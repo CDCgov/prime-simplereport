@@ -1,3 +1,4 @@
+import { MockedProvider } from "@apollo/client/testing";
 import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
@@ -6,6 +7,7 @@ import configureStore from "redux-mock-store";
 import { displayFullName } from "../../utils";
 
 import ManageUsers, { SettingsUsers } from "./ManageUsers";
+import { GET_USER } from "./ManageUsersContainer";
 
 const organization = { testingFacility: [{ id: "a1", name: "Foo Org" }] };
 const allFacilities = [
@@ -24,6 +26,19 @@ const loggedInUser = {
 };
 
 const mockStore = configureStore([]);
+const store = mockStore({
+  organization: {
+    name: "Organization Name",
+  },
+  user: {
+    firstName: "Kim",
+    lastName: "Mendoza",
+  },
+  facilities: [
+    { id: "1", name: "Facility 1" },
+    { id: "2", name: "Facility 2" },
+  ],
+});
 
 const users: SettingsUsers[keyof SettingsUsers][] = [
   {
@@ -46,12 +61,71 @@ const users: SettingsUsers[keyof SettingsUsers][] = [
   },
 ];
 
+const mocks = [
+  {
+    request: {
+      query: GET_USER,
+      variables: {
+        id: "a123",
+      },
+    },
+    result: {
+      data: {
+        user: {
+          id: "a123",
+          firstName: "John",
+          middleName: "",
+          lastName: "Arthur",
+          roleDescription: "user",
+          role: "USER",
+          permissions: ["READ_PATIENT_LIST"],
+          email: "john@example.com",
+          organization: { testingFacility: [] },
+        },
+      },
+    },
+  },
+  {
+    request: {
+      query: GET_USER,
+      variables: {
+        id: "b1",
+      },
+    },
+    result: {
+      data: {
+        user: {
+          id: "b1",
+          firstName: "Bob",
+          middleName: "",
+          lastName: "Bobberoo",
+          roleDescription: "admin",
+          role: "ADMIN",
+          permissions: ["READ_PATIENT_LIST"],
+          email: "bob@bobberoo.org",
+          organization: { testingFacility: [] },
+        },
+      },
+    },
+  },
+];
+
 let updateUserPrivileges: () => Promise<any>;
 let addUserToOrg: () => Promise<any>;
 let deleteUser: (obj: any) => Promise<any>;
 let getUsers: () => Promise<any>;
 
 let inputValue = (value: string) => ({ target: { value } });
+
+const TestContainer: React.FC = ({ children }) => (
+  <MemoryRouter>
+    <Provider store={store}>
+      <MockedProvider mocks={mocks}>
+        <>{children}</>
+      </MockedProvider>
+    </Provider>
+  </MemoryRouter>
+);
 
 describe("ManageUsers", () => {
   beforeEach(() => {
@@ -66,373 +140,304 @@ describe("ManageUsers", () => {
     );
     getUsers = jest.fn(() => Promise.resolve({ data: users }));
   });
-  it("displays the list of users and defaults to the first user", () => {
-    const { container } = render(
-      <MemoryRouter>
-        <ManageUsers
-          users={users}
-          loggedInUser={loggedInUser}
-          allFacilities={allFacilities}
-          updateUserPrivileges={updateUserPrivileges}
-          addUserToOrg={addUserToOrg}
-          deleteUser={deleteUser}
-          getUsers={getUsers}
-        />
-      </MemoryRouter>
-    );
-    expect(container).toMatchSnapshot();
-  });
-  it("disables logged-in user's settings", async () => {
-    const { container, findByText, getByText, getByLabelText } = render(
-      <MemoryRouter>
-        <ManageUsers
-          users={users}
-          loggedInUser={loggedInUser}
-          allFacilities={allFacilities}
-          updateUserPrivileges={updateUserPrivileges}
-          addUserToOrg={addUserToOrg}
-          deleteUser={deleteUser}
-          getUsers={getUsers}
-        />
-      </MemoryRouter>
-    );
 
-    fireEvent.click(getByText(displayFullName("Bob", "", "Bobberoo")));
-    await findByText("YOU");
-    expect(getByLabelText("admin", { exact: false })).toHaveAttribute(
-      "disabled"
-    );
-    expect(getByLabelText("user", { exact: false })).toHaveAttribute(
-      "disabled"
-    );
-    expect(getByLabelText("Entry only", { exact: false })).toHaveAttribute(
-      "disabled"
-    );
-    expect(container).toMatchSnapshot();
-  });
-  it("passes user details to the addUserToOrg function", async () => {
-    const store = mockStore({
-      organization: {
-        name: "Organization Name",
-      },
-      user: {
-        firstName: "Kim",
-        lastName: "Mendoza",
-      },
-      facilities: [
-        { id: "1", name: "Facility 1" },
-        { id: "2", name: "Facility 2" },
-      ],
+  describe("regular list of users", () => {
+    let container: any,
+      findByText: any,
+      findAllByRole: any,
+      getByText: any,
+      getByLabelText: any;
+    beforeEach(async () => {
+      await waitFor(() => {
+        const {
+          container: ui,
+          findByText: findText,
+          findAllByRole: findAllRole,
+          getByText: getText,
+          getByLabelText: getLabelText,
+        } = render(
+          <TestContainer>
+            <ManageUsers
+              users={users}
+              loggedInUser={loggedInUser}
+              allFacilities={allFacilities}
+              updateUserPrivileges={updateUserPrivileges}
+              addUserToOrg={addUserToOrg}
+              deleteUser={deleteUser}
+              getUsers={getUsers}
+            />
+          </TestContainer>
+        );
+        container = ui;
+        findByText = findText;
+        findAllByRole = findAllRole;
+        getByText = getText;
+        getByLabelText = getLabelText;
+      });
     });
-    const { getByText, findAllByRole, getByLabelText } = render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <ManageUsers
-            users={users}
-            loggedInUser={loggedInUser}
-            allFacilities={allFacilities}
-            updateUserPrivileges={updateUserPrivileges}
-            addUserToOrg={addUserToOrg}
-            deleteUser={deleteUser}
-            getUsers={getUsers}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
 
-    const newUser = {
-      firstName: "Jane",
-      lastName: "Smith",
-      email: "jane@smith.co",
-      role: "USER",
-    };
-
-    fireEvent.click(getByText("New User", { exact: false }));
-    const [first, last, email] = await findAllByRole("textbox");
-    const select = getByLabelText("Access Level", { exact: false });
-    fireEvent.change(first, inputValue(newUser.firstName));
-    fireEvent.change(last, inputValue(newUser.lastName));
-    fireEvent.change(email, inputValue(newUser.email));
-    fireEvent.change(select, inputValue(newUser.role));
-    const sendButton = getByText("Send invite");
-    await waitFor(() => {
-      fireEvent.click(screen.getAllByRole("checkbox")[1]);
-      expect(sendButton).not.toBeDisabled();
+    it("displays the list of users and defaults to the first user", async () => {
+      expect(container).toMatchSnapshot();
     });
-    fireEvent.click(sendButton);
-    await waitFor(() => expect(addUserToOrg).toBeCalled());
-    expect(addUserToOrg).toBeCalledWith({ variables: newUser });
-    expect(updateUserPrivileges).toBeCalledWith({
-      variables: {
-        accessAllFacilities: true,
-        facilities: ["1", "2"],
-        id: "added-user-id",
+
+    it("disables logged-in user's settings", async () => {
+      fireEvent.click(getByText(displayFullName("Bob", "", "Bobberoo")));
+      await findByText("YOU");
+      expect(getByLabelText("admin", { exact: false })).toHaveAttribute(
+        "disabled"
+      );
+      expect(getByLabelText("user", { exact: false })).toHaveAttribute(
+        "disabled"
+      );
+      expect(getByLabelText("Entry only", { exact: false })).toHaveAttribute(
+        "disabled"
+      );
+      expect(container).toMatchSnapshot();
+    });
+
+    it("passes user details to the addUserToOrg function", async () => {
+      const newUser = {
+        firstName: "Jane",
+        lastName: "Smith",
+        email: "jane@smith.co",
         role: "USER",
-      },
-    });
-  });
-  it("passes user details to the addUserToOrg function without a role", async () => {
-    const store = mockStore({
-      organization: {
-        name: "Organization Name",
-      },
-      user: {
-        firstName: "Kim",
-        lastName: "Mendoza",
-      },
-      facilities: [
-        { id: "1", name: "Facility 1" },
-        { id: "2", name: "Facility 2" },
-      ],
-    });
-    const { getByText, findAllByRole } = render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <ManageUsers
-            users={users}
-            loggedInUser={loggedInUser}
-            allFacilities={allFacilities}
-            updateUserPrivileges={updateUserPrivileges}
-            addUserToOrg={addUserToOrg}
-            deleteUser={deleteUser}
-            getUsers={getUsers}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
+      };
 
-    const newUser = {
-      firstName: "Jane",
-      lastName: "Smith",
-      email: "jane@smith.co",
-    };
-
-    fireEvent.click(getByText("New User", { exact: false }));
-    const [first, last, email] = await findAllByRole("textbox");
-    fireEvent.change(first, inputValue(newUser.firstName));
-    fireEvent.change(last, inputValue(newUser.lastName));
-    fireEvent.change(email, inputValue(newUser.email));
-    fireEvent.click(screen.getAllByRole("checkbox")[1]);
-    const sendButton = getByText("Send invite");
-    await waitFor(() => expect(sendButton).not.toBeDisabled());
-    fireEvent.click(sendButton);
-    await waitFor(() => expect(addUserToOrg).toBeCalled());
-    expect(addUserToOrg).toBeCalledWith({
-      variables: { ...newUser, role: "USER" },
-    });
-  });
-  it("deletes a user", async () => {
-    const { findByText } = render(
-      <MemoryRouter>
-        <ManageUsers
-          users={users}
-          loggedInUser={loggedInUser}
-          allFacilities={allFacilities}
-          updateUserPrivileges={updateUserPrivileges}
-          addUserToOrg={addUserToOrg}
-          deleteUser={deleteUser}
-          getUsers={getUsers}
-        />
-      </MemoryRouter>
-    );
-    const removeButton = await findByText("Remove", { exact: false });
-    fireEvent.click(removeButton);
-    const sureButton = await findByText("Yes", { exact: false });
-    fireEvent.click(sureButton);
-    await waitFor(() => expect(deleteUser).toBeCalled());
-    expect(deleteUser).toBeCalledWith({
-      variables: { deleted: true, id: users[0].id },
-    });
-  });
-  it("updates someone from user to admin", async () => {
-    const { findAllByRole, findByText } = render(
-      <MemoryRouter>
-        <ManageUsers
-          users={users}
-          loggedInUser={loggedInUser}
-          allFacilities={allFacilities}
-          updateUserPrivileges={updateUserPrivileges}
-          addUserToOrg={addUserToOrg}
-          deleteUser={deleteUser}
-          getUsers={getUsers}
-        />
-      </MemoryRouter>
-    );
-    const [adminOption] = await findAllByRole("radio");
-    fireEvent.click(adminOption);
-    const button = await findByText("Save", { exact: false });
-    await waitFor(() => expect(button).not.toHaveAttribute("disabled"));
-    fireEvent.click(button);
-    await waitFor(() => expect(updateUserPrivileges).toBeCalled());
-    expect(updateUserPrivileges).toBeCalledWith({
-      variables: {
-        id: users[0].id,
-        role: "ADMIN",
-        accessAllFacilities: false,
-        facilities: ["a1", "a2"],
-      },
-    });
-  });
-  it("fails gracefully when there are no users", async () => {
-    const { findByText } = render(
-      <MemoryRouter>
-        <ManageUsers
-          users={[]}
-          loggedInUser={loggedInUser}
-          allFacilities={allFacilities}
-          updateUserPrivileges={updateUserPrivileges}
-          addUserToOrg={addUserToOrg}
-          deleteUser={deleteUser}
-          getUsers={getUsers}
-        />
-      </MemoryRouter>
-    );
-    const noUsers = await findByText("no users", { exact: false });
-    expect(noUsers).toBeInTheDocument();
-  });
-  it("adds a user when zero users exist", async () => {
-    const store = mockStore({
-      organization: {
-        name: "Organization Name",
-      },
-      user: {
-        firstName: "Kim",
-        lastName: "Mendoza",
-      },
-      facilities: allFacilities,
-    });
-    const { getByText, findAllByRole } = render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <ManageUsers
-            users={[]}
-            loggedInUser={loggedInUser}
-            allFacilities={allFacilities}
-            updateUserPrivileges={updateUserPrivileges}
-            addUserToOrg={addUserToOrg}
-            deleteUser={deleteUser}
-            getUsers={getUsers}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    const newUser = {
-      firstName: "Jane",
-      lastName: "Smith",
-      email: "jane@smith.co",
-    };
-
-    fireEvent.click(getByText("New User", { exact: false }));
-    const [first, last, email] = await findAllByRole("textbox");
-    fireEvent.change(first, inputValue(newUser.firstName));
-    fireEvent.change(last, inputValue(newUser.lastName));
-    fireEvent.change(email, inputValue(newUser.email));
-    fireEvent.click(screen.getByRole("checkbox"));
-    const sendButton = getByText("Send invite");
-    await waitFor(() => expect(sendButton).not.toBeDisabled());
-    await waitFor(() => {
+      fireEvent.click(getByText("New User", { exact: false }));
+      const [first, last, email] = await findAllByRole("textbox");
+      const select = getByLabelText("Access Level", { exact: false });
+      fireEvent.change(first, inputValue(newUser.firstName));
+      fireEvent.change(last, inputValue(newUser.lastName));
+      fireEvent.change(email, inputValue(newUser.email));
+      fireEvent.change(select, inputValue(newUser.role));
+      const sendButton = getByText("Send invite");
+      await waitFor(() => {
+        fireEvent.click(screen.getAllByRole("checkbox")[1]);
+        expect(sendButton).not.toBeDisabled();
+      });
       fireEvent.click(sendButton);
-      expect(addUserToOrg).toBeCalled();
-    });
-    expect(addUserToOrg).toBeCalledWith({
-      variables: { ...newUser, role: "USER" },
-    });
-  });
-  it("adds adds a facility for a user", async () => {
-    render(
-      <MemoryRouter>
-        <ManageUsers
-          users={users}
-          loggedInUser={loggedInUser}
-          allFacilities={allFacilities}
-          updateUserPrivileges={updateUserPrivileges}
-          addUserToOrg={addUserToOrg}
-          deleteUser={deleteUser}
-          getUsers={getUsers}
-        />
-      </MemoryRouter>
-    );
-    const facilitySelect = await screen.findByLabelText("Add facility");
-    const addButton = screen.getByText("Add");
-    await waitFor(() => {
-      fireEvent.change(facilitySelect, { target: { value: "a1" } });
-      expect(addButton).not.toBeDisabled();
-    });
-    fireEvent.click(addButton);
-    const saveButton = screen.getByText("Save changes");
-    await waitFor(() => expect(saveButton).not.toBeDisabled());
-    await waitFor(() => {
-      fireEvent.click(saveButton);
-      expect(updateUserPrivileges).toBeCalled();
-    });
-    expect(updateUserPrivileges).toBeCalledWith({
-      variables: {
-        accessAllFacilities: false,
-        facilities: ["a1"],
-        id: "a123",
-        role: "USER",
-      },
-    });
-  });
-  it("gives user access to all facilities", async () => {
-    render(
-      <MemoryRouter>
-        <ManageUsers
-          users={users}
-          loggedInUser={loggedInUser}
-          allFacilities={allFacilities}
-          updateUserPrivileges={updateUserPrivileges}
-          addUserToOrg={addUserToOrg}
-          deleteUser={deleteUser}
-          getUsers={getUsers}
-        />
-      </MemoryRouter>
-    );
-    const allFacilitiesBox = await screen.findByLabelText(
-      "Access all facilities"
-    );
-    const saveButton = screen.getByText("Save changes");
-    await waitFor(() => {
-      fireEvent.click(allFacilitiesBox);
-      expect(saveButton).not.toBeDisabled();
-    });
-    await waitFor(() => {
-      fireEvent.click(saveButton);
-      expect(updateUserPrivileges).toBeCalled();
+      await waitFor(() => expect(addUserToOrg).toBeCalled());
+      expect(addUserToOrg).toBeCalledWith({ variables: newUser });
+      expect(updateUserPrivileges).toBeCalledWith({
+        variables: {
+          accessAllFacilities: true,
+          facilities: ["1", "2"],
+          id: "added-user-id",
+          role: "USER",
+        },
+      });
     });
 
-    expect(updateUserPrivileges).toBeCalledWith({
-      variables: {
-        accessAllFacilities: true,
-        facilities: ["a1", "a2"],
-        id: "a123",
-        role: "USER",
-      },
+    it("passes user details to the addUserToOrg function without a role", async () => {
+      const newUser = {
+        firstName: "Jane",
+        lastName: "Smith",
+        email: "jane@smith.co",
+      };
+
+      fireEvent.click(getByText("New User", { exact: false }));
+      const [first, last, email] = await findAllByRole("textbox");
+      fireEvent.change(first, inputValue(newUser.firstName));
+      fireEvent.change(last, inputValue(newUser.lastName));
+      fireEvent.change(email, inputValue(newUser.email));
+      fireEvent.click(screen.getAllByRole("checkbox")[1]);
+      const sendButton = getByText("Send invite");
+      await waitFor(() => expect(sendButton).not.toBeDisabled());
+      fireEvent.click(sendButton);
+      await waitFor(() => expect(addUserToOrg).toBeCalled());
+      expect(addUserToOrg).toBeCalledWith({
+        variables: { ...newUser, role: "USER" },
+      });
+    });
+
+    it("deletes a user", async () => {
+      const removeButton = await findByText("Remove", { exact: false });
+      fireEvent.click(removeButton);
+      const sureButton = await findByText("Yes", { exact: false });
+      fireEvent.click(sureButton);
+      await waitFor(() => expect(deleteUser).toBeCalled());
+      expect(deleteUser).toBeCalledWith({
+        variables: { deleted: true, id: users[0].id },
+      });
+    });
+
+    it("updates someone from user to admin", async () => {
+      const [adminOption] = await findAllByRole("radio");
+      fireEvent.click(adminOption);
+      const button = await findByText("Save", { exact: false });
+      await waitFor(() => expect(button).not.toHaveAttribute("disabled"));
+      fireEvent.click(button);
+      await waitFor(() => expect(updateUserPrivileges).toBeCalled());
+      expect(updateUserPrivileges).toBeCalledWith({
+        variables: {
+          id: users[0].id,
+          role: "ADMIN",
+          accessAllFacilities: false,
+          facilities: ["a1", "a2"],
+        },
+      });
+    });
+
+    it("adds adds a facility for a user", async () => {
+      const facilitySelect = await screen.findByLabelText("Add facility");
+      const addButton = screen.getByText("Add");
+      await waitFor(() => {
+        fireEvent.change(facilitySelect, { target: { value: "a1" } });
+        expect(addButton).not.toBeDisabled();
+      });
+      fireEvent.click(addButton);
+      const saveButton = screen.getByText("Save changes");
+      await waitFor(() => expect(saveButton).not.toBeDisabled());
+      await waitFor(() => {
+        fireEvent.click(saveButton);
+        expect(updateUserPrivileges).toBeCalled();
+      });
+      expect(updateUserPrivileges).toBeCalledWith({
+        variables: {
+          accessAllFacilities: false,
+          facilities: ["a1"],
+          id: "a123",
+          role: "USER",
+        },
+      });
     });
   });
+
+  describe("empty list of users", () => {
+    let findByText: any, findAllByRole: any, getByText: any;
+    beforeEach(async () => {
+      await waitFor(() => {
+        const {
+          findByText: findText,
+          findAllByRole: findAllRole,
+          getByText: getText,
+        } = render(
+          <TestContainer>
+            <ManageUsers
+              users={[]}
+              loggedInUser={loggedInUser}
+              allFacilities={allFacilities}
+              updateUserPrivileges={updateUserPrivileges}
+              addUserToOrg={addUserToOrg}
+              deleteUser={deleteUser}
+              getUsers={getUsers}
+            />
+          </TestContainer>
+        );
+        findByText = findText;
+        findAllByRole = findAllRole;
+        getByText = getText;
+      });
+    });
+
+    it("fails gracefully when there are no users", async () => {
+      const noUsers = await findByText("no users", { exact: false });
+      expect(noUsers).toBeInTheDocument();
+    });
+
+    it("adds a user when zero users exist", async () => {
+      const newUser = {
+        firstName: "Jane",
+        lastName: "Smith",
+        email: "jane@smith.co",
+      };
+
+      fireEvent.click(getByText("New User", { exact: false }));
+      const [first, last, email] = await findAllByRole("textbox");
+      fireEvent.change(first, inputValue(newUser.firstName));
+      fireEvent.change(last, inputValue(newUser.lastName));
+      fireEvent.change(email, inputValue(newUser.email));
+      fireEvent.click(screen.getByRole("checkbox"));
+      const sendButton = getByText("Send invite");
+      await waitFor(() => expect(sendButton).not.toBeDisabled());
+      await waitFor(() => {
+        fireEvent.click(sendButton);
+        expect(addUserToOrg).toBeCalled();
+      });
+      expect(addUserToOrg).toBeCalledWith({
+        variables: { ...newUser, role: "USER" },
+      });
+    });
+  });
+
   it("removes a facility", async () => {
-    render(
-      <MemoryRouter>
-        <ManageUsers
-          users={users.map((user) => ({
-            ...user,
-            organization: {
-              testingFacility: [
-                { id: "a1", name: "Foo Facility" },
-                { id: "a2", name: "Bar Facility" },
-              ],
+    const updatedMocks = [
+      {
+        request: {
+          query: GET_USER,
+          variables: {
+            id: "a123",
+          },
+        },
+        result: {
+          data: {
+            user: {
+              id: "a123",
+              firstName: "John",
+              middleName: "",
+              lastName: "Arthur",
+              roleDescription: "user",
+              role: "USER",
+              permissions: ["READ_PATIENT_LIST"],
+              email: "john@example.com",
+              organization: {
+                testingFacility: [
+                  { id: "a1", name: "Foo Facility" },
+                  { id: "a2", name: "Bar Facility" },
+                ],
+              },
             },
-          }))}
-          loggedInUser={loggedInUser}
-          allFacilities={allFacilities}
-          updateUserPrivileges={updateUserPrivileges}
-          addUserToOrg={addUserToOrg}
-          deleteUser={deleteUser}
-          getUsers={getUsers}
-        />
-      </MemoryRouter>
-    );
+          },
+        },
+      },
+      {
+        request: {
+          query: GET_USER,
+          variables: {
+            id: "b1",
+          },
+        },
+        result: {
+          data: {
+            user: {
+              id: "b1",
+              firstName: "Bob",
+              middleName: "",
+              lastName: "Bobberoo",
+              roleDescription: "admin",
+              role: "ADMIN",
+              permissions: ["READ_PATIENT_LIST"],
+              email: "bob@bobberoo.org",
+              organization: {
+                testingFacility: [
+                  { id: "a1", name: "Foo Facility" },
+                  { id: "a2", name: "Bar Facility" },
+                ],
+              },
+            },
+          },
+        },
+      },
+    ];
+    await waitFor(() => {
+      render(
+        <MemoryRouter>
+          <Provider store={store}>
+            <MockedProvider mocks={updatedMocks}>
+              <ManageUsers
+                users={users}
+                loggedInUser={loggedInUser}
+                allFacilities={allFacilities}
+                updateUserPrivileges={updateUserPrivileges}
+                addUserToOrg={addUserToOrg}
+                deleteUser={deleteUser}
+                getUsers={getUsers}
+              />
+            </MockedProvider>
+          </Provider>
+        </MemoryRouter>
+      );
+    });
 
     const removeButton = (
       await screen.findAllByLabelText("Remove facility", {
