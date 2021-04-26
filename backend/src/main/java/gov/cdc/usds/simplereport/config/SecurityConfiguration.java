@@ -73,6 +73,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
         .antMatchers(HttpMethod.POST, WebConfiguration.ACCOUNT_REQUEST + "/**")
         .permitAll()
 
+        // User account creation request authorization is handled in UserAccountCreationController
+        .antMatchers(HttpMethod.GET, WebConfiguration.USER_ACCOUNT_REQUEST + "**")
+        .permitAll()
+
         // Anything else goes through Okta
         .anyRequest()
         .authenticated()

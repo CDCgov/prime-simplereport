@@ -316,4 +316,8 @@ public class ApiUserService {
         new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
     return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
   }
+
+  public boolean verifyAccountCreationRequest() {
+    return true;
+  }
 }
