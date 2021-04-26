@@ -4,6 +4,7 @@ import gov.cdc.usds.simplereport.api.InternalIdResolver;
 import gov.cdc.usds.simplereport.api.PersonNameResolver;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.errors.NoDataLoaderFoundException;
+import gov.cdc.usds.simplereport.config.DataLoaders;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.PatientPreferences;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -22,15 +23,14 @@ import org.springframework.stereotype.Component;
 public class PatientDataResolver
     implements GraphQLResolver<Person>, PersonNameResolver<Person>, InternalIdResolver<Person> {
 
-  public static final String LAST_TEST_DATA_LOADER = "patientLastTestLoader";
-
   public CompletableFuture<TestEvent> getLastTest(Person person, DataFetchingEnvironment dfe) {
     DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
-    DataLoader<UUID, TestEvent> lastTestLoader = registry.getDataLoader(LAST_TEST_DATA_LOADER);
+    DataLoader<UUID, TestEvent> lastTestLoader =
+        registry.getDataLoader(DataLoaders.PATIENT_LAST_TEST);
     if (lastTestLoader != null) {
       return lastTestLoader.load(person.getInternalId());
     }
-    throw new NoDataLoaderFoundException(LAST_TEST_DATA_LOADER);
+    throw new NoDataLoaderFoundException(DataLoaders.PATIENT_LAST_TEST);
   }
 
   public ApiFacility getFacility(Person p) {
@@ -52,10 +52,10 @@ public class PatientDataResolver
       Person person, DataFetchingEnvironment dfe) {
     DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
     DataLoader<UUID, PatientPreferences> patientPreferencesLoader =
-        registry.getDataLoader(PatientPreferences.DATA_LOADER);
+        registry.getDataLoader(DataLoaders.PATIENT_PREFERENCES);
     if (patientPreferencesLoader != null) {
       return patientPreferencesLoader.load(person.getInternalId());
     }
-    throw new NoDataLoaderFoundException(PatientPreferences.DATA_LOADER);
+    throw new NoDataLoaderFoundException(DataLoaders.PATIENT_PREFERENCES);
   }
 }
