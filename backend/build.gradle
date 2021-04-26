@@ -20,12 +20,6 @@ repositories {
     mavenCentral()
 }
 
-// dependencyManagement {
-//   imports {
-//     mavenBom 'org.springframework.session:spring-session-bom:2020.0.3'
-//   }
-// }
-
 dependencies {
     // core infrastructure
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -63,10 +57,6 @@ dependencies {
 
     // SendGrid for Email
     implementation 'com.sendgrid:sendgrid-java:4.7.2'
-
-    // Spring Session
-    // compile 'org.springframework.session:spring-session-core'
-    // compile 'org.springframework.session:spring-session-jdbc'
 
     // graphql-java-extended-validation schema directives
     compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
