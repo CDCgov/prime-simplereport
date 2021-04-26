@@ -149,8 +149,8 @@ describe("FacilityForm", () => {
       </MemoryRouter>
     );
     const stateDropdownElement = screen.getByTestId("facility-state-dropdown");
-    fireEvent.change(stateDropdownElement, { target: { selectedValue: "CA" } });
-    fireEvent.change(stateDropdownElement, { target: { value: "CA" } });
+    fireEvent.change(stateDropdownElement, { target: { selectedValue: "PW" } });
+    fireEvent.change(stateDropdownElement, { target: { value: "PW" } });
     await waitFor(async () => {
       fireEvent.blur(stateDropdownElement);
     });
@@ -161,7 +161,7 @@ describe("FacilityForm", () => {
       { exact: false }
     );
     expect(warning).toBeInTheDocument();
-    const state = await screen.findByText("California", { exact: false });
+    const state = await screen.findByText("Palau", { exact: false });
     expect(state).toBeInTheDocument();
   });
 });

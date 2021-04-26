@@ -1,13 +1,13 @@
 output "subnet_vm_id" {
-  value = azurerm_subnet.vms.id
+  value = module.vnet.subnet_vm_id
 }
 
 output "subnet_lbs_id" {
-  value = azurerm_subnet.lbs.id
+  value = module.vnet.subnet_lbs_id
 }
 
 output "subnet_webapp_id" {
-  value = azurerm_subnet.webapp.id
+  value = module.vnet.subnet_webapp_id
 }
 
 output "app_insight_id" {
@@ -15,7 +15,8 @@ output "app_insight_id" {
 }
 
 output "app_insights_instrumentation_key" {
-  value = module.monitoring.app_insights_instrumentation_key
+  value     = module.monitoring.app_insights_instrumentation_key
+  sensitive = true
 }
 
 output "postgres_server_name" {
