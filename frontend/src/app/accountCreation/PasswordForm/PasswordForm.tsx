@@ -8,6 +8,7 @@ import StepIndicator from "../../commonComponents/StepIndicator";
 
 export const PasswordForm = () => {
   const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   return (
     <CardBackground>
@@ -18,6 +19,8 @@ export const PasswordForm = () => {
           name={"password"}
           type={"password"}
           hintText="Your password must be at least 8 characters and include an uppercase and lowercase letter and a number."
+          errorMessage="this is an error"
+          validationStatus={passwordError ? "error" : undefined}
           onChange={(evt) => setPassword(evt.currentTarget.value)}
         />
         <p>[ password strength ] todo: verify w/ team</p>

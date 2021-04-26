@@ -7,7 +7,6 @@ export default {
   component: Card,
   argTypes: {
     logo: { control: "boolean" },
-    // bodyHeading: { control: "boolean" },
   },
 } as Meta;
 
