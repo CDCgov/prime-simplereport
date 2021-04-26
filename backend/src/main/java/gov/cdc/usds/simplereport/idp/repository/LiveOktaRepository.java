@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -232,7 +233,7 @@ public class LiveOktaRepository implements OktaRepository {
         user.listGroups().stream()
             .filter(
                 g ->
-                    GroupType.OKTA_GROUP.equals(g.getType())
+                    GroupType.OKTA_GROUP == g.getType()
                         && g.getProfile().getName().startsWith(groupOrgPrefix))
             .collect(Collectors.toMap(g -> g.getProfile().getName(), g -> g));
 
@@ -266,8 +267,8 @@ public class LiveOktaRepository implements OktaRepository {
     if (!groupNamesToRemove.isEmpty() || !groupNamesToAdd.isEmpty()) {
       Map<String, Group> fullOrgGroupMap =
           _client.listGroups(groupOrgPrefix, null, null).stream()
-              .filter(g -> GroupType.OKTA_GROUP.equals(g.getType()))
-              .collect(Collectors.toMap(g -> g.getProfile().getName(), g -> g));
+              .filter(g -> GroupType.OKTA_GROUP == g.getType())
+              .collect(Collectors.toMap(g -> g.getProfile().getName(), Function.identity()));
       if (fullOrgGroupMap.size() == 0) {
         throw new IllegalGraphqlArgumentException(
             String.format("Cannot add Okta user to nonexistent organization=%s", orgId));
@@ -276,20 +277,17 @@ public class LiveOktaRepository implements OktaRepository {
       for (String groupName : groupNamesToRemove) {
         Group group = fullOrgGroupMap.get(groupName);
         LOG.info("Removing {} from Okta group: {}", username, group.getProfile().getName());
-        user.addToGroup(group.getId());
+        group.removeUser(user.getId());
       }
 
-      groupNamesToAdd.stream()
-          .filter(n -> !fullOrgGroupMap.containsKey(n))
-          .forEach(
-              n -> {
-                throw new IllegalGraphqlArgumentException(
-                    String.format("Cannot add Okta user to nonexistent group=%s", n));
-              });
       for (String groupName : groupNamesToAdd) {
+        if (!fullOrgGroupMap.containsKey(groupName)) {
+          throw new IllegalGraphqlArgumentException(
+              String.format("Cannot add Okta user to nonexistent group=%s", groupName));
+        }
         Group group = fullOrgGroupMap.get(groupName);
         LOG.info("Adding {} to Okta group: {}", username, group.getProfile().getName());
-        group.removeUser(user.getId());
+        user.addToGroup(group.getId());
       }
     }
 
