@@ -79,7 +79,7 @@ const Dropdown: React.FC<Props & SelectProps> = ({
               {errorMessage}
             </div>
           )}
-          {hintText && <span className="usa-hint text-ls-1">{hintText}</span>}
+          {hintText && <span className="usa-hint">{hintText}</span>}
           <select
             className={classnames("usa-select", selectClassName)}
             name={name}

@@ -1188,7 +1188,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                 </abbr>
               </legend>
               <span
-                className="usa-hint text-ls-1"
+                className="usa-hint"
               >
                 For example: nursing home, group home, prison, jail, or military
               </span>
