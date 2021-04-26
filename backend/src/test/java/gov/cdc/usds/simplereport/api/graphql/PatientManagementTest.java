@@ -38,7 +38,7 @@ class PatientManagementTest extends BaseGraphqlTest {
     final MutableObject<String> facilityId = new MutableObject<>(); // LOL
     TestUserIdentities.withStandardUser(
         () -> {
-          Organization org = _orgService.getCurrentOrganization();
+          Organization org = _orgService.getCurrentOrganizationNoCache();
           Facility place = _orgService.getFacilities(org).get(0);
           _dataFactory.createMinimalPerson(org, place, "Cassandra", null, "Thom", null);
           _dataFactory.createMinimalPerson(org, null, " Miriana", "Linas", "Luisito", null);

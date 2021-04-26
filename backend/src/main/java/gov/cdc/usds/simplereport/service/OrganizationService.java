@@ -96,6 +96,18 @@ public class OrganizationService {
     return orgRole.getOrganization();
   }
 
+  /**
+   * This method exists because we need to bypass the request-context level cache in test setups,
+   * which do not <em>have</em> a request context.
+   *
+   * <p><strong>In request-level code, use getCurrentOrganization instead</strong>
+   */
+  public Organization getCurrentOrganizationNoCache() {
+    OrganizationRoles orgRole =
+        fetchCurrentOrganizationRoles().orElseThrow(MisconfiguredUserException::new);
+    return orgRole.getOrganization();
+  }
+
   public OrganizationRoles getOrganizationRoles(OrganizationRoleClaims roleClaims) {
     Organization org = getOrganization(roleClaims.getOrganizationExternalId());
     return getOrganizationRoles(org, roleClaims);
