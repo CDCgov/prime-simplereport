@@ -168,7 +168,7 @@ const PersonForm = (props: Props) => {
           return;
         }
         if (!focusedOnError) {
-          document.getElementsByName(name)[0].focus();
+          document.getElementsByName(name)[0]?.focus();
           focusedOnError = true;
         }
         showError(toast, "Please correct before submitting", error);
@@ -299,8 +299,6 @@ const PersonForm = (props: Props) => {
           <ManagePhoneNumbers
             phoneNumbers={patient.phoneNumbers || []}
             updatePhoneNumbers={onPersonChange("phoneNumbers")}
-            errors={errors}
-            validateField={() => validateField("phoneNumbers")}
           />
         </div>
         {/*</div>

@@ -7,6 +7,7 @@ import {
   ETHNICITY_VALUES,
   GENDER_VALUES,
   TRIBAL_AFFILIATION_VALUES,
+  PHONE_TYPE_VALUES,
 } from "../constants";
 import { Option } from "../commonComponents/Dropdown";
 import { languages } from "../../config/constants";
@@ -47,16 +48,7 @@ const getValues = (options: Option[]) => options.map(({ value }) => value);
 const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
   lookupId: yup.string().nullable(),
   role: yup.mixed().oneOf([...getValues(ROLE_VALUES), "UNKNOWN", "", null]),
-  telephone: yup
-    .string()
-    .test(function (input) {
-      if (!input) {
-        return false;
-      }
-      const number = phoneUtil.parseAndKeepRawInput(input, "US");
-      return phoneUtil.isValidNumber(number);
-    })
-    .required(),
+  telephone: yup.mixed().optional(),
   phoneNumbers: yup.array().test(function (phoneNumbers) {
     if (!phoneNumbers) {
       return false;
@@ -88,6 +80,24 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
     .oneOf([...getValues(TRIBAL_AFFILIATION_VALUES), "", null]),
   preferredLanguage: yup.mixed().oneOf([...languages, "", null]),
 };
+
+const updatePhoneNumberSchemata: Record<keyof PhoneNumber, yup.AnySchema> = {
+  number: yup
+    .string()
+    .test(function (input) {
+      if (!input) {
+        return false;
+      }
+      const number = phoneUtil.parseAndKeepRawInput(input, "US");
+      return phoneUtil.isValidNumber(number);
+    })
+    .required(),
+  type: yup.mixed().oneOf(getValues(PHONE_TYPE_VALUES)),
+};
+
+export const phoneNumberUpdateSchema: yup.SchemaOf<PhoneNumber> = yup.object(
+  updatePhoneNumberSchemata
+);
 
 export const personUpdateSchema: yup.SchemaOf<PersonUpdateFields> = yup.object(
   updateFieldSchemata
@@ -129,4 +139,11 @@ export const allPersonErrors: Required<PersonErrors> = {
     "Are you a resident in a congregate living setting? is required",
   employedInHealthcare: "Are you a health care worker? is required",
   preferredLanguage: "Preferred language is incorrectly formatted",
+};
+
+export type PhoneNumberErrors = Partial<Record<keyof PhoneNumber, string>>;
+
+export const allPhoneNumberErrors: Required<PhoneNumberErrors> = {
+  number: "Phone number is missing or invalid",
+  type: "Phone type is missing or invalid",
 };

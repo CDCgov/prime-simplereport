@@ -1,31 +1,27 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { PHONE_TYPE_VALUES } from "../../constants";
 import Button from "../../commonComponents/Button";
-//import Input from "../../commonComponents/Input";
-import TextInput from "../../commonComponents/TextInput";
+import Input from "../../commonComponents/Input";
 import RadioGroup from "../../commonComponents/RadioGroup";
-import { PersonErrors } from "../personSchema";
-
-import { ValidateField } from "./PersonForm";
+import {
+  PhoneNumberErrors,
+  allPhoneNumberErrors,
+  phoneNumberUpdateSchema,
+} from "../personSchema";
 
 interface Props {
   phoneNumbers: PhoneNumber[];
   updatePhoneNumbers: (phoneNumbers: PhoneNumber[]) => void;
-  errors: PersonErrors;
-  validateField: ValidateField;
 }
 
 const ManagePhoneNumbers: React.FC<Props> = ({
   phoneNumbers,
   updatePhoneNumbers,
-  errors,
-  validateField,
 }) => {
-  const phoneNumberErrors: React.ReactNode[] = [];
+  const [errors, setErrors] = useState<PhoneNumberErrors[]>([]);
 
-  /* fix this */
   if (phoneNumbers.length === 0) {
     phoneNumbers = [
       {
@@ -35,9 +31,39 @@ const ManagePhoneNumbers: React.FC<Props> = ({
     ];
   }
 
-  if (errors.telephone) {
-    phoneNumberErrors.push(errors.telephone);
-  }
+  const clearError = useCallback(
+    (idx: number, field: keyof PhoneNumberErrors) => {
+      if (errors[idx][field]) {
+        errors[idx][field] = "";
+
+        setErrors(errors);
+      }
+    },
+    [errors]
+  );
+
+  const validateField = useCallback(
+    async (idx: number, field: keyof PhoneNumber) => {
+      try {
+        clearError(idx, field);
+        await phoneNumberUpdateSchema.validateAt(field, phoneNumbers[idx]);
+      } catch (e) {
+        setErrors((existingErrors) => {
+          existingErrors[idx] = {
+            ...existingErrors[idx],
+            [field]: allPhoneNumberErrors[field],
+          };
+
+          return existingErrors;
+        });
+      }
+    },
+    [phoneNumbers, clearError]
+  );
+
+  const validationStatus = (idx: number, name: keyof PhoneNumberErrors) => {
+    return errors[idx] && errors[idx][name] ? "error" : undefined;
+  };
 
   const onPhoneTypeChange = (index: number, newPhoneType: string) => {
     const newPhoneNumbers = Array.from(phoneNumbers);
@@ -72,30 +98,17 @@ const ManagePhoneNumbers: React.FC<Props> = ({
     return phoneNumbers.map((phoneNumber, idx) => {
       return (
         <div key={idx}>
-          {/*
-                <Input
-                  field="number"
-                  label={
-                    idx === 0
-                      ? 'Primary phone number'
-                      : 'Additional phone number'
-                   }
-                   required={true}
-                   formObject={phoneNumber}                   
-                   validate={validateField}
-                   getValidationStatus={() => {}}
-                   onChange={(e) => onPhoneNumberChange(idx, e)()}
-                   errors
-              />
-              */}
-          <TextInput
+          <Input
+            field="number"
             label={
               idx === 0 ? "Primary phone number" : "Additional phone number"
             }
-            name="number"
-            value={phoneNumber.number}
             required={true}
-            onChange={(e) => onPhoneNumberChange(idx, e.target.value)}
+            formObject={phoneNumber}
+            validate={(field) => validateField(idx, field)}
+            getValidationStatus={() => validationStatus(idx, "number")}
+            onChange={(field) => (value) => onPhoneNumberChange(idx, value)}
+            errors={errors[idx] || {}}
           />
           <RadioGroup
             legend="Phone type"
@@ -104,7 +117,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
             required={true}
             onChange={(e) => onPhoneTypeChange(idx, e)}
           />
-          {/* this isn't in the design but it feels like it should exist */}
+          {/* TODO: this isn't in the design but it feels like it should exist */}
           <button
             className="usa-button--unstyled"
             onClick={() => onPhoneNumberRemove(idx)}
@@ -118,14 +131,6 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 
   return (
     <div>
-      {phoneNumberErrors.length > 0 && (
-        <ul className="text-bold text-secondary-vivid">
-          {phoneNumberErrors.map((err, index) => (
-            <li key={index}>{err}</li>
-          ))}
-        </ul>
-      )}
-      {/*<div className="usa-card__body">{renderPhoneNumbersTable()}</div>*/}
       {generatePhoneNumberRows()}
       <div className="usa-card__footer">
         <Button
