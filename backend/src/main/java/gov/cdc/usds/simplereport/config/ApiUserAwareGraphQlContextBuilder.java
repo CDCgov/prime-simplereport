@@ -2,12 +2,15 @@ package gov.cdc.usds.simplereport.config;
 
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
+import gov.cdc.usds.simplereport.api.patient.PatientDataResolver;
 import gov.cdc.usds.simplereport.config.authorization.ApiUserPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.FacilityPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
 import gov.cdc.usds.simplereport.db.model.PatientPreferences;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.repository.PatientPreferencesRepository;
+import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import graphql.kickstart.execution.context.DefaultGraphQLContext;
 import graphql.kickstart.execution.context.GraphQLContext;
@@ -38,11 +41,15 @@ import org.springframework.stereotype.Component;
 class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder {
   private final ApiUserService apiUserService;
   private final PatientPreferencesRepository patientPreferencesRepository;
+  private final TestEventRepository testEventRepository;
 
   ApiUserAwareGraphQlContextBuilder(
-      ApiUserService apiUserService, PatientPreferencesRepository patientPreferencesRepository) {
+      ApiUserService apiUserService,
+      PatientPreferencesRepository patientPreferencesRepository,
+      TestEventRepository testEventRepository) {
     this.apiUserService = apiUserService;
     this.patientPreferencesRepository = patientPreferencesRepository;
+    this.testEventRepository = testEventRepository;
   }
 
   @Override
@@ -97,7 +104,8 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
    */
   private DataLoaderRegistry buildDataLoaderRegistry() {
     DataLoaderRegistry dataLoaderRegistry = new DataLoaderRegistry();
-    DataLoader<UUID, PatientPreferences> patientPreferencesLoader =
+
+    DataLoader<UUID, PatientPreferences> patientPreferencesDataLoader =
         new DataLoader<>(
             patientIds ->
                 supplyAsync(
@@ -111,7 +119,22 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
                           .map(p -> found.getOrDefault(p, PatientPreferences.DEFAULT))
                           .collect(Collectors.toList());
                     }));
-    dataLoaderRegistry.register(PatientPreferences.DATA_LOADER, patientPreferencesLoader);
+    dataLoaderRegistry.register(PatientPreferences.DATA_LOADER, patientPreferencesDataLoader);
+
+    DataLoader<UUID, TestEvent> testEventDataLoader =
+        new DataLoader<>(
+            patientIds ->
+                supplyAsync(
+                    () -> {
+                      Map<UUID, TestEvent> found =
+                          testEventRepository.findLastTestsByPatient(patientIds).stream()
+                              .collect(Collectors.toMap(TestEvent::getPatientInternalID, s -> s));
+                      return patientIds.stream()
+                          .map(te -> found.getOrDefault(te, null))
+                          .collect(Collectors.toList());
+                    }));
+    dataLoaderRegistry.register(PatientDataResolver.LAST_TEST_DATA_LOADER, testEventDataLoader);
+
     return dataLoaderRegistry;
   }
 }

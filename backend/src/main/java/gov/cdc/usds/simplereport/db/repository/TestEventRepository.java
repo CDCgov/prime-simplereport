@@ -33,6 +33,14 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
 
   public TestEvent findFirst1ByPatientOrderByCreatedAtDesc(Person p);
 
+  @Query(
+      value =
+          " SELECT DISTINCT ON (patient_id) *, COALESCE(date_tested_backdate, created_at) AS coalesced_last_test_date FROM {h-schema}test_event"
+              + " WHERE patient_id IN :patientIds"
+              + " ORDER BY patient_id, coalesced_last_test_date DESC",
+      nativeQuery = true)
+  public List<TestEvent> findLastTestsByPatient(Collection<UUID> patientIds);
+
   @EntityGraph(attributePaths = {"patient", "order"})
   public TestEvent findByOrganizationAndInternalId(Organization o, UUID id);
 

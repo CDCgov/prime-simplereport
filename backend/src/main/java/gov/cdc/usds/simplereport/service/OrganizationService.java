@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -38,21 +39,33 @@ public class OrganizationService {
   private ProviderRepository _providerRepo;
   private AuthorizationService _authService;
   private OktaRepository _oktaRepo;
+  private CurrentOrganizationRolesContextHolder _currentOrgRolesContextHolder;
 
   public OrganizationService(
       OrganizationRepository repo,
       FacilityRepository facilityRepo,
       AuthorizationService authService,
       ProviderRepository providerRepo,
-      OktaRepository oktaRepo) {
+      OktaRepository oktaRepo,
+      CurrentOrganizationRolesContextHolder currentOrgRolesContextHolder) {
     _repo = repo;
     _facilityRepo = facilityRepo;
     _authService = authService;
     _providerRepo = providerRepo;
     _oktaRepo = oktaRepo;
+    _currentOrgRolesContextHolder = currentOrgRolesContextHolder;
   }
 
   public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
+    if (_currentOrgRolesContextHolder.hasBeenPopulated()) {
+      return _currentOrgRolesContextHolder.getOrganizationRoles();
+    }
+    var result = fetchCurrentOrganizationRoles();
+    _currentOrgRolesContextHolder.setOrganizationRoles(result);
+    return result;
+  }
+
+  private Optional<OrganizationRoles> fetchCurrentOrganizationRoles() {
     List<OrganizationRoleClaims> orgRoles = _authService.findAllOrganizationRoles();
     List<String> candidateExternalIds =
         orgRoles.stream()
@@ -80,6 +93,18 @@ public class OrganizationService {
   public Organization getCurrentOrganization() {
     OrganizationRoles orgRole =
         getCurrentOrganizationRoles().orElseThrow(MisconfiguredUserException::new);
+    return orgRole.getOrganization();
+  }
+
+  /**
+   * This method exists because we need to bypass the request-context level cache in test setups,
+   * which do not <em>have</em> a request context.
+   *
+   * <p><strong>In request-level code, use getCurrentOrganization instead</strong>
+   */
+  public Organization getCurrentOrganizationNoCache() {
+    OrganizationRoles orgRole =
+        fetchCurrentOrganizationRoles().orElseThrow(MisconfiguredUserException::new);
     return orgRole.getOrganization();
   }
 
