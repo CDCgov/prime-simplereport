@@ -47,6 +47,18 @@ export const DetachedPendingOrganizationsList: any = ({
     new Set()
   );
 
+  function adjustVerifiedOrgExternalIds(externalId: String, verified: Boolean) {
+    const newVerifiedOrgExternalIds = new Set(
+      verifiedOrgExternalIds
+    );
+    if (verified) {
+      newVerifiedOrgExternalIds.add(externalId);
+    } else {
+      newVerifiedOrgExternalIds.delete(externalId);
+    }
+    setVerifiedOrgExternalIds(newVerifiedOrgExternalIds);
+  }
+
   function orgRows(orgs: any) {
     if (orgs.length === 0) {
       return (
@@ -63,17 +75,7 @@ export const DetachedPendingOrganizationsList: any = ({
           <th scope="row">{o.externalId}</th>
           <td>
             <Checkboxes
-              onChange={(e) => {
-                const newVerifiedOrgExternalIds = new Set(
-                  verifiedOrgExternalIds
-                );
-                if (e.target.checked) {
-                  newVerifiedOrgExternalIds.add(o.externalId);
-                } else {
-                  newVerifiedOrgExternalIds.delete(o.externalId);
-                }
-                setVerifiedOrgExternalIds(newVerifiedOrgExternalIds);
-              }}
+              onChange={(e) => adjustVerifiedOrgExternalIds(o.externalId, e.target.checked)}
               name="identity_verified"
               legend=""
               boxes={[
