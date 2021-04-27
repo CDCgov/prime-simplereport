@@ -64,16 +64,18 @@ jobs:
           node-version: "14"
       - name: Install dependencies
         run: yarn install
-      - name: Build deploy artifact
-        env:
-          REACT_APP_BASE_URL: https://test.simplereport.gov
-          REACT_APP_BACKEND_URL: https://test.simplereport.gov/api
-          PUBLIC_URL: /app/
-          REACT_APP_SMARTY_STREETS_KEY: ${{ secrets.SMARTY_STREETS_KEY }}
-        run: yarn run build
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Update build variables
+        run: |
+          az config set extension.use_dynamic_install=yes_without_prompt
+          INSIGHTS_KEY=$(az monitor app-insights component  show -g prime-simple-report-test | jq -r '.[0].instrumentationKey')
+          echo "REACT_APP_APPINSIGHTS_KEY=${INSIGHTS_KEY}" > .env.production.local
+      - name: Build deploy artifact
+        env:
+          REACT_APP_SMARTY_STREETS_KEY: ${{ secrets.SMARTY_STREETS_KEY }}
+        run: yarn run build
       - name: Deploy frontend app
         run: az storage blob upload-batch -s build/ -d '$web' --account-name simplereporttestapp --destination-path '/app'
       - name: Purge CDN
