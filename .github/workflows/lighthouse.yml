@@ -9,20 +9,21 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Lighthouse CI Action
-      uses: treosh/lighthouse-ci-action@v2
+      uses: treosh/lighthouse-ci-action@v7
       with:
         urls: |
           $SITE_URL/
-          $SITE_URL/app/
-          $SITE_URL/app/queue/
-          $SITE_URL/app/results/
-          $SITE_URL/app/patients/
-          $SITE_URL/app/add-patient/
-          $SITE_URL/app/settings/
-          $SITE_URL/app/settings/facilities/
-          $SITE_URL/app/settings/add-facility/
-        uploadArtifacts: false
+          $SITE_URL/app/$FACILITY_ID
+          $SITE_URL/app/queue/$FACILITY_ID
+          $SITE_URL/app/results/$FACILITY_ID
+          $SITE_URL/app/patients/$FACILITY_ID
+          $SITE_URL/app/add-patient/$FACILITY_ID
+          $SITE_URL/app/settings/$FACILITY_ID
+          $SITE_URL/app/settings/facilities/$FACILITY_ID
+          $SITE_URL/app/settings/add-facility/$FACILITY_ID
+        uploadArtifacts: true
         configPath: ./lighthouserc.yml
         runs: 1
       env:
-        SITE_URL: https://demo.simplereport.gov/
+        SITE_URL: https://training.simplereport.gov
+        FACILITY_ID: ?facility=adddb27d-3be3-48b7-b959-ea506fd92ce6
