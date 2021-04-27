@@ -2,7 +2,7 @@ export type CardContainerProps = {};
 
 export const CardBackground: React.FC<CardContainerProps> = ({ children }) => {
   return (
-    <div className="height-full bg-base-lightest">
+    <div className="bg-base-lightest">
       <div className="grid-container maxw-mobile-lg usa-section">
         {children}
       </div>
