@@ -74,7 +74,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
   void init() {
     TestUserIdentities.withStandardUser(
         () -> {
-          Organization org = _orgService.getCurrentOrganization();
+          Organization org = _orgService.getCurrentOrganizationNoCache();
           _base = _orgService.getFacilities(org).get(0);
           _patient = _dataFactory.createFullPerson(org);
           TestOrder order = _dataFactory.createTestOrder(_patient, _base);
