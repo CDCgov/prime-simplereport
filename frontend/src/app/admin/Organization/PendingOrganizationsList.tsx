@@ -44,14 +44,8 @@ export const DetachedPendingOrganizationsList: any = ({
 }: Props) => {
   const orgs = data?.organizations || [];
 
-  var externalIdVerifiedMap = new Map([...orgs].map((o) => [o.externalId, o.identityVerified]));
+  const [verifiedOrgExternalIds, setVerifiedOrgExternalIds] = useState(new Set());
 
-  // const verifyByExternalId = (externalId: String) => {
-  //   const [modifiedData, setModifiedData] = useState(externalIdVerifiedMap.get(externalId))
-  //   return setModifiedData;
-  // }
-
-  console.log(externalIdVerifiedMap);
   function orgRows(orgs: any) {
     if (orgs.length === 0) {
       return (
@@ -61,14 +55,11 @@ export const DetachedPendingOrganizationsList: any = ({
       );
     }
     
-    var rows = [];
-    for (var i in orgs) {
-      const o = orgs[i];
-      const [modifiedData, setVerified] = useState(externalIdVerifiedMap.get(o.externalId));
-      rows.push(
+    return [...orgs].map((o) => {
+
+      return (
         <tr
           key={o.id}
-          //title=""
           className={classnames("sr-org-row")}
         >
           <th scope="row">
@@ -79,29 +70,29 @@ export const DetachedPendingOrganizationsList: any = ({
           </th>
           <td>
             <Checkboxes
-              onChange={(e) => {setVerified(e.target.checked)}}
+              onChange={(e) => {
+                const newVerifiedOrgExternalIds = new Set(verifiedOrgExternalIds);
+                if (e.target.checked) {
+                  newVerifiedOrgExternalIds.add(o.externalId);
+                } else {
+                  newVerifiedOrgExternalIds.delete(o.externalId);
+                }
+                setVerifiedOrgExternalIds(newVerifiedOrgExternalIds);
+              }}
               name="identity_verified"
               legend=""
               boxes={[
                 {
                   value: "1",
                   label: "Identity Verified",
-                  checked: externalIdVerifiedMap.get(o.externalId),
+                  checked: verifiedOrgExternalIds.has(o.externalId),
                 },
               ]}
             />
           </td>
-          {/* <td>
-            <Button
-              type="button"
-              onClick={submitIdentityVerified}
-              label="Save Changes"
-              disabled={!identityVerified}
-            />
-          </td> */}
         </tr>
       );
-    }
+    });
   }
 
   const rows = orgRows(orgs);
@@ -109,23 +100,20 @@ export const DetachedPendingOrganizationsList: any = ({
   const [verifyIdentity] = useMutation(SET_ORG_IDENTITY_VERIFIED_MUTATION);
 
   const submitIdentityVerified = () => {
-    const verifyAllIdentities = new Promise(() => 
-      {externalIdVerifiedMap.forEach((externalId,verified) => {
-        verifyIdentity({
+    Promise.all(Array.from(verifiedOrgExternalIds).map((externalId) => {
+      return verifyIdentity({
           variables: {
             externalId: externalId,
-            verified: verified,
+            verified: true,
           },
-        })
-      })}
-    );
-
-    verifyAllIdentities
+        });
+    }))
       .then(() => {
         const alert = (
           <Alert
             type="success"
-            title={"Blah identity verified"}
+            title={"Identity verified for " + verifiedOrgExternalIds.size + " organization" + 
+                (verifiedOrgExternalIds.size === 1 ? "" : "s")}
             body=""
           />
         );
@@ -144,6 +132,7 @@ export const DetachedPendingOrganizationsList: any = ({
               <div>
                 <Button
                   className="sr-active-button"
+                  disabled={verifiedOrgExternalIds.size === 0}
                   onClick={submitIdentityVerified}
                 >
                   Save Changes
