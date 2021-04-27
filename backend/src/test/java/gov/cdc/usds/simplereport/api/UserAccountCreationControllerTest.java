@@ -120,7 +120,7 @@ class UserAccountCreationControllerTest {
             .andReturn()
             .getResponse()
             .getContentAsString();
-            
+
     assertEquals(setPasswordResponse, setRecoveryQuestionResponse);
   }
 }

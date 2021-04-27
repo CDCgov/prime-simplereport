@@ -10,8 +10,6 @@ spring:
     properties:
       hibernate:
         default_schema: simple_report
-  session:
-    store-type: "jdbc"
 management:
   endpoints:
     web:
