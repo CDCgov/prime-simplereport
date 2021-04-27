@@ -2,13 +2,13 @@ import siteLogo from "../../../img/simplereport-logo-color.svg";
 
 export type CardProps = {
   logo?: boolean;
-  bodyHeading?: string;
+  bodyKicker?: string;
 };
 
 export const Card: React.FC<CardProps> = ({
   children,
   logo = false,
-  bodyHeading = false,
+  bodyKicker = false,
 }) => {
   return (
     <div className="card">
@@ -22,8 +22,8 @@ export const Card: React.FC<CardProps> = ({
           <div className="border-bottom border-base-lighter margin-x-neg-3 margin-top-3"></div>
         </header>
       )}
-      {bodyHeading && (
-        <h1 className="font-ui-sm margin-top-3">{bodyHeading}</h1>
+      {bodyKicker && (
+        <p className="font-ui-sm text-bold margin-top-3">{bodyKicker}</p>
       )}
       {children}
     </div>

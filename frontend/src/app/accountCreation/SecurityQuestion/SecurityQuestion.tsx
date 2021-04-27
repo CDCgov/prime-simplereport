@@ -13,7 +13,7 @@ export const SecurityQuestion = () => {
 
   return (
     <CardBackground>
-      <Card logo bodyHeading="Set up your account">
+      <Card logo bodyKicker="Set up your account">
         <p>[ step indicator ]</p>
         <Dropdown
           label="Security question"

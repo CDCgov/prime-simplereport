@@ -12,10 +12,10 @@ export const VerifySecurityCode = () => {
 
   return (
     <CardBackground>
-      <Card logo bodyHeading="Set up your account">
+      <Card logo bodyKicker="Set up your account">
         <p>[ step indicator ]</p>
-        <p>Verify your security code.</p>
-        <p className="usa-hint">
+        <p className="margin-bottom-0">Verify your security code.</p>
+        <p className="usa-hint font-ui-2xs">
           We’ve sent a text message (SMS) to <b>(213) 555-2424</b>. It will
           expire in 10 minutes.{" "}
         </p>
@@ -29,7 +29,7 @@ export const VerifySecurityCode = () => {
         />
         <Button className="margin-top-3" label={"Verify"} type={"submit"} />
         <Button
-          className="usa-button--outline display-block margin-top-2"
+          className="usa-button--outline display-block margin-top-3"
           label={"Send another code"}
           type={"submit"}
         />

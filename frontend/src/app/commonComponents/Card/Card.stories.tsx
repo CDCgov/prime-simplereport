@@ -14,7 +14,7 @@ const Template: Story = (args) => <Card {...args} />;
 
 export const WithChildren = Template.bind({});
 WithChildren.args = {
-  bodyHeading: "Heading",
+  bodyKicker: "Heading",
   children: (
     <>
       <p>This is some test content</p>

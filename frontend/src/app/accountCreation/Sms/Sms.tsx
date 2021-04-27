@@ -12,13 +12,15 @@ export const Sms = () => {
 
   return (
     <CardBackground>
-      <Card logo bodyHeading="Set up your account">
+      <Card logo bodyKicker="Set up your account">
         <p>[ step indicator ]</p>
-        <p>Get your security code via text message (SMS).</p>
-        <p className="usa-hint">
+        <p className="margin-bottom-0">
+          Get your security code via text message (SMS).
+        </p>
+        <p className="usa-hint font-ui-2xs">
           We’ll send you a security code each time you sign in.
         </p>
-        <p className="usa-hint">
+        <p className="usa-hint font-ui-2xs">
           Message and data rates may apply. Not compatible with web-based (VOIP)
           phone services like Google Voice.
         </p>

@@ -109,7 +109,7 @@ const RadioGroup = <T extends string>({
                   <label className={labelClasses} htmlFor={uid(c.value)}>
                     {c.label}
                     {labelDescription && (
-                      <span className="usa-checkbox__label-description">
+                      <span className="usa-checkbox__label-description text-base-dark">
                         {labelDescription}
                       </span>
                     )}
