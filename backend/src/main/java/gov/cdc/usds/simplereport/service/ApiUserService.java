@@ -18,8 +18,8 @@ import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
-import gov.cdc.usds.simplereport.service.model.UserIdentityInfo;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -256,12 +256,12 @@ public class ApiUserService {
   }
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
-  public List<UserIdentityInfo> getUsersInCurrentOrg() {
+  public List<ApiUser> getUsersInCurrentOrg() {
     Organization org = _orgService.getCurrentOrganization();
     final Set<String> orgUserEmails = _oktaRepo.getAllUsersForOrganization(org);
     final Set<ApiUser> orgApiUsers = _apiUserRepo.findAllByLoginEmailIn(orgUserEmails);
 
-    return orgApiUsers.stream().map(UserIdentityInfo::new).collect(Collectors.toList());
+    return new ArrayList<>(orgApiUsers);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser

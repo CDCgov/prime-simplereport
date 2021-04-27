@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
-import gov.cdc.usds.simplereport.service.model.UserIdentityInfo;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
@@ -26,13 +25,13 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   @WithSimpleReportOrgAdminUser
   void getUsersInCurrentOrg_adminUser_success() {
     initSampleData();
-    List<UserIdentityInfo> users = _service.getUsersInCurrentOrg();
-    Collections.sort(users, new UserIdentityInfoEmailComparator());
-    assertEquals(users.size(), 5);
-    assertEquals(users.get(0).getEmail(), "admin@example.com");
-    assertEquals(users.get(1).getEmail(), "allfacilities@example.com");
-    assertEquals(users.get(2).getEmail(), "bobbity@example.com");
-    assertEquals(users.get(3).getEmail(), "nobody@example.com");
+    List<ApiUser> users = _service.getUsersInCurrentOrg();
+    Collections.sort(users, new ApiUserEmailComparator());
+    assertEquals(5, users.size());
+    assertEquals("admin@example.com", users.get(0).getLoginEmail());
+    assertEquals("allfacilities@example.com", users.get(1).getLoginEmail());
+    assertEquals("bobbity@example.com", users.get(2).getLoginEmail());
+    assertEquals("nobody@example.com", users.get(3).getLoginEmail());
   }
 
   @Test
@@ -103,10 +102,10 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     assertEquals(expected, actual);
   }
 
-  private class UserIdentityInfoEmailComparator implements Comparator<UserIdentityInfo> {
+  private class ApiUserEmailComparator implements Comparator<ApiUser> {
     @Override
-    public int compare(UserIdentityInfo u1, UserIdentityInfo u2) {
-      return u1.getEmail().compareTo(u2.getEmail());
+    public int compare(ApiUser u1, ApiUser u2) {
+      return u1.getLoginEmail().compareTo(u2.getLoginEmail());
     }
   }
 }
