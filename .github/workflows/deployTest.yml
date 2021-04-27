@@ -4,13 +4,6 @@ on:
   workflow_dispatch:
 
 env:
-  ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
-  ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
-  ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
-  ACR_ADMIN_USERNAME: ${{ secrets.ACR_ADMIN_USERNAME }}
-  ACR_ADMIN_PASWORD: ${{ secrets.ACR_ADMIN_PASWORD }}
-  ACR_REPO_URL: ${{ secrets.ACR_REPO_URL }}
   DEPLOY_ENV: test
 
 jobs:
@@ -33,6 +26,11 @@ jobs:
     defaults:
       run:
         working-directory: ./backend
+    env:
+      ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
     steps:
       - uses: actions/checkout@v2
       - uses: azure/login@v1
