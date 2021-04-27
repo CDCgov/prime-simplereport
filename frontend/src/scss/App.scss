@@ -61,6 +61,11 @@
 @import "uswds";
 
 // -------------------------------------
+// Import custom utilities
+
+@import "utilities.scss";
+
+// -------------------------------------
 // Import custom components
 
 @import "components/card.scss";
