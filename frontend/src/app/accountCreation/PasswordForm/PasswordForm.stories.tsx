@@ -13,6 +13,18 @@ const Template: Story = (args) => <PasswordForm {...args} />;
 export const Default = Template.bind({});
 Default.args = {};
 
+export const PwStrengthWeak1 = Template.bind({});
+PwStrengthWeak1.args = {};
+
+export const PwStrengthWeak2 = Template.bind({});
+PwStrengthWeak2.args = {};
+
+export const PwStrengthOkay = Template.bind({});
+PwStrengthOkay.args = {};
+
+export const PwStrengthGood = Template.bind({});
+PwStrengthGood.args = {};
+
 export const ErrorState = Template.bind({});
 ErrorState.args = {
   passwordError: "error",

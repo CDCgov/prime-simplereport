@@ -18,7 +18,7 @@ export const PasswordForm = () => {
           label={"Password"}
           name={"password"}
           type={"password"}
-          hintText="Your password must be at least 8 characters and include an uppercase and lowercase letter and a number."
+          hintText="Your password must be at least 8 characters, include an uppercase and lowercase letter, a number, and a symbol."
           errorMessage="this is an error"
           validationStatus={passwordError ? "error" : undefined}
           onChange={(evt) => setPassword(evt.currentTarget.value)}
@@ -30,7 +30,7 @@ export const PasswordForm = () => {
           <div className="height-1 width-full bg-base-lighter margin-left-1"></div>
         </div>
         <p className="font-ui-3xs">
-          Password strength: <span>Weak</span>
+          Password strength: <span>...</span>
         </p>
         <TextInput
           label={"Confirm password"}
