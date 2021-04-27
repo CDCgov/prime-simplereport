@@ -214,6 +214,7 @@ type Query {
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   users: [User] @requiredPermissions(allOf: ["MANAGE_USERS"])
+  user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
 }
 

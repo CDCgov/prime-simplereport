@@ -40,7 +40,7 @@ class QueueManagementTest extends BaseGraphqlTest {
 
   @BeforeEach
   public void init() {
-    _org = _orgService.getCurrentOrganization();
+    _org = _orgService.getCurrentOrganizationNoCache();
     _site = _orgService.getFacilities(_org).get(0);
   }
 
@@ -84,7 +84,7 @@ class QueueManagementTest extends BaseGraphqlTest {
 
     performQueueUpdateMutation(variables, Optional.empty());
 
-    TestOrder updatedTestOrder = _testOrderService.getTestOrder(orderId);
+    TestOrder updatedTestOrder = _testOrderService.getTestOrder(_org, orderId);
     assertEquals(
         deviceId, updatedTestOrder.getDeviceType().getInternalId().toString(), "device type ID");
     assertEquals(TestResult.POSITIVE, updatedTestOrder.getTestResult());
