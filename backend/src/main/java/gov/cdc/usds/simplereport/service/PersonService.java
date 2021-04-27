@@ -23,6 +23,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.validation.constraints.Size;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -38,6 +40,7 @@ public class PersonService {
   private final PersonRepository _repo;
   private final PatientPreferencesRepository _prefRepo;
   private final PhoneNumberRepository _phoneRepo;
+  private final Logger LOG = LoggerFactory.getLogger(PersonService.class);
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000; // this is high because the searchBar
@@ -225,9 +228,9 @@ public class PersonService {
             employedInHealthcare);
 
     updatePersonFacility(newPatient, facilityId);
-    updatePhoneNumbers(newPatient, phoneNumbers);
     Person savedPerson = _repo.save(newPatient);
     upsertPreferredLanguage(savedPerson, preferredLanguage);
+    updatePhoneNumbers(newPatient, phoneNumbers);
     return savedPerson;
   }
 
@@ -277,19 +280,28 @@ public class PersonService {
       return;
     }
     incoming.forEach(phoneNumber -> phoneNumber.setPerson(person));
-    var existing = person.getPhoneNumbers();
 
-    var toSave = incoming.stream().collect(Collectors.toList());
-    toSave.removeAll(existing);
+    var existingNumbers = person.getPhoneNumbers();
+    LOG.trace("incoming: {}", incoming);
+    LOG.trace("existing: {}", existingNumbers);
 
-    var toDelete = existing.stream().collect(Collectors.toSet());
-    toDelete.removeAll(incoming);
+    if (existingNumbers == null) {
+      _phoneRepo.saveAll(incoming);
+      if (incoming.size() > 0) {
+        person.setPrimaryPhone(incoming.get(0));
+      }
+    } else {
+      var toSave = incoming.stream().collect(Collectors.toList());
+      toSave.removeAll(existingNumbers);
 
-    _phoneRepo.deleteAll(toDelete);
-    _phoneRepo.saveAll(toSave);
+      var toDelete = existingNumbers.stream().collect(Collectors.toSet());
+      toDelete.removeAll(incoming);
 
-    if (toSave.size() > 0) {
-      person.setPrimaryPhone(toSave.get(0));
+      _phoneRepo.deleteAll(toDelete);
+      _phoneRepo.saveAll(toSave);
+      if (toSave.size() > 0) {
+        person.setPrimaryPhone(toSave.get(0));
+      }
     }
   }
 
