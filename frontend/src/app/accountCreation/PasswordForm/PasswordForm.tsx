@@ -23,7 +23,15 @@ export const PasswordForm = () => {
           validationStatus={passwordError ? "error" : undefined}
           onChange={(evt) => setPassword(evt.currentTarget.value)}
         />
-        <p>[ password strength ] todo: verify w/ team</p>
+        <div className="display-flex grid-gap margin-top-105">
+          <div className="height-1 width-full bg-base-lighter"></div>
+          <div className="height-1 width-full bg-base-lighter margin-left-1"></div>
+          <div className="height-1 width-full bg-base-lighter margin-left-1"></div>
+          <div className="height-1 width-full bg-base-lighter margin-left-1"></div>
+        </div>
+        <p className="font-ui-3xs">
+          Password strength: <span>Weak</span>
+        </p>
         <TextInput
           label={"Confirm password"}
           name={"confirm-password"}
