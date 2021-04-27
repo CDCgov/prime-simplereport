@@ -24,9 +24,6 @@ spring:
   session:
     store-type: jdbc
     timeout: 15m
-    jdbc:
-        initialize-schema: never
-        table-name: ${spring.jpa.properties.hibernate.default_schema}.spring_session
 graphql:
   servlet:
     mapping: /graphql

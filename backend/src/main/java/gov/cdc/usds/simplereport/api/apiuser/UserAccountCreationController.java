@@ -34,6 +34,10 @@ public class UserAccountCreationController {
    */
   @PostMapping("/initialize-and-set-password")
   public String setPassword(HttpSession session) {
+    // steps here:
+    // strip important information out of the session (can probably do that here and have the rest of the password setting be done in a separate private method)
+    // add authentication, in the form of getting the Okta token out of the HTTP session (or servlet? look at patient experience controller for example)
+    // extract the password, run some preliminary checks on it, and either return an error or set the password in Okta
     return session.getId();
   }
 
