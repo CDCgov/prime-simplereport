@@ -19,7 +19,6 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -259,9 +258,7 @@ public class ApiUserService {
   public List<ApiUser> getUsersInCurrentOrg() {
     Organization org = _orgService.getCurrentOrganization();
     final Set<String> orgUserEmails = _oktaRepo.getAllUsersForOrganization(org);
-    final Set<ApiUser> orgApiUsers = _apiUserRepo.findAllByLoginEmailIn(orgUserEmails);
-
-    return new ArrayList<>(orgApiUsers);
+    return _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserEmails);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser

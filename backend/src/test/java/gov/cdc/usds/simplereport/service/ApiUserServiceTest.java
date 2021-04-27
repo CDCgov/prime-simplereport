@@ -8,8 +8,6 @@ import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -26,12 +24,17 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   void getUsersInCurrentOrg_adminUser_success() {
     initSampleData();
     List<ApiUser> users = _service.getUsersInCurrentOrg();
-    Collections.sort(users, new ApiUserEmailComparator());
     assertEquals(5, users.size());
     assertEquals("admin@example.com", users.get(0).getLoginEmail());
-    assertEquals("allfacilities@example.com", users.get(1).getLoginEmail());
-    assertEquals("bobbity@example.com", users.get(2).getLoginEmail());
-    assertEquals("nobody@example.com", users.get(3).getLoginEmail());
+    assertEquals("Andrews", users.get(0).getNameInfo().getLastName());
+    assertEquals("bobbity@example.com", users.get(1).getLoginEmail());
+    assertEquals("Bobberoo", users.get(1).getNameInfo().getLastName());
+    assertEquals("nobody@example.com", users.get(2).getLoginEmail());
+    assertEquals("Nixon", users.get(2).getNameInfo().getLastName());
+    assertEquals("notruby@example.com", users.get(3).getLoginEmail());
+    assertEquals("Reynolds", users.get(3).getNameInfo().getLastName());
+    assertEquals("allfacilities@example.com", users.get(4).getLoginEmail());
+    assertEquals("Williams", users.get(4).getNameInfo().getLastName());
   }
 
   @Test
@@ -100,12 +103,5 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   private void roleCheck(final UserInfo userInfo, final Set<OrganizationRole> expected) {
     EnumSet<OrganizationRole> actual = EnumSet.copyOf(userInfo.getRoles());
     assertEquals(expected, actual);
-  }
-
-  private class ApiUserEmailComparator implements Comparator<ApiUser> {
-    @Override
-    public int compare(ApiUser u1, ApiUser u2) {
-      return u1.getLoginEmail().compareTo(u2.getLoginEmail());
-    }
   }
 }
