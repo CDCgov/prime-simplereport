@@ -12,7 +12,6 @@ import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import Checkboxes from "../../commonComponents/Checkboxes";
 import Button from "../../commonComponents/Button";
-import { Console } from "console";
 
 export const ORGANIZATIONS_QUERY = gql`
   query GetUnverifiedOrganizations($identityVerified: Boolean) {
@@ -44,7 +43,9 @@ export const DetachedPendingOrganizationsList: any = ({
 }: Props) => {
   const orgs = data?.organizations || [];
 
-  const [verifiedOrgExternalIds, setVerifiedOrgExternalIds] = useState(new Set());
+  const [verifiedOrgExternalIds, setVerifiedOrgExternalIds] = useState(
+    new Set()
+  );
 
   function orgRows(orgs: any) {
     if (orgs.length === 0) {
@@ -54,24 +55,18 @@ export const DetachedPendingOrganizationsList: any = ({
         </tr>
       );
     }
-    
-    return [...orgs].map((o) => {
 
+    return [...orgs].map((o) => {
       return (
-        <tr
-          key={o.id}
-          className={classnames("sr-org-row")}
-        >
-          <th scope="row">
-            {o.name}
-          </th>
-          <th scope="row">
-            {o.externalId}
-          </th>
+        <tr key={o.id} className={classnames("sr-org-row")}>
+          <th scope="row">{o.name}</th>
+          <th scope="row">{o.externalId}</th>
           <td>
             <Checkboxes
               onChange={(e) => {
-                const newVerifiedOrgExternalIds = new Set(verifiedOrgExternalIds);
+                const newVerifiedOrgExternalIds = new Set(
+                  verifiedOrgExternalIds
+                );
                 if (e.target.checked) {
                   newVerifiedOrgExternalIds.add(o.externalId);
                 } else {
@@ -100,27 +95,33 @@ export const DetachedPendingOrganizationsList: any = ({
   const [verifyIdentity] = useMutation(SET_ORG_IDENTITY_VERIFIED_MUTATION);
 
   const submitIdentityVerified = () => {
-    Promise.all(Array.from(verifiedOrgExternalIds).map((externalId) => {
-      return verifyIdentity({
+    Promise.all(
+      Array.from(verifiedOrgExternalIds).map((externalId) => {
+        return verifyIdentity({
           variables: {
             externalId: externalId,
             verified: true,
           },
         });
-    }))
+      })
+    )
       .then(() => {
         const alert = (
           <Alert
             type="success"
-            title={"Identity verified for " + verifiedOrgExternalIds.size + " organization" + 
-                (verifiedOrgExternalIds.size === 1 ? "" : "s")}
+            title={
+              "Identity verified for " +
+              verifiedOrgExternalIds.size +
+              " organization" +
+              (verifiedOrgExternalIds.size === 1 ? "" : "s")
+            }
             body=""
           />
         );
         showNotification(toast, alert);
       })
       .finally(refetch);
-    };
+  };
 
   return (
     <main className="prime-home">
