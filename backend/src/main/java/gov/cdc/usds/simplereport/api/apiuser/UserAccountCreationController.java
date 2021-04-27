@@ -20,7 +20,8 @@ public class UserAccountCreationController {
 
   @PostConstruct
   private void init() {
-    LOG.info("User account request REST endpoint enabled");
+    LOG.info(
+        "WIP: User account request creation REST endpoint enabled. Not for use in production at this time.");
   }
 
   /**
