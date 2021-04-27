@@ -4,6 +4,7 @@ import com.okta.spring.boot.oauth.Okta;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.servlet.config.annotation.CorsRegistration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -39,6 +41,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 
   public static final String SAVED_REQUEST_HEADER = "SPRING_SECURITY_SAVED_REQUEST";
   private static final Logger LOG = LoggerFactory.getLogger(SecurityConfiguration.class);
+
+  private static final RequestMatcher CSRF_REQUEST_MATCHER = new DefaultRequiresCsrfMatcher();
 
   public interface OktaAttributes {
     public static String EMAIL = "email";
@@ -81,11 +85,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
         .anyRequest()
         .authenticated()
 
-        // We don't have sessions, so can't have CSRF. Spring's automatic CSRF support
-        // breaks the REST controller, so, disable it:
+        // Most of the app doesn't have sessions, so can't have CSRF. Spring's automatic CSRF
+        // breaks the REST controller, so we disable it for most paths.
+        // USER_ACCOUNT_REQUEST does use sessions, so CSRF is enabled there.
         .and()
         .csrf()
-        .disable();
+        .requireCsrfProtectionMatcher(CSRF_REQUEST_MATCHER);
 
     Okta.configureResourceServer401ResponseBody(http);
   }
@@ -136,6 +141,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
     List<String> origins = _corsProperties.getAllowedOrigins();
     if (origins != null && !origins.isEmpty()) {
       reg.allowedOrigins(origins.toArray(String[]::new));
+    }
+  }
+
+  private static final class DefaultRequiresCsrfMatcher implements RequestMatcher {
+    // USER_ACCOUNT_REQUEST is the only path that has spring sessions enabled, so it also needs
+    // CSRF support.
+    // All other paths will break if CSRF is enabled.
+    @Override
+    public boolean matches(HttpServletRequest request) {
+      return (request.getRequestURI().contains(WebConfiguration.USER_ACCOUNT_REQUEST)
+          && request.getMethod().equals("POST"));
     }
   }
 }
