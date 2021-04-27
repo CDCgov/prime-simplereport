@@ -20,7 +20,7 @@ spring:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
   session:
-    store-type: "jdbc"
+    store-type: jdbc
 graphql:
   servlet:
     mapping: /graphql
