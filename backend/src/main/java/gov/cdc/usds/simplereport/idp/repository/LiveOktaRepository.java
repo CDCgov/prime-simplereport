@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -222,56 +223,73 @@ public class LiveOktaRepository implements OktaRepository {
     User user = users.single();
 
     String orgId = org.getExternalId();
-    boolean userInOrg = false;
-    // Remove user from old groups
-    for (Group g : user.listGroups()) {
-      if (g.getType() == GroupType.OKTA_GROUP
-          && g.getProfile().getName().startsWith(generateGroupOrgPrefix(orgId))) {
-        userInOrg = true;
-        // do not remove user from org's default group
-        if (!g.getProfile()
-            .getName()
-            .equals(generateRoleGroupName(orgId, OrganizationRole.getDefault()))) {
-          g.removeUser(user.getId());
-        }
-      }
-    }
-    if (!userInOrg) {
+
+    final String groupOrgPrefix = generateGroupOrgPrefix(orgId);
+    final String groupOrgDefaultName = generateRoleGroupName(orgId, OrganizationRole.getDefault());
+
+    // Map user's current Okta group memberships (Okta group name -> Okta Group).
+    // The Okta group name is our friendly role and facility group names
+    Map<String, Group> currentOrgGroupMapForUser =
+        user.listGroups().stream()
+            .filter(
+                g ->
+                    GroupType.OKTA_GROUP == g.getType()
+                        && g.getProfile().getName().startsWith(groupOrgPrefix))
+            .collect(Collectors.toMap(g -> g.getProfile().getName(), g -> g));
+
+    if (!currentOrgGroupMapForUser.containsKey(groupOrgDefaultName)) {
+      // The user is not a member of the default group for this organization.  If they happen
+      // to be in any of this organization's groups, remove the user from those groups.
+      currentOrgGroupMapForUser.values().forEach(g -> g.removeUser(user.getId()));
       throw new IllegalGraphqlArgumentException(
           "Cannot update privileges of Okta user in organization they do not belong to.");
     }
 
-    // Add user to new groups
-    Set<String> groupNamesToAdd = new HashSet<>();
-    groupNamesToAdd.addAll(
-        roles.stream()
-            .filter(r -> r != OrganizationRole.getDefault())
-            .map(r -> generateRoleGroupName(orgId, r))
-            .collect(Collectors.toSet()));
+    Set<String> expectedOrgGroupNamesForUser = new HashSet<>();
+    expectedOrgGroupNamesForUser.add(groupOrgDefaultName);
+    expectedOrgGroupNamesForUser.addAll(
+        roles.stream().map(r -> generateRoleGroupName(orgId, r)).collect(Collectors.toSet()));
     if (!PermissionHolder.grantsAllFacilityAccess(roles)) {
-      groupNamesToAdd.addAll(
+      expectedOrgGroupNamesForUser.addAll(
           facilities.stream()
               .map(f -> generateFacilityGroupName(orgId, f.getInternalId()))
               .collect(Collectors.toSet()));
     }
 
-    GroupList orgGroups = _client.listGroups(generateGroupOrgPrefix(orgId), null, null);
-    if (orgGroups.stream().count() == 0) {
-      throw new IllegalGraphqlArgumentException(
-          String.format("Cannot add Okta user to nonexistent organization=%s", orgId));
+    // to remove...
+    Set<String> groupNamesToRemove = new HashSet<>(currentOrgGroupMapForUser.keySet());
+    groupNamesToRemove.removeIf(expectedOrgGroupNamesForUser::contains);
+
+    // to add...
+    Set<String> groupNamesToAdd = new HashSet<>(expectedOrgGroupNamesForUser);
+    groupNamesToAdd.removeIf(currentOrgGroupMapForUser::containsKey);
+
+    if (!groupNamesToRemove.isEmpty() || !groupNamesToAdd.isEmpty()) {
+      Map<String, Group> fullOrgGroupMap =
+          _client.listGroups(groupOrgPrefix, null, null).stream()
+              .filter(g -> GroupType.OKTA_GROUP == g.getType())
+              .collect(Collectors.toMap(g -> g.getProfile().getName(), Function.identity()));
+      if (fullOrgGroupMap.size() == 0) {
+        throw new IllegalGraphqlArgumentException(
+            String.format("Cannot add Okta user to nonexistent organization=%s", orgId));
+      }
+
+      for (String groupName : groupNamesToRemove) {
+        Group group = fullOrgGroupMap.get(groupName);
+        LOG.info("Removing {} from Okta group: {}", username, group.getProfile().getName());
+        group.removeUser(user.getId());
+      }
+
+      for (String groupName : groupNamesToAdd) {
+        if (!fullOrgGroupMap.containsKey(groupName)) {
+          throw new IllegalGraphqlArgumentException(
+              String.format("Cannot add Okta user to nonexistent group=%s", groupName));
+        }
+        Group group = fullOrgGroupMap.get(groupName);
+        LOG.info("Adding {} to Okta group: {}", username, group.getProfile().getName());
+        user.addToGroup(group.getId());
+      }
     }
-    Set<String> orgGroupNames =
-        orgGroups.stream().map(g -> g.getProfile().getName()).collect(Collectors.toSet());
-    groupNamesToAdd.stream()
-        .filter(n -> !orgGroupNames.contains(n))
-        .forEach(
-            n -> {
-              throw new IllegalGraphqlArgumentException(
-                  String.format("Cannot add Okta user to nonexistent group=%s", n));
-            });
-    orgGroups.stream()
-        .filter(g -> groupNamesToAdd.contains(g.getProfile().getName()))
-        .forEach(g -> user.addToGroup(g.getId()));
 
     return getOrganizationRoleClaimsForUser(user);
   }
