@@ -1,10 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 
-import { Authentication } from "./Authentication";
+import { MfaSelect } from "./MfaSelect";
 
-describe("Authentication", () => {
+describe("MfaSelect", () => {
   beforeEach(() => {
-    render(<Authentication />);
+    render(<MfaSelect />);
   });
 
   it("can choose an mfa option", () => {

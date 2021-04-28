@@ -7,7 +7,7 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 
-export const Authentication = () => {
+export const MfaSelect = () => {
   const [mfaOption, setMfaOption] = useState("");
 
   return (

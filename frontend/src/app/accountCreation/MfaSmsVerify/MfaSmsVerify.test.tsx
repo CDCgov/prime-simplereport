@@ -1,10 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 
-import { VerifySecurityCode } from "./VerifySecurityCode";
+import { MfaSmsVerify } from "./MfaSmsVerify";
 
-describe("VerifySecurityCode", () => {
+describe("Verify SMS MFA", () => {
   beforeEach(() => {
-    render(<VerifySecurityCode />);
+    render(<MfaSmsVerify />);
   });
 
   it("can type a security code", () => {

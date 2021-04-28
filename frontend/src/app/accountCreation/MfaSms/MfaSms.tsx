@@ -7,7 +7,7 @@ import Button from "../../commonComponents/Button";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 
-export const Sms = () => {
+export const MfaSms = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [phoneNumberError] = useState("");
 

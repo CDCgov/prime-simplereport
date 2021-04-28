@@ -1,10 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 
-import { Sms } from "./Sms";
+import { MfaSms } from "./MfaSms";
 
-describe("Sms", () => {
+describe("SMS MFA", () => {
   beforeEach(() => {
-    render(<Sms />);
+    render(<MfaSms />);
   });
 
   it("can type a phone number", () => {

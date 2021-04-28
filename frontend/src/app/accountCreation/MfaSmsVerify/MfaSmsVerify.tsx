@@ -7,7 +7,7 @@ import Button from "../../commonComponents/Button";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 
-export const VerifySecurityCode = () => {
+export const MfaSmsVerify = () => {
   const [code, setCode] = useState("");
   const [codeError] = useState("");
 
