@@ -6,7 +6,7 @@ import Dropdown from "../../commonComponents/Dropdown";
 import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button";
 import StepIndicator from "../../commonComponents/StepIndicator";
-import { stateCodes } from "../../../config/constants";
+import { accountCreationSteps, stateCodes } from "../../../config/constants";
 
 export const SecurityQuestion = () => {
   const [password, setPassword] = useState("");
@@ -14,7 +14,11 @@ export const SecurityQuestion = () => {
   return (
     <CardBackground>
       <Card logo bodyKicker="Set up your account">
-        <p>[ step indicator ]</p>
+        <StepIndicator
+          steps={accountCreationSteps}
+          currentStepValue={"1"}
+          noLabels={true}
+        />
         <Dropdown
           label="Security question"
           name="security-question"

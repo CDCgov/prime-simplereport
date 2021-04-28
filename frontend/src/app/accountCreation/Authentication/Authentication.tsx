@@ -5,6 +5,7 @@ import { CardBackground } from "../../commonComponents/CardBackground/CardBackgr
 import Button from "../../commonComponents/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import StepIndicator from "../../commonComponents/StepIndicator";
+import { accountCreationSteps } from "../../../config/constants";
 
 export const Authentication = () => {
   const [password, setPassword] = useState("");
@@ -12,7 +13,11 @@ export const Authentication = () => {
   return (
     <CardBackground>
       <Card logo bodyKicker="Set up your account">
-        <p>[ step indicator ]</p>
+        <StepIndicator
+          steps={accountCreationSteps}
+          currentStepValue={"2"}
+          noLabels={true}
+        />
         <RadioGroup
           name="addressSelect"
           hintText="Add a second layer of security to protect your account."
