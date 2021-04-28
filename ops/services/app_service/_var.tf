@@ -7,6 +7,8 @@ variable "resource_group_name" {}
 variable "resource_group_location" {}
 
 variable "docker_image_uri" {}
+variable "webapp_subnet_id" {}
+
 variable "app_settings" {
   default = {}
 }

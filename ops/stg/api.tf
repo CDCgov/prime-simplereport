@@ -3,10 +3,13 @@ module "simple_report_api" {
   name   = "${local.name}-api"
   env    = local.env
 
-  instance_count = 2
+  instance_count = 3
+  instance_size  = "P2v2"
 
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
+
+  webapp_subnet_id = data.terraform_remote_state.persistent_stg.outputs.subnet_webapp_id
 
   docker_image_uri = "DOCKER|simplereportacr.azurecr.io/api/simple-report-api-build:${var.acr_image_tag}"
   key_vault_id     = data.azurerm_key_vault.global.id
