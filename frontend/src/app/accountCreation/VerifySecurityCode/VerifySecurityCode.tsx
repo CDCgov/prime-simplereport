@@ -20,7 +20,7 @@ export const VerifySecurityCode = () => {
           noLabels={true}
         />
         <p className="margin-bottom-0">Verify your security code.</p>
-        <p className="usa-hint font-ui-2xs">
+        <p className="usa-hint font-ui-2xs margin-bottom-0">
           We’ve sent a text message (SMS) to <b>(213) 555-2424</b>. It will
           expire in 10 minutes.{" "}
         </p>
