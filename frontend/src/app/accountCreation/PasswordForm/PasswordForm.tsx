@@ -16,6 +16,7 @@ import {
 
 export const PasswordForm = () => {
   const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [strength, setStrength] = useState(0);
   const [error] = useState("");
 
@@ -62,7 +63,12 @@ export const PasswordForm = () => {
   const strengthBars = [1, 3, 4, 5].map((score) => {
     const margin = score === 1 ? "" : "margin-left-1";
     const color = strength >= score ? strengthColor : "bg-base-lighter";
-    return <div className={`height-1 width-full ${margin} ${color}`}></div>;
+    return (
+      <div
+        key={score}
+        className={`height-1 width-full ${margin} ${color}`}
+      ></div>
+    );
   });
 
   return (
@@ -86,14 +92,13 @@ export const PasswordForm = () => {
         <div className="display-flex grid-gap margin-top-105">
           {strengthBars}
         </div>
-        <p className="font-ui-3xs">
-          Password strength: <span>{strengthLabel}</span>
-        </p>
+        <p className="font-ui-3xs">Password strength: {strengthLabel}</p>
         <TextInput
           label={"Confirm password"}
           name={"confirm-password"}
           type={"password"}
-          onChange={(evt) => setPassword(evt.currentTarget.value)}
+          value={passwordConfirmation}
+          onChange={(evt) => setPasswordConfirmation(evt.currentTarget.value)}
         />
         <Button className="margin-top-3" label={"Continue"} type={"submit"} />
       </Card>
