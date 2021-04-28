@@ -24,16 +24,23 @@ export const VerifySecurityCode = () => {
           We’ve sent a text message (SMS) to <b>(213) 555-2424</b>. It will
           expire in 10 minutes.{" "}
         </p>
-        <TextInput
-          label={"One-time security code"}
-          name={"security-code"}
-          type={"tel"}
-          errorMessage="this is an error"
-          validationStatus={codeError ? "error" : undefined}
-          value={code}
-          onChange={(evt) => setCode(evt.currentTarget.value)}
-        />
-        <Button className="margin-top-3" label={"Verify"} type={"submit"} />
+        <div className="display-flex">
+          <TextInput
+            className="flex-fill"
+            label={"One-time security code"}
+            name={"security-code"}
+            type={"tel"}
+            errorMessage="this is an error"
+            validationStatus={codeError ? "error" : undefined}
+            value={code}
+            onChange={(evt) => setCode(evt.currentTarget.value)}
+          />
+          <Button
+            className="margin-top-3 flex-align-self-end margin-left-1"
+            label={"Verify"}
+            type={"submit"}
+          />
+        </div>
         <Button
           className="usa-button--outline display-block margin-top-3"
           label={"Send another code"}
