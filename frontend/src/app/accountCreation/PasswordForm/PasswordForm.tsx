@@ -11,32 +11,32 @@ import {
   hasNumber,
   hasSymbol,
   hasUpperCase,
+  isAtLeast15Chars,
 } from "../../utils/text";
 
 export const PasswordForm = () => {
   const [password, setPassword] = useState("");
-  const [passwordStrength, setPasswordStrength] = useState(0);
-  const [passwordError] = useState("");
+  const [strength, setStrength] = useState(0);
+  const [error] = useState("");
 
-  const calculatePasswordStrength = (value: string): number => {
-    let strength = 0;
-    if (hasLowerCase(value)) strength++;
-    if (hasUpperCase(value)) strength++;
-    if (hasNumber(value)) strength++;
-    if (hasSymbol(value)) strength++;
-    if (value.length >= 15) strength++;
-    return strength;
-  };
+  const calculateStrength = (value: string): number =>
+    [
+      hasLowerCase,
+      hasUpperCase,
+      hasNumber,
+      hasSymbol,
+      isAtLeast15Chars,
+    ].filter((f) => f(value)).length;
 
   const handleChange = ({
     target: { value },
   }: ChangeEvent<HTMLInputElement>) => {
     setPassword(value);
-    setPasswordStrength(calculatePasswordStrength(value));
+    setStrength(calculateStrength(value));
   };
 
   let strengthLabel, strengthColor: string;
-  switch (passwordStrength) {
+  switch (strength) {
     case 1:
     case 2:
       strengthLabel = "Weak";
@@ -59,9 +59,9 @@ export const PasswordForm = () => {
       strengthColor = "bg-base-lighter";
   }
 
-  const passwordStrengthBars = [1, 3, 4, 5].map((score) => {
+  const strengthBars = [1, 3, 4, 5].map((score) => {
     const margin = score === 1 ? "" : "margin-left-1";
-    const color = passwordStrength >= score ? strengthColor : "bg-base-lighter";
+    const color = strength >= score ? strengthColor : "bg-base-lighter";
     return <div className={`height-1 width-full ${margin} ${color}`}></div>;
   });
 
@@ -80,11 +80,11 @@ export const PasswordForm = () => {
           value={password}
           hintText="Your password must be at least 15 characters, include an uppercase and lowercase letter, a number, and a symbol."
           errorMessage="this is an error"
-          validationStatus={passwordError ? "error" : undefined}
+          validationStatus={error ? "error" : undefined}
           onChange={handleChange}
         />
         <div className="display-flex grid-gap margin-top-105">
-          {passwordStrengthBars}
+          {strengthBars}
         </div>
         <p className="font-ui-3xs">
           Password strength: <span>{strengthLabel}</span>
