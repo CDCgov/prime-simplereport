@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.api.PersonNameResolver;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.errors.NoDataLoaderFoundException;
 import gov.cdc.usds.simplereport.config.DataLoaders;
+import gov.cdc.usds.simplereport.db.model.AuditedEntity;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.PatientPreferences;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -24,13 +25,7 @@ public class PatientDataResolver
     implements GraphQLResolver<Person>, PersonNameResolver<Person>, InternalIdResolver<Person> {
 
   public CompletableFuture<TestEvent> getLastTest(Person person, DataFetchingEnvironment dfe) {
-    DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
-    DataLoader<UUID, TestEvent> lastTestLoader =
-        registry.getDataLoader(DataLoaders.PATIENT_LAST_TEST);
-    if (lastTestLoader != null) {
-      return lastTestLoader.load(person.getInternalId());
-    }
-    throw new NoDataLoaderFoundException(DataLoaders.PATIENT_LAST_TEST);
+    return loadFuture(person, dfe, DataLoaders.PATIENT_LAST_TEST);
   }
 
   public ApiFacility getFacility(Person p) {
@@ -50,12 +45,16 @@ public class PatientDataResolver
 
   private CompletableFuture<PatientPreferences> getPatientPreferences(
       Person person, DataFetchingEnvironment dfe) {
+    return loadFuture(person, dfe, DataLoaders.PATIENT_PREFERENCES);
+  }
+
+  private static <T> CompletableFuture<T> loadFuture(
+      AuditedEntity parentObject, DataFetchingEnvironment dfe, final String key) {
     DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
-    DataLoader<UUID, PatientPreferences> patientPreferencesLoader =
-        registry.getDataLoader(DataLoaders.PATIENT_PREFERENCES);
-    if (patientPreferencesLoader != null) {
-      return patientPreferencesLoader.load(person.getInternalId());
+    DataLoader<UUID, T> loader = registry.getDataLoader(key);
+    if (loader == null) {
+      throw new NoDataLoaderFoundException(key);
     }
-    throw new NoDataLoaderFoundException(DataLoaders.PATIENT_PREFERENCES);
+    return loader.load(parentObject.getInternalId());
   }
 }
