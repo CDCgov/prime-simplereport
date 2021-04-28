@@ -9,7 +9,7 @@ import { accountCreationSteps } from "../../../config/constants";
 
 export const VerifySecurityCode = () => {
   const [code, setCode] = useState("");
-  const [codeError, setCodeError] = useState("");
+  const [codeError] = useState("");
 
   return (
     <CardBackground>

@@ -16,7 +16,7 @@ import {
 export const PasswordForm = () => {
   const [password, setPassword] = useState("");
   const [passwordStrength, setPasswordStrength] = useState(0);
-  const [passwordError, setPasswordError] = useState("");
+  const [passwordError] = useState("");
 
   const calculatePasswordStrength = (value: string): number => {
     let strength = 0;

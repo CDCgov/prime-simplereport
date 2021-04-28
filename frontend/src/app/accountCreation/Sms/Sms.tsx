@@ -9,7 +9,7 @@ import { accountCreationSteps } from "../../../config/constants";
 
 export const Sms = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [phoneNumberError, setPhoneNumberError] = useState("");
+  const [phoneNumberError] = useState("");
 
   return (
     <CardBackground>

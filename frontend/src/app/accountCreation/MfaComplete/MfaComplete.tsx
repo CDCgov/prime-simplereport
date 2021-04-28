@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button";
