@@ -35,34 +35,33 @@ export const PasswordForm = () => {
     setPasswordStrength(calculatePasswordStrength(value));
   };
 
-  let passwordStrengthLabel, passwordStrengthColor: string;
+  let strengthLabel, strengthColor: string;
   switch (passwordStrength) {
     case 1:
     case 2:
-      passwordStrengthLabel = "Weak";
-      passwordStrengthColor = "bg-error";
+      strengthLabel = "Weak";
+      strengthColor = "bg-error";
       break;
     case 3:
-      passwordStrengthLabel = "Weak";
-      passwordStrengthColor = "bg-orange";
+      strengthLabel = "Weak";
+      strengthColor = "bg-orange";
       break;
     case 4:
-      passwordStrengthLabel = "Okay";
-      passwordStrengthColor = "bg-gold";
+      strengthLabel = "Okay";
+      strengthColor = "bg-gold";
       break;
     case 5:
-      passwordStrengthLabel = "Good";
-      passwordStrengthColor = "bg-success";
+      strengthLabel = "Good";
+      strengthColor = "bg-success";
       break;
     default:
-      passwordStrengthLabel = "...";
-      passwordStrengthColor = "bg-base-lighter";
+      strengthLabel = "...";
+      strengthColor = "bg-base-lighter";
   }
 
   const passwordStrengthBars = [1, 3, 4, 5].map((score) => {
     const margin = score === 1 ? "" : "margin-left-1";
-    const color =
-      passwordStrength >= score ? passwordStrengthColor : "bg-base-lighter";
+    const color = passwordStrength >= score ? strengthColor : "bg-base-lighter";
     return <div className={`height-1 width-full ${margin} ${color}`}></div>;
   });
 
@@ -88,7 +87,7 @@ export const PasswordForm = () => {
           {passwordStrengthBars}
         </div>
         <p className="font-ui-3xs">
-          Password strength: <span>{passwordStrengthLabel}</span>
+          Password strength: <span>{strengthLabel}</span>
         </p>
         <TextInput
           label={"Confirm password"}
