@@ -13,11 +13,11 @@ export function camelToSentenceCase(text = ""): string {
 }
 
 export function hasLowerCase(string: string) {
-  return string.toUpperCase() != string;
+  return string.toUpperCase() !== string;
 }
 
 export function hasUpperCase(string: string) {
-  return string.toLowerCase() != string;
+  return string.toLowerCase() !== string;
 }
 
 export function hasNumber(string: string) {
