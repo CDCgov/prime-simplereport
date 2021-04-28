@@ -35,7 +35,7 @@ export const PasswordForm = () => {
     setPasswordStrength(calculatePasswordStrength(value));
   };
 
-  let passwordStrengthLabel, passwordStrengthColor;
+  let passwordStrengthLabel, passwordStrengthColor: string;
   switch (passwordStrength) {
     case 1:
     case 2:
@@ -59,6 +59,13 @@ export const PasswordForm = () => {
       passwordStrengthColor = "bg-base-lighter";
   }
 
+  const passwordStrengthBars = [1, 3, 4, 5].map((score) => {
+    const margin = score === 1 ? "" : "margin-left-1";
+    const color =
+      passwordStrength >= score ? passwordStrengthColor : "bg-base-lighter";
+    return <div className={`height-1 width-full ${margin} ${color}`}></div>;
+  });
+
   return (
     <CardBackground>
       <Card logo bodyKicker="Set up your account">
@@ -78,26 +85,7 @@ export const PasswordForm = () => {
           onChange={handleChange}
         />
         <div className="display-flex grid-gap margin-top-105">
-          <div
-            className={`height-1 width-full ${
-              passwordStrength >= 1 ? passwordStrengthColor : "bg-base-lighter"
-            }`}
-          ></div>
-          <div
-            className={`height-1 width-full margin-left-1 ${
-              passwordStrength >= 3 ? passwordStrengthColor : "bg-base-lighter"
-            }`}
-          ></div>
-          <div
-            className={`height-1 width-full margin-left-1 ${
-              passwordStrength >= 4 ? passwordStrengthColor : "bg-base-lighter"
-            }`}
-          ></div>
-          <div
-            className={`height-1 width-full margin-left-1 ${
-              passwordStrength >= 5 ? passwordStrengthColor : "bg-base-lighter"
-            }`}
-          ></div>
+          {passwordStrengthBars}
         </div>
         <p className="font-ui-3xs">
           Password strength: <span>{passwordStrengthLabel}</span>

@@ -8,7 +8,7 @@ import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 
 export const Authentication = () => {
-  const [password, setPassword] = useState("");
+  const [mfaOption, setMfaOption] = useState("");
 
   return (
     <CardBackground>
@@ -23,22 +23,26 @@ export const Authentication = () => {
           hintText="Add a second layer of security to protect your account."
           buttons={[
             {
-              value: "value",
+              value: "SMS",
               label: "Text message (SMS)",
+              labelDescription:
+                "Get a single-use code sent via text message (SMS).",
+              labelTag: "Less secure",
             },
             {
-              value: "value2",
+              value: "Okta",
               label: "Okta Verify",
+              labelDescription:
+                "Get a push notification sent through the Okta mobile app.",
+              labelTag: "Secure",
             },
           ]}
-          // selectedRadio={selectedAddress}
-          onChange={setPassword}
+          selectedRadio={mfaOption}
+          onChange={setMfaOption}
           // onBlur={validate}
           // validationStatus={error ? "error" : undefined}
           variant="tile"
           // errorMessage={error ? ERROR_MESSAGE : undefined}
-          labelDescription="Get a single-use code sent via text message (SMS)."
-          labelTag="Less secure"
         />
         <Button className="margin-top-3" label={"Continue"} type={"submit"} />
       </Card>

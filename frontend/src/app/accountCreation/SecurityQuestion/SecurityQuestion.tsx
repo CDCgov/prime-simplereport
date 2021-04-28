@@ -6,10 +6,14 @@ import Dropdown from "../../commonComponents/Dropdown";
 import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button";
 import StepIndicator from "../../commonComponents/StepIndicator";
-import { accountCreationSteps, stateCodes } from "../../../config/constants";
+import {
+  accountCreationSteps,
+  securityQuestions,
+} from "../../../config/constants";
 
 export const SecurityQuestion = () => {
-  const [password, setPassword] = useState("");
+  const [securityQuestion, setSecurityQuestion] = useState("");
+  const [securityAnswer, setSecurityAnswer] = useState("");
 
   return (
     <CardBackground>
@@ -23,16 +27,17 @@ export const SecurityQuestion = () => {
           label="Security question"
           name="security-question"
           hintText="If you forget your password, we’ll ask you this question to verify your identity."
-          selectedValue={"string"}
-          options={stateCodes.map((c) => ({ label: c, value: c }))}
+          selectedValue={securityQuestion}
+          options={securityQuestions.map((c) => ({ label: c, value: c }))}
           defaultSelect
           className="usa-input--medium"
-          onChange={(evt) => setPassword(evt.currentTarget.value)}
+          onChange={(evt) => setSecurityQuestion(evt.currentTarget.value)}
         />
         <TextInput
           label={"Answer"}
           name={"answer"}
-          onChange={(evt) => setPassword(evt.currentTarget.value)}
+          value={securityAnswer}
+          onChange={(evt) => setSecurityAnswer(evt.currentTarget.value)}
         />
         <Button className="margin-top-3" label={"Continue"} type={"submit"} />
       </Card>

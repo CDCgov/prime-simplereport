@@ -8,8 +8,8 @@ import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 
 export const Sms = () => {
-  const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneNumberError, setPhoneNumberError] = useState("");
 
   return (
     <CardBackground>
@@ -34,8 +34,9 @@ export const Sms = () => {
           name={"phone-number"}
           type={"tel"}
           errorMessage="this is an error"
-          validationStatus={passwordError ? "error" : undefined}
-          onChange={(evt) => setPassword(evt.currentTarget.value)}
+          validationStatus={phoneNumberError ? "error" : undefined}
+          value={phoneNumber}
+          onChange={(evt) => setPhoneNumber(evt.currentTarget.value)}
         />
         <Button className="margin-top-3" label={"Send code"} type={"submit"} />
       </Card>

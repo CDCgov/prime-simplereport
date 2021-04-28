@@ -8,6 +8,8 @@ import Optional from "./Optional";
 type Options<T> = {
   label: React.ReactNode;
   value: T;
+  labelDescription?: string;
+  labelTag?: string;
   disabled?: boolean;
   className?: string;
 }[];
@@ -25,8 +27,6 @@ interface Props<T> {
   variant?: "default" | "tile" | "horizontal";
   hintText?: string;
   disabled?: boolean;
-  labelDescription?: string;
-  labelTag?: string;
   onChange: (value: T) => void;
   onClick?: (value: T) => void;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
@@ -44,8 +44,6 @@ const RadioGroup = <T extends string>({
   required,
   variant,
   hintText,
-  labelDescription,
-  labelTag,
   onChange,
   onBlur,
   onClick,
@@ -85,7 +83,7 @@ const RadioGroup = <T extends string>({
               validationStatus === "error" && "usa-form-group--error"
             )}
           >
-            {buttons.map((c, i) => {
+            {buttons.map((c) => {
               const labelClasses = classnames(
                 "usa-radio__label",
                 (c.disabled || disabled) && "text-base"
@@ -108,15 +106,15 @@ const RadioGroup = <T extends string>({
                   />
                   <label className={labelClasses} htmlFor={uid(c.value)}>
                     {c.label}
-                    {labelDescription && (
+                    {c.labelDescription && (
                       <span className="usa-checkbox__label-description text-base-dark">
-                        {labelDescription}
+                        {c.labelDescription}
                       </span>
                     )}
-                    {labelTag && (
+                    {c.labelTag && (
                       <div className="display-block margin-left-4 margin-top-1">
                         <span className="usa-tag bg-primary-darker">
-                          {labelTag}
+                          {c.labelTag}
                         </span>
                       </div>
                     )}

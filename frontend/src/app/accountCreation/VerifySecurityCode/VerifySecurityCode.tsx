@@ -8,8 +8,8 @@ import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 
 export const VerifySecurityCode = () => {
-  const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [code, setCode] = useState("");
+  const [codeError, setCodeError] = useState("");
 
   return (
     <CardBackground>
@@ -29,8 +29,9 @@ export const VerifySecurityCode = () => {
           name={"security-code"}
           type={"tel"}
           errorMessage="this is an error"
-          validationStatus={passwordError ? "error" : undefined}
-          onChange={(evt) => setPassword(evt.currentTarget.value)}
+          validationStatus={codeError ? "error" : undefined}
+          value={code}
+          onChange={(evt) => setCode(evt.currentTarget.value)}
         />
         <Button className="margin-top-3" label={"Verify"} type={"submit"} />
         <Button
