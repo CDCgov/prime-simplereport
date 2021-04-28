@@ -5,6 +5,7 @@ import { CardBackground } from "../../commonComponents/CardBackground/CardBackgr
 import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button";
 import StepIndicator from "../../commonComponents/StepIndicator";
+import { accountCreationSteps } from "../../../config/constants";
 
 export const VerifySecurityCode = () => {
   const [password, setPassword] = useState("");
@@ -13,7 +14,11 @@ export const VerifySecurityCode = () => {
   return (
     <CardBackground>
       <Card logo bodyKicker="Set up your account">
-        <p>[ step indicator ]</p>
+        <StepIndicator
+          steps={accountCreationSteps}
+          currentStepValue={"2"}
+          noLabels={true}
+        />
         <p className="margin-bottom-0">Verify your security code.</p>
         <p className="usa-hint font-ui-2xs">
           We’ve sent a text message (SMS) to <b>(213) 555-2424</b>. It will

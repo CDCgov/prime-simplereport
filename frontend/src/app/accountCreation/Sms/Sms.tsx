@@ -5,6 +5,7 @@ import { CardBackground } from "../../commonComponents/CardBackground/CardBackgr
 import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button";
 import StepIndicator from "../../commonComponents/StepIndicator";
+import { accountCreationSteps } from "../../../config/constants";
 
 export const Sms = () => {
   const [password, setPassword] = useState("");
@@ -13,7 +14,11 @@ export const Sms = () => {
   return (
     <CardBackground>
       <Card logo bodyKicker="Set up your account">
-        <p>[ step indicator ]</p>
+        <StepIndicator
+          steps={accountCreationSteps}
+          currentStepValue={"2"}
+          noLabels={true}
+        />
         <p className="margin-bottom-0">
           Get your security code via text message (SMS).
         </p>
