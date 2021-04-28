@@ -40,7 +40,7 @@ export const PasswordForm = () => {
     case 1:
     case 2:
       passwordStrengthLabel = "Weak";
-      passwordStrengthColor = "bg-red";
+      passwordStrengthColor = "bg-error";
       break;
     case 3:
       passwordStrengthLabel = "Weak";
@@ -48,11 +48,11 @@ export const PasswordForm = () => {
       break;
     case 4:
       passwordStrengthLabel = "Okay";
-      passwordStrengthColor = "bg-yellow";
+      passwordStrengthColor = "bg-gold";
       break;
     case 5:
       passwordStrengthLabel = "Good";
-      passwordStrengthColor = "bg-green";
+      passwordStrengthColor = "bg-success";
       break;
     default:
       passwordStrengthLabel = "...";
