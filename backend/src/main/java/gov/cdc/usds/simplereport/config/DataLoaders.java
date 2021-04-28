@@ -17,8 +17,8 @@ import org.springframework.stereotype.Component;
 public class DataLoaders {
   private final PatientPreferencesRepository patientPreferencesRepository;
   private final TestEventRepository testEventRepository;
-  public static final String PATIENT_LAST_TEST = "patientLastTestLoader";
-  public static final String PATIENT_PREFERENCES = "patientPreferencesLoader";
+  public static final String PATIENT_LAST_TEST = "patients[*].lastTest";
+  public static final String PATIENT_PREFERENCES = "patients[*].preferences";
 
   public DataLoaders(
       PatientPreferencesRepository patientPreferencesRepository,
