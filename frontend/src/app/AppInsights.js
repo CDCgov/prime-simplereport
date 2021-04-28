@@ -19,6 +19,9 @@ const appInsights = new ApplicationInsights({
     },
   },
 });
-appInsights.loadAppInsights();
+
+if (process.env.REACT_APP_APPINSIGHTS_KEY) {
+  appInsights.loadAppInsights();
+}
 
 export { appInsights, reactPlugin };
