@@ -8,6 +8,8 @@ import Optional from "./Optional";
 type Options<T> = {
   label: React.ReactNode;
   value: T;
+  labelDescription?: string;
+  labelTag?: string;
   disabled?: boolean;
   className?: string;
 }[];
@@ -65,7 +67,7 @@ const RadioGroup = <T extends string>({
           {required ? <Required label={legend} /> : <Optional label={legend} />}
         </legend>
       )}
-      {hintText && <span className="usa-hint text-ls-1">{hintText}</span>}
+      {hintText && <span className="usa-hint">{hintText}</span>}
       {validationStatus === "error" && (
         <div className="usa-error-message" role="alert">
           <span className="usa-sr-only">Error: </span>
@@ -81,7 +83,7 @@ const RadioGroup = <T extends string>({
               validationStatus === "error" && "usa-form-group--error"
             )}
           >
-            {buttons.map((c, i) => {
+            {buttons.map((c) => {
               const labelClasses = classnames(
                 "usa-radio__label",
                 (c.disabled || disabled) && "text-base"
@@ -104,6 +106,18 @@ const RadioGroup = <T extends string>({
                   />
                   <label className={labelClasses} htmlFor={uid(c.value)}>
                     {c.label}
+                    {c.labelDescription && (
+                      <span className="usa-checkbox__label-description text-base-dark">
+                        {c.labelDescription}
+                      </span>
+                    )}
+                    {c.labelTag && (
+                      <div className="display-block margin-left-4 margin-top-1">
+                        <span className="usa-tag bg-primary-darker">
+                          {c.labelTag}
+                        </span>
+                      </div>
+                    )}
                   </label>
                 </div>
               );
