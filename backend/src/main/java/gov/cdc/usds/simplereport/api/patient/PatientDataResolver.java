@@ -19,14 +19,11 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PatientDataResolver
     implements GraphQLResolver<Person>, PersonNameResolver<Person>, InternalIdResolver<Person> {
-  private static Logger LOG = LoggerFactory.getLogger(PatientDataResolver.class);
 
   public CompletableFuture<TestEvent> getLastTest(Person person, DataFetchingEnvironment dfe) {
     return loadFuture(person, dfe, PatientLastTestDataLoader.KEY);
@@ -56,11 +53,9 @@ public class PatientDataResolver
       AuditedEntity parentObject, DataFetchingEnvironment dfe, final String key) {
     DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
     DataLoader<UUID, T> loader = registry.getDataLoader(key);
-    LOG.info("Oh hello {}", key);
     if (loader == null) {
       throw new NoDataLoaderFoundException(key);
     }
-    LOG.info("Here's a loader {}", loader);
     return loader.load(parentObject.getInternalId());
   }
 }
