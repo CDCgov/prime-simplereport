@@ -6,7 +6,10 @@ import graphql.GraphQLError;
 import graphql.language.SourceLocation;
 import java.util.List;
 
-/** Exception to throw when an operation is performed on a test order that does not exist or has already been completed. */
+/**
+ * Exception to throw when an operation is performed on a test order that does not exist or has
+ * already been completed.
+ */
 public class NonexistentQueueItemException extends RuntimeException implements GraphQLError {
 
   private static final long serialVersionUID = 1L;

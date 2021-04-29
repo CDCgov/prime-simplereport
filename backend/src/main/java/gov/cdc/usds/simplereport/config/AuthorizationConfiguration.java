@@ -341,7 +341,11 @@ public class AuthorizationConfiguration {
   @Retention(RUNTIME)
   @Target(METHOD)
   @PreAuthorize(
-      SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_START_TEST + " && " + SPEL_CAN_VIEW_PATIENT_BY_ID)
+      SPEL_IS_VALID
+          + " && "
+          + SPEL_HAS_PERMISSION_START_TEST
+          + " && "
+          + SPEL_CAN_VIEW_PATIENT_BY_ID)
   public @interface RequirePermissionStartTestForPatientById {}
 
   /**
@@ -361,8 +365,8 @@ public class AuthorizationConfiguration {
   public @interface RequirePermissionStartTestWithPatientLink {}
 
   /**
-   * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for the queue
-   * item for patient with UUID {@code patientId}.
+   * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for the
+   * queue item for patient with UUID {@code patientId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code patientId}.
    */
@@ -389,8 +393,8 @@ public class AuthorizationConfiguration {
   public @interface RequirePermissionUpdateTestForTestEvent {}
 
   /**
-   * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for the queue
-   * item with UUID {@code testOrderId}.
+   * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for the
+   * queue item with UUID {@code testOrderId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code testOrderId}.
    */
@@ -401,8 +405,8 @@ public class AuthorizationConfiguration {
   public @interface RequirePermissionUpdateTestForTestOrder {}
 
   /**
-   * Require the current user to have the {@link UserPermission#SUBMIT_TEST} permission for the queue
-   * item for patient with UUID {@code patientId}.
+   * Require the current user to have the {@link UserPermission#SUBMIT_TEST} permission for the
+   * queue item for patient with UUID {@code patientId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code patientId}.
    */

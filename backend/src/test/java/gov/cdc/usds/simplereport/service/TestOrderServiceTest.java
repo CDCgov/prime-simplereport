@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 import com.google.i18n.phonenumbers.NumberParseException;
-
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -494,8 +493,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
     assertThrows(
         NonexistentQueueItemException.class,
-        () ->_service.addTestResult(
-            devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null));
+        () ->
+            _service.addTestResult(
+                devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null));
   }
 
   @Test
@@ -613,7 +613,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(TestResult.POSITIVE, queue.get(0).getTestResult());
     assertEquals(devA.getInternalId(), queue.get(0).getDeviceType().getInternalId());
   }
-
 
   @Test
   @WithSimpleReportOrgAdminUser
