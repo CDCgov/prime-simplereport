@@ -55,3 +55,34 @@ export const getBestSuggestion = async (
     console.error("Unable to validate address:", error.message);
   }
 };
+
+function toLowerStripWhitespace(s: string | null): string {
+  if (s === null) {
+    return "";
+  }
+  return s.toLocaleLowerCase().replace(/\s/, "");
+}
+
+export function suggestionIsCloseEnough(
+  original: Address,
+  suggested: Address | undefined
+): boolean {
+  if (typeof suggested === "undefined") {
+    return false;
+  }
+
+  const fields: (keyof Address)[] = ["city", "state", "street", "streetTwo"];
+  fields.forEach((field) => {
+    if (
+      toLowerStripWhitespace(original[field]) !==
+      toLowerStripWhitespace(suggested[field])
+    ) {
+      return false;
+    }
+  });
+  if (original.zipCode.substr(0, 5) !== suggested.zipCode.substr(0, 5)) {
+    return false;
+  }
+
+  return true;
+}
