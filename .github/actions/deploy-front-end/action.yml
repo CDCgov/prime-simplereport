@@ -10,6 +10,9 @@ inputs:
   base-domain-name:
     description: The domain where the application is deployed (e.g. "simplereport.gov" or "test.simplereport.gov")
     required: false
+  is-training-site:
+    description: If this is set, special training branding will be applied.
+    required: false
 runs:
   using: composite
   steps:
@@ -30,6 +33,9 @@ runs:
           echo "REACT_APP_APPINSIGHTS_KEY=${INSIGHTS_KEY}" > .env.production.local
           if [[ -n "${{ inputs.base-domain-name }}" ]]
             then echo "REACT_APP_BASE_URL=https://${{inputs.base-domain-name}}" >> .env.production.local
+          fi
+          if [[ "true" == "${{ inputs.is-training-site }}" ]]
+            then echo "REACT_APP_IS_TRAINING_SITE=true" >> .env.production.local
           fi
     - name: Build deployable application
       shell: bash
