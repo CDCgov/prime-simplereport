@@ -56,27 +56,16 @@ jobs:
         run: make promote-${{ env.DEPLOY_ENV }}
   deploy-frontend:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: "14"
-      - name: Install dependencies
-        run: yarn install
-      - name: Build deploy artifact
-        env:
-          REACT_APP_BASE_URL: https://demo.simplereport.gov
-          REACT_APP_BACKEND_URL: https://demo.simplereport.gov/api
-          PUBLIC_URL: /app/
-          REACT_APP_SMARTY_STREETS_KEY: ${{ secrets.SMARTY_STREETS_KEY }}
-        run: yarn run build
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Deploy frontend app
-        run: az storage blob upload-batch -s build/ -d '$web' --account-name simplereportdemoapp --destination-path '/app'
-      - name: Purge CDN
-        run: az cdn endpoint purge --resource-group prime-simple-report-${{ env.DEPLOY_ENV }} --profile-name simple-report-${{ env.DEPLOY_ENV }} --name simple-report-${{ env.DEPLOY_ENV }} --content-paths "/app/*" --no-wait
+      - uses: ./.github/actions/deploy-front-end
+        name: Build and deploy front-end application
+        with:
+          deploy-env: ${{env.DEPLOY_ENV}}
+          smarty-streets-key: ${{ secrets.SMARTY_STREETS_KEY }}
