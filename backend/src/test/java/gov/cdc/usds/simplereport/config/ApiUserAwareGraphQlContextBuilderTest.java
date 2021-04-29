@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.ApiUserService;
+import gov.cdc.usds.simplereport.service.dataloader.DataLoaderRegistryBuilder;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import java.util.HashSet;

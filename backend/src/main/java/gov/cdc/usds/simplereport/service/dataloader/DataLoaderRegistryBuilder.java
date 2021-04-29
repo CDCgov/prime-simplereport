@@ -1,6 +1,5 @@
-package gov.cdc.usds.simplereport.config;
+package gov.cdc.usds.simplereport.service.dataloader;
 
-import gov.cdc.usds.simplereport.service.dataloader.KeyedDataLoaderFactory;
 import java.util.List;
 import org.dataloader.DataLoaderRegistry;
 import org.springframework.stereotype.Component;

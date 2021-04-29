@@ -9,7 +9,7 @@ import org.dataloader.DataLoader;
  * each type that needs to be registered. In order for them to be get and set, they also have to be
  * aware of their key.
  */
-public abstract class KeyedDataLoaderFactory<K, V> {
+abstract class KeyedDataLoaderFactory<K, V> {
   private final BatchLoader<K, V> batchLoadFunction;
 
   KeyedDataLoaderFactory(BatchLoader<K, V> batchLoadFunction) {

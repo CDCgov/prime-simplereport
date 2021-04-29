@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.config.authorization.FacilityPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
 import gov.cdc.usds.simplereport.service.ApiUserService;
+import gov.cdc.usds.simplereport.service.dataloader.DataLoaderRegistryBuilder;
 import graphql.kickstart.execution.context.DefaultGraphQLContext;
 import graphql.kickstart.execution.context.GraphQLContext;
 import graphql.kickstart.servlet.context.DefaultGraphQLServletContext;
