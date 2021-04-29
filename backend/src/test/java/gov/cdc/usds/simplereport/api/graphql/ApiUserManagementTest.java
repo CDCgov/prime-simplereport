@@ -765,10 +765,6 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
       assertEquals(userRetrieved.get("firstName").asText(), userAdded.get("firstName").asText());
       assertEquals(userRetrieved.get("email").asText(), userAdded.get("email").asText());
-      assertEquals(
-          userRetrieved.get("organization").get("externalId").asText(),
-          userAdded.get("organizationExternalId").asText());
-      assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(userRetrieved));
     }
   }
 

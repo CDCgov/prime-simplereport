@@ -8,20 +8,27 @@ interface Props {
     order: number;
   }[];
   currentStepValue: string;
+  noLabels?: boolean;
 }
 
 const StepIndicator = ({
   steps,
   currentStepValue,
+  noLabels,
 }: Props): React.ReactElement => {
   const currentStep = steps.find(({ value }) => value === currentStepValue) || {
     order: 0,
     label: "",
   };
 
+  let noLabelsClass = "";
+  if (noLabels) {
+    noLabelsClass = "usa-step-indicator--no-labels";
+  }
+
   return (
     <div
-      className="usa-step-indicator usa-step-indicator--counters-sm margin-y-205"
+      className={`usa-step-indicator ${noLabelsClass} usa-step-indicator--counters-sm margin-y-205`}
       aria-label="progress"
     >
       <ol className="usa-step-indicator__segments">

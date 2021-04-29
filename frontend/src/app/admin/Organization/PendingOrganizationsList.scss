@@ -1,0 +1,13 @@
+@import "../../../scss/settings/app-settings.scss";
+
+.sr-pending-organizations-list {
+  .sr-org-row th,
+  .sr-org-row td {
+    /* override USWDS force-white */
+    background: inherit;
+  }
+
+  .sr-org-row:hover {
+    background: $theme-color-base-lightest;
+  }
+}
