@@ -13,7 +13,7 @@ public class PatientRegistrationLink extends EternalAuditedEntity {
 
   @OneToOne(optional = true)
   @JoinColumn(name = "organization_id")
-  private Organization organization; 
+  private Organization organization;
 
   @Column(nullable = false)
   private String patientRegistrationLink;

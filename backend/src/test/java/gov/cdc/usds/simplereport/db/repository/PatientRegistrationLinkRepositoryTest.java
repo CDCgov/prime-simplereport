@@ -3,18 +3,15 @@ package gov.cdc.usds.simplereport.db.repository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.hibernate.exception.ConstraintViolationException;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Optional;
-
-import javax.persistence.PersistenceException;
-
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import java.util.Optional;
+import javax.persistence.PersistenceException;
+import org.hibernate.exception.ConstraintViolationException;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
   @Autowired private PatientRegistrationLinkRepository _repo;
@@ -29,7 +26,8 @@ public class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
     _repo.save(new PatientRegistrationLink(fac, "foo-facility"));
     _repo.save(new PatientRegistrationLink(otherFac, "bar-facility"));
 
-    Optional<PatientRegistrationLink> retrieved = _repo.findByPatientRegistrationLink("foo-facility");
+    Optional<PatientRegistrationLink> retrieved =
+        _repo.findByPatientRegistrationLink("foo-facility");
     assertEquals(retrieved.isPresent(), true);
     assertEquals(retrieved.get().getFacility().getInternalId(), fac.getInternalId());
   }
@@ -38,7 +36,7 @@ public class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
   void testFindOrganizationByLink() {
     Organization org = _dataFactory.createValidOrg();
     Facility fac = _dataFactory.createValidFacility(org, "Foo Facility");
-    
+
     _repo.save(new PatientRegistrationLink(fac, "foo-facility"));
     _repo.save(new PatientRegistrationLink(org, "happy-org"));
 
@@ -55,7 +53,8 @@ public class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
     _repo.save(new PatientRegistrationLink(org, "happy-org"));
     _repo.save(new PatientRegistrationLink(fac, "foo-facility"));
 
-    Optional<PatientRegistrationLink> retrieved = _repo.findByPatientRegistrationLink("some-bad-link");
+    Optional<PatientRegistrationLink> retrieved =
+        _repo.findByPatientRegistrationLink("some-bad-link");
     assertEquals(retrieved.isPresent(), false);
   }
 
@@ -71,7 +70,7 @@ public class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
             () -> {
               _repo.save(new PatientRegistrationLink(org, "the-link"));
               flush();
-        });
+            });
 
     assertEquals(ConstraintViolationException.class, caught.getCause().getClass());
   }
