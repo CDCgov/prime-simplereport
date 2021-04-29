@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { PHONE_TYPE_VALUES } from "../../constants";
@@ -42,8 +42,13 @@ const ManagePhoneNumbers: React.FC<Props> = ({
     [errors]
   );
 
+  const validationStatus = (idx: number, name: keyof PhoneNumberErrors) => {
+    return errors[idx] && errors[idx][name] ? "error" : undefined;
+  };
+
   const validateField = useCallback(
     async (idx: number, field: keyof PhoneNumber) => {
+      console.log(`Validating field ${field} at index ${idx}`);
       try {
         clearError(idx, field);
         await phoneNumberUpdateSchema.validateAt(field, phoneNumbers[idx]);
@@ -58,12 +63,14 @@ const ManagePhoneNumbers: React.FC<Props> = ({
         });
       }
     },
-    [phoneNumbers, clearError]
+    [phoneNumbers, clearError, validationStatus]
   );
 
-  const validationStatus = (idx: number, name: keyof PhoneNumberErrors) => {
-    return errors[idx] && errors[idx][name] ? "error" : undefined;
-  };
+  /*
+  useEffect(() => {
+    setErrors(errors);
+  }, [errors]);
+  */
 
   const onPhoneTypeChange = (index: number, newPhoneType: string) => {
     const newPhoneNumbers = Array.from(phoneNumbers);
@@ -96,41 +103,58 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 
   const generatePhoneNumberRows = () => {
     return phoneNumbers.map((phoneNumber, idx) => {
+      const isPrimary = idx === 0;
+
       return (
         <div key={idx}>
-          <Input
-            field="number"
-            label={
-              idx === 0 ? "Primary phone number" : "Additional phone number"
-            }
-            required={true}
-            formObject={phoneNumber}
-            validate={(field) => validateField(idx, field)}
-            getValidationStatus={() => validationStatus(idx, "number")}
-            onChange={(field) => (value) => onPhoneNumberChange(idx, value)}
-            errors={errors[idx] || {}}
-          />
-          <RadioGroup
-            legend="Phone type"
-            buttons={PHONE_TYPE_VALUES}
-            selectedRadio={phoneNumber.type}
-            required={true}
-            onChange={(e) => onPhoneTypeChange(idx, e)}
-          />
-          {/* TODO: this isn't in the design but it feels like it should exist */}
-          <button
-            className="usa-button--unstyled"
-            onClick={() => onPhoneNumberRemove(idx)}
-          >
-            <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
-          </button>
+          <div className="grid-row">
+            <div className={isPrimary ? "grid-col-12" : "grid-col-10"}>
+              <Input
+                field="number"
+                label={
+                  isPrimary ? "Primary phone number" : "Additional phone number"
+                }
+                required={isPrimary}
+                formObject={phoneNumber}
+                validate={(field) => validateField(idx, field)}
+                getValidationStatus={() => validationStatus(idx, "number")}
+                onChange={(field) => (value) => {
+                  validateField(idx, field);
+                  return onPhoneNumberChange(idx, value);
+                }}
+                errors={errors[idx] || {}}
+              />
+            </div>
+            {!isPrimary && (
+              <div className="grid-col-2">
+                <button
+                  className="usa-button--unstyled"
+                  onClick={() => onPhoneNumberRemove(idx)}
+                >
+                  <FontAwesomeIcon
+                    icon={"trash"}
+                    className={"prime-red-icon"}
+                  />
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="grid-row">
+            <RadioGroup
+              legend="Phone type"
+              buttons={PHONE_TYPE_VALUES}
+              selectedRadio={phoneNumber.type}
+              required={isPrimary}
+              onChange={(e) => onPhoneTypeChange(idx, e)}
+            />
+          </div>
         </div>
       );
     });
   };
 
   return (
-    <div>
+    <div className="usa-form">
       {generatePhoneNumberRows()}
       <div className="usa-card__footer">
         <Button

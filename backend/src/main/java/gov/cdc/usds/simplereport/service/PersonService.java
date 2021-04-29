@@ -282,26 +282,15 @@ public class PersonService {
     incoming.forEach(phoneNumber -> phoneNumber.setPerson(person));
 
     var existingNumbers = person.getPhoneNumbers();
-    LOG.trace("incoming: {}", incoming);
-    LOG.trace("existing: {}", existingNumbers);
 
-    if (existingNumbers == null) {
-      _phoneRepo.saveAll(incoming);
-      if (incoming.size() > 0) {
-        person.setPrimaryPhone(incoming.get(0));
-      }
-    } else {
-      var toSave = incoming.stream().collect(Collectors.toList());
-      toSave.removeAll(existingNumbers);
+    if (existingNumbers != null) {
+      _phoneRepo.deleteAll(existingNumbers);
+    }
 
-      var toDelete = existingNumbers.stream().collect(Collectors.toSet());
-      toDelete.removeAll(incoming);
+    _phoneRepo.saveAll(incoming);
 
-      _phoneRepo.deleteAll(toDelete);
-      _phoneRepo.saveAll(toSave);
-      if (toSave.size() > 0) {
-        person.setPrimaryPhone(toSave.get(0));
-      }
+    if (incoming.size() > 0) {
+      person.setPrimaryPhone(incoming.get(0));
     }
   }
 

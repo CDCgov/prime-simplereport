@@ -293,16 +293,10 @@ const PersonForm = (props: Props) => {
         </div>
       </FormGroup>
       <FormGroup title="Contact information">
-        <div className="usa-form">
-          {/*<div className="grid-row grid-gap">
-      <div className="mobile-lg:grid-col-6">*/}
-          <ManagePhoneNumbers
-            phoneNumbers={patient.phoneNumbers || []}
-            updatePhoneNumbers={onPersonChange("phoneNumbers")}
-          />
-        </div>
-        {/*</div>
-          </div>*/}
+        <ManagePhoneNumbers
+          phoneNumbers={patient.phoneNumbers || []}
+          updatePhoneNumbers={onPersonChange("phoneNumbers")}
+        />
         <div className="usa-form">
           <Input
             {...commonInputProps}
