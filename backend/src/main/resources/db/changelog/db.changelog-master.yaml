@@ -1769,7 +1769,9 @@ databaseChangeLog:
             columns:
               - column: *pk_column
               - column: *created_at_column
+              - column: *created_by_column
               - column: *updated_at_column
+              - column: *updated_by_column
               - column:
                   name: patient_registration_link
                   remarks: The unique link

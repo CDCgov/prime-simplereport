@@ -1,20 +1,22 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
 public class PatientRegistrationLink extends EternalAuditedEntity {
-  @OneToOne
-  @JoinColumn(name = "facility_id", nullable = true)
+  @OneToOne(optional = true)
+  @JoinColumn(name = "facility_id")
   private Facility facility;
 
-  @OneToOne
-  @JoinColumn(name = "organization_id", nullable = true)
-  private Organization organization;
+  @OneToOne(optional = true)
+  @JoinColumn(name = "organization_id")
+  private Organization organization; 
 
-  String patientRegistrationLink;
+  @Column(nullable = false)
+  private String patientRegistrationLink;
 
   public PatientRegistrationLink(Organization org, String link) {
     this.organization = org;
