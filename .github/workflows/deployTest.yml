@@ -54,9 +54,6 @@ jobs:
         run: make promote-${{ env.DEPLOY_ENV }}
   deploy-frontend:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -66,6 +63,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - uses: ./.github/actions/deploy-front-end
+        name: Build and deploy front-end application
         with:
           deploy-env: ${{env.DEPLOY_ENV}}
           smarty-streets-key: ${{ secrets.SMARTY_STREETS_KEY }}
