@@ -4,13 +4,14 @@ import gov.cdc.usds.simplereport.api.InternalIdResolver;
 import gov.cdc.usds.simplereport.api.PersonNameResolver;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.errors.NoDataLoaderFoundException;
-import gov.cdc.usds.simplereport.config.DataLoaders;
 import gov.cdc.usds.simplereport.db.model.AuditedEntity;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.PatientPreferences;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.service.dataloader.PatientLastTestDataLoader;
+import gov.cdc.usds.simplereport.service.dataloader.PatientPreferencesDataLoader;
 import graphql.kickstart.execution.context.GraphQLContext;
 import graphql.kickstart.tools.GraphQLResolver;
 import graphql.schema.DataFetchingEnvironment;
@@ -18,14 +19,17 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PatientDataResolver
     implements GraphQLResolver<Person>, PersonNameResolver<Person>, InternalIdResolver<Person> {
+  private static Logger LOG = LoggerFactory.getLogger(PatientDataResolver.class);
 
   public CompletableFuture<TestEvent> getLastTest(Person person, DataFetchingEnvironment dfe) {
-    return loadFuture(person, dfe, DataLoaders.PATIENT_LAST_TEST);
+    return loadFuture(person, dfe, PatientLastTestDataLoader.KEY);
   }
 
   public ApiFacility getFacility(Person p) {
@@ -45,16 +49,18 @@ public class PatientDataResolver
 
   private CompletableFuture<PatientPreferences> getPatientPreferences(
       Person person, DataFetchingEnvironment dfe) {
-    return loadFuture(person, dfe, DataLoaders.PATIENT_PREFERENCES);
+    return loadFuture(person, dfe, PatientPreferencesDataLoader.KEY);
   }
 
   private static <T> CompletableFuture<T> loadFuture(
       AuditedEntity parentObject, DataFetchingEnvironment dfe, final String key) {
     DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
     DataLoader<UUID, T> loader = registry.getDataLoader(key);
+    LOG.info("Oh hello {}", key);
     if (loader == null) {
       throw new NoDataLoaderFoundException(key);
     }
+    LOG.info("Here's a loader {}", loader);
     return loader.load(parentObject.getInternalId());
   }
 }
