@@ -1758,3 +1758,75 @@ databaseChangeLog:
             columns:
               - column:
                   name: test_result_delivery
+  - changeSet:
+      id: add-spring-session-jdbc-support
+      author: emma@skylight.digital
+      comment: Add a table to back spring sessions.
+      changes: 
+        - createTable:
+              tableName: spring_session
+              remarks: Data store for user sessions, as created by SpringSession.
+              columns:
+                - column:
+                    name: primary_id
+                    type: *idtype
+                    remarks: The immutable internal key to identify this session.
+                    constraints:
+                      nullable: false
+                - column:
+                    name: session_id
+                    type: *idtype
+                    remarks: A unique, externally visible string that identifies this session.
+                    constraints:
+                      nullable: false
+                      unique: true
+                - column:
+                    name: creation_time
+                    type: DATETIME
+                    remarks: The creation timestamp for the session id.
+                    constraints: 
+                      nullable: false
+                - column:
+                    name: last_access_time
+                    type: DATETIME
+                    remarks: The last time the session id was used.
+                    constraints:
+                      nullable: false 
+                - column:
+                    name: max_inactive_interval
+                    type: int
+                    remarks: The maximum inactive interval time before a session times out and is invalidated.
+                    constraints: 
+                      nullable: facilities
+                - column:
+                    name: expiry_time
+                    type: DATETIME
+                    remarks: The time this session will expire (last_access_time + max_inactive_interval.)
+                    constraints: 
+                      nullable: false
+                - column:
+                    name: principal_name
+                    type: *string
+                    remarks: The name or UUID of the user for this session.
+        - createTable:
+              tableName: spring_session_attributes
+              remarks: Attribute store for user sessions.
+              columns:
+                - column:
+                    name: session_primary_id
+                    type: *idtype
+                    remarks: The immutable internal key to identify this session.
+                    constraints: 
+                      nullable: false
+                - column:
+                    name: attribute_name
+                    type: *string
+                    remarks: The unique name of this attribute.
+                    constraints: 
+                      nullable: false
+                - column:
+                    name: attribute_bytes
+                    type: BYTEA
+                    remarks: The stored value of the attribute.
+                    constraints:
+                      nullable: false
