@@ -31,3 +31,10 @@ export function hasSymbol(string: string) {
 export function isAtLeast15Chars(string: string) {
   return string.length >= 15;
 }
+
+export function toLowerStripWhitespace(s: string | null): string {
+  if (s === null) {
+    return "";
+  }
+  return s.toLocaleLowerCase().replace(/\s/g, "");
+}
