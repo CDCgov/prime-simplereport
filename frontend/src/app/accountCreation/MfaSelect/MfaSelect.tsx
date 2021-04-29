@@ -20,7 +20,7 @@ export const MfaSelect = () => {
         />
         <RadioGroup
           name="addressSelect"
-          hintText="Add a second layer of security to protect your account."
+          legend="Add a second layer of security to protect your account."
           buttons={[
             {
               value: "SMS",
