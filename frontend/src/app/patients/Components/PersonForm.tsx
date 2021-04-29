@@ -142,7 +142,7 @@ const PersonForm = (props: Props) => {
 
   const validatePatientAddress = async () => {
     const originalAddress = getAddress(patient);
-    const suggestedAddress = await getBestSuggestion(getAddress(patient));
+    const suggestedAddress = await getBestSuggestion(originalAddress);
     if (suggestionIsCloseEnough(originalAddress, suggestedAddress)) {
       onSave(suggestedAddress);
     } else {
