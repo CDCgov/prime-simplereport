@@ -96,7 +96,7 @@ export const TextInput = ({
               {errorMessage}
             </span>
           )}
-          {hintText && <span className="usa-hint text-ls-1">{hintText}</span>}
+          {hintText && <span className="usa-hint">{hintText}</span>}
           <input
             className={classnames(
               "usa-input",
