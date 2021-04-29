@@ -13,7 +13,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
+class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
   @Autowired private PatientRegistrationLinkRepository _repo;
   @Autowired private TestDataFactory _dataFactory;
 
@@ -28,7 +28,7 @@ public class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
 
     Optional<PatientRegistrationLink> retrieved =
         _repo.findByPatientRegistrationLink("foo-facility");
-    assertEquals(retrieved.isPresent(), true);
+    assertEquals(true, retrieved.isPresent());
     assertEquals(retrieved.get().getFacility().getInternalId(), fac.getInternalId());
   }
 
@@ -41,7 +41,7 @@ public class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
     _repo.save(new PatientRegistrationLink(org, "happy-org"));
 
     Optional<PatientRegistrationLink> retrieved = _repo.findByPatientRegistrationLink("happy-org");
-    assertEquals(retrieved.isPresent(), true);
+    assertEquals(true, retrieved.isPresent());
     assertEquals(retrieved.get().getOrganization().getInternalId(), org.getInternalId());
   }
 
@@ -55,7 +55,7 @@ public class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
 
     Optional<PatientRegistrationLink> retrieved =
         _repo.findByPatientRegistrationLink("some-bad-link");
-    assertEquals(retrieved.isPresent(), false);
+    assertEquals(false, retrieved.isPresent());
   }
 
   @Test
