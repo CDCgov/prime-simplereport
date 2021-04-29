@@ -22,6 +22,8 @@ const appInsights = new ApplicationInsights({
 
 if (process.env.REACT_APP_APPINSIGHTS_KEY) {
   appInsights.loadAppInsights();
+} else {
+  console.info("Application Insights key was not found.");
 }
 
 export { appInsights, reactPlugin };
