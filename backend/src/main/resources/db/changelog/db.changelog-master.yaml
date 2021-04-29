@@ -1794,23 +1794,23 @@ databaseChangeLog:
       changes:
         - sql:
           sql: |
-            GRANT USAGE ON SCHEMA ${database.defaultSchemaName} TO simple_report_no_phi;
-            GRANT SELECT ON TABLE ${database.defaultSchemaName}.facility_device_type TO simple_report_no_phi;
-            GRANT SELECT ON TABLE ${database.defaultSchemaName}.device_type TO simple_report_no_phi;
-            GRANT SELECT ON TABLE ${database.defaultSchemaName}.organization TO simple_report_no_phi;
-            GRANT SELECT ON TABLE ${database.defaultSchemaName}.patient_answers TO simple_report_no_phi;
-            GRANT SELECT ON TABLE ${database.defaultSchemaName}.facility TO simple_report_no_phi;
-            GRANT SELECT ON TABLE ${database.defaultSchemaName}.patient_link TO simple_report_no_phi;
-            GRANT SELECT ON TABLE ${database.defaultSchemaName}.data_hub_upload TO simple_report_no_phi;
-            GRANT SELECT ON TABLE ${database.defaultSchemaName}.time_of_consent TO simple_report_no_phi;
-            GRANT SELECT ON TABLE ${database.defaultSchemaName}.specimen_type TO simple_report_no_phi;
-            GRANT SELECT ON TABLE ${database.defaultSchemaName}.device_specimen_type TO simple_report_no_phi;
-            GRANT SELECT ON TABLE ${database.defaultSchemaName}.facility_device_specimen_type TO simple_report_no_phi;
-            GRANT SELECT ON TABLE ${database.defaultSchemaName}.test_order TO simple_report_no_phi;
-            GRANT SELECT ON ${database.defaultSchemaName}.api_user_no_phi_view TO simple_report_no_phi;
-            GRANT SELECT ON ${database.defaultSchemaName}.provider_no_phi_view TO simple_report_no_phi;
-            GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO simple_report_no_phi;
-            GRANT SELECT ON ${database.defaultSchemaName}.test_event_no_phi_view TO simple_report_no_phi;
+            GRANT USAGE ON SCHEMA ${database.defaultSchemaName} TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.facility_device_type TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.device_type TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.organization TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.patient_answers TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.facility TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.patient_link TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.data_hub_upload TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.time_of_consent TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.specimen_type TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.device_specimen_type TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.facility_device_specimen_type TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.test_order TO ${noPhiUsername};
+            GRANT SELECT ON ${database.defaultSchemaName}.api_user_no_phi_view TO ${noPhiUsername};
+            GRANT SELECT ON ${database.defaultSchemaName}.provider_no_phi_view TO ${noPhiUsername};
+            GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+            GRANT SELECT ON ${database.defaultSchemaName}.test_event_no_phi_view TO ${noPhiUsername};
       rollback:
         - sql:
           sql: |
