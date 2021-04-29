@@ -6,12 +6,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import org.dataloader.DataLoaderRegistry;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PatientPreferencesDataLoader
-    extends SelfRegisteringDataLoader<UUID, PatientPreferences> {
+public class PatientPreferencesDataLoader extends KeyedDataLoaderFactory<UUID, PatientPreferences> {
   public static final String KEY = "patients[*].preferences";
 
   @Override
@@ -19,11 +17,8 @@ public class PatientPreferencesDataLoader
     return KEY;
   }
 
-  PatientPreferencesDataLoader(
-      DataLoaderRegistry dataLoaderRegistry,
-      PatientPreferencesRepository patientPreferencesRepository) {
+  PatientPreferencesDataLoader(PatientPreferencesRepository patientPreferencesRepository) {
     super(
-        dataLoaderRegistry,
         patientIds ->
             CompletableFuture.supplyAsync(
                 () -> {

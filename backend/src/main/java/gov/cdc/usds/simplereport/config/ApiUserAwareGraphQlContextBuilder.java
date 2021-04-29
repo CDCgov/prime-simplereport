@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.websocket.Session;
 import javax.websocket.server.HandshakeRequest;
-import org.dataloader.DataLoaderRegistry;
 import org.springframework.stereotype.Component;
 
 /**
@@ -29,12 +28,12 @@ import org.springframework.stereotype.Component;
 @Component
 class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder {
   private final ApiUserService apiUserService;
-  private final DataLoaderRegistry dataLoaderRegistry;
+  private final DataLoaderRegistryBuilder dataLoaderRegistryBuilder;
 
   ApiUserAwareGraphQlContextBuilder(
-      ApiUserService apiUserService, DataLoaderRegistry dataLoaderRegistry) {
+      ApiUserService apiUserService, DataLoaderRegistryBuilder dataLoaderRegistryBuilder) {
     this.apiUserService = apiUserService;
-    this.dataLoaderRegistry = dataLoaderRegistry;
+    this.dataLoaderRegistryBuilder = dataLoaderRegistryBuilder;
   }
 
   @Override
@@ -44,7 +43,7 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
         .with(httpServletRequest)
         .with(httpServletResponse)
         .with(subjectFromCurrentUser())
-        .with(dataLoaderRegistry)
+        .with(dataLoaderRegistryBuilder.build())
         .build();
   }
 
@@ -54,13 +53,13 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
         .with(session)
         .with(handshakeRequest)
         .with(subjectFromCurrentUser())
-        .with(dataLoaderRegistry)
+        .with(dataLoaderRegistryBuilder.build())
         .build();
   }
 
   @Override
   public GraphQLContext build() {
-    return new DefaultGraphQLContext(dataLoaderRegistry, subjectFromCurrentUser());
+    return new DefaultGraphQLContext(dataLoaderRegistryBuilder.build(), subjectFromCurrentUser());
   }
 
   private Subject subjectFromCurrentUser() {

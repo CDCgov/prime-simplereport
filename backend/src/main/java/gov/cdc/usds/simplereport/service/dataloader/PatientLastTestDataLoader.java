@@ -6,11 +6,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import org.dataloader.DataLoaderRegistry;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PatientLastTestDataLoader extends SelfRegisteringDataLoader<UUID, TestEvent> {
+public class PatientLastTestDataLoader extends KeyedDataLoaderFactory<UUID, TestEvent> {
   public static final String KEY = "patients[*].lastTest";
 
   @Override
@@ -18,10 +17,8 @@ public class PatientLastTestDataLoader extends SelfRegisteringDataLoader<UUID, T
     return KEY;
   }
 
-  PatientLastTestDataLoader(
-      DataLoaderRegistry dataLoaderRegistry, TestEventRepository testEventRepository) {
+  PatientLastTestDataLoader(TestEventRepository testEventRepository) {
     super(
-        dataLoaderRegistry,
         patientIds ->
             CompletableFuture.supplyAsync(
                 () -> {

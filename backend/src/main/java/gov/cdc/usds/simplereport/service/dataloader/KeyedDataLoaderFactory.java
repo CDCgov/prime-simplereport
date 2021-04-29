@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.service.dataloader;
 
 import org.dataloader.BatchLoader;
 import org.dataloader.DataLoader;
-import org.dataloader.DataLoaderRegistry;
 
 /**
  * In order for the GraphQL DataResolvers to be able to access DataLoaders from the
@@ -10,12 +9,16 @@ import org.dataloader.DataLoaderRegistry;
  * <em>self-register</em> with the DataLoaderRegistry, they must also know their own key at
  * instantiation.
  */
-public abstract class SelfRegisteringDataLoader<K, V> extends DataLoader<K, V> {
-  SelfRegisteringDataLoader(
-      DataLoaderRegistry dataLoaderRegistry, BatchLoader<K, V> batchLoadFunction) {
-    super(batchLoadFunction);
-    dataLoaderRegistry.register(getKey(), this);
+public abstract class KeyedDataLoaderFactory<K, V> {
+  private final BatchLoader<K, V> batchLoadFunction;
+
+  KeyedDataLoaderFactory(BatchLoader<K, V> batchLoadFunction) {
+    this.batchLoadFunction = batchLoadFunction;
   }
 
-  abstract String getKey();
+  public DataLoader<K, V> get() {
+    return new DataLoader<K, V>(batchLoadFunction);
+  }
+
+  public abstract String getKey();
 }

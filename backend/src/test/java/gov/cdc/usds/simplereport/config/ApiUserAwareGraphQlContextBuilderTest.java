@@ -40,10 +40,11 @@ class ApiUserAwareGraphQlContextBuilderTest {
   @MethodSource("userProvider")
   void populatesSubject(UserInfo user) {
     var apiUserService = mock(ApiUserService.class);
-    var dataLoaderRegistry = mock(DataLoaderRegistry.class);
+    var dataLoaderRegistryBuilder = mock(DataLoaderRegistryBuilder.class);
     when(apiUserService.getCurrentUserInfo()).thenReturn(user);
+    when(dataLoaderRegistryBuilder.build()).thenReturn(new DataLoaderRegistry());
 
-    var sut = new ApiUserAwareGraphQlContextBuilder(apiUserService, dataLoaderRegistry);
+    var sut = new ApiUserAwareGraphQlContextBuilder(apiUserService, dataLoaderRegistryBuilder);
     validateSubject(
         sut.build(mock(HttpServletRequest.class), mock(HttpServletResponse.class))
             .getSubject()
