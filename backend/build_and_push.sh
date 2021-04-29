@@ -7,7 +7,6 @@ ACR_TAG="simplereportacr.azurecr.io/api/simple-report-api-build:$GIT_SHA"
 
 export DOCKER_CLI_EXPERIMENTAL=enabled # to get "manifest inspect"
 
-echo "Trying that inspect plan"
 if docker manifest inspect $ACR_TAG >& /dev/null; then
     echo "Built image for ${GIT_SHA} already exists in the repository"
     exit 0
