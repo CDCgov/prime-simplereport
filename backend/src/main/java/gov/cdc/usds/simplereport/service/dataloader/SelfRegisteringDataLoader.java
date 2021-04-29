@@ -11,7 +11,7 @@ import org.dataloader.DataLoaderRegistry;
  * instantiation.
  */
 public abstract class SelfRegisteringDataLoader<K, V> extends DataLoader<K, V> {
-  public SelfRegisteringDataLoader(
+  SelfRegisteringDataLoader(
       DataLoaderRegistry dataLoaderRegistry, BatchLoader<K, V> batchLoadFunction) {
     super(batchLoadFunction);
     dataLoaderRegistry.register(getKey(), this);
