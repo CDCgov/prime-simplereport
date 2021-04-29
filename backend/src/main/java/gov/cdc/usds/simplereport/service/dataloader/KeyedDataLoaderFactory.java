@@ -17,7 +17,7 @@ public abstract class KeyedDataLoaderFactory<K, V> {
   }
 
   public DataLoader<K, V> get() {
-    return new DataLoader<K, V>(batchLoadFunction);
+    return new DataLoader<>(batchLoadFunction);
   }
 
   public abstract String getKey();

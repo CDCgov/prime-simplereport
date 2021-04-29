@@ -16,9 +16,8 @@ public class DataLoaderRegistryBuilder {
   public DataLoaderRegistry build() {
     DataLoaderRegistry registry = new DataLoaderRegistry();
     dataLoaders.forEach(
-        dataLoaderFactory -> {
-          registry.register(dataLoaderFactory.getKey(), dataLoaderFactory.get());
-        });
+        dataLoaderFactory ->
+            registry.register(dataLoaderFactory.getKey(), dataLoaderFactory.get()));
     return registry;
   }
 }
