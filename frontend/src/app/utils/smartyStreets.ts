@@ -60,7 +60,7 @@ function toLowerStripWhitespace(s: string | null): string {
   if (s === null) {
     return "";
   }
-  return s.toLocaleLowerCase().replace(/\s/, "");
+  return s.toLocaleLowerCase().replace(/\s/g, "");
 }
 
 export function suggestionIsCloseEnough(
@@ -72,14 +72,14 @@ export function suggestionIsCloseEnough(
   }
 
   const fields: (keyof Address)[] = ["city", "state", "street", "streetTwo"];
-  fields.forEach((field) => {
+  for (const field of fields) {
     if (
       toLowerStripWhitespace(original[field]) !==
       toLowerStripWhitespace(suggested[field])
     ) {
       return false;
     }
-  });
+  }
   if (original.zipCode.substr(0, 5) !== suggested.zipCode.substr(0, 5)) {
     return false;
   }
