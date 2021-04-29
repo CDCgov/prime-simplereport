@@ -17,5 +17,5 @@ public abstract class SelfRegisteringDataLoader<K, V> extends DataLoader<K, V> {
     dataLoaderRegistry.register(getKey(), this);
   }
 
-  public abstract String getKey();
+  abstract String getKey();
 }
