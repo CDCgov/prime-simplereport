@@ -14,14 +14,13 @@ public class DataLoaderRegistryBuilder {
 
   public DataLoaderRegistryBuilder(List<KeyedDataLoaderFactory> dataLoaders) {
     this.dataLoaders = dataLoaders;
-    LOG.warn("Init");
   }
 
   public DataLoaderRegistry build() {
     DataLoaderRegistry registry = new DataLoaderRegistry();
     dataLoaders.forEach(
         dataLoaderFactory -> {
-          LOG.warn("Registering {}", dataLoaderFactory.getKey());
+          LOG.debug("Registering {}", dataLoaderFactory.getKey());
           registry.register(dataLoaderFactory.getKey(), dataLoaderFactory.get());
         });
     return registry;
