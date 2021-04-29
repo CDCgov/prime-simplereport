@@ -4,10 +4,10 @@ import org.dataloader.BatchLoader;
 import org.dataloader.DataLoader;
 
 /**
- * In order for the GraphQL DataResolvers to be able to access DataLoaders from the
- * DataLoaderRegistry, each DataLoader must have a unique key. In order for our DataLoaders to
- * <em>self-register</em> with the DataLoaderRegistry, they must also know their own key at
- * instantiation.
+ * The DataLoaderResgistryBuilder will receive an injected List of KeyedDataLoaderFactories, and
+ * each time it builds a new DataLoaderRegistry it will use the factories to new up a DataLoader of
+ * each type that needs to be registered. In order for them to be get and set, they also have to be
+ * aware of their key.
  */
 public abstract class KeyedDataLoaderFactory<K, V> {
   private final BatchLoader<K, V> batchLoadFunction;
