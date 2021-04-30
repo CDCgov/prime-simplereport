@@ -26,6 +26,8 @@
 
 ### Changes are Backwards Compatible
 - [ ] Database changes are submitted as a separate PR
+  - [ ] Any new tables that do not contain PII are accompanied by a GRANT SELECT to the no-PHI user
+  - [ ] Any changes to tables that have custom no-PHI views are accompanied by changes to those views
 - [ ] GraphQL schema changes are backward compatible with older version of the front-end
 
 ### Security
