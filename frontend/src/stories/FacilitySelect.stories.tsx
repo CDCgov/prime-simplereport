@@ -7,7 +7,7 @@ import FacilitySelect, {
 } from "../app/facilitySelect/FacilitySelect";
 
 export default {
-  title: "App/FacilitySelect",
+  title: "App/Facility select",
   component: FacilitySelect,
   argTypes: { setActiveFacility: { action: "clicked" } },
 } as Meta;

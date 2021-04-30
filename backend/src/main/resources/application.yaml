@@ -19,6 +19,9 @@ spring:
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
+  session:
+    store-type: jdbc
+    timeout: 15m
 graphql:
   servlet:
     mapping: /graphql
