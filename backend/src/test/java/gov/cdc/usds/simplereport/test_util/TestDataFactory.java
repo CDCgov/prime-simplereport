@@ -151,7 +151,10 @@ public class TestDataFactory {
             "M",
             false,
             false);
-    _phoneNumberRepo.save(new PhoneNumber(p, PhoneType.MOBILE, "503-867-5309"));
+    _personRepo.save(p);
+    PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, "503-867-5309");
+    _phoneNumberRepo.save(pn);
+    p.setPrimaryPhone(pn);
     return _personRepo.save(p);
   }
 
