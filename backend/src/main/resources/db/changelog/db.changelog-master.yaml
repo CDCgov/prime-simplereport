@@ -1814,5 +1814,5 @@ databaseChangeLog:
       rollback:
         - sql:
           sql: |
-            REVOKE ALL PRIVILEGES ON SCHEMA ${database.defaultSchemaName} FROM simple_report_no_phi;
-            REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA ${database.defaultSchemaName};
+            REVOKE ALL PRIVILEGES ON SCHEMA ${database.defaultSchemaName} FROM ${noPhiUsername};
+            REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA ${database.defaultSchemaName} FROM ${noPhiUsername};
