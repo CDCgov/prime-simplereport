@@ -33,11 +33,14 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 
   const clearError = useCallback(
     (idx: number, field: keyof PhoneNumberErrors) => {
-      if (errors[idx][field]) {
-        errors[idx][field] = "";
-
-        setErrors(errors);
-      }
+      const newErrors = errors.map((error, i) => {
+        if (i !== idx) return error;
+        return {
+          ...error,
+          [field]: "",
+        };
+      });
+      setErrors(newErrors);
     },
     [errors]
   );
@@ -54,16 +57,17 @@ const ManagePhoneNumbers: React.FC<Props> = ({
         await phoneNumberUpdateSchema.validateAt(field, phoneNumbers[idx]);
       } catch (e) {
         setErrors((existingErrors) => {
-          existingErrors[idx] = {
-            ...existingErrors[idx],
+          const newErrors = [...existingErrors];
+          newErrors[idx] = {
+            ...newErrors[idx],
             [field]: allPhoneNumberErrors[field],
           };
 
-          return existingErrors;
+          return newErrors;
         });
       }
     },
-    [phoneNumbers, clearError, validationStatus]
+    [phoneNumbers, clearError]
   );
 
   /*
