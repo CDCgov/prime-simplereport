@@ -36,10 +36,6 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Install postgres so that terraform can execute psql
-        run: |
-          apt-get update
-          apt-get install --yes --no-install-recommends postgresql-client
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 0.14.10
