@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
+import gov.cdc.usds.simplereport.api.InternalIdResolver;
 import gov.cdc.usds.simplereport.api.PersonNameResolver;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import org.springframework.stereotype.Component;
@@ -10,4 +11,25 @@ import org.springframework.stereotype.Component;
  * {@link UserResolver}, which provides access to a much more significant graph.
  */
 @Component
-public class ApiUserDataResolver implements PersonNameResolver<ApiUser> {}
+public class ApiUserDataResolver
+    implements InternalIdResolver<ApiUser>, PersonNameResolver<ApiUser> {
+  public String getEmail(ApiUser user) {
+    return user.getLoginEmail();
+  }
+
+  public String getFirstName(ApiUser user) {
+    return user.getNameInfo().getFirstName();
+  }
+
+  public String getMiddleName(ApiUser user) {
+    return user.getNameInfo().getMiddleName();
+  }
+
+  public String getLastName(ApiUser user) {
+    return user.getNameInfo().getLastName();
+  }
+
+  public String getSuffix(ApiUser user) {
+    return user.getNameInfo().getSuffix();
+  }
+}

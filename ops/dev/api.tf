@@ -8,10 +8,21 @@ module "simple_report_api" {
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
 
+  webapp_subnet_id = data.terraform_remote_state.persistent_dev.outputs.subnet_webapp_id
+
   docker_image_uri = "DOCKER|simplereportacr.azurecr.io/api/simple-report-api-build:${var.acr_image_tag}"
   key_vault_id     = data.azurerm_key_vault.sr_global.id
   tenant_id        = data.azurerm_client_config.current.tenant_id
   https_only       = true
+
+  deploy_info = {
+    env           = "dev",
+    time          = var.deploy_timestamp,
+    tag           = var.deploy_tag,
+    workflow_name = var.deploy_workflow,
+    workflow_run  = var.deploy_runnumber,
+    by            = var.deploy_actor
+  }
 
   app_settings = {
     SPRING_PROFILES_ACTIVE                = "azure-dev"

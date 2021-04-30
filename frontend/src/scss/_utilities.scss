@@ -1,0 +1,25 @@
+// -------------------------------------
+// Typography
+
+.maxw-prose {
+  max-width: 68ex;
+}
+
+// -------------------------------------
+// Color
+
+// Text color
+
+.text-success {
+  color: color("success");
+}
+
+// Background color
+
+.bg-success {
+  background-color: color("success");
+}
+
+.bg-error {
+  background-color: color("error");
+}

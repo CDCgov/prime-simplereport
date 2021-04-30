@@ -9,7 +9,7 @@ exports[`PatientFormContainer snapshot 1`] = `
   >
     <div
       aria-label="progress"
-      className="usa-step-indicator usa-step-indicator--counters-sm margin-y-205"
+      className="usa-step-indicator  usa-step-indicator--counters-sm margin-y-205"
     >
       <ol
         className="usa-step-indicator__segments"
@@ -1188,7 +1188,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                 </abbr>
               </legend>
               <span
-                className="usa-hint text-ls-1"
+                className="usa-hint"
               >
                 For example: nursing home, group home, prison, jail, or military
               </span>
