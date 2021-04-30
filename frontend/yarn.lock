@@ -3877,10 +3877,10 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
-"@types/google-libphonenumber@^7.4.19":
-  version "7.4.19"
-  resolved "https://registry.npmjs.org/@types/google-libphonenumber/-/google-libphonenumber-7.4.19.tgz#8444042875e3a42e19d763f85e0656449530fdb6"
-  integrity sha512-Rm2VhKzu4UofafuTrNTG6fy+385x1PIomnTGGSzOXGbKLpXAhNlUG+7F6UdcIosM5JMvXcJBnwUW/u4qQmt0yg==
+"@types/google-libphonenumber@^7.4.20":
+  version "7.4.20"
+  resolved "https://registry.yarnpkg.com/@types/google-libphonenumber/-/google-libphonenumber-7.4.20.tgz#0d01ceed02d2fb0875dd33990c8fcad2e6e8afd1"
+  integrity sha512-JhazLvUESaGTx4TkeeHbRaV6wsVGPuoUtOhL8xKlQ2M5BxEW64p8tKVboH6mMqGOEPa1vOVs0dec/MFD88+e+A==
 
 "@types/graceful-fs@^4.1.2":
   version "4.1.4"
@@ -14849,10 +14849,10 @@ react-modal@^3.11.2:
     react-lifecycles-compat "^3.0.0"
     warning "^4.0.3"
 
-react-papaparse@^3.9.0:
-  version "3.11.1"
-  resolved "https://registry.yarnpkg.com/react-papaparse/-/react-papaparse-3.11.1.tgz#fddcd9b5b5cf0ac84f990959b8d1071d8a5f83d9"
-  integrity sha512-/TGscChB9rtaqKbQOWXpGQ+hFf+6EWxV5iRi1V1tCf0WW+dT4oy961QpdPUDZNcUakEXdkuRzdi+z8yNTRGCQQ==
+react-papaparse@^3.14.0:
+  version "3.14.0"
+  resolved "https://registry.yarnpkg.com/react-papaparse/-/react-papaparse-3.14.0.tgz#4b4e9981656d8e72889ae312d2781ca001b40c78"
+  integrity sha512-EfVJdyy9J4Ee4gS2qB9g5kPWLxlAnsguG6cpC+SHpVS2iVPoDqeUi9OTu8YwgFCoj5x+FF1o1S/lF/j5bfEmRA==
   dependencies:
     "@types/papaparse" "^5.0.4"
     papaparse "^5.2.0"
