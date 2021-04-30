@@ -17,7 +17,7 @@ public class OktaStateHandler extends AuthenticationStateHandlerAdapter {
 
   @Override
   public void handleSuccess(AuthenticationResponse response) {
-      LOG.info("Successful Okta authentication.");
+    LOG.info("Successful Okta authentication.");
   }
 
   @Override
@@ -31,7 +31,7 @@ public class OktaStateHandler extends AuthenticationStateHandlerAdapter {
 
   public void throwExceptionIfNecessary() throws Exception {
     if (failureException != null) {
-        throw failureException;
+      throw failureException;
     }
   }
 }
