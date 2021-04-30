@@ -295,11 +295,23 @@ There are a few ways to manage this:
 1. Enable the optional pre-commit hook by running `yarn install` in the root dir
 1. Add extensions to your code editor that runs the linters for you on save, e.g. [prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode), [vscode-eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint), [vscode-google-java-format](https://marketplace.visualstudio.com/items?itemName=ilkka.google-java-format)
 
-### Storybook
+### Storybook and Chromatic
 
 [Storybook](https://storybook.js.org/) is an open source tool for developing UI components in isolation for React. It makes building UIs organized and efficient.
 
+To view the Storybook locally:
+
 - Run `yarn storybook` in the `frontend/` dir
+- Visit http://localhost:6006
+
+[Chromatic](https://www.chromatic.com/) is a web-based tool for Storybook that helps speed UI
+component development.  It provides regression testing and review.  It also allows for publication
+of the Storybook.
+
+Changes to the Storybook are sent to Chromatic when a pull request is made or code is merged to
+main that includes changes to the frontend source.
+
+View the [SimpleReport Storybook](https://main--60a556a7c807cc0039ec6786.chromatic.com/)
 
 ## Deploy
 
