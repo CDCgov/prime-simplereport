@@ -49,6 +49,7 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
   lookupId: yup.string().nullable(),
   role: yup.mixed().oneOf([...getValues(ROLE_VALUES), "UNKNOWN", "", null]),
   telephone: yup.mixed().optional(),
+  /*
   phoneNumbers: yup.array().test(function (phoneNumbers) {
     if (!phoneNumbers) {
       return false;
@@ -59,6 +60,37 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
         return false;
       }
 
+      const number = phoneUtil.parseAndKeepRawInput(phoneNumber.number, "US");
+      return phoneUtil.isValidNumber(number);
+    });
+  }),
+  */
+  phoneNumbers: yup.array().test(function (phoneNumbers) {
+    // At least one phone number is required
+    if (!phoneNumbers || phoneNumbers.length === 0) {
+      return false;
+    }
+
+    return phoneNumbers.every((phoneNumber, idx) => {
+      // The first phone number is considered the "primary" phone number and must
+      // be provided
+      if (idx === 0) {
+        if (!phoneNumber || !phoneNumber.number || !phoneNumber.type) {
+          return false;
+        }
+      } else {
+        // Subsequent phone numbers are optional and may be fully blank...
+        if (!phoneNumber || (!phoneNumber.number && !phoneNumber.type)) {
+          return true;
+        }
+
+        // ...but not partially blank...
+        if (!phoneNumber.number || !phoneNumber.type) {
+          return false;
+        }
+      }
+
+      // ...and must validate if provided
       const number = phoneUtil.parseAndKeepRawInput(phoneNumber.number, "US");
       return phoneUtil.isValidNumber(number);
     });

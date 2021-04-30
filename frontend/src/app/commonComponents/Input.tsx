@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import TextInput, { HTMLInputElementType } from "./TextInput";
 
@@ -30,6 +30,14 @@ export const Input = <T extends { [key: string]: any }>({
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(field)(e.target.value);
   };
+
+  const [inputErrors, setErrors] = useState(errors);
+
+  useEffect(() => {
+    console.log("setting input errors...");
+    setErrors(errors);
+  }, [errors]);
+
   return (
     <TextInput
       label={label}
@@ -38,9 +46,10 @@ export const Input = <T extends { [key: string]: any }>({
       onChange={onChangeHandler}
       onBlur={() => {
         validate(field);
+        getValidationStatus(field);
       }}
       validationStatus={getValidationStatus(field)}
-      errorMessage={errors[field]}
+      errorMessage={inputErrors[field]}
       type={type}
       required={required}
       disabled={disabled}

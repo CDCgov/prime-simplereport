@@ -94,7 +94,16 @@ const AddPatient = () => {
   }
 
   const savePerson = async (person: Nullable<PersonFormData>) => {
-    await addPatient({ variables: { ...person } });
+    await addPatient({
+      variables: {
+        ...person,
+        phoneNumbers: (person.phoneNumbers || []).filter(
+          (phoneNumber: PhoneNumber) => {
+            return phoneNumber && phoneNumber.number && phoneNumber.type;
+          }
+        ),
+      },
+    });
     showNotification(
       toast,
       <Alert

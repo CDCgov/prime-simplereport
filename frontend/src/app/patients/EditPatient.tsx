@@ -140,11 +140,26 @@ const EditPatient = (props: Props) => {
   }
 
   const savePerson = async (person: Nullable<PersonFormData>) => {
+    const variables = {
+      patientId: props.patientId,
+      ...person,
+      phoneNumbers: (person.phoneNumbers || [])
+        .filter(function removeEmptyPhoneNumbers(phoneNumber: PhoneNumber) {
+          return phoneNumber && phoneNumber.number && phoneNumber.type;
+        })
+        .map(function removeTypename(phoneNumber: PhoneNumber) {
+          // GraphQL query returns a `__typename` meta field on
+          // `PhoneNumber` objects which must be removed before they
+          // may be used in a mutation
+          return {
+            number: phoneNumber.number,
+            type: phoneNumber.type,
+          };
+        }),
+    };
+
     await updatePatient({
-      variables: {
-        patientId: props.patientId,
-        ...person,
-      },
+      variables,
     });
     showNotification(
       toast,
@@ -169,6 +184,16 @@ const EditPatient = (props: Props) => {
             <PersonForm
               patient={{
                 ...data.patient,
+                phoneNumbers: data.patient.phoneNumbers.sort(function (
+                  x: PhoneNumber,
+                  y: PhoneNumber
+                ) {
+                  return x.number == data.patient.telephone
+                    ? -1
+                    : y.number == data.patient.telephone
+                    ? 1
+                    : 0;
+                }),
                 facilityId:
                   data.patient.facility === null
                     ? null
