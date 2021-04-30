@@ -14849,10 +14849,10 @@ react-modal@^3.11.2:
     react-lifecycles-compat "^3.0.0"
     warning "^4.0.3"
 
-react-papaparse@^3.9.0:
-  version "3.11.1"
-  resolved "https://registry.yarnpkg.com/react-papaparse/-/react-papaparse-3.11.1.tgz#fddcd9b5b5cf0ac84f990959b8d1071d8a5f83d9"
-  integrity sha512-/TGscChB9rtaqKbQOWXpGQ+hFf+6EWxV5iRi1V1tCf0WW+dT4oy961QpdPUDZNcUakEXdkuRzdi+z8yNTRGCQQ==
+react-papaparse@^3.14.0:
+  version "3.14.0"
+  resolved "https://registry.yarnpkg.com/react-papaparse/-/react-papaparse-3.14.0.tgz#4b4e9981656d8e72889ae312d2781ca001b40c78"
+  integrity sha512-EfVJdyy9J4Ee4gS2qB9g5kPWLxlAnsguG6cpC+SHpVS2iVPoDqeUi9OTu8YwgFCoj5x+FF1o1S/lF/j5bfEmRA==
   dependencies:
     "@types/papaparse" "^5.0.4"
     papaparse "^5.2.0"
