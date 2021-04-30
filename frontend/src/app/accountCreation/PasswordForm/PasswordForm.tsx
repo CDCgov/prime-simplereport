@@ -144,8 +144,12 @@ export const PasswordForm = () => {
         <div className="display-flex grid-gap margin-top-105">
           {strengthBars}
         </div>
-        <p className="font-ui-3xs">Password strength: {strengthLabel}</p>
-        <p className="font-ui-3xs">{strengthHint}</p>
+        <p className="font-ui-3xs margin-bottom-0">
+          Password strength: {strengthLabel}
+        </p>
+        <p className="font-ui-3xs margin-top-05 line-height-sans-3">
+          {strengthHint}
+        </p>
         <TextInput
           label={"Confirm password"}
           name={"confirm-password"}
