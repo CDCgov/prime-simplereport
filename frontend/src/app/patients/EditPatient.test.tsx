@@ -71,6 +71,12 @@ describe("EditPatient", () => {
                 state: "DC",
                 zipCode: null,
                 telephone: "(634) 397-4114",
+                phoneNumbers: [
+                  {
+                    type: "MOBILE",
+                    number: "(634) 397-4114"
+                  }
+                ],
                 role: "UNKNOWN",
                 email: "foo@bar.com",
                 county: null,
@@ -157,6 +163,12 @@ describe("EditPatient", () => {
                 state: "DC",
                 zipCode: null,
                 telephone: "(634) 397-4114",
+                phoneNumbers: [
+                  {
+                    type: "MOBILE",
+                    number: "(634) 397-4114"
+                  }
+                ],
                 role: "UNKNOWN",
                 email: "foo@bar.com",
                 county: null,
