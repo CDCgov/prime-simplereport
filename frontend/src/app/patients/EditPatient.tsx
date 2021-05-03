@@ -188,9 +188,9 @@ const EditPatient = (props: Props) => {
                   x: PhoneNumber,
                   y: PhoneNumber
                 ) {
-                  return x.number == data.patient.telephone
+                  return x.number === data.patient.telephone
                     ? -1
-                    : y.number == data.patient.telephone
+                    : y.number === data.patient.telephone
                     ? 1
                     : 0;
                 }),
