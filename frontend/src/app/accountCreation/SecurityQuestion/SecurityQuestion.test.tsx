@@ -24,9 +24,7 @@ describe("SecurityQuestion", () => {
       target: { value: "Lord of the Rings" },
     });
     fireEvent.click(screen.getByText("Continue"));
-    expect(
-      screen.getByText("Security question is required")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Enter a security question")).toBeInTheDocument();
   });
 
   it("requires a security answer", () => {
@@ -35,6 +33,6 @@ describe("SecurityQuestion", () => {
       ["What’s your favorite book?"]
     );
     fireEvent.click(screen.getByText("Continue"));
-    expect(screen.getByText("Security answer is required")).toBeInTheDocument();
+    expect(screen.getByText("Enter a security answer")).toBeInTheDocument();
   });
 });

@@ -16,12 +16,12 @@ describe("Verify SMS MFA", () => {
     );
     fireEvent.click(screen.getByText("Verify"));
     expect(
-      screen.queryByText("Security code is required")
+      screen.queryByText("Enter your security code")
     ).not.toBeInTheDocument();
   });
 
   it("requires a security code", () => {
     fireEvent.click(screen.getByText("Verify"));
-    expect(screen.getByText("Security code is required")).toBeInTheDocument();
+    expect(screen.getByText("Enter your security code")).toBeInTheDocument();
   });
 });

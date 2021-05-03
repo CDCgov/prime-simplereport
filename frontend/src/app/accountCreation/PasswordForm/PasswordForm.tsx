@@ -48,9 +48,9 @@ export const PasswordForm = () => {
         hints.push("at least 8 characters");
       }
       if (hints.length === 1) {
-        return "Needs " + hints[0];
+        return "Your password must have " + hints[0];
       }
-      return `Needs ${hints.slice(0, -1).join(", ")} and ${
+      return `Your password must have ${hints.slice(0, -1).join(", ")} and ${
         hints[hints.length - 1]
       }`;
     }

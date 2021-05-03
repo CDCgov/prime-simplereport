@@ -16,7 +16,7 @@ export const MfaSms = () => {
   const validatePhoneNumber = () => {
     setFormIsDirty(true);
     if (!phoneNumber) {
-      setPhoneNumberError("Phone number is required");
+      setPhoneNumberError("Enter your phone number");
       return;
     }
 
@@ -28,7 +28,7 @@ export const MfaSms = () => {
     }
 
     if (!valid) {
-      setPhoneNumberError("Phone number is invalid");
+      setPhoneNumberError("Enter a valid phone number");
     } else {
       setPhoneNumberError("");
     }

@@ -13,7 +13,7 @@ export const MfaSmsVerify = () => {
 
   const validateCode = () => {
     if (code === "") {
-      setCodeError("Security code is required");
+      setCodeError("Enter your security code");
     } else {
       setCodeError("");
     }

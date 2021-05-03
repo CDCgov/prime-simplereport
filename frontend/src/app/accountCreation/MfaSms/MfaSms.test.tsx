@@ -19,7 +19,7 @@ describe("SMS MFA", () => {
 
   it("requires a phone number", () => {
     fireEvent.click(screen.getByText("Send code"));
-    expect(screen.getByText("Phone number is required")).toBeInTheDocument();
+    expect(screen.getByText("Enter your phone number")).toBeInTheDocument();
   });
 
   it("requires a valid phone number", () => {
@@ -27,6 +27,6 @@ describe("SMS MFA", () => {
       target: { value: "(555) 555-5555" },
     });
     fireEvent.click(screen.getByText("Send code"));
-    expect(screen.getByText("Phone number is invalid")).toBeInTheDocument();
+    expect(screen.getByText("Enter a valid phone number")).toBeInTheDocument();
   });
 });

@@ -18,7 +18,7 @@ describe("MfaSelect", () => {
   it("requires an mfa option", () => {
     fireEvent.click(screen.getByText("Continue"));
     expect(
-      screen.getByText("Authentication option is required")
+      screen.getByText("Select an authentication option")
     ).toBeInTheDocument();
   });
 });

@@ -19,7 +19,7 @@ export const SecurityQuestion = () => {
 
   const validateSecurityQuestion = () => {
     if (securityQuestion === "") {
-      setSecurityQuestionError("Security question is required");
+      setSecurityQuestionError("Enter a security question");
     } else {
       setSecurityQuestionError("");
     }
@@ -27,7 +27,7 @@ export const SecurityQuestion = () => {
 
   const validateSecurityAnswer = () => {
     if (securityAnswer === "") {
-      setSecurityAnswerError("Security answer is required");
+      setSecurityAnswerError("Enter a security answer");
     } else {
       setSecurityAnswerError("");
     }

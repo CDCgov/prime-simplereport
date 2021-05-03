@@ -13,7 +13,7 @@ export const MfaSelect = () => {
 
   const validateMfaOption = () => {
     if (mfaOption === "") {
-      setMfaOptionError("Authentication option is required");
+      setMfaOptionError("Select an authentication option");
     } else {
       setMfaOptionError("");
     }
