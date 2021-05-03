@@ -4,7 +4,9 @@ import com.okta.authn.sdk.AuthenticationException;
 import com.okta.authn.sdk.client.AuthenticationClient;
 import com.okta.authn.sdk.client.AuthenticationClients;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
+import gov.cdc.usds.simplereport.config.BeanProfiles;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
  *
  * <p>Handles all Okta-related authenticaton.
  */
+@Profile("!" + BeanProfiles.NO_OKTA_AUTH)
 @Service
 public class LiveOktaAuthentication implements OktaAuthentication {
   private AuthenticationClient _client;
@@ -24,14 +27,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
 
   public void setPassword(String authenticationToken, char[] password)
       throws AuthenticationException {
-        _client.resetPassword(password, authenticationToken, new OktaStateHandler());
-    // try {
-    //   _client.resetPassword(password, authenticationToken, new OktaStateHandler());
-    // } catch (CredentialsException e) {
-    //   // Password failed to meet Okta standards.
-    //   return Optional.of(e.getCauses());
-    // }
-    // return Optional.empty();
+    _client.resetPassword(password, authenticationToken, new OktaStateHandler());
   }
 
   public void setRecoveryQuestions(String question, String answer) {

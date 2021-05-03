@@ -2,8 +2,9 @@ package gov.cdc.usds.simplereport.api.apiuser;
 
 import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQUEST;
 
-import java.util.Enumeration;
-
+import com.okta.authn.sdk.AuthenticationException;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
+import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -25,6 +26,11 @@ public class UserAccountCreationController {
   private static final Logger LOG = LoggerFactory.getLogger(UserAccountCreationController.class);
 
   @Autowired private OktaAuthentication _oktaAuth;
+  // private OktaAuthentication _oktaAuth;
+
+  // public UserAccountCreationController(OktaAuthentication oktaAuth) {
+  //   this._oktaAuth = oktaAuth;
+  // }
 
   @PostConstruct
   private void init() {
@@ -38,7 +44,9 @@ public class UserAccountCreationController {
    * meet requirements, sends a notice back to the frontend.
    *
    * @param session
-   * @return the session id (temporary)
+   * @return the session id (temporary) Throws oneof AuthenticationException or
+   *     CredentialsException. AuthenticationException if the authorization token is invalid, and
+   *     CredentialsException if the password does not meet Okta standards.
    */
   @PostMapping("/initialize-and-set-password")
   public String setPassword(HttpSession session) {
@@ -55,7 +63,8 @@ public class UserAccountCreationController {
   public String setRecoveryQuestions(HttpSession session) {
     // for the authorization on this, probably just need to assert that the session exists.
     // may also be a good idea to put an attribute on the session, something like "authenticated"
-    // the alternative is to use the Okta authorization token again, but that's probably a one-time-use?
+    // the alternative is to use the Okta authorization token again, but that's probably a
+    // one-time-use?
     // at any rate, we need the session id for something
     return session.getId();
   }

@@ -1,36 +1,52 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
+import com.okta.authn.sdk.AuthenticationException;
+import com.okta.authn.sdk.CredentialsException;
+import com.okta.sdk.error.Error;
 import com.okta.sdk.error.ErrorCause;
+import gov.cdc.usds.simplereport.config.BeanProfiles;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 
+@Profile(BeanProfiles.NO_OKTA_AUTH)
+@Service
 public class DemoOktaAuthentication implements OktaAuthentication {
 
+  private final int ERROR_STATUS_CODE = 403;
+  private final int MINIMUM_PASSWORD_LENGTH = 8;
+
   private HashSet<String> validAuthenticationTokens;
+  private HashMap<String, String> authTokenToPasswordMap;
 
   public DemoOktaAuthentication() {
     this.validAuthenticationTokens = new HashSet<String>();
+    this.authTokenToPasswordMap = new HashMap<String, String>();
   }
 
   public void setPassword(String authenticationToken, char[] password)
-      throws Exception {
-    if (!validAuthenticationTokens.contains(authenticationToken)) {
-      throw new Exception("Authentication token not recognized.");
+      throws AuthenticationException {
+    if (!this.validAuthenticationTokens.contains(authenticationToken)) {
+      DemoError authError = new DemoError("Authentication token not recognized.");
+      throw new AuthenticationException(authError);
     }
-    if (password.length < 8) {
-      ErrorCause cause = new TestErrorCause("password is too short");
-    //   return Optional.of(List.of(cause));
+    if (password.length < MINIMUM_PASSWORD_LENGTH) {
+      DemoError passwordError = new DemoError("Password is too short.");
+      throw new CredentialsException(passwordError);
     }
-    Pattern specialCharacters = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
-    Matcher matcher = specialCharacters.matcher(password.toString());
-    if (!matcher.find()) {
-      ErrorCause cause = new TestErrorCause("password does not contain any special characters");
-    //   return Optional.of(List.of(cause));
+    Pattern specialCharacters = Pattern.compile("[^a-zA-Z0-9]");
+    Matcher matcher = specialCharacters.matcher(String.valueOf(password));
+    boolean found = matcher.find();
+    if (!found) {
+      DemoError passwordError = new DemoError("Password does not contain any special characters.");
+      throw new CredentialsException(passwordError);
     }
-    // return Optional.empty();
+    this.authTokenToPasswordMap.put(authenticationToken, String.valueOf(password));
   }
 
   public void setRecoveryQuestions(String question, String answer) {
@@ -41,11 +57,59 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     this.validAuthenticationTokens.add(authenticationToken);
   }
 
-  class TestErrorCause implements ErrorCause {
+  public HashMap<String, String> getPasswords() {
+    return this.authTokenToPasswordMap;
+  }
+
+  public void reset() {
+    this.validAuthenticationTokens.clear();
+    this.authTokenToPasswordMap.clear();
+  }
+
+  class DemoError implements Error {
+    private String errorMessage;
+    private int status;
+    private List<ErrorCause> causes;
+
+    public DemoError(String errorMessage) {
+      this.errorMessage = errorMessage;
+      this.status = ERROR_STATUS_CODE;
+      this.causes = List.of(new DemoErrorCause(errorMessage));
+    }
+
+    public String getMessage() {
+      return this.errorMessage;
+    }
+
+    public int getStatus() {
+      return this.status;
+    }
+
+    public String getCode() {
+      // Error code as provided by Okta implementation:
+      // https://github.com/okta/okta-auth-java/blob/866e9a0d27d83bb9732bca4da14eeaaa2706eadd/api/src/main/java/com/okta/authn/sdk/AuthenticationFailureException.java#L28
+      return "E0000004";
+    }
+
+    public Map<String, List<String>> getHeaders() {
+      return Map.of("", List.of(""));
+    }
+
+    public String getId() {
+      return "";
+    }
+
+    public List<ErrorCause> getCauses() {
+      return this.causes;
+    }
+  }
+
+  class DemoErrorCause implements ErrorCause {
+
     private String cause;
     private String href;
 
-    public TestErrorCause(String cause) {
+    public DemoErrorCause(String cause) {
       this.cause = cause;
     }
 
