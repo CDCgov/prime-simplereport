@@ -266,10 +266,10 @@ public class PersonService {
     return _prefRepo.findByPerson(person).orElseGet(() -> new PatientPreferences(person));
   }
 
-  @AuthorizationConfiguration.RequirePermissionEditPatientAtFacility
+  @AuthorizationConfiguration.RequirePermissionStartTestForPatientById
   public PatientPreferences updateTestResultDeliveryPreference(
-      UUID personId, TestResultDeliveryPreference testResultDelivery) {
-    Person person = _repo.findById(personId).orElseThrow();
+      UUID patientId, TestResultDeliveryPreference testResultDelivery) {
+    Person person = _repo.findById(patientId).orElseThrow();
     return upsertTestResultDeliveryPreference(person, testResultDelivery);
   }
 

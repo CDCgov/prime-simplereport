@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 import com.google.i18n.phonenumbers.NumberParseException;
+import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -438,6 +439,66 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   }
 
   @Test
+  @WithSimpleReportEntryOnlyAllFacilitiesUser
+  void addTestResult_entryOnlyUserAllFacilities_ok() throws NumberParseException {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person p = _dataFactory.createFullPerson(org);
+    _personService.updateTestResultDeliveryPreference(
+        p.getInternalId(), TestResultDeliveryPreference.SMS);
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        p,
+        "",
+        Collections.<String, Boolean>emptyMap(),
+        false,
+        LocalDate.of(1865, 12, 25),
+        "",
+        TestResult.POSITIVE,
+        LocalDate.of(1865, 12, 25),
+        false);
+    DeviceType devA = _dataFactory.getGenericDevice();
+
+    _service.addTestResult(
+        devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
+
+    verify(_smsService).sendToPatientLink(any(UUID.class), anyString());
+
+    List<TestOrder> queue = _service.getQueue(facility.getInternalId());
+    assertEquals(0, queue.size());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void addTestResult_testAlreadySubmitted_failure() throws NumberParseException {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person p = _dataFactory.createFullPerson(org);
+    _personService.updateTestResultDeliveryPreference(
+        p.getInternalId(), TestResultDeliveryPreference.SMS);
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        p,
+        "",
+        Collections.<String, Boolean>emptyMap(),
+        false,
+        LocalDate.of(1865, 12, 25),
+        "",
+        TestResult.POSITIVE,
+        LocalDate.of(1865, 12, 25),
+        false);
+    DeviceType devA = _dataFactory.getGenericDevice();
+
+    _service.addTestResult(
+        devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
+    assertThrows(
+        NonexistentQueueItemException.class,
+        () ->
+            _service.addTestResult(
+                devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null));
+  }
+
+  @Test
   @WithSimpleReportStandardAllFacilitiesUser
   void editTestResult_standardAllFacilitiesUser_ok() {
     Organization org = _organizationService.getCurrentOrganization();
@@ -551,6 +612,44 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(1, queue.size());
     assertEquals(TestResult.POSITIVE, queue.get(0).getTestResult());
     assertEquals(devA.getInternalId(), queue.get(0).getDeviceType().getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void editTestResult_testAlreadySubmitted_failure() throws NumberParseException {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person p = _dataFactory.createFullPerson(org);
+    _personService.updateTestResultDeliveryPreference(
+        p.getInternalId(), TestResultDeliveryPreference.SMS);
+    TestOrder o =
+        _service.addPatientToQueue(
+            facility.getInternalId(),
+            p,
+            "",
+            Collections.<String, Boolean>emptyMap(),
+            false,
+            LocalDate.of(1865, 12, 25),
+            "",
+            TestResult.POSITIVE,
+            LocalDate.of(1865, 12, 25),
+            false);
+    DeviceType devA = _dataFactory.getGenericDevice();
+
+    _service.editQueueItem(
+        o.getInternalId(), devA.getInternalId().toString(), TestResult.NEGATIVE.toString(), null);
+
+    _service.addTestResult(
+        devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
+
+    assertThrows(
+        NonexistentQueueItemException.class,
+        () ->
+            _service.editQueueItem(
+                o.getInternalId(),
+                devA.getInternalId().toString(),
+                TestResult.POSITIVE.toString(),
+                null));
   }
 
   @Test
