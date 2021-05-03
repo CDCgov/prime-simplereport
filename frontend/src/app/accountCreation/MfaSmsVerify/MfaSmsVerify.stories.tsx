@@ -12,8 +12,3 @@ const Template: Story = (args) => <MfaSmsVerify {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};
-
-export const ErrorState = Template.bind({});
-ErrorState.args = {
-  passwordError: "error",
-};
