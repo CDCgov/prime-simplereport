@@ -95,11 +95,11 @@ public class AuthorizationConfiguration {
   private static final String SPEL_CAN_VIEW_TEST_EVENT =
       "@" + AUTHORIZER_BEAN + ".userCanViewTestEvent(#testEventId)";
 
-  private static final String SPEL_CAN_VIEW_TEST_ORDER =
-      "@" + AUTHORIZER_BEAN + ".userCanViewTestOrder(#testOrderId)";
+  private static final String SPEL_CAN_VIEW_QUEUE_ITEM =
+      "@" + AUTHORIZER_BEAN + ".userCanViewQueueItem(#testOrderId)";
 
-  private static final String SPEL_CAN_VIEW_TEST_ORDER_OF_PATIENT =
-      "@" + AUTHORIZER_BEAN + ".userCanViewTestOrderOfPatient(#patientId)";
+  private static final String SPEL_CAN_VIEW_QUEUE_ITEM_FOR_PATIENT =
+      "@" + AUTHORIZER_BEAN + ".userCanViewQueueItemForPatient(#patientId)";
 
   private static final String SPEL_CAN_ACCESS_PATIENT_LINK =
       "@" + AUTHORIZER_BEAN + ".userCanAccessPatientLink(#patientLinkId)";
@@ -333,6 +333,22 @@ public class AuthorizationConfiguration {
   public @interface RequirePermissionStartTestForPatient {}
 
   /**
+   * Require the current user to have the {@link UserPermission#START_TEST} permission for the
+   * patient with UUID {@code patientId}.
+   *
+   * <p>NOTE: any method with this annotation must have a parameter {@code patientId}.
+   */
+  @Retention(RUNTIME)
+  @Target(METHOD)
+  @PreAuthorize(
+      SPEL_IS_VALID
+          + " && "
+          + SPEL_HAS_PERMISSION_START_TEST
+          + " && "
+          + SPEL_CAN_VIEW_PATIENT_BY_ID)
+  public @interface RequirePermissionStartTestForPatientById {}
+
+  /**
    * Require the current user to have the {@link UserPermission#START_TEST} permission with access
    * to the patient link with UUID {@code patientLinkId}.
    *
@@ -349,8 +365,8 @@ public class AuthorizationConfiguration {
   public @interface RequirePermissionStartTestWithPatientLink {}
 
   /**
-   * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for the test
-   * order of patient with UUID {@code patientId}.
+   * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for the
+   * queue item for patient with UUID {@code patientId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code patientId}.
    */
@@ -361,7 +377,7 @@ public class AuthorizationConfiguration {
           + " && "
           + SPEL_HAS_PERMISSION_UPDATE_TEST
           + " && "
-          + SPEL_CAN_VIEW_TEST_ORDER_OF_PATIENT)
+          + SPEL_CAN_VIEW_QUEUE_ITEM_FOR_PATIENT)
   public @interface RequirePermissionUpdateTestForPatient {}
 
   /**
@@ -377,20 +393,20 @@ public class AuthorizationConfiguration {
   public @interface RequirePermissionUpdateTestForTestEvent {}
 
   /**
-   * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for the test
-   * order with UUID {@code testOrderId}.
+   * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for the
+   * queue item with UUID {@code testOrderId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code testOrderId}.
    */
   @Retention(RUNTIME)
   @Target(METHOD)
   @PreAuthorize(
-      SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_UPDATE_TEST + " && " + SPEL_CAN_VIEW_TEST_ORDER)
+      SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_UPDATE_TEST + " && " + SPEL_CAN_VIEW_QUEUE_ITEM)
   public @interface RequirePermissionUpdateTestForTestOrder {}
 
   /**
-   * Require the current user to have the {@link UserPermission#SUBMIT_TEST} permission for the test
-   * order of patient with UUID {@code patientId}.
+   * Require the current user to have the {@link UserPermission#SUBMIT_TEST} permission for the
+   * queue item for patient with UUID {@code patientId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code patientId}.
    */
@@ -401,6 +417,6 @@ public class AuthorizationConfiguration {
           + " && "
           + SPEL_HAS_PERMISSION_SUBMIT_TEST
           + " && "
-          + SPEL_CAN_VIEW_TEST_ORDER_OF_PATIENT)
+          + SPEL_CAN_VIEW_QUEUE_ITEM_FOR_PATIENT)
   public @interface RequirePermissionSubmitTestForPatient {}
 }
