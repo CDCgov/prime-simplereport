@@ -6,7 +6,7 @@ interface Props<T> {
   field: keyof T;
   formObject: T;
   label: string;
-  className: string;
+  className?: string;
   onChange: (field: keyof T) => (value: string) => void;
   validate: (field: keyof T) => Promise<void>;
   getValidationStatus: (name: keyof T) => "error" | undefined;
