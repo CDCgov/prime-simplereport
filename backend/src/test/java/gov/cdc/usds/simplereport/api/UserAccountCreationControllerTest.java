@@ -8,17 +8,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import gov.cdc.usds.simplereport.api.apiuser.UserAccountCreationController;
 import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
+import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
+import javax.servlet.http.HttpSession;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+@Import(DemoOktaAuthentication.class)
 @WebMvcTest(
     controllers = UserAccountCreationController.class,
     includeFilters =
@@ -33,6 +39,23 @@ class UserAccountCreationControllerTest {
 
   @Autowired private MockMvc _mockMvc;
 
+  @Autowired private DemoOktaAuthentication _oktaAuth;
+
+  private static final String VALID_AUTH_TOKEN = "validAuthenticationToken";
+
+  private static final String VALID_PASSWORD_REQUEST = "{\"password\":\"superStrongPassword!\"}";
+
+  @BeforeEach
+  public void setup() {
+    _oktaAuth.reset();
+    _oktaAuth.addAuthenticationToken(VALID_AUTH_TOKEN);
+  }
+
+  @AfterEach
+  public void teardown() {
+    _oktaAuth.reset();
+  }
+
   @Test
   void setPasswordIsOk() throws Exception {
     MockHttpServletRequestBuilder builder =
@@ -40,37 +63,52 @@ class UserAccountCreationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .content("{}");
+            .header("authorization", VALID_AUTH_TOKEN)
+            .content(VALID_PASSWORD_REQUEST);
 
     this._mockMvc.perform(builder).andExpect(status().isOk());
   }
 
   @Test
   void setPassword_worksAsExpectedWithMultipleSessions() throws Exception {
-    MockHttpServletRequestBuilder builder =
+    MockHttpServletRequestBuilder firstBuilder =
         post(ResourceLinks.USER_SET_PASSWORD)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .content("{}");
+            .header("authorization", VALID_AUTH_TOKEN)
+            .content(VALID_PASSWORD_REQUEST);
 
-    String firstRequest =
+    String secondValidPasswordRequest = "{\"password\":\"secondSuperStrongPassword!?\"}";
+    String secondValidAuthToken = "anotherValidAuthToken";
+
+    _oktaAuth.addAuthenticationToken(secondValidAuthToken);
+
+    MockHttpServletRequestBuilder secondBuilder =
+        post(ResourceLinks.USER_SET_PASSWORD)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .header("authorization", secondValidAuthToken)
+            .content(secondValidPasswordRequest);
+
+    HttpSession firstSession =
         this._mockMvc
-            .perform(builder)
+            .perform(firstBuilder)
             .andExpect(status().isOk())
             .andReturn()
-            .getResponse()
-            .getContentAsString();
+            .getRequest()
+            .getSession(false);
 
-    String secondRequest =
+    HttpSession secondSession =
         this._mockMvc
-            .perform(builder)
+            .perform(secondBuilder)
             .andExpect(status().isOk())
             .andReturn()
-            .getResponse()
-            .getContentAsString();
+            .getRequest()
+            .getSession(false);
 
-    assertThat(firstRequest).isNotEqualTo(secondRequest);
+    assertThat(firstSession.getId()).isNotEqualTo(secondSession.getId());
   }
 
   @Test
@@ -94,7 +132,8 @@ class UserAccountCreationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .content("{}")
+            .header("authorization", VALID_AUTH_TOKEN)
+            .content(VALID_PASSWORD_REQUEST)
             .session(session);
 
     MockHttpServletRequestBuilder setRecoveryQuestionBuilder =
@@ -105,21 +144,21 @@ class UserAccountCreationControllerTest {
             .content("{}")
             .session(session);
 
-    String setPasswordResponse =
+    HttpSession setPasswordResponse =
         this._mockMvc
             .perform(setPasswordBuilder)
             .andExpect(status().isOk())
             .andReturn()
-            .getResponse()
-            .getContentAsString();
+            .getRequest()
+            .getSession(false);
 
-    String setRecoveryQuestionResponse =
+    HttpSession setRecoveryQuestionResponse =
         this._mockMvc
             .perform(setRecoveryQuestionBuilder)
             .andExpect(status().isOk())
             .andReturn()
-            .getResponse()
-            .getContentAsString();
+            .getRequest()
+            .getSession(false);
 
     assertEquals(setPasswordResponse, setRecoveryQuestionResponse);
   }
