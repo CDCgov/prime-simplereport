@@ -125,9 +125,9 @@ const ManagePhoneNumbers: React.FC<Props> = ({
               errors={errors[idx] || {}}
             />
             {!isPrimary && (
-              <div className="flex-align-self-end margin-bottom-1 margin-left-105">
+              <div className="flex-align-self-end">
                 <button
-                  className="usa-button--unstyled"
+                  className="usa-button--unstyled padding-105 height-5"
                   onClick={() => onPhoneNumberRemove(idx)}
                 >
                   <FontAwesomeIcon icon={"trash"} className={"text-error"} />
