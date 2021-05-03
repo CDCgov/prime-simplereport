@@ -113,6 +113,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
         <div key={idx}>
           <div className="display-flex">
             <Input
+              className="flex-fill"
               field="number"
               label={
                 isPrimary ? "Primary phone number" : "Additional phone number"
