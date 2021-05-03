@@ -9,10 +9,7 @@ mutation createPersonEntry(
     $city: String = "Winterfell",
     $state: String = "NY",
     $zipCode: String = "00000",
-    $telephone: PhoneNumberInput = {
-      number: "(900)-GOT-STUBBLE",
-      type: "MOBILE"
-    }
+    $telephone: String = "(900)-GOT-STUBBLE",
     $role: String = "staff",
     $flagCongregate: Boolean = true,
     $flagHealthcare: Boolean = false,
@@ -28,7 +25,10 @@ mutation createPersonEntry(
     city: $city
     state: $state
     zipCode: $zipCode
-    phoneNumbers: [$telephone]
+    phoneNumbers: [{
+      number: $telephone
+      type: "MOBILE"
+    }]
     role: $role
     residentCongregateSetting: $flagCongregate
     employedInHealthcare: $flagHealthcare

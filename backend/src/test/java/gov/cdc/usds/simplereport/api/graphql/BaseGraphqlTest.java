@@ -268,15 +268,9 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
             .put("firstName", firstName)
             .put("lastName", lastName)
             .put("birthDate", birthDate)
+            .put("telephone", phone)
             .put("lookupId", lookupId)
-            .put("facilityId", facilityId.map(UUID::toString).orElse(null))
-            .set(
-                "phoneNumbers",
-                JsonNodeFactory.instance
-                    .arrayNode()
-                    .addObject()
-                    .put("number", phone)
-                    .put("type", "MOBILE"));
+            .put("facilityId", facilityId.map(UUID::toString).orElse(null));
     return runQuery("add-person", variables, expectedError.orElse(null));
   }
 
