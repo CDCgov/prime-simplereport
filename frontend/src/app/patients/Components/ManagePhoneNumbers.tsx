@@ -151,15 +151,13 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   return (
     <div className="usa-form">
       {generatePhoneNumberRows()}
-      <div className="">
-        <Button
-          className="margin-top-2"
-          onClick={onAddPhoneNumber}
-          variant="unstyled"
-          label="Add another number"
-          icon="plus"
-        />
-      </div>
+      <Button
+        className="margin-top-2"
+        onClick={onAddPhoneNumber}
+        variant="unstyled"
+        label="Add another number"
+        icon="plus"
+      />
     </div>
   );
 };
