@@ -38,7 +38,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 0.14.10
+          terraform_version: 0.15.1
       - name: Terraform Init
         run: make init-${{ env.DEPLOY_ENV }}
       - name: Azure deploy Api
