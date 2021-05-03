@@ -25,7 +25,7 @@ jobs:
     needs: docker-build
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: ./ops
     env:
       ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
@@ -40,23 +40,19 @@ jobs:
         with:
           terraform_version: 0.14.10
       - name: Terraform Init
-        working-directory: ${{ github.workspace }}/ops/${{ env.DEPLOY_ENV }}
-        run: terraform init
+        run: make init-${{ env.DEPLOY_ENV }}
       - name: Azure deploy Api
-        working-directory: ${{ github.workspace }}/ops/${{ env.DEPLOY_ENV }}
-        run: terraform apply -auto-approve -var="acr_image_tag=${GITHUB_SHA::7}" -target="module.simple_report_api"
+        run: make deploy-${{ env.DEPLOY_ENV }}-api
       - name: Wait for staging deploy to complete
-        working-directory: ${{ github.workspace }}/ops
         timeout-minutes: 10
         run: make wait-for-${{ env.DEPLOY_ENV }}
       - name: Promote staging to production
-        working-directory: ${{ github.workspace }}/ops
         run: make promote-${{ env.DEPLOY_ENV }}
   deploy-frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2.1.5
         with:
           node-version: "14"
       - uses: azure/login@v1
