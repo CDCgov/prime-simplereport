@@ -1817,3 +1817,51 @@ databaseChangeLog:
           sql: |
             REVOKE ALL PRIVILEGES ON SCHEMA ${database.defaultSchemaName} FROM ${noPhiUsername};
             REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA ${database.defaultSchemaName} FROM ${noPhiUsername};
+  - changeSet:
+      id: add-patient-registration-link-table
+      author: nicholas.a.scialli@omb.eop.gov
+      comment: Add a table that stores facility- or organization-specific patient registration links.
+      changes:
+        - createTable:
+            tableName: patient_registration_link
+            remarks: This table stores unique registration links associated with a facility or organization.
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+              - column:
+                  name: patient_registration_link
+                  remarks: The unique link
+                  type: *string
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: facility_id
+                  type: *idtype
+                  remarks: The facility associated with the link
+                  constraints:
+                    nullable: true
+                    unique: true
+                    foreignKeyName: fk__link__facility
+                    references: facility
+              - column:
+                  name: organization_id
+                  type: *idtype
+                  remarks: The organization associated with the link
+                  constraints:
+                    nullable: true
+                    unique: true
+                    foreignKeyName: fk__link__organization
+                    references: organization
+              - column: &soft_delete_column
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
+        - sql:
+            remarks: Add constraint to allow for a facility or an organization.
+            sql: ALTER TABLE patient_registration_link ADD CONSTRAINT facility_or_organization CHECK (num_nonnulls(facility_id, organization_id) = 1)
