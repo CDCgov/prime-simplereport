@@ -156,7 +156,7 @@
     "babel-loader": "8.1.0",
     "chromedriver": "^88.0.0",
     "dayjs": "^1.10.4",
-    "eslint-config-prettier": "^8.1.0",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-graphql": "^4.0.0",
     "eslint-plugin-import": "^2.22.1",
     "faker": "^5.5.3",
