@@ -111,44 +111,38 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 
       return (
         <div key={idx}>
-          <div className="grid-row">
-            <div className={isPrimary ? "grid-col-12" : "grid-col-10"}>
-              <Input
-                field="number"
-                label={
-                  isPrimary ? "Primary phone number" : "Additional phone number"
-                }
-                required={isPrimary}
-                formObject={phoneNumber}
-                validate={(field) => validateField(idx, field)}
-                getValidationStatus={() => validationStatus(idx, "number")}
-                onChange={(field) => (value) => onPhoneNumberChange(idx, value)}
-                errors={errors[idx] || {}}
-              />
-            </div>
+          <div className="display-flex">
+            <Input
+              field="number"
+              label={
+                isPrimary ? "Primary phone number" : "Additional phone number"
+              }
+              required={isPrimary}
+              formObject={phoneNumber}
+              validate={(field) => validateField(idx, field)}
+              getValidationStatus={() => validationStatus(idx, "number")}
+              onChange={(field) => (value) => onPhoneNumberChange(idx, value)}
+              errors={errors[idx] || {}}
+            />
             {!isPrimary && (
-              <div className="grid-col-2">
+              <div className="flex-align-self-end">
                 <button
-                  className="usa-button--unstyled"
+                  className="usa-button--unstyled padding-105 height-5"
                   onClick={() => onPhoneNumberRemove(idx)}
                 >
-                  <FontAwesomeIcon
-                    icon={"trash"}
-                    className={"prime-red-icon"}
-                  />
+                  <FontAwesomeIcon icon={"trash"} className={"text-error"} />
                 </button>
               </div>
             )}
           </div>
-          <div className="grid-row">
-            <RadioGroup
-              legend="Phone type"
-              buttons={PHONE_TYPE_VALUES}
-              selectedRadio={phoneNumber.type}
-              required={isPrimary}
-              onChange={(e) => onPhoneTypeChange(idx, e)}
-            />
-          </div>
+          <RadioGroup
+            className="margin-top-3"
+            legend="Phone type"
+            buttons={PHONE_TYPE_VALUES}
+            selectedRadio={phoneNumber.type}
+            required={isPrimary}
+            onChange={(e) => onPhoneTypeChange(idx, e)}
+          />
         </div>
       );
     });
@@ -157,14 +151,13 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   return (
     <div className="usa-form">
       {generatePhoneNumberRows()}
-      <div className="usa-card__footer">
-        <Button
-          onClick={onAddPhoneNumber}
-          variant="unstyled"
-          label="Add another number"
-          icon="plus"
-        />
-      </div>
+      <Button
+        className="margin-top-2"
+        onClick={onAddPhoneNumber}
+        variant="unstyled"
+        label="Add another number"
+        icon="plus"
+      />
     </div>
   );
 };
