@@ -1800,7 +1800,7 @@ databaseChangeLog:
                     type: int
                     remarks: The maximum inactive interval time before a session times out and is invalidated.
                     constraints: 
-                      nullable: facilities
+                      nullable: false
                 - column:
                     name: expiry_time
                     type: DATETIME
