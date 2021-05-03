@@ -34,7 +34,6 @@ export const Input = <T extends { [key: string]: any }>({
   const [inputErrors, setErrors] = useState(errors);
 
   useEffect(() => {
-    console.log("setting input errors...");
     setErrors(errors);
   }, [errors]);
 
