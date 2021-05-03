@@ -9,6 +9,15 @@ import { accountCreationSteps } from "../../../config/constants";
 
 export const MfaSelect = () => {
   const [mfaOption, setMfaOption] = useState("");
+  const [mfaOptionError, setMfaOptionError] = useState("");
+
+  const validateMfaOption = () => {
+    if (mfaOption === "") {
+      setMfaOptionError("Select an authentication option");
+    } else {
+      setMfaOptionError("");
+    }
+  };
 
   return (
     <CardBackground>
@@ -20,7 +29,8 @@ export const MfaSelect = () => {
         />
         <RadioGroup
           name="addressSelect"
-          hintText="Add a second layer of security to protect your account."
+          legend="Add a second layer of security to protect your account."
+          required
           buttons={[
             {
               value: "SMS",
@@ -38,13 +48,21 @@ export const MfaSelect = () => {
             },
           ]}
           selectedRadio={mfaOption}
+          errorMessage={mfaOptionError}
+          validationStatus={mfaOptionError ? "error" : undefined}
+          onBlur={validateMfaOption}
           onChange={setMfaOption}
           // onBlur={validate}
           // validationStatus={error ? "error" : undefined}
           variant="tile"
           // errorMessage={error ? ERROR_MESSAGE : undefined}
         />
-        <Button className="margin-top-3" label={"Continue"} type={"submit"} />
+        <Button
+          className="margin-top-3"
+          label={"Continue"}
+          type={"submit"}
+          onClick={validateMfaOption}
+        />
       </Card>
       <p className="margin-top-5">
         <a href="#0">Return to previous step</a>
