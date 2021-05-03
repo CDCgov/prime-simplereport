@@ -340,7 +340,7 @@ const QueueItem: any = ({
           dateTested: shouldUseCurrentDateTime() ? null : dateTested,
         },
       })
-        .then(testResultsSubmitted)
+        .then(testResultsSubmitted, () => {})
         .then(refetchQueue)
         .then(() => removeTimer(internalId))
         .catch((error) => {
