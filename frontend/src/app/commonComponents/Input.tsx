@@ -6,6 +6,7 @@ interface Props<T> {
   field: keyof T;
   formObject: T;
   label: string;
+  className: string;
   onChange: (field: keyof T) => (value: string) => void;
   validate: (field: keyof T) => Promise<void>;
   getValidationStatus: (name: keyof T) => "error" | undefined;
@@ -19,6 +20,7 @@ export const Input = <T extends { [key: string]: any }>({
   field,
   formObject,
   label,
+  className,
   onChange,
   validate,
   getValidationStatus,
@@ -49,6 +51,7 @@ export const Input = <T extends { [key: string]: any }>({
       }}
       validationStatus={getValidationStatus(field)}
       errorMessage={inputErrors[field]}
+      className={className}
       type={type}
       required={required}
       disabled={disabled}
