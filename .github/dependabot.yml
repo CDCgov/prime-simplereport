@@ -16,8 +16,6 @@ updates:
     directory: /backend
     schedule:
       interval: "daily"
-    # Open PR limit only affects non-security updates
-    open-pull-requests-limit: 0
     labels:
       - "Backend"
       - "DevOps"
@@ -28,8 +26,6 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    # Open PR limit only affects non-security updates
-    open-pull-requests-limit: 0
     labels:
       - "DevOps"
       - "Security"
