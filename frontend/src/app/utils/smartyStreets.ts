@@ -1,5 +1,7 @@
 import { core, usStreet } from "smartystreets-javascript-sdk";
 
+import { toLowerStripWhitespace } from "./text";
+
 class SmartyStreetsError extends Error {
   constructor(message: string) {
     super(message);
@@ -55,3 +57,27 @@ export const getBestSuggestion = async (
     console.error("Unable to validate address:", error.message);
   }
 };
+
+export function suggestionIsCloseEnough(
+  original: Address,
+  suggested: Address | undefined
+): boolean {
+  if (typeof suggested === "undefined") {
+    return false;
+  }
+
+  const fields: (keyof Address)[] = ["city", "state", "street", "streetTwo"];
+  for (const field of fields) {
+    if (
+      toLowerStripWhitespace(original[field]) !==
+      toLowerStripWhitespace(suggested[field])
+    ) {
+      return false;
+    }
+  }
+  if (original.zipCode.substr(0, 5) !== suggested.zipCode.substr(0, 5)) {
+    return false;
+  }
+
+  return true;
+}

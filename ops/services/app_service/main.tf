@@ -1,11 +1,16 @@
 locals {
-  all_app_settings = merge(var.app_settings, {
-    "DOCKER_REGISTRY_SERVER_PASSWORD" = data.terraform_remote_state.global.outputs.acr_simeplereport_admin_password
-    "DOCKER_REGISTRY_SERVER_URL"      = "https://${data.terraform_remote_state.global.outputs.acr_simeplereport_name}.azurecr.io"
-    "DOCKER_REGISTRY_SERVER_USERNAME" = data.terraform_remote_state.global.outputs.acr_simeplereport_name
-    "WEBSITES_PORT"                   = "8080"
-    "WEBSITE_DNS_SERVER"              = "168.63.129.16" # https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#azure-dns-private-zones
-    "WEBSITE_VNET_ROUTE_ALL"          = "1"
+  all_app_settings = merge(var.app_settings,
+    {
+      for k, v in var.deploy_info : join("_", ["INFO", "DEPLOY", upper(k)]) => v
+      if v != ""
+    },
+    {
+      "DOCKER_REGISTRY_SERVER_PASSWORD" = data.terraform_remote_state.global.outputs.acr_simeplereport_admin_password
+      "DOCKER_REGISTRY_SERVER_URL"      = "https://${data.terraform_remote_state.global.outputs.acr_simeplereport_name}.azurecr.io"
+      "DOCKER_REGISTRY_SERVER_USERNAME" = data.terraform_remote_state.global.outputs.acr_simeplereport_name
+      "WEBSITES_PORT"                   = "8080"
+      "WEBSITE_DNS_SERVER"              = "168.63.129.16" # https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#azure-dns-private-zones
+      "WEBSITE_VNET_ROUTE_ALL"          = "1"
   })
 }
 

@@ -7,4 +7,6 @@
 node_modules
 *.swp
 *.swo
+*.orig
+*.rej
 /.env

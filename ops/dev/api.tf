@@ -15,6 +15,15 @@ module "simple_report_api" {
   tenant_id        = data.azurerm_client_config.current.tenant_id
   https_only       = true
 
+  deploy_info = {
+    env           = "dev",
+    time          = var.deploy_timestamp,
+    tag           = var.deploy_tag,
+    workflow_name = var.deploy_workflow,
+    workflow_run  = var.deploy_runnumber,
+    by            = var.deploy_actor
+  }
+
   app_settings = {
     SPRING_PROFILES_ACTIVE                = "azure-dev"
     SPRING_DATASOURCE_URL                 = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sr_dev_db_jdbc.id})"

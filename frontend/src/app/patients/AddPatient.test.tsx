@@ -17,6 +17,7 @@ const mockStore = configureStore([]);
 
 jest.mock("../utils/smartyStreets", () => ({
   getBestSuggestion: jest.fn(),
+  suggestionIsCloseEnough: () => false,
 }));
 
 const fillOutForm = (
