@@ -27,7 +27,10 @@ mutation updatePatient(
     city: $city
     state: $state
     zipCode: $zipCode
-    telephone: $telephone
+     phoneNumbers: [{
+      number: $telephone
+      type: "MOBILE"
+    }]
     role: $role
     residentCongregateSetting: $flagCongregate
     employedInHealthcare: $flagHealthcare
