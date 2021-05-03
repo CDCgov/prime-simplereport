@@ -123,6 +123,10 @@ public class TestDataFactory {
 
   public Person createMinimalPerson(Organization org, Facility fac, PersonName names) {
     Person p = new Person(names, org, fac);
+    _personRepo.save(p);
+    PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, "503-867-5309");
+    _phoneNumberRepo.save(pn);
+    p.setPrimaryPhone(pn);
     return _personRepo.save(p);
   }
 
@@ -152,7 +156,7 @@ public class TestDataFactory {
             false,
             false);
     _personRepo.save(p);
-    PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, "503-867-5309");
+    PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, telephone);
     _phoneNumberRepo.save(pn);
     p.setPrimaryPhone(pn);
     return _personRepo.save(p);
