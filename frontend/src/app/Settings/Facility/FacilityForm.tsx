@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { Prompt } from "react-router-dom";
 
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import Alert from "../../commonComponents/Alert";

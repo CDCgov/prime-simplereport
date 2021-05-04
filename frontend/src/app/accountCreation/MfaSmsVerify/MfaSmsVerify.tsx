@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import TextInput from "../../commonComponents/TextInput";
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 

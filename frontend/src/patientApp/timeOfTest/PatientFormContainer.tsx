@@ -9,7 +9,7 @@ import PersonForm from "../../app/patients/Components/PersonForm";
 import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";
 import { showNotification } from "../../app/utils";
 import Alert from "../../app/commonComponents/Alert";
-import Button from "../../app/commonComponents/Button";
+import Button from "../../app/commonComponents/Button/Button";
 
 const PatientFormContainer = () => {
   const history = useHistory();
