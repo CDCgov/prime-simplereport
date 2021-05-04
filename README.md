@@ -343,7 +343,7 @@ Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/rele
 6. Add a release title `Revert to ${version_tag}`
 7. Add a description briefly explaining why the revert is needed
 8. Click publish release
-9. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`
+9. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done by going to `/app/static/commit.txt` and `/api/actuator/info`
 
 
 ### Deploy With Action
