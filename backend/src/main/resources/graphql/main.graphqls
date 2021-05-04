@@ -335,7 +335,8 @@ type Mutation {
     city: String
     state: String!
     zipCode: String!
-    phoneNumbers: [PhoneNumberInput!]!
+    telephone: String
+    phoneNumbers: [PhoneNumberInput!]
     role: String
     email: String
     county: String
@@ -366,7 +367,8 @@ type Mutation {
         regexp: "[0-9]{5}(-[0-9]{4})?"
         message: "Use ZIP or ZIP+4 format"
       )
-    phoneNumbers: [PhoneNumberInput!]!
+    telephone: String
+    phoneNumbers: [PhoneNumberInput!]
     role: String @Size(min: 0, max: 32)
     email: String @Size(min: 3, max: 254)
     county: String
