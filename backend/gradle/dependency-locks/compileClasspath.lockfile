@@ -134,7 +134,6 @@ org.springframework.security:spring-security-oauth2-core:5.4.2
 org.springframework.security:spring-security-oauth2-jose:5.4.2
 org.springframework.security:spring-security-oauth2-resource-server:5.4.2
 org.springframework.security:spring-security-web:5.4.2
-org.springframework.session:spring-session-core:2.4.1
 org.springframework:spring-aop:5.3.2
 org.springframework:spring-aspects:5.3.2
 org.springframework:spring-beans:5.3.2

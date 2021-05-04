@@ -50,7 +50,6 @@ dependencies {
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.1'
 
     // SpringSession dependencies
-    implementation 'org.springframework.session:spring-session-core'
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
 
     // App insights instrumentation
@@ -96,8 +95,8 @@ configurations {
         resolutionStrategy.activateDependencyLocking()
     }
     runtimeClasspath {
-        resolutionStrategy.activateDependencyLocking()
-    }
+		resolutionStrategy.activateDependencyLocking()
+	}
 }
 
 checkstyleTest {
