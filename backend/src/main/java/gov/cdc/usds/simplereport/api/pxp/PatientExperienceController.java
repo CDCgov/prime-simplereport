@@ -144,7 +144,7 @@ public class PatientExperienceController {
       @RequestBody PxpRegistrationRequestWrapper<Void> body, HttpServletRequest request) {
     String slug = body.getPatientRegistrationLink();
     PatientRegistrationLink link = prls.getPatientRegistrationLink(slug);
-    if(!Objects.isNull(link.getFacility())) {
+    if (!Objects.isNull(link.getFacility())) {
       return link.getFacility().getFacilityName();
     }
     return link.getOrganization().getOrganizationName();

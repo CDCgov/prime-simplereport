@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 // NOTE: as of today, only those methods exposed to graphql endpoints have method-level security.
 // We will likely want to want security for the others in the near future.
-@Service("patientLinkService")
+@Service("patientRegistrationLinkService")
 @Transactional(readOnly = false)
 public class PatientRegistrationLinkService {
 
