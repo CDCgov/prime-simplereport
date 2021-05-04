@@ -43,7 +43,8 @@ class UserAccountCreationControllerTest {
 
   @Autowired private DemoOktaAuthentication _oktaAuth;
 
-  private static final String VALID_AUTH_TOKEN = "validAuthenticationToken";
+  private static final String VALID_ACTIVATION_TOKEN = "validActivationToken";
+  private static final String STATE_TOKEN_ATTR_NAME = "stateToken";
 
   private static final String VALID_PASSWORD_REQUEST = "{\"password\":\"superStrongPassword!\"}";
 
@@ -64,7 +65,7 @@ class UserAccountCreationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .header("authorization", VALID_AUTH_TOKEN)
+            .header("authorization", VALID_ACTIVATION_TOKEN)
             .header("X-Forwarded-For", "1.1.1.1")
             .header("User-Agent", "Chrome")
             .content(VALID_PASSWORD_REQUEST);
@@ -81,11 +82,12 @@ class UserAccountCreationControllerTest {
             .characterEncoding("UTF-8")
             .content(VALID_PASSWORD_REQUEST);
 
-    Exception exception = assertThrows(
-        Exception.class,
-        () -> {
-          this._mockMvc.perform(builder);
-        });
+    Exception exception =
+        assertThrows(
+            Exception.class,
+            () -> {
+              this._mockMvc.perform(builder);
+            });
     assertTrue(exception.getMessage().contains("Activation token invalid."));
   }
 
@@ -96,22 +98,22 @@ class UserAccountCreationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .header("authorization", VALID_AUTH_TOKEN)
+            .header("authorization", VALID_ACTIVATION_TOKEN)
             .header("X-Forwarded-For", "1.1.1.1")
             .header("User-Agent", "Chrome")
             .content(VALID_PASSWORD_REQUEST);
 
     String secondValidPasswordRequest = "{\"password\":\"secondSuperStrongPassword!?\"}";
-    String secondValidAuthToken = "anotherValidAuthToken";
+    String secondValidActivationToken = "anotherValidAuthToken";
 
-    _oktaAuth.getStateTokenFromActivationToken(secondValidAuthToken);
+    _oktaAuth.getStateTokenFromActivationToken(secondValidActivationToken);
 
     MockHttpServletRequestBuilder secondBuilder =
         post(ResourceLinks.USER_SET_PASSWORD)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .header("authorization", secondValidAuthToken)
+            .header("authorization", secondValidActivationToken)
             .header("X-Forwarded-For", "1.1.1.1")
             .header("User-Agent", "Chrome")
             .content(secondValidPasswordRequest);
@@ -134,7 +136,7 @@ class UserAccountCreationControllerTest {
 
     assertThat(firstSession.getId()).isNotEqualTo(secondSession.getId());
     assertThat(firstSession.getAttribute("stateToken"))
-        .isEqualTo("stateToken validAuthenticationToken");
+        .isEqualTo("stateToken " + VALID_ACTIVATION_TOKEN);
   }
 
   @Test
@@ -158,7 +160,7 @@ class UserAccountCreationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .header("authorization", VALID_AUTH_TOKEN)
+            .header("authorization", VALID_ACTIVATION_TOKEN)
             .header("X-Forwarded-For", "1.1.1.1")
             .header("User-Agent", "Chrome")
             .content(VALID_PASSWORD_REQUEST)
@@ -190,7 +192,7 @@ class UserAccountCreationControllerTest {
 
     // assert that the state token is propagated to the recovery question session
     assertThat(setRecoveryQuestionResponse.getAttribute("stateToken"))
-        .isEqualTo("stateToken validAuthenticationToken");
+        .isEqualTo("stateToken " + VALID_ACTIVATION_TOKEN);
     assertEquals(setPasswordResponse, setRecoveryQuestionResponse);
   }
 }
