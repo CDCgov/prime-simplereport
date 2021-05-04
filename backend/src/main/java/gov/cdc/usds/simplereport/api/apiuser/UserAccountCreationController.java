@@ -32,7 +32,7 @@ public class UserAccountCreationController {
    * @param session
    * @return the session id (temporary)
    */
-  @PostMapping("/set-password")
+  @PostMapping("/initialize-and-set-password")
   public String setPassword(HttpSession session) {
     return session.getId();
   }
