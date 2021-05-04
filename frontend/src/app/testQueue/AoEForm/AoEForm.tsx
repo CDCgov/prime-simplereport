@@ -9,7 +9,7 @@ import {
   getTestResultDeliveryPreferences,
 } from "../../../patientApp/timeOfTest/constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import FormGroup from "../../commonComponents/FormGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { COVID_RESULTS } from "../../constants";

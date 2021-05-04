@@ -11,7 +11,7 @@ import "./PendingOrganizationsList.scss";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import Checkboxes from "../../commonComponents/Checkboxes";
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 
 export const ORGANIZATIONS_QUERY = gql`
   query GetUnverifiedOrganizations($identityVerified: Boolean) {
