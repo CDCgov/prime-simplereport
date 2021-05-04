@@ -9,7 +9,15 @@ import { accountCreationSteps } from "../../../config/constants";
 
 export const MfaSmsVerify = () => {
   const [code, setCode] = useState("");
-  const [codeError] = useState("");
+  const [codeError, setCodeError] = useState("");
+
+  const validateCode = () => {
+    if (code === "") {
+      setCodeError("Enter your security code");
+    } else {
+      setCodeError("");
+    }
+  };
 
   return (
     <CardBackground>
@@ -30,15 +38,18 @@ export const MfaSmsVerify = () => {
             label={"One-time security code"}
             name={"security-code"}
             type={"tel"}
-            errorMessage="this is an error"
-            validationStatus={codeError ? "error" : undefined}
+            required
             value={code}
+            errorMessage={codeError}
+            validationStatus={codeError ? "error" : undefined}
+            onBlur={validateCode}
             onChange={(evt) => setCode(evt.currentTarget.value)}
           />
           <Button
             className="margin-top-3 flex-align-self-end margin-left-1"
             label={"Verify"}
             type={"submit"}
+            onClick={validateCode}
           />
         </div>
         <Button

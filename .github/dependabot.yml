@@ -6,6 +6,8 @@ updates:
     directory: /frontend
     schedule:
       interval: "daily"
+    # Open PR limit only affects non-security updates
+    open-pull-requests-limit: 0
     labels:
       - "Front end"
       - "Security"
