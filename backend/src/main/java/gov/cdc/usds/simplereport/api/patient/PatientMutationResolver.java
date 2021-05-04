@@ -82,7 +82,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
     List<PhoneNumberInput> backwardsCompatiblePhoneNumbers =
         phoneNumbers != null
             ? phoneNumbers
-            : List.of(new PhoneNumberInput(parsePhoneNumber(telephone)));
+            : List.of(new PhoneNumberInput(parsePhoneNumber(telephone), null));
 
     return _ps.addPatient(
         facilityId,
@@ -140,7 +140,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
     List<PhoneNumberInput> backwardsCompatiblePhoneNumbers =
         phoneNumbers != null
             ? phoneNumbers
-            : List.of(new PhoneNumberInput(parsePhoneNumber(telephone)));
+            : List.of(new PhoneNumberInput(parsePhoneNumber(telephone), null));
     return _ps.updatePatient(
         facilityId,
         patientId,

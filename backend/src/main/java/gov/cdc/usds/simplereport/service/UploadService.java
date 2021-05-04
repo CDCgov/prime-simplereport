@@ -123,7 +123,8 @@ public class UploadService {
             address,
             parsePhoneNumbers(
                 List.of(
-                    new PhoneNumberInput(parsePhoneNumber((getRow(row, "PhoneNumber", true)))))),
+                    new PhoneNumberInput(
+                        parsePhoneNumber((getRow(row, "PhoneNumber", true))), "LANDLINE"))),
             parsePersonRole(getRow(row, "Role", false)),
             parseEmail(getRow(row, "Email", false)),
             parseRaceDisplayValue(getRow(row, "Race", false)),
