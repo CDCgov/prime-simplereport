@@ -27,3 +27,7 @@ variable "tags" {
 variable "mem_threshold" {
   default = 70
 }
+
+variable "cpu_threshold" {
+  default = 70
+}

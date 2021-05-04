@@ -5,6 +5,7 @@ module "metric_alerts" {
   app_service_id      = module.simple_report_api.app_service_id
   rg_name             = data.azurerm_resource_group.rg.name
   tags                = local.management_tags
+  mem_threshold       = 85
 
   action_group_ids = [
     data.terraform_remote_state.global.outputs.slack_alert_action_id,
