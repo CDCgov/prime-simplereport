@@ -43,7 +43,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * machine into a RESET_PASSWORD state.
    * https://developer.okta.com/docs/reference/api/authn/#response-example-for-activation-token-success-user-without-password
    *
-   * @param activationToken: the token passed from Okta when creating a new user.
+   * @param activationToken the token passed from Okta when creating a new user.
    * @param requestingIpAddress the IP address of the user requesting a new account.
    * @param userAgent the user agent of the user requesting a new account.
    * @return The state token affiliated with this request by Okta.
@@ -96,14 +96,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   }
 
   public void setRecoveryQuestions(String question, String answer) {
-    // changeRecoveryQuestion is a method of API user, not AuthenticationClient like
-    // resetting the password.
-    // it requires the user id, password, and question/answer
-    // the user/password information can probably be extracted from setPassword and
-    // passed here, though that likely needs to happen in the REST handler (since it might
-    // involve session ids)
-    // we can track the state token on session ids, but I'm not sure if that alone will be
-    // enough information - is there a way to also store the user somehow? Might be able to set the
-    // user directly as a session attribute?
+    // WIP
   }
 }

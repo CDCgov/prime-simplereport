@@ -12,8 +12,7 @@ public interface OktaAuthentication {
   public String getStateTokenFromActivationToken(
       String activationToken, String requestingIpAddress, String userAgent) throws Exception;
 
-  public String setPassword(String authenticationToken, char[] password)
-      throws AuthenticationException;
+  public String setPassword(String stateToken, char[] password) throws AuthenticationException;
 
   public void setRecoveryQuestions(String recoveryQuestion, String answer);
 }
