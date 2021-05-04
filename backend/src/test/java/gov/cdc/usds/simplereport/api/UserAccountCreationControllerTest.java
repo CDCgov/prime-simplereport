@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -85,7 +86,7 @@ class UserAccountCreationControllerTest {
         () -> {
           this._mockMvc.perform(builder);
         });
-    assertThat(exception.getMessage()).isEqualTo("Activation token invalid.");
+    assertTrue(exception.getMessage().contains("Activation token invalid."));
   }
 
   @Test
