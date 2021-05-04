@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { useLazyQuery } from "@apollo/client";
 
 import Alert from "../../commonComponents/Alert";
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import {
   showNotification,
   displayFullNameInOrder,
