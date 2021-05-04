@@ -103,6 +103,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     // passed here, though that likely needs to happen in the REST handler (since it might
     // involve session ids)
     // we can track the state token on session ids, but I'm not sure if that alone will be
-    // enough information - is there a way to also store the user somehow? Might be able to set the user directly as a session attribute?
+    // enough information - is there a way to also store the user somehow? Might be able to set the
+    // user directly as a session attribute?
   }
 }

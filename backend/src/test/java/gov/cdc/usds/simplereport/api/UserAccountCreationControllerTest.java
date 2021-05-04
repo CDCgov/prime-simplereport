@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,17 +49,12 @@ class UserAccountCreationControllerTest {
   @BeforeEach
   public void setup() throws Exception {
     _oktaAuth.reset();
-    _oktaAuth.getStateTokenFromActivationToken(VALID_AUTH_TOKEN);
   }
 
   @AfterEach
   public void teardown() {
     _oktaAuth.reset();
   }
-
-  // update this test with;
-  // ip and user-agent headers
-  // make sure that the session is set with the state token
 
   @Test
   void setPasswordIsOk() throws Exception {
@@ -68,9 +64,28 @@ class UserAccountCreationControllerTest {
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .header("authorization", VALID_AUTH_TOKEN)
+            .header("X-Forwarded-For", "1.1.1.1")
+            .header("User-Agent", "Chrome")
             .content(VALID_PASSWORD_REQUEST);
 
     this._mockMvc.perform(builder).andExpect(status().isOk());
+  }
+
+  @Test
+  void setPassword_failsWithoutActivationToken() throws Exception {
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.USER_SET_PASSWORD)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(VALID_PASSWORD_REQUEST);
+
+    Exception exception = assertThrows(
+        Exception.class,
+        () -> {
+          this._mockMvc.perform(builder);
+        });
+    assertThat(exception.getMessage()).isEqualTo("Activation token invalid.");
   }
 
   @Test
@@ -81,6 +96,8 @@ class UserAccountCreationControllerTest {
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .header("authorization", VALID_AUTH_TOKEN)
+            .header("X-Forwarded-For", "1.1.1.1")
+            .header("User-Agent", "Chrome")
             .content(VALID_PASSWORD_REQUEST);
 
     String secondValidPasswordRequest = "{\"password\":\"secondSuperStrongPassword!?\"}";
@@ -94,6 +111,8 @@ class UserAccountCreationControllerTest {
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .header("authorization", secondValidAuthToken)
+            .header("X-Forwarded-For", "1.1.1.1")
+            .header("User-Agent", "Chrome")
             .content(secondValidPasswordRequest);
 
     HttpSession firstSession =
@@ -113,6 +132,8 @@ class UserAccountCreationControllerTest {
             .getSession(false);
 
     assertThat(firstSession.getId()).isNotEqualTo(secondSession.getId());
+    assertThat(firstSession.getAttribute("stateToken"))
+        .isEqualTo("stateToken validAuthenticationToken");
   }
 
   @Test
@@ -137,6 +158,8 @@ class UserAccountCreationControllerTest {
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .header("authorization", VALID_AUTH_TOKEN)
+            .header("X-Forwarded-For", "1.1.1.1")
+            .header("User-Agent", "Chrome")
             .content(VALID_PASSWORD_REQUEST)
             .session(session);
 
@@ -164,6 +187,9 @@ class UserAccountCreationControllerTest {
             .getRequest()
             .getSession(false);
 
+    // assert that the state token is propagated to the recovery question session
+    assertThat(setRecoveryQuestionResponse.getAttribute("stateToken"))
+        .isEqualTo("stateToken validAuthenticationToken");
     assertEquals(setPasswordResponse, setRecoveryQuestionResponse);
   }
 }

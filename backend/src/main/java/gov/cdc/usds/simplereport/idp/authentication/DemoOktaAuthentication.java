@@ -31,6 +31,9 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   public String getStateTokenFromActivationToken(
       String activationToken, String requestingIpAddress, String userAgent) throws Exception {
+    if (activationToken == null || activationToken.isEmpty()) {
+      throw new Exception("Activation token invalid.");
+    }
     String stateToken = "stateToken " + activationToken;
     this.validStateTokens.add(stateToken);
     return stateToken;
