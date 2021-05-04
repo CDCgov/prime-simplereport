@@ -1,10 +1,9 @@
 import React from "react";
+import { DatePicker , Form , FormGroup , Label , TextInput } from "@trussworks/react-uswds";
 
-import { DatePicker } from "@trussworks/react-uswds";
-import { Form } from "@trussworks/react-uswds";
-import { FormGroup } from "@trussworks/react-uswds";
-import { Label } from "@trussworks/react-uswds";
-import { TextInput } from "@trussworks/react-uswds";
+
+
+
 
 export default {
   title: "Components/Form controls/Date picker",
@@ -41,7 +40,11 @@ We may find that we want to expose props for custom event handlers or even a ref
   },
 };
 
-export const completeDatePicker = (argTypes): React.ReactElement => (
+export const completeDatePicker = (argTypes: {
+  onSubmit: ((event: React.FormEvent<HTMLFormElement>) => void) &
+    React.FormEventHandler<HTMLFormElement>;
+  disabled: boolean | undefined;
+}): React.ReactElement => (
   <Form onSubmit={argTypes.onSubmit}>
     <FormGroup>
       <Label id="appointment-date-label" htmlFor="appointment-date">
