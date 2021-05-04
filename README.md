@@ -331,7 +331,7 @@ Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/rele
 1. Find the version tag for the release you want to revert to.
 2. Checkout that version and create a new branch
     ```bash
-    $ git checkout
+    $ git checkout ${version_tag}
     ```
 3. Create and publish new branch at that tag
      ```bash
