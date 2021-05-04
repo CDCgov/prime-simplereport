@@ -1156,7 +1156,7 @@ Object {
                       </abbr>
                     </legend>
                     <span
-                      class="usa-hint text-ls-1"
+                      class="usa-hint"
                     >
                       For example: nursing home, group home, prison, jail, or military
                     </span>
@@ -2470,7 +2470,7 @@ Object {
                     </abbr>
                   </legend>
                   <span
-                    class="usa-hint text-ls-1"
+                    class="usa-hint"
                   >
                     For example: nursing home, group home, prison, jail, or military
                   </span>

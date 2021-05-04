@@ -16,6 +16,8 @@ spring:
         default_schema: public # Using the public schema for now, so we don't have to add a manual step to the deploy process
   liquibase:
     default-schema: ${spring.jpa.properties.hibernate.default_schema}
+    parameters:
+      noPhiUsername: simple_report_no_phi
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false

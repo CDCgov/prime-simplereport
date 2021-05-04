@@ -4,62 +4,62 @@ on:
   workflow_dispatch:
 
 env:
-  ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
-  ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
-  ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
-  ACR_ADMIN_USERNAME: ${{ secrets.ACR_ADMIN_USERNAME }}
-  ACR_ADMIN_PASWORD: ${{ secrets.ACR_ADMIN_PASWORD }}
-  ACR_REPO_URL: ${{ secrets.ACR_REPO_URL }}
   DEPLOY_ENV: test
 
 jobs:
-  deploy-backend:
+  docker-build:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./backend
     steps:
       - uses: actions/checkout@v2
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Login to ACR
         run: docker login ${{ secrets.ACR_REPO_URL }} -u ${{ secrets.ACR_ADMIN_USERNAME }} -p ${{ secrets.ACR_ADMIN_PASWORD }}
       - name: Build and push Docker images
-        run: |
-          ./build_and_push.sh
-      - uses: hashicorp/setup-terraform@v1
-      - name: Terraform Init
-        working-directory: ${{ github.workspace }}/ops/${{ env.DEPLOY_ENV }}
-        run: terraform init
-      - name: Azure deploy Api
-        working-directory: ${{ github.workspace }}/ops/${{ env.DEPLOY_ENV }}
-        run: terraform apply -auto-approve -var="acr_image_tag=${GITHUB_SHA::7}" -target="module.simple_report_api.azurerm_app_service.service"
-  deploy-frontend:
+        run: ./build_and_push.sh
+  deploy-backend:
     runs-on: ubuntu-latest
+    needs: docker-build
     defaults:
       run:
-        working-directory: ./frontend
+        working-directory: ./ops
+    env:
+      ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: "14"
-      - name: Install dependencies
-        run: yarn install
-      - name: Build deploy artifact
-        env:
-          REACT_APP_BASE_URL: https://test.simplereport.gov
-          REACT_APP_BACKEND_URL: https://test.simplereport.gov/api
-          PUBLIC_URL: /app/
-          REACT_APP_SMARTY_STREETS_KEY: ${{ secrets.SMARTY_STREETS_KEY }}
-        run: yarn run build
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Deploy frontend app
-        run: az storage blob upload-batch -s build/ -d '$web' --account-name simplereporttestapp --destination-path '/app'
-      - name: Purge CDN
-        run: az cdn endpoint purge --resource-group prime-simple-report-${{ env.DEPLOY_ENV }} --profile-name simple-report-${{ env.DEPLOY_ENV }} --name simple-report-${{ env.DEPLOY_ENV }} --content-paths "/app/*" --no-wait
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 0.15.1
+      - name: Terraform Init
+        run: make init-${{ env.DEPLOY_ENV }}
+      - name: Azure deploy Api
+        run: make deploy-${{ env.DEPLOY_ENV }}-api
+      - name: Wait for staging deploy to complete
+        timeout-minutes: 10
+        run: make wait-for-${{ env.DEPLOY_ENV }}
+      - name: Promote staging to production
+        run: make promote-${{ env.DEPLOY_ENV }}
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.5
+        with:
+          node-version: "14"
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: ./.github/actions/deploy-front-end
+        name: Build and deploy front-end application
+        with:
+          deploy-env: ${{env.DEPLOY_ENV}}
+          smarty-streets-key: ${{ secrets.SMARTY_STREETS_KEY }}

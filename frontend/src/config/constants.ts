@@ -176,3 +176,15 @@ export const urls = {
     process.env.REACT_APP_BASE_URL +
     "resources/using-simplereport/manage-facility-info/find-supported-jurisdictions/",
 };
+
+export const securityQuestions = [
+  "What’s your first pet’s name?",
+  "What’s your favorite book?",
+  "What’s your favorite food?",
+];
+
+export const accountCreationSteps = [
+  { label: "Create your password", value: "0", order: 0 },
+  { label: "Select your security question", value: "1", order: 1 },
+  { label: "Set up authentication", value: "2", order: 2 },
+];

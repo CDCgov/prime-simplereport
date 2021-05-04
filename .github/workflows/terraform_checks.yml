@@ -1,5 +1,4 @@
----
-name: Infra Checks
+name: Terraform Checks
 
 on:
   workflow_dispatch: # because sometimes you just want to force a branch to have tests run
@@ -14,32 +13,33 @@ defaults:
   run:
     working-directory: ./ops
 
-env:
-  ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
-  ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
-  ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
-
 jobs:
-  validation_and_formatting:
+  check-terraform-formatting:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
-
+        with:
+          terraform_version: 0.15.1
       - name: Terraform fmt
-        run: |
-          terraform fmt -check -recursive
+        run: terraform fmt -check -recursive
 
+  check-terraform-validity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 0.15.1
       - name: Terraform Init
         run: |
-          pushd dev; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
-          pushd test; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
-          pushd demo; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
-          pushd stg; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
-          pushd prod; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
-          pushd pentest; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
-          pushd global; echo $PWD && terraform init;
+          pushd dev; pushd persistent; terraform init -backend=false; popd; terraform init -backend=false; popd
+          pushd test; pushd persistent; terraform init -backend=false; popd; terraform init -backend=false; popd
+          pushd demo; pushd persistent; terraform init -backend=false; popd; terraform init -backend=false; popd
+          pushd stg; pushd persistent; terraform init -backend=false; popd; terraform init -backend=false; popd
+          pushd prod; pushd persistent; terraform init -backend=false; popd; terraform init -backend=false; popd
+          pushd pentest; pushd persistent; terraform init -backend=false; popd; terraform init -backend=false; popd
+          pushd global; terraform init -backend=false;
 
       - name: Terraform Validate
         run: |

@@ -9,3 +9,4 @@ coverage
 geckodriver.log
 chromedriver.log
 tests_output/
+storybook-static
