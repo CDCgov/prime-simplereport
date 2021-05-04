@@ -15,8 +15,11 @@ resource "azurerm_monitor_metric_alert" "cpu_util" {
     threshold        = 70
   }
 
-  action {
-    action_group_id = var.action_group_id
+  dynamic "action" {
+    for_each = var.action_group_ids
+    content {
+      action_group_id = action.value
+    }
   }
 }
 
@@ -38,8 +41,11 @@ resource "azurerm_monitor_metric_alert" "mem_util" {
     threshold        = var.mem_threshold
   }
 
-  action {
-    action_group_id = var.action_group_id
+  dynamic "action" {
+    for_each = var.action_group_ids
+    content {
+      action_group_id = action.value
+    }
   }
 }
 
@@ -61,8 +67,11 @@ resource "azurerm_monitor_metric_alert" "http_response_time" {
     threshold        = 1.000 #(1s/1000ms)
   }
 
-  action {
-    action_group_id = var.action_group_id
+  dynamic "action" {
+    for_each = var.action_group_ids
+    content {
+      action_group_id = action.value
+    }
   }
 }
 
@@ -85,8 +94,11 @@ resource "azurerm_monitor_metric_alert" "http_5xx_errors" {
     threshold        = 10
   }
 
-  action {
-    action_group_id = var.action_group_id
+  dynamic "action" {
+    for_each = var.action_group_ids
+    content {
+      action_group_id = action.value
+    }
   }
 }
 
@@ -108,7 +120,10 @@ resource "azurerm_monitor_metric_alert" "http_4xx_errors" {
     threshold        = 10
   }
 
-  action {
-    action_group_id = var.action_group_id
+  dynamic "action" {
+    for_each = var.action_group_ids
+    content {
+      action_group_id = action.value
+    }
   }
 }
