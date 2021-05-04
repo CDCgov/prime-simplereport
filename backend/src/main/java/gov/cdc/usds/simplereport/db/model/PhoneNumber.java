@@ -66,17 +66,15 @@ public class PhoneNumber extends AuditedEntity {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (!(other instanceof PhoneNumber)) {
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    var o = (PhoneNumber) other;
-    if (o.person != null
-        && this.person != null
-        && !o.person.getInternalId().equals(this.person.getInternalId())) {
-      return false;
-    }
-    if (!o.type.equals(this.type)) {
+    PhoneNumber that = (PhoneNumber) o;
+    if (!Objects.equals(type, that.type)) {
       return false;
     }
     try {
@@ -86,7 +84,7 @@ public class PhoneNumber extends AuditedEntity {
               phoneUtil.parse(this.number, "US"), PhoneNumberUtil.PhoneNumberFormat.NATIONAL);
       var b =
           phoneUtil.format(
-              phoneUtil.parse(o.number, "US"), PhoneNumberUtil.PhoneNumberFormat.NATIONAL);
+              phoneUtil.parse(that.number, "US"), PhoneNumberUtil.PhoneNumberFormat.NATIONAL);
       return a.equals(b);
     } catch (NumberParseException e) {
       // this shouldn't happen, but I don't want an upsert to fail because an old phone number,
@@ -95,6 +93,7 @@ public class PhoneNumber extends AuditedEntity {
     }
   }
 
+  @Override
   public int hashCode() {
     return Objects.hash(person, number, type);
   }
