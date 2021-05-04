@@ -9,21 +9,25 @@ import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
 import gov.cdc.usds.simplereport.api.model.AoEQuestions;
 import gov.cdc.usds.simplereport.api.model.PersonUpdate;
+import gov.cdc.usds.simplereport.api.model.pxp.PxpRegistrationRequestWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponse;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.PatientPreferences;
+import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
+import gov.cdc.usds.simplereport.service.PatientRegistrationLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -47,8 +51,6 @@ import org.springframework.web.bind.annotation.RestController;
  * Because of this, every handler method of this controller is required to have an {@link
  * HttpServletRequest} argument named {@code request}.
  */
-@PreAuthorize(
-    "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
 @PostAuthorize("@restAuditLogManager.logRestSuccess(#request, returnObject)")
 @RestController
 @RequestMapping("/pxp")
@@ -59,6 +61,8 @@ public class PatientExperienceController {
   @Autowired private PersonService ps;
 
   @Autowired private PatientLinkService pls;
+
+  @Autowired private PatientRegistrationLinkService prls;
 
   @Autowired private TestOrderService tos;
 
@@ -75,6 +79,8 @@ public class PatientExperienceController {
    * Verify that the patient-provided DOB matches the patient on file for the patient link id. It
    * returns the full patient object if so, otherwise it throws an exception
    */
+  @PreAuthorize(
+      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
   @PutMapping("/link/verify")
   public PxpVerifyResponse getPatientLinkVerify(
       @RequestBody PxpRequestWrapper<Void> body, HttpServletRequest request) {
@@ -89,6 +95,8 @@ public class PatientExperienceController {
     return new PxpVerifyResponse(p, os, te, pp);
   }
 
+  @PreAuthorize(
+      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
   @PutMapping("/patient")
   public Person updatePatient(
       @RequestBody PxpRequestWrapper<PersonUpdate> body, HttpServletRequest request) {
@@ -107,6 +115,8 @@ public class PatientExperienceController {
         person.getPreferredLanguage());
   }
 
+  @PreAuthorize(
+      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
   @PutMapping("/questions")
   public void patientLinkSubmit(
       @RequestBody PxpRequestWrapper<AoEQuestions> body, HttpServletRequest request) {
@@ -125,5 +135,18 @@ public class PatientExperienceController {
 
     ps.updateMyTestResultDeliveryPreference(data.getTestResultDelivery());
     pls.expireMyPatientLink();
+  }
+
+  @PreAuthorize(
+      "@patientRegistrationLinkService.verifyPatientRegistrationLink(#body.getPatientRegistrationLink())")
+  @PutMapping("/register/entity-name")
+  public String getEntityName(
+      @RequestBody PxpRegistrationRequestWrapper<Void> body, HttpServletRequest request) {
+    String slug = body.getPatientRegistrationLink();
+    PatientRegistrationLink link = prls.getPatientRegistrationLink(slug);
+    if(!Objects.isNull(link.getFacility())) {
+      return link.getFacility().getFacilityName();
+    }
+    return link.getOrganization().getOrganizationName();
   }
 }
