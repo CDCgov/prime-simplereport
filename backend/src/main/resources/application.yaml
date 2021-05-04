@@ -78,6 +78,7 @@ simple-report:
       - GET
       - HEAD
       - POST
+      - PUT
 twilio:
   from-number: "+12023014570"
 logging:
