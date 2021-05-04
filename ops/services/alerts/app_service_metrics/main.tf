@@ -1,6 +1,10 @@
+locals {
+  ucfirst_env = title(var.env)
+}
+
 resource "azurerm_monitor_metric_alert" "cpu_util" {
   name                = "${var.env}-api-cpu"
-  description         = "CPU utilization is greater than 70%"
+  description         = "${local.ucfirst_env} CPU utilization is greater than 70%"
   resource_group_name = var.rg_name
   scopes              = [var.app_service_plan_id]
   frequency           = "PT1M"
@@ -25,7 +29,7 @@ resource "azurerm_monitor_metric_alert" "cpu_util" {
 
 resource "azurerm_monitor_metric_alert" "mem_util" {
   name                = "${var.env}-api-mem"
-  description         = "Memory utilization is greater than 70%"
+  description         = "${local.ucfirst_env} Memory utilization is greater than 70%"
   resource_group_name = var.rg_name
   scopes              = [var.app_service_plan_id]
   frequency           = "PT1M"
@@ -51,7 +55,7 @@ resource "azurerm_monitor_metric_alert" "mem_util" {
 
 resource "azurerm_monitor_metric_alert" "http_response_time" {
   name                = "${var.env}-api-http-response"
-  description         = "Network response >= 1000ms(1s)"
+  description         = "${local.ucfirst_env} Network response >= 1000ms(1s)"
   resource_group_name = var.rg_name
   scopes              = [var.app_service_id]
   frequency           = "PT1M"
@@ -78,7 +82,7 @@ resource "azurerm_monitor_metric_alert" "http_response_time" {
 
 resource "azurerm_monitor_metric_alert" "http_5xx_errors" {
   name                = "${var.env}-api-5xx-errors"
-  description         = "Http Server 5xx Errors >= 10"
+  description         = "${local.ucfirst_env} Http Server 5xx Errors >= 10"
   resource_group_name = var.rg_name
   scopes              = [var.app_service_id]
   frequency           = "PT1M"
@@ -104,7 +108,7 @@ resource "azurerm_monitor_metric_alert" "http_5xx_errors" {
 
 resource "azurerm_monitor_metric_alert" "http_4xx_errors" {
   name                = "${var.env}-api-4xx-errors"
-  description         = "Http Server 4xx Errors >= 10"
+  description         = "${local.ucfirst_env} Http Server 4xx Errors >= 10"
   resource_group_name = var.rg_name
   scopes              = [var.app_service_id]
   frequency           = "PT1M"
