@@ -10,8 +10,8 @@ import { accountCreationSteps } from "../../../config/constants";
 
 export const MfaEmail = () => {
   const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [formIsDirty, setFormIsDirty] = useState(false);
+  const [emailError] = useState("");
+  const [formIsDirty] = useState(false);
 
   const validateEmail = () => {
     // setFormIsDirty(true);
