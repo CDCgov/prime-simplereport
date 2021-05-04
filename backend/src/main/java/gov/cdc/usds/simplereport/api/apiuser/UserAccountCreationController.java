@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.api.apiuser;
 
 import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQUEST;
 
-import com.okta.authn.sdk.AuthenticationException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
 import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 import javax.annotation.PostConstruct;
@@ -18,19 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 
 /** Controller used for user account creation. */
-// NOTE: This class is not currently functional; it's a WIP so that the frontend has endpoints to
-// query.
 @RestController
 @RequestMapping(USER_ACCOUNT_REQUEST)
 public class UserAccountCreationController {
   private static final Logger LOG = LoggerFactory.getLogger(UserAccountCreationController.class);
 
   @Autowired private OktaAuthentication _oktaAuth;
-  // private OktaAuthentication _oktaAuth;
-
-  // public UserAccountCreationController(OktaAuthentication oktaAuth) {
-  //   this._oktaAuth = oktaAuth;
-  // }
 
   @PostConstruct
   private void init() {
@@ -39,14 +31,16 @@ public class UserAccountCreationController {
   }
 
   /**
-   * WIP Validates that the requesting user has been sent an invitation to SimpleReport, ensures the
-   * given password meets all requirements, and sets the password in Okta. If the password doesn't
-   * meet requirements, sends a notice back to the frontend.
+   * Validates that the requesting user has been sent an invitation to SimpleReport, ensures the
+   * given password meets all requirements, and sets the password in Okta.
    *
-   * @param session
-   * @return the session id (temporary) Throws oneof AuthenticationException or
-   *     CredentialsException. AuthenticationException if the authorization token is invalid, and
-   *     CredentialsException if the password does not meet Okta standards.
+   * @param UserAccountCreationRequest requestBody contains the password
+   * @param HttpServletRequest request contains all header information, including the activation
+   *     token.
+   * @throws Exception if the activation token is invalid.
+   * @throws AuthenticationException if the state token passed to Okta is invalid, or if the Okta
+   *     state machine is not in a RESET_PASSWORD state.
+   * @throws CredentialsException if the password does not meet Okta standards.
    */
   @PostMapping("/initialize-and-set-password")
   public String setPassword(HttpSession session) {
@@ -61,11 +55,6 @@ public class UserAccountCreationController {
    */
   @PostMapping("/set-recovery-question")
   public String setRecoveryQuestions(HttpSession session) {
-    // for the authorization on this, probably just need to assert that the session exists.
-    // may also be a good idea to put an attribute on the session, something like "authenticated"
-    // the alternative is to use the Okta authorization token again, but that's probably a
-    // one-time-use?
-    // at any rate, we need the session id for something
     return session.getId();
   }
 }

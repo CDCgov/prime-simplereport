@@ -46,15 +46,19 @@ class UserAccountCreationControllerTest {
   private static final String VALID_PASSWORD_REQUEST = "{\"password\":\"superStrongPassword!\"}";
 
   @BeforeEach
-  public void setup() {
+  public void setup() throws Exception {
     _oktaAuth.reset();
-    _oktaAuth.addAuthenticationToken(VALID_AUTH_TOKEN);
+    _oktaAuth.getStateTokenFromActivationToken(VALID_AUTH_TOKEN);
   }
 
   @AfterEach
   public void teardown() {
     _oktaAuth.reset();
   }
+
+  // update this test with;
+  // ip and user-agent headers
+  // make sure that the session is set with the state token
 
   @Test
   void setPasswordIsOk() throws Exception {
@@ -82,7 +86,7 @@ class UserAccountCreationControllerTest {
     String secondValidPasswordRequest = "{\"password\":\"secondSuperStrongPassword!?\"}";
     String secondValidAuthToken = "anotherValidAuthToken";
 
-    _oktaAuth.addAuthenticationToken(secondValidAuthToken);
+    _oktaAuth.getStateTokenFromActivationToken(secondValidAuthToken);
 
     MockHttpServletRequestBuilder secondBuilder =
         post(ResourceLinks.USER_SET_PASSWORD)
