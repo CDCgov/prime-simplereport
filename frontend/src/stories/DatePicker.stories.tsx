@@ -1,9 +1,11 @@
 import React from "react";
-import { DatePicker , Form , FormGroup , Label , TextInput } from "@trussworks/react-uswds";
-
-
-
-
+import {
+  DatePicker,
+  Form,
+  FormGroup,
+  Label,
+  TextInput,
+} from "@trussworks/react-uswds";
 
 export default {
   title: "Components/Form controls/Date picker",
