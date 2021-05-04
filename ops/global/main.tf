@@ -48,3 +48,17 @@ module "insights" {
   rg_name       = data.azurerm_resource_group.rg.name
   tags          = local.management_tags
 }
+
+module "pd_demo" {
+  source                  = "../services/pagerduty"
+  resource_group_name     = data.azurerm_resource_group.rg.name
+  pagerduty_service_name  = "SimpleReport - Demo"
+  action_group_short_name = "SR-NonProd"
+}
+
+module "pd_prod" {
+  source                  = "../services/pagerduty"
+  resource_group_name     = data.azurerm_resource_group.rg.name
+  pagerduty_service_name  = "SimpleReport - Production"
+  action_group_short_name = "SR-Prod"
+}
