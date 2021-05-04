@@ -49,22 +49,6 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
   lookupId: yup.string().nullable(),
   role: yup.mixed().oneOf([...getValues(ROLE_VALUES), "UNKNOWN", "", null]),
   telephone: yup.mixed().optional(),
-  /*
-  phoneNumbers: yup.array().test(function (phoneNumbers) {
-    if (!phoneNumbers) {
-      return false;
-    }
-
-    return phoneNumbers.every((phoneNumber) => {
-      if (!phoneNumber || !phoneNumber.number || !phoneNumber.type) {
-        return false;
-      }
-
-      const number = phoneUtil.parseAndKeepRawInput(phoneNumber.number, "US");
-      return phoneUtil.isValidNumber(number);
-    });
-  }),
-  */
   phoneNumbers: yup.array().test(function (phoneNumbers) {
     // At least one phone number is required
     if (!phoneNumbers || phoneNumbers.length === 0) {
@@ -154,7 +138,6 @@ export const allPersonErrors: Required<PersonErrors> = {
   role: "Role is incorrectly formatted",
   facilityId: "Facility is required",
   birthDate: "Date of birth is missing or incorrectly formatted",
-  telephone: "Phone number is missing or invalid",
   phoneNumbers: "Phone number is missing or invalid",
   email: "Email is missing or incorrectly formatted",
   street: "Street is missing",

@@ -280,50 +280,16 @@ exports[`PatientFormContainer snapshot 1`] = `
             >
               <div>
                 <div
-                  className="grid-row"
+                  className="display-flex"
                 >
                   <div
-                    className="grid-col-12"
+                    className="usa-form-group flex-fill"
                   >
-                    <div
-                      className="usa-form-group"
+                    <label
+                      className="usa-label"
+                      htmlFor="6"
                     >
-                      <label
-                        className="usa-label"
-                        htmlFor="6"
-                      >
-                        Primary phone number
-                        <abbr
-                          className="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                           
-                          *
-                        </abbr>
-                      </label>
-                      <input
-                        aria-required={true}
-                        className="usa-input"
-                        id="6"
-                        name="number"
-                        onBlur={[Function]}
-                        onChange={[Function]}
-                        type="text"
-                        value=""
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="grid-row"
-                >
-                  <fieldset
-                    className="usa-fieldset prime-radios"
-                  >
-                    <legend
-                      className="usa-legend"
-                    >
-                      Phone type
+                      Primary phone number
                       <abbr
                         className="usa-hint usa-hint--required"
                         title="required"
@@ -331,82 +297,104 @@ exports[`PatientFormContainer snapshot 1`] = `
                          
                         *
                       </abbr>
-                    </legend>
-                    <div
-                      className="usa-form-group"
-                    >
-                      <div
-                        className="usa-radio"
-                      >
-                        <input
-                          checked={false}
-                          className="usa-radio__input"
-                          data-required={true}
-                          disabled={false}
-                          id="7-val-MOBILE"
-                          onChange={[Function]}
-                          type="radio"
-                          value="MOBILE"
-                        />
-                        <label
-                          className="usa-radio__label"
-                          htmlFor="7-val-MOBILE"
-                        >
-                          Mobile
-                        </label>
-                      </div>
-                      <div
-                        className="usa-radio"
-                      >
-                        <input
-                          checked={false}
-                          className="usa-radio__input"
-                          data-required={true}
-                          disabled={false}
-                          id="7-val-LANDLINE"
-                          onChange={[Function]}
-                          type="radio"
-                          value="LANDLINE"
-                        />
-                        <label
-                          className="usa-radio__label"
-                          htmlFor="7-val-LANDLINE"
-                        >
-                          Landline
-                        </label>
-                      </div>
-                    </div>
-                  </fieldset>
-                </div>
-              </div>
-              <div
-                className="usa-card__footer"
-              >
-                <button
-                  className="usa-button usa-button--unstyled"
-                  onClick={[Function]}
-                  type="button"
-                >
-                  <svg
-                    aria-hidden="true"
-                    className="svg-inline--fa fa-plus fa-w-14 margin-right-1"
-                    data-icon="plus"
-                    data-prefix="fas"
-                    focusable="false"
-                    role="img"
-                    style={Object {}}
-                    viewBox="0 0 448 512"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-                      fill="currentColor"
-                      style={Object {}}
+                    </label>
+                    <input
+                      aria-required={true}
+                      className="usa-input"
+                      id="6"
+                      name="number"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      type="text"
+                      value=""
                     />
-                  </svg>
-                  Add another number
-                </button>
+                  </div>
+                </div>
+                <fieldset
+                  className="usa-fieldset prime-radios margin-top-3"
+                >
+                  <legend
+                    className="usa-legend"
+                  >
+                    Phone type
+                    <abbr
+                      className="usa-hint usa-hint--required"
+                      title="required"
+                    >
+                       
+                      *
+                    </abbr>
+                  </legend>
+                  <div
+                    className="usa-form-group"
+                  >
+                    <div
+                      className="usa-radio"
+                    >
+                      <input
+                        checked={false}
+                        className="usa-radio__input"
+                        data-required={true}
+                        disabled={false}
+                        id="7-val-MOBILE"
+                        onChange={[Function]}
+                        type="radio"
+                        value="MOBILE"
+                      />
+                      <label
+                        className="usa-radio__label"
+                        htmlFor="7-val-MOBILE"
+                      >
+                        Mobile
+                      </label>
+                    </div>
+                    <div
+                      className="usa-radio"
+                    >
+                      <input
+                        checked={false}
+                        className="usa-radio__input"
+                        data-required={true}
+                        disabled={false}
+                        id="7-val-LANDLINE"
+                        onChange={[Function]}
+                        type="radio"
+                        value="LANDLINE"
+                      />
+                      <label
+                        className="usa-radio__label"
+                        htmlFor="7-val-LANDLINE"
+                      >
+                        Landline
+                      </label>
+                    </div>
+                  </div>
+                </fieldset>
               </div>
+              <button
+                className="usa-button usa-button--unstyled margin-top-2"
+                onClick={[Function]}
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  className="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                  data-icon="plus"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  style={Object {}}
+                  viewBox="0 0 448 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                    fill="currentColor"
+                    style={Object {}}
+                  />
+                </svg>
+                Add another number
+              </button>
             </div>
             <div
               className="usa-form"

@@ -74,8 +74,8 @@ describe("EditPatient", () => {
                 phoneNumbers: [
                   {
                     type: "MOBILE",
-                    number: "(634) 397-4114"
-                  }
+                    number: "(634) 397-4114",
+                  },
                 ],
                 role: "UNKNOWN",
                 email: "foo@bar.com",
@@ -166,8 +166,8 @@ describe("EditPatient", () => {
                 phoneNumbers: [
                   {
                     type: "MOBILE",
-                    number: "(634) 397-4114"
-                  }
+                    number: "(634) 397-4114",
+                  },
                 ],
                 role: "UNKNOWN",
                 email: "foo@bar.com",

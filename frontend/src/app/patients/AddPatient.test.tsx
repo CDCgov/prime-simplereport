@@ -115,11 +115,12 @@ describe("AddPatient", () => {
               city: "Boston",
               state: "MA",
               zipCode: "02115",
+              telephone: null,
               phoneNumbers: [
                 {
                   type: "MOBILE",
-                  number: "617-432-1000"
-                }
+                  number: "617-432-1000",
+                },
               ],
               role: null,
               email: null,
@@ -153,11 +154,12 @@ describe("AddPatient", () => {
               city: "Boston",
               state: "MA",
               zipCode: "02115",
+              telephone: null,
               phoneNumbers: [
                 {
                   type: "MOBILE",
-                  number: "617-432-1000"
-                }
+                  number: "617-432-1000",
+                },
               ],
               role: "STUDENT",
               email: null,

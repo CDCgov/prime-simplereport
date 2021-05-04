@@ -307,48 +307,16 @@ Object {
                   >
                     <div>
                       <div
-                        class="grid-row"
+                        class="display-flex"
                       >
                         <div
-                          class="grid-col-12"
+                          class="usa-form-group flex-fill"
                         >
-                          <div
-                            class="usa-form-group"
+                          <label
+                            class="usa-label"
+                            for="27"
                           >
-                            <label
-                              class="usa-label"
-                              for="27"
-                            >
-                              Primary phone number
-                              <abbr
-                                class="usa-hint usa-hint--required"
-                                title="required"
-                              >
-                                 
-                                *
-                              </abbr>
-                            </label>
-                            <input
-                              aria-required="true"
-                              class="usa-input"
-                              id="27"
-                              name="number"
-                              type="text"
-                              value="(634) 397-4114"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        class="grid-row"
-                      >
-                        <fieldset
-                          class="usa-fieldset prime-radios"
-                        >
-                          <legend
-                            class="usa-legend"
-                          >
-                            Phone type
+                            Primary phone number
                             <abbr
                               class="usa-hint usa-hint--required"
                               title="required"
@@ -356,74 +324,94 @@ Object {
                                
                               *
                             </abbr>
-                          </legend>
-                          <div
-                            class="usa-form-group"
-                          >
-                            <div
-                              class="usa-radio"
-                            >
-                              <input
-                                checked=""
-                                class="usa-radio__input"
-                                data-required="true"
-                                id="28-val-MOBILE"
-                                type="radio"
-                                value="MOBILE"
-                              />
-                              <label
-                                class="usa-radio__label"
-                                for="28-val-MOBILE"
-                              >
-                                Mobile
-                              </label>
-                            </div>
-                            <div
-                              class="usa-radio"
-                            >
-                              <input
-                                class="usa-radio__input"
-                                data-required="true"
-                                id="28-val-LANDLINE"
-                                type="radio"
-                                value="LANDLINE"
-                              />
-                              <label
-                                class="usa-radio__label"
-                                for="28-val-LANDLINE"
-                              >
-                                Landline
-                              </label>
-                            </div>
-                          </div>
-                        </fieldset>
-                      </div>
-                    </div>
-                    <div
-                      class="usa-card__footer"
-                    >
-                      <button
-                        class="usa-button usa-button--unstyled"
-                        type="button"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
-                          data-icon="plus"
-                          data-prefix="fas"
-                          focusable="false"
-                          role="img"
-                          viewBox="0 0 448 512"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-                            fill="currentColor"
+                          </label>
+                          <input
+                            aria-required="true"
+                            class="usa-input"
+                            id="27"
+                            name="number"
+                            type="text"
+                            value="(634) 397-4114"
                           />
-                        </svg>
-                        Add another number
-                      </button>
+                        </div>
+                      </div>
+                      <fieldset
+                        class="usa-fieldset prime-radios margin-top-3"
+                      >
+                        <legend
+                          class="usa-legend"
+                        >
+                          Phone type
+                          <abbr
+                            class="usa-hint usa-hint--required"
+                            title="required"
+                          >
+                             
+                            *
+                          </abbr>
+                        </legend>
+                        <div
+                          class="usa-form-group"
+                        >
+                          <div
+                            class="usa-radio"
+                          >
+                            <input
+                              checked=""
+                              class="usa-radio__input"
+                              data-required="true"
+                              id="28-val-MOBILE"
+                              type="radio"
+                              value="MOBILE"
+                            />
+                            <label
+                              class="usa-radio__label"
+                              for="28-val-MOBILE"
+                            >
+                              Mobile
+                            </label>
+                          </div>
+                          <div
+                            class="usa-radio"
+                          >
+                            <input
+                              class="usa-radio__input"
+                              data-required="true"
+                              id="28-val-LANDLINE"
+                              type="radio"
+                              value="LANDLINE"
+                            />
+                            <label
+                              class="usa-radio__label"
+                              for="28-val-LANDLINE"
+                            >
+                              Landline
+                            </label>
+                          </div>
+                        </div>
+                      </fieldset>
                     </div>
+                    <button
+                      class="usa-button usa-button--unstyled margin-top-2"
+                      type="button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                        data-icon="plus"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      Add another number
+                    </button>
                   </div>
                   <div
                     class="usa-form"
@@ -1711,48 +1699,16 @@ Object {
                 >
                   <div>
                     <div
-                      class="grid-row"
+                      class="display-flex"
                     >
                       <div
-                        class="grid-col-12"
+                        class="usa-form-group flex-fill"
                       >
-                        <div
-                          class="usa-form-group"
+                        <label
+                          class="usa-label"
+                          for="27"
                         >
-                          <label
-                            class="usa-label"
-                            for="27"
-                          >
-                            Primary phone number
-                            <abbr
-                              class="usa-hint usa-hint--required"
-                              title="required"
-                            >
-                               
-                              *
-                            </abbr>
-                          </label>
-                          <input
-                            aria-required="true"
-                            class="usa-input"
-                            id="27"
-                            name="number"
-                            type="text"
-                            value="(634) 397-4114"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      class="grid-row"
-                    >
-                      <fieldset
-                        class="usa-fieldset prime-radios"
-                      >
-                        <legend
-                          class="usa-legend"
-                        >
-                          Phone type
+                          Primary phone number
                           <abbr
                             class="usa-hint usa-hint--required"
                             title="required"
@@ -1760,74 +1716,94 @@ Object {
                              
                             *
                           </abbr>
-                        </legend>
-                        <div
-                          class="usa-form-group"
-                        >
-                          <div
-                            class="usa-radio"
-                          >
-                            <input
-                              checked=""
-                              class="usa-radio__input"
-                              data-required="true"
-                              id="28-val-MOBILE"
-                              type="radio"
-                              value="MOBILE"
-                            />
-                            <label
-                              class="usa-radio__label"
-                              for="28-val-MOBILE"
-                            >
-                              Mobile
-                            </label>
-                          </div>
-                          <div
-                            class="usa-radio"
-                          >
-                            <input
-                              class="usa-radio__input"
-                              data-required="true"
-                              id="28-val-LANDLINE"
-                              type="radio"
-                              value="LANDLINE"
-                            />
-                            <label
-                              class="usa-radio__label"
-                              for="28-val-LANDLINE"
-                            >
-                              Landline
-                            </label>
-                          </div>
-                        </div>
-                      </fieldset>
-                    </div>
-                  </div>
-                  <div
-                    class="usa-card__footer"
-                  >
-                    <button
-                      class="usa-button usa-button--unstyled"
-                      type="button"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
-                        data-icon="plus"
-                        data-prefix="fas"
-                        focusable="false"
-                        role="img"
-                        viewBox="0 0 448 512"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-                          fill="currentColor"
+                        </label>
+                        <input
+                          aria-required="true"
+                          class="usa-input"
+                          id="27"
+                          name="number"
+                          type="text"
+                          value="(634) 397-4114"
                         />
-                      </svg>
-                      Add another number
-                    </button>
+                      </div>
+                    </div>
+                    <fieldset
+                      class="usa-fieldset prime-radios margin-top-3"
+                    >
+                      <legend
+                        class="usa-legend"
+                      >
+                        Phone type
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
+                      </legend>
+                      <div
+                        class="usa-form-group"
+                      >
+                        <div
+                          class="usa-radio"
+                        >
+                          <input
+                            checked=""
+                            class="usa-radio__input"
+                            data-required="true"
+                            id="28-val-MOBILE"
+                            type="radio"
+                            value="MOBILE"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="28-val-MOBILE"
+                          >
+                            Mobile
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
+                        >
+                          <input
+                            class="usa-radio__input"
+                            data-required="true"
+                            id="28-val-LANDLINE"
+                            type="radio"
+                            value="LANDLINE"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="28-val-LANDLINE"
+                          >
+                            Landline
+                          </label>
+                        </div>
+                      </div>
+                    </fieldset>
                   </div>
+                  <button
+                    class="usa-button usa-button--unstyled margin-top-2"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                      data-icon="plus"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 448 512"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    Add another number
+                  </button>
                 </div>
                 <div
                   class="usa-form"

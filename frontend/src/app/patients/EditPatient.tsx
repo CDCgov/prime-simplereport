@@ -60,6 +60,7 @@ const UPDATE_PATIENT = gql`
     $city: String
     $state: String!
     $zipCode: String!
+    $telephone: String
     $phoneNumbers: [PhoneNumberInput!]!
     $role: String
     $lookupId: String
@@ -85,6 +86,7 @@ const UPDATE_PATIENT = gql`
       city: $city
       state: $state
       zipCode: $zipCode
+      telephone: $telephone
       phoneNumbers: $phoneNumbers
       role: $role
       lookupId: $lookupId
@@ -188,6 +190,9 @@ const EditPatient = (props: Props) => {
                   x: PhoneNumber,
                   y: PhoneNumber
                 ) {
+                  // A patient's primary phone number is returned in the
+                  // query as `telephone` and should be the first element
+                  // of the array of phone numbers
                   return x.number === data.patient.telephone
                     ? -1
                     : y.number === data.patient.telephone
