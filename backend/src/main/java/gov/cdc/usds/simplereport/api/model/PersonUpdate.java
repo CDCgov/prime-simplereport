@@ -109,6 +109,7 @@ public class PersonUpdate {
     PersonUpdate that = (PersonUpdate) o;
     return Objects.equals(address, that.address)
         && Objects.equals(telephone, that.telephone)
+        && Objects.equals(phoneNumbers, that.phoneNumbers)
         && role == that.role
         && Objects.equals(email, that.email)
         && Objects.equals(race, that.race)
