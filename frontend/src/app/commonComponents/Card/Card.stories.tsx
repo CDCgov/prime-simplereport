@@ -3,7 +3,7 @@ import { Story, Meta } from "@storybook/react";
 import { Card } from "./Card";
 
 export default {
-  title: "Components/Card",
+  title: "Components/Card/Card",
   component: Card,
   argTypes: {
     logo: { control: "boolean" },
