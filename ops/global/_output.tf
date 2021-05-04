@@ -14,3 +14,11 @@ output "acr_simeplereport_admin_password" {
 output "slack_alert_action_id" {
   value = module.alerting.monitor_group_id
 }
+
+output "pagerduty_demo_action_id" {
+  value = module.pd_demo.monitor_group_id
+}
+
+output "pagerduty_prod_action_id" {
+  value = module.pd_prod.monitor_group_id
+}
