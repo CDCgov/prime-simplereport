@@ -75,10 +75,12 @@ public class Translators {
   private static PhoneType parsePhoneType(String t) {
     String type = parseString(t);
     if (type == null) {
-      throw new IllegalGraphqlArgumentException("Invalid PhoneType received");
+      // TODO: when we no longer require backwards compatibility with an old UI, we can parse this
+      // more strictly
+      return null;
     }
     try {
-      return PhoneType.valueOf(t.toUpperCase());
+      return PhoneType.valueOf(type.toUpperCase());
     } catch (IllegalArgumentException e) {
       throw new IllegalGraphqlArgumentException("Invalid PhoneType received");
     }
