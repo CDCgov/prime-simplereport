@@ -21,18 +21,28 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   private final int ERROR_STATUS_CODE = 403;
   private final int MINIMUM_PASSWORD_LENGTH = 8;
 
-  private HashSet<String> validAuthenticationTokens;
-  private HashMap<String, String> authTokenToPasswordMap;
+  private HashSet<String> validStateTokens;
+  private HashMap<String, String> stateTokenToPasswordMap;
 
   public DemoOktaAuthentication() {
-    this.validAuthenticationTokens = new HashSet<String>();
-    this.authTokenToPasswordMap = new HashMap<String, String>();
+    this.validStateTokens = new HashSet<String>();
+    this.stateTokenToPasswordMap = new HashMap<String, String>();
   }
 
-  public void setPassword(String authenticationToken, char[] password)
-      throws AuthenticationException {
-    if (!this.validAuthenticationTokens.contains(authenticationToken)) {
-      DemoError authError = new DemoError("Authentication token not recognized.");
+  public String getStateTokenFromActivationToken(
+      String activationToken, String requestingIpAddress, String userAgent) throws Exception {
+    String stateToken = "stateToken " + activationToken;
+    this.validStateTokens.add(stateToken);
+    return stateToken;
+  }
+
+  public String getStateTokenFromActivationToken(String activationToken) throws Exception {
+    return getStateTokenFromActivationToken(activationToken, "", "");
+  }
+
+  public String setPassword(String stateToken, char[] password) throws AuthenticationException {
+    if (!this.validStateTokens.contains(stateToken)) {
+      DemoError authError = new DemoError("State token not recognized.");
       throw new AuthenticationException(authError);
     }
     if (password.length < MINIMUM_PASSWORD_LENGTH) {
@@ -46,24 +56,21 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       DemoError passwordError = new DemoError("Password does not contain any special characters.");
       throw new CredentialsException(passwordError);
     }
-    this.authTokenToPasswordMap.put(authenticationToken, String.valueOf(password));
+    this.stateTokenToPasswordMap.put(stateToken, String.valueOf(password));
+    return stateToken;
   }
 
   public void setRecoveryQuestions(String question, String answer) {
     // when recovery question logic is added, implement it here
   }
 
-  public void addAuthenticationToken(String authenticationToken) {
-    this.validAuthenticationTokens.add(authenticationToken);
-  }
-
   public HashMap<String, String> getPasswords() {
-    return this.authTokenToPasswordMap;
+    return this.stateTokenToPasswordMap;
   }
 
   public void reset() {
-    this.validAuthenticationTokens.clear();
-    this.authTokenToPasswordMap.clear();
+    this.validStateTokens.clear();
+    this.stateTokenToPasswordMap.clear();
   }
 
   class DemoError implements Error {

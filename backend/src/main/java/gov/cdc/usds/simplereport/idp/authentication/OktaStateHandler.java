@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
-// import com.okta.authn.sdk.AuthenticationStateHandler;
-
 import com.okta.authn.sdk.AuthenticationStateHandlerAdapter;
 import com.okta.authn.sdk.resource.AuthenticationResponse;
 import com.okta.authn.sdk.resource.AuthenticationStatus;

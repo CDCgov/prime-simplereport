@@ -19,44 +19,41 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void validAuthToken() throws Exception {
-    String authToken = "correct_okta_authentication";
+    String stateToken = _auth.getStateTokenFromActivationToken("valid_activation_token");
     String password = "dummyPassword!";
-    _auth.addAuthenticationToken(authToken);
-    _auth.setPassword(authToken, password.toCharArray());
+    _auth.setPassword(stateToken, password.toCharArray());
     assertThat(_auth.getPasswords().containsValue(password));
   }
 
   @Test
-  void invalidAuthenticationToken() throws Exception {
+  void invalidStateToken() throws Exception {
     String password = "dummyPassword!";
     assertThrows(
         AuthenticationException.class,
         () -> {
-          _auth.setPassword("invalidAuthenticationToken", password.toCharArray());
+          _auth.setPassword("invalidStateToken", password.toCharArray());
         });
   }
 
   @Test
   void passwordTooShort() throws Exception {
-    String authToken = "correct_okta_authentication";
+    String stateToken = _auth.getStateTokenFromActivationToken("valid_activation_token");
     String password = "short";
-    _auth.addAuthenticationToken(authToken);
     assertThrows(
         CredentialsException.class,
         () -> {
-          _auth.setPassword(authToken, password.toCharArray());
+          _auth.setPassword(stateToken, password.toCharArray());
         });
   }
 
   @Test
   void passwordNoSpecialCharacters() throws Exception {
-    String authToken = "correct_okta_authentication";
+    String stateToken = _auth.getStateTokenFromActivationToken("valid_activation_token");
     String password = "longPasswordNoSpecialCharacters";
-    _auth.addAuthenticationToken(authToken);
     assertThrows(
         CredentialsException.class,
         () -> {
-          _auth.setPassword(authToken, password.toCharArray());
+          _auth.setPassword(stateToken, password.toCharArray());
         });
   }
 }
