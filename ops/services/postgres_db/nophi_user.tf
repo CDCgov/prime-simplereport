@@ -6,14 +6,14 @@ locals {
   --host ${azurerm_postgresql_server.db.fqdn} \
   --username ${var.administrator_login}@${azurerm_postgresql_server.db.name} \
   --dbname "${var.db_table}" \
-  --command "DO \$\$ BEGIN CREATE ROLE ${azurerm_key_vault_secret.db_username_no_phi.value} WITH LOGIN NOSUPERUSER ENCRYPTED PASSWORD '${var.nophi_user_password}'; EXCEPTION WHEN DUPLICATE_OBJECT THEN RAISE NOTICE 'not creating simple_report_no_phi role -- it already exists'; END \$\$;"
+  --command "DO \$\$ BEGIN CREATE ROLE ${azurerm_key_vault_secret.db_username_no_phi.value} WITH LOGIN NOSUPERUSER ENCRYPTED PASSWORD '${var.nophi_user_password}'; EXCEPTION WHEN DUPLICATE_OBJECT THEN RAISE NOTICE 'not creating ${azurerm_key_vault_secret.db_username_no_phi.value} role -- it already exists'; END \$\$;"
   EOF
 }
 
 ### The following resource opens the DB firewall for the Github Action runner's IP, adds the simple_report_no_phi user, and then closes the firewall and removes access for that IP.
 ### NOTE: these resources will only trigger if local.grant_command has changed, due to how slowly each CLI operation runs. It's fine to run every single time if we're worried about state divergence.
 
-resource "null_resource" "open_runner_firewall" {
+resource "null_resource" "add_no_phi_user" {
   triggers = {
     grant_command = local.grant_command
   }

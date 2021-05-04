@@ -19,7 +19,10 @@ resource "azurerm_app_service" "metabase" {
     linux_fx_version = "DOCKER|metabase/metabase"
   }
 
-  app_settings = merge(local.app_setting_defaults, var.app_settings_overrides)
+  app_settings = merge(local.app_setting_defaults, {
+    "MB_DB_USER" = "${var.postgres_metabase_username}@${var.postgres_server_name}",
+    "MB_DB_PASS" = var.postgres_metabase_password
+  })
 
   identity {
     type = "SystemAssigned"
@@ -34,7 +37,7 @@ resource "azurerm_app_service" "metabase" {
     }
   }
   depends_on = [
-    azurerm_postgresql_database.metabase
+    null_resource.add_metabase_permissions_for_no_phi_user
   ]
 }
 

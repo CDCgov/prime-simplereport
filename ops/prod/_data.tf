@@ -56,6 +56,16 @@ data "azurerm_key_vault_secret" "metabase_db_uri" {
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
+data "azurerm_key_vault_secret" "postgres_user" {
+  name         = "simple-report-${local.env}-db-username"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "postgres_password" {
+  name         = "simple-report-${local.env}-db-password"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
 data "azurerm_key_vault_secret" "postgres_nophi_user" {
   name         = "simple-report-${local.env}-db-username-no-phi"
   key_vault_id = data.azurerm_key_vault.global.id

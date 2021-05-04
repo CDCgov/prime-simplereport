@@ -3,10 +3,10 @@ module "metabase" {
   name   = "${local.project}-${local.name}-${local.env}-metabase"
   env    = local.env
 
-  app_settings_overrides = {
-    "MB_DB_USER" = "${data.azurerm_key_vault_secret.postgres_nophi_user.value}@${data.terraform_remote_state.persistent_test.outputs.postgres_server_name}"
-    "MB_DB_PASS" = data.azurerm_key_vault_secret.postgres_nophi_password.value
-  }
+  postgres_admin_username    = data.azurerm_key_vault_secret.postgres_user.value
+  postgres_admin_password    = data.azurerm_key_vault_secret.postgres_password.value
+  postgres_metabase_username = data.azurerm_key_vault_secret.postgres_nophi_user.value
+  postgres_metabase_password = data.azurerm_key_vault_secret.postgres_nophi_password.value
 
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
@@ -19,4 +19,5 @@ module "metabase" {
 
   postgres_server_name = data.terraform_remote_state.persistent_test.outputs.postgres_server_name
   postgres_url         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.metabase_db_uri.id})"
+  postgres_server_fqdn = data.terraform_remote_state.persistent_test.outputs.postgres_server_fqdn
 }
