@@ -44,19 +44,18 @@ export type PersonUpdateFields = PartialBy<
 
 const getValues = (options: Option[]) => options.map(({ value }) => value);
 
+export function phoneNumberIsValid(input: any) {
+  if (!input) {
+    return false;
+  }
+  const number = phoneUtil.parseAndKeepRawInput(input, "US");
+  return phoneUtil.isValidNumber(number);
+}
+
 const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
   lookupId: yup.string().nullable(),
   role: yup.mixed().oneOf([...getValues(ROLE_VALUES), "UNKNOWN", "", null]),
-  telephone: yup
-    .string()
-    .test(function (input) {
-      if (!input) {
-        return false;
-      }
-      const number = phoneUtil.parseAndKeepRawInput(input, "US");
-      return phoneUtil.isValidNumber(number);
-    })
-    .required(),
+  telephone: yup.string().test(phoneNumberIsValid).required(),
   email: yup.string().email().nullable(),
   street: yup.string().required(),
   streetTwo: yup.string().nullable(),
