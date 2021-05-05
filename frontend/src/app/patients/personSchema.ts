@@ -138,6 +138,7 @@ export const allPersonErrors: Required<PersonErrors> = {
   role: "Role is incorrectly formatted",
   facilityId: "Facility is required",
   birthDate: "Date of birth is missing or incorrectly formatted",
+  telephone: "Phone number is missing or invalid",
   phoneNumbers: "Phone number is missing or invalid",
   email: "Email is missing or incorrectly formatted",
   street: "Street is missing",
