@@ -57,10 +57,12 @@ public class PhoneNumber extends AuditedEntity {
     return number;
   }
 
+  @JsonIgnore
   public boolean isMobile() {
     return type == PhoneType.MOBILE;
   }
 
+  @JsonIgnore
   public boolean isLandline() {
     return type == PhoneType.LANDLINE;
   }
