@@ -37,6 +37,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -62,15 +63,31 @@ public class LiveOktaRepository implements OktaRepository {
 
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
+      Client client,
+      @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
+      OrganizationExtractor organizationExtractor) {
+    _rolePrefix = authorizationProperties.getRolePrefix();
+    _client = client;
+    try {
+      _app = _client.getApplication(oktaOAuth2ClientId);
+    } catch (ResourceException e) {
+      throw new MisconfiguredApplicationException(
+          "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
+    }
+    _extractor = organizationExtractor;
+  }
+
+  @Autowired
+  public LiveOktaRepository(
+      AuthorizationProperties authorizationProperties,
       OktaClientProperties oktaClientProperties,
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
       OrganizationExtractor organizationExtractor) {
     _rolePrefix = authorizationProperties.getRolePrefix();
-    _client =
-        Clients.builder()
-            .setOrgUrl(oktaClientProperties.getOrgUrl())
-            .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
-            .build();
+    _client = Clients.builder()
+        .setOrgUrl(oktaClientProperties.getOrgUrl())
+        .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
+        .build();
     try {
       _app = _client.getApplication(oktaOAuth2ClientId);
     } catch (ResourceException e) {
