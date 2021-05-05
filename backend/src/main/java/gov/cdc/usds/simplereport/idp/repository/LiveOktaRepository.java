@@ -84,10 +84,11 @@ public class LiveOktaRepository implements OktaRepository {
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
       OrganizationExtractor organizationExtractor) {
     _rolePrefix = authorizationProperties.getRolePrefix();
-    _client = Clients.builder()
-        .setOrgUrl(oktaClientProperties.getOrgUrl())
-        .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
-        .build();
+    _client =
+        Clients.builder()
+            .setOrgUrl(oktaClientProperties.getOrgUrl())
+            .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
+            .build();
     try {
       _app = _client.getApplication(oktaOAuth2ClientId);
     } catch (ResourceException e) {
