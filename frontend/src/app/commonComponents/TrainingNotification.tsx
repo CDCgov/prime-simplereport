@@ -4,7 +4,7 @@ import Modal from "react-modal";
 import logo from "../../img/simplereport-logomark-color.svg";
 
 import Alert from "./Alert";
-import Button from "./Button";
+import Button from "./Button/Button";
 
 const SESSION_IDENTIFIER = "trainingAcknowledged";
 

@@ -29,6 +29,7 @@ https://simplereport.gov/
   - [Deploy](#deploy)
     - [Cloud Environments](#cloud-environments)
     - [Deploy With Release](#deploy-with-release)
+    - [Revert to a Previous Release](#revert-to-a-previous-release)
     - [Deploy With Action](#deploy-with-action)
 
 ## Setup
@@ -316,7 +317,7 @@ Pentest|[/app/static/commit.txt](https://pentest.simplereport.gov/app/static/com
 
 ### Deploy With Release
 
-Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/releases/new) pag
+Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/releases/new) page
 ![release form](https://user-images.githubusercontent.com/80347105/110684538-43187880-81ab-11eb-9793-7cc923956a8b.png)
 
 1. Add a version tag. If the release was `v1` then this release should be `v2`
@@ -324,6 +325,26 @@ Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/rele
 3. If applicable describe some of the changes in detail in the description
 4. Click publish release
 5. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`
+
+### Revert to a Previous Release
+
+1. Find the version tag for the release you want to revert to.
+2. Checkout that version and create a new branch
+    ```bash
+    $ git checkout ${version_tag}
+    ```
+3. Create and publish new branch at that tag
+     ```bash
+    $ git checkout -b revert-to-${version_tag} && git push -u
+    ```
+4. Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/releases/new) page
+5. Add a version tag: `revert-to-${version_tag}`.
+    - If a version has already been reverted to in the past and needs to be again add an counter to the tag: `revert-to-${version_tag}-${X}`
+6. Add a release title `Revert to ${version_tag}`
+7. Add a description briefly explaining why the revert is needed
+8. Click publish release
+9. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done by going to `/app/static/commit.txt` and `/api/actuator/info`
+
 
 ### Deploy With Action
 
