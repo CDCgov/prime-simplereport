@@ -134,6 +134,8 @@ public class PatientExperienceController {
     pls.expireMyPatientLink();
   }
 
+  // PostAuthorize will need to be updated once there is a concept of a general patient registration
+  // user that can be used for audit logging
   @PreAuthorize("permitAll()")
   @PostAuthorize("permitAll()")
   @GetMapping("/register/entity-name")
