@@ -3,7 +3,7 @@ import { Story, Meta } from "@storybook/react";
 import { CardBackground } from "./CardBackground";
 
 export default {
-  title: "App/Components/Card background",
+  title: "Components/Card/Card background",
   component: CardBackground,
   argTypes: {
     logo: { control: "boolean" },

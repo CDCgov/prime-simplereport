@@ -37,7 +37,7 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -82,7 +82,7 @@ public class PatientExperienceController {
    */
   @PreAuthorize(
       "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
-  @PutMapping("/link/verify")
+  @PostMapping("/link/verify")
   public PxpVerifyResponse getPatientLinkVerify(
       @RequestBody PxpRequestWrapper<Void> body, HttpServletRequest request) {
     UUID plid = UUID.fromString(body.getPatientLinkId());
@@ -98,7 +98,7 @@ public class PatientExperienceController {
 
   @PreAuthorize(
       "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
-  @PutMapping("/patient")
+  @PostMapping("/patient")
   public Person updatePatient(
       @RequestBody PxpRequestWrapper<PersonUpdate> body, HttpServletRequest request) {
     PersonUpdate person = body.getData();
@@ -118,7 +118,7 @@ public class PatientExperienceController {
 
   @PreAuthorize(
       "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
-  @PutMapping("/questions")
+  @PostMapping("/questions")
   public void patientLinkSubmit(
       @RequestBody PxpRequestWrapper<AoEQuestions> body, HttpServletRequest request) {
     AoEQuestions data = body.getData();

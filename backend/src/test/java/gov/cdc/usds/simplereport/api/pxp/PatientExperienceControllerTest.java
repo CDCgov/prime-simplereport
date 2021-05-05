@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -82,7 +82,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
         "{\"patientLinkId\":\"" + UUID.randomUUID() + "\",\"dateOfBirth\":\"" + dob + "\"}";
 
     MockHttpServletRequestBuilder builder =
-        put(ResourceLinks.VERIFY_LINK)
+        post(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -108,7 +108,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put(ResourceLinks.VERIFY_LINK)
+        post(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -132,7 +132,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put(ResourceLinks.VERIFY_LINK)
+        post(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -167,7 +167,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put(ResourceLinks.VERIFY_LINK)
+        post(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -197,7 +197,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder submitBuilder =
-        put(ResourceLinks.ANSWER_QUESTIONS)
+        post(ResourceLinks.ANSWER_QUESTIONS)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -207,14 +207,14 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // OKAY NOW DO IT AGAIN
     MockHttpServletRequestBuilder verifyBuilder =
-        put(ResourceLinks.VERIFY_LINK)
+        post(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
 
     MockHttpServletRequestBuilder secondSubmitBuilder =
-        put(ResourceLinks.ANSWER_QUESTIONS)
+        post(ResourceLinks.ANSWER_QUESTIONS)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -240,7 +240,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put(ResourceLinks.VERIFY_LINK)
+        post(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -273,7 +273,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put(ResourceLinks.UPDATE_PATIENT)
+        post(ResourceLinks.UPDATE_PATIENT)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -306,7 +306,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put(ResourceLinks.ANSWER_QUESTIONS)
+        post(ResourceLinks.ANSWER_QUESTIONS)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
