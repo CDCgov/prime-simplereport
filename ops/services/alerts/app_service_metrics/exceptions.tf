@@ -9,7 +9,7 @@ data "azurerm_log_analytics_workspace" "global" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "collect_appserviceconsolelogs" {
-  name                       = "API App Service console logs"
+  name                       = "${var.env} API App Service console logs"
   target_resource_id         = var.app_service_id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.global.id
 
@@ -25,10 +25,14 @@ resource "azurerm_monitor_diagnostic_setting" "collect_appserviceconsolelogs" {
 }
 
 # Add an alert for GraphQL query validation failures (more than 3 in a 5-minute window)
+data "azurerm_resource_group" "app" {
+  name = var.rg_name
+}
+
 resource "azurerm_monitor_scheduled_query_rules_alert" "graphql_query_validation_failures" {
-  name                = "graphql-query-validation-failures"
-  location            = "East US"
-  resource_group_name = "prime-simple-report-${var.env}"
+  name                = "${var.env}-graphql-query-validation-failures"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
 
   action {
     action_group = [var.action_group_id]
@@ -40,7 +44,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "graphql_query_validation
 
   query = <<-QUERY
 AppServiceConsoleLogs
-  | where tolower(ResultDescription) contains "Query failed to validate"
+  | where tolower(ResultDescription) contains "query failed to validate"
   QUERY
 
   severity    = 1
