@@ -17,7 +17,7 @@ describe("PasswordForm", () => {
     fireEvent.click(screen.getByText("Continue"));
     expect(
       screen.getByText(
-        "Your password must be a lowercase letter, an uppercase letter, a number and at least 8 characters"
+        "Your password must have a lowercase letter, an uppercase letter, a number and at least 8 characters"
       )
     ).toBeInTheDocument();
   });
