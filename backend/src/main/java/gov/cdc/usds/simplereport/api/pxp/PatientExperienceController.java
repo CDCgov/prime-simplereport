@@ -44,16 +44,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * This controller self-authorizes by means of this {@link PreAuthorize} annotation and
- * are set to permitAll() in SecurityConfiguration. If this changes, please update the documentation
- * on both sides.
+ * Note that this controller self-authorizes by means of this {@link PreAuthorize} annotation and
+ * its routes are set to permitAll() in SecurityConfiguration. If this changes, please update the
+ * documentation on both sides.
  *
- * <p>This controller sends information to the audit log via a {@link PostAuthorize}. Because of
- * this, every handler method of this controller is required to have an {@link HttpServletRequest}
- * argument named {@code request}.
+ * <p>Similarly, this controller sends information to the audit log via a {@link PostAuthorize}.
+ * Because of this, every handler method of this controller is required to have an {@link
+ * HttpServletRequest} argument named {@code request}.
  */
 @PreAuthorize(
-      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
+    "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
 @PostAuthorize("@restAuditLogManager.logRestSuccess(#request, returnObject)")
 @RestController
 @RequestMapping("/pxp")
