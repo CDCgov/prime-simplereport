@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -15,6 +16,7 @@ import gov.cdc.usds.simplereport.api.ResourceLinks;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
+import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TimeOfConsent;
@@ -46,6 +48,8 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
   private Organization _org;
   private Facility _site;
+  private PatientRegistrationLink _orgRegistrationLink;
+  private PatientRegistrationLink _facilityRegistrationLink;
 
   @BeforeEach
   void init() {
@@ -57,6 +61,8 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
           _person = _dataFactory.createFullPerson(_org);
           _testOrder = _dataFactory.createTestOrder(_person, _site);
           _patientLink = _dataFactory.createPatientLink(_testOrder);
+          _orgRegistrationLink = _dataFactory.createPatientReigistrationLink(_org);
+          _facilityRegistrationLink = _dataFactory.createPatientReigistrationLink(_site);
         });
   }
 
@@ -322,5 +328,33 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
         .andReturn()
         .getResponse()
         .getHeader(LoggingConstants.REQUEST_ID_HEADER);
+  }
+
+  @Test
+  void badRegistrationLinkThrows404() throws Exception {
+    String link = UUID.randomUUID().toString();
+
+    MockHttpServletRequestBuilder builder =
+        get(ResourceLinks.ENTITY_NAME).param("patientRegistrationLink", link);
+
+    this._mockMvc
+        .perform(builder)
+        .andExpect(status().isNotFound())
+        .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER));
+    assertNoAuditEvent();
+  }
+
+  @Test
+  void registrationEntityNameLinkFound() throws Exception {
+    // GIVEN
+    String link = _orgRegistrationLink.getLink();
+
+    // WHEN
+    MockHttpServletRequestBuilder builder =
+        get(ResourceLinks.ENTITY_NAME).param("patientRegistrationLink", link);
+
+    // THEN
+    String requestId = runBuilderReturningRequestId(builder, status().isOk());
+    assertLastAuditEntry(HttpStatus.OK, ResourceLinks.ENTITY_NAME, requestId);
   }
 }

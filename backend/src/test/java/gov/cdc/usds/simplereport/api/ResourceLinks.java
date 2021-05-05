@@ -6,6 +6,8 @@ public final class ResourceLinks {
   public static final String ANSWER_QUESTIONS = "/pxp/questions";
   public static final String UPDATE_PATIENT = "/pxp/patient";
 
+  public static final String ENTITY_NAME = "/pxp/register/entity-name";
+
   public static final String WAITLIST_REQUEST = "/account-request/waitlist";
   public static final String ACCOUNT_REQUEST = "/account-request";
 }

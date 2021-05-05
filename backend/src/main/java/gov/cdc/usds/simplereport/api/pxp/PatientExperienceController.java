@@ -9,7 +9,6 @@ import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
 import gov.cdc.usds.simplereport.api.model.AoEQuestions;
 import gov.cdc.usds.simplereport.api.model.PersonUpdate;
-import gov.cdc.usds.simplereport.api.model.pxp.PxpRegistrationRequestWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponse;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -37,19 +36,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Note that this controller self-authorizes by means of this {@link PreAuthorize} annotation and
- * its routes are set to permitAll() in SecurityConfiguration. If this changes, please update the
- * documentation on both sides.
+ * The routes in this controller self-authorize by means of this {@link PreAuthorize} annotation and
+ * are set to permitAll() in SecurityConfiguration. If this changes, please update the documentation
+ * on both sides.
  *
- * <p>Similarly, this controller sends information to the audit log via a {@link PostAuthorize}.
- * Because of this, every handler method of this controller is required to have an {@link
- * HttpServletRequest} argument named {@code request}.
+ * <p>This controller sends information to the audit log via a {@link PostAuthorize}. Because of
+ * this, every handler method of this controller is required to have an {@link HttpServletRequest}
+ * argument named {@code request}.
  */
 @PostAuthorize("@restAuditLogManager.logRestSuccess(#request, returnObject)")
 @RestController
@@ -137,14 +138,12 @@ public class PatientExperienceController {
     pls.expireMyPatientLink();
   }
 
-  @PreAuthorize(
-      "@patientRegistrationLinkService.verifyPatientRegistrationLink(#body.getPatientRegistrationLink())")
-  @PutMapping("/register/entity-name")
+  @PreAuthorize("permitAll()")
+  @GetMapping("/register/entity-name")
   public String getEntityName(
-      @RequestBody PxpRegistrationRequestWrapper<Void> body, HttpServletRequest request) {
-    String slug = body.getPatientRegistrationLink();
-    PatientRegistrationLink link = prls.getPatientRegistrationLink(slug);
-    if (!Objects.isNull(link.getFacility())) {
+      @RequestParam String patientRegistrationLink, HttpServletRequest request) {
+    PatientRegistrationLink link = prls.getPatientRegistrationLink(patientRegistrationLink);
+    if (Objects.nonNull(link.getFacility())) {
       return link.getFacility().getFacilityName();
     }
     return link.getOrganization().getOrganizationName();
