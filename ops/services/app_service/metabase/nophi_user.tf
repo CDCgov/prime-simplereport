@@ -6,7 +6,7 @@ locals {
   --host ${var.postgres_server_fqdn} \
   --username ${var.postgres_admin_username}@${var.postgres_server_name} \
   --dbname "metabase" \
-  --command "GRANT INSERT, SELECT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ${var.postgres_metabase_username}; GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO ${var.postgres_metabase_username};"
+  --command "GRANT INSERT, SELECT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ${var.postgres_metabase_username}; GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO ${var.postgres_metabase_username};"
   EOF
 }
 
