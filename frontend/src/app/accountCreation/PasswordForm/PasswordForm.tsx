@@ -35,6 +35,9 @@ export const PasswordForm = () => {
     const needs = missingRequirements(value);
     if (needs.length) {
       const hints = [];
+      if (needs.includes(isAtLeast8Chars)) {
+        hints.push("at least 8 characters");
+      }
       if (needs.includes(hasLowerCase)) {
         hints.push("a lowercase letter");
       }
@@ -43,9 +46,6 @@ export const PasswordForm = () => {
       }
       if (needs.includes(hasNumber)) {
         hints.push("a number");
-      }
-      if (needs.includes(isAtLeast8Chars)) {
-        hints.push("at least 8 characters");
       }
       if (hints.length === 1) {
         return "Your password must have " + hints[0];
