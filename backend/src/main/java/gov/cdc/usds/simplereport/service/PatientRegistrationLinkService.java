@@ -21,9 +21,4 @@ public class PatientRegistrationLinkService {
         .findByPatientRegistrationLink(patientRegistrationLink)
         .orElseThrow(() -> new InvalidPatientRegistrationLinkException());
   }
-
-  public boolean verifyPatientRegistrationLink(String patientRegistrationLink) {
-    getPatientRegistrationLink(patientRegistrationLink);
-    return true;
-  }
 }
