@@ -39,7 +39,7 @@ export class PxpApi {
     dateOfBirth: string
   ): Promise<any> {
     return fetch(`${API_URL}/link/verify`, {
-      method: "put",
+      method: "POST",
       mode: "cors",
       headers,
       body: JSON.stringify({
@@ -60,7 +60,7 @@ export class PxpApi {
     data: any
   ) {
     return fetch(`${API_URL}/questions`, {
-      method: "put",
+      method: "POST",
       mode: "cors",
       headers,
       body: JSON.stringify({
@@ -77,7 +77,7 @@ export class PxpApi {
     data: UpdatePatientData
   ) {
     return fetch(`${API_URL}/patient`, {
-      method: "put",
+      method: "POST",
       mode: "cors",
       headers,
       body: JSON.stringify({
