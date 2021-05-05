@@ -346,15 +346,14 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
   @Test
   void registrationEntityNameLinkFound() throws Exception {
-    // GIVEN
     String link = _orgRegistrationLink.getLink();
 
-    // WHEN
     MockHttpServletRequestBuilder builder =
         get(ResourceLinks.ENTITY_NAME).param("patientRegistrationLink", link);
 
-    // THEN
-    String requestId = runBuilderReturningRequestId(builder, status().isOk());
-    assertLastAuditEntry(HttpStatus.OK, ResourceLinks.ENTITY_NAME, requestId);
+    this._mockMvc
+        .perform(builder)
+        .andExpect(status().isOk())
+        .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER));
   }
 }

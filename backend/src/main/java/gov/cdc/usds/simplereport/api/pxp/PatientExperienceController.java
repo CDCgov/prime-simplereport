@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * The routes in this controller self-authorize by means of this {@link PreAuthorize} annotation and
+ * This controller self-authorizes by means of this {@link PreAuthorize} annotation and
  * are set to permitAll() in SecurityConfiguration. If this changes, please update the documentation
  * on both sides.
  *
@@ -52,6 +52,8 @@ import org.springframework.web.bind.annotation.RestController;
  * this, every handler method of this controller is required to have an {@link HttpServletRequest}
  * argument named {@code request}.
  */
+@PreAuthorize(
+      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
 @PostAuthorize("@restAuditLogManager.logRestSuccess(#request, returnObject)")
 @RestController
 @RequestMapping("/pxp")
@@ -80,8 +82,6 @@ public class PatientExperienceController {
    * Verify that the patient-provided DOB matches the patient on file for the patient link id. It
    * returns the full patient object if so, otherwise it throws an exception
    */
-  @PreAuthorize(
-      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
   @PostMapping("/link/verify")
   public PxpVerifyResponse getPatientLinkVerify(
       @RequestBody PxpRequestWrapper<Void> body, HttpServletRequest request) {
@@ -96,8 +96,6 @@ public class PatientExperienceController {
     return new PxpVerifyResponse(p, os, te, pp);
   }
 
-  @PreAuthorize(
-      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
   @PostMapping("/patient")
   public Person updatePatient(
       @RequestBody PxpRequestWrapper<PersonUpdate> body, HttpServletRequest request) {
@@ -116,8 +114,6 @@ public class PatientExperienceController {
         person.getPreferredLanguage());
   }
 
-  @PreAuthorize(
-      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
   @PostMapping("/questions")
   public void patientLinkSubmit(
       @RequestBody PxpRequestWrapper<AoEQuestions> body, HttpServletRequest request) {
@@ -139,6 +135,7 @@ public class PatientExperienceController {
   }
 
   @PreAuthorize("permitAll()")
+  @PostAuthorize("permitAll()")
   @GetMapping("/register/entity-name")
   public String getEntityName(
       @RequestParam String patientRegistrationLink, HttpServletRequest request) {
