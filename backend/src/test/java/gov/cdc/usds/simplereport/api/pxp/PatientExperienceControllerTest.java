@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -345,15 +346,38 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
   }
 
   @Test
-  void registrationEntityNameLinkFound() throws Exception {
+  void registrationEntityOrgNameFound() throws Exception {
     String link = _orgRegistrationLink.getLink();
 
     MockHttpServletRequestBuilder builder =
         get(ResourceLinks.ENTITY_NAME).param("patientRegistrationLink", link);
 
-    this._mockMvc
-        .perform(builder)
-        .andExpect(status().isOk())
-        .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER));
+    MvcResult result =
+        this._mockMvc
+            .perform(builder)
+            .andExpect(status().isOk())
+            .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER))
+            .andReturn();
+
+    String content = result.getResponse().getContentAsString();
+    assertEquals(_org.getOrganizationName(), content);
+  }
+
+  @Test
+  void registrationEntityFacilityNameFound() throws Exception {
+    String link = _facilityRegistrationLink.getLink();
+
+    MockHttpServletRequestBuilder builder =
+        get(ResourceLinks.ENTITY_NAME).param("patientRegistrationLink", link);
+
+    MvcResult result =
+        this._mockMvc
+            .perform(builder)
+            .andExpect(status().isOk())
+            .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER))
+            .andReturn();
+
+    String content = result.getResponse().getContentAsString();
+    assertEquals(_site.getFacilityName(), content);
   }
 }
