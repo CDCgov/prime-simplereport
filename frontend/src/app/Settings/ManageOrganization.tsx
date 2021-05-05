@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import TextInput from "../commonComponents/TextInput";
-import Button from "../commonComponents/Button";
+import Button from "../commonComponents/Button/Button";
 import RequiredMessage from "../commonComponents/RequiredMessage";
 
 interface Props {

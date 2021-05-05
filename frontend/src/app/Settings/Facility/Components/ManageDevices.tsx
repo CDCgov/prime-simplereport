@@ -1,7 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Button from "../../../commonComponents/Button";
+import Button from "../../../commonComponents/Button/Button";
 import Dropdown from "../../../commonComponents/Dropdown";
 import Checkboxes from "../../../commonComponents/Checkboxes";
 import { FacilityErrors } from "../facilitySchema";

@@ -1,7 +1,7 @@
 import React from "react";
 import Modal from "react-modal";
 
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 
 interface Props {
   onClose: () => void;

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Redirect, RouteComponentProps, withRouter } from "react-router";
 
-import Button from "../../app/commonComponents/Button";
+import Button from "../../app/commonComponents/Button/Button";
 
 import ToS from "./ToS";
 
