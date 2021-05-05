@@ -16,9 +16,8 @@ import java.util.concurrent.ScheduledFuture;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.boot.task.TaskSchedulerBuilder;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.support.CronTrigger;
 
 class ScheduledTasksServiceTest {
 
@@ -55,7 +54,7 @@ class ScheduledTasksServiceTest {
     DataHubConfig config =
         new DataHubConfig(true, "http://mock.com", 20, "NOPE", "", Collections.emptyList(), null);
 
-        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+    ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
     TaskSchedulerBuilder schedulerBuilder = mock(TaskSchedulerBuilder.class);
     ArgumentCaptor<CronTrigger> captureTrigger = ArgumentCaptor.forClass(CronTrigger.class);
     ArgumentCaptor<Runnable> captureMethod = ArgumentCaptor.forClass(Runnable.class);
@@ -68,7 +67,8 @@ class ScheduledTasksServiceTest {
         new ScheduledTasksService(uploader, schedulerBuilder).scheduleUploads(config);
     assertEquals(Collections.emptyMap(), scheduledUploads);
 
-    verify(schedulerBuilder.build(), never()).schedule(captureMethod.capture(), captureTrigger.capture());
+    verify(schedulerBuilder.build(), never())
+        .schedule(captureMethod.capture(), captureTrigger.capture());
     verify(uploader, never()).dataHubUploaderTask();
   }
 }
