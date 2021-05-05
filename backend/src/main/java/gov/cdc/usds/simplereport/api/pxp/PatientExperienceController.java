@@ -33,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -75,7 +75,7 @@ public class PatientExperienceController {
    * Verify that the patient-provided DOB matches the patient on file for the patient link id. It
    * returns the full patient object if so, otherwise it throws an exception
    */
-  @PutMapping("/link/verify")
+  @PostMapping("/link/verify")
   public PxpVerifyResponse getPatientLinkVerify(
       @RequestBody PxpRequestWrapper<Void> body, HttpServletRequest request) {
     UUID plid = UUID.fromString(body.getPatientLinkId());
@@ -89,7 +89,7 @@ public class PatientExperienceController {
     return new PxpVerifyResponse(p, os, te, pp);
   }
 
-  @PutMapping("/patient")
+  @PostMapping("/patient")
   public Person updatePatient(
       @RequestBody PxpRequestWrapper<PersonUpdate> body, HttpServletRequest request) {
     PersonUpdate person = body.getData();
@@ -107,7 +107,7 @@ public class PatientExperienceController {
         person.getPreferredLanguage());
   }
 
-  @PutMapping("/questions")
+  @PostMapping("/questions")
   public void patientLinkSubmit(
       @RequestBody PxpRequestWrapper<AoEQuestions> body, HttpServletRequest request) {
     AoEQuestions data = body.getData();
