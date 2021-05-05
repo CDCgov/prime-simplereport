@@ -112,7 +112,7 @@ simple-report:
           last-name: Reynolds
         authorization:
           organization-external-id: DIS_ORG
-          facilities: 
+          facilities:
             - Testing Site
             # TODO: uncomment once e2e tests can accommodate 2+ facilities
             # - Injection Site
@@ -125,7 +125,7 @@ simple-report:
           suffix: III
         authorization:
           organization-external-id: DIS_ORG
-          facilities: 
+          facilities:
             - Testing Site
           granted-roles: []
       - identity:

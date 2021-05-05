@@ -87,4 +87,14 @@ export class PxpApi {
       }),
     }).then((res) => res.json());
   }
+
+  static getEntityName = async (registrationLink: string): Promise<string> => {
+    const res = await fetch(
+      `${API_URL}/register/entity-name?patientRegistrationLink=${registrationLink}`
+    );
+    if (!res.ok) {
+      throw res;
+    }
+    return await res.json();
+  };
 }
