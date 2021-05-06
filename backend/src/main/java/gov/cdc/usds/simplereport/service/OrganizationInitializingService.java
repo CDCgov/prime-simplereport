@@ -160,8 +160,9 @@ public class OrganizationInitializingService {
           _prlRepository.findByPatientRegistrationLink(p.getLink());
       if (!link.isPresent()) {
         LOG.info("Creating patient registration link {}", p.getLink());
-        PatientRegistrationLink prl = p.makePatientRegistrationLink(
-            orgsByExternalId.get(p.getOrganizationExternalId()), p.getLink());
+        PatientRegistrationLink prl =
+            p.makePatientRegistrationLink(
+                orgsByExternalId.get(p.getOrganizationExternalId()), p.getLink());
         _prlRepository.save(prl);
       }
     }
