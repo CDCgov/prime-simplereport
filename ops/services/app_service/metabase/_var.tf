@@ -28,15 +28,41 @@ variable "webapp_subnet_id" {
   description = "Webapp Subnet ID"
 }
 
-
 variable "postgres_server_name" {
   type        = string
   description = "PostgreSQL Server name"
 }
 
+variable "postgres_server_fqdn" {
+  type        = string
+  description = "PostgreSQL FQDN"
+}
+
 variable "postgres_url" {
   type        = string
   description = "PostgreSQL Connection URL"
+}
+
+variable "postgres_admin_username" {
+  type        = string
+  description = "PostgreSQL admin username"
+}
+
+variable "postgres_admin_password" {
+  type        = string
+  description = "PostgreSQL admin password"
+  sensitive   = true
+}
+
+variable "postgres_metabase_username" {
+  type        = string
+  description = "PostgreSQL username for Metabase user"
+}
+
+variable "postgres_metabase_password" {
+  type        = string
+  description = "PostgreSQL password for Metabase user"
+  sensitive   = true
 }
 
 variable "ai_instrumentation_key" {
