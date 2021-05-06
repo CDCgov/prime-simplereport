@@ -212,6 +212,12 @@ public class LiveOktaRepository implements OktaRepository {
           "Cannot update Okta user with unrecognized username");
     }
     User user = users.single();
+    updateUser(user, userIdentity);
+
+    return getOrganizationRoleClaimsForUser(user);
+  }
+
+  private void updateUser(User user, IdentityAttributes userIdentity) {
     user.getProfile().setFirstName(userIdentity.getFirstName());
     user.getProfile().setMiddleName(userIdentity.getMiddleName());
     user.getProfile().setLastName(userIdentity.getLastName());
@@ -219,8 +225,34 @@ public class LiveOktaRepository implements OktaRepository {
     // don't have regular suffix? You decide.
     user.getProfile().setHonorificSuffix(userIdentity.getSuffix());
     user.update();
+  }
 
-    return getOrganizationRoleClaimsForUser(user);
+  public void reprovisionUser(IdentityAttributes userIdentity) {
+    UserList users = _client.listUsers(userIdentity.getUsername(), null, null, null, null);
+    if (users.stream().count() == 0) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot reprovision Okta user with unrecognized username");
+    }
+    User user = users.single();
+    UserStatus userStatus = user.getStatus();
+
+    // any org user "deleted" through our api will be in SUSPENDED state
+    if (userStatus != UserStatus.SUSPENDED) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot reprovision user in unsupported state: " + userStatus);
+    }
+
+    updateUser(user, userIdentity);
+
+    // reset all MFA factors (this triggers an email to the user, which can be configured in Okta)
+    user.resetFactors();
+
+    // transitioning from SUSPENDED -> DEPROVISIONED -> ACTIVE will reset the user's password
+    // and password reset question.  `.activate(true)` will send an activation email (just like
+    // creating a new account).  This cannot be done with `.reactivate()` because `.reactivate()`
+    // requires  the user to be in PROVISIONED state
+    user.deactivate();
+    user.activate(true);
   }
 
   public Optional<OrganizationRoleClaims> updateUserPrivileges(

@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.model.Role;
+import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
@@ -66,7 +67,54 @@ public class ApiUserService {
   public UserInfo createUserInCurrentOrg(
       String username, PersonName name, Role role, boolean active) {
     Organization org = _orgService.getCurrentOrganization();
+
+    Optional<ApiUser> found = _apiUserRepo.findByLoginEmailIncludeArchived(username);
+    if (found.isPresent()) {
+      return reprovisionUserHelper(found.get(), name, org, role);
+    }
+
     return createUserHelper(username, name, org, role, true);
+  }
+
+  private UserInfo reprovisionUserHelper(
+      ApiUser apiUser, PersonName name, Organization org, Role role) {
+    if (!apiUser.isDeleted()) {
+      // an enabled user with this email address exists (in some org)
+      throw new ConflictingUserException("A user with this email address already exists.");
+    }
+
+    OrganizationRoleClaims claims =
+        _oktaRepo
+            .getOrganizationRoleClaimsForUser(apiUser.getLoginEmail())
+            .orElseThrow(MisconfiguredUserException::new);
+    if (!org.getExternalId().equals(claims.getOrganizationExternalId())) {
+      throw new ConflictingUserException(
+          "The user already exists, but is not in your organization.");
+    }
+
+    // re-provision the user
+    apiUser.setNameInfo(name);
+    apiUser.setIsDeleted(false);
+
+    IdentityAttributes userIdentity = new IdentityAttributes(apiUser.getLoginEmail(), name);
+    _oktaRepo.reprovisionUser(userIdentity);
+
+    // for now, all re-enabled users have no access to facilities unless they are admins
+    Set<OrganizationRole> roles =
+        EnumSet.of(role.toOrganizationRole(), OrganizationRole.getDefault());
+    Optional<OrganizationRoleClaims> roleClaims =
+        _oktaRepo.updateUserPrivileges(apiUser.getLoginEmail(), org, Set.of(), roles);
+
+    Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
+    boolean isAdmin = isAdmin(apiUser);
+    UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
+
+    LOG.info(
+        "User with id={} re-provisioned by user with id={}",
+        apiUser.getInternalId(),
+        getCurrentApiUser().getInternalId());
+
+    return user;
   }
 
   private UserInfo createUserHelper(

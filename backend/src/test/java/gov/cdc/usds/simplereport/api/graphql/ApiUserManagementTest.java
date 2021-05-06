@@ -306,6 +306,64 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   }
 
   @Test
+  void addUserToCurrentOrg_disabledUser_success() {
+    useOrgAdmin();
+
+    // add a new user
+    String addedUserId = runBoilerplateAddUserToCurrentOrg(Role.ENTRY_ONLY).get("id").asText();
+
+    // disable new user
+    ObjectNode deleteVariables =
+        JsonNodeFactory.instance.objectNode().put("id", addedUserId).put("deleted", true);
+    String email =
+        runQuery("set-user-is-deleted", deleteVariables)
+            .get("setUserIsDeleted")
+            .get("email")
+            .asText();
+
+    // add user again (expect the user to be re-enabled with their original role)
+    ObjectNode addVariables = makeBoilerplateArgs(Role.USER, false);
+    addVariables.put("email", email);
+    addVariables.put("firstName", "A-Different-FirstName");
+    addVariables.put("lastName", "A-Different-LastName");
+    ObjectNode enabledUser =
+        (ObjectNode)
+            runQuery("add-user-to-current-org", "addUserToCurrentOrgNovel", addVariables, null)
+                .get("addUserToCurrentOrg");
+    String enabledUserId = enabledUser.get("id").asText();
+
+    // after enabling through reprovision of disabled user
+    assertEquals(addedUserId, enabledUserId);
+    assertEquals("A-Different-FirstName", enabledUser.get("firstName").asText());
+    assertEquals("A-Different-LastName", enabledUser.get("lastName").asText());
+    assertEquals(Set.of(Role.USER), extractRolesFromUser(enabledUser));
+    assertEquals(Map.of(), extractFacilitiesFromUser(enabledUser));
+    assertEquals(
+        EnumSet.of(
+            UserPermission.ARCHIVE_PATIENT,
+            UserPermission.EDIT_PATIENT,
+            UserPermission.READ_PATIENT_LIST,
+            UserPermission.READ_RESULT_LIST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.START_TEST,
+            UserPermission.SUBMIT_TEST,
+            UserPermission.UPDATE_TEST),
+        extractPermissionsFromUser(enabledUser));
+  }
+
+  @Test
+  void addUserToCurrentOrg_enabledUserExists_failure() {
+    useOrgAdmin();
+    ObjectNode variables = makeBoilerplateArgs(Role.ADMIN, false);
+    variables.put("email", "allfacilities@example.com");
+    runQuery(
+        "add-user-to-current-org",
+        "addUserToCurrentOrgNovel",
+        variables,
+        "A user with this email address already exists.");
+  }
+
+  @Test
   void updateUser_adminUser_success() {
     useOrgAdmin();
 
