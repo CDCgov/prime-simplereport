@@ -18,8 +18,7 @@ const useOutsideClick = (
         handleClickOutside
       );
     };
-    // eslint-disable-next-line
-  }, [ref]);
+  }, [ref, onClickOutside]);
 };
 
 export { useOutsideClick };

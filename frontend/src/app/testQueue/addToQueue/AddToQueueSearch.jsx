@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import { toast } from "react-toastify";
 import { gql, useMutation, useLazyQuery } from "@apollo/client";
 import {
@@ -128,9 +134,9 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
   ]);
 
   const dropDownRef = useRef(null);
-  const hideOnOutsideClick = () => {
+  const hideOnOutsideClick = useCallback(() => {
     setShowSuggestion(false);
-  };
+  }, []);
 
   useOutsideClick(dropDownRef, hideOnOutsideClick);
 

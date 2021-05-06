@@ -4,6 +4,7 @@ import React, {
   Dispatch,
   MouseEventHandler,
   SetStateAction,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -246,9 +247,9 @@ export const DetachedTestResultsList: any = ({
     allowQuery,
     showSuggestion,
   ]);
-  const hideOnOutsideClick = () => {
+  const hideOnOutsideClick = useCallback(() => {
     setShowSuggestion(false);
-  };
+  }, []);
 
   useOutsideClick(dropDownRef, hideOnOutsideClick);
 
