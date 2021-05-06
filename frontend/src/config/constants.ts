@@ -179,9 +179,22 @@ export const urls = {
 };
 
 export const securityQuestions = [
-  "What’s your first pet’s name?",
-  "What’s your favorite book?",
-  "What’s your favorite food?",
+  "What’s the first name of your best friend in high school?",
+  "What was the first name of your favorite childhood friend?",
+  "In what city or town was your first job?",
+  "What’s the last name of your first boss?",
+  "What’s your grandmother’s first name?",
+  "What’s your oldest sibling’s middle name?",
+  "What was the name of the street where you were living when you were 10 years old?",
+  "What was the name of the street where you were living when you were in third grade?",
+  "In what city or town did your parents meet?",
+  "What’s the first name of your eldest cousin on your mother’s side?",
+  "What’s the last name of your best friend?",
+  "What was the make and model of your first car?",
+  "What was the name of the company where you had your first job?",
+  "What’s the first name of your oldest nephew?",
+  "What was the first name of the first person you dated?",
+  "What was the first name of your first boyfriend or girlfriend?",
 ];
 
 export const accountCreationSteps = [
