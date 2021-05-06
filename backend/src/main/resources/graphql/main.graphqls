@@ -84,8 +84,14 @@ type User {
 }
 
 type ApiUser {
-  name: NameInfo
+  id: ID
+  name: NameInfo!
   nameInfo: NameInfo @deprecated(reason: "needless connection of type to field name")
+  firstName: String
+  middleName: String
+  lastName: String!
+  suffix: String
+  email: String!
 }
 
 # Patient and test types
@@ -213,7 +219,7 @@ type Query {
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
-  users: [User] @requiredPermissions(allOf: ["MANAGE_USERS"])
+  users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
   user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
 }

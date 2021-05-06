@@ -255,31 +255,10 @@ public class ApiUserService {
   }
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
-  public List<UserInfo> getUsersInCurrentOrg() {
+  public List<ApiUser> getUsersInCurrentOrg() {
     Organization org = _orgService.getCurrentOrganization();
-    Map<String, OrganizationRoleClaims> userClaims = _oktaRepo.getAllUsersForOrganization(org);
-    Set<ApiUser> apiUsers = _apiUserRepo.findAllByLoginEmailIn(userClaims.keySet());
-    // will add facilities to their users in a subsequent PR
-    List<Facility> facilities = _orgService.getFacilities(org);
-    Set<Facility> facilitiesSet = new HashSet<>(facilities);
-    Map<UUID, Facility> facilitiesByUUID =
-        facilities.stream().collect(Collectors.toMap(Facility::getInternalId, Function.identity()));
-    return apiUsers.stream()
-        .map(
-            u -> {
-              OrganizationRoleClaims claims = userClaims.get(u.getLoginEmail());
-              boolean allFacilityAccess = claims.grantsAllFacilityAccess();
-              Set<Facility> accessibleFacilities =
-                  allFacilityAccess
-                      ? facilitiesSet
-                      : claims.getFacilities().stream()
-                          .map(facilitiesByUUID::get)
-                          .collect(Collectors.toSet());
-              OrganizationRoles orgRoles =
-                  new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
-              return new UserInfo(u, Optional.of(orgRoles), isAdmin(u));
-            })
-        .collect(Collectors.toList());
+    final Set<String> orgUserEmails = _oktaRepo.getAllUsersForOrganization(org);
+    return _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserEmails);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser

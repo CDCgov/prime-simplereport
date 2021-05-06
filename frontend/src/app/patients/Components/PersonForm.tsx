@@ -23,7 +23,10 @@ import {
 import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
 import Input from "../../commonComponents/Input";
 import Select from "../../commonComponents/Select";
-import { getBestSuggestion } from "../../utils/smartyStreets";
+import {
+  getBestSuggestion,
+  suggestionIsCloseEnough,
+} from "../../utils/smartyStreets";
 import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
 import ComboBox from "../../commonComponents/ComboBox";
 
@@ -138,9 +141,14 @@ const PersonForm = (props: Props) => {
   };
 
   const validatePatientAddress = async () => {
-    const suggestedAddress = await getBestSuggestion(getAddress(patient));
-    setAddressSuggestion(suggestedAddress);
-    setAddressModalOpen(true);
+    const originalAddress = getAddress(patient);
+    const suggestedAddress = await getBestSuggestion(originalAddress);
+    if (suggestionIsCloseEnough(originalAddress, suggestedAddress)) {
+      onSave(suggestedAddress);
+    } else {
+      setAddressSuggestion(suggestedAddress);
+      setAddressModalOpen(true);
+    }
   };
 
   const validateForm = async () => {

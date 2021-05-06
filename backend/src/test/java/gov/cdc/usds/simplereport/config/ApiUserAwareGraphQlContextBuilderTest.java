@@ -16,9 +16,8 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.repository.PatientPreferencesRepository;
-import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
+import gov.cdc.usds.simplereport.service.dataloader.DataLoaderRegistryBuilder;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import java.util.HashSet;
@@ -32,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.websocket.Session;
 import javax.websocket.server.HandshakeRequest;
+import org.dataloader.DataLoaderRegistry;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -41,13 +41,11 @@ class ApiUserAwareGraphQlContextBuilderTest {
   @MethodSource("userProvider")
   void populatesSubject(UserInfo user) {
     var apiUserService = mock(ApiUserService.class);
-    var patientPreferencesRepository = mock(PatientPreferencesRepository.class);
-    var testEventRepository = mock(TestEventRepository.class);
+    var dataLoaderRegistryBuilder = mock(DataLoaderRegistryBuilder.class);
     when(apiUserService.getCurrentUserInfo()).thenReturn(user);
+    when(dataLoaderRegistryBuilder.build()).thenReturn(new DataLoaderRegistry());
 
-    var sut =
-        new ApiUserAwareGraphQlContextBuilder(
-            apiUserService, patientPreferencesRepository, testEventRepository);
+    var sut = new ApiUserAwareGraphQlContextBuilder(apiUserService, dataLoaderRegistryBuilder);
     validateSubject(
         sut.build(mock(HttpServletRequest.class), mock(HttpServletResponse.class))
             .getSubject()
