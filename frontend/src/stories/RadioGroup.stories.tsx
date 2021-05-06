@@ -45,25 +45,20 @@ Default.args = {};
 export const Tile = Template.bind({});
 Tile.args = {
   variant: "tile",
-};
-
-export const labelDescription = Template.bind({});
-labelDescription.args = {
   buttons: [
     {
       label: "Apple",
       value: "apple",
-      labelDescription: "Text that describes the fruit",
     },
     {
       label: "Orange",
       value: "orange",
-      labelDescription: "Text that describes the fruit",
+      labelDescription:
+        "This is optional text that can be used to describe the label in more detail.",
     },
     {
       label: "Pear",
       value: "pear",
-      labelDescription: "Text that describes the fruit",
     },
   ],
 };
