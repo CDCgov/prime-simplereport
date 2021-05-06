@@ -5,7 +5,6 @@ import {
   useAppInsightsContext,
   useTrackEvent,
 } from "@microsoft/applicationinsights-react-js";
-import { useOutsideClick } from "app/utils/hooks";
 
 import Alert from "../../commonComponents/Alert";
 import {
@@ -15,6 +14,7 @@ import {
   SEARCH_DEBOUNCE_TIME,
 } from "../constants";
 import { showNotification } from "../../utils";
+import { useOutsideClick } from "../../utils/hooks";
 
 import SearchResults from "./SearchResults";
 import SearchInput from "./SearchInput";

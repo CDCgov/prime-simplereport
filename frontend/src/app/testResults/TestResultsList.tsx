@@ -13,7 +13,6 @@ import { useSelector } from "react-redux";
 import moment from "moment";
 import classnames from "classnames";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
-import { useOutsideClick } from "app/utils/hooks";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName, displayFullNameInOrder } from "../utils";
@@ -23,6 +22,7 @@ import {
 } from "../commonComponents/QueryWrapper";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import { getUrl } from "../utils/url";
+import { useOutsideClick } from "../utils/hooks";
 import Pagination from "../commonComponents/Pagination";
 import { TEST_RESULT_DESCRIPTIONS } from "../constants";
 import "./TestResultsList.scss";
