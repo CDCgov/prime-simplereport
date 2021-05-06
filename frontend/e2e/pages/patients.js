@@ -27,7 +27,7 @@ function addPatient(dobFormat) {
   this.section.editPatient.setValue("@firstName", firstName);
   this.section.editPatient.setValue("@dob", dobForInput);
   this.section.editPatient.setValue("@phone", phone);
-  this.section.editPatient.click("@phoneType");
+  this.section.editPatient.click("@phoneType-0");
   this.section.editPatient.setValue("@address", address);
   this.section.editPatient.setValue("@state", state);
   this.section.editPatient.setValue("@zip", zip);
@@ -85,7 +85,7 @@ module.exports = {
         facility: 'select[name="facilityId"]',
         dob: 'input[name="birthDate"]',
         phone: 'input[name="number"]',
-        phoneType: 'input[name="phoneType"]+label',
+        "phoneType-0": 'input[name="phoneType-0"]+label',
         address: 'input[name="street"]',
         state: 'select[name="state"]',
         zip: 'input[name="zipCode"]',

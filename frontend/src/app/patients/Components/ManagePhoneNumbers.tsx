@@ -131,7 +131,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
             )}
           </div>
           <RadioGroup
-            name="phoneType"
+            name={`phoneType-${idx}`}
             className="margin-top-3"
             legend="Phone type"
             buttons={PHONE_TYPE_VALUES}
