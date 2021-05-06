@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { PHONE_TYPE_VALUES } from "../../constants";
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import Input from "../../commonComponents/Input";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import {
@@ -137,6 +137,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
             )}
           </div>
           <RadioGroup
+            name="phoneType"
             className="margin-top-3"
             legend="Phone type"
             buttons={PHONE_TYPE_VALUES}
