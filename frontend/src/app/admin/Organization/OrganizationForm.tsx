@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import ManageDevices from "../../Settings/Facility/Components/ManageDevices";
 import OrderingProviderSettings from "../../Settings/Facility/Components/OrderingProvider";

@@ -23,7 +23,7 @@ import { getUrl } from "../utils/url";
 import Pagination from "../commonComponents/Pagination";
 import { TEST_RESULT_DESCRIPTIONS } from "../constants";
 import "./TestResultsList.scss";
-import Button from "../commonComponents/Button";
+import Button from "../commonComponents/Button/Button";
 import { useDebounce } from "../testQueue/addToQueue/useDebounce";
 import {
   MIN_SEARCH_CHARACTER_COUNT,

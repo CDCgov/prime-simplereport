@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import AoEModalForm from "../AoEForm/AoEModalForm";
 import { displayFullName } from "../../utils";
 import { Patient } from "../../patients/ManagePatients";

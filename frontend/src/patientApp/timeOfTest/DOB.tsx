@@ -3,7 +3,7 @@ import { connect, useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import moment from "moment";
 
-import Button from "../../app/commonComponents/Button";
+import Button from "../../app/commonComponents/Button/Button";
 import TextInput from "../../app/commonComponents/TextInput";
 import { setPatient, updateOrganization } from "../../app/store";
 import { PxpApi } from "../PxpApiService";
