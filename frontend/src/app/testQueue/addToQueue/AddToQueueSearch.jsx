@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { toast } from "react-toastify";
 import { gql, useMutation, useLazyQuery } from "@apollo/client";
 import {
   useAppInsightsContext,
   useTrackEvent,
 } from "@microsoft/applicationinsights-react-js";
+import { useOutsideClick } from "app/utils/hooks";
 
 import Alert from "../../commonComponents/Alert";
 import {
@@ -113,11 +114,22 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
     fetchPolicy: "no-cache",
     variables: { facilityId, namePrefixMatch: queryString },
   });
+
   const [mutationError, updateMutationError] = useState(null);
+  const [showSuggestion, setShowSuggestion] = useState(true);
+
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [updateAoe] = useMutation(UPDATE_AOE);
 
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
+  const showDropdown = useMemo(() => allowQuery && showSuggestion, [allowQuery,showSuggestion]);
+
+  const dropDownRef = useRef(null);
+  const hideOnOutsideClick = () => {
+    setShowSuggestion(false);
+  };
+
+  useOutsideClick(dropDownRef, hideOnOutsideClick);
 
   useEffect(() => {
     if (queryString.trim() !== "") {
@@ -133,6 +145,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
   }
 
   const onInputChange = (event) => {
+    setShowSuggestion(true)
     setDebounced(event.target.value);
   };
 
@@ -156,6 +169,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
     createOrUpdate = "create"
   ) => {
     setDebounced("");
+    setShowSuggestion(false);
     trackAddPatientToQueue();
     let callback;
     const variables = {
@@ -208,8 +222,9 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
         patients={data?.patients || []}
         onAddToQueue={onAddToQueue}
         patientsInQueue={patientsInQueue}
-        shouldShowSuggestions={allowQuery}
+        shouldShowSuggestions={showDropdown}
         loading={debounced !== queryString}
+        dropDownRef={dropDownRef}
       />
     </React.Fragment>
   );

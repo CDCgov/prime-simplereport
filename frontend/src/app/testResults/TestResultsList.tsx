@@ -5,12 +5,15 @@ import React, {
   MouseEventHandler,
   SetStateAction,
   useEffect,
+  useMemo,
+  useRef,
   useState,
 } from "react";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import classnames from "classnames";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
+import { useOutsideClick } from "app/utils/hooks";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName, displayFullNameInOrder } from "../utils";
@@ -203,6 +206,7 @@ export const DetachedTestResultsList: any = ({
   const [markErrorId, setMarkErrorId] = useState(undefined);
   const [detailsModalId, setDetailsModalId] = useState<string>();
   const [showFilters, setShowFilters] = useState(false);
+  const [showSuggestion, setShowSuggestion] = useState(true);
 
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
@@ -223,6 +227,7 @@ export const DetachedTestResultsList: any = ({
   }, [queryString, queryPatients]);
 
   const onInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    setShowSuggestion(true);
     setDebounced(event.target.value);
   };
 
@@ -233,7 +238,19 @@ export const DetachedTestResultsList: any = ({
   const onPatientSelect = (patient: Patient) => {
     setDebounced("");
     setSelectedPatientId(patient.internalId);
+    setShowSuggestion(false);
   };
+
+  const dropDownRef = useRef(null);
+  const showDropdown = useMemo(() => allowQuery && showSuggestion, [
+    allowQuery,
+    showSuggestion,
+  ]);
+  const hideOnOutsideClick = () => {
+    setShowSuggestion(false);
+  };
+
+  useOutsideClick(dropDownRef, hideOnOutsideClick);
 
   if (printModalId) {
     return (
@@ -318,8 +335,9 @@ export const DetachedTestResultsList: any = ({
                   page="test-results"
                   patients={patientData?.patients || []}
                   onPatientSelect={onPatientSelect}
-                  shouldShowSuggestions={allowQuery}
+                  shouldShowSuggestions={showDropdown}
                   loading={debounced !== queryString}
+                  dropDownRef={dropDownRef}
                 />
               </div>
             )}
