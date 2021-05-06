@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.model.pxp;
 
 import gov.cdc.usds.simplereport.db.model.PatientPreferences;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
@@ -68,6 +69,10 @@ public class PxpVerifyResponse {
 
   public String getTelephone() {
     return person.getTelephone();
+  }
+
+  public List<PhoneNumber> getPhoneNumbers() {
+    return person.getPhoneNumbers();
   }
 
   public String getEmail() {
