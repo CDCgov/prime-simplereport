@@ -361,6 +361,7 @@ Object {
                               class="usa-radio__input"
                               data-required="true"
                               id="28-val-MOBILE"
+                              name="phoneType-0"
                               type="radio"
                               value="MOBILE"
                             />
@@ -378,6 +379,7 @@ Object {
                               class="usa-radio__input"
                               data-required="true"
                               id="28-val-LANDLINE"
+                              name="phoneType-0"
                               type="radio"
                               value="LANDLINE"
                             />
@@ -1753,6 +1755,7 @@ Object {
                             class="usa-radio__input"
                             data-required="true"
                             id="28-val-MOBILE"
+                            name="phoneType-0"
                             type="radio"
                             value="MOBILE"
                           />
@@ -1770,6 +1773,7 @@ Object {
                             class="usa-radio__input"
                             data-required="true"
                             id="28-val-LANDLINE"
+                            name="phoneType-0"
                             type="radio"
                             value="LANDLINE"
                           />
