@@ -122,7 +122,10 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
   const [updateAoe] = useMutation(UPDATE_AOE);
 
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
-  const showDropdown = useMemo(() => allowQuery && showSuggestion, [allowQuery,showSuggestion]);
+  const showDropdown = useMemo(() => allowQuery && showSuggestion, [
+    allowQuery,
+    showSuggestion,
+  ]);
 
   const dropDownRef = useRef(null);
   const hideOnOutsideClick = () => {
@@ -145,7 +148,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
   }
 
   const onInputChange = (event) => {
-    setShowSuggestion(true)
+    setShowSuggestion(true);
     setDebounced(event.target.value);
   };
 
