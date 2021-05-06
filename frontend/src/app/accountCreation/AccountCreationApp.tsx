@@ -55,7 +55,7 @@ const AccountCreationApp = () => {
             <AccountCreation404Wrapper activationToken={activationToken}>
               <Router basename={`${process.env.PUBLIC_URL}/uac`}>
                 <Switch>
-                  <Route path="/set-password" exact component={PasswordForm} />
+                  <Route path="/set-password" component={PasswordForm} />
                   <Route
                     path="/set-recovery-question"
                     component={SecurityQuestion}

@@ -27,7 +27,7 @@ export const PasswordForm = () => {
     ""
   );
   const [loading, setLoading] = useState(false);
-  const [passwordAccepted, setPasswordAccepted] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   // Get activation token from store
   const activationToken = useSelector((state: any) => state.activationToken);
@@ -111,7 +111,7 @@ export const PasswordForm = () => {
         console.error(error);
       } finally {
         setLoading(false);
-        setPasswordAccepted(true);
+        setSubmitted(true);
       }
     }
   };
@@ -163,7 +163,7 @@ export const PasswordForm = () => {
     );
   }
 
-  if (passwordAccepted) {
+  if (submitted) {
     return (
       <Redirect
         to={{

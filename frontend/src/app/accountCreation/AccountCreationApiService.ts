@@ -22,13 +22,14 @@ export class AccountCreationApi {
     });
   }
 
-  static setRecoveryQuestion(data: any) {
+  static setRecoveryQuestion(recoveryQuestion: string, recoveryAnswer: string) {
     return fetch(`${API_URL}/set-recovery-question`, {
       method: "POST",
       mode: "cors",
       headers,
       body: JSON.stringify({
-        data,
+        recoveryQuestion,
+        recoveryAnswer,
       }),
     });
   }
