@@ -19,8 +19,3 @@ const Template: Story<Props> = (args) => <TextInput {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};
-
-export const WithError = Template.bind({});
-WithError.args = {
-  validationStatus: "error",
-};
