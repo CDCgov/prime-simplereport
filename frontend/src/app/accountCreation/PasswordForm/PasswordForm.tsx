@@ -1,4 +1,6 @@
 import { ChangeEvent, useState } from "react";
+import { useSelector } from "react-redux";
+import { Redirect } from "react-router";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -12,8 +14,10 @@ import {
   hasUpperCase,
   isAtLeast8Chars,
 } from "../../utils/text";
+import { AccountCreationApi } from "../AccountCreationApiService";
 
 export const PasswordForm = () => {
+  // State setup
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [strength, setStrength] = useState(0);
@@ -22,15 +26,24 @@ export const PasswordForm = () => {
   const [passwordConfirmationError, setPasswordConfirmationError] = useState(
     ""
   );
+  const [loading, setLoading] = useState(false);
+  const [passwordAccepted, setPasswordAccepted] = useState(false);
 
+  // Get activation token from store
+  const activationToken = useSelector((state: any) => state.activationToken);
+
+  // An array of functions that test for all of the password requirements
   const requirements = [hasLowerCase, hasUpperCase, hasNumber, isAtLeast8Chars];
 
+  // Returns an array only containing the requirement functions that fail
   const missingRequirements = (value: string): Function[] =>
     requirements.filter((f) => !f(value));
 
+  // Returns an array only containing the requirement functions that pass
   const matchedRequirements = (value: string): Function[] =>
     requirements.filter((f) => f(value));
 
+  // Builds a hint or error string for password describing missing requirements
   const buildHint = (value: string): string => {
     const needs = missingRequirements(value);
     if (needs.length) {
@@ -57,36 +70,54 @@ export const PasswordForm = () => {
     return "";
   };
 
+  // This function set the hint on the page, then returns the number of passing requirements
   const calculateStrength = (value: string): number => {
     setStrengthHint(buildHint(value));
     return matchedRequirements(value).length;
   };
 
-  const handleChange = ({
+  // onChange handler for password field
+  const handlePasswordChange = ({
     target: { value },
   }: ChangeEvent<HTMLInputElement>) => {
     setPassword(value);
     setStrength(calculateStrength(value));
   };
 
-  const validatePassword = () => {
+  // Clears the hint and sets the error since this is validation on submit
+  const validatePassword = (): boolean => {
     setStrengthHint("");
-    setPasswordError(buildHint(password));
+    const hint = buildHint(password);
+    setPasswordError(hint);
+    return hint === "";
   };
 
-  const validatePasswordConfirmation = () => {
+  const validatePasswordConfirmation = (): boolean => {
+    let error = "";
     if (password !== passwordConfirmation) {
-      setPasswordConfirmationError("Passwords must match");
-    } else {
-      setPasswordConfirmationError("");
+      error = "Passwords must match";
+    }
+    setPasswordConfirmationError(error);
+    return error === "";
+  };
+
+  // Form submit handler
+  const handleSubmit = async () => {
+    if (validatePassword() && validatePasswordConfirmation()) {
+      setLoading(true);
+      try {
+        await AccountCreationApi.setPassword(activationToken, password);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+        setPasswordAccepted(true);
+      }
     }
   };
 
-  const handleSubmit = () => {
-    validatePassword();
-    validatePasswordConfirmation();
-  };
-
+  // This switch sets both the label of the password strength
+  // and the color class to use for the strength bars
   let strengthLabel, strengthColor: string;
   switch (strength) {
     case 1:
@@ -110,6 +141,7 @@ export const PasswordForm = () => {
       strengthColor = "bg-base-lighter";
   }
 
+  // This builds the divs for the strength bars
   const strengthBars = [1, 2, 3, 4].map((score) => {
     const margin = score === 1 ? "" : "margin-left-1";
     const color = strength >= score ? strengthColor : "bg-base-lighter";
@@ -120,6 +152,27 @@ export const PasswordForm = () => {
       ></div>
     );
   });
+
+  if (loading) {
+    return (
+      <main>
+        <div className="grid-container maxw-tablet">
+          <p className="margin-top-3">Validating password...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (passwordAccepted) {
+    return (
+      <Redirect
+        to={{
+          pathname: "/set-recovery-question",
+          search: `?activationToken=${activationToken}`,
+        }}
+      />
+    );
+  }
 
   return (
     <CardBackground>
@@ -139,7 +192,7 @@ export const PasswordForm = () => {
           errorMessage={passwordError}
           validationStatus={passwordError ? "error" : undefined}
           onBlur={validatePassword}
-          onChange={handleChange}
+          onChange={handlePasswordChange}
         />
         <div className="display-flex grid-gap margin-top-105">
           {strengthBars}

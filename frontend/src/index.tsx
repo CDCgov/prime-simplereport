@@ -16,6 +16,7 @@ import Modal from "react-modal";
 
 import App from "./app/App";
 import PatientApp from "./patientApp/PatientApp";
+import AccountCreationApp from "./app/accountCreation/AccountCreationApp";
 import HealthChecks from "./app/HealthChecks";
 import * as serviceWorker from "./serviceWorker";
 import "./styles/App.css";
@@ -89,6 +90,7 @@ ReactDOM.render(
           <Switch>
             <Route path="/health" component={HealthChecks} />
             <Route path="/pxp" component={PatientApp} />
+            <Route path="/uac" component={AccountCreationApp} />
             <Route path="/" component={App} />
           </Switch>
         </Router>
