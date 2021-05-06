@@ -100,7 +100,7 @@ export const TextInput = ({
           <input
             className={classnames(
               "usa-input",
-              validationStatus === "error" && "usa-input-error"
+              validationStatus === "error" && "usa-input--error"
             )}
             id={id}
             name={name}
