@@ -95,6 +95,6 @@ export class PxpApi {
     if (!res.ok) {
       throw res;
     }
-    return await res.json();
+    return res.text();
   };
 }

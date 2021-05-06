@@ -92,6 +92,9 @@ simple-report-initialization:
       model: CareStart COVID-19 Antigen test*
       loinc-code: "94558-4"
       swab-type: "258500001"
+  patient-registration-links:
+    - patient-registration-link: dis-org
+      organization-external-id: DIS_ORG
 simple-report:
   demo-users:
     site-admin-emails:
