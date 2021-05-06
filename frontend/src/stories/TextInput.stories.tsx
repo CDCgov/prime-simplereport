@@ -13,7 +13,9 @@ export default {
   },
 } as Meta;
 
-const Template: Story = (args) => <TextInput {...args} />;
+type Props = React.ComponentProps<typeof TextInput>;
+
+const Template: Story<Props> = (args) => <TextInput {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};
