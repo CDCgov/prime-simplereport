@@ -70,7 +70,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 
         // Patient experience authorization is handled in PatientExperienceController
         // If this configuration changes, please update the documentation on both sides
-        .antMatchers(HttpMethod.PUT, WebConfiguration.PATIENT_EXPERIENCE)
+        .antMatchers(HttpMethod.POST, WebConfiguration.PATIENT_EXPERIENCE)
         .permitAll()
 
         // Account requests are unauthorized

@@ -4,7 +4,7 @@ import Modal from "react-modal";
 import moment from "moment";
 import classnames from "classnames";
 
-import Button from "../commonComponents/Button";
+import Button from "../commonComponents/Button/Button";
 import { displayFullName } from "../utils";
 import "./TestResultPrintModal.scss";
 import logo from "../../img/simplereport-logo-black.svg";

@@ -1,0 +1,48 @@
+name : Dependabot Gradle Helper
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: 'dependabot/gradle/**'
+
+env:
+  JAVA_VERSION: 11
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  # in case we once again need to figure out why this thing is not running, some day...
+  # debug-message:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: echo "Actor for this run is ${{github.actor}} and event name is ${{github.event_name}}"
+  #       working-directory: /
+  update-locks:
+    # Run when manually requested or when dependabot creates/updates a PR
+    # DO NOT run if somebody else updates a PR (a probably unnecessarily strict guard against infinite 
+    # workflow loops, in case we ever enable this workflow to trigger other workflows)
+    if: ${{ github.actor == 'dependabot[bot]' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Disable shallow clones: we need to be able to push
+      - name: Set up JDK ${{env.JAVA_VERSION}}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{env.JAVA_VERSION}}
+      - name: Configure git commit information
+        run: |
+          git config user.name simplereport-dependabot-helper
+          git config user.email no-reply@simplereport.gov
+      - name: Update dependency locks
+        run: ./gradlew dependencies --write-locks
+      - name: Commit and push changes
+        run: |
+          if ! git diff --quiet --exit-code gradle/dependency-locks; then
+            git commit -m'Updated dependency locks for dependabot.' gradle/dependency-locks
+            git push
+          else
+            echo No dependency changes found: nothing to do.
+          fi

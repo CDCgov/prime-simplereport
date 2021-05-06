@@ -1961,6 +1961,7 @@ databaseChangeLog:
         id: alter-spring-session-types
         author: emma@skylight.digital
         comment: Change the creation_time, last_access_time, and expiry_time columns to be of type bigint instead of DATETIME. Spring expects bigints for these columns.
+        # https://github.com/spring-projects/spring-session/blob/main/spring-session-jdbc/src/main/resources/org/springframework/session/jdbc/schema-postgresql.sql#L4
         changes:
           - sql:
             sql: |
