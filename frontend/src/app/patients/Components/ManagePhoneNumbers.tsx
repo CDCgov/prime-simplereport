@@ -70,12 +70,6 @@ const ManagePhoneNumbers: React.FC<Props> = ({
     [phoneNumbers, clearError]
   );
 
-  /*
-  useEffect(() => {
-    setErrors(errors);
-  }, [errors]);
-  */
-
   const onPhoneTypeChange = (index: number, newPhoneType: string) => {
     const newPhoneNumbers = Array.from(phoneNumbers);
 
