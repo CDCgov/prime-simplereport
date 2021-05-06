@@ -19,7 +19,9 @@ jobs:
   #     - run: echo "Actor for this run is ${{github.actor}} and event name is ${{github.event_name}}"
   #       working-directory: /
   update-locks:
-    # DO NOT run if somebody else (specifically, this workflow) updates a dependabot PR
+    # Run when manually requested or when dependabot creates/updates a PR
+    # DO NOT run if somebody else updates a PR (a probably unnecessarily strict guard against infinite 
+    # workflow loops, in case we ever enable this workflow to trigger other workflows)
     if: ${{ github.actor == 'dependabot[bot]' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps:
