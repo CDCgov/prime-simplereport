@@ -40,7 +40,7 @@ public class PatientRegistrationController {
     _currentPatientContextHolder = currentPatientContextHolder;
   }
 
-  @PostMapping("/")
+  @PostMapping("")
   public void register(@RequestBody PatientRegistration body, HttpServletRequest request) {
     _currentPatientContextHolder.setPatientRegistrationRequest(true);
 
