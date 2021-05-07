@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { Prompt } from "react-router-dom";
 import { toast } from "react-toastify";
+import { SchemaOf } from "yup";
 
 import { languages, stateCodes } from "../../../config/constants";
 import {
@@ -19,6 +20,8 @@ import {
   personSchema,
   PersonErrors,
   personUpdateSchema,
+  selfRegistrationSchema,
+  PersonUpdateFields,
 } from "../personSchema";
 import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
 import Input from "../../commonComponents/Input";
@@ -31,6 +34,12 @@ import { AddressConfirmationModal } from "../../commonComponents/AddressConfirma
 import ComboBox from "../../commonComponents/ComboBox";
 
 import FacilitySelect from "./FacilitySelect";
+
+export enum PersonFormView {
+  APP,
+  PXP,
+  SELF_REGISTRATION,
+}
 
 const boolToYesNoUnknown = (
   value: boolean | null | undefined
@@ -74,8 +83,14 @@ interface Props {
     formChanged: boolean
   ) => React.ReactNode;
   getFooter: (onSave: () => void, formChanged: boolean) => React.ReactNode;
-  isPatientView?: boolean;
+  view?: PersonFormView;
 }
+
+const schemata: Record<PersonFormView, SchemaOf<PersonUpdateFields>> = {
+  [PersonFormView.APP]: personSchema,
+  [PersonFormView.PXP]: personUpdateSchema,
+  [PersonFormView.SELF_REGISTRATION]: selfRegistrationSchema,
+};
 
 const PersonForm = (props: Props) => {
   const [formChanged, setFormChanged] = useState(false);
@@ -85,8 +100,8 @@ const PersonForm = (props: Props) => {
   const [addressSuggestion, setAddressSuggestion] = useState<
     AddressWithMetaData | undefined
   >();
-  const { isPatientView = false } = props;
-  const schema = isPatientView ? personUpdateSchema : personSchema;
+  const { view = PersonFormView.APP } = props;
+  const schema = schemata[view];
 
   const clearError = useCallback(
     (field: keyof PersonErrors) => {
@@ -213,10 +228,9 @@ const PersonForm = (props: Props) => {
           "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing."
         }
       />
-      {!isPatientView && (
+      {view === PersonFormView.APP && props.getHeader && (
         <div className="patient__header">
-          {props.getHeader &&
-            props.getHeader(patient, validateForm, formChanged)}
+          {props.getHeader(patient, validateForm, formChanged)}
         </div>
       )}
       <FormGroup title="General information">
@@ -226,21 +240,21 @@ const PersonForm = (props: Props) => {
             {...commonInputProps}
             label="First name"
             field="firstName"
-            required={!isPatientView}
-            disabled={isPatientView}
+            required={view !== PersonFormView.PXP}
+            disabled={view === PersonFormView.PXP}
           />
           <Input
             {...commonInputProps}
             field="middleName"
             label="Middle name"
-            disabled={isPatientView}
+            disabled={view === PersonFormView.PXP}
           />
           <Input
             {...commonInputProps}
             field="lastName"
             label="Last name"
-            required={!isPatientView}
-            disabled={isPatientView}
+            required={view !== PersonFormView.PXP}
+            disabled={view === PersonFormView.PXP}
           />
         </div>
         <div className="usa-form">
@@ -255,16 +269,18 @@ const PersonForm = (props: Props) => {
           {patient.role === "STUDENT" && (
             <Input {...commonInputProps} field="lookupId" label="Student ID" />
           )}
-          <FacilitySelect
-            facilityId={patient.facilityId}
-            onChange={onPersonChange("facilityId")}
-            validateField={() => {
-              validateField("facilityId");
-            }}
-            validationStatus={validationStatus}
-            errors={errors}
-            hidden={props.hideFacilitySelect}
-          />
+          {view !== PersonFormView.SELF_REGISTRATION && (
+            <FacilitySelect
+              facilityId={patient.facilityId}
+              onChange={onPersonChange("facilityId")}
+              validateField={() => {
+                validateField("facilityId");
+              }}
+              validationStatus={validationStatus}
+              errors={errors}
+              hidden={props.hideFacilitySelect}
+            />
+          )}
           <fieldset className="usa-fieldset">
             <label className="usa-label" htmlFor="preferred-language">
               Preferred language
@@ -292,8 +308,8 @@ const PersonForm = (props: Props) => {
             field="birthDate"
             label="Date of birth (mm/dd/yyyy)"
             type="date"
-            required={!isPatientView}
-            disabled={isPatientView}
+            required={view !== PersonFormView.PXP}
+            disabled={view === PersonFormView.PXP}
           />
         </div>
       </FormGroup>

@@ -98,4 +98,16 @@ export class PxpApi {
     }
     return res.text();
   };
+
+  static selfRegister = async (person: any): Promise<void> => {
+    const res = await fetch(`${API_URL}/register`, {
+      method: "POST",
+      mode: "cors",
+      headers,
+      body: JSON.stringify(person),
+    });
+    if (!res.ok) {
+      throw res;
+    }
+  };
 }

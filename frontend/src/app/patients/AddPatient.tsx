@@ -14,6 +14,31 @@ import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
 import PersonForm from "./Components/PersonForm";
 
+export const EMPTY_PERSON: Nullable<PersonFormData> = {
+  facilityId: "",
+  firstName: null,
+  middleName: null,
+  lastName: null,
+  lookupId: null,
+  role: null,
+  race: null,
+  ethnicity: null,
+  gender: null,
+  residentCongregateSetting: undefined,
+  employedInHealthcare: undefined,
+  tribalAffiliation: null,
+  birthDate: null,
+  telephone: null,
+  county: null,
+  email: null,
+  street: null,
+  streetTwo: null,
+  city: null,
+  state: null,
+  zipCode: null,
+  preferredLanguage: null,
+};
+
 export const ADD_PATIENT = gql`
   mutation AddPatient(
     $facilityId: ID
@@ -110,30 +135,7 @@ const AddPatient = () => {
     <main className={"prime-edit-patient prime-home"}>
       <div className={"grid-container margin-bottom-4"}>
         <PersonForm
-          patient={{
-            facilityId: "",
-            firstName: null,
-            middleName: null,
-            lastName: null,
-            lookupId: null,
-            role: null,
-            race: null,
-            ethnicity: null,
-            gender: null,
-            residentCongregateSetting: undefined,
-            employedInHealthcare: undefined,
-            tribalAffiliation: null,
-            birthDate: null,
-            telephone: null,
-            county: null,
-            email: null,
-            street: null,
-            streetTwo: null,
-            city: null,
-            state: null,
-            zipCode: null,
-            preferredLanguage: null,
-          }}
+          patient={EMPTY_PERSON}
           activeFacilityId={activeFacilityId}
           savePerson={savePerson}
           getHeader={(_, onSave, formChanged) => (

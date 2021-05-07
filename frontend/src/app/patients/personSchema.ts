@@ -42,6 +42,8 @@ export type PersonUpdateFields = PartialBy<
   UpdateOptionalFields
 >;
 
+export type SelfRegistationFields = Omit<RequiredPersonFields, "facilityId">;
+
 const getValues = (options: Option[]) => options.map(({ value }) => value);
 
 export function phoneNumberIsValid(input: any) {
@@ -86,6 +88,16 @@ export const personSchema: yup.SchemaOf<RequiredPersonFields> = yup.object({
   facilityId: yup.string().nullable().min(1) as any,
   ...updateFieldSchemata,
 });
+
+export const selfRegistrationSchema: yup.SchemaOf<SelfRegistationFields> = yup.object(
+  {
+    firstName: yup.string().required(),
+    middleName: yup.string().nullable(),
+    lastName: yup.string().required(),
+    birthDate: yup.string().required(),
+    ...updateFieldSchemata,
+  }
+);
 
 export type PersonErrors = Partial<Record<keyof PersonFormData, string>>;
 
