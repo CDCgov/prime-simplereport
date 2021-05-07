@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.service;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientRegistrationLinkException;
 import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = false)
 public class PatientRegistrationLinkService {
 
-  @Autowired private PatientRegistrationLinkRepository prlrepo;
+  private PatientRegistrationLinkRepository prlrepo;
+
+  PatientRegistrationLinkService(PatientRegistrationLinkRepository prlrepo) {
+    this.prlrepo = prlrepo;
+  }
 
   public PatientRegistrationLink getPatientRegistrationLink(String patientRegistrationLink)
       throws InvalidPatientRegistrationLinkException {

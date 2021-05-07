@@ -198,14 +198,14 @@ public class TestDataFactory {
   }
 
   @Transactional
-  public PatientRegistrationLink createPatientReigistrationLink(Organization org) {
+  public PatientRegistrationLink createPatientRegistrationLink(Organization org) {
     String link = UUID.randomUUID().toString();
     PatientRegistrationLink prl = new PatientRegistrationLink(org, link);
     return _patientRegistrationLinkRepository.save(prl);
   }
 
   @Transactional
-  public PatientRegistrationLink createPatientReigistrationLink(Facility fac) {
+  public PatientRegistrationLink createPatientRegistrationLink(Facility fac) {
     String link = UUID.randomUUID().toString();
     PatientRegistrationLink prl = new PatientRegistrationLink(fac, link);
     return _patientRegistrationLinkRepository.save(prl);

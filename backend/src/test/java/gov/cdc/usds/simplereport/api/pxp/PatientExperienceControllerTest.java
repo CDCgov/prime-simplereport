@@ -62,8 +62,8 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
           _person = _dataFactory.createFullPerson(_org);
           _testOrder = _dataFactory.createTestOrder(_person, _site);
           _patientLink = _dataFactory.createPatientLink(_testOrder);
-          _orgRegistrationLink = _dataFactory.createPatientReigistrationLink(_org);
-          _facilityRegistrationLink = _dataFactory.createPatientReigistrationLink(_site);
+          _orgRegistrationLink = _dataFactory.createPatientRegistrationLink(_org);
+          _facilityRegistrationLink = _dataFactory.createPatientRegistrationLink(_site);
         });
   }
 

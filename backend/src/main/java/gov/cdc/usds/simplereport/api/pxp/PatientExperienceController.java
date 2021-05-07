@@ -26,7 +26,6 @@ import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -142,7 +141,7 @@ public class PatientExperienceController {
   public String getEntityName(
       @RequestParam String patientRegistrationLink, HttpServletRequest request) {
     PatientRegistrationLink link = prls.getPatientRegistrationLink(patientRegistrationLink);
-    if (Objects.nonNull(link.getFacility())) {
+    if (link.getFacility() != null) {
       return link.getFacility().getFacilityName();
     }
     return link.getOrganization().getOrganizationName();
