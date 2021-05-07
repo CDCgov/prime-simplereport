@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientRegistrationLinkException;
+import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import org.springframework.stereotype.Service;
@@ -13,9 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class PatientRegistrationLinkService {
 
   private PatientRegistrationLinkRepository prlrepo;
+  private CurrentPatientContextHolder contextHolder;
 
-  PatientRegistrationLinkService(PatientRegistrationLinkRepository prlrepo) {
+  PatientRegistrationLinkService(
+      PatientRegistrationLinkRepository prlrepo,
+      CurrentPatientContextHolder currentPatientContextHolder) {
     this.prlrepo = prlrepo;
+    this.contextHolder = currentPatientContextHolder;
   }
 
   public PatientRegistrationLink getPatientRegistrationLink(String patientRegistrationLink)
@@ -23,5 +28,10 @@ public class PatientRegistrationLinkService {
     return prlrepo
         .findByPatientRegistrationLink(patientRegistrationLink)
         .orElseThrow(() -> new InvalidPatientRegistrationLinkException());
+  }
+
+  public boolean flagRegistrationRequest() {
+    contextHolder.setPatientRegistrationRequest(true);
+    return true;
   }
 }

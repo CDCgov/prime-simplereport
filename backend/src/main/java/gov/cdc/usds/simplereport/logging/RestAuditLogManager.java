@@ -45,8 +45,9 @@ public class RestAuditLogManager {
    */
   public boolean logRestSuccess(HttpServletRequest request, Object resultObject) {
     PatientLink patientLink = _contextHolder.getPatientLink();
-    if (patientLink == null) {
-      LOG.error("Somehow reached PXP success handler with no patient link");
+    if (patientLink == null && !_contextHolder.isPatientRegistrationRequest()) {
+      LOG.error(
+          "Somehow reached PXP success handler outside of registration & with no patient link");
       return false;
     }
     try {

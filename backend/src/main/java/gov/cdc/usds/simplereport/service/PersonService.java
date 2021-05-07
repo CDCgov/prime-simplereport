@@ -200,9 +200,52 @@ public class PersonService {
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
       String preferredLanguage) {
+    return addPatient(
+        _os.getCurrentOrganization(),
+        facilityId,
+        lookupId,
+        firstName,
+        middleName,
+        lastName,
+        suffix,
+        birthDate,
+        address,
+        telephone,
+        role,
+        email,
+        race,
+        ethnicity,
+        tribalAffiliation,
+        gender,
+        residentCongregateSetting,
+        employedInHealthcare,
+        preferredLanguage);
+  }
+
+  @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
+  public Person addPatient(
+      Organization organization,
+      UUID facilityId,
+      String lookupId,
+      String firstName,
+      String middleName,
+      String lastName,
+      String suffix,
+      LocalDate birthDate,
+      StreetAddress address,
+      String telephone,
+      PersonRole role,
+      String email,
+      String race,
+      String ethnicity,
+      String tribalAffiliation,
+      String gender,
+      Boolean residentCongregateSetting,
+      Boolean employedInHealthcare,
+      String preferredLanguage) {
     Person newPatient =
         new Person(
-            _os.getCurrentOrganization(),
+            organization,
             lookupId,
             firstName,
             middleName,
@@ -219,7 +262,6 @@ public class PersonService {
             gender,
             residentCongregateSetting,
             employedInHealthcare);
-
     updatePersonFacility(newPatient, facilityId);
     Person savedPerson = _repo.save(newPatient);
     upsertPreferredLanguage(savedPerson, preferredLanguage);

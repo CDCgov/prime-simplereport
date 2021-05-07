@@ -13,14 +13,12 @@ import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponse;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.PatientPreferences;
-import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
-import gov.cdc.usds.simplereport.service.PatientRegistrationLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
@@ -31,15 +29,12 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -60,17 +55,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class PatientExperienceController {
   private static final Logger LOG = LoggerFactory.getLogger(PatientExperienceController.class);
 
-  @Autowired private PersonService ps;
+  private final PersonService ps;
+  private final PatientLinkService pls;
+  private final TestOrderService tos;
+  private final TestEventService tes;
+  private final TimeOfConsentService tocs;
 
-  @Autowired private PatientLinkService pls;
-
-  @Autowired private PatientRegistrationLinkService prls;
-
-  @Autowired private TestOrderService tos;
-
-  @Autowired private TestEventService tes;
-
-  @Autowired private TimeOfConsentService tocs;
+  public PatientExperienceController(
+      PersonService personService,
+      PatientLinkService patientLinkService,
+      TestOrderService testOrderService,
+      TestEventService testEventService,
+      TimeOfConsentService timeOfConsentService) {
+    this.ps = personService;
+    this.pls = patientLinkService;
+    this.tos = testOrderService;
+    this.tes = testEventService;
+    this.tocs = timeOfConsentService;
+  }
 
   @PostConstruct
   private void init() {
@@ -131,19 +133,5 @@ public class PatientExperienceController {
 
     ps.updateMyTestResultDeliveryPreference(data.getTestResultDelivery());
     pls.expireMyPatientLink();
-  }
-
-  // PostAuthorize will need to be updated once there is a concept of a general patient registration
-  // user that can be used for audit logging
-  @PreAuthorize("permitAll()")
-  @PostAuthorize("permitAll()")
-  @GetMapping("/register/entity-name")
-  public String getEntityName(
-      @RequestParam String patientRegistrationLink, HttpServletRequest request) {
-    PatientRegistrationLink link = prls.getPatientRegistrationLink(patientRegistrationLink);
-    if (link.getFacility() != null) {
-      return link.getFacility().getFacilityName();
-    }
-    return link.getOrganization().getOrganizationName();
   }
 }

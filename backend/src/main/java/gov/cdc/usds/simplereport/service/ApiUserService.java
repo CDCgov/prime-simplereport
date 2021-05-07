@@ -213,17 +213,42 @@ public class ApiUserService {
     }
   }
 
+  private static final String NOREPLY = "-noreply@simplereport.gov";
+  private static final String PATIENT_REGISTRATION_EMAIL = "patient-registration" + NOREPLY;
+
   private String getPatientIdEmail(Person patient) {
-    return patient.getInternalId() + "-noreply@simplereport.gov";
+    return patient.getInternalId() + NOREPLY;
+  }
+
+  /**
+   * The Patient Registration User should <em>always</em> exist. Originally it was created in a
+   * migration, but the app shouldn't crash if that row is missing. Instead, create it!
+   */
+  private ApiUser getPatientRegistrationApiUser() {
+    Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(PATIENT_REGISTRATION_EMAIL);
+    return found.orElseGet(
+        () -> {
+          LOG.info("Magic patient registration user not found. Created {}");
+          ApiUser magicUser =
+              new ApiUser(
+                  PATIENT_REGISTRATION_EMAIL,
+                  new PersonName("", "", "Patient Registration User", ""));
+          _apiUserRepo.save(magicUser);
+          return magicUser;
+        });
   }
 
   private ApiUser getCurrentApiUser() {
     IdentityAttributes userIdentity = _supplier.get();
     if (userIdentity == null) {
       if (_contextHolder.hasPatientLink()) {
-        // we're in a patient experience interaction
         return getPatientApiUser();
       }
+
+      if (_contextHolder.isPatientRegistrationRequest()) {
+        return getPatientRegistrationApiUser();
+      }
+
       throw new UnidentifiedUserException();
     }
 
