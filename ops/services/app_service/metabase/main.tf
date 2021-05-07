@@ -1,3 +1,12 @@
+locals {
+  app_setting_defaults = {
+    "MB_DB_CONNECTION_URI"           = var.postgres_url
+    "WEBSITE_VNET_ROUTE_ALL"         = 1
+    "WEBSITE_DNS_SERVER"             = "168.63.129.16"
+    "APPINSIGHTS_INSTRUMENTATIONKEY" = var.ai_instrumentation_key
+  }
+}
+
 resource "azurerm_app_service" "metabase" {
   name                = var.name
   resource_group_name = var.resource_group_name
@@ -10,12 +19,10 @@ resource "azurerm_app_service" "metabase" {
     linux_fx_version = "DOCKER|metabase/metabase"
   }
 
-  app_settings = {
-    "MB_DB_CONNECTION_URI"           = var.postgres_url
-    "WEBSITE_VNET_ROUTE_ALL"         = 1
-    "WEBSITE_DNS_SERVER"             = "168.63.129.16"
-    "APPINSIGHTS_INSTRUMENTATIONKEY" = var.ai_instrumentation_key
-  }
+  app_settings = merge(local.app_setting_defaults, {
+    "MB_DB_USER" = "${var.postgres_metabase_username}@${var.postgres_server_name}",
+    "MB_DB_PASS" = var.postgres_metabase_password
+  })
 
   identity {
     type = "SystemAssigned"
@@ -29,7 +36,9 @@ resource "azurerm_app_service" "metabase" {
       }
     }
   }
-  depends_on = [azurerm_postgresql_database.metabase]
+  depends_on = [
+    null_resource.add_metabase_permissions_for_no_phi_user
+  ]
 }
 
 resource "azurerm_key_vault_access_policy" "app_secret_access" {
