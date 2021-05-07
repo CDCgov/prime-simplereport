@@ -58,11 +58,7 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 
 const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
   if (networkError && process.env.REACT_APP_BASE_URL) {
-    if (
-      networkError &&
-      "statusCode" in networkError &&
-      networkError.statusCode === 401
-    ) {
+    if ("statusCode" in networkError && networkError.statusCode === 401) {
       console.warn("[UNATHORIZED_ACCESS] !!");
       console.warn("redirect-to:", process.env.REACT_APP_BASE_URL);
       window.location.replace(process.env.REACT_APP_BASE_URL);
