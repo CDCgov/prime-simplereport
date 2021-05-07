@@ -1,14 +1,14 @@
 import { Story, Meta } from "@storybook/react";
-// import { useState } from "react";
+import { useState } from "react";
 
 import Dropdown from "../app/commonComponents/Dropdown";
 
 const fruits = ["Apple", "Orange", "Pear"];
 
-const fruitOptions = Object.entries(fruits).map(([value, key]) => ({
-  value: value,
-  label: key,
-}));
+// const fruitOptions = Object.entries(fruits).map(([value, key]) => ({
+//   value: value,
+//   label: key,
+// }));
 
 export default {
   title: "Components/Form controls/Dropdown",
@@ -19,18 +19,26 @@ export default {
     name: "dropdown",
     label: "Dropdown",
     errorMessage: "Helpful error message",
-    options: fruitOptions.map((c) => ({ label: c, value: c })),
+    options: fruits.map((c) => ({ label: c, value: c })),
     defaultSelect: true,
   },
 } as Meta;
 
 type Props = React.ComponentProps<typeof Dropdown>;
 
-const Template: Story<Props> = (args) => (
-  <div className="grid-container margin-top-2">
-    <Dropdown {...args} />
-  </div>
-);
+const Template: Story<Props> = (args) => {
+  const [fruit, setFruit] = useState("");
+
+  return (
+    <div className="grid-container margin-top-2">
+      <Dropdown
+        {...args}
+        selectedValue={fruit}
+        onChange={(evt) => setFruit(evt.target.value)}
+      />
+    </div>
+  );
+};
 
 export const Default = Template.bind({});
 Default.args = {};
