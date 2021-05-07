@@ -2,10 +2,11 @@ package gov.cdc.usds.simplereport.db.model.auxiliary;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import gov.cdc.usds.simplereport.api.model.PersonUpdate;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class PatientRegistration {
+public class PatientRegistration extends PersonUpdate {
   private final String registrationLink;
   private final String lookupId;
   private final String firstName;
@@ -13,17 +14,6 @@ public class PatientRegistration {
   private final String lastName;
   private final String suffix;
   private final LocalDate birthDate;
-  private final StreetAddress address;
-  private final String telephone;
-  private final PersonRole role;
-  private final String email;
-  private final String race;
-  private final String ethnicity;
-  private final String tribalAffiliation;
-  private final String gender;
-  private final Boolean residentCongregateSetting;
-  private final Boolean employedInHealthcare;
-  private final String preferredLanguage;
 
   @JsonCreator
   public PatientRegistration(
@@ -45,6 +35,18 @@ public class PatientRegistration {
       @JsonProperty("residentCongregateSetting") Boolean residentCongregateSetting,
       @JsonProperty("employedInHealthcare") Boolean employedInHealthcare,
       @JsonProperty("preferredLanguage") String preferredLanguage) {
+    super(
+        address,
+        telephone,
+        role,
+        email,
+        race,
+        ethnicity,
+        tribalAffiliation,
+        gender,
+        residentCongregateSetting,
+        employedInHealthcare,
+        preferredLanguage);
     this.registrationLink = registrationLink;
     this.lookupId = lookupId;
     this.firstName = firstName;
@@ -52,17 +54,6 @@ public class PatientRegistration {
     this.lastName = lastName;
     this.suffix = suffix;
     this.birthDate = birthDate;
-    this.address = address;
-    this.telephone = telephone;
-    this.role = role;
-    this.email = email;
-    this.race = race;
-    this.ethnicity = ethnicity;
-    this.tribalAffiliation = tribalAffiliation;
-    this.gender = gender;
-    this.residentCongregateSetting = residentCongregateSetting;
-    this.employedInHealthcare = employedInHealthcare;
-    this.preferredLanguage = preferredLanguage;
   }
 
   public String getRegistrationLink() {
@@ -93,50 +84,6 @@ public class PatientRegistration {
     return birthDate;
   }
 
-  public StreetAddress getAddress() {
-    return address;
-  }
-
-  public String getTelephone() {
-    return telephone;
-  }
-
-  public PersonRole getRole() {
-    return role;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public String getRace() {
-    return race;
-  }
-
-  public String getEthnicity() {
-    return ethnicity;
-  }
-
-  public String getTribalAffiliation() {
-    return tribalAffiliation;
-  }
-
-  public String getGender() {
-    return gender;
-  }
-
-  public Boolean getResidentCongregateSetting() {
-    return residentCongregateSetting;
-  }
-
-  public Boolean getEmployedInHealthcare() {
-    return employedInHealthcare;
-  }
-
-  public String getPreferredLanguage() {
-    return preferredLanguage;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -153,17 +100,17 @@ public class PatientRegistration {
         && Objects.equals(lastName, that.lastName)
         && Objects.equals(suffix, that.suffix)
         && Objects.equals(birthDate, that.birthDate)
-        && Objects.equals(address, that.address)
-        && Objects.equals(telephone, that.telephone)
-        && role == that.role
-        && Objects.equals(email, that.email)
-        && Objects.equals(race, that.race)
-        && Objects.equals(ethnicity, that.ethnicity)
-        && Objects.equals(tribalAffiliation, that.tribalAffiliation)
-        && Objects.equals(gender, that.gender)
-        && Objects.equals(residentCongregateSetting, that.residentCongregateSetting)
-        && Objects.equals(employedInHealthcare, that.employedInHealthcare)
-        && Objects.equals(preferredLanguage, that.preferredLanguage);
+        && Objects.equals(getAddress(), that.getAddress())
+        && Objects.equals(getTelephone(), that.getTelephone())
+        && getRole() == that.getRole()
+        && Objects.equals(getEmail(), that.getEmail())
+        && Objects.equals(getRace(), that.getRace())
+        && Objects.equals(getEthnicity(), that.getEthnicity())
+        && Objects.equals(getTribalAffiliation(), that.getTribalAffiliation())
+        && Objects.equals(getGender(), that.getGender())
+        && Objects.equals(getResidentCongregateSetting(), that.getResidentCongregateSetting())
+        && Objects.equals(getEmployedInHealthcare(), that.getEmployedInHealthcare())
+        && Objects.equals(getPreferredLanguage(), that.getPreferredLanguage());
   }
 
   @Override
@@ -176,16 +123,16 @@ public class PatientRegistration {
         lastName,
         suffix,
         birthDate,
-        address,
-        telephone,
-        role,
-        email,
-        race,
-        ethnicity,
-        tribalAffiliation,
-        gender,
-        residentCongregateSetting,
-        employedInHealthcare,
-        preferredLanguage);
+        getAddress(),
+        getTelephone(),
+        getRole(),
+        getEmail(),
+        getRace(),
+        getEthnicity(),
+        getTribalAffiliation(),
+        getGender(),
+        getResidentCongregateSetting(),
+        getEmployedInHealthcare(),
+        getPreferredLanguage());
   }
 }

@@ -228,11 +228,12 @@ public class ApiUserService {
     Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(PATIENT_REGISTRATION_EMAIL);
     return found.orElseGet(
         () -> {
-          LOG.info("Magic patient registration user not found. Created {}");
           ApiUser magicUser =
               new ApiUser(
                   PATIENT_REGISTRATION_EMAIL,
                   new PersonName("", "", "Patient Registration User", ""));
+          LOG.info(
+              "Magic patient registration user not found. Created {}", magicUser.getInternalId());
           _apiUserRepo.save(magicUser);
           return magicUser;
         });
