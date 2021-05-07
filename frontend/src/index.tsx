@@ -10,7 +10,7 @@ import {
 } from "@apollo/client";
 import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import { createUploadLink } from "apollo-upload-client";
-import { onError } from "@apollo/client/link/error";
+import { ErrorResponse, onError } from "@apollo/client/link/error";
 import { toast } from "react-toastify";
 import Modal from "react-modal";
 
@@ -56,11 +56,23 @@ const authMiddleware = new ApolloLink((operation, forward) => {
   return forward(operation);
 });
 
-const logoutLink = onError(({ networkError, graphQLErrors }) => {
+const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
   if (networkError && process.env.REACT_APP_BASE_URL) {
-    console.error("network error", networkError);
-    console.log("redirecting to", process.env.REACT_APP_BASE_URL);
-    window.location.replace(process.env.REACT_APP_BASE_URL);
+    if (
+      networkError &&
+      "statusCode" in networkError &&
+      networkError.statusCode === 401
+    ) {
+      console.warn("[UNATHORIZED_ACCESS] !!");
+      console.warn("redirect-to:", process.env.REACT_APP_BASE_URL);
+      window.location.replace(process.env.REACT_APP_BASE_URL);
+    } else {
+      showError(
+        toast,
+        "Please check for errors and try again",
+        networkError.message
+      );
+    }
   }
   if (graphQLErrors) {
     const messages = graphQLErrors.map(({ message, locations, path }) => {
