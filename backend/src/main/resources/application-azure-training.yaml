@@ -1,13 +1,13 @@
 spring:
   profiles.include: no-security, no-okta-mgmt, create-sample-data
-graphql.servlet.cors:
-  allowed-origins:
-    - https://simple-report-api-training.azurewebsites.net
-    - https://simple-report-training.azureedge.net
-    - https://training.simplereport.gov
 simple-report:
   patient-link-url: https://training.simplereport.gov/app/pxp?plid=
   sendgrid:
     enabled: false
+  cors:
+    allowed-origins:
+      - https://simple-report-api-training.azurewebsites.net
+      - https://simple-report-training.azureedge.net
+      - https://training.simplereport.gov
 twilio:
   enabled: false

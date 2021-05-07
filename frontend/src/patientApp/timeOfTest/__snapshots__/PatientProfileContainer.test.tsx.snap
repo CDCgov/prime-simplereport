@@ -9,7 +9,7 @@ exports[`PatientProfileContainer snapshot 1`] = `
   >
     <div
       aria-label="progress"
-      className="usa-step-indicator usa-step-indicator--counters-sm margin-y-205"
+      className="usa-step-indicator  usa-step-indicator--counters-sm margin-y-205"
     >
       <ol
         className="usa-step-indicator__segments"
@@ -100,7 +100,7 @@ exports[`PatientProfileContainer snapshot 1`] = `
       <h3
         className="font-heading-sm"
       >
-        Preferred Language
+        Preferred language
       </h3>
       <p>
         Not provided
@@ -172,7 +172,7 @@ exports[`PatientProfileContainer snapshot 1`] = `
       <h3
         className="font-heading-sm"
       >
-        Tribal Affiliation
+        Tribal affiliation
       </h3>
       <p>
         Not provided
@@ -193,7 +193,7 @@ exports[`PatientProfileContainer snapshot 1`] = `
       <h3
         className="font-heading-sm"
       >
-        Resident in congregate care/living setting
+        Are you a resident in a congregate living setting?
       </h3>
       <p>
         Yes
@@ -201,7 +201,7 @@ exports[`PatientProfileContainer snapshot 1`] = `
       <h3
         className="font-heading-sm"
       >
-        Employed in healthcare
+        Are you a health care worker?
       </h3>
       <p>
         Yes

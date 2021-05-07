@@ -120,14 +120,14 @@ public class DemoOktaRepository implements OktaRepository {
     }
   }
 
-  public Map<String, OrganizationRoleClaims> getAllUsersForOrganization(Organization org) {
+  public Set<String> getAllUsersForOrganization(Organization org) {
     if (!orgUsernamesMap.containsKey(org.getExternalId())) {
       throw new IllegalGraphqlArgumentException(
           "Cannot get Okta users from nonexistent organization.");
     }
     return orgUsernamesMap.get(org.getExternalId()).stream()
         .filter(u -> !inactiveUsernames.contains(u))
-        .collect(Collectors.toMap(u -> u, u -> usernameOrgRolesMap.get(u)));
+        .collect(Collectors.toUnmodifiableSet());
   }
 
   // this method doesn't mean much in a demo env

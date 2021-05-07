@@ -14,11 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
   private static final String FAKE_SWAB_TYPE = "012345678";
+  private static final int STANDARD_TEST_LENGTH = 15;
   @Autowired private DeviceTypeRepository _deviceTypeRepo;
 
   @Test
   void fetchDeviceTypes() {
-    _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", FAKE_SWAB_TYPE));
+    _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", FAKE_SWAB_TYPE, STANDARD_TEST_LENGTH));
 
     DeviceType deviceType = _service.fetchDeviceTypes().get(0);
 
@@ -27,6 +28,18 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals(deviceType.getModel(), "C");
     assertEquals(deviceType.getLoincCode(), "D");
     assertEquals(deviceType.getSwabType(), FAKE_SWAB_TYPE);
+    assertEquals(15, deviceType.getTestLength());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void fetchDeviceType_carestartTestLength() {
+    _service.createDeviceType("CareStart", "B", "C", "D", FAKE_SWAB_TYPE);
+
+    DeviceType deviceType = _service.fetchDeviceTypes().get(0);
+    System.out.print(deviceType.toString());
+
+    assertEquals(10, deviceType.getTestLength());
   }
 
   @Test
@@ -37,7 +50,8 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   @Test
   void updateDeviceType_baseUser_error() {
     DeviceType deviceType =
-        _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", FAKE_SWAB_TYPE));
+        _deviceTypeRepo.save(
+            new DeviceType("A", "B", "C", "D", FAKE_SWAB_TYPE, STANDARD_TEST_LENGTH));
     assertSecurityError(
         () -> _service.updateDeviceType(deviceType.getInternalId(), "1", "2", "3", "4", "5"));
   }
@@ -45,7 +59,8 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   @Test
   void removeDeviceType_baseUser_eror() {
     DeviceType deviceType =
-        _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", FAKE_SWAB_TYPE));
+        _deviceTypeRepo.save(
+            new DeviceType("A", "B", "C", "D", FAKE_SWAB_TYPE, STANDARD_TEST_LENGTH));
     assertSecurityError(() -> _service.removeDeviceType(deviceType));
   }
 

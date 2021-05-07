@@ -25,7 +25,7 @@ exports[`DOB snapshot matches 1`] = `
           Date of birth
         </label>
         <span
-          className="usa-hint text-ls-1"
+          className="usa-hint"
         >
           MM/DD/YYYY or MMDDYYYY
         </span>

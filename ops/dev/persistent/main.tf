@@ -2,6 +2,10 @@ locals {
   project = "prime"
   name    = "simple-report"
   env     = "dev"
+
+  network_cidr = "10.1.0.0/16"
+  rg_name      = data.azurerm_resource_group.dev.name
+  rg_location  = data.azurerm_resource_group.dev.location
   management_tags = {
     prime-app      = "simple-report"
     environment    = local.env
@@ -13,8 +17,8 @@ module "monitoring" {
   source        = "../../services/monitoring"
   env           = local.env
   management_rg = data.azurerm_resource_group.global.name
-  rg_location   = data.azurerm_resource_group.dev.location
-  rg_name       = data.azurerm_resource_group.dev.name
+  rg_location   = local.rg_location
+  rg_name       = local.rg_name
 
   app_url = "${local.env}.simplereport.gov"
 
@@ -25,27 +29,42 @@ module "bastion" {
   source = "../../services/bastion_host"
   env    = local.env
 
-  resource_group_location = data.azurerm_resource_group.dev.location
-  resource_group_name     = data.azurerm_resource_group.dev.name
+  resource_group_location = local.rg_location
+  resource_group_name     = local.rg_name
 
-  virtual_network_name = "${local.name}-${local.env}-network"
-  subnet_cidr          = ["10.1.253.0/27"]
+  virtual_network = module.vnet.network
 
   tags = local.management_tags
+}
+
+resource "random_password" "random_nophi_password" {
+  length           = 30
+  special          = false
+  override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
 module "db" {
   source      = "../../services/postgres_db"
   env         = local.env
-  rg_location = data.azurerm_resource_group.dev.location
-  rg_name     = data.azurerm_resource_group.dev.name
+  rg_location = local.rg_location
+  rg_name     = local.rg_name
 
   global_vault_id      = data.azurerm_key_vault.global.id
   db_vault_id          = data.azurerm_key_vault.db_keys.id
   db_encryption_key_id = data.azurerm_key_vault_key.db_encryption_key.id
   public_access        = false
 
-  log_workspace_id = module.monitoring.log_analytics_workspace_id
+  nophi_user_password = random_password.random_nophi_password.result
+  log_workspace_id    = module.monitoring.log_analytics_workspace_id
 
   tags = local.management_tags
+}
+
+module "vnet" {
+  source              = "../../services/virtual_network"
+  env                 = local.env
+  resource_group_name = local.rg_name
+  network_address     = local.network_cidr
+  management_tags     = local.management_tags
+  location            = local.rg_location
 }

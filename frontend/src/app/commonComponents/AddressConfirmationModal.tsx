@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { formatAddress, newLineSpan } from "../utils/address";
 
 import Alert from "./Alert";
-import Button from "./Button";
+import Button from "./Button/Button";
 import RadioGroup from "./RadioGroup";
 import Modal from "./Modal";
 import "./AddressConfirmation.scss";

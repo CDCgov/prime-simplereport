@@ -72,16 +72,19 @@ public class EmailService {
         templateData.getTemplateName(), templateData.toTemplateVariables());
   }
 
-  private Attachments getAttachmentsFromResource(final String attachmentResourceName) {
+  private Attachments getAttachmentsFromResource(final String attachmentResourceName)
+      throws IOException {
     final String resourcePath = "attachments/" + attachmentResourceName;
-    final InputStream content = getClass().getClassLoader().getResourceAsStream(resourcePath);
-    if (content == null) {
-      return null;
-    }
+    try (final InputStream content =
+        getClass().getClassLoader().getResourceAsStream(resourcePath)) {
+      if (content == null) {
+        return null;
+      }
 
-    return new Attachments.Builder(attachmentResourceName, content)
-        .withType("application/pdf")
-        .build();
+      return new Attachments.Builder(attachmentResourceName, content)
+          .withType("application/pdf")
+          .build();
+    }
   }
 
   public String send(

@@ -14,11 +14,13 @@
     "@microsoft/applicationinsights-react-js": "^3.0.5",
     "@microsoft/applicationinsights-web": "^2.5.10",
     "@reduxjs/toolkit": "^1.4.0",
+    "@storybook/addon-a11y": "^6.2.9",
     "@szhsin/react-menu": "^1.5.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^13.1.1",
-    "@types/google-libphonenumber": "^7.4.19",
+    "@trussworks/react-uswds": "^1.16.0",
+    "@types/google-libphonenumber": "^7.4.20",
     "@types/react-router-dom": "^5.1.6",
     "@types/react-transition-group": "^4.4.1",
     "ajv": "^6.12.6",
@@ -32,8 +34,8 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-html-id": "^0.1.5",
-    "react-modal": "^3.11.2",
-    "react-papaparse": "^3.9.0",
+    "react-modal": "^3.13.1",
+    "react-papaparse": "^3.14.0",
     "react-qr-code": "^1.0.5",
     "react-redux": "^7.2.1",
     "react-router": "^5.2.0",
@@ -58,12 +60,14 @@
     "prebuild": "yarn compile-scss",
     "build": "INLINE_RUNTIME_CHUNK=false REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) react-scripts build",
     "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/static/commit.txt",
-    "lint": "npm-run-all -p lint:eslint lint:prettier",
-    "lint:write": "npm-run-all -p lint:eslint:write lint:prettier:write",
+    "lint": "npm-run-all -p lint:eslint lint:prettier lint:stylelint",
+    "lint:write": "npm-run-all -p lint:eslint:write lint:prettier:write lint:stylelint:write",
     "lint:eslint": "eslint --quiet 'src/**/*.{js,ts,jsx,tsx}'",
     "lint:eslint:write": "eslint --fix 'src/**/*.{js,ts,jsx,tsx}'",
     "lint:prettier": "prettier -c 'src/**/*.{js,ts,jsx,tsx}'",
     "lint:prettier:write": "prettier --write 'src/**/*.{js,ts,jsx,tsx}'",
+    "lint:stylelint": "stylelint '**/*.scss'",
+    "lint:stylelint:write": "stylelint '**/*.scss' --fix",
     "test": "TZ='UTC' react-scripts test",
     "test:ci": "CI=true REACT_APP_TEST_TRIBAL_AFFILIATION_BYPASS=true yarn test --coverage",
     "e2e": "./e2e.sh default",
@@ -71,7 +75,9 @@
     "e2e:brave": "./e2e.sh brave",
     "eject": "react-scripts eject",
     "compile-scss": "node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss --output-style compressed -o ./src/styles/ ./src/scss/App.scss",
-    "watch-css": "yarn compile-scss && node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss -o src/styles/ --watch --recursive src/scss/App.scss"
+    "watch-css": "yarn compile-scss && node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss -o src/styles/ --watch --recursive src/scss/App.scss",
+    "storybook": "yarn watch-css & start-storybook -p 6006 -s public",
+    "build-storybook": "yarn compile-scss && build-storybook -s public"
   },
   "prettier": {
     "singleQuote": false
@@ -106,7 +112,17 @@
       ],
       "import/newline-after-import": 1,
       "import/no-commonjs": 0
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/*.stories.*"
+        ],
+        "rules": {
+          "import/no-anonymous-default-export": "off"
+        }
+      }
+    ]
   },
   "browserslist": {
     "production": [
@@ -121,6 +137,12 @@
     ]
   },
   "devDependencies": {
+    "@storybook/addon-actions": "^6.2.9",
+    "@storybook/addon-essentials": "^6.2.9",
+    "@storybook/addon-links": "^6.2.9",
+    "@storybook/node-logger": "^6.2.9",
+    "@storybook/preset-create-react-app": "^3.1.7",
+    "@storybook/react": "^6.2.9",
     "@types/apollo-upload-client": "^14.1.0",
     "@types/classnames": "^2.2.11",
     "@types/jest": "^26.0.22",
@@ -129,24 +151,30 @@
     "@types/react-dom": "^17.0.0",
     "@types/react-modal": "^3.10.6",
     "@types/react-redux": "^7.1.11",
-    "@types/react-test-renderer": "^17.0.0",
+    "@types/react-test-renderer": "^17.0.1",
     "@types/redux-mock-store": "^1.0.2",
     "@types/smartystreets-javascript-sdk": "^1.6.2",
     "@types/uuid": "^8.3.0",
+    "babel-loader": "8.1.0",
     "chromedriver": "^88.0.0",
     "dayjs": "^1.10.4",
-    "eslint-config-prettier": "^8.1.0",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-graphql": "^4.0.0",
     "eslint-plugin-import": "^2.22.1",
-    "faker": "^5.4.0",
+    "faker": "^5.5.3",
     "geckodriver": "^1.22.3",
-    "mockdate": "^3.0.2",
+    "mockdate": "^3.0.5",
     "nightwatch": "^1.5.1",
     "node-sass": "^4.14.1",
     "npm-run-all": "^4.1.5",
-    "prettier": "2.2.0",
+    "prettier": "^2.2.1",
     "react-test-renderer": "^17.0.1",
     "redux-mock-store": "^1.5.4",
-    "typescript": "^4.1.2"
+    "stylelint": "^13.12.0",
+    "stylelint-config-standard": "^21.0.0",
+    "typescript": "^4.2.4"
+  },
+  "resolutions": {
+    "@storybook/react/babel-loader": "8.1.0"
   }
 }

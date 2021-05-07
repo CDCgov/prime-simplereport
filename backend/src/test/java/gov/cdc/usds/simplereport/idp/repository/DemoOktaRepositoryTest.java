@@ -12,7 +12,6 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -106,18 +105,12 @@ class DemoOktaRepositoryTest {
                         true)
                     .get()));
 
-    assertTrue(
-        new OrganizationRoleClaimsMatcher(amos_expected)
-            .matches(_repo.getAllUsersForOrganization(ABC).get(AMOS.getUsername())));
-    assertTrue(
-        new OrganizationRoleClaimsMatcher(brad_expected)
-            .matches(_repo.getAllUsersForOrganization(ABC).get(BRAD.getUsername())));
-    assertTrue(
-        new OrganizationRoleClaimsMatcher(charles_expected)
-            .matches(_repo.getAllUsersForOrganization(ABC).get(CHARLES.getUsername())));
-    assertTrue(
-        new OrganizationRoleClaimsMatcher(diane_expected)
-            .matches(_repo.getAllUsersForOrganization(ABC).get(DIANE.getUsername())));
+    Set<String> abcUsernames = _repo.getAllUsersForOrganization(ABC);
+
+    assertTrue(abcUsernames.contains(AMOS.getUsername()));
+    assertTrue(abcUsernames.contains(BRAD.getUsername()));
+    assertTrue(abcUsernames.contains(CHARLES.getUsername()));
+    assertTrue(abcUsernames.contains(DIANE.getUsername()));
   }
 
   @Test
@@ -153,7 +146,7 @@ class DemoOktaRepositoryTest {
                     .get()));
     assertTrue(
         new OrganizationRoleClaimsMatcher(expected_1)
-            .matches(_repo.getAllUsersForOrganization(ABC).get(AMOS.getUsername())));
+            .matches(_repo.getOrganizationRoleClaimsForUser(AMOS.getUsername()).get()));
 
     assertTrue(
         new OrganizationRoleClaimsMatcher(expected_2)
@@ -167,7 +160,7 @@ class DemoOktaRepositoryTest {
                     .get()));
     assertTrue(
         new OrganizationRoleClaimsMatcher(expected_2)
-            .matches(_repo.getAllUsersForOrganization(ABC).get(AMOS.getUsername())));
+            .matches(_repo.getOrganizationRoleClaimsForUser(AMOS.getUsername()).get()));
 
     assertTrue(
         new OrganizationRoleClaimsMatcher(expected_3)
@@ -175,7 +168,7 @@ class DemoOktaRepositoryTest {
                 _repo.updateUserPrivileges(AMOS.getUsername(), ABC, Set.of(), Set.of()).get()));
     assertTrue(
         new OrganizationRoleClaimsMatcher(expected_3)
-            .matches(_repo.getAllUsersForOrganization(ABC).get(AMOS.getUsername())));
+            .matches(_repo.getOrganizationRoleClaimsForUser(AMOS.getUsername()).get()));
   }
 
   @Test
@@ -261,19 +254,18 @@ class DemoOktaRepositoryTest {
             OrganizationRole.NO_ACCESS, OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN),
         true);
 
-    Map<String, OrganizationRoleClaims> all_users_actual = _repo.getAllUsersForOrganization(ABC);
     assertTrue(
         new OrganizationRoleClaimsMatcher(amos_expected)
-            .matches(all_users_actual.get(AMOS.getUsername())));
+            .matches(_repo.getOrganizationRoleClaimsForUser(AMOS.getUsername()).get()));
     assertTrue(
         new OrganizationRoleClaimsMatcher(brad_expected)
-            .matches(all_users_actual.get(BRAD.getUsername())));
+            .matches(_repo.getOrganizationRoleClaimsForUser(BRAD.getUsername()).get()));
     assertTrue(
         new OrganizationRoleClaimsMatcher(charles_expected)
-            .matches(all_users_actual.get(CHARLES.getUsername())));
+            .matches(_repo.getOrganizationRoleClaimsForUser(CHARLES.getUsername()).get()));
     assertTrue(
         new OrganizationRoleClaimsMatcher(diane_expected)
-            .matches(all_users_actual.get(DIANE.getUsername())));
+            .matches(_repo.getOrganizationRoleClaimsForUser(DIANE.getUsername()).get()));
   }
 
   @Test
@@ -287,8 +279,8 @@ class DemoOktaRepositoryTest {
         true);
     _repo.setUserIsActive(AMOS.getUsername(), false);
 
-    assertTrue(_repo.getAllUsersForOrganization(ABC).containsKey(BRAD.getUsername()));
-    assertFalse(_repo.getAllUsersForOrganization(ABC).containsKey(AMOS.getUsername()));
+    assertTrue(_repo.getAllUsersForOrganization(ABC).contains(BRAD.getUsername()));
+    assertFalse(_repo.getAllUsersForOrganization(ABC).contains(AMOS.getUsername()));
   }
 
   @Test
@@ -311,8 +303,8 @@ class DemoOktaRepositoryTest {
     assertTrue(
         new OrganizationRoleClaimsMatcher(amos_expected)
             .matches(_repo.getOrganizationRoleClaimsForUser(AMOS.getUsername()).get()));
-    assertTrue(_repo.getAllUsersForOrganization(ABC).containsKey(AMOS.getUsername()));
-    assertTrue(_repo.getAllUsersForOrganization(ABC).containsKey(BRAD.getUsername()));
+    assertTrue(_repo.getAllUsersForOrganization(ABC).contains(AMOS.getUsername()));
+    assertTrue(_repo.getAllUsersForOrganization(ABC).contains(BRAD.getUsername()));
 
     _repo.deleteOrganization(ABC);
 

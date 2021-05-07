@@ -1,7 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Button from "../../../commonComponents/Button";
+import Button from "../../../commonComponents/Button/Button";
 import Dropdown from "../../../commonComponents/Dropdown";
 import Checkboxes from "../../../commonComponents/Checkboxes";
 import { FacilityErrors } from "../facilitySchema";
@@ -26,7 +26,7 @@ const ManageDevices: React.FC<Props> = ({
   errors,
   validateField,
 }) => {
-  const deviceErrors = [];
+  const deviceErrors: React.ReactNode[] = [];
   if (errors.deviceTypes) {
     deviceErrors.push(errors.deviceTypes);
   }
@@ -133,8 +133,8 @@ const ManageDevices: React.FC<Props> = ({
       </div>
       {deviceErrors.length > 0 && (
         <ul className="text-bold text-secondary-vivid">
-          {deviceErrors.map((err) => (
-            <li key={err}>{err}</li>
+          {deviceErrors.map((err, index) => (
+            <li key={index}>{err}</li>
           ))}
         </ul>
       )}

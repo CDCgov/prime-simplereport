@@ -16,9 +16,14 @@ spring:
         default_schema: public # Using the public schema for now, so we don't have to add a manual step to the deploy process
   liquibase:
     default-schema: ${spring.jpa.properties.hibernate.default_schema}
+    parameters:
+      noPhiUsername: simple_report_no_phi
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
+  session:
+    store-type: jdbc
+    timeout: 15m
 graphql:
   servlet:
     mapping: /graphql
@@ -59,7 +64,7 @@ simple-report:
   authorization:
     # these are overridden by application-dev, -prod, -test, etc
     role-claim: dev_roles
-    role-prefix: "SR-DEV-TENANT:"
+    environment-name: "DEV"
   sendgrid:
     enabled: false
     from-email: support@simplereport.gov
@@ -68,6 +73,11 @@ simple-report:
       - Protect-ServiceDesk@hhs.gov
     waitlist-recipient: 
       - support@simplereport.gov
+  cors:
+    allowed-methods:
+      - GET
+      - HEAD
+      - POST
 twilio:
   from-number: "+12023014570"
 logging:

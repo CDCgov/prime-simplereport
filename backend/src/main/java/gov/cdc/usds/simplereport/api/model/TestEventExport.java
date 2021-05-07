@@ -61,12 +61,14 @@ public class TestEventExport {
           "ambiguous", "A",
           "unknown", genderUnknown,
           "unk", genderUnknown,
+          "refused", genderUnknown,
           "notapplicable", "N");
 
   private Map<String, String> ethnicityMap =
       Map.of(
           "hispanic", "H",
-          "not_hispanic", "N");
+          "not_hispanic", "N",
+          "refused", "U");
 
   private Map<TestResult, String> testResultMap =
       Map.of(
@@ -81,7 +83,7 @@ public class TestEventExport {
           "black", "2054-5",
           "pacific", "2076-8",
           "white", "2106-3",
-          "other", "2131-1", // not currently in our app
+          "other", "2131-1",
           "unknown", raceUnknown,
           "refused", "ASKU" // Asked, but unknown
           );

@@ -8,7 +8,7 @@ import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
-import Button from "../commonComponents/Button";
+import Button from "../commonComponents/Button/Button";
 import { RootState } from "../store";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
@@ -35,8 +35,8 @@ export const ADD_PATIENT = gql`
     $ethnicity: String
     $tribalAffiliation: String
     $gender: String
-    $residentCongregateSetting: Boolean!
-    $employedInHealthcare: Boolean!
+    $residentCongregateSetting: Boolean
+    $employedInHealthcare: Boolean
     $preferredLanguage: String
   ) {
     addPatient(
@@ -120,8 +120,8 @@ const AddPatient = () => {
             race: null,
             ethnicity: null,
             gender: null,
-            residentCongregateSetting: null,
-            employedInHealthcare: null,
+            residentCongregateSetting: undefined,
+            employedInHealthcare: undefined,
             tribalAffiliation: null,
             birthDate: null,
             telephone: null,

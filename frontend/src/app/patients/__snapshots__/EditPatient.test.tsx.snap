@@ -75,23 +75,19 @@ Object {
                   <legend
                     class="prime-formgroup-heading usa-legend"
                   >
-                    General info
+                    General information
                   </legend>
                   <p
                     class="message--required"
                   >
-                    All fields marked with 
-                    <span
-                      class="usa-sr-only"
+                    Required fields are marked with an asterisk (
+                    <abbr
+                      class="usa-hint usa-hint--required"
+                      title="required"
                     >
-                      Required
-                    </span>
-                    <span
-                      class="usa-hint--required"
-                    >
-                       *
-                    </span>
-                     are required
+                      *
+                    </abbr>
+                    ).
                   </p>
                   <div
                     class="usa-form"
@@ -104,16 +100,13 @@ Object {
                         for="20"
                       >
                         First name
-                        <span
-                          class="usa-sr-only"
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
                         >
-                          Required
-                        </span>
-                        <span
-                          class="usa-hint--required"
-                        >
-                           *
-                        </span>
+                           
+                          *
+                        </abbr>
                       </label>
                       <input
                         aria-disabled="false"
@@ -152,16 +145,13 @@ Object {
                         for="22"
                       >
                         Last name
-                        <span
-                          class="usa-sr-only"
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
                         >
-                          Required
-                        </span>
-                        <span
-                          class="usa-hint--required"
-                        >
-                           *
-                        </span>
+                           
+                          *
+                        </abbr>
                       </label>
                       <input
                         aria-disabled="false"
@@ -227,16 +217,13 @@ Object {
                         for="24"
                       >
                         Facility
-                        <span
-                          class="usa-sr-only"
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
                         >
-                          Required
-                        </span>
-                        <span
-                          class="usa-hint--required"
-                        >
-                           *
-                        </span>
+                           
+                          *
+                        </abbr>
                       </label>
                       <select
                         aria-required="true"
@@ -283,16 +270,13 @@ Object {
                         for="25"
                       >
                         Date of birth (mm/dd/yyyy)
-                        <span
-                          class="usa-sr-only"
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
                         >
-                          Required
-                        </span>
-                        <span
-                          class="usa-hint--required"
-                        >
-                           *
-                        </span>
+                           
+                          *
+                        </abbr>
                       </label>
                       <input
                         aria-disabled="false"
@@ -335,16 +319,13 @@ Object {
                             for="26"
                           >
                             Phone number
-                            <span
-                              class="usa-sr-only"
+                            <abbr
+                              class="usa-hint usa-hint--required"
+                              title="required"
                             >
-                              Required
-                            </span>
-                            <span
-                              class="usa-hint--required"
-                            >
-                               *
-                            </span>
+                               
+                              *
+                            </abbr>
                           </label>
                           <input
                             aria-required="true"
@@ -387,16 +368,13 @@ Object {
                         for="28"
                       >
                         Street address 1
-                        <span
-                          class="usa-sr-only"
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
                         >
-                          Required
-                        </span>
-                        <span
-                          class="usa-hint--required"
-                        >
-                           *
-                        </span>
+                           
+                          *
+                        </abbr>
                       </label>
                       <input
                         aria-required="true"
@@ -483,16 +461,13 @@ Object {
                             for="32"
                           >
                             State
-                            <span
-                              class="usa-sr-only"
+                            <abbr
+                              class="usa-hint usa-hint--required"
+                              title="required"
                             >
-                              Required
-                            </span>
-                            <span
-                              class="usa-hint--required"
-                            >
-                               *
-                            </span>
+                               
+                              *
+                            </abbr>
                           </label>
                           <select
                             aria-required="true"
@@ -814,16 +789,13 @@ Object {
                             for="33"
                           >
                             Zip code
-                            <span
-                              class="usa-sr-only"
+                            <abbr
+                              class="usa-hint usa-hint--required"
+                              title="required"
                             >
-                              Required
-                            </span>
-                            <span
-                              class="usa-hint--required"
-                            >
-                               *
-                            </span>
+                               
+                              *
+                            </abbr>
                           </label>
                           <input
                             aria-required="true"
@@ -853,7 +825,7 @@ Object {
                   <p
                     class="usa-hint maxw-prose"
                   >
-                    This information is important for public health efforts to recognize and address inequality in health outcomes.
+                    This information is collected as part of public health efforts to recognize and address inequality in health outcomes.
                   </p>
                   <fieldset
                     class="usa-fieldset prime-radios"
@@ -881,7 +853,7 @@ Object {
                           class="usa-radio__label"
                           for="34-val-native"
                         >
-                          American Indian or Alaskan Native
+                          American Indian/Alaskan Native
                         </label>
                       </div>
                       <div
@@ -917,7 +889,7 @@ Object {
                           class="usa-radio__label"
                           for="34-val-black"
                         >
-                          Black or African American
+                          Black/African American
                         </label>
                       </div>
                       <div
@@ -935,7 +907,7 @@ Object {
                           class="usa-radio__label"
                           for="34-val-pacific"
                         >
-                          Native Hawaiian or other Pacific Islander
+                          Native Hawaiian/other Pacific Islander
                         </label>
                       </div>
                       <div
@@ -962,16 +934,16 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="34-val-unknown"
+                          id="34-val-other"
                           name="race"
                           type="radio"
-                          value="unknown"
+                          value="other"
                         />
                         <label
                           class="usa-radio__label"
-                          for="34-val-unknown"
+                          for="34-val-other"
                         >
-                          Unknown
+                          Other
                         </label>
                       </div>
                       <div
@@ -989,7 +961,7 @@ Object {
                           class="usa-radio__label"
                           for="34-val-refused"
                         >
-                          Refused to answer
+                          Prefer not to answer
                         </label>
                       </div>
                     </div>
@@ -1009,7 +981,7 @@ Object {
                     <legend
                       class="usa-legend"
                     >
-                      Ethnicity
+                      Are you Hispanic or Latino?
                     </legend>
                     <div
                       class="usa-form-group"
@@ -1029,7 +1001,7 @@ Object {
                           class="usa-radio__label"
                           for="35-val-hispanic"
                         >
-                          Hispanic or Latino
+                          Yes
                         </label>
                       </div>
                       <div
@@ -1047,7 +1019,25 @@ Object {
                           class="usa-radio__label"
                           for="35-val-not_hispanic"
                         >
-                          Not Hispanic
+                          No
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="35-val-refused"
+                          name="ethnicity"
+                          type="radio"
+                          value="refused"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="35-val-refused"
+                        >
+                          Prefer not to answer
                         </label>
                       </div>
                     </div>
@@ -1058,29 +1048,11 @@ Object {
                     <legend
                       class="usa-legend"
                     >
-                      Biological Sex
+                      Biological sex
                     </legend>
                     <div
                       class="usa-form-group"
                     >
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="36-val-male"
-                          name="gender"
-                          type="radio"
-                          value="male"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="36-val-male"
-                        >
-                          Male
-                        </label>
-                      </div>
                       <div
                         class="usa-radio"
                       >
@@ -1105,6 +1077,24 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
+                          id="36-val-male"
+                          name="gender"
+                          type="radio"
+                          value="male"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="36-val-male"
+                        >
+                          Male
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
                           id="36-val-other"
                           name="gender"
                           type="radio"
@@ -1115,6 +1105,24 @@ Object {
                           for="36-val-other"
                         >
                           Other
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="36-val-refused"
+                          name="gender"
+                          type="radio"
+                          value="refused"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="36-val-refused"
+                        >
+                          Prefer not to answer
                         </label>
                       </div>
                     </div>
@@ -1138,18 +1146,20 @@ Object {
                     <legend
                       class="usa-legend"
                     >
-                      Resident in congregate care/living setting?
-                      <span
-                        class="usa-sr-only"
+                      Are you a resident in a congregate living setting?
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
                       >
-                        Required
-                      </span>
-                      <span
-                        class="usa-hint--required"
-                      >
-                         *
-                      </span>
+                         
+                        *
+                      </abbr>
                     </legend>
+                    <span
+                      class="usa-hint"
+                    >
+                      For example: nursing home, group home, prison, jail, or military
+                    </span>
                     <div
                       class="usa-form-group"
                     >
@@ -1190,6 +1200,24 @@ Object {
                           No
                         </label>
                       </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="true"
+                          id="37-val-UNKNOWN"
+                          name="residentCongregateSetting"
+                          type="radio"
+                          value="UNKNOWN"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="37-val-UNKNOWN"
+                        >
+                          Unknown
+                        </label>
+                      </div>
                     </div>
                   </fieldset>
                   <fieldset
@@ -1198,17 +1226,14 @@ Object {
                     <legend
                       class="usa-legend"
                     >
-                      Work in Healthcare?
-                      <span
-                        class="usa-sr-only"
+                      Are you a health care worker?
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
                       >
-                        Required
-                      </span>
-                      <span
-                        class="usa-hint--required"
-                      >
-                         *
-                      </span>
+                         
+                        *
+                      </abbr>
                     </legend>
                     <div
                       class="usa-form-group"
@@ -1248,6 +1273,24 @@ Object {
                           for="38-val-NO"
                         >
                           No
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="true"
+                          id="38-val-UNKNOWN"
+                          name="employedInHealthcare"
+                          type="radio"
+                          value="UNKNOWN"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="38-val-UNKNOWN"
+                        >
+                          Unknown
                         </label>
                       </div>
                     </div>
@@ -1346,23 +1389,19 @@ Object {
                 <legend
                   class="prime-formgroup-heading usa-legend"
                 >
-                  General info
+                  General information
                 </legend>
                 <p
                   class="message--required"
                 >
-                  All fields marked with 
-                  <span
-                    class="usa-sr-only"
+                  Required fields are marked with an asterisk (
+                  <abbr
+                    class="usa-hint usa-hint--required"
+                    title="required"
                   >
-                    Required
-                  </span>
-                  <span
-                    class="usa-hint--required"
-                  >
-                     *
-                  </span>
-                   are required
+                    *
+                  </abbr>
+                  ).
                 </p>
                 <div
                   class="usa-form"
@@ -1375,16 +1414,13 @@ Object {
                       for="20"
                     >
                       First name
-                      <span
-                        class="usa-sr-only"
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
                       >
-                        Required
-                      </span>
-                      <span
-                        class="usa-hint--required"
-                      >
-                         *
-                      </span>
+                         
+                        *
+                      </abbr>
                     </label>
                     <input
                       aria-disabled="false"
@@ -1423,16 +1459,13 @@ Object {
                       for="22"
                     >
                       Last name
-                      <span
-                        class="usa-sr-only"
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
                       >
-                        Required
-                      </span>
-                      <span
-                        class="usa-hint--required"
-                      >
-                         *
-                      </span>
+                         
+                        *
+                      </abbr>
                     </label>
                     <input
                       aria-disabled="false"
@@ -1498,16 +1531,13 @@ Object {
                       for="24"
                     >
                       Facility
-                      <span
-                        class="usa-sr-only"
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
                       >
-                        Required
-                      </span>
-                      <span
-                        class="usa-hint--required"
-                      >
-                         *
-                      </span>
+                         
+                        *
+                      </abbr>
                     </label>
                     <select
                       aria-required="true"
@@ -1554,16 +1584,13 @@ Object {
                       for="25"
                     >
                       Date of birth (mm/dd/yyyy)
-                      <span
-                        class="usa-sr-only"
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
                       >
-                        Required
-                      </span>
-                      <span
-                        class="usa-hint--required"
-                      >
-                         *
-                      </span>
+                         
+                        *
+                      </abbr>
                     </label>
                     <input
                       aria-disabled="false"
@@ -1606,16 +1633,13 @@ Object {
                           for="26"
                         >
                           Phone number
-                          <span
-                            class="usa-sr-only"
+                          <abbr
+                            class="usa-hint usa-hint--required"
+                            title="required"
                           >
-                            Required
-                          </span>
-                          <span
-                            class="usa-hint--required"
-                          >
-                             *
-                          </span>
+                             
+                            *
+                          </abbr>
                         </label>
                         <input
                           aria-required="true"
@@ -1658,16 +1682,13 @@ Object {
                       for="28"
                     >
                       Street address 1
-                      <span
-                        class="usa-sr-only"
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
                       >
-                        Required
-                      </span>
-                      <span
-                        class="usa-hint--required"
-                      >
-                         *
-                      </span>
+                         
+                        *
+                      </abbr>
                     </label>
                     <input
                       aria-required="true"
@@ -1754,16 +1775,13 @@ Object {
                           for="32"
                         >
                           State
-                          <span
-                            class="usa-sr-only"
+                          <abbr
+                            class="usa-hint usa-hint--required"
+                            title="required"
                           >
-                            Required
-                          </span>
-                          <span
-                            class="usa-hint--required"
-                          >
-                             *
-                          </span>
+                             
+                            *
+                          </abbr>
                         </label>
                         <select
                           aria-required="true"
@@ -2085,16 +2103,13 @@ Object {
                           for="33"
                         >
                           Zip code
-                          <span
-                            class="usa-sr-only"
+                          <abbr
+                            class="usa-hint usa-hint--required"
+                            title="required"
                           >
-                            Required
-                          </span>
-                          <span
-                            class="usa-hint--required"
-                          >
-                             *
-                          </span>
+                             
+                            *
+                          </abbr>
                         </label>
                         <input
                           aria-required="true"
@@ -2124,7 +2139,7 @@ Object {
                 <p
                   class="usa-hint maxw-prose"
                 >
-                  This information is important for public health efforts to recognize and address inequality in health outcomes.
+                  This information is collected as part of public health efforts to recognize and address inequality in health outcomes.
                 </p>
                 <fieldset
                   class="usa-fieldset prime-radios"
@@ -2152,7 +2167,7 @@ Object {
                         class="usa-radio__label"
                         for="34-val-native"
                       >
-                        American Indian or Alaskan Native
+                        American Indian/Alaskan Native
                       </label>
                     </div>
                     <div
@@ -2188,7 +2203,7 @@ Object {
                         class="usa-radio__label"
                         for="34-val-black"
                       >
-                        Black or African American
+                        Black/African American
                       </label>
                     </div>
                     <div
@@ -2206,7 +2221,7 @@ Object {
                         class="usa-radio__label"
                         for="34-val-pacific"
                       >
-                        Native Hawaiian or other Pacific Islander
+                        Native Hawaiian/other Pacific Islander
                       </label>
                     </div>
                     <div
@@ -2233,16 +2248,16 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="34-val-unknown"
+                        id="34-val-other"
                         name="race"
                         type="radio"
-                        value="unknown"
+                        value="other"
                       />
                       <label
                         class="usa-radio__label"
-                        for="34-val-unknown"
+                        for="34-val-other"
                       >
-                        Unknown
+                        Other
                       </label>
                     </div>
                     <div
@@ -2260,7 +2275,7 @@ Object {
                         class="usa-radio__label"
                         for="34-val-refused"
                       >
-                        Refused to answer
+                        Prefer not to answer
                       </label>
                     </div>
                   </div>
@@ -2280,7 +2295,7 @@ Object {
                   <legend
                     class="usa-legend"
                   >
-                    Ethnicity
+                    Are you Hispanic or Latino?
                   </legend>
                   <div
                     class="usa-form-group"
@@ -2300,7 +2315,7 @@ Object {
                         class="usa-radio__label"
                         for="35-val-hispanic"
                       >
-                        Hispanic or Latino
+                        Yes
                       </label>
                     </div>
                     <div
@@ -2318,7 +2333,25 @@ Object {
                         class="usa-radio__label"
                         for="35-val-not_hispanic"
                       >
-                        Not Hispanic
+                        No
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="false"
+                        id="35-val-refused"
+                        name="ethnicity"
+                        type="radio"
+                        value="refused"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        for="35-val-refused"
+                      >
+                        Prefer not to answer
                       </label>
                     </div>
                   </div>
@@ -2329,29 +2362,11 @@ Object {
                   <legend
                     class="usa-legend"
                   >
-                    Biological Sex
+                    Biological sex
                   </legend>
                   <div
                     class="usa-form-group"
                   >
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="36-val-male"
-                        name="gender"
-                        type="radio"
-                        value="male"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="36-val-male"
-                      >
-                        Male
-                      </label>
-                    </div>
                     <div
                       class="usa-radio"
                     >
@@ -2376,6 +2391,24 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
+                        id="36-val-male"
+                        name="gender"
+                        type="radio"
+                        value="male"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        for="36-val-male"
+                      >
+                        Male
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="false"
                         id="36-val-other"
                         name="gender"
                         type="radio"
@@ -2386,6 +2419,24 @@ Object {
                         for="36-val-other"
                       >
                         Other
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="false"
+                        id="36-val-refused"
+                        name="gender"
+                        type="radio"
+                        value="refused"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        for="36-val-refused"
+                      >
+                        Prefer not to answer
                       </label>
                     </div>
                   </div>
@@ -2409,18 +2460,20 @@ Object {
                   <legend
                     class="usa-legend"
                   >
-                    Resident in congregate care/living setting?
-                    <span
-                      class="usa-sr-only"
+                    Are you a resident in a congregate living setting?
+                    <abbr
+                      class="usa-hint usa-hint--required"
+                      title="required"
                     >
-                      Required
-                    </span>
-                    <span
-                      class="usa-hint--required"
-                    >
-                       *
-                    </span>
+                       
+                      *
+                    </abbr>
                   </legend>
+                  <span
+                    class="usa-hint"
+                  >
+                    For example: nursing home, group home, prison, jail, or military
+                  </span>
                   <div
                     class="usa-form-group"
                   >
@@ -2461,6 +2514,24 @@ Object {
                         No
                       </label>
                     </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="true"
+                        id="37-val-UNKNOWN"
+                        name="residentCongregateSetting"
+                        type="radio"
+                        value="UNKNOWN"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        for="37-val-UNKNOWN"
+                      >
+                        Unknown
+                      </label>
+                    </div>
                   </div>
                 </fieldset>
                 <fieldset
@@ -2469,17 +2540,14 @@ Object {
                   <legend
                     class="usa-legend"
                   >
-                    Work in Healthcare?
-                    <span
-                      class="usa-sr-only"
+                    Are you a health care worker?
+                    <abbr
+                      class="usa-hint usa-hint--required"
+                      title="required"
                     >
-                      Required
-                    </span>
-                    <span
-                      class="usa-hint--required"
-                    >
-                       *
-                    </span>
+                       
+                      *
+                    </abbr>
                   </legend>
                   <div
                     class="usa-form-group"
@@ -2519,6 +2587,24 @@ Object {
                         for="38-val-NO"
                       >
                         No
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="true"
+                        id="38-val-UNKNOWN"
+                        name="employedInHealthcare"
+                        type="radio"
+                        value="UNKNOWN"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        for="38-val-UNKNOWN"
+                      >
+                        Unknown
                       </label>
                     </div>
                   </div>

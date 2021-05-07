@@ -3,8 +3,10 @@ package gov.cdc.usds.simplereport.config;
 import com.okta.spring.boot.oauth.Okta;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.info.InfoEndpoint;
@@ -18,6 +20,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.servlet.config.annotation.CorsRegistration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * Live (with Okta integration) request-level security configuration. Not to be confused with {@link
@@ -27,7 +32,10 @@ import org.springframework.security.oauth2.jwt.Jwt;
 @Configuration
 @Profile("!" + BeanProfiles.NO_SECURITY) // Activate this profile to disable security
 @ConditionalOnWebApplication
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter
+    implements WebMvcConfigurer {
+
+  @Autowired CorsProperties _corsProperties;
 
   public static final String SAVED_REQUEST_HEADER = "SPRING_SECURITY_SAVED_REQUEST";
   private static final Logger LOG = LoggerFactory.getLogger(SecurityConfiguration.class);
@@ -40,7 +48,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.authorizeRequests()
+    http.cors()
+        .and()
+        .authorizeRequests()
         .antMatchers("/")
         .permitAll()
         .antMatchers(HttpMethod.OPTIONS, "/**")
@@ -56,7 +66,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         // Patient experience authorization is handled in PatientExperienceController
         // If this configuration changes, please update the documentation on both sides
-        .antMatchers(HttpMethod.PUT, WebConfiguration.PATIENT_EXPERIENCE)
+        .antMatchers(HttpMethod.POST, WebConfiguration.PATIENT_EXPERIENCE)
         .permitAll()
 
         // Account requests are unauthorized
@@ -108,5 +118,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
       throw new RuntimeException(
           "Unexpected authentication principal of type " + principal.getClass());
     };
+  }
+
+  @Override
+  public void addCorsMappings(CorsRegistry registry) {
+    CorsRegistration reg = registry.addMapping("/**");
+
+    List<String> methods = _corsProperties.getAllowedMethods();
+    if (methods != null && !methods.isEmpty()) {
+      reg.allowedMethods(methods.toArray(String[]::new));
+    }
+
+    List<String> origins = _corsProperties.getAllowedOrigins();
+    if (origins != null && !origins.isEmpty()) {
+      reg.allowedOrigins(origins.toArray(String[]::new));
+    }
   }
 }

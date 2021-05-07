@@ -4,7 +4,7 @@ function acceptTos() {
   this.expect.section("@app").to.be.visible;
   this.expect
     .section("@app")
-    .to.contain.text("I consent to the Terms of Service");
+    .to.contain.text("I agree");
   this.section.app.expect.element("@tosConsentButton").to.be.visible;
   this.section.app.click("@tosConsentButton");
   return this;

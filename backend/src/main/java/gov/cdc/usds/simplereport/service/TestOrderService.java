@@ -94,6 +94,17 @@ public class TestOrderService {
   }
 
   @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
+  public List<TestEvent> getTestEventsResultsByPatient(
+      UUID patientId, int pageOffset, int pageSize) {
+    return _terepo.getTestEventResultsByPatient(patientId, PageRequest.of(pageOffset, pageSize));
+  }
+
+  public int getTestResultsCountByPatient(UUID patientId) {
+    return _terepo.getTestResultsCountByPatient(patientId);
+  }
+
+  @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListForTestEvent
   public TestEvent getTestResult(UUID testEventId) {
     Organization org = _os.getCurrentOrganization();
@@ -111,7 +122,14 @@ public class TestOrderService {
   @Transactional(readOnly = true)
   public TestOrder getTestOrder(UUID id) {
     Organization org = _os.getCurrentOrganization();
-    return _repo.fetchQueueItemById(org, id).orElseThrow(TestOrderService::noSuchOrderFound);
+    return getTestOrder(org, id);
+  }
+
+  @Transactional(readOnly = true)
+  public TestOrder getTestOrder(Organization org, UUID id) {
+    return _repo
+        .fetchQueueItemByOrganizationAndId(org, id)
+        .orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder

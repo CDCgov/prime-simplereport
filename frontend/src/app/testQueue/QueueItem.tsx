@@ -12,7 +12,7 @@ import classnames from "classnames";
 import moment from "moment";
 
 import Alert from "../commonComponents/Alert";
-import Button from "../commonComponents/Button";
+import Button from "../commonComponents/Button/Button";
 import Dropdown from "../commonComponents/Dropdown";
 import TextInput from "../commonComponents/TextInput";
 import LabeledText from "../commonComponents/LabeledText";
@@ -23,11 +23,16 @@ import Checkboxes from "../commonComponents/Checkboxes";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
-import { removeTimer, TestTimerWidget, useTestTimer } from "./TestTimer";
+import {
+  removeTimer,
+  TestTimerWidget,
+  updateTimer,
+  useTestTimer,
+} from "./TestTimer";
 import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
 
-export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";
+export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
 
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
 
@@ -37,7 +42,7 @@ export const REMOVE_PATIENT_FROM_QUEUE = gql`
   }
 `;
 
-const EDIT_QUEUE_ITEM = gql`
+export const EDIT_QUEUE_ITEM = gql`
   mutation EditQueueItem(
     $id: ID!
     $deviceId: String
@@ -54,6 +59,7 @@ const EDIT_QUEUE_ITEM = gql`
       dateTested
       deviceType {
         internalId
+        testLength
       }
     }
   }
@@ -70,7 +76,7 @@ interface EditQueueItemResponse {
   editQueueItem: {
     result: TestResult;
     dateTested: string;
-    deviceType: { internalId: string };
+    deviceType: { internalId: string; testLength: number };
   };
 }
 
@@ -190,9 +196,11 @@ interface QueueItemProps {
   devices: {
     name: string;
     internalId: string;
+    testLength: number;
   }[];
   askOnEntry: string;
   selectedDeviceId: string;
+  selectedDeviceTestLength: number;
   selectedTestResult: TestResult;
   defaultDevice: {
     internalId: string;
@@ -205,6 +213,7 @@ interface QueueItemProps {
 
 interface updateQueueItemProps {
   deviceId?: string;
+  testLength?: number;
   result?: TestResult;
   dateTested?: string;
 }
@@ -215,6 +224,7 @@ const QueueItem: any = ({
   devices,
   askOnEntry,
   selectedDeviceId,
+  selectedDeviceTestLength,
   selectedTestResult,
   defaultDevice,
   refetchQueue,
@@ -256,6 +266,10 @@ const QueueItem: any = ({
 
   const [deviceId, updateDeviceId] = useState(
     selectedDeviceId || defaultDevice.internalId
+  );
+
+  const [deviceTestLength, updateDeviceTestLength] = useState(
+    selectedDeviceTestLength
   );
 
   const [useCurrentDateTime, updateUseCurrentDateTime] = useState<string>(
@@ -326,7 +340,7 @@ const QueueItem: any = ({
           dateTested: shouldUseCurrentDateTime() ? null : dateTested,
         },
       })
-        .then(testResultsSubmitted)
+        .then(testResultsSubmitted, () => {})
         .then(refetchQueue)
         .then(() => removeTimer(internalId))
         .catch((error) => {
@@ -354,6 +368,13 @@ const QueueItem: any = ({
         if (!response.data) throw Error("updateQueueItem null response");
         updateDeviceId(response.data.editQueueItem.deviceType.internalId);
         updateTestResultValue(response.data.editQueueItem.result || undefined);
+        updateTimer(
+          internalId,
+          response.data.editQueueItem.deviceType.testLength
+        );
+        updateDeviceTestLength(
+          response.data.editQueueItem.deviceType.testLength
+        );
       })
       .catch(updateMutationError);
   };
@@ -489,7 +510,7 @@ const QueueItem: any = ({
       </li>
     ) : null;
 
-  const timer = useTestTimer(internalId);
+  const timer = useTestTimer(internalId, deviceTestLength);
 
   const containerClasses = classnames(
     "grid-container",

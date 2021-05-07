@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Prompt } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useLazyQuery } from "@apollo/client";
 
 import Alert from "../../commonComponents/Alert";
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import {
   showNotification,
   displayFullNameInOrder,
@@ -17,12 +18,18 @@ import InProgressModal from "./InProgressModal";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
 import UsersSideNav from "./UsersSideNav";
-import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
+import {
+  SettingsUser,
+  LimitedUser,
+  UserFacilitySetting,
+  SingleUserData,
+  GET_USER,
+} from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
 
 interface Props {
-  users: SettingsUser[];
+  users: LimitedUser[];
   loggedInUser: User;
   allFacilities: UserFacilitySetting[];
   updateUserPrivileges: (variables: any) => Promise<any>;
@@ -31,21 +38,9 @@ interface Props {
   getUsers: () => Promise<any>;
 }
 
+export type LimitedUsers = { [id: string]: LimitedUser };
+
 export type SettingsUsers = { [id: string]: SettingsUser };
-
-const sortUsers = (users: SettingsUsers) =>
-  Object.values(users).sort((a, b) => {
-    const nameA = displayFullName(a.firstName, a.middleName, a.lastName);
-    const nameB = displayFullName(b.firstName, b.middleName, b.lastName);
-    if (nameA === nameB) return 0;
-    return nameA > nameB ? 1 : -1;
-  });
-
-const getSettingsUser = (users: SettingsUser[]) =>
-  users.reduce((acc: SettingsUsers, user: SettingsUser) => {
-    acc[user.id] = user;
-    return acc;
-  }, {});
 
 export type UpdateUser = <K extends keyof SettingsUser>(
   key: K,
@@ -53,6 +48,32 @@ export type UpdateUser = <K extends keyof SettingsUser>(
 ) => void;
 
 const roles: Role[] = ["ADMIN", "ENTRY_ONLY", "USER"];
+
+const emptySettingsUser: SettingsUser = {
+  firstName: "",
+  middleName: "",
+  lastName: "",
+  id: "",
+  email: "",
+  organization: { testingFacility: [] },
+  permissions: [],
+  roleDescription: "user",
+  role: "USER",
+};
+
+const sortUsers = (users: LimitedUsers) =>
+  Object.values(users).sort((a, b) => {
+    const nameA = displayFullName(a.firstName, a.middleName, a.lastName);
+    const nameB = displayFullName(b.firstName, b.middleName, b.lastName);
+    if (nameA === nameB) return 0;
+    return nameA > nameB ? 1 : -1;
+  });
+
+const getLimitedUser = (users: LimitedUser[]) =>
+  users.reduce((acc: LimitedUsers, user: LimitedUser) => {
+    acc[user.id] = user;
+    return acc;
+  }, {});
 
 const ManageUsers: React.FC<Props> = ({
   users,
@@ -63,7 +84,19 @@ const ManageUsers: React.FC<Props> = ({
   deleteUser,
   getUsers,
 }) => {
-  const [activeUser, updateActiveUser] = useState<SettingsUser>();
+  const [activeUser, updateActiveUser] = useState<LimitedUser>();
+  const [
+    userWithPermissions,
+    updateUserWithPermissions,
+  ] = useState<SettingsUser>();
+  const [queryUserWithPermissions] = useLazyQuery<SingleUserData, {}>(
+    GET_USER,
+    {
+      variables: { id: activeUser ? activeUser.id : loggedInUser.id },
+      fetchPolicy: "no-cache",
+      onCompleted: (data) => updateUserWithPermissions(data.user),
+    }
+  );
   const [nextActiveUserId, updateNextActiveUserId] = useState<string | null>(
     null
   );
@@ -87,14 +120,15 @@ const ManageUsers: React.FC<Props> = ({
   if (deletedUserId) {
     localUsers = localUsers.filter(({ id }) => id !== deletedUserId);
   }
-  const usersState: SettingsUsers = getSettingsUser(localUsers);
+
+  const usersState: LimitedUsers = getLimitedUser(localUsers);
   const sortedUsers = sortUsers(usersState);
 
   // only updates the local state
   const updateUser: UpdateUser = (key, value) => {
-    if (activeUser) {
-      updateActiveUser({
-        ...activeUser,
+    if (activeUser && userWithPermissions) {
+      updateUserWithPermissions({
+        ...userWithPermissions,
         [key]: value,
       });
       updateIsUserEdited(true);
@@ -108,6 +142,7 @@ const ManageUsers: React.FC<Props> = ({
       updateShowInProgressModal(true);
     } else {
       updateActiveUser(usersState[nextActiveUserId]);
+      queryUserWithPermissions();
     }
   };
 
@@ -117,6 +152,7 @@ const ManageUsers: React.FC<Props> = ({
     updateShowInProgressModal(false);
     if (nextActiveUserId) {
       updateActiveUser(usersState[nextActiveUserId]);
+      queryUserWithPermissions();
     }
   };
 
@@ -127,10 +163,12 @@ const ManageUsers: React.FC<Props> = ({
     setIsUpdating(true);
     updateUserPrivileges({
       variables: {
-        id: activeUser.id,
-        role: activeUser.role,
-        facilities: activeUser.organization.testingFacility.map(({ id }) => id),
-        accessAllFacilities: activeUser.permissions.includes(
+        id: userWithPermissions?.id,
+        role: userWithPermissions?.role,
+        facilities: userWithPermissions?.organization.testingFacility.map(
+          ({ id }) => id
+        ),
+        accessAllFacilities: userWithPermissions?.permissions.includes(
           "ACCESS_ALL_FACILITIES"
         ),
       },
@@ -138,13 +176,11 @@ const ManageUsers: React.FC<Props> = ({
       .then(() => {
         getUsers();
         updateIsUserEdited(false);
-        const user = usersState[activeUser.id];
         const fullName = displayFullNameInOrder(
-          user.firstName,
-          user.middleName,
-          user.lastName
+          userWithPermissions?.firstName,
+          userWithPermissions?.middleName,
+          userWithPermissions?.lastName
         );
-
         setIsUpdating(false);
         showNotification(
           toast,
@@ -207,19 +243,16 @@ const ManageUsers: React.FC<Props> = ({
 
   const handleDeleteUser = async (userId: string) => {
     try {
-      const data = await deleteUser({
+      await deleteUser({
         variables: {
           id: userId,
           deleted: true,
         },
       });
-      const deletedUserId = data.data.setUserIsDeleted.id;
-      const user = usersState[deletedUserId];
-
       const fullName = displayFullNameInOrder(
-        user.firstName,
-        user.middleName,
-        user.lastName
+        userWithPermissions?.firstName,
+        userWithPermissions?.middleName,
+        userWithPermissions?.lastName
       );
       updateShowDeleteUserModal(false);
       setDeletedUserId(userId);
@@ -228,8 +261,6 @@ const ManageUsers: React.FC<Props> = ({
         <Alert type="success" title={`User account removed for ${fullName}`} />
       );
       await getUsers();
-      updateActiveUser(sortedUsers[0]); // arbitrarily pick the first user as the next active.
-      setDeletedUserId(undefined);
     } catch (e) {
       setError(e);
     }
@@ -239,16 +270,42 @@ const ManageUsers: React.FC<Props> = ({
   useEffect(() => {
     if (!activeUser && sortedUsers.length) {
       updateActiveUser(sortedUsers[0]);
+      queryUserWithPermissions();
     }
-  }, [activeUser, sortedUsers]);
+  }, [activeUser, sortedUsers, queryUserWithPermissions]);
 
-  // Navigate to addeed user, if applicable
+  // Navigate to added user, if applicable
   useEffect(() => {
     if (addedUserId && usersState[addedUserId]) {
       updateActiveUser(usersState[addedUserId]);
+      queryUserWithPermissions();
       setAddedUserId(undefined);
     }
-  }, [addedUserId, usersState]);
+  }, [addedUserId, usersState, queryUserWithPermissions]);
+
+  // Navigate to correct user on user deletion (first sorted, unless the deleted user was first)
+  useEffect(() => {
+    if (deletedUserId) {
+      const nextUser: LimitedUser =
+        sortedUsers[0].id === deletedUserId && sortedUsers.length > 1
+          ? sortedUsers[1]
+          : sortedUsers[0];
+      updateActiveUser(nextUser);
+      queryUserWithPermissions();
+      setDeletedUserId(undefined);
+    }
+  }, [deletedUserId, sortedUsers, queryUserWithPermissions]);
+
+  // If there's no userWithPermisions, call the permissions query again
+  useEffect(() => {
+    if (userWithPermissions === undefined) {
+      queryUserWithPermissions();
+    }
+  }, [queryUserWithPermissions, userWithPermissions]);
+
+  const user: SettingsUser = userWithPermissions
+    ? userWithPermissions
+    : emptySettingsUser;
 
   return (
     <div className="prime-container card-container">
@@ -308,7 +365,7 @@ const ManageUsers: React.FC<Props> = ({
                 </p>
                 {
                   <UserRoleSettingsForm
-                    activeUser={activeUser}
+                    activeUser={user}
                     loggedInUser={loggedInUser}
                     onUpdateUser={updateUser}
                   />
@@ -316,7 +373,7 @@ const ManageUsers: React.FC<Props> = ({
 
                 {process.env.REACT_APP_VIEW_USER_FACILITIES === "true" ? (
                   <UserFacilitiesSettingsForm
-                    activeUser={activeUser}
+                    activeUser={user}
                     allFacilities={allFacilities}
                     onUpdateUser={updateUser}
                   />
@@ -338,8 +395,8 @@ const ManageUsers: React.FC<Props> = ({
                   onClick={() => handleUpdateUser()}
                   label={isUpdating ? "Saving..." : "Save changes"}
                   disabled={
-                    !roles.includes(activeUser.role) ||
-                    activeUser.organization.testingFacility.length === 0 ||
+                    !roles.includes(user.role) ||
+                    user.organization.testingFacility.length === 0 ||
                     !isUserEdited ||
                     !["Admin user", "Admin user (SU)"].includes(
                       loggedInUser.roleDescription
@@ -364,7 +421,7 @@ const ManageUsers: React.FC<Props> = ({
               {showDeleteUserModal &&
               process.env.REACT_APP_DELETE_USER_ENABLED === "true" ? (
                 <DeleteUserModal
-                  user={activeUser}
+                  user={user}
                   onClose={() => updateShowDeleteUserModal(false)}
                   onDeleteUser={handleDeleteUser}
                 />

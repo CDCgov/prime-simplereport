@@ -4,7 +4,7 @@ import Modal from "react-modal";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
 
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import { displayFullName, showError } from "../../utils";
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
@@ -314,6 +314,7 @@ const AoEModalForm = (props: AoEModalProps) => {
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Test questionnaire"
+      ariaHideApp={process.env.NODE_ENV !== "test"}
     >
       <div className="display-flex flex-justify">
         <h1 className="font-heading-lg margin-top-05 margin-bottom-0">

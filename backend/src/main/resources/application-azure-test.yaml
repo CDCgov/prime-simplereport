@@ -1,29 +1,13 @@
 spring:
   profiles.include: okta-test, server-debug
-graphql.servlet.cors:
-  allowed-origins:
-    - https://simple-report-api-test.azurewebsites.net
-    - https://simple-report-test.azureedge.net
-    - https://test.simplereport.gov
 simple-report:
-  site-admin-emails:
-    - bwarfield@cdc.gov
-    - tim.best@usds.dhs.gov
-    - qom2@cdc.gov # a.k.a. abeckett@cdc.gov
-    - jonathan.eskew@cms.hhs.gov
-    - neil.s.sharma@omb.eop.gov
-    - wsullivan@cdc.gov
-    - jeremy.a.zitomer@omb.eop.gov
-    - nicholas.scialli@usds.dhs.gov
-    - qrk8@cdc.gov # Sparkle
-    - thomas.a.nielsen@omb.eop.gov
-    - adam@skylight.digital
-    - josh@skylight.digital
-    - qom5@cdc.gov # Heather
-    - qpu1@cdc.gov # Katherine
-    - qyl5@cdc.gov # Brett
   patient-link-url: https://test.simplereport.gov/app/pxp?plid=
   sendgrid:
     enabled: false
+  cors:
+    allowed-origins:
+      - https://simple-report-api-test.azurewebsites.net
+      - https://simple-report-test.azureedge.net
+      - https://test.simplereport.gov
 twilio:
   enabled: true

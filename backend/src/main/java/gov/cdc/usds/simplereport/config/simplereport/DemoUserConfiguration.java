@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,15 +24,19 @@ public class DemoUserConfiguration {
   private DemoUser defaultUser;
   private List<DemoUser> users;
   private Map<String, DemoUser> byUsername;
+  private Set<String> siteAdminEmails;
 
   public DemoUserConfiguration(List<DemoUser> allUsers) {
-    this(null, allUsers);
+    this(null, allUsers, null);
   }
 
   @ConstructorBinding
-  public DemoUserConfiguration(DemoUser defaultUser, List<DemoUser> alternateUsers) {
+  public DemoUserConfiguration(
+      DemoUser defaultUser, List<DemoUser> alternateUsers, List<String> siteAdminEmails) {
     super();
     this.defaultUser = defaultUser;
+    this.siteAdminEmails =
+        siteAdminEmails != null ? new HashSet<>(siteAdminEmails) : new HashSet<>();
     this.users = new ArrayList<>();
     if (defaultUser != null) {
       users.add(defaultUser);
@@ -53,6 +58,10 @@ public class DemoUserConfiguration {
 
   public DemoUser getByUsername(String username) {
     return byUsername.get(username);
+  }
+
+  public Set<String> getSiteAdminEmails() {
+    return siteAdminEmails;
   }
 
   @ConstructorBinding

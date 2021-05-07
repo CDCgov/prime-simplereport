@@ -64,15 +64,15 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @Column private String telephone;
   @Column private String email;
 
-  @Column(nullable = false)
-  private boolean employedInHealthcare;
+  @Column(nullable = true)
+  private Boolean employedInHealthcare;
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private PersonRole role;
 
-  @Column(nullable = false)
-  private boolean residentCongregateSetting;
+  @Column(nullable = true)
+  private Boolean residentCongregateSetting;
 
   protected Person() {
     /* for hibernate */

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import TextInput from "../../commonComponents/TextInput";
 
 import { Device } from "./DeviceTypeFormContainer";
@@ -48,7 +48,18 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType }) => {
                 />
               </div>
             </div>
-            <div className="usa-card__body">
+            <div className="usa-card__body margin-top-1">
+              <div>
+                <div className="usa-alert usa-alert--warning">
+                  <div className="usa-alert__body">
+                    <h4 className="usa-alert__heading">Reminder</h4>
+                    <p className="usa-alert__text">
+                      Add the new device type to the Sign up form device
+                      options.
+                    </p>
+                  </div>
+                </div>
+              </div>
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
                   <TextInput

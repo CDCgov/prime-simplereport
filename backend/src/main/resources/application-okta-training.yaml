@@ -6,4 +6,4 @@ okta:
 simple-report:
   authorization:
     role-claim: training_roles
-    role-prefix: "SR-TRAINING-TENANT:"
+    environment-name: "TRAINING"

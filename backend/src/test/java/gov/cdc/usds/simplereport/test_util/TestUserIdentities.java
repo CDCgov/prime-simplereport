@@ -15,7 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class TestUserIdentities {
 
-  public static final String TEST_ROLE_PREFIX = "TEST-TENANT:";
+  public static final String TEST_ROLE_PREFIX = "SR-UNITTEST-TENANT:";
 
   public static final String DEFAULT_ORGANIZATION = "DIS_ORG";
 

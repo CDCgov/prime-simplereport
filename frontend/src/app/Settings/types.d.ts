@@ -174,3 +174,5 @@ interface FacilityData {
     }
   ];
 }
+
+type TestCorrectionStatus = "ORIGINAL" | "CORRECTED" | "REMOVED";

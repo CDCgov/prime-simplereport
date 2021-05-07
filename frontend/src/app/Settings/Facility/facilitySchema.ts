@@ -1,6 +1,8 @@
 import * as yup from "yup";
 import { PhoneNumberUtil } from "google-libphonenumber";
 
+import { liveJurisdictions } from "../../../config/constants";
+
 const phoneUtil = PhoneNumberUtil.getInstance();
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -44,7 +46,16 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
       return phoneUtil.isValidNumber(number);
     })
     .required(),
-  state: yup.string().required(),
+  state: yup
+    .string()
+    .test(function (input) {
+      if (!input) {
+        return false;
+      }
+
+      return liveJurisdictions.includes(input);
+    })
+    .required(),
   id: yup.string(),
   email: yup.string().email().nullable(),
   streetTwo: yup.string().nullable(),
@@ -65,7 +76,9 @@ type FacilityErrorKeys =
   | "orderingProvider.state"
   | "orderingProvider.zipCode";
 
-export type FacilityErrors = Partial<Record<FacilityErrorKeys, string>>;
+export type FacilityErrors = Partial<
+  Record<FacilityErrorKeys, React.ReactNode>
+>;
 
 const orderingProviderFormatError = (field: string) =>
   `"Ordering provider ${field} is incorrectly formatted"`;

@@ -107,7 +107,8 @@ public class Translators {
           "native hawaiian or other pacific islander", "pacific",
           "white", "white",
           "unknown", "unknown",
-          "refused to answer", "refused");
+          "prefer not to answer", "refused",
+          "other", "other");
 
   private static final Set<String> RACE_VALUES =
       RACES.values().stream().collect(Collectors.toSet());
@@ -141,7 +142,7 @@ public class Translators {
     throw IllegalGraphqlArgumentException.mustBeEnumerated(r, RACE_KEYS);
   }
 
-  private static final Set<String> ETHNICITIES = Set.of("hispanic", "not_hispanic");
+  private static final Set<String> ETHNICITIES = Set.of("hispanic", "not_hispanic", "refused");
 
   public static String parseEthnicity(String e) {
     String ethnicity = parseString(e);
@@ -172,7 +173,7 @@ public class Translators {
     throw IllegalGraphqlArgumentException.mustBeEnumerated(ta, TRIBAL_AFFILIATIONS);
   }
 
-  private static final Set<String> GENDERS = Set.of("male", "female", "other");
+  private static final Set<String> GENDERS = Set.of("male", "female", "other", "refused");
 
   public static String parseGender(String g) {
     String gender = parseString(g);

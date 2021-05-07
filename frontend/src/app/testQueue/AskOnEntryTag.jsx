@@ -9,14 +9,8 @@ export const areAnswersComplete = (answers) => {
       return false;
     }
   }
-  if (!answers.firstTest) {
-    if (
-      !answers.priorTestDate ||
-      !answers.priorTestType ||
-      !answers.priorTestResult
-    ) {
-      return false;
-    }
+  if (!answers.firstTest && !answers.priorTestType) {
+    return false;
   }
   if (!answers.pregnancy) {
     return false;

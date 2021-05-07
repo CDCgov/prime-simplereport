@@ -12,7 +12,7 @@ import org.hibernate.annotations.Type;
 
 @Entity
 public class PatientPreferences extends AuditedEntity {
-  public static final String DATA_LOADER = "patientPreferencesLoader";
+  public static final PatientPreferences DEFAULT = new PatientPreferences();
 
   @MapsId
   @OneToOne

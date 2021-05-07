@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
+
 const Admin = () => {
   return (
     <main className="prime-home">
@@ -13,6 +15,11 @@ const Admin = () => {
               </div>
             </div>
             <div className="usa-card__body">
+              <div>
+                <LinkWithQuery to={`/admin/pending-organizations`}>
+                  Organizations pending identify verification
+                </LinkWithQuery>
+              </div>
               <div>
                 {" "}
                 <Link to="/admin/create-organization">

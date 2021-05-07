@@ -5,13 +5,25 @@ exports[`TermsOfService snapshot 1`] = `
   className="patient-app padding-bottom-4 bg-base-lightest"
 >
   <form
-    className="grid-container maxw-tablet"
+    className="grid-container maxw-tablet usa-prose"
   >
     <h1
-      className="font-heading-lg margin-top-3 margin-bottom-2"
+      className="font-heading-lg margin-top-3"
     >
-      Terms of Service
+      Terms of service
     </h1>
+    <p
+      className="margin-top-105"
+    >
+      This testing site uses
+       
+      <a
+        href="https://simplereport.gov/"
+      >
+        SimpleReport
+      </a>
+       to manage COVID-19 testing and reporting. The terms below explain SimpleReport’s policies and terms of service.
+    </p>
     <div
       className="tos-content prime-formgroup usa-prose height-card-lg overflow-x-hidden font-body-3xs"
     >
@@ -222,13 +234,16 @@ exports[`TermsOfService snapshot 1`] = `
         While using the Application, certain general data analytics on the usage patterns and performance of the Application may be gathered and stored automatically to assist with design and development of the Application. This general usage data is not linked to an individual's identity but IP address and device information may be included. Transactions are audited and stored for site monitoring, performance, and troubleshooting and may be tied to the individual performing an activity. Any such data will be maintained consistent with applicable federal laws.
       </p>
     </div>
+    <p>
+      By agreeing, you consent to our terms of service.
+    </p>
     <button
-      className="usa-button margin-top-3"
+      className="usa-button"
       id="tos-consent-button"
       onClick={[Function]}
       type="button"
     >
-      I consent to the Terms of Service
+      I agree
     </button>
   </form>
 </main>

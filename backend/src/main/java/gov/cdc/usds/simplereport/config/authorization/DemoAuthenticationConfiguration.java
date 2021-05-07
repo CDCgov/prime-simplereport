@@ -9,6 +9,8 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
@@ -69,8 +71,10 @@ public class DemoAuthenticationConfiguration {
 
   @Bean
   public AuthorizationService getDemoAuthorizationService(
-      OktaRepository oktaRepo, IdentitySupplier supplier) {
-    return new DemoAuthorizationService(oktaRepo, supplier);
+      OktaRepository oktaRepo,
+      IdentitySupplier supplier,
+      DemoUserConfiguration demoUserConfiguration) {
+    return new DemoAuthorizationService(oktaRepo, supplier, demoUserConfiguration);
   }
 
   @Bean
@@ -122,11 +126,19 @@ public class DemoAuthenticationConfiguration {
 
     private final IdentitySupplier _getCurrentUser;
     private final OktaRepository _oktaRepo;
+    private final Set<String> _adminGroupMemberSet;
 
-    public DemoAuthorizationService(OktaRepository oktaRepo, IdentitySupplier getCurrent) {
+    public DemoAuthorizationService(
+        OktaRepository oktaRepo,
+        IdentitySupplier getCurrent,
+        DemoUserConfiguration demoUserConfiguration) {
       super();
       this._getCurrentUser = getCurrent;
       this._oktaRepo = oktaRepo;
+
+      _adminGroupMemberSet =
+          demoUserConfiguration.getSiteAdminEmails().stream()
+              .collect(Collectors.toUnmodifiableSet());
     }
 
     @Override
@@ -135,6 +147,12 @@ public class DemoAuthenticationConfiguration {
       Optional<OrganizationRoleClaims> claims =
           _oktaRepo.getOrganizationRoleClaimsForUser(username);
       return claims.isEmpty() ? List.of() : List.of(claims.get());
+    }
+
+    @Override
+    public boolean isSiteAdmin() {
+      final String userEmail = _getCurrentUser.get().getUsername();
+      return _adminGroupMemberSet.contains(userEmail);
     }
   }
 }

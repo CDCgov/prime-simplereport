@@ -9,9 +9,10 @@ import {
   getTestResultDeliveryPreferences,
 } from "../../../patientApp/timeOfTest/constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import FormGroup from "../../commonComponents/FormGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
+import { COVID_RESULTS } from "../../constants";
 
 import "./AoEForm.scss";
 import SymptomInputs from "./SymptomInputs";
@@ -106,8 +107,12 @@ const AoEForm: React.FC<Props> = ({
   const [isFirstTest, setIsFirstTest] = useState(loadState.firstTest);
   const [priorTestDate, setPriorTestDate] = useState(loadState.priorTestDate);
   const [priorTestType, setPriorTestType] = useState(loadState.priorTestType);
-  const [priorTestResult, setPriorTestResult] = useState(
-    loadState.priorTestResult
+  const [priorTestResult, setPriorTestResult] = useState<
+    string | null | undefined
+  >(
+    loadState.priorTestResult === undefined
+      ? undefined
+      : loadState.priorTestResult || null
   );
   const [pregnancyResponse, setPregnancyResponse] = useState(
     loadState.pregnancy
@@ -184,7 +189,10 @@ const AoEForm: React.FC<Props> = ({
             firstTest: false,
             priorTestDate: priorTestDate,
             priorTestType: priorTestType,
-            priorTestResult: priorTestResult ? priorTestResult : null,
+            priorTestResult:
+              !priorTestResult || priorTestResult === COVID_RESULTS.UNKNOWN
+                ? null
+                : priorTestResult,
           };
 
       saveCallback({

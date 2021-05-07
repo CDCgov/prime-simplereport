@@ -4,7 +4,8 @@ import Required from "./Required";
 
 const RequiredMessage = () => (
   <p className="message--required">
-    All fields marked with <Required /> are required
+    Required fields are marked with an asterisk (<Required />
+    ).
   </p>
 );
 

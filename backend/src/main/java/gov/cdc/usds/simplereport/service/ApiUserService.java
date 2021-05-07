@@ -8,7 +8,6 @@ import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
-import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -40,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = false)
 public class ApiUserService {
 
-  @Autowired private SiteAdminEmailList _siteAdmins;
+  @Autowired private AuthorizationService _authService;
 
   @Autowired private ApiUserRepository _apiUserRepo;
 
@@ -171,8 +170,10 @@ public class ApiUserService {
     return result;
   }
 
+  // In the future, this should be removed, but in the meantime, always return false.
+  // For more detail see comments on: https://github.com/CDCgov/prime-simplereport/pull/1218
   public boolean isAdmin(ApiUser user) {
-    return _siteAdmins.contains(user.getLoginEmail());
+    return false;
   }
 
   // Creating separate getCurrentApiUser() methods because the auditing use case and
@@ -249,35 +250,49 @@ public class ApiUserService {
   public UserInfo getCurrentUserInfo() {
     ApiUser currentUser = getCurrentApiUser();
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
-    boolean isAdmin = isAdmin(currentUser);
+    boolean isAdmin = _authService.isSiteAdmin();
     return new UserInfo(currentUser, currentOrgRoles, isAdmin);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
-  public List<UserInfo> getUsersInCurrentOrg() {
+  public List<ApiUser> getUsersInCurrentOrg() {
     Organization org = _orgService.getCurrentOrganization();
-    Map<String, OrganizationRoleClaims> userClaims = _oktaRepo.getAllUsersForOrganization(org);
-    Set<ApiUser> apiUsers = _apiUserRepo.findAllByLoginEmailIn(userClaims.keySet());
-    // will add facilities to their users in a subsequent PR
+    final Set<String> orgUserEmails = _oktaRepo.getAllUsersForOrganization(org);
+    return _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserEmails);
+  }
+
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
+  public UserInfo getUser(final UUID userId) {
+    final Optional<ApiUser> optApiUser = _apiUserRepo.findById(userId);
+    if (optApiUser.isEmpty()) {
+      throw new UnidentifiedUserException();
+    }
+    final ApiUser apiUser = optApiUser.get();
+
+    Optional<OrganizationRoleClaims> optClaims =
+        _oktaRepo.getOrganizationRoleClaimsForUser(apiUser.getLoginEmail());
+    if (optClaims.isEmpty()) {
+      throw new UnidentifiedUserException();
+    }
+    final OrganizationRoleClaims claims = optClaims.get();
+
+    // use the target user's org so response is built correctly even if site admin is the requester
+    Organization org = _orgService.getOrganization(claims.getOrganizationExternalId());
+
     List<Facility> facilities = _orgService.getFacilities(org);
     Set<Facility> facilitiesSet = new HashSet<>(facilities);
     Map<UUID, Facility> facilitiesByUUID =
         facilities.stream().collect(Collectors.toMap(Facility::getInternalId, Function.identity()));
-    return apiUsers.stream()
-        .map(
-            u -> {
-              OrganizationRoleClaims claims = userClaims.get(u.getLoginEmail());
-              boolean allFacilityAccess = claims.grantsAllFacilityAccess();
-              Set<Facility> accessibleFacilities =
-                  allFacilityAccess
-                      ? facilitiesSet
-                      : claims.getFacilities().stream()
-                          .map(facilitiesByUUID::get)
-                          .collect(Collectors.toSet());
-              OrganizationRoles orgRoles =
-                  new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
-              return new UserInfo(u, Optional.of(orgRoles), isAdmin(u));
-            })
-        .collect(Collectors.toList());
+
+    boolean allFacilityAccess = claims.grantsAllFacilityAccess();
+    Set<Facility> accessibleFacilities =
+        allFacilityAccess
+            ? facilitiesSet
+            : claims.getFacilities().stream()
+                .map(facilitiesByUUID::get)
+                .collect(Collectors.toSet());
+    OrganizationRoles orgRoles =
+        new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
+    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
   }
 }

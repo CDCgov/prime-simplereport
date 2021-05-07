@@ -48,7 +48,9 @@ exports[`SearchResults should show matching results 1`] = `
           <td>
             Washington, George
           </td>
-          <td />
+          <td>
+            1950-01-01
+          </td>
           <td>
             <button
               className="usa-button usa-button--unstyled"
@@ -63,7 +65,9 @@ exports[`SearchResults should show matching results 1`] = `
           <td>
             King, Martin Luther
           </td>
-          <td />
+          <td>
+            1950-01-01
+          </td>
           <td>
             <button
               className="usa-button usa-button--unstyled"
@@ -78,7 +82,9 @@ exports[`SearchResults should show matching results 1`] = `
           <td>
             Obama, Barack Hussein
           </td>
-          <td />
+          <td>
+            1950-01-01
+          </td>
           <td>
             <button
               className="usa-button usa-button--unstyled"

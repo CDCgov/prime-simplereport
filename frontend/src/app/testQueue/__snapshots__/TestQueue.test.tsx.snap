@@ -107,6 +107,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 </h2>
                 <button
                   class="timer-button timer-reset"
+                  data-testid="timer"
                 >
                   <span>
                     15:00
@@ -407,6 +408,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 </h2>
                 <button
                   class="timer-button timer-reset"
+                  data-testid="timer"
                 >
                   <span>
                     15:00

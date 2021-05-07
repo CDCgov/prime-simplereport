@@ -13,7 +13,6 @@ import {
 import RadioGroup from "../../commonComponents/RadioGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { showError } from "../../utils";
-import "../EditPatient.scss";
 import FormGroup from "../../commonComponents/FormGroup";
 import {
   allPersonErrors,
@@ -24,11 +23,44 @@ import {
 import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
 import Input from "../../commonComponents/Input";
 import Select from "../../commonComponents/Select";
-import { getBestSuggestion } from "../../utils/smartyStreets";
+import {
+  getBestSuggestion,
+  suggestionIsCloseEnough,
+} from "../../utils/smartyStreets";
 import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
 import ComboBox from "../../commonComponents/ComboBox";
 
 import FacilitySelect from "./FacilitySelect";
+
+const boolToYesNoUnknown = (
+  value: boolean | null | undefined
+): YesNoUnknown | undefined => {
+  if (value) {
+    return "YES";
+  }
+  if (value === false) {
+    return "NO";
+  }
+  if (value === null) {
+    return "UNKNOWN";
+  }
+  return undefined;
+};
+
+const yesNoUnknownToBool = (
+  value: YesNoUnknown
+): boolean | null | undefined => {
+  if (value === "YES") {
+    return true;
+  }
+  if (value === "NO") {
+    return false;
+  }
+  if (value === "UNKNOWN") {
+    return null;
+  }
+  return undefined;
+};
 
 interface Props {
   patient: Nullable<PersonFormData>;
@@ -109,9 +141,14 @@ const PersonForm = (props: Props) => {
   };
 
   const validatePatientAddress = async () => {
-    const suggestedAddress = await getBestSuggestion(getAddress(patient));
-    setAddressSuggestion(suggestedAddress);
-    setAddressModalOpen(true);
+    const originalAddress = getAddress(patient);
+    const suggestedAddress = await getBestSuggestion(originalAddress);
+    if (suggestionIsCloseEnough(originalAddress, suggestedAddress)) {
+      onSave(suggestedAddress);
+    } else {
+      setAddressSuggestion(suggestedAddress);
+      setAddressModalOpen(true);
+    }
   };
 
   const validateForm = async () => {
@@ -182,7 +219,7 @@ const PersonForm = (props: Props) => {
             props.getHeader(patient, validateForm, formChanged)}
         </div>
       )}
-      <FormGroup title="General info">
+      <FormGroup title="General information">
         <RequiredMessage />
         <div className="usa-form">
           <Input
@@ -328,8 +365,8 @@ const PersonForm = (props: Props) => {
       </FormGroup>
       <FormGroup title="Demographics">
         <p className="usa-hint maxw-prose">
-          This information is important for public health efforts to recognize
-          and address inequality in health outcomes.
+          This information is collected as part of public health efforts to
+          recognize and address inequality in health outcomes.
         </p>
         <RadioGroup
           legend="Race"
@@ -351,14 +388,14 @@ const PersonForm = (props: Props) => {
           />
         </fieldset>
         <RadioGroup
-          legend="Ethnicity"
+          legend="Are you Hispanic or Latino?"
           name="ethnicity"
           buttons={ETHNICITY_VALUES}
           selectedRadio={patient.ethnicity}
           onChange={onPersonChange("ethnicity")}
         />
         <RadioGroup
-          legend="Biological Sex"
+          legend="Biological sex"
           name="gender"
           buttons={GENDER_VALUES}
           selectedRadio={patient.gender}
@@ -367,10 +404,13 @@ const PersonForm = (props: Props) => {
       </FormGroup>
       <FormGroup title="Other">
         <YesNoRadioGroup
-          legend="Resident in congregate care/living setting?"
+          legend="Are you a resident in a congregate living setting?"
+          hintText="For example: nursing home, group home, prison, jail, or military"
           name="residentCongregateSetting"
-          value={patient.residentCongregateSetting}
-          onChange={onPersonChange("residentCongregateSetting")}
+          value={boolToYesNoUnknown(patient.residentCongregateSetting)}
+          onChange={(v) =>
+            onPersonChange("residentCongregateSetting")(yesNoUnknownToBool(v))
+          }
           onBlur={() => {
             validateField("residentCongregateSetting");
           }}
@@ -379,10 +419,12 @@ const PersonForm = (props: Props) => {
           required
         />
         <YesNoRadioGroup
-          legend="Work in Healthcare?"
+          legend="Are you a health care worker?"
           name="employedInHealthcare"
-          value={patient.employedInHealthcare}
-          onChange={onPersonChange("employedInHealthcare")}
+          value={boolToYesNoUnknown(patient.employedInHealthcare)}
+          onChange={(v) =>
+            onPersonChange("employedInHealthcare")(yesNoUnknownToBool(v))
+          }
           onBlur={() => {
             validateField("employedInHealthcare");
           }}

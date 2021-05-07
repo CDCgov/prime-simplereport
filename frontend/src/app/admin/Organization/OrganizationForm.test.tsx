@@ -16,7 +16,7 @@ const validFacility: Facility = {
   phone: "(202) 395-3080",
   street: "736 Jackson Pl NW",
   zipCode: "20503",
-  state: "DC",
+  state: "AZ",
   id: "some-id",
   email: null,
   streetTwo: null,

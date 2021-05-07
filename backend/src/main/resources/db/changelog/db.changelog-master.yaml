@@ -1731,3 +1731,229 @@ databaseChangeLog:
                   defaultValueBoolean: true
                   constraints:
                     nullable: false
+  - changeSet:
+      id: add-test-length
+      author: emma@skylight.digital
+      comment: Add test length column to the device type table. Test length will be based on the model used.
+      changes:
+        - addColumn:
+            tableName: device_type
+            columns:
+              - column:
+                  name: test_length
+                  type: int
+                  remarks: The length (in minutes) that the test will take.
+                  defaultValueNumeric: 15
+                  valueComputed: (CASE WHEN name like '%CareStart%' THEN 10 ELSE 15 END)
+                  # This valueComputed backfills the column to have the correct values for all existing device_type rows. It does not apply to new rows.
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: remove-person-test_result_delivery
+      author: adam@skylight.digital
+      comment: Remove the orphaned person.test_result_delivery column
+      changes:
+        - dropColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: test_result_delivery
+      id: add-no-phi-views
+      author: josh@skylight.digital
+      comment: Add views for some tables that omit columns containing PHI.
+      changes:
+        - createView:
+            viewName: api_user_no_phi_view
+            remarks: A subset of the api_user table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: SELECT internal_id, created_at, updated_at, last_seen, is_deleted FROM ${database.defaultSchemaName}.api_user
+        - createView:
+            viewName: provider_no_phi_view
+            remarks: A subset of the provider table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: SELECT internal_id, created_at, created_by, updated_at, updated_by, is_deleted, provider_id FROM ${database.defaultSchemaName}.provider
+        - createView:
+            viewName: person_no_phi_view
+            remarks: A subset of the person table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: SELECT internal_id, created_at, created_by, updated_at, updated_by, is_deleted, organization_id, facility_id, race, gender, ethnicity, county, state, employed_in_healthcare, role, resident_congregate_setting, tribal_affiliation FROM ${database.defaultSchemaName}.person
+        - createView:
+            viewName: test_event_no_phi_view
+            remarks: A subset of the test_event table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: SELECT device_specimen_type_id, created_at, created_by, updated_at, updated_by, patient_id, organization_id, result, facility_id, survey_data, date_tested_backdate, test_order_id, correction_status, prior_corrected_test_event_id, internal_id, reason_for_correction FROM ${database.defaultSchemaName}.test_event
+  - changeSet:
+      id: set-no-phi-user-permissions
+      author: josh@skylight.digital
+      comment: Restrict access for the simple_report_no_phi user to certain tables/columns in order to prevent PHI exposure.
+      changes:
+        - sql:
+          sql: |
+            REVOKE ALL PRIVILEGES ON SCHEMA ${database.defaultSchemaName} FROM PUBLIC;
+            GRANT USAGE ON SCHEMA ${database.defaultSchemaName} TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.facility_device_type TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.device_type TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.organization TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.patient_answers TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.facility TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.patient_link TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.data_hub_upload TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.time_of_consent TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.specimen_type TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.device_specimen_type TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.facility_device_specimen_type TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.test_order TO ${noPhiUsername};
+            GRANT SELECT ON ${database.defaultSchemaName}.api_user_no_phi_view TO ${noPhiUsername};
+            GRANT SELECT ON ${database.defaultSchemaName}.provider_no_phi_view TO ${noPhiUsername};
+            GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+            GRANT SELECT ON ${database.defaultSchemaName}.test_event_no_phi_view TO ${noPhiUsername};
+      rollback:
+        - sql:
+          sql: |
+            REVOKE ALL PRIVILEGES ON SCHEMA ${database.defaultSchemaName} FROM ${noPhiUsername};
+            REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA ${database.defaultSchemaName} FROM ${noPhiUsername};
+  - changeSet:
+      id: add-patient-registration-link-table
+      author: nicholas.a.scialli@omb.eop.gov
+      comment: Add a table that stores facility- or organization-specific patient registration links.
+      changes:
+        - createTable:
+            tableName: patient_registration_link
+            remarks: This table stores unique registration links associated with a facility or organization.
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+              - column:
+                  name: patient_registration_link
+                  remarks: The unique link
+                  type: *string
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: facility_id
+                  type: *idtype
+                  remarks: The facility associated with the link
+                  constraints:
+                    nullable: true
+                    unique: true
+                    foreignKeyName: fk__link__facility
+                    references: facility
+              - column:
+                  name: organization_id
+                  type: *idtype
+                  remarks: The organization associated with the link
+                  constraints:
+                    nullable: true
+                    unique: true
+                    foreignKeyName: fk__link__organization
+                    references: organization
+              - column: &soft_delete_column
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
+        - sql:
+            remarks: Add constraint to allow for a facility or an organization.
+            sql: ALTER TABLE patient_registration_link ADD CONSTRAINT facility_or_organization CHECK (num_nonnulls(facility_id, organization_id) = 1)
+  - changeSet:
+        id: add-spring-session-jdbc-support
+        author: emma@skylight.digital
+        comment: Add a table to back spring sessions.
+        changes: 
+          - createTable:
+                tableName: spring_session
+                remarks: Data store for user sessions, as created by SpringSession.
+                columns:
+                  - column:
+                      name: primary_id
+                      type: char(36)
+                      remarks: The immutable internal key to identify this session.
+                      constraints:
+                        nullable: false
+                        primaryKey: true
+                        primaryKeyName: pk__spring_session
+                  - column:
+                      name: session_id
+                      type: char(36)
+                      remarks: A unique, externally visible string that identifies this session.
+                      constraints:
+                        nullable: false
+                        unique: true
+                        uniqueConstraintName: uk__spring_session
+                  - column:
+                      name: creation_time
+                      type: DATETIME
+                      remarks: The creation timestamp for the session id.
+                      constraints: 
+                        nullable: false
+                  - column:
+                      name: last_access_time
+                      type: DATETIME
+                      remarks: The last time the session id was used.
+                      constraints:
+                        nullable: false 
+                  - column:
+                      name: max_inactive_interval
+                      type: int
+                      remarks: The maximum inactive interval time before a session times out and is invalidated.
+                      constraints: 
+                        nullable: false
+                  - column:
+                      name: expiry_time
+                      type: DATETIME
+                      remarks: The time this session will expire (last_access_time + max_inactive_interval.)
+                      constraints: 
+                        nullable: false
+                  - column:
+                      name: principal_name
+                      type: *string
+                      remarks: The name or UUID of the user for this session.
+          - createIndex:
+              tableName: spring_session
+              indexName: ix__spring_session_expiry_time
+              columns:
+                - column:
+                    name: expiry_time
+          - createIndex:
+              tableName: spring_session
+              indexName: ix__spring_session_principal_name
+              columns:
+                - column:
+                    name: principal_name
+          - createTable:
+                tableName: spring_session_attributes
+                remarks: Attribute store for user sessions.
+                columns:
+                  - column:
+                      name: session_primary_id
+                      type: char(36)
+                      remarks: The immutable internal key to identify this session.
+                      constraints:
+                        nullable: false
+                        foreignKeyName: fk__spring_session_attributes__spring_session
+                        references: spring_session
+                        deleteCascade: true
+                  - column:
+                      name: attribute_name
+                      type: *string
+                      remarks: The unique name of this attribute.
+                      constraints: 
+                        nullable: false
+                  - column:
+                      name: attribute_bytes
+                      type: BYTEA
+                      remarks: The stored value of the attribute.
+                      constraints:
+                        nullable: false
+          - addPrimaryKey:
+              tableName: spring_session_attributes
+              columnNames: session_primary_id, attribute_name

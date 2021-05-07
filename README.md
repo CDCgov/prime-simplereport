@@ -11,7 +11,7 @@ https://simplereport.gov/
   - [Setup](#setup)
   - [Backend](#backend)
     - [Backend-Setup](#backend-setup)
-    - [Running the app with Make](#running-the-app-with-make)
+    - [Running the app with Make or start.sh](#running-the-app-with-make-or-startsh)
     - [Updating user role](#updating-user-role)
       - [Organization roles](#organization-roles)
       - [Site roles](#site-roles)
@@ -24,10 +24,12 @@ https://simplereport.gov/
     - [Twilio](#twilio)
   - [Frontend](#frontend)
     - [Frontend-Setup](#frontend-setup)
-  - [Linters](#linters)
+    - [Linters](#linters)
+    - [Storybook](#storybook)
   - [Deploy](#deploy)
     - [Cloud Environments](#cloud-environments)
     - [Deploy With Release](#deploy-with-release)
+    - [Revert to a Previous Release](#revert-to-a-previous-release)
     - [Deploy With Action](#deploy-with-action)
 
 ## Setup
@@ -152,8 +154,9 @@ You can make the default user a site admin by adding the following to `applicati
 
 ```
 simple-report:
-  site-admin-emails:
-    - bob@example.com
+  demo-users:
+    site-admin-emails:
+      - bob@example.com
 ```
 
 Site admins can access the `/admin` paths and site admin APIs
@@ -216,8 +219,9 @@ Useful local settings
 
 ```
 simple-report:
-  site-admin-emails:
-    - bob@example.com
+  demo-users:
+    site-admin-emails:
+      - bob@example.com
 ```
 
 - make SQL pretty
@@ -229,6 +233,16 @@ spring:
       hibernate:
         format_sql: true
 ```
+
+- set CORS allowed-origins (this can be useful for testing the Okta integration)
+
+```
+simple-report:
+  cors:
+    allowed-origins:
+      - http://localhost:3000
+```
+
 
 ### SchemaSpy
 
@@ -258,7 +272,7 @@ These can also be set by environment variable if desired.
 
 ## Frontend
 
-The frontend is a React app. The app uses [Apollo](https://www.apollographql.com/) to manage the graphql API. For styling the app leverages the [U.S. Web Design System (USWDS)](https://designsystem.digital.gov/)
+The front end is a React app. The app uses [Apollo](https://www.apollographql.com/) to manage the graphql API. For styling the app leverages the [U.S. Web Design System (USWDS)](https://designsystem.digital.gov/)
 
 ### Frontend-Setup
 
@@ -270,9 +284,9 @@ The frontend is a React app. The app uses [Apollo](https://www.apollographql.com
 1. view site at http://localhost:3000
    - Note: frontend need the backend to be running to work
 
-## Linters
+### Linters
 
-This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) as frontend linters,
+This project uses [eslint](https://eslint.org/), [prettier](https://prettier.io/), and [stylelint](https://stylelint.io/) as frontend linters,
 and [spotless](https://github.com/diffplug/spotless) and [google-java-format](https://github.com/google/google-java-format) for the backend.
 GitHub Actions is configured to run these linters on every pull request, so you must resolve all mismatches/errors prior to merging.
 There are a few ways to manage this:
@@ -280,6 +294,12 @@ There are a few ways to manage this:
 1. Run `yarn lint:write` in the `frontend/` dir, and `./gradlew spotlessApply` in the `backend/` dir, before every commit
 1. Enable the optional pre-commit hook by running `yarn install` in the root dir
 1. Add extensions to your code editor that runs the linters for you on save, e.g. [prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode), [vscode-eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint), [vscode-google-java-format](https://marketplace.visualstudio.com/items?itemName=ilkka.google-java-format)
+
+### Storybook
+
+[Storybook](https://storybook.js.org/) is an open source tool for developing UI components in isolation for React. It makes building UIs organized and efficient.
+
+- Run `yarn storybook` in the `frontend/` dir
 
 ## Deploy
 
@@ -297,15 +317,34 @@ Pentest|[/app/static/commit.txt](https://pentest.simplereport.gov/app/static/com
 
 ### Deploy With Release
 
-Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/releases/new) pag
+Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/releases/new) page
 ![release form](https://user-images.githubusercontent.com/80347105/110684538-43187880-81ab-11eb-9793-7cc923956a8b.png)
 
 1. Add a version tag. If the release was `v1` then this release should be `v2`
 2. Add a release title summarizing the changes
 3. If applicable describe some of the changes in detail in the description
 4. Click publish release
-5. Post a link to the release in [#shared-cdc-prime-simplereport-engineering](https://usds.slack.com/archives/C01LTSNKEPP). Example: `Deploying prod https://github.com/CDCgov/prime-simplereport/releases/tag/0.test`
-6. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`
+5. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`
+
+### Revert to a Previous Release
+
+1. Find the version tag for the release you want to revert to.
+2. Checkout that version and create a new branch
+    ```bash
+    $ git checkout ${version_tag}
+    ```
+3. Create and publish new branch at that tag
+     ```bash
+    $ git checkout -b revert-to-${version_tag} && git push -u
+    ```
+4. Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/releases/new) page
+5. Add a version tag: `revert-to-${version_tag}`.
+    - If a version has already been reverted to in the past and needs to be again add an counter to the tag: `revert-to-${version_tag}-${X}`
+6. Add a release title `Revert to ${version_tag}`
+7. Add a description briefly explaining why the revert is needed
+8. Click publish release
+9. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done by going to `/app/static/commit.txt` and `/api/actuator/info`
+
 
 ### Deploy With Action
 

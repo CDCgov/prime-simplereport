@@ -204,9 +204,9 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
         disabled={!allowQuery}
       />
       <SearchResults
+        page="queue"
         patients={data?.patients || []}
         onAddToQueue={onAddToQueue}
-        facilityId={facilityId}
         patientsInQueue={patientsInQueue}
         shouldShowSuggestions={allowQuery}
         loading={debounced !== queryString}

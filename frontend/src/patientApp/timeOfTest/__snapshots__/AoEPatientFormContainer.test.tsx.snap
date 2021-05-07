@@ -9,7 +9,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
   >
     <div
       aria-label="progress"
-      className="usa-step-indicator usa-step-indicator--counters-sm margin-y-205"
+      className="usa-step-indicator  usa-step-indicator--counters-sm margin-y-205"
     >
       <ol
         className="usa-step-indicator__segments"
@@ -88,18 +88,14 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
       <p
         className="message--required"
       >
-        All fields marked with 
-        <span
-          className="usa-sr-only"
+        Required fields are marked with an asterisk (
+        <abbr
+          className="usa-hint usa-hint--required"
+          title="required"
         >
-          Required
-        </span>
-        <span
-          className="usa-hint--required"
-        >
-           *
-        </span>
-         are required
+          *
+        </abbr>
+        ).
       </p>
       <div
         className="prime-formgroup"
@@ -122,16 +118,13 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                 className="usa-legend"
               >
                 Are you experiencing any of the following symptoms?
-                <span
-                  className="usa-sr-only"
+                <abbr
+                  className="usa-hint usa-hint--required"
+                  title="required"
                 >
-                  Required
-                </span>
-                <span
-                  className="usa-hint--required"
-                >
-                   *
-                </span>
+                   
+                  *
+                </abbr>
               </legend>
               <div
                 className="usa-form-group"

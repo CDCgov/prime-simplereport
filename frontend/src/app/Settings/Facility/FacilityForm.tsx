@@ -1,12 +1,15 @@
 import React, { useCallback, useState } from "react";
 import { toast } from "react-toastify";
+import { Prompt } from "react-router-dom";
 
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
+import { stateCodes, urls } from "../../../config/constants";
+import { getStateNameFromCode } from "../../utils/state";
 
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
@@ -37,9 +40,10 @@ export const useFacilityValidation = (facility: Facility) => {
         clearError(field);
         await facilitySchema.validateAt(field, facility);
       } catch (e) {
+        const errorMessage = createFieldError(field, facility);
         setErrors((existingErrors) => ({
           ...existingErrors,
-          [field]: allFacilityErrors[field],
+          [field]: errorMessage,
         }));
       }
     },
@@ -56,7 +60,7 @@ export const useFacilityValidation = (facility: Facility) => {
           acc: FacilityErrors,
           el: { path: keyof FacilityErrors; message: string }
         ) => {
-          acc[el.path] = allFacilityErrors[el.path];
+          acc[el.path] = createFieldError(el.path, facility);
           return acc;
         },
         {} as FacilityErrors
@@ -75,6 +79,31 @@ export const useFacilityValidation = (facility: Facility) => {
   };
 
   return { errors, validateField, validateFacility };
+};
+
+const createFieldError = (field: keyof FacilityErrors, facility: Facility) => {
+  // The `state` field may produce two different errors: one indicating
+  // that no option has been selected and the other indicating that
+  // SimpleReport has not gone live in that particular state.
+  if (field === "state" && stateCodes.includes(facility[field])) {
+    return (
+      <>
+        <span>
+          SimpleReport isn’t currently supported in{" "}
+          {getStateNameFromCode(facility.state)}.
+        </span>
+        <span className="display-block margin-top-05">
+          See a{" "}
+          <a href={urls.FACILITY_INFO}>
+            {" "}
+            list of states where SimpleReport is supported
+          </a>
+          .
+        </span>
+      </>
+    );
+  }
+  return allFacilityErrors[field];
 };
 
 interface Props {
@@ -127,77 +156,83 @@ const FacilityForm: React.FC<Props> = (props) => {
   };
 
   return (
-    <div className="">
-      <div className="prime-container card-container">
-        <div className="usa-card__header">
-          <div>
-            <div className="display-flex flex-align-center">
-              <svg
-                className="usa-icon text-base margin-left-neg-2px"
-                aria-hidden="true"
-                focusable="false"
-                role="img"
-              >
-                <use xlinkHref={iconSprite + "#arrow_back"}></use>
-              </svg>
-              <LinkWithQuery
-                to={`/settings/facilities`}
-                className="margin-left-05"
-              >
-                All facilities
-              </LinkWithQuery>
+    <>
+      <Prompt
+        when={formChanged}
+        message="\nYour changes are not saved yet!\n\nClick OK to delete your answers and leave, or Cancel to return and save your progress."
+      />
+      <div className="">
+        <div className="prime-container card-container">
+          <div className="usa-card__header">
+            <div>
+              <div className="display-flex flex-align-center">
+                <svg
+                  className="usa-icon text-base margin-left-neg-2px"
+                  aria-hidden="true"
+                  focusable="false"
+                  role="img"
+                >
+                  <use xlinkHref={iconSprite + "#arrow_back"}></use>
+                </svg>
+                <LinkWithQuery
+                  to={`/settings/facilities`}
+                  className="margin-left-05"
+                >
+                  All facilities
+                </LinkWithQuery>
+              </div>
+              <h1 className="font-heading-lg margin-y-0">{facility.name}</h1>
             </div>
-            <h1 className="font-heading-lg margin-y-0">{facility.name}</h1>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                className="margin-right-0"
+                type="button"
+                onClick={validateAndSaveFacility}
+                label="Save changes"
+                disabled={!formChanged}
+              />
+            </div>
           </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Button
-              className="margin-right-0"
-              type="button"
-              onClick={validateAndSaveFacility}
-              label="Save changes"
-              disabled={!formChanged}
+          <div className="usa-card__body padding-top-2">
+            <RequiredMessage />
+            <FacilityInformation
+              facility={facility}
+              updateFacility={updateFacility}
+              errors={errors}
+              validateField={validateField}
             />
           </div>
         </div>
-        <div className="usa-card__body padding-top-2">
-          <RequiredMessage />
-          <FacilityInformation
-            facility={facility}
-            updateFacility={updateFacility}
-            errors={errors}
-            validateField={validateField}
+        <OrderingProviderSettings
+          provider={facility.orderingProvider}
+          updateProvider={updateProvider}
+        />
+        <ManageDevices
+          deviceTypes={facility.deviceTypes}
+          defaultDevice={facility.defaultDevice}
+          updateDeviceTypes={updateDeviceTypes}
+          updateDefaultDevice={updateDefaultDevice}
+          deviceOptions={props.deviceOptions}
+          errors={errors}
+          validateField={validateField}
+        />
+        <div className="float-right margin-bottom-4">
+          <Button
+            className="margin-right-0"
+            type="button"
+            onClick={validateAndSaveFacility}
+            label="Save changes"
+            disabled={!formChanged}
           />
         </div>
       </div>
-      <OrderingProviderSettings
-        provider={facility.orderingProvider}
-        updateProvider={updateProvider}
-      />
-      <ManageDevices
-        deviceTypes={facility.deviceTypes}
-        defaultDevice={facility.defaultDevice}
-        updateDeviceTypes={updateDeviceTypes}
-        updateDefaultDevice={updateDefaultDevice}
-        deviceOptions={props.deviceOptions}
-        errors={errors}
-        validateField={validateField}
-      />
-      <div className="float-right margin-bottom-4">
-        <Button
-          className="margin-right-0"
-          type="button"
-          onClick={validateAndSaveFacility}
-          label="Save changes"
-          disabled={!formChanged}
-        />
-      </div>
-    </div>
+    </>
   );
 };
 

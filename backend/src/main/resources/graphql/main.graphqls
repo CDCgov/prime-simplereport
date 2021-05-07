@@ -55,6 +55,7 @@ type DeviceType {
   model: String
   loincCode: String
   swabType: String
+  testLength: Int
 }
 
 type TestDescription {
@@ -83,8 +84,14 @@ type User {
 }
 
 type ApiUser {
-  name: NameInfo
+  id: ID
+  name: NameInfo!
   nameInfo: NameInfo @deprecated(reason: "needless connection of type to field name")
+  firstName: String
+  middleName: String
+  lastName: String!
+  suffix: String
+  email: String!
 }
 
 # Patient and test types
@@ -206,13 +213,14 @@ type Query {
   patient(id: ID!): Patient
   queue(facilityId: ID!): [TestOrder]
     @requiredPermissions(anyOf: ["START_TEST", "UPDATE_TEST", "SUBMIT_TEST"])
-  testResults(facilityId: ID!, pageNumber: Int, pageSize: Int): [TestResult]
+  testResults(facilityId: ID, patientId: ID, pageNumber: Int, pageSize: Int): [TestResult]
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
-  testResultsCount(facilityId: ID!): Int
+  testResultsCount(facilityId: ID, patientId: ID): Int
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
-  users: [User] @requiredPermissions(allOf: ["MANAGE_USERS"])
+  users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
+  user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
 }
 
@@ -323,8 +331,8 @@ type Mutation {
     ethnicity: String
     tribalAffiliation: String
     gender: String
-    residentCongregateSetting: Boolean!
-    employedInHealthcare: Boolean!
+    residentCongregateSetting: Boolean
+    employedInHealthcare: Boolean
     preferredLanguage: String
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   updatePatient(
@@ -354,8 +362,8 @@ type Mutation {
     ethnicity: String @Size(min: 0, max: 32)
     tribalAffiliation: String @Size(min: 0, max: 3)
     gender: String @Size(min: 0, max: 32)
-    residentCongregateSetting: Boolean!
-    employedInHealthcare: Boolean!
+    residentCongregateSetting: Boolean
+    employedInHealthcare: Boolean
     preferredLanguage: String
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   setPatientIsDeleted(id: ID!, deleted: Boolean!): Patient

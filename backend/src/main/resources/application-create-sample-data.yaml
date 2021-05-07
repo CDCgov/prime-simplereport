@@ -93,9 +93,9 @@ simple-report-initialization:
       loinc-code: "94558-4"
       swab-type: "258500001"
 simple-report:
-  site-admin-emails:
-    - ruby@example.com
   demo-users:
+    site-admin-emails:
+      - ruby@example.com
     default-user:
       identity:
         username: bob@example.com

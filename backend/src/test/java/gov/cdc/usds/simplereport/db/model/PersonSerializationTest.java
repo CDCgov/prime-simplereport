@@ -74,7 +74,7 @@ class PersonSerializationTest {
     Provider mccoy = new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222");
     DeviceSpecimenType ds =
         new DeviceSpecimenType(
-            new DeviceType("Bill", "Weasleys", "1", "12345-6", "E"),
+            new DeviceType("Bill", "Weasleys", "1", "12345-6", "E", 15),
             new SpecimenType("Troll Bogies", "000111222"));
     StreetAddress addy =
         new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");

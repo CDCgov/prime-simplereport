@@ -19,7 +19,7 @@ import {
 import Pagination from "../commonComponents/Pagination";
 import { useDebounce } from "../testQueue/addToQueue/useDebounce";
 import { SEARCH_DEBOUNCE_TIME } from "../testQueue/constants";
-import Button from "../commonComponents/Button";
+import Button from "../commonComponents/Button/Button";
 import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { TestResult as TestResultType } from "../../app/testQueue/QueueItem";
 

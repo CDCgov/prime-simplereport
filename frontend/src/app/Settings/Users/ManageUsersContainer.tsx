@@ -13,6 +13,18 @@ const GET_USERS = gql`
       firstName
       middleName
       lastName
+      email
+    }
+  }
+`;
+
+export const GET_USER = gql`
+  query GetUser($id: ID!) {
+    user(id: $id) {
+      id
+      firstName
+      middleName
+      lastName
       roleDescription
       role
       permissions
@@ -27,7 +39,7 @@ const GET_USERS = gql`
   }
 `;
 
-// structure for `getUsers` query
+// structure for `getUser` query
 export interface SettingsUser {
   id: string;
   firstName: string;
@@ -42,8 +54,21 @@ export interface SettingsUser {
   };
 }
 
+// structure for `getUsers` query
+export interface LimitedUser {
+  id: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  email: string;
+}
+
 interface UserData {
-  users: SettingsUser[];
+  users: LimitedUser[];
+}
+
+export interface SingleUserData {
+  user: SettingsUser;
 }
 
 const UPDATE_USER_PRIVILEGES = gql`

@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.test_util;
 
+import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuditingConfig;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
@@ -9,7 +10,6 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
-import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
@@ -80,12 +80,12 @@ import org.springframework.security.test.context.support.WithMockUser;
   OrganizationService.class,
   ApiUserService.class,
   OrganizationInitializingService.class,
-  CurrentPatientContextHolder.class
+  CurrentPatientContextHolder.class,
+  CurrentOrganizationRolesContextHolder.class
 })
 @EnableConfigurationProperties({
   InitialSetupProperties.class,
   AuthorizationProperties.class,
-  SiteAdminEmailList.class,
   DataHubConfig.class,
 })
 public class SliceTestConfiguration {
@@ -94,6 +94,7 @@ public class SliceTestConfiguration {
       TestUserIdentities.TEST_ROLE_PREFIX + TestUserIdentities.DEFAULT_ORGANIZATION + ":";
 
   public static final class Role {
+    public static final String SITE_ADMIN = "SR-UNITTEST-ADMINS";
     public static final String DEFAULT_ORG_USER =
         SliceTestConfiguration.DEFAULT_ROLE_PREFIX + "USER";
     public static final String DEFAULT_ORG_ADMIN =
@@ -121,7 +122,8 @@ public class SliceTestConfiguration {
 
   @Bean
   public AuthorizationService realAuthorizationService(OrganizationExtractor extractor) {
-    return new LoggedInAuthorizationService(extractor);
+    return new LoggedInAuthorizationService(
+        extractor, new AuthorizationProperties(null, "UNITTEST"));
   }
 
   @Retention(RetentionPolicy.RUNTIME)
@@ -176,7 +178,7 @@ public class SliceTestConfiguration {
   @Target({ElementType.METHOD, ElementType.TYPE})
   @WithMockUser(
       username = TestUserIdentities.SITE_ADMIN_USER,
-      authorities = {})
+      authorities = {Role.SITE_ADMIN})
   @Inherited
   public @interface WithSimpleReportSiteAdminUser {}
 }

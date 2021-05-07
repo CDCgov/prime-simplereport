@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ManageUsers disables logged-in user's settings 1`] = `
+exports[`ManageUsers regular list of users disables logged-in user's settings 1`] = `
 <div>
   <div
     class="prime-container card-container"
@@ -316,7 +316,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
 </div>
 `;
 
-exports[`ManageUsers displays the list of users and defaults to the first user 1`] = `
+exports[`ManageUsers regular list of users displays the list of users and defaults to the first user 1`] = `
 <div>
   <div
     class="prime-container card-container"

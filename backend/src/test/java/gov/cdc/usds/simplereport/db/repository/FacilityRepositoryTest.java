@@ -30,8 +30,8 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
   @Test
   void smokeTestDeviceOperations() {
     List<DeviceSpecimenType> configuredDevices = new ArrayList<>();
-    DeviceType bill = _devices.save(new DeviceType("Bill", "Weasleys", "1", "12345-6", "E"));
-    DeviceType percy = _devices.save(new DeviceType("Percy", "Weasleys", "2", "12345-7", "E"));
+    DeviceType bill = _devices.save(new DeviceType("Bill", "Weasleys", "1", "12345-6", "E", 15));
+    DeviceType percy = _devices.save(new DeviceType("Percy", "Weasleys", "2", "12345-7", "E", 15));
     SpecimenType spec = _specimens.save(new SpecimenType("Troll Bogies", "0001111234"));
     DeviceSpecimenType billbogies = _deviceSpecimens.save(new DeviceSpecimenType(bill, spec));
     Provider mccoy =

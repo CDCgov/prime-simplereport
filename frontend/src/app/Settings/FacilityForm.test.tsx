@@ -16,7 +16,7 @@ const validFacility: Facility = {
   phone: "(202) 395-3080",
   street: "736 Jackson Pl NW",
   zipCode: "20503",
-  state: "DC",
+  state: "AZ",
   id: "some-id",
   email: null,
   streetTwo: null,
@@ -137,5 +137,31 @@ describe("FacilityForm", () => {
       fireEvent.click(saveButton);
     });
     expect(saveFacility).toBeCalledTimes(1);
+  });
+  it("only accepts live jurisdictions", async () => {
+    render(
+      <MemoryRouter>
+        <FacilityForm
+          facility={validFacility}
+          deviceOptions={devices}
+          saveFacility={saveFacility}
+        />
+      </MemoryRouter>
+    );
+    const stateDropdownElement = screen.getByTestId("facility-state-dropdown");
+    fireEvent.change(stateDropdownElement, { target: { selectedValue: "PW" } });
+    fireEvent.change(stateDropdownElement, { target: { value: "PW" } });
+    await waitFor(async () => {
+      fireEvent.blur(stateDropdownElement);
+    });
+
+    // There's a line break between these two statements, so they have to be separated
+    const warning = await screen.findByText(
+      "SimpleReport isn’t currently supported in",
+      { exact: false }
+    );
+    expect(warning).toBeInTheDocument();
+    const state = await screen.findByText("Palau", { exact: false });
+    expect(state).toBeInTheDocument();
   });
 });
