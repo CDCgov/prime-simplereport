@@ -18,6 +18,8 @@ import gov.cdc.usds.simplereport.config.WebConfiguration;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
 import gov.cdc.usds.simplereport.service.email.EmailProvider;
 import gov.cdc.usds.simplereport.service.email.EmailService;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
+
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -29,6 +31,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -44,6 +47,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
         @Filter(
             classes = {AuditLoggingAdvice.class, WebConfiguration.class},
             type = FilterType.ASSIGNABLE_TYPE))
+@Import(SliceTestConfiguration.class)
 class AccountRequestControllerTest {
 
   @Autowired private MockMvc _mockMvc;

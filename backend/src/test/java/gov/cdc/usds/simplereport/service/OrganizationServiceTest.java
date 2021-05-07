@@ -88,7 +88,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             "547329472");
 
     assertEquals("Tim's org", org.getOrganizationName());
-    assertTrue(org.getIdentityVerified());
+    assertFalse(org.getIdentityVerified());
     assertEquals("d6b3951b-6698-4ee7-9d63-aaadee85bac0", org.getExternalId());
     List<Facility> facilities = _service.getFacilities(org);
     assertNotNull(facilities);

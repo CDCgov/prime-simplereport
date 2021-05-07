@@ -93,11 +93,11 @@ public class AccountRequestController {
 
     Map<String, String> reqVars =
         body.toTemplateVariables().entrySet().stream()
-            .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().toString()));
-    System.out.println("testingDevices=" + reqVars.get("testingDevices"));
-    System.out.println("testingDevicesOther=" + reqVars.get("testingDevicesOther"));
-    System.out.println("defaultTestDevice=" + reqVars.get("defaultTestDevice"));
-    System.out.println("accessDevices=" + reqVars.get("accessDevices"));
+            .collect(Collectors.toMap(
+                e -> e.getKey(), 
+                e -> e.getValue() == null 
+                    ? null 
+                    : e.getValue().toString()));
     List<String> testingDevices = Arrays.asList(reqVars.get("testingDevices").split(", "));
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
         _dts.getTypesForFacility(
