@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.api.accountrequest;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.ACCOUNT_REQUEST;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
@@ -18,13 +17,12 @@ import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
-
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import org.slf4j.Logger;
@@ -45,11 +43,11 @@ public class AccountRequestController {
   private final EmailService _es;
   private final SendGridProperties sendGridProperties;
   private final ObjectMapper objectMapper;
-  
+
   private static final Logger LOG = LoggerFactory.getLogger(AccountRequestController.class);
 
   public AccountRequestController(
-      SendGridProperties sendGridProperties, 
+      SendGridProperties sendGridProperties,
       OrganizationService os,
       DeviceTypeService dts,
       AddressValidationService avs,
@@ -93,17 +91,17 @@ public class AccountRequestController {
         "account-next-steps",
         "simplereport-site-onboarding-guide.pdf");
 
-    Map<String, String> reqVars = 
+    Map<String, String> reqVars =
         body.toTemplateVariables().entrySet().stream()
             .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().toString()));
+    System.out.println("testingDevices=" + reqVars.get("testingDevices"));
+    System.out.println("testingDevicesOther=" + reqVars.get("testingDevicesOther"));
+    System.out.println("defaultTestDevice=" + reqVars.get("defaultTestDevice"));
+    System.out.println("accessDevices=" + reqVars.get("accessDevices"));
+    List<String> testingDevices = Arrays.asList(reqVars.get("testingDevices").split(", "));
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
         _dts.getTypesForFacility(
-            reqVars.get("defaultTestDevice"), 
-            List.of(reqVars.get("testingDevices")));
-    System.out.println("testingDevices="+reqVars.get("testingDevices"));
-    System.out.println("testingDevicesOther="+reqVars.get("testingDevicesOther"));
-    System.out.println("defaultTestDevice="+reqVars.get("defaultTestDevice"));
-    System.out.println("accessDevices="+reqVars.get("accessDevices"));
+            reqVars.get("defaultTestDevice"), testingDevices);
     StreetAddress facilityAddress =
         _avs.getValidatedAddress(
             reqVars.get("streetAddress1"),
@@ -122,16 +120,11 @@ public class AccountRequestController {
             Translators.parseString(reqVars.get("opCounty")));
     PersonName providerName =
         Translators.consolidateNameArguments(
-            null,
-            reqVars.get("opFirstName"),
-            null,
-            reqVars.get("opLastName"),
-            null,
-            true);
+            null, reqVars.get("opFirstName"), null, reqVars.get("opLastName"), null, true);
     PersonName adminName =
         Translators.consolidateNameArguments(
             null, reqVars.get("firstName"), null, reqVars.get("lastName"), null);
-    String orgExternalId = 
+    String orgExternalId =
         String.format(
             "%s-%s-%s",
             reqVars.get("state"),

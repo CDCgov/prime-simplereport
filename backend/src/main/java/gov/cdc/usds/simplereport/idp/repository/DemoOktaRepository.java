@@ -73,10 +73,10 @@ public class DemoOktaRepository implements OktaRepository {
 
     orgUsernamesMap.get(organizationExternalId).add(userIdentity.getUsername());
 
-    if (active) {
+    if (!active) {
       inactiveUsernames.add(userIdentity.getUsername());
     }
-    
+
     return Optional.of(orgRoles);
   }
 

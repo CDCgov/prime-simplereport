@@ -61,12 +61,14 @@ public class ApiUserService {
   }
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
-  public UserInfo createUserInCurrentOrg(String username, PersonName name, Role role, boolean active) {
+  public UserInfo createUserInCurrentOrg(
+      String username, PersonName name, Role role, boolean active) {
     Organization org = _orgService.getCurrentOrganization();
     return createUserHelper(username, name, org, role, true);
   }
 
-  private UserInfo createUserHelper(String username, PersonName name, Organization org, Role role, boolean active) {
+  private UserInfo createUserHelper(
+      String username, PersonName name, Organization org, Role role, boolean active) {
     IdentityAttributes userIdentity = new IdentityAttributes(username, name);
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
     // for now, all new users have no access to any facilities by default unless they are admins

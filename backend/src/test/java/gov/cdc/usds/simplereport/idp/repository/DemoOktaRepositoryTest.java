@@ -75,7 +75,9 @@ class DemoOktaRepositoryTest {
     assertTrue(
         new OrganizationRoleClaimsMatcher(amos_expected)
             .matches(
-                _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER), true).get()));
+                _repo
+                    .createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER), true)
+                    .get()));
     assertTrue(
         new OrganizationRoleClaimsMatcher(brad_expected)
             .matches(
@@ -250,8 +252,7 @@ class DemoOktaRepositoryTest {
         DIANE,
         ABC,
         Set.of(ABC_1, ABC_2),
-        Set.of(
-            OrganizationRole.NO_ACCESS, OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN),
+        Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN),
         true);
 
     assertTrue(
