@@ -72,6 +72,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
         // If this configuration changes, please update the documentation on both sides
         .antMatchers(HttpMethod.POST, WebConfiguration.PATIENT_EXPERIENCE)
         .permitAll()
+        .antMatchers(HttpMethod.GET, WebConfiguration.PATIENT_EXPERIENCE)
+        .permitAll()
 
         // Account requests are unauthorized
         .antMatchers(HttpMethod.POST, WebConfiguration.ACCOUNT_REQUEST + "/**")
