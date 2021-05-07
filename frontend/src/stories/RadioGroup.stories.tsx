@@ -1,4 +1,5 @@
 import { Story, Meta } from "@storybook/react";
+import React, { useState } from "react";
 
 import RadioGroup from "../app/commonComponents/RadioGroup";
 
@@ -33,11 +34,15 @@ export default {
 
 type Props = React.ComponentProps<typeof RadioGroup>;
 
-const Template: Story<Props> = (args) => (
-  <div className="grid-container margin-top-2">
-    <RadioGroup {...args} />
-  </div>
-);
+const Template: Story<Props> = (args) => {
+  const [fruit, setFruit] = useState("");
+
+  return (
+    <div className="grid-container margin-top-2">
+      <RadioGroup {...args} selectedRadio={fruit} onChange={setFruit} />
+    </div>
+  );
+};
 
 export const Default = Template.bind({});
 Default.args = {};
