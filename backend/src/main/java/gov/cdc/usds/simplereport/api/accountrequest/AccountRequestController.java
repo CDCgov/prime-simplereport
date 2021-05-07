@@ -21,6 +21,9 @@ import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
@@ -39,17 +42,25 @@ public class AccountRequestController {
   private final DeviceTypeService _dts;
   private final AddressValidationService _avs;
   private final ApiUserService _aus;
+  private final EmailService _es;
+  private final SendGridProperties sendGridProperties;
+  private final ObjectMapper objectMapper;
   
   private static final Logger LOG = LoggerFactory.getLogger(AccountRequestController.class);
 
-  SendGridProperties sendGridProperties;
-  EmailService emailService;
-  ObjectMapper objectMapper;
-
   public AccountRequestController(
-      SendGridProperties sendGridProperties, EmailService emailService) {
+      SendGridProperties sendGridProperties, 
+      OrganizationService os,
+      DeviceTypeService dts,
+      AddressValidationService avs,
+      ApiUserService aus,
+      EmailService es) {
     this.sendGridProperties = sendGridProperties;
-    this.emailService = emailService;
+    this._os = os;
+    this._dts = dts;
+    this._avs = avs;
+    this._aus = aus;
+    this._es = es;
     this.objectMapper = new ObjectMapper();
   }
 
@@ -65,7 +76,7 @@ public class AccountRequestController {
     if (LOG.isInfoEnabled()) {
       LOG.info("Waitlist request submitted: {}", objectMapper.writeValueAsString(body));
     }
-    emailService.send(sendGridProperties.getWaitlistRecipient(), subject, body);
+    _es.send(sendGridProperties.getWaitlistRecipient(), subject, body);
   }
 
   /** Read the account request and generate an email body, then send with the emailService */
@@ -75,57 +86,71 @@ public class AccountRequestController {
     if (LOG.isInfoEnabled()) {
       LOG.info("Account request submitted: {}", objectMapper.writeValueAsString(body));
     }
-    emailService.send(sendGridProperties.getAccountRequestRecipient(), subject, body);
-    emailService.send(
+    _es.send(sendGridProperties.getAccountRequestRecipient(), subject, body);
+    _es.send(
         body.getEmail(),
         "Next Steps for SimpleReport",
         "account-next-steps",
         "simplereport-site-onboarding-guide.pdf");
-    
+
+    Map<String, String> reqVars = 
+        body.toTemplateVariables().entrySet().stream()
+            .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().toString()));
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
-        _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+        _dts.getTypesForFacility(
+            reqVars.get("defaultTestDevice"), 
+            List.of(reqVars.get("testingDevices")));
+    System.out.println("testingDevices="+reqVars.get("testingDevices"));
+    System.out.println("testingDevicesOther="+reqVars.get("testingDevicesOther"));
+    System.out.println("defaultTestDevice="+reqVars.get("defaultTestDevice"));
+    System.out.println("accessDevices="+reqVars.get("accessDevices"));
     StreetAddress facilityAddress =
         _avs.getValidatedAddress(
-            body.getMailingAddress1(), 
-            body.getMailingAddress2(), 
-            body.getdevic
-            body.getCity(), 
-            body.getState(), 
-            body.getZip(), 
+            reqVars.get("streetAddress1"),
+            reqVars.get("streetAddress2"),
+            reqVars.get("city"),
+            reqVars.get("state"),
+            reqVars.get("zip"),
             _avs.FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
         new StreetAddress(
-            Translators.parseString(body.getOpMailingAddress1()),
-            Translators.parseString(body.getOpMailingAddress2()),
-            Translators.parseString(body.getOpCity()),
-            Translators.parseState(body.getOpState()),
-            Translators.parseString(body.getOpZip()),
-            Translators.parseString(body.getOpCounty()));
-    PersonName providerName = // SPECIAL CASE: MAY BE ALL NULLS/BLANKS
+            Translators.parseString(reqVars.get("opStreetAddress1")),
+            Translators.parseString(reqVars.get("opStreetAddress2")),
+            Translators.parseString(reqVars.get("opCity")),
+            Translators.parseState(reqVars.get("opState")),
+            Translators.parseString(reqVars.get("opZip")),
+            Translators.parseString(reqVars.get("opCounty")));
+    PersonName providerName =
         Translators.consolidateNameArguments(
             null,
-            body.getOpFirstName(),
-            body.getOpMiddleName(),
-            body.getOpLastName(),
-            body.getOpSuffix(),
+            reqVars.get("opFirstName"),
+            null,
+            reqVars.get("opLastName"),
+            null,
             true);
     PersonName adminName =
         Translators.consolidateNameArguments(
-            null, body.getFirstName(), body.getMiddleName(), body.getLastName(), body.getSuffix());
+            null, reqVars.get("firstName"), null, reqVars.get("lastName"), null);
+    String orgExternalId = 
+        String.format(
+            "%s-%s-%s",
+            reqVars.get("state"),
+            reqVars.get("organizationName").replace(' ', '-').replace(':', '-'),
+            UUID.randomUUID().toString());
     Organization org =
         _os.createOrganization(
-            body.getOrganizationName(),
-            body.getOrganizationExternalId(),
-            body.getFacilityName(),
-            body.getCliaNumber(),
+            reqVars.get("organizationName"),
+            orgExternalId,
+            reqVars.get("facilityName"),
+            reqVars.get("cliaNumber"),
             facilityAddress,
-            Translators.parsePhoneNumber(phone),
-            Translators.parseEmail(email),
+            Translators.parsePhoneNumber(reqVars.get("facilityPhoneNumber")),
+            null,
             deviceSpecimenTypes,
             providerName,
             providerAddress,
-            Translators.parsePhoneNumber(body.getOpPhoneNumber()),
-            body.getNpi());
-    _aus.createUser(body.getEmail(), adminName, body.getOrganizationExternalId(), Role.ADMIN, false);
+            Translators.parsePhoneNumber(reqVars.get("opPhoneNumber")),
+            reqVars.get("npi"));
+    _aus.createUser(reqVars.get("email"), adminName, orgExternalId, Role.ADMIN, false);
   }
 }
