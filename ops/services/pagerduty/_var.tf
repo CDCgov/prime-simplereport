@@ -9,7 +9,7 @@ variable "pagerduty_service_name" {
 }
 
 variable "action_group_short_name" {
-  description = "The short name (very shor!) of the action group we are creating."
+  description = "The short name (very short!) of the action group we are creating."
   type        = string
   default     = "SR-ALERTS"
 }
