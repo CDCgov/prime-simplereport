@@ -92,6 +92,9 @@ simple-report-initialization:
       model: CareStart COVID-19 Antigen test*
       loinc-code: "94558-4"
       swab-type: "258500001"
+  patient-registration-links:
+    - patient-registration-link: dis-org
+      organization-external-id: DIS_ORG
 simple-report:
   demo-users:
     site-admin-emails:
@@ -112,7 +115,7 @@ simple-report:
           last-name: Reynolds
         authorization:
           organization-external-id: DIS_ORG
-          facilities: 
+          facilities:
             - Testing Site
             # TODO: uncomment once e2e tests can accommodate 2+ facilities
             # - Injection Site
@@ -125,7 +128,7 @@ simple-report:
           suffix: III
         authorization:
           organization-external-id: DIS_ORG
-          facilities: 
+          facilities:
             - Testing Site
           granted-roles: []
       - identity:
