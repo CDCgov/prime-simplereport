@@ -11,17 +11,19 @@ describe("SecurityQuestion", () => {
   it("can choose a security question and type an answer", () => {
     userEvent.selectOptions(
       screen.getByLabelText("Security question", { exact: false }),
-      ["What’s your favorite book?"]
+      ["In what city or town was your first job?"]
     );
     fireEvent.change(screen.getByLabelText("Answer", { exact: false }), {
-      target: { value: "Lord of the Rings" },
+      target: { value: "New York" },
     });
-    expect(screen.getByText("What’s your favorite book?")).toBeInTheDocument();
+    expect(
+      screen.getByText("In what city or town was your first job?")
+    ).toBeInTheDocument();
   });
 
   it("requires a security question", () => {
     fireEvent.change(screen.getByLabelText("Answer", { exact: false }), {
-      target: { value: "Lord of the Rings" },
+      target: { value: "New York" },
     });
     fireEvent.click(screen.getByText("Continue"));
     expect(screen.getByText("Enter a security question")).toBeInTheDocument();
@@ -30,7 +32,7 @@ describe("SecurityQuestion", () => {
   it("requires a security answer", () => {
     userEvent.selectOptions(
       screen.getByLabelText("Security question", { exact: false }),
-      ["What’s your favorite book?"]
+      ["In what city or town was your first job?"]
     );
     fireEvent.click(screen.getByText("Continue"));
     expect(screen.getByText("Enter a security answer")).toBeInTheDocument();

@@ -59,73 +59,86 @@ const RadioGroup = <T extends string>({
   );
 
   return (
-    <fieldset className={classnames("usa-fieldset prime-radios", className)}>
-      {legend && (
-        <legend
-          className={classnames("usa-legend", legendSrOnly && "usa-sr-only")}
-        >
-          {required ? <Required label={legend} /> : <Optional label={legend} />}
-        </legend>
+    <div
+      className={classnames(
+        validationStatus === "error" && "usa-form-group--error"
       )}
-      {hintText && <span className="usa-hint">{hintText}</span>}
-      {validationStatus === "error" && (
-        <div className="usa-error-message" role="alert">
-          <span className="usa-sr-only">Error: </span>
-          {errorMessage}
-        </div>
-      )}
-      <UIDConsumer>
-        {(_, uid) => (
-          <div
+    >
+      <fieldset className={classnames("usa-fieldset prime-radios", className)}>
+        {legend && (
+          <legend
             className={classnames(
-              "usa-form-group",
-              variant === "horizontal" && "prime-radio--horizontal",
-              validationStatus === "error" && "usa-form-group--error"
+              "usa-legend",
+              legendSrOnly && "usa-sr-only",
+              validationStatus === "error" && "usa-label--error"
             )}
           >
-            {buttons.map((c) => {
-              const labelClasses = classnames(
-                "usa-radio__label",
-                (c.disabled || disabled) && "text-base"
-              );
-              const className = classnames(groupClass, c.className);
-              return (
-                <div className={className} key={uid(c.value)}>
-                  <input
-                    type="radio"
-                    id={uid(c.value)}
-                    name={name}
-                    value={c.value}
-                    data-required={required || "false"}
-                    disabled={disabled || c.disabled || false}
-                    className={inputClass}
-                    checked={c.value === selectedRadio}
-                    onClick={onClick ? () => onClick(c.value) : undefined}
-                    onChange={() => onChange(c.value)}
-                    onBlur={onBlur}
-                  />
-                  <label className={labelClasses} htmlFor={uid(c.value)}>
-                    {c.label}
-                    {c.labelDescription && (
-                      <span className="usa-checkbox__label-description text-base-dark">
-                        {c.labelDescription}
-                      </span>
-                    )}
-                    {c.labelTag && (
-                      <div className="display-block margin-left-4 margin-top-1">
-                        <span className="usa-tag bg-primary-darker">
-                          {c.labelTag}
-                        </span>
-                      </div>
-                    )}
-                  </label>
-                </div>
-              );
-            })}
+            {required ? (
+              <Required label={legend} />
+            ) : (
+              <Optional label={legend} />
+            )}
+          </legend>
+        )}
+        {hintText && <span className="usa-hint">{hintText}</span>}
+        {validationStatus === "error" && (
+          <div className="usa-error-message" role="alert">
+            <span className="usa-sr-only">Error: </span>
+            {errorMessage}
           </div>
         )}
-      </UIDConsumer>
-    </fieldset>
+        <UIDConsumer>
+          {(_, uid) => (
+            <div
+              className={classnames(
+                "usa-form-group",
+                variant === "horizontal" && "prime-radio--horizontal"
+              )}
+            >
+              {buttons.map((c) => {
+                const labelClasses = classnames(
+                  "usa-radio__label",
+                  (c.disabled || disabled) && "text-base"
+                );
+                const className = classnames(groupClass, c.className);
+                return (
+                  <div className={className} key={uid(c.value)}>
+                    <input
+                      type="radio"
+                      id={uid(c.value)}
+                      name={name}
+                      value={c.value}
+                      data-required={required || "false"}
+                      disabled={disabled || c.disabled || false}
+                      className={inputClass}
+                      checked={c.value === selectedRadio}
+                      onClick={onClick ? () => onClick(c.value) : undefined}
+                      onChange={() => onChange(c.value)}
+                      onBlur={onBlur}
+                    />
+                    <label className={labelClasses} htmlFor={uid(c.value)}>
+                      {c.label}
+                      {c.labelDescription && (
+                        <span className="usa-checkbox__label-description text-base-dark">
+                          {c.labelDescription}
+                        </span>
+                      )}
+                      {c.labelTag && (
+                        <div className="display-block margin-left-4 margin-top-1">
+                          <span className="usa-tag bg-primary-darker">
+                            {c.labelTag}
+                          </span>
+                        </div>
+                      )}
+                    </label>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </UIDConsumer>
+      </fieldset>
+    </div>
   );
 };
 
