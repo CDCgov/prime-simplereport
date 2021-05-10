@@ -18,6 +18,8 @@ public class PatientRegistrationLink extends EternalAuditedEntity {
   @Column(nullable = false)
   private String patientRegistrationLink;
 
+  public PatientRegistrationLink() {}
+
   public PatientRegistrationLink(Organization org, String link) {
     this.organization = org;
     this.patientRegistrationLink = link;
@@ -34,5 +36,9 @@ public class PatientRegistrationLink extends EternalAuditedEntity {
 
   public Organization getOrganization() {
     return organization;
+  }
+
+  public String getLink() {
+    return patientRegistrationLink;
   }
 }

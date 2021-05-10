@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
+import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
@@ -22,6 +23,7 @@ import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
+import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
@@ -57,6 +59,7 @@ public class TestDataFactory {
   @Autowired private TestEventRepository _testEventRepo;
   @Autowired private PatientAnswersRepository _patientAnswerRepo;
   @Autowired private PatientLinkRepository _patientLinkRepository;
+  @Autowired private PatientRegistrationLinkRepository _patientRegistrationLinkRepository;
   @Autowired private SpecimenTypeRepository _specimenRepo;
   @Autowired private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
 
@@ -192,6 +195,20 @@ public class TestDataFactory {
   public PatientLink expirePatientLink(PatientLink pl) {
     pl.expire();
     return _patientLinkRepository.save(pl);
+  }
+
+  @Transactional
+  public PatientRegistrationLink createPatientRegistrationLink(Organization org) {
+    String link = UUID.randomUUID().toString();
+    PatientRegistrationLink prl = new PatientRegistrationLink(org, link);
+    return _patientRegistrationLinkRepository.save(prl);
+  }
+
+  @Transactional
+  public PatientRegistrationLink createPatientRegistrationLink(Facility fac) {
+    String link = UUID.randomUUID().toString();
+    PatientRegistrationLink prl = new PatientRegistrationLink(fac, link);
+    return _patientRegistrationLinkRepository.save(prl);
   }
 
   @Transactional
