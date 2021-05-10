@@ -817,166 +817,170 @@ exports[`PatientFormContainer snapshot 1`] = `
             >
               This information is collected as part of public health efforts to recognize and address inequality in health outcomes.
             </p>
-            <fieldset
-              className="usa-fieldset prime-radios"
+            <div
+              className=""
             >
-              <legend
-                className="usa-legend"
+              <fieldset
+                className="usa-fieldset prime-radios"
               >
-                Race
-              </legend>
-              <div
-                className="usa-form-group"
-              >
-                <div
-                  className="usa-radio"
+                <legend
+                  className="usa-legend"
                 >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="14-val-native"
-                    name="race"
-                    onChange={[Function]}
-                    type="radio"
-                    value="native"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="14-val-native"
-                  >
-                    American Indian/Alaskan Native
-                  </label>
-                </div>
+                  Race
+                </legend>
                 <div
-                  className="usa-radio"
+                  className="usa-form-group"
                 >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="14-val-asian"
-                    name="race"
-                    onChange={[Function]}
-                    type="radio"
-                    value="asian"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="14-val-asian"
+                  <div
+                    className="usa-radio"
                   >
-                    Asian
-                  </label>
-                </div>
-                <div
-                  className="usa-radio"
-                >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="14-val-black"
-                    name="race"
-                    onChange={[Function]}
-                    type="radio"
-                    value="black"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="14-val-black"
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="14-val-native"
+                      name="race"
+                      onChange={[Function]}
+                      type="radio"
+                      value="native"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="14-val-native"
+                    >
+                      American Indian/Alaskan Native
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
                   >
-                    Black/African American
-                  </label>
-                </div>
-                <div
-                  className="usa-radio"
-                >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="14-val-pacific"
-                    name="race"
-                    onChange={[Function]}
-                    type="radio"
-                    value="pacific"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="14-val-pacific"
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="14-val-asian"
+                      name="race"
+                      onChange={[Function]}
+                      type="radio"
+                      value="asian"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="14-val-asian"
+                    >
+                      Asian
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
                   >
-                    Native Hawaiian/other Pacific Islander
-                  </label>
-                </div>
-                <div
-                  className="usa-radio"
-                >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="14-val-white"
-                    name="race"
-                    onChange={[Function]}
-                    type="radio"
-                    value="white"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="14-val-white"
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="14-val-black"
+                      name="race"
+                      onChange={[Function]}
+                      type="radio"
+                      value="black"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="14-val-black"
+                    >
+                      Black/African American
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
                   >
-                    White
-                  </label>
-                </div>
-                <div
-                  className="usa-radio"
-                >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="14-val-other"
-                    name="race"
-                    onChange={[Function]}
-                    type="radio"
-                    value="other"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="14-val-other"
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="14-val-pacific"
+                      name="race"
+                      onChange={[Function]}
+                      type="radio"
+                      value="pacific"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="14-val-pacific"
+                    >
+                      Native Hawaiian/other Pacific Islander
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
                   >
-                    Other
-                  </label>
-                </div>
-                <div
-                  className="usa-radio"
-                >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="14-val-refused"
-                    name="race"
-                    onChange={[Function]}
-                    type="radio"
-                    value="refused"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="14-val-refused"
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="14-val-white"
+                      name="race"
+                      onChange={[Function]}
+                      type="radio"
+                      value="white"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="14-val-white"
+                    >
+                      White
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
                   >
-                    Prefer not to answer
-                  </label>
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="14-val-other"
+                      name="race"
+                      onChange={[Function]}
+                      type="radio"
+                      value="other"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="14-val-other"
+                    >
+                      Other
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
+                  >
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="14-val-refused"
+                      name="race"
+                      onChange={[Function]}
+                      type="radio"
+                      value="refused"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="14-val-refused"
+                    >
+                      Prefer not to answer
+                    </label>
+                  </div>
                 </div>
-              </div>
-            </fieldset>
+              </fieldset>
+            </div>
             <fieldset
               className="usa-fieldset"
             >
@@ -986,179 +990,187 @@ exports[`PatientFormContainer snapshot 1`] = `
                 Tribal affiliation
               </legend>
             </fieldset>
-            <fieldset
-              className="usa-fieldset prime-radios"
+            <div
+              className=""
             >
-              <legend
-                className="usa-legend"
+              <fieldset
+                className="usa-fieldset prime-radios"
               >
-                Are you Hispanic or Latino?
-              </legend>
-              <div
-                className="usa-form-group"
-              >
-                <div
-                  className="usa-radio"
+                <legend
+                  className="usa-legend"
                 >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="15-val-hispanic"
-                    name="ethnicity"
-                    onChange={[Function]}
-                    type="radio"
-                    value="hispanic"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="15-val-hispanic"
-                  >
-                    Yes
-                  </label>
-                </div>
+                  Are you Hispanic or Latino?
+                </legend>
                 <div
-                  className="usa-radio"
+                  className="usa-form-group"
                 >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="15-val-not_hispanic"
-                    name="ethnicity"
-                    onChange={[Function]}
-                    type="radio"
-                    value="not_hispanic"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="15-val-not_hispanic"
+                  <div
+                    className="usa-radio"
                   >
-                    No
-                  </label>
-                </div>
-                <div
-                  className="usa-radio"
-                >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="15-val-refused"
-                    name="ethnicity"
-                    onChange={[Function]}
-                    type="radio"
-                    value="refused"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="15-val-refused"
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="15-val-hispanic"
+                      name="ethnicity"
+                      onChange={[Function]}
+                      type="radio"
+                      value="hispanic"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="15-val-hispanic"
+                    >
+                      Yes
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
                   >
-                    Prefer not to answer
-                  </label>
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="15-val-not_hispanic"
+                      name="ethnicity"
+                      onChange={[Function]}
+                      type="radio"
+                      value="not_hispanic"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="15-val-not_hispanic"
+                    >
+                      No
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
+                  >
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="15-val-refused"
+                      name="ethnicity"
+                      onChange={[Function]}
+                      type="radio"
+                      value="refused"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="15-val-refused"
+                    >
+                      Prefer not to answer
+                    </label>
+                  </div>
                 </div>
-              </div>
-            </fieldset>
-            <fieldset
-              className="usa-fieldset prime-radios"
+              </fieldset>
+            </div>
+            <div
+              className=""
             >
-              <legend
-                className="usa-legend"
+              <fieldset
+                className="usa-fieldset prime-radios"
               >
-                Biological sex
-              </legend>
-              <div
-                className="usa-form-group"
-              >
-                <div
-                  className="usa-radio"
+                <legend
+                  className="usa-legend"
                 >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="16-val-female"
-                    name="gender"
-                    onChange={[Function]}
-                    type="radio"
-                    value="female"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="16-val-female"
-                  >
-                    Female
-                  </label>
-                </div>
+                  Biological sex
+                </legend>
                 <div
-                  className="usa-radio"
+                  className="usa-form-group"
                 >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="16-val-male"
-                    name="gender"
-                    onChange={[Function]}
-                    type="radio"
-                    value="male"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="16-val-male"
+                  <div
+                    className="usa-radio"
                   >
-                    Male
-                  </label>
-                </div>
-                <div
-                  className="usa-radio"
-                >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="16-val-other"
-                    name="gender"
-                    onChange={[Function]}
-                    type="radio"
-                    value="other"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="16-val-other"
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="16-val-female"
+                      name="gender"
+                      onChange={[Function]}
+                      type="radio"
+                      value="female"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="16-val-female"
+                    >
+                      Female
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
                   >
-                    Other
-                  </label>
-                </div>
-                <div
-                  className="usa-radio"
-                >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="16-val-refused"
-                    name="gender"
-                    onChange={[Function]}
-                    type="radio"
-                    value="refused"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="16-val-refused"
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="16-val-male"
+                      name="gender"
+                      onChange={[Function]}
+                      type="radio"
+                      value="male"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="16-val-male"
+                    >
+                      Male
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
                   >
-                    Prefer not to answer
-                  </label>
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="16-val-other"
+                      name="gender"
+                      onChange={[Function]}
+                      type="radio"
+                      value="other"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="16-val-other"
+                    >
+                      Other
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
+                  >
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="16-val-refused"
+                      name="gender"
+                      onChange={[Function]}
+                      type="radio"
+                      value="refused"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="16-val-refused"
+                    >
+                      Prefer not to answer
+                    </label>
+                  </div>
                 </div>
-              </div>
-            </fieldset>
+              </fieldset>
+            </div>
           </fieldset>
         </div>
         <div
@@ -1172,183 +1184,191 @@ exports[`PatientFormContainer snapshot 1`] = `
             >
               Other
             </legend>
-            <fieldset
-              className="usa-fieldset prime-radios"
+            <div
+              className=""
             >
-              <legend
-                className="usa-legend"
+              <fieldset
+                className="usa-fieldset prime-radios"
               >
-                Are you a resident in a congregate living setting?
-                <abbr
-                  className="usa-hint usa-hint--required"
-                  title="required"
+                <legend
+                  className="usa-legend"
                 >
-                   
-                  *
-                </abbr>
-              </legend>
-              <span
-                className="usa-hint"
-              >
-                For example: nursing home, group home, prison, jail, or military
-              </span>
-              <div
-                className="usa-form-group"
-              >
-                <div
-                  className="usa-radio"
-                >
-                  <input
-                    checked={true}
-                    className="usa-radio__input"
-                    data-required={true}
-                    disabled={false}
-                    id="17-val-YES"
-                    name="residentCongregateSetting"
-                    onBlur={[Function]}
-                    onChange={[Function]}
-                    type="radio"
-                    value="YES"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="17-val-YES"
+                  Are you a resident in a congregate living setting?
+                  <abbr
+                    className="usa-hint usa-hint--required"
+                    title="required"
                   >
-                    Yes
-                  </label>
-                </div>
-                <div
-                  className="usa-radio"
+                     
+                    *
+                  </abbr>
+                </legend>
+                <span
+                  className="usa-hint"
                 >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required={true}
-                    disabled={false}
-                    id="17-val-NO"
-                    name="residentCongregateSetting"
-                    onBlur={[Function]}
-                    onChange={[Function]}
-                    type="radio"
-                    value="NO"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="17-val-NO"
-                  >
-                    No
-                  </label>
-                </div>
+                  For example: nursing home, group home, prison, jail, or military
+                </span>
                 <div
-                  className="usa-radio"
+                  className="usa-form-group"
                 >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required={true}
-                    disabled={false}
-                    id="17-val-UNKNOWN"
-                    name="residentCongregateSetting"
-                    onBlur={[Function]}
-                    onChange={[Function]}
-                    type="radio"
-                    value="UNKNOWN"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="17-val-UNKNOWN"
+                  <div
+                    className="usa-radio"
                   >
-                    Unknown
-                  </label>
+                    <input
+                      checked={true}
+                      className="usa-radio__input"
+                      data-required={true}
+                      disabled={false}
+                      id="17-val-YES"
+                      name="residentCongregateSetting"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      type="radio"
+                      value="YES"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="17-val-YES"
+                    >
+                      Yes
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
+                  >
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required={true}
+                      disabled={false}
+                      id="17-val-NO"
+                      name="residentCongregateSetting"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      type="radio"
+                      value="NO"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="17-val-NO"
+                    >
+                      No
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
+                  >
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required={true}
+                      disabled={false}
+                      id="17-val-UNKNOWN"
+                      name="residentCongregateSetting"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      type="radio"
+                      value="UNKNOWN"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="17-val-UNKNOWN"
+                    >
+                      Unknown
+                    </label>
+                  </div>
                 </div>
-              </div>
-            </fieldset>
-            <fieldset
-              className="usa-fieldset prime-radios"
+              </fieldset>
+            </div>
+            <div
+              className=""
             >
-              <legend
-                className="usa-legend"
+              <fieldset
+                className="usa-fieldset prime-radios"
               >
-                Are you a health care worker?
-                <abbr
-                  className="usa-hint usa-hint--required"
-                  title="required"
+                <legend
+                  className="usa-legend"
                 >
-                   
-                  *
-                </abbr>
-              </legend>
-              <div
-                className="usa-form-group"
-              >
-                <div
-                  className="usa-radio"
-                >
-                  <input
-                    checked={true}
-                    className="usa-radio__input"
-                    data-required={true}
-                    disabled={false}
-                    id="18-val-YES"
-                    name="employedInHealthcare"
-                    onBlur={[Function]}
-                    onChange={[Function]}
-                    type="radio"
-                    value="YES"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="18-val-YES"
+                  Are you a health care worker?
+                  <abbr
+                    className="usa-hint usa-hint--required"
+                    title="required"
                   >
-                    Yes
-                  </label>
-                </div>
+                     
+                    *
+                  </abbr>
+                </legend>
                 <div
-                  className="usa-radio"
+                  className="usa-form-group"
                 >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required={true}
-                    disabled={false}
-                    id="18-val-NO"
-                    name="employedInHealthcare"
-                    onBlur={[Function]}
-                    onChange={[Function]}
-                    type="radio"
-                    value="NO"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="18-val-NO"
+                  <div
+                    className="usa-radio"
                   >
-                    No
-                  </label>
-                </div>
-                <div
-                  className="usa-radio"
-                >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required={true}
-                    disabled={false}
-                    id="18-val-UNKNOWN"
-                    name="employedInHealthcare"
-                    onBlur={[Function]}
-                    onChange={[Function]}
-                    type="radio"
-                    value="UNKNOWN"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="18-val-UNKNOWN"
+                    <input
+                      checked={true}
+                      className="usa-radio__input"
+                      data-required={true}
+                      disabled={false}
+                      id="18-val-YES"
+                      name="employedInHealthcare"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      type="radio"
+                      value="YES"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="18-val-YES"
+                    >
+                      Yes
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
                   >
-                    Unknown
-                  </label>
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required={true}
+                      disabled={false}
+                      id="18-val-NO"
+                      name="employedInHealthcare"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      type="radio"
+                      value="NO"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="18-val-NO"
+                    >
+                      No
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
+                  >
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required={true}
+                      disabled={false}
+                      id="18-val-UNKNOWN"
+                      name="employedInHealthcare"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      type="radio"
+                      value="UNKNOWN"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="18-val-UNKNOWN"
+                    >
+                      Unknown
+                    </label>
+                  </div>
                 </div>
-              </div>
-            </fieldset>
+              </fieldset>
+            </div>
           </fieldset>
         </div>
         <div

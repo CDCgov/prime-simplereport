@@ -18,8 +18,8 @@
 ## Checklist for Author and Reviewer
 
 ### UI
-- [ ] Any changes to the UI/UX have been approved by design 
-- [ ] Any new or edited error messages have been approved by design 
+- [ ] Any changes to the UI/UX are approved by design 
+- [ ] Any new or updated content (e.g. error messages) are approved by design 
 
 ### Testing
 - [ ] Includes a summary of what a code reviewer should verify
