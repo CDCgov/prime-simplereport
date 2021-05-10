@@ -222,7 +222,8 @@ public class PersonService {
         preferredLanguage);
   }
 
-  @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
+  // IMPLICIT AUTHORIZATION: this is used for self-registration
+  // TODO: move to a separate service, with the other self-service methods
   public Person addPatient(
       Organization organization,
       UUID facilityId,
