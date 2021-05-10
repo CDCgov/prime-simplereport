@@ -11,7 +11,6 @@ import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
-import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
@@ -82,7 +81,7 @@ import org.springframework.security.test.context.support.WithMockUser;
   ApiUserService.class,
   OrganizationInitializingService.class,
   CurrentPatientContextHolder.class,
-  CurrentOrganizationRolesContextHolder.class
+  CurrentOrganizationRolesContextHolder.class,
 })
 @EnableConfigurationProperties({
   InitialSetupProperties.class,

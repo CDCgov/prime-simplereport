@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.WaitlistRequest;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
@@ -18,9 +19,12 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -93,15 +97,35 @@ public class AccountRequestController {
 
     Map<String, String> reqVars =
         body.toTemplateVariables().entrySet().stream()
-            .collect(Collectors.toMap(
-                e -> e.getKey(), 
-                e -> e.getValue() == null 
+            .collect(
+                HashMap::new, 
+                (m,e)->m.put(
+                    e.getKey(), 
+                    e.getValue() == null 
                     ? null 
-                    : e.getValue().toString()));
-    List<String> testingDevices = Arrays.asList(reqVars.get("testingDevices").split(", "));
+                    : e.getValue().toString()), 
+                HashMap::putAll);
+
+    List<DeviceType> devices = _dts.fetchDeviceTypes();
+    Map<String, String> deviceNamesToIds = 
+        devices.stream().collect(Collectors.toMap(d -> d.getName(), d -> d.getInternalId().toString()));
+    Map<String, String> deviceModelsToIds = 
+        devices.stream().collect(Collectors.toMap(d -> d.getModel(), d -> d.getInternalId().toString()));
+
+    List<String> testingDevicesSubmitted = 
+        new ArrayList<>(Arrays.asList(reqVars.get("testingDevices").split(", ")));
+    testingDevicesSubmitted.removeIf(d -> d.toLowerCase().startsWith("other"));
+    List<String> testingDeviceIds = 
+        testingDevicesSubmitted.stream()
+            .map(d -> Optional.ofNullable(deviceNamesToIds.get(d)).orElse(deviceModelsToIds.get(d)))
+            .collect(Collectors.toList());
+    String defaultTestingDeviceId = 
+        Optional.ofNullable(deviceNamesToIds.get(reqVars.get("defaultTestingDevice")))
+            .orElse(deviceModelsToIds.get(reqVars.get("defaultTestingDevice")));
+
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
-        _dts.getTypesForFacility(
-            reqVars.get("defaultTestDevice"), testingDevices);
+        _dts.getTypesForFacility(defaultTestingDeviceId, testingDeviceIds);
+
     StreetAddress facilityAddress =
         _avs.getValidatedAddress(
             reqVars.get("streetAddress1"),
@@ -118,18 +142,21 @@ public class AccountRequestController {
             Translators.parseState(reqVars.get("opState")),
             Translators.parseString(reqVars.get("opZip")),
             Translators.parseString(reqVars.get("opCounty")));
+
     PersonName providerName =
         Translators.consolidateNameArguments(
             null, reqVars.get("opFirstName"), null, reqVars.get("opLastName"), null, true);
     PersonName adminName =
         Translators.consolidateNameArguments(
             null, reqVars.get("firstName"), null, reqVars.get("lastName"), null);
+
     String orgExternalId =
         String.format(
             "%s-%s-%s",
             reqVars.get("state"),
             reqVars.get("organizationName").replace(' ', '-').replace(':', '-'),
             UUID.randomUUID().toString());
+
     Organization org =
         _os.createOrganization(
             reqVars.get("organizationName"),
@@ -144,6 +171,7 @@ public class AccountRequestController {
             providerAddress,
             Translators.parsePhoneNumber(reqVars.get("opPhoneNumber")),
             reqVars.get("npi"));
+            
     _aus.createUser(reqVars.get("email"), adminName, orgExternalId, Role.ADMIN, false);
   }
 }
