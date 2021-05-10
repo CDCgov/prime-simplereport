@@ -12,61 +12,65 @@ Array [
   >
     No previous test data found
   </div>,
-  <fieldset
-    className="usa-fieldset prime-radios"
+  <div
+    className=""
   >
-    <legend
-      className="usa-legend usa-sr-only"
+    <fieldset
+      className="usa-fieldset prime-radios"
     >
-      Is this your first covid test?
-    </legend>
-    <div
-      className="usa-form-group prime-radio--horizontal"
-    >
-      <div
-        className="usa-radio prime-radio--horizontal__container"
+      <legend
+        className="usa-legend usa-sr-only"
       >
-        <input
-          checked={false}
-          className="usa-radio__input"
-          data-required="false"
-          disabled={false}
-          id="1-val-YES"
-          name="prior_test_flag"
-          onChange={[Function]}
-          type="radio"
-          value="YES"
-        />
-        <label
-          className="usa-radio__label"
-          htmlFor="1-val-YES"
-        >
-          Yes
-        </label>
-      </div>
+        Is this your first covid test?
+      </legend>
       <div
-        className="usa-radio prime-radio--horizontal__container"
+        className="usa-form-group prime-radio--horizontal"
       >
-        <input
-          checked={true}
-          className="usa-radio__input"
-          data-required="false"
-          disabled={false}
-          id="1-val-NO"
-          name="prior_test_flag"
-          onChange={[Function]}
-          type="radio"
-          value="NO"
-        />
-        <label
-          className="usa-radio__label"
-          htmlFor="1-val-NO"
+        <div
+          className="usa-radio prime-radio--horizontal__container"
         >
-          No
-        </label>
+          <input
+            checked={false}
+            className="usa-radio__input"
+            data-required="false"
+            disabled={false}
+            id="1-val-YES"
+            name="prior_test_flag"
+            onChange={[Function]}
+            type="radio"
+            value="YES"
+          />
+          <label
+            className="usa-radio__label"
+            htmlFor="1-val-YES"
+          >
+            Yes
+          </label>
+        </div>
+        <div
+          className="usa-radio prime-radio--horizontal__container"
+        >
+          <input
+            checked={true}
+            className="usa-radio__input"
+            data-required="false"
+            disabled={false}
+            id="1-val-NO"
+            name="prior_test_flag"
+            onChange={[Function]}
+            type="radio"
+            value="NO"
+          />
+          <label
+            className="usa-radio__label"
+            htmlFor="1-val-NO"
+          >
+            No
+          </label>
+        </div>
       </div>
-    </div>
-  </fieldset>,
+    </fieldset>
+  </div>,
   <div
     className="usa-form-group"
   >
