@@ -33,3 +33,7 @@ variable "instance_size" {
 variable "instance_count" {
   default = 1
 }
+
+variable "deploy_info" {
+  default = {}
+}

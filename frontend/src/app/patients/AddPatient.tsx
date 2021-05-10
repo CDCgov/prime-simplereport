@@ -8,7 +8,7 @@ import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
-import Button from "../commonComponents/Button";
+import Button from "../commonComponents/Button/Button";
 import { RootState } from "../store";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 

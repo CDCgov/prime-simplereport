@@ -7,12 +7,26 @@ describe("SMS MFA", () => {
     render(<MfaSms />);
   });
 
-  it("can type a phone number", () => {
-    fireEvent.change(screen.getByLabelText("Phone number"), {
-      target: { value: "(670) 867-5309" },
+  it("can enter a valid phone number", () => {
+    fireEvent.change(screen.getByLabelText("Phone number", { exact: false }), {
+      target: { value: "(910) 867-5309" },
     });
+    fireEvent.click(screen.getByText("Send code"));
     expect(
-      screen.getByText("Get your security code via text message (SMS).")
-    ).toBeInTheDocument();
+      screen.queryByText("Phone number is invalid")
+    ).not.toBeInTheDocument();
+  });
+
+  it("requires a phone number", () => {
+    fireEvent.click(screen.getByText("Send code"));
+    expect(screen.getByText("Enter your phone number")).toBeInTheDocument();
+  });
+
+  it("requires a valid phone number", () => {
+    fireEvent.change(screen.getByLabelText("Phone number", { exact: false }), {
+      target: { value: "(555) 555-5555" },
+    });
+    fireEvent.click(screen.getByText("Send code"));
+    expect(screen.getByText("Enter a valid phone number")).toBeInTheDocument();
   });
 });

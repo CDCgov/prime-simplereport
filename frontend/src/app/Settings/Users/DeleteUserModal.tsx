@@ -2,7 +2,7 @@ import React from "react";
 import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import { displayFullName } from "../../utils";
 
 import { SettingsUser } from "./ManageUsersContainer";

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import TextInput from "../../commonComponents/TextInput";
 
 import { Device } from "./DeviceTypeFormContainer";

@@ -50,3 +50,9 @@ variable "tls_enabled" {
 variable "public_access" {
   default = true
 }
+
+variable "nophi_user_password" {
+  description = "Password for the simple_report_no_phi user."
+  type        = string
+  sensitive   = true
+}

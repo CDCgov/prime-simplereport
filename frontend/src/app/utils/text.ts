@@ -28,6 +28,17 @@ export function hasSymbol(string: string) {
   return /[^A-Za-z 0-9]/.test(string);
 }
 
+export function isAtLeast8Chars(string: string) {
+  return string.length >= 8;
+}
+
 export function isAtLeast15Chars(string: string) {
   return string.length >= 15;
+}
+
+export function toLowerStripWhitespace(s: string | null): string {
+  if (s === null) {
+    return "";
+  }
+  return s.toLocaleLowerCase().replace(/\s/g, "");
 }

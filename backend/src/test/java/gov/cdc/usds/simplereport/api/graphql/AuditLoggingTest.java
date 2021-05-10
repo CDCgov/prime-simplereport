@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -119,7 +118,7 @@ class AuditLoggingTest extends BaseGraphqlTest {
             .put("dateOfBirth", TestDataFactory.DEFAULT_BDAY.toString())
             .toString();
     _mockMvc
-        .perform(withJsonContent(put(ResourceLinks.VERIFY_LINK), requestBody))
+        .perform(withJsonContent(post(ResourceLinks.VERIFY_LINK), requestBody))
         .andExpect(status().isOk());
 
     ApiAuditEvent event = assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK, null);
@@ -159,7 +158,7 @@ class AuditLoggingTest extends BaseGraphqlTest {
             .put("dateOfBirth", TestDataFactory.DEFAULT_BDAY.toString())
             .toString();
     MockHttpServletRequestBuilder req =
-        withJsonContent(put(ResourceLinks.VERIFY_LINK), requestBody)
+        withJsonContent(post(ResourceLinks.VERIFY_LINK), requestBody)
             .header("X-forwarded-PROTO", "gopher")
             .header("x-ORIGINAL-HOST", "simplereport.simple")
             .header("x-forwarded-for", "192.168.153.128:80, 10.3.1.1:443");
