@@ -81,7 +81,7 @@ import org.springframework.security.test.context.support.WithMockUser;
   ApiUserService.class,
   OrganizationInitializingService.class,
   CurrentPatientContextHolder.class,
-  CurrentOrganizationRolesContextHolder.class,
+  CurrentOrganizationRolesContextHolder.class
 })
 @EnableConfigurationProperties({
   InitialSetupProperties.class,
