@@ -8,7 +8,9 @@ export default {
   argTypes: {},
 } as Meta;
 
-const Template: Story = (args) => <MfaGoogleAuth {...args} />;
+type Props = React.ComponentProps<typeof MfaGoogleAuth>;
+
+const Template: Story<Props> = (args) => <MfaGoogleAuth {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};
