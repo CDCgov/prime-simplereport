@@ -29,7 +29,7 @@ export const MfaGoogleAuth = (props: Props) => {
           {props.qrCode ? (
             <img src={props.qrCode} alt="TOTP QR Code" />
           ) : (
-            <QRCode value={"https://bit.ly/3cRcweQ"} size={190} />
+            <QRCode value={"https://bit.ly/3cRcweQ"} size={140} />
           )}
         </div>
         <Button className="margin-top-3" label={"Continue"} type={"submit"} />
