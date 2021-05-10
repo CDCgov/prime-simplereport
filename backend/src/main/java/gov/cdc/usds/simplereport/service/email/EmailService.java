@@ -117,4 +117,20 @@ public class EmailService {
     return sendWithProvider(
         List.of(toEmail), subject, getContentFromTemplate(templateName), attachments);
   }
+
+  public String sendWithProviderTemplate(
+      final String toEmail, final EmailProviderTemplate providerTemplate) throws IOException {
+    Mail mail = new Mail();
+    mail.setFrom(
+        new Email(sendGridProperties.getFromEmail(), sendGridProperties.getFromDisplayName()));
+
+    // Use SendGrid Dynamic Template (subject and body configured in SendGrid web app)
+    mail.setTemplateId(providerTemplate.getTemplateGuid());
+
+    Personalization personalization = new Personalization();
+    personalization.addTo(new Email(toEmail));
+    mail.addPersonalization(personalization);
+
+    return emailProvider.send(mail);
+  }
 }
