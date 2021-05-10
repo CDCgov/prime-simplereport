@@ -10,26 +10,31 @@ import { accountCreationSteps } from "../../../config/constants";
 
 export const MfaEmail = () => {
   const [email, setEmail] = useState("");
-  const [emailError] = useState("");
-  const [formIsDirty] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [formIsDirty, setFormIsDirty] = useState(false);
+
+  const emailIsValid = (email: string) => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  };
 
   const validateEmail = () => {
-    // setFormIsDirty(true);
-    // if (!email) {
-    //   setPhoneNumberError("Enter your email address");
-    //   return;
-    // }
-    // let valid;
-    // try {
-    //   valid = emailIsValid(email);
-    // } catch (e) {
-    //   valid = false;
-    // }
-    // if (!valid) {
-    //   setEmailError("Enter a valid email address");
-    // } else {
-    //   setEmailError("");
-    // }
+    setFormIsDirty(true);
+    if (!email) {
+      setEmailError("Enter your email address");
+      return;
+    }
+    let valid;
+    try {
+      valid = emailIsValid(email);
+    } catch (e) {
+      valid = false;
+    }
+    if (!valid) {
+      setEmailError("Enter a valid email address");
+    } else {
+      setEmailError("");
+    }
   };
 
   const handleSubmit = () => {

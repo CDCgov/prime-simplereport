@@ -1,10 +1,16 @@
+import QRCode from "react-qr-code";
+
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button/Button";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 
-export const MfaGoogleAuth = () => {
+interface Props {
+  qrCode: string;
+}
+
+export const MfaGoogleAuth = (props: Props) => {
   return (
     <CardBackground>
       <Card logo bodyKicker="Set up your account">
@@ -20,7 +26,11 @@ export const MfaGoogleAuth = () => {
           To add an authentication application, scan this QR code in the app.
         </p>
         <div className="display-flex flex-column flex-align-center">
-          <div className="square-15 bg-base"></div>
+          {props.qrCode ? (
+            <img src={props.qrCode} alt="TOTP QR Code" />
+          ) : (
+            <QRCode value={"https://bit.ly/3cRcweQ"} size={190} />
+          )}
         </div>
         <Button className="margin-top-3" label={"Continue"} type={"submit"} />
       </Card>
