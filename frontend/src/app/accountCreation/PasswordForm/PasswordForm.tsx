@@ -50,18 +50,6 @@ export const PasswordForm = () => {
       if (hints.length === 1) {
         return "Your password must have " + hints[0];
       } else if (hints.length >= 3) {
-        return `Your password must have ${hints.slice(0, -1).join(", ")}, and  ${
-        hints[hints.length - 1]
-        }`;
-      } else if (hints > 0) {
-        return `Your password must have ${hints.slice(0, -1).join(", ")} and ${
-        hints[hints.length - 1]
-      }`;
-      } else {
-      return "";
-      }
-        return "Your password must have " + hints[0];
-      } else if (hints.length >= 3) {
         return `Your password must have ${hints.slice(0, -1).join(", ")}, and ${
           hints[hints.length - 1]
         }`;
