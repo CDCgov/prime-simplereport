@@ -179,7 +179,7 @@ export const urls = {
 };
 
 export const securityQuestions = [
-  "What’s the first name of your best friend in high school?",
+  "What’s the first name of your best friend from high school?",
   "What was the first name of your favorite childhood friend?",
   "In what city or town was your first job?",
   "What’s the last name of your first boss?",
