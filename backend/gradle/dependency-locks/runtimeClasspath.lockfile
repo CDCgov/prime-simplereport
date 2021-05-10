@@ -58,10 +58,10 @@ com.sun.istack:istack-commons-runtime:3.0.11
 com.twilio.sdk:twilio:8.7.0
 com.vladmihalcea:hibernate-types-52:2.10.0
 com.zaxxer:HikariCP:3.4.5
-com.zhokhov.graphql:graphql-datetime-autoconfigure-common:3.0.0
-com.zhokhov.graphql:graphql-datetime-autoconfigure:3.0.0
-com.zhokhov.graphql:graphql-datetime-spring-boot-starter:3.0.0
-com.zhokhov.graphql:graphql-java-datetime:3.0.0
+com.zhokhov.graphql:graphql-datetime-autoconfigure-common:4.0.0
+com.zhokhov.graphql:graphql-datetime-autoconfigure:4.0.0
+com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.0.0
+com.zhokhov.graphql:graphql-java-datetime:4.0.0
 commons-codec:commons-codec:1.15
 commons-io:commons-io:2.7
 io.jsonwebtoken:jjwt-api:0.11.2
@@ -151,6 +151,8 @@ org.springframework.security:spring-security-oauth2-core:5.4.2
 org.springframework.security:spring-security-oauth2-jose:5.4.2
 org.springframework.security:spring-security-oauth2-resource-server:5.4.2
 org.springframework.security:spring-security-web:5.4.2
+org.springframework.session:spring-session-core:2.4.1
+org.springframework.session:spring-session-jdbc:2.4.1
 org.springframework:spring-aop:5.3.2
 org.springframework:spring-aspects:5.3.2
 org.springframework:spring-beans:5.3.2
