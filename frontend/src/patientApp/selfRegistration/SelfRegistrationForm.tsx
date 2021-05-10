@@ -10,7 +10,10 @@ type Props = {
 
 export const SelfRegistrationForm = ({ savePerson }: Props) => {
   return (
-    <div className="grid-container maxw-tablet padding-y-3">
+    <div
+      id="registration-container"
+      className="grid-container maxw-tablet padding-y-3"
+    >
       <PersonForm
         activeFacilityId=""
         patient={EMPTY_PERSON}
