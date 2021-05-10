@@ -38,7 +38,8 @@ public class EmailService {
       final Attachments attachments)
       throws IOException {
     Mail mail = new Mail();
-    mail.setFrom(new Email(sendGridProperties.getFromEmail()));
+    mail.setFrom(
+        new Email(sendGridProperties.getFromEmail(), sendGridProperties.getFromDisplayName()));
     mail.setSubject(subject);
     Personalization personalization = new Personalization();
     toEmail.stream().map(Email::new).forEach(personalization::addTo);

@@ -71,7 +71,8 @@ simple-report:
   sendgrid:
     enabled: false
     from-email: support@simplereport.gov
-    account-request-recipient: 
+    from-display-name: SimpleReport Support (CDC)
+    account-request-recipient:
       - support@simplereport.gov
       - Protect-ServiceDesk@hhs.gov
     waitlist-recipient: 
