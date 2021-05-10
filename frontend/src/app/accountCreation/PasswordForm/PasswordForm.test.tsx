@@ -1,10 +1,25 @@
 import { render, screen, fireEvent } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { MemoryRouter } from "react-router";
+import createMockStore from "redux-mock-store";
 
 import { PasswordForm } from "./PasswordForm";
 
+const mockStore = createMockStore([]);
+
+const store = mockStore({
+  activationToken: "foo",
+});
+
 describe("PasswordForm", () => {
   beforeEach(() => {
-    render(<PasswordForm />);
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <PasswordForm />
+        </Provider>
+      </MemoryRouter>
+    );
   });
 
   const strengthLabel = (label: string) => (content: string, element: any) => {

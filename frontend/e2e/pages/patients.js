@@ -14,7 +14,7 @@ function addPatient(dobFormat) {
   const address = "736 Jackson PI NW";
   const state = "DC";
   const zip = "20503";
-  const studentId = faker.random.uuid();
+  const studentId = faker.datatype.uuid();
 
   this.expect.section("@navbar").to.be.visible;
   this.section.navbar.expect.element("@patientLink").to.be.visible;
