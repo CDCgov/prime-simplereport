@@ -41,7 +41,7 @@ public class UserAccountCreationController {
    *     state machine is not in a RESET_PASSWORD state.
    * @throws CredentialsException if the password does not meet Okta standards.
    */
-@PostMapping("/initialize-and-set-password")
+  @PostMapping("/initialize-and-set-password")
   public void activateAccountAndSetPassword(
       @RequestBody UserAccountCreationRequest requestBody, HttpServletRequest request)
       throws Exception {
