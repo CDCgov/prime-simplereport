@@ -537,61 +537,65 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
             >
               No previous test data found
             </div>
-            <fieldset
-              className="usa-fieldset prime-radios"
+            <div
+              className=""
             >
-              <legend
-                className="usa-legend usa-sr-only"
+              <fieldset
+                className="usa-fieldset prime-radios"
               >
-                Is this your first covid test?
-              </legend>
-              <div
-                className="usa-form-group prime-radio--horizontal"
-              >
-                <div
-                  className="usa-radio prime-radio--horizontal__container"
+                <legend
+                  className="usa-legend usa-sr-only"
                 >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="4-val-YES"
-                    name="prior_test_flag"
-                    onChange={[Function]}
-                    type="radio"
-                    value="YES"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="4-val-YES"
-                  >
-                    Yes
-                  </label>
-                </div>
+                  Is this your first covid test?
+                </legend>
                 <div
-                  className="usa-radio prime-radio--horizontal__container"
+                  className="usa-form-group prime-radio--horizontal"
                 >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="4-val-NO"
-                    name="prior_test_flag"
-                    onChange={[Function]}
-                    type="radio"
-                    value="NO"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="4-val-NO"
+                  <div
+                    className="usa-radio prime-radio--horizontal__container"
                   >
-                    No
-                  </label>
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="4-val-YES"
+                      name="prior_test_flag"
+                      onChange={[Function]}
+                      type="radio"
+                      value="YES"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="4-val-YES"
+                    >
+                      Yes
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio prime-radio--horizontal__container"
+                  >
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="4-val-NO"
+                      name="prior_test_flag"
+                      onChange={[Function]}
+                      type="radio"
+                      value="NO"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="4-val-NO"
+                    >
+                      No
+                    </label>
+                  </div>
                 </div>
-              </div>
-            </fieldset>
+              </fieldset>
+            </div>
           </div>
         </fieldset>
       </div>
@@ -606,82 +610,86 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
           >
             Pregnancy
           </legend>
-          <fieldset
-            className="usa-fieldset prime-radios"
+          <div
+            className=""
           >
-            <legend
-              className="usa-legend"
+            <fieldset
+              className="usa-fieldset prime-radios"
             >
-              Currently pregnant?
-            </legend>
-            <div
-              className="usa-form-group"
-            >
-              <div
-                className="usa-radio"
+              <legend
+                className="usa-legend"
               >
-                <input
-                  checked={false}
-                  className="usa-radio__input"
-                  data-required="false"
-                  disabled={false}
-                  id="5-val-77386006"
-                  name="pregnancy"
-                  onChange={[Function]}
-                  type="radio"
-                  value="77386006"
-                />
-                <label
-                  className="usa-radio__label"
-                  htmlFor="5-val-77386006"
-                >
-                  Yes
-                </label>
-              </div>
+                Currently pregnant?
+              </legend>
               <div
-                className="usa-radio"
+                className="usa-form-group"
               >
-                <input
-                  checked={false}
-                  className="usa-radio__input"
-                  data-required="false"
-                  disabled={false}
-                  id="5-val-60001007"
-                  name="pregnancy"
-                  onChange={[Function]}
-                  type="radio"
-                  value="60001007"
-                />
-                <label
-                  className="usa-radio__label"
-                  htmlFor="5-val-60001007"
+                <div
+                  className="usa-radio"
                 >
-                  No
-                </label>
-              </div>
-              <div
-                className="usa-radio"
-              >
-                <input
-                  checked={false}
-                  className="usa-radio__input"
-                  data-required="false"
-                  disabled={false}
-                  id="5-val-261665006"
-                  name="pregnancy"
-                  onChange={[Function]}
-                  type="radio"
-                  value="261665006"
-                />
-                <label
-                  className="usa-radio__label"
-                  htmlFor="5-val-261665006"
+                  <input
+                    checked={false}
+                    className="usa-radio__input"
+                    data-required="false"
+                    disabled={false}
+                    id="5-val-77386006"
+                    name="pregnancy"
+                    onChange={[Function]}
+                    type="radio"
+                    value="77386006"
+                  />
+                  <label
+                    className="usa-radio__label"
+                    htmlFor="5-val-77386006"
+                  >
+                    Yes
+                  </label>
+                </div>
+                <div
+                  className="usa-radio"
                 >
-                  Prefer not to answer
-                </label>
+                  <input
+                    checked={false}
+                    className="usa-radio__input"
+                    data-required="false"
+                    disabled={false}
+                    id="5-val-60001007"
+                    name="pregnancy"
+                    onChange={[Function]}
+                    type="radio"
+                    value="60001007"
+                  />
+                  <label
+                    className="usa-radio__label"
+                    htmlFor="5-val-60001007"
+                  >
+                    No
+                  </label>
+                </div>
+                <div
+                  className="usa-radio"
+                >
+                  <input
+                    checked={false}
+                    className="usa-radio__input"
+                    data-required="false"
+                    disabled={false}
+                    id="5-val-261665006"
+                    name="pregnancy"
+                    onChange={[Function]}
+                    type="radio"
+                    value="261665006"
+                  />
+                  <label
+                    className="usa-radio__label"
+                    htmlFor="5-val-261665006"
+                  >
+                    Prefer not to answer
+                  </label>
+                </div>
               </div>
-            </div>
-          </fieldset>
+            </fieldset>
+          </div>
         </fieldset>
       </div>
       <div
