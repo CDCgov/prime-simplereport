@@ -1,11 +1,16 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
 import com.okta.authn.sdk.AuthenticationException;
-import com.okta.authn.sdk.client.AuthenticationClient;
-import com.okta.authn.sdk.impl.client.DefaultAuthenticationClientBuilder;
-import com.okta.authn.sdk.resource.AuthenticationResponse;
+import com.okta.sdk.authc.credentials.TokenClientCredentials;
+import com.okta.sdk.client.Client;
+import com.okta.sdk.client.Clients;
+import com.okta.sdk.resource.user.PasswordCredential;
+import com.okta.sdk.resource.user.RecoveryQuestionCredential;
+import com.okta.sdk.resource.user.User;
+import com.okta.sdk.resource.user.UserCredentials;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
+import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
 import org.json.JSONObject;
@@ -24,12 +29,16 @@ import org.springframework.web.client.RestTemplate;
 @Profile("!" + BeanProfiles.NO_OKTA_AUTH)
 @Service
 public class LiveOktaAuthentication implements OktaAuthentication {
-  private AuthenticationClient _client;
+  private Client _client;
   private String _apiToken;
   private String _orgUrl;
 
   public LiveOktaAuthentication(OktaClientProperties oktaClientProperties) {
-    _client = new DefaultAuthenticationClientBuilder().setOrgUrl(oktaClientProperties.getOrgUrl()).build();
+    _client =
+        Clients.builder()
+            .setOrgUrl(oktaClientProperties.getOrgUrl())
+            .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
+            .build();
     _apiToken = oktaClientProperties.getToken();
     _orgUrl = oktaClientProperties.getOrgUrl();
   }
@@ -47,7 +56,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * @return The state token affiliated with this request by Okta.
    * @throws Exception if the state token is not returned by Okta.
    */
-  public String getStateTokenFromActivationToken(
+  public JSONObject activateUser(
       String activationToken, String requestingIpAddress, String userAgent)
       throws InvalidActivationLinkException {
     JSONObject requestBody = new JSONObject();
@@ -70,30 +79,58 @@ public class LiveOktaAuthentication implements OktaAuthentication {
             .build();
     String response = restTemplate.postForObject(_orgUrl, requestBody, String.class);
     JSONObject responseJson = new JSONObject(response);
-    if (responseJson.has("stateToken")) {
-      return responseJson.getString("stateToken");
+    if (responseJson.has("stateToken") && responseJson.has("userId")) {
+      return responseJson;
     } else {
       throw new InvalidActivationLinkException();
     }
   }
 
   /**
-   * Using the Okta Authentication SDK, sets a user's password for the first time.
+   * Using the Okta Management SDK, sets a user's password for the first time.
    *
-   * @param stateToken the state token associated with the request.
+   * @param userId the user id of the user making the request.
    * @param password the user-provided password to set.
-   * @throws AuthenticationException if the state token is invalid or the state is not set to
-   *     RESET_PASSWORD.
-   * @throws CredentialException if the password does not meet Okta requirements.
-   * @return the updated state token.
+   * @throws OktaAuthenticationFailureException if the password doesn't meet Okta requirements or
+   *     the user is not in a RESET_PASSWORD state.
    */
-  public String setPassword(String stateToken, char[] password) throws AuthenticationException {
-    AuthenticationResponse response =
-        _client.resetPassword(password, stateToken, new OktaStateHandler());
-    return response.getStateToken();
+  public void setPassword(String userId, char[] password) throws AuthenticationException {
+    try {
+      User user = _client.getUser(userId);
+      UserCredentials creds = user.getCredentials();
+      PasswordCredential passwordCred =
+          _client.instantiate(PasswordCredential.class).setValue(password);
+      creds.setPassword(passwordCred);
+      user.setCredentials(creds);
+      user.update();
+    } catch (Exception e) {
+      throw new OktaAuthenticationFailureException("Error setting user's password", e);
+    }
   }
 
-  public void setRecoveryQuestions(String question, String answer) {
-    // WIP
+  /**
+   * Using the Okta Management SDK, set's a user's recovery questions.
+   *
+   * @param userId the user id of the user making the request.
+   * @param question the user-selected question to answer.
+   * @param answer the user-input answer to the selected question.
+   * @throws OktaAuthenticationFailureException if the recovery question/answer doesn't meet Okta
+   *     requirements.
+   */
+  public void setRecoveryQuestions(String userId, String question, String answer) {
+    try {
+      User user = _client.getUser(userId);
+      UserCredentials creds = user.getCredentials();
+      RecoveryQuestionCredential recoveryCred =
+          _client
+              .instantiate(RecoveryQuestionCredential.class)
+              .setQuestion(question)
+              .setAnswer(answer);
+      creds.setRecoveryQuestion(recoveryCred);
+      user.setCredentials(creds);
+      user.update();
+    } catch (Exception e) {
+      throw new OktaAuthenticationFailureException("Error setting recovery questions", e);
+    }
   }
 }

@@ -1,17 +1,13 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
 import com.okta.authn.sdk.AuthenticationException;
-import com.okta.authn.sdk.CredentialsException;
-import com.okta.sdk.error.Error;
-import com.okta.sdk.error.ErrorCause;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
+import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.json.JSONObject;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -19,123 +15,116 @@ import org.springframework.stereotype.Service;
 @Service
 public class DemoOktaAuthentication implements OktaAuthentication {
 
-  private static final int ERROR_STATUS_CODE = 403;
   private static final int MINIMUM_PASSWORD_LENGTH = 8;
 
-  private HashSet<String> validStateTokens;
-  private HashMap<String, String> stateTokenToPasswordMap;
+  private HashMap<String, DemoUser> idToUserMap;
 
   public DemoOktaAuthentication() {
-    this.validStateTokens = new HashSet<>();
-    this.stateTokenToPasswordMap = new HashMap<>();
+    this.idToUserMap = new HashMap<>();
   }
 
-  public String getStateTokenFromActivationToken(
+  public JSONObject activateUser(
       String activationToken, String requestingIpAddress, String userAgent)
       throws InvalidActivationLinkException {
     if (activationToken == null || activationToken.isEmpty()) {
       throw new InvalidActivationLinkException();
     }
     String stateToken = "stateToken " + activationToken;
-    this.validStateTokens.add(stateToken);
-    return stateToken;
+    String userId = "userId " + activationToken;
+    this.idToUserMap.put(userId, new DemoUser(userId));
+    JSONObject json = new JSONObject();
+    json.put("stateToken", stateToken);
+    json.put("userId", userId);
+    return json;
   }
 
-  public String getStateTokenFromActivationToken(String activationToken)
-      throws InvalidActivationLinkException {
-    return getStateTokenFromActivationToken(activationToken, "", "");
+  public JSONObject activateUser(String activationToken) throws InvalidActivationLinkException {
+    return activateUser(activationToken, "", "");
   }
 
-  public String setPassword(String stateToken, char[] password) throws AuthenticationException {
-    if (!this.validStateTokens.contains(stateToken)) {
-      DemoError authError = new DemoError("State token not recognized.");
-      throw new AuthenticationException(authError);
+  public void setPassword(String userId, char[] password) throws AuthenticationException {
+    if (!idToUserMap.containsKey(userId)) {
+      throw new OktaAuthenticationFailureException("User id not recognized.");
     }
     if (password.length < MINIMUM_PASSWORD_LENGTH) {
-      DemoError passwordError = new DemoError("Password is too short.");
-      throw new CredentialsException(passwordError);
+      throw new OktaAuthenticationFailureException("Password is too short.");
     }
     Pattern specialCharacters = Pattern.compile("[^a-zA-Z0-9]");
     Matcher matcher = specialCharacters.matcher(String.valueOf(password));
     boolean found = matcher.find();
     if (!found) {
-      DemoError passwordError = new DemoError("Password does not contain any special characters.");
-      throw new CredentialsException(passwordError);
+      throw new OktaAuthenticationFailureException(
+          "Password does not contain any special characters.");
     }
-    this.stateTokenToPasswordMap.put(stateToken, String.valueOf(password));
-    return stateToken;
+    idToUserMap.get(userId).setPassword(String.valueOf(password));
   }
 
-  public void setRecoveryQuestions(String question, String answer) {
-    // when recovery question logic is added, implement it here
+  public void setRecoveryQuestions(String userId, String question, String answer) {
+    System.out.println(
+        "BOOYAH demoOktaAuth recoveryQuestions: " + userId + " " + question + " " + answer);
+    if (!idToUserMap.containsKey(userId)) {
+      throw new OktaAuthenticationFailureException("User id not recognized.");
+    }
+    if (question.isBlank()) {
+      throw new OktaAuthenticationFailureException("Recovery question cannot be empty.");
+    }
+    if (answer.isBlank()) {
+      throw new OktaAuthenticationFailureException("Recovery answer cannot be empty.");
+    }
+
+    DemoUser user = idToUserMap.get(userId);
+    user.setRecoveryQuestion(question);
+    user.setRecoveryAnswer(answer);
   }
 
-  public Map<String, String> getPasswords() {
-    return this.stateTokenToPasswordMap;
+  public DemoUser getUser(String userId) {
+    return this.idToUserMap.get(userId);
   }
 
   public void reset() {
-    this.validStateTokens.clear();
-    this.stateTokenToPasswordMap.clear();
+    this.idToUserMap.clear();
   }
 
-  class DemoError implements Error {
-    private String errorMessage;
-    private int status;
-    private List<ErrorCause> causes;
+  class DemoUser {
 
-    public DemoError(String errorMessage) {
-      this.errorMessage = errorMessage;
-      this.status = ERROR_STATUS_CODE;
-      this.causes = List.of(new DemoErrorCause(errorMessage));
+    private String id;
+    private String password;
+    private String recoveryQuestion;
+    private String recoveryAnswer;
+
+    public DemoUser(String id) {
+      this.id = id;
+      this.password = "";
+      this.recoveryQuestion = "";
+      this.recoveryAnswer = "";
     }
 
-    public String getMessage() {
-      return this.errorMessage;
+    public void setPassword(String password) {
+      this.password = password;
     }
 
-    public int getStatus() {
-      return this.status;
+    public void setRecoveryQuestion(String recoveryQuestion) {
+      this.recoveryQuestion = recoveryQuestion;
     }
 
-    public String getCode() {
-      // Error code as provided by Okta implementation:
-      // https://github.com/okta/okta-auth-java/blob/866e9a0d27d83bb9732bca4da14eeaaa2706eadd/api/src/main/java/com/okta/authn/sdk/AuthenticationFailureException.java#L28
-      return "E0000004";
+    public void setRecoveryAnswer(String recoveryAnswer) {
+      this.recoveryAnswer = recoveryAnswer;
     }
 
-    public Map<String, List<String>> getHeaders() {
-      return Map.of("", List.of(""));
+    public String getUserId() {
+      return this.id;
     }
 
-    public String getId() {
-      return "";
+    public String getPassword() {
+      return this.password;
     }
 
-    public List<ErrorCause> getCauses() {
-      return this.causes;
-    }
-  }
-
-  class DemoErrorCause implements ErrorCause {
-
-    private String cause;
-    private String href;
-
-    public DemoErrorCause(String cause) {
-      this.cause = cause;
+    public String getRecoveryQuestion() {
+      return this.recoveryQuestion;
     }
 
-    public String getSummary() {
-      return this.cause;
-    }
-
-    public void setResourceHref(String href) {
-      this.href = href;
-    }
-
-    public String getResourceHref() {
-      return this.href;
+    public String getRecoveryAnswer() {
+      return this.recoveryAnswer;
     }
   }
 }

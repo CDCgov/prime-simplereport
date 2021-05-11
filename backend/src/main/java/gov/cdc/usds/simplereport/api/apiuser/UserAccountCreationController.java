@@ -7,7 +7,7 @@ import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreati
 import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +22,9 @@ import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 @RequestMapping(USER_ACCOUNT_REQUEST)
 public class UserAccountCreationController {
   private static final Logger LOG = LoggerFactory.getLogger(UserAccountCreationController.class);
+
+  private static final String STATE_TOKEN_KEY = "stateToken";
+  private static final String USER_ID_KEY = "userId";
 
   @Autowired private OktaAuthentication _oktaAuth;
 
@@ -38,9 +41,8 @@ public class UserAccountCreationController {
    * @param requestBody contains the password
    * @param request contains all header information, including the activation token.
    * @throws InvalidActivationLinkException if the activation token is invalid.
-   * @throws AuthenticationException if the state token passed to Okta is invalid, or if the Okta
-   *     state machine is not in a RESET_PASSWORD state.
-   * @throws CredentialsException if the password does not meet Okta standards.
+   * @throws OktaAuthenticationFailureException if the password is invalid or if the user is not in
+   *     a RESET_PASSWORD state.
    */
   @PostMapping("/initialize-and-set-password")
   public String setPassword(HttpSession session) {
@@ -48,13 +50,20 @@ public class UserAccountCreationController {
   }
 
   /**
-   * WIP Sets a recovery question for the given session/user in Okta.
+   * Sets a recovery question and answer for a user.
    *
-   * @param session
-   * @return the session id (temporary)
+   * @param requestBody contains the selected question and user-provided answer
+   * @param request contains session information about the user, including their id
+   * @throws OktaAuthenticationFailureException if the recovery question or answer don't meet Okta
+   *     standards (answers must be at least 4 chars long)
    */
   @PostMapping("/set-recovery-question")
-  public String setRecoveryQuestions(HttpSession session) {
-    return session.getId();
+  public void setRecoveryQuestions(
+      @RequestBody UserAccountCreationRequest requestBody, HttpServletRequest request) {
+    System.out.println("BOOYAH" + requestBody.getRecoveryQuestion() + " " + request);
+    _oktaAuth.setRecoveryQuestions(
+        request.getSession().getAttribute(USER_ID_KEY).toString(),
+        requestBody.getRecoveryQuestion(),
+        requestBody.getRecoveryAnswer());
   }
 }
