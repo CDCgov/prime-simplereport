@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
-import com.okta.authn.sdk.AuthenticationException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
@@ -42,7 +41,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     return activateUser(activationToken, "", "");
   }
 
-  public void setPassword(String userId, char[] password) throws AuthenticationException {
+  public void setPassword(String userId, char[] password)
+      throws OktaAuthenticationFailureException {
     if (!idToUserMap.containsKey(userId)) {
       throw new OktaAuthenticationFailureException("User id not recognized.");
     }
@@ -59,9 +59,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     idToUserMap.get(userId).setPassword(String.valueOf(password));
   }
 
-  public void setRecoveryQuestions(String userId, String question, String answer) {
-    System.out.println(
-        "BOOYAH demoOktaAuth recoveryQuestions: " + userId + " " + question + " " + answer);
+  public void setRecoveryQuestions(String userId, String question, String answer)
+      throws OktaAuthenticationFailureException {
     if (!idToUserMap.containsKey(userId)) {
       throw new OktaAuthenticationFailureException("User id not recognized.");
     }

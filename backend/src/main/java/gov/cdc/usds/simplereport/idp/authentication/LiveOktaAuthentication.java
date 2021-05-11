@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
-import com.okta.authn.sdk.AuthenticationException;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
@@ -94,7 +93,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * @throws OktaAuthenticationFailureException if the password doesn't meet Okta requirements or
    *     the user is not in a RESET_PASSWORD state.
    */
-  public void setPassword(String userId, char[] password) throws AuthenticationException {
+  public void setPassword(String userId, char[] password)
+      throws OktaAuthenticationFailureException {
     try {
       User user = _client.getUser(userId);
       UserCredentials creds = user.getCredentials();
@@ -117,7 +117,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * @throws OktaAuthenticationFailureException if the recovery question/answer doesn't meet Okta
    *     requirements.
    */
-  public void setRecoveryQuestions(String userId, String question, String answer) {
+  public void setRecoveryQuestions(String userId, String question, String answer)
+      throws OktaAuthenticationFailureException {
     try {
       User user = _client.getUser(userId);
       UserCredentials creds = user.getCredentials();
