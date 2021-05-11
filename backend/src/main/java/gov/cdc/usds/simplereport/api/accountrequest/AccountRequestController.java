@@ -81,7 +81,7 @@ public class AccountRequestController {
     _es.send(sendGridProperties.getWaitlistRecipient(), subject, body);
   }
 
-  /** Read the account request and generate an email body, then send with the emailService */
+  /** Read the account request and generate an email body, then send with the emailService and create org */
   @PostMapping("")
   public void submitAccountRequest(@Valid @RequestBody AccountRequest body) throws IOException {
     String subject = "New account request";
@@ -107,21 +107,30 @@ public class AccountRequestController {
                 HashMap::putAll);
 
     List<DeviceType> devices = _dts.fetchDeviceTypes();
+    //TODO: remove these sysprint's
+    System.out.println("devicesLength="+devices.size());
     Map<String, String> deviceNamesToIds = 
         devices.stream().collect(Collectors.toMap(d -> d.getName(), d -> d.getInternalId().toString()));
+    System.out.println("deviceNamesToIds="+String.join(", ", 
+        deviceNamesToIds.entrySet().stream().map(e->e.getKey()+":"+e.getValue()).collect(Collectors.toList())));
     Map<String, String> deviceModelsToIds = 
         devices.stream().collect(Collectors.toMap(d -> d.getModel(), d -> d.getInternalId().toString()));
+    System.out.println("deviceModelsToIds="+String.join(", ", 
+        deviceModelsToIds.entrySet().stream().map(e->e.getKey()+":"+e.getValue()).collect(Collectors.toList())));
 
     List<String> testingDevicesSubmitted = 
         new ArrayList<>(Arrays.asList(reqVars.get("testingDevices").split(", ")));
+    System.out.println("testingDevicesSubmitted="+String.join(", ", testingDevicesSubmitted));
     testingDevicesSubmitted.removeIf(d -> d.toLowerCase().startsWith("other"));
     List<String> testingDeviceIds = 
         testingDevicesSubmitted.stream()
             .map(d -> Optional.ofNullable(deviceNamesToIds.get(d)).orElse(deviceModelsToIds.get(d)))
             .collect(Collectors.toList());
+    System.out.println("testingDeviceIds="+String.join(", ", testingDeviceIds));
     String defaultTestingDeviceId = 
         Optional.ofNullable(deviceNamesToIds.get(reqVars.get("defaultTestingDevice")))
             .orElse(deviceModelsToIds.get(reqVars.get("defaultTestingDevice")));
+    System.out.println("defaultTestingDeviceId="+defaultTestingDeviceId);
 
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
         _dts.getTypesForFacility(defaultTestingDeviceId, testingDeviceIds);
