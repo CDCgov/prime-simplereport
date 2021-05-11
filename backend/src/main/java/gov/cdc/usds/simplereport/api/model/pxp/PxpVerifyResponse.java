@@ -1,8 +1,8 @@
 package gov.cdc.usds.simplereport.api.model.pxp;
 
 import gov.cdc.usds.simplereport.db.model.PatientPreferences;
-import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;

@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -274,6 +275,10 @@ public class TestDataFactory {
   }
 
   public static List<PhoneNumber> getListOfOnePhoneNumber() {
-    return List.of(new PhoneNumber(PhoneType.MOBILE, "503-867-5309"));
+    return List.of(new PhoneNumber(PhoneType.MOBILE, "(503) 867-5309"));
+  }
+
+  public static List<PhoneNumberInput> getListOfOnePhoneNumberInput() {
+    return List.of(new PhoneNumberInput("(503) 867-5309", "MOBILE"));
   }
 }
