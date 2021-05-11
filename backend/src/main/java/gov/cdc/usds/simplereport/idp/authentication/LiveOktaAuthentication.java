@@ -5,8 +5,8 @@ import com.okta.authn.sdk.client.AuthenticationClient;
 import com.okta.authn.sdk.client.AuthenticationClients;
 import com.okta.authn.sdk.resource.AuthenticationResponse;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
-import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
+import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
 import org.json.JSONObject;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -28,8 +28,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   private String _apiToken;
   private String _orgUrl;
 
-  public LiveOktaAuthentication(
-      OktaClientProperties oktaClientProperties) {
+  public LiveOktaAuthentication(OktaClientProperties oktaClientProperties) {
     _client = AuthenticationClients.builder().setOrgUrl(oktaClientProperties.getOrgUrl()).build();
     _apiToken = oktaClientProperties.getToken();
     _orgUrl = oktaClientProperties.getOrgUrl();
@@ -49,7 +48,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * @throws Exception if the state token is not returned by Okta.
    */
   public String getStateTokenFromActivationToken(
-      String activationToken, String requestingIpAddress, String userAgent) throws Exception {
+      String activationToken, String requestingIpAddress, String userAgent)
+      throws InvalidActivationLinkException {
     JSONObject requestBody = new JSONObject();
     requestBody.put("token", activationToken);
     String authorizationToken = "SSWS " + _apiToken;

@@ -4,6 +4,7 @@ import com.okta.authn.sdk.AuthenticationException;
 import com.okta.authn.sdk.CredentialsException;
 import com.okta.sdk.error.Error;
 import com.okta.sdk.error.ErrorCause;
+import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,7 +14,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 
 @Profile(BeanProfiles.NO_OKTA_AUTH)
 @Service
@@ -31,7 +31,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   }
 
   public String getStateTokenFromActivationToken(
-      String activationToken, String requestingIpAddress, String userAgent) throws InvalidActivationLinkException {
+      String activationToken, String requestingIpAddress, String userAgent)
+      throws InvalidActivationLinkException {
     if (activationToken == null || activationToken.isEmpty()) {
       throw new InvalidActivationLinkException();
     }
@@ -40,7 +41,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     return stateToken;
   }
 
-  public String getStateTokenFromActivationToken(String activationToken) throws InvalidActivationLinkException {
+  public String getStateTokenFromActivationToken(String activationToken)
+      throws InvalidActivationLinkException {
     return getStateTokenFromActivationToken(activationToken, "", "");
   }
 

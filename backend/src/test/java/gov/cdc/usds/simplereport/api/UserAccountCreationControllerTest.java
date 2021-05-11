@@ -2,8 +2,6 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,7 +42,6 @@ class UserAccountCreationControllerTest {
   @Autowired private DemoOktaAuthentication _oktaAuth;
 
   private static final String VALID_ACTIVATION_TOKEN = "validActivationToken";
-  private static final String STATE_TOKEN_ATTR_NAME = "stateToken";
 
   private static final String VALID_PASSWORD_REQUEST = "{\"password\":\"superStrongPassword!\"}";
 
@@ -82,13 +79,7 @@ class UserAccountCreationControllerTest {
             .characterEncoding("UTF-8")
             .content(VALID_PASSWORD_REQUEST);
 
-    Exception exception =
-        assertThrows(
-            Exception.class,
-            () -> {
-              this._mockMvc.perform(builder);
-            });
-    assertTrue(exception.getMessage().contains("Activation token invalid."));
+    this._mockMvc.perform(builder).andExpect(status().isForbidden());
   }
 
   @Test
