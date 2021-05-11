@@ -34,7 +34,10 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   const clearError = useCallback(
     (idx: number, field: keyof PhoneNumberErrors) => {
       const newErrors = errors.map((error, i) => {
-        if (i !== idx) return error;
+        if (i !== idx) {
+          return error;
+        }
+
         return {
           ...error,
           [field]: "",
@@ -51,7 +54,6 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 
   const validateField = useCallback(
     async (idx: number, field: keyof PhoneNumber) => {
-      console.log(`Validating field ${field} at index ${idx}`);
       try {
         clearError(idx, field);
         await phoneNumberUpdateSchema.validateAt(field, phoneNumbers[idx]);

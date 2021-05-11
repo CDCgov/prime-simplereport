@@ -83,8 +83,7 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
       }
 
       // ...and must validate if provided
-      const number = phoneUtil.parseAndKeepRawInput(phoneNumber.number, "US");
-      return phoneUtil.isValidNumber(number);
+      return phoneNumberIsValid(phoneNumber.number);
     });
   }),
   email: yup.string().email().nullable(),
@@ -106,16 +105,7 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
 };
 
 const updatePhoneNumberSchemata: Record<keyof PhoneNumber, yup.AnySchema> = {
-  number: yup
-    .string()
-    .test(function (input) {
-      if (!input) {
-        return false;
-      }
-      const number = phoneUtil.parseAndKeepRawInput(input, "US");
-      return phoneUtil.isValidNumber(number);
-    })
-    .required(),
+  number: yup.string().test(phoneNumberIsValid).required(),
   type: yup.mixed().oneOf(getValues(PHONE_TYPE_VALUES)),
 };
 
