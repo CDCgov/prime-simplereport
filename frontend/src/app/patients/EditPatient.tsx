@@ -146,19 +146,17 @@ const EditPatient = (props: Props) => {
       variables: {
         patientId: props.patientId,
         ...person,
-        phoneNumbers: (person.phoneNumbers || [])
-          .filter(function removeEmptyPhoneNumbers(phoneNumber: PhoneNumber) {
-            return phoneNumber && phoneNumber.number && phoneNumber.type;
-          })
-          .map(function removeTypename(phoneNumber: PhoneNumber) {
-            // GraphQL query returns a `__typename` meta field on
-            // `PhoneNumber` objects which must be removed before they
-            // may be used in a mutation
-            return {
-              number: phoneNumber.number,
-              type: phoneNumber.type,
-            };
-          }),
+        phoneNumbers: (person.phoneNumbers || []).map(function removeTypename(
+          phoneNumber: PhoneNumber
+        ) {
+          // GraphQL query returns a `__typename` meta field on
+          // `PhoneNumber` objects which must be removed before they
+          // may be used in a mutation
+          return {
+            number: phoneNumber.number,
+            type: phoneNumber.type,
+          };
+        }),
       },
     });
     showNotification(
