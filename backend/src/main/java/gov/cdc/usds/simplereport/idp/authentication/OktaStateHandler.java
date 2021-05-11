@@ -1,9 +1,9 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
+import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import com.okta.authn.sdk.AuthenticationStateHandlerAdapter;
 import com.okta.authn.sdk.resource.AuthenticationResponse;
 import com.okta.authn.sdk.resource.AuthenticationStatus;
-import javax.naming.AuthenticationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +11,7 @@ public class OktaStateHandler extends AuthenticationStateHandlerAdapter {
 
   private static final Logger LOG = LoggerFactory.getLogger(OktaStateHandler.class);
 
-  private Exception failureException;
+  private OktaAuthenticationFailureException failureException;
 
   @Override
   public void handleSuccess(AuthenticationResponse response) {
@@ -21,9 +21,9 @@ public class OktaStateHandler extends AuthenticationStateHandlerAdapter {
   @Override
   public void handleUnknown(AuthenticationResponse response) {
     AuthenticationStatus status = response.getStatus();
-    LOG.info("Unknown error occured during Okta authentication: " + status.name());
+    LOG.info("Unknown error occured during Okta authentication: {} ", status.name());
     failureException =
-        new AuthenticationException(
+        new OktaAuthenticationFailureException(
             "Unknown error occured during Okta authentication: " + status.name());
   }
 

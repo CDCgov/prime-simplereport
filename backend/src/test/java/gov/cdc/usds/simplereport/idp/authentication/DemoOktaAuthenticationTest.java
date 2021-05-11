@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.okta.authn.sdk.AuthenticationException;
 import com.okta.authn.sdk.CredentialsException;
@@ -22,7 +22,7 @@ class DemoOktaAuthenticationTest {
     String stateToken = _auth.getStateTokenFromActivationToken("valid_activation_token");
     String password = "dummyPassword!";
     _auth.setPassword(stateToken, password.toCharArray());
-    assertThat(_auth.getPasswords().containsValue(password));
+    assertTrue(_auth.getPasswords().containsValue(password));
   }
 
   @Test
