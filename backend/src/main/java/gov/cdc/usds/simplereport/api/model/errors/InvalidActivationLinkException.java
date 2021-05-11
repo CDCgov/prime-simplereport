@@ -5,8 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(
     code = HttpStatus.FORBIDDEN,
-    reason =
-        "Provided account activation token deemed invalid by Okta.")
+    reason = "Provided account activation token is invalid.")
 public class InvalidActivationLinkException extends RuntimeException {
   private static final long serialVersionUID = 1L;
 }

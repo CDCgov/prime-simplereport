@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.apiuser;
 
 import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQUEST;
 
+import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
 import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 import javax.annotation.PostConstruct;
@@ -33,10 +34,9 @@ public class UserAccountCreationController {
    * Validates that the requesting user has been sent an invitation to SimpleReport, ensures the
    * given password meets all requirements, and sets the password in Okta.
    *
-   * @param UserAccountCreationRequest requestBody contains the password
-   * @param HttpServletRequest request contains all header information, including the activation
-   *     token.
-   * @throws Exception if the activation token is invalid.
+   * @param requestBody contains the password
+   * @param request contains all header information, including the activation token.
+   * @throws InvalidActivationLinkException if the activation token is invalid.
    * @throws AuthenticationException if the state token passed to Okta is invalid, or if the Okta
    *     state machine is not in a RESET_PASSWORD state.
    * @throws CredentialsException if the password does not meet Okta standards.

@@ -11,7 +11,8 @@ import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException
 public interface OktaAuthentication {
 
   public String getStateTokenFromActivationToken(
-      String activationToken, String requestingIpAddress, String userAgent) throws InvalidActivationLinkException;
+      String activationToken, String requestingIpAddress, String userAgent)
+      throws InvalidActivationLinkException;
 
   public String setPassword(String stateToken, char[] password) throws AuthenticationException;
 

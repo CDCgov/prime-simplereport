@@ -1,9 +1,9 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
-import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import com.okta.authn.sdk.AuthenticationStateHandlerAdapter;
 import com.okta.authn.sdk.resource.AuthenticationResponse;
 import com.okta.authn.sdk.resource.AuthenticationStatus;
+import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
