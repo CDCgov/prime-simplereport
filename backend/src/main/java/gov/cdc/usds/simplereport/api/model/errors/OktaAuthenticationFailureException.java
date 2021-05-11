@@ -10,4 +10,8 @@ public class OktaAuthenticationFailureException extends RuntimeException {
   public OktaAuthenticationFailureException(String message) {
     super(message);
   }
+
+  public OktaAuthenticationFailureException(String message, Throwable t) {
+    super(message, t);
+  }
 }

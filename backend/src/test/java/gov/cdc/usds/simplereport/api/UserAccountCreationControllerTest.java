@@ -11,7 +11,6 @@ import gov.cdc.usds.simplereport.config.WebConfiguration;
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
 import javax.servlet.http.HttpSession;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,13 +44,11 @@ class UserAccountCreationControllerTest {
 
   private static final String VALID_PASSWORD_REQUEST = "{\"password\":\"superStrongPassword!\"}";
 
+  private static final String VALID_RECOVERY_QUESTION_REQUEST =
+      "{\"recoveryQuestion\":\"Who was your third grade teacher?\", \"recoveryAnswer\" : \"Jane Doe\"}";
+
   @BeforeEach
   public void setup() throws Exception {
-    _oktaAuth.reset();
-  }
-
-  @AfterEach
-  public void teardown() {
     _oktaAuth.reset();
   }
 
@@ -97,8 +94,6 @@ class UserAccountCreationControllerTest {
     String secondValidPasswordRequest = "{\"password\":\"secondSuperStrongPassword!?\"}";
     String secondValidActivationToken = "anotherValidAuthToken";
 
-    _oktaAuth.getStateTokenFromActivationToken(secondValidActivationToken);
-
     MockHttpServletRequestBuilder secondBuilder =
         post(ResourceLinks.USER_SET_PASSWORD)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -131,18 +126,6 @@ class UserAccountCreationControllerTest {
   }
 
   @Test
-  void setRecoveryQuestionsIsOk() throws Exception {
-    MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.USER_SET_RECOVERY_QUESTION)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content("{}");
-
-    this._mockMvc.perform(builder).andExpect(status().isOk());
-  }
-
-  @Test
   void setPasswordThenRecoveryQuestions() throws Exception {
     MockHttpSession session = new MockHttpSession();
 
@@ -162,7 +145,7 @@ class UserAccountCreationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .content("{}")
+            .content(VALID_RECOVERY_QUESTION_REQUEST)
             .session(session);
 
     HttpSession setPasswordResponse =
@@ -181,9 +164,9 @@ class UserAccountCreationControllerTest {
             .getRequest()
             .getSession(false);
 
-    // assert that the state token is propagated to the recovery question session
-    assertThat(setRecoveryQuestionResponse.getAttribute("stateToken"))
-        .isEqualTo("stateToken " + VALID_ACTIVATION_TOKEN);
+    // assert that the userId is propagated to the recovery question session
+    assertThat(setRecoveryQuestionResponse.getAttribute("userId"))
+        .isEqualTo("userId " + VALID_ACTIVATION_TOKEN);
     assertEquals(setPasswordResponse, setRecoveryQuestionResponse);
   }
 }
