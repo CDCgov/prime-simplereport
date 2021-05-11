@@ -27,7 +27,7 @@ public class OktaStateHandler extends AuthenticationStateHandlerAdapter {
             "Unknown error occured during Okta authentication: " + status.name());
   }
 
-  public void throwExceptionIfNecessary() throws Exception {
+  public void throwExceptionIfNecessary() throws OktaAuthenticationFailureException {
     if (failureException != null) {
       throw failureException;
     }
