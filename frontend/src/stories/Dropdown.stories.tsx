@@ -5,10 +5,10 @@ import Dropdown from "../app/commonComponents/Dropdown";
 
 const fruits = ["Apple", "Orange", "Pear"];
 
-// const fruitOptions = Object.entries(fruits).map(([value, key]) => ({
-//   value: value,
-//   label: key,
-// }));
+const fruitOptions = Object.entries(fruits).map(([value, key]) => ({
+  value: value,
+  label: key,
+}));
 
 export default {
   title: "Components/Form controls/Dropdown",
@@ -19,7 +19,7 @@ export default {
     name: "dropdown",
     label: "Dropdown",
     errorMessage: "Helpful error message",
-    options: fruits.map((c) => ({ label: c, value: c })),
+    options: fruitOptions,
     defaultSelect: true,
   },
 } as Meta;
