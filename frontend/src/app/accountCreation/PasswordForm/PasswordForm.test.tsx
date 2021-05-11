@@ -19,7 +19,7 @@ jest.mock("../AccountCreationApiService", () => ({
         if (password === "validPASS123!") {
           res("success");
         } else {
-          rej();
+          rej("utter failure");
         }
       });
     },
@@ -145,5 +145,22 @@ describe("PasswordForm", () => {
       await fireEvent.click(screen.getByText("Continue"));
     });
     expect(screen.getByText("Password set successfully.")).toBeInTheDocument();
+  });
+
+  it("fails on submit with invalid password", async () => {
+    fireEvent.change(screen.getByLabelText("Password *"), {
+      target: { value: "INvalidPASS123!" },
+    });
+    fireEvent.change(
+      screen.getByLabelText("Confirm password", { exact: false }),
+      {
+        target: { value: "INvalidPASS123!" },
+      }
+    );
+    expect(screen.getByText(strengthLabel("Good"))).toBeInTheDocument();
+    await act(async () => {
+      await fireEvent.click(screen.getByText("Continue"));
+    });
+    expect(screen.getByText("API Error: utter failure")).toBeInTheDocument();
   });
 });

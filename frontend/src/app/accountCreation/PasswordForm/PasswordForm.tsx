@@ -110,13 +110,17 @@ export const PasswordForm = () => {
   const handleSubmit = async () => {
     if (validatePassword() && validatePasswordConfirmation()) {
       setLoading(true);
+      let success = false;
       try {
         await AccountCreationApi.setPassword(activationToken, password);
+        success = true;
       } catch (error) {
-        console.error(error);
+        setPasswordError(`API Error: ${error}`);
       } finally {
         setLoading(false);
-        setSubmitted(true);
+        if (success) {
+          setSubmitted(true);
+        }
       }
     }
   };
