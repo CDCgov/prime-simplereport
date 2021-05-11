@@ -32,5 +32,13 @@ type Props = React.ComponentProps<typeof StepIndicator>;
 
 const Template: Story<Props> = (args) => <StepIndicator {...args} />;
 
-export const Default = Template.bind({});
-Default.args = {};
+export const noLabels = Template.bind({});
+noLabels.args = {
+  noLabels: true,
+};
+
+export const SmallCounters = Template.bind({});
+SmallCounters.args = {};
+SmallCounters.parameters = {
+  backgrounds: { default: "light gray" },
+};
