@@ -7,6 +7,7 @@ import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.task.TaskSchedulerBuilder;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.support.CronTrigger;
@@ -21,9 +22,9 @@ public class ScheduledTasksService {
   private final DataHubUploaderService _dataHubUploaderService;
 
   public ScheduledTasksService(
-      DataHubUploaderService dataHubUploaderService, TaskScheduler scheduler) {
+      DataHubUploaderService dataHubUploaderService, TaskSchedulerBuilder schedulerBuilder) {
     _dataHubUploaderService = dataHubUploaderService;
-    _scheduler = scheduler;
+    _scheduler = schedulerBuilder.build();
   }
 
   public Map<String, ScheduledFuture<?>> scheduleUploads(DataHubConfig config) {
