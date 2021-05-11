@@ -97,7 +97,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="21"
+                        for="65"
                       >
                         First name
                         <abbr
@@ -112,7 +112,7 @@ Object {
                         aria-disabled="false"
                         aria-required="true"
                         class="usa-input"
-                        id="21"
+                        id="65"
                         name="firstName"
                         type="text"
                         value="Eugenia"
@@ -123,7 +123,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="22"
+                        for="66"
                       >
                         Middle name
                       </label>
@@ -131,7 +131,7 @@ Object {
                         aria-disabled="false"
                         aria-required="false"
                         class="usa-input"
-                        id="22"
+                        id="66"
                         name="middleName"
                         type="text"
                         value=""
@@ -142,7 +142,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="23"
+                        for="67"
                       >
                         Last name
                         <abbr
@@ -157,7 +157,7 @@ Object {
                         aria-disabled="false"
                         aria-required="true"
                         class="usa-input"
-                        id="23"
+                        id="67"
                         name="lastName"
                         type="text"
                         value="Franecki"
@@ -172,14 +172,14 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="24"
+                        for="68"
                       >
                         Role
                       </label>
                       <select
                         aria-required="false"
                         class="usa-select"
-                        id="24"
+                        id="68"
                         name="role"
                       >
                         <option
@@ -214,7 +214,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="25"
+                        for="69"
                       >
                         Facility
                         <abbr
@@ -228,7 +228,7 @@ Object {
                       <select
                         aria-required="true"
                         class="usa-select"
-                        id="25"
+                        id="69"
                         name="facilityId"
                       >
                         <option
@@ -267,7 +267,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="26"
+                        for="70"
                       >
                         Date of birth (mm/dd/yyyy)
                         <abbr
@@ -282,7 +282,7 @@ Object {
                         aria-disabled="false"
                         aria-required="true"
                         class="usa-input"
-                        id="26"
+                        id="70"
                         name="birthDate"
                         type="date"
                         value="1939-10-11"
@@ -314,7 +314,7 @@ Object {
                         >
                           <label
                             class="usa-label"
-                            for="27"
+                            for="71"
                           >
                             Primary phone number
                             <abbr
@@ -328,7 +328,7 @@ Object {
                           <input
                             aria-required="true"
                             class="usa-input"
-                            id="27"
+                            id="71"
                             name="number"
                             type="text"
                             value="(634) 397-4114"
@@ -360,14 +360,14 @@ Object {
                               checked=""
                               class="usa-radio__input"
                               data-required="true"
-                              id="28-val-MOBILE"
+                              id="72-val-MOBILE"
                               name="phoneType-0"
                               type="radio"
                               value="MOBILE"
                             />
                             <label
                               class="usa-radio__label"
-                              for="28-val-MOBILE"
+                              for="72-val-MOBILE"
                             >
                               Mobile
                             </label>
@@ -378,14 +378,14 @@ Object {
                             <input
                               class="usa-radio__input"
                               data-required="true"
-                              id="28-val-LANDLINE"
+                              id="72-val-LANDLINE"
                               name="phoneType-0"
                               type="radio"
                               value="LANDLINE"
                             />
                             <label
                               class="usa-radio__label"
-                              for="28-val-LANDLINE"
+                              for="72-val-LANDLINE"
                             >
                               Landline
                             </label>
@@ -423,14 +423,14 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="29"
+                        for="73"
                       >
                         Email address
                       </label>
                       <input
                         aria-required="false"
                         class="usa-input"
-                        id="29"
+                        id="73"
                         name="email"
                         type="email"
                         value="foo@bar.com"
@@ -445,7 +445,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="30"
+                        for="74"
                       >
                         Street address 1
                         <abbr
@@ -459,7 +459,7 @@ Object {
                       <input
                         aria-required="true"
                         class="usa-input"
-                        id="30"
+                        id="74"
                         name="street"
                         type="text"
                         value="736 Jackson PI NW"
@@ -474,14 +474,14 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="31"
+                        for="75"
                       >
                         Street address 2
                       </label>
                       <input
                         aria-required="false"
                         class="usa-input"
-                        id="31"
+                        id="75"
                         name="streetTwo"
                         type="text"
                         value="DC"
@@ -496,14 +496,14 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="32"
+                        for="76"
                       >
                         City
                       </label>
                       <input
                         aria-required="false"
                         class="usa-input"
-                        id="32"
+                        id="76"
                         name="city"
                         type="text"
                         value=""
@@ -514,14 +514,14 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="33"
+                        for="77"
                       >
                         County
                       </label>
                       <input
                         aria-required="false"
                         class="usa-input"
-                        id="33"
+                        id="77"
                         name="county"
                         type="text"
                         value=""
@@ -538,7 +538,7 @@ Object {
                         >
                           <label
                             class="usa-label"
-                            for="34"
+                            for="78"
                           >
                             State
                             <abbr
@@ -552,7 +552,7 @@ Object {
                           <select
                             aria-required="true"
                             class="usa-select"
-                            id="34"
+                            id="78"
                             name="state"
                           >
                             <option
@@ -866,7 +866,7 @@ Object {
                         >
                           <label
                             class="usa-label"
-                            for="35"
+                            for="79"
                           >
                             Zip code
                             <abbr
@@ -880,7 +880,7 @@ Object {
                           <input
                             aria-required="true"
                             class="usa-input"
-                            id="35"
+                            id="79"
                             name="zipCode"
                             type="text"
                             value=""
@@ -924,14 +924,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="36-val-native"
+                          id="80-val-native"
                           name="race"
                           type="radio"
                           value="native"
                         />
                         <label
                           class="usa-radio__label"
-                          for="36-val-native"
+                          for="80-val-native"
                         >
                           American Indian/Alaskan Native
                         </label>
@@ -942,14 +942,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="36-val-asian"
+                          id="80-val-asian"
                           name="race"
                           type="radio"
                           value="asian"
                         />
                         <label
                           class="usa-radio__label"
-                          for="36-val-asian"
+                          for="80-val-asian"
                         >
                           Asian
                         </label>
@@ -960,14 +960,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="36-val-black"
+                          id="80-val-black"
                           name="race"
                           type="radio"
                           value="black"
                         />
                         <label
                           class="usa-radio__label"
-                          for="36-val-black"
+                          for="80-val-black"
                         >
                           Black/African American
                         </label>
@@ -978,14 +978,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="36-val-pacific"
+                          id="80-val-pacific"
                           name="race"
                           type="radio"
                           value="pacific"
                         />
                         <label
                           class="usa-radio__label"
-                          for="36-val-pacific"
+                          for="80-val-pacific"
                         >
                           Native Hawaiian/other Pacific Islander
                         </label>
@@ -996,14 +996,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="36-val-white"
+                          id="80-val-white"
                           name="race"
                           type="radio"
                           value="white"
                         />
                         <label
                           class="usa-radio__label"
-                          for="36-val-white"
+                          for="80-val-white"
                         >
                           White
                         </label>
@@ -1014,14 +1014,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="36-val-other"
+                          id="80-val-other"
                           name="race"
                           type="radio"
                           value="other"
                         />
                         <label
                           class="usa-radio__label"
-                          for="36-val-other"
+                          for="80-val-other"
                         >
                           Other
                         </label>
@@ -1032,14 +1032,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="36-val-refused"
+                          id="80-val-refused"
                           name="race"
                           type="radio"
                           value="refused"
                         />
                         <label
                           class="usa-radio__label"
-                          for="36-val-refused"
+                          for="80-val-refused"
                         >
                           Prefer not to answer
                         </label>
@@ -1072,14 +1072,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="37-val-hispanic"
+                          id="81-val-hispanic"
                           name="ethnicity"
                           type="radio"
                           value="hispanic"
                         />
                         <label
                           class="usa-radio__label"
-                          for="37-val-hispanic"
+                          for="81-val-hispanic"
                         >
                           Yes
                         </label>
@@ -1090,14 +1090,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="37-val-not_hispanic"
+                          id="81-val-not_hispanic"
                           name="ethnicity"
                           type="radio"
                           value="not_hispanic"
                         />
                         <label
                           class="usa-radio__label"
-                          for="37-val-not_hispanic"
+                          for="81-val-not_hispanic"
                         >
                           No
                         </label>
@@ -1108,14 +1108,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="37-val-refused"
+                          id="81-val-refused"
                           name="ethnicity"
                           type="radio"
                           value="refused"
                         />
                         <label
                           class="usa-radio__label"
-                          for="37-val-refused"
+                          for="81-val-refused"
                         >
                           Prefer not to answer
                         </label>
@@ -1139,14 +1139,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="38-val-female"
+                          id="82-val-female"
                           name="gender"
                           type="radio"
                           value="female"
                         />
                         <label
                           class="usa-radio__label"
-                          for="38-val-female"
+                          for="82-val-female"
                         >
                           Female
                         </label>
@@ -1157,14 +1157,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="38-val-male"
+                          id="82-val-male"
                           name="gender"
                           type="radio"
                           value="male"
                         />
                         <label
                           class="usa-radio__label"
-                          for="38-val-male"
+                          for="82-val-male"
                         >
                           Male
                         </label>
@@ -1175,14 +1175,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="38-val-other"
+                          id="82-val-other"
                           name="gender"
                           type="radio"
                           value="other"
                         />
                         <label
                           class="usa-radio__label"
-                          for="38-val-other"
+                          for="82-val-other"
                         >
                           Other
                         </label>
@@ -1193,14 +1193,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="38-val-refused"
+                          id="82-val-refused"
                           name="gender"
                           type="radio"
                           value="refused"
                         />
                         <label
                           class="usa-radio__label"
-                          for="38-val-refused"
+                          for="82-val-refused"
                         >
                           Prefer not to answer
                         </label>
@@ -1250,14 +1250,14 @@ Object {
                           checked=""
                           class="usa-radio__input"
                           data-required="true"
-                          id="39-val-YES"
+                          id="83-val-YES"
                           name="residentCongregateSetting"
                           type="radio"
                           value="YES"
                         />
                         <label
                           class="usa-radio__label"
-                          for="39-val-YES"
+                          for="83-val-YES"
                         >
                           Yes
                         </label>
@@ -1268,14 +1268,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="39-val-NO"
+                          id="83-val-NO"
                           name="residentCongregateSetting"
                           type="radio"
                           value="NO"
                         />
                         <label
                           class="usa-radio__label"
-                          for="39-val-NO"
+                          for="83-val-NO"
                         >
                           No
                         </label>
@@ -1286,14 +1286,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="39-val-UNKNOWN"
+                          id="83-val-UNKNOWN"
                           name="residentCongregateSetting"
                           type="radio"
                           value="UNKNOWN"
                         />
                         <label
                           class="usa-radio__label"
-                          for="39-val-UNKNOWN"
+                          for="83-val-UNKNOWN"
                         >
                           Unknown
                         </label>
@@ -1325,14 +1325,14 @@ Object {
                           checked=""
                           class="usa-radio__input"
                           data-required="true"
-                          id="40-val-YES"
+                          id="84-val-YES"
                           name="employedInHealthcare"
                           type="radio"
                           value="YES"
                         />
                         <label
                           class="usa-radio__label"
-                          for="40-val-YES"
+                          for="84-val-YES"
                         >
                           Yes
                         </label>
@@ -1343,14 +1343,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="40-val-NO"
+                          id="84-val-NO"
                           name="employedInHealthcare"
                           type="radio"
                           value="NO"
                         />
                         <label
                           class="usa-radio__label"
-                          for="40-val-NO"
+                          for="84-val-NO"
                         >
                           No
                         </label>
@@ -1361,14 +1361,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="40-val-UNKNOWN"
+                          id="84-val-UNKNOWN"
                           name="employedInHealthcare"
                           type="radio"
                           value="UNKNOWN"
                         />
                         <label
                           class="usa-radio__label"
-                          for="40-val-UNKNOWN"
+                          for="84-val-UNKNOWN"
                         >
                           Unknown
                         </label>
@@ -1491,7 +1491,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="21"
+                      for="65"
                     >
                       First name
                       <abbr
@@ -1506,7 +1506,7 @@ Object {
                       aria-disabled="false"
                       aria-required="true"
                       class="usa-input"
-                      id="21"
+                      id="65"
                       name="firstName"
                       type="text"
                       value="Eugenia"
@@ -1517,7 +1517,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="22"
+                      for="66"
                     >
                       Middle name
                     </label>
@@ -1525,7 +1525,7 @@ Object {
                       aria-disabled="false"
                       aria-required="false"
                       class="usa-input"
-                      id="22"
+                      id="66"
                       name="middleName"
                       type="text"
                       value=""
@@ -1536,7 +1536,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="23"
+                      for="67"
                     >
                       Last name
                       <abbr
@@ -1551,7 +1551,7 @@ Object {
                       aria-disabled="false"
                       aria-required="true"
                       class="usa-input"
-                      id="23"
+                      id="67"
                       name="lastName"
                       type="text"
                       value="Franecki"
@@ -1566,14 +1566,14 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="24"
+                      for="68"
                     >
                       Role
                     </label>
                     <select
                       aria-required="false"
                       class="usa-select"
-                      id="24"
+                      id="68"
                       name="role"
                     >
                       <option
@@ -1608,7 +1608,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="25"
+                      for="69"
                     >
                       Facility
                       <abbr
@@ -1622,7 +1622,7 @@ Object {
                     <select
                       aria-required="true"
                       class="usa-select"
-                      id="25"
+                      id="69"
                       name="facilityId"
                     >
                       <option
@@ -1661,7 +1661,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="26"
+                      for="70"
                     >
                       Date of birth (mm/dd/yyyy)
                       <abbr
@@ -1676,7 +1676,7 @@ Object {
                       aria-disabled="false"
                       aria-required="true"
                       class="usa-input"
-                      id="26"
+                      id="70"
                       name="birthDate"
                       type="date"
                       value="1939-10-11"
@@ -1708,7 +1708,7 @@ Object {
                       >
                         <label
                           class="usa-label"
-                          for="27"
+                          for="71"
                         >
                           Primary phone number
                           <abbr
@@ -1722,7 +1722,7 @@ Object {
                         <input
                           aria-required="true"
                           class="usa-input"
-                          id="27"
+                          id="71"
                           name="number"
                           type="text"
                           value="(634) 397-4114"
@@ -1754,14 +1754,14 @@ Object {
                             checked=""
                             class="usa-radio__input"
                             data-required="true"
-                            id="28-val-MOBILE"
+                            id="72-val-MOBILE"
                             name="phoneType-0"
                             type="radio"
                             value="MOBILE"
                           />
                           <label
                             class="usa-radio__label"
-                            for="28-val-MOBILE"
+                            for="72-val-MOBILE"
                           >
                             Mobile
                           </label>
@@ -1772,14 +1772,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="true"
-                            id="28-val-LANDLINE"
+                            id="72-val-LANDLINE"
                             name="phoneType-0"
                             type="radio"
                             value="LANDLINE"
                           />
                           <label
                             class="usa-radio__label"
-                            for="28-val-LANDLINE"
+                            for="72-val-LANDLINE"
                           >
                             Landline
                           </label>
@@ -1817,14 +1817,14 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="29"
+                      for="73"
                     >
                       Email address
                     </label>
                     <input
                       aria-required="false"
                       class="usa-input"
-                      id="29"
+                      id="73"
                       name="email"
                       type="email"
                       value="foo@bar.com"
@@ -1839,7 +1839,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="30"
+                      for="74"
                     >
                       Street address 1
                       <abbr
@@ -1853,7 +1853,7 @@ Object {
                     <input
                       aria-required="true"
                       class="usa-input"
-                      id="30"
+                      id="74"
                       name="street"
                       type="text"
                       value="736 Jackson PI NW"
@@ -1868,14 +1868,14 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="31"
+                      for="75"
                     >
                       Street address 2
                     </label>
                     <input
                       aria-required="false"
                       class="usa-input"
-                      id="31"
+                      id="75"
                       name="streetTwo"
                       type="text"
                       value="DC"
@@ -1890,14 +1890,14 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="32"
+                      for="76"
                     >
                       City
                     </label>
                     <input
                       aria-required="false"
                       class="usa-input"
-                      id="32"
+                      id="76"
                       name="city"
                       type="text"
                       value=""
@@ -1908,14 +1908,14 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="33"
+                      for="77"
                     >
                       County
                     </label>
                     <input
                       aria-required="false"
                       class="usa-input"
-                      id="33"
+                      id="77"
                       name="county"
                       type="text"
                       value=""
@@ -1932,7 +1932,7 @@ Object {
                       >
                         <label
                           class="usa-label"
-                          for="34"
+                          for="78"
                         >
                           State
                           <abbr
@@ -1946,7 +1946,7 @@ Object {
                         <select
                           aria-required="true"
                           class="usa-select"
-                          id="34"
+                          id="78"
                           name="state"
                         >
                           <option
@@ -2260,7 +2260,7 @@ Object {
                       >
                         <label
                           class="usa-label"
-                          for="35"
+                          for="79"
                         >
                           Zip code
                           <abbr
@@ -2274,7 +2274,7 @@ Object {
                         <input
                           aria-required="true"
                           class="usa-input"
-                          id="35"
+                          id="79"
                           name="zipCode"
                           type="text"
                           value=""
@@ -2318,14 +2318,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="36-val-native"
+                        id="80-val-native"
                         name="race"
                         type="radio"
                         value="native"
                       />
                       <label
                         class="usa-radio__label"
-                        for="36-val-native"
+                        for="80-val-native"
                       >
                         American Indian/Alaskan Native
                       </label>
@@ -2336,14 +2336,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="36-val-asian"
+                        id="80-val-asian"
                         name="race"
                         type="radio"
                         value="asian"
                       />
                       <label
                         class="usa-radio__label"
-                        for="36-val-asian"
+                        for="80-val-asian"
                       >
                         Asian
                       </label>
@@ -2354,14 +2354,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="36-val-black"
+                        id="80-val-black"
                         name="race"
                         type="radio"
                         value="black"
                       />
                       <label
                         class="usa-radio__label"
-                        for="36-val-black"
+                        for="80-val-black"
                       >
                         Black/African American
                       </label>
@@ -2372,14 +2372,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="36-val-pacific"
+                        id="80-val-pacific"
                         name="race"
                         type="radio"
                         value="pacific"
                       />
                       <label
                         class="usa-radio__label"
-                        for="36-val-pacific"
+                        for="80-val-pacific"
                       >
                         Native Hawaiian/other Pacific Islander
                       </label>
@@ -2390,14 +2390,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="36-val-white"
+                        id="80-val-white"
                         name="race"
                         type="radio"
                         value="white"
                       />
                       <label
                         class="usa-radio__label"
-                        for="36-val-white"
+                        for="80-val-white"
                       >
                         White
                       </label>
@@ -2408,14 +2408,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="36-val-other"
+                        id="80-val-other"
                         name="race"
                         type="radio"
                         value="other"
                       />
                       <label
                         class="usa-radio__label"
-                        for="36-val-other"
+                        for="80-val-other"
                       >
                         Other
                       </label>
@@ -2426,14 +2426,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="36-val-refused"
+                        id="80-val-refused"
                         name="race"
                         type="radio"
                         value="refused"
                       />
                       <label
                         class="usa-radio__label"
-                        for="36-val-refused"
+                        for="80-val-refused"
                       >
                         Prefer not to answer
                       </label>
@@ -2466,14 +2466,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="37-val-hispanic"
+                        id="81-val-hispanic"
                         name="ethnicity"
                         type="radio"
                         value="hispanic"
                       />
                       <label
                         class="usa-radio__label"
-                        for="37-val-hispanic"
+                        for="81-val-hispanic"
                       >
                         Yes
                       </label>
@@ -2484,14 +2484,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="37-val-not_hispanic"
+                        id="81-val-not_hispanic"
                         name="ethnicity"
                         type="radio"
                         value="not_hispanic"
                       />
                       <label
                         class="usa-radio__label"
-                        for="37-val-not_hispanic"
+                        for="81-val-not_hispanic"
                       >
                         No
                       </label>
@@ -2502,14 +2502,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="37-val-refused"
+                        id="81-val-refused"
                         name="ethnicity"
                         type="radio"
                         value="refused"
                       />
                       <label
                         class="usa-radio__label"
-                        for="37-val-refused"
+                        for="81-val-refused"
                       >
                         Prefer not to answer
                       </label>
@@ -2533,14 +2533,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="38-val-female"
+                        id="82-val-female"
                         name="gender"
                         type="radio"
                         value="female"
                       />
                       <label
                         class="usa-radio__label"
-                        for="38-val-female"
+                        for="82-val-female"
                       >
                         Female
                       </label>
@@ -2551,14 +2551,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="38-val-male"
+                        id="82-val-male"
                         name="gender"
                         type="radio"
                         value="male"
                       />
                       <label
                         class="usa-radio__label"
-                        for="38-val-male"
+                        for="82-val-male"
                       >
                         Male
                       </label>
@@ -2569,14 +2569,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="38-val-other"
+                        id="82-val-other"
                         name="gender"
                         type="radio"
                         value="other"
                       />
                       <label
                         class="usa-radio__label"
-                        for="38-val-other"
+                        for="82-val-other"
                       >
                         Other
                       </label>
@@ -2587,14 +2587,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="38-val-refused"
+                        id="82-val-refused"
                         name="gender"
                         type="radio"
                         value="refused"
                       />
                       <label
                         class="usa-radio__label"
-                        for="38-val-refused"
+                        for="82-val-refused"
                       >
                         Prefer not to answer
                       </label>
@@ -2644,14 +2644,14 @@ Object {
                         checked=""
                         class="usa-radio__input"
                         data-required="true"
-                        id="39-val-YES"
+                        id="83-val-YES"
                         name="residentCongregateSetting"
                         type="radio"
                         value="YES"
                       />
                       <label
                         class="usa-radio__label"
-                        for="39-val-YES"
+                        for="83-val-YES"
                       >
                         Yes
                       </label>
@@ -2662,14 +2662,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="true"
-                        id="39-val-NO"
+                        id="83-val-NO"
                         name="residentCongregateSetting"
                         type="radio"
                         value="NO"
                       />
                       <label
                         class="usa-radio__label"
-                        for="39-val-NO"
+                        for="83-val-NO"
                       >
                         No
                       </label>
@@ -2680,14 +2680,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="true"
-                        id="39-val-UNKNOWN"
+                        id="83-val-UNKNOWN"
                         name="residentCongregateSetting"
                         type="radio"
                         value="UNKNOWN"
                       />
                       <label
                         class="usa-radio__label"
-                        for="39-val-UNKNOWN"
+                        for="83-val-UNKNOWN"
                       >
                         Unknown
                       </label>
@@ -2719,14 +2719,14 @@ Object {
                         checked=""
                         class="usa-radio__input"
                         data-required="true"
-                        id="40-val-YES"
+                        id="84-val-YES"
                         name="employedInHealthcare"
                         type="radio"
                         value="YES"
                       />
                       <label
                         class="usa-radio__label"
-                        for="40-val-YES"
+                        for="84-val-YES"
                       >
                         Yes
                       </label>
@@ -2737,14 +2737,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="true"
-                        id="40-val-NO"
+                        id="84-val-NO"
                         name="employedInHealthcare"
                         type="radio"
                         value="NO"
                       />
                       <label
                         class="usa-radio__label"
-                        for="40-val-NO"
+                        for="84-val-NO"
                       >
                         No
                       </label>
@@ -2755,14 +2755,14 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="true"
-                        id="40-val-UNKNOWN"
+                        id="84-val-UNKNOWN"
                         name="employedInHealthcare"
                         type="radio"
                         value="UNKNOWN"
                       />
                       <label
                         class="usa-radio__label"
-                        for="40-val-UNKNOWN"
+                        for="84-val-UNKNOWN"
                       >
                         Unknown
                       </label>
