@@ -2,7 +2,7 @@ package gov.cdc.usds.simplereport.idp.authentication;
 
 import com.okta.authn.sdk.AuthenticationException;
 import com.okta.authn.sdk.client.AuthenticationClient;
-import com.okta.authn.sdk.client.AuthenticationClients;
+import com.okta.authn.sdk.impl.client.DefaultAuthenticationClientBuilder;
 import com.okta.authn.sdk.resource.AuthenticationResponse;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
@@ -29,7 +29,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   private String _orgUrl;
 
   public LiveOktaAuthentication(OktaClientProperties oktaClientProperties) {
-    _client = AuthenticationClients.builder().setOrgUrl(oktaClientProperties.getOrgUrl()).build();
+    _client = new DefaultAuthenticationClientBuilder().setOrgUrl(oktaClientProperties.getOrgUrl()).build();
     _apiToken = oktaClientProperties.getToken();
     _orgUrl = oktaClientProperties.getOrgUrl();
   }
@@ -68,8 +68,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
                               return execution.execute(request, body);
                             }))
             .build();
-    String response = "";
-    response = restTemplate.postForObject(_orgUrl, requestBody, String.class);
+    String response = restTemplate.postForObject(_orgUrl, requestBody, String.class);
     JSONObject responseJson = new JSONObject(response);
     if (responseJson.has("stateToken")) {
       return responseJson.getString("stateToken");
