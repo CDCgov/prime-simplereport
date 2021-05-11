@@ -1,11 +1,30 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { act } from "react-dom/test-utils";
+import { MemoryRouter, Route } from "react-router";
 
 import { SecurityQuestion } from "./SecurityQuestion";
 
+jest.mock("../AccountCreationApiService", () => ({
+  AccountCreationApi: {
+    setRecoveryQuestion: (recoveryQuestion: string, recoveryAnswer: string) => {
+      return new Promise((res, rej) => {
+        res("success");
+      });
+    },
+  },
+}));
+
 describe("SecurityQuestion", () => {
   beforeEach(() => {
-    render(<SecurityQuestion />);
+    render(
+      <MemoryRouter initialEntries={["/set-recovery-question"]}>
+        <Route path="/set-recovery-question" component={SecurityQuestion} />
+        <Route path="/mfa-select">
+          <p>Recovery question set successfully.</p>
+        </Route>
+      </MemoryRouter>
+    );
   });
 
   it("can choose a security question and type an answer", () => {
@@ -36,5 +55,21 @@ describe("SecurityQuestion", () => {
     );
     fireEvent.click(screen.getByText("Continue"));
     expect(screen.getByText("Enter a security answer")).toBeInTheDocument();
+  });
+
+  it("succeeds on submit w/ valid responses", async () => {
+    userEvent.selectOptions(
+      screen.getByLabelText("Security question", { exact: false }),
+      ["In what city or town was your first job?"]
+    );
+    fireEvent.change(screen.getByLabelText("Answer", { exact: false }), {
+      target: { value: "New York" },
+    });
+    await act(async () => {
+      await fireEvent.click(screen.getByText("Continue"));
+    });
+    expect(
+      screen.getByText("Recovery question set successfully.")
+    ).toBeInTheDocument();
   });
 });
