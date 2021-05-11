@@ -6,9 +6,9 @@ import com.okta.authn.sdk.client.AuthenticationClients;
 import com.okta.authn.sdk.resource.AuthenticationResponse;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
+import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import java.util.List;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
@@ -25,15 +25,14 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class LiveOktaAuthentication implements OktaAuthentication {
   private AuthenticationClient _client;
-  private String _api_token;
-  private String _org_url;
+  private String _apiToken;
+  private String _orgUrl;
 
   public LiveOktaAuthentication(
-      OktaClientProperties oktaClientProperties,
-      @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId) {
+      OktaClientProperties oktaClientProperties) {
     _client = AuthenticationClients.builder().setOrgUrl(oktaClientProperties.getOrgUrl()).build();
-    _api_token = oktaClientProperties.getToken();
-    _org_url = oktaClientProperties.getOrgUrl();
+    _apiToken = oktaClientProperties.getToken();
+    _orgUrl = oktaClientProperties.getOrgUrl();
   }
 
   /**
@@ -53,7 +52,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       String activationToken, String requestingIpAddress, String userAgent) throws Exception {
     JSONObject requestBody = new JSONObject();
     requestBody.put("token", activationToken);
-    String authorizationToken = "SSWS " + _api_token;
+    String authorizationToken = "SSWS " + _apiToken;
     RestTemplate restTemplate =
         new RestTemplateBuilder(
                 rt ->
@@ -70,12 +69,12 @@ public class LiveOktaAuthentication implements OktaAuthentication {
                             }))
             .build();
     String response = "";
-    response = restTemplate.postForObject(_org_url, requestBody, String.class);
+    response = restTemplate.postForObject(_orgUrl, requestBody, String.class);
     JSONObject responseJson = new JSONObject(response);
     if (responseJson.has("stateToken")) {
       return responseJson.getString("stateToken");
     } else {
-      throw new Exception("Activation token invalid.");
+      throw new InvalidActivationLinkException();
     }
   }
 

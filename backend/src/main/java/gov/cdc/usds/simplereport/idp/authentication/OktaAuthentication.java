@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
 import com.okta.authn.sdk.AuthenticationException;
+import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 
 /**
  * Created by emmastephenson on 4/28/21
@@ -10,7 +11,7 @@ import com.okta.authn.sdk.AuthenticationException;
 public interface OktaAuthentication {
 
   public String getStateTokenFromActivationToken(
-      String activationToken, String requestingIpAddress, String userAgent) throws Exception;
+      String activationToken, String requestingIpAddress, String userAgent) throws InvalidActivationLinkException;
 
   public String setPassword(String stateToken, char[] password) throws AuthenticationException;
 

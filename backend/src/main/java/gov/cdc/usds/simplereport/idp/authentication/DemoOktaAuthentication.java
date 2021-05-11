@@ -13,33 +13,34 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 
 @Profile(BeanProfiles.NO_OKTA_AUTH)
 @Service
 public class DemoOktaAuthentication implements OktaAuthentication {
 
-  private final int ERROR_STATUS_CODE = 403;
-  private final int MINIMUM_PASSWORD_LENGTH = 8;
+  private static final int ERROR_STATUS_CODE = 403;
+  private static final int MINIMUM_PASSWORD_LENGTH = 8;
 
   private HashSet<String> validStateTokens;
   private HashMap<String, String> stateTokenToPasswordMap;
 
   public DemoOktaAuthentication() {
-    this.validStateTokens = new HashSet<String>();
-    this.stateTokenToPasswordMap = new HashMap<String, String>();
+    this.validStateTokens = new HashSet<>();
+    this.stateTokenToPasswordMap = new HashMap<>();
   }
 
   public String getStateTokenFromActivationToken(
-      String activationToken, String requestingIpAddress, String userAgent) throws Exception {
+      String activationToken, String requestingIpAddress, String userAgent) throws InvalidActivationLinkException {
     if (activationToken == null || activationToken.isEmpty()) {
-      throw new Exception("Activation token invalid.");
+      throw new InvalidActivationLinkException();
     }
     String stateToken = "stateToken " + activationToken;
     this.validStateTokens.add(stateToken);
     return stateToken;
   }
 
-  public String getStateTokenFromActivationToken(String activationToken) throws Exception {
+  public String getStateTokenFromActivationToken(String activationToken) throws InvalidActivationLinkException {
     return getStateTokenFromActivationToken(activationToken, "", "");
   }
 
@@ -67,7 +68,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     // when recovery question logic is added, implement it here
   }
 
-  public HashMap<String, String> getPasswords() {
+  public Map<String, String> getPasswords() {
     return this.stateTokenToPasswordMap;
   }
 
