@@ -9,52 +9,73 @@ import RadioGroup from "./RadioGroup";
 import Modal from "./Modal";
 import "./AddressConfirmation.scss";
 
-interface Props {
+type AddressConfig<T> = {
+  key: T;
+  label?: string;
   userEnteredAddress: AddressWithMetaData;
   suggestedAddress: AddressWithMetaData | undefined;
+};
+
+interface Props<T extends string> {
+  addressConfig: AddressConfig<T>[];
   showModal: boolean;
-  onConfirm: (address: AddressWithMetaData) => void;
+  onConfirm: (addresses: Record<T, AddressWithMetaData>) => void;
   onClose: () => void;
 }
 
 type addressOptions = "userAddress" | "suggested";
 const ERROR_MESSAGE = "Please choose to an address or go back to edit";
-export const AddressConfirmationModal: React.FC<Props> = ({
-  userEnteredAddress,
-  suggestedAddress,
+export const AddressConfirmationModal = <T extends string>({
+  addressConfig,
   showModal,
   onConfirm,
   onClose,
-}) => {
-  const [selectedAddress, setSelectedAddress] = useState<addressOptions>();
+}: Props<T>) => {
+  const [selectedAddress, setSelectedAddress] = useState<
+    Partial<Record<T, addressOptions>>
+  >({});
+  const addressConfigMap = addressConfig.reduce((acc, el) => {
+    acc[el.key] = el;
+    return acc;
+  }, {} as Record<T, AddressConfig<T>>);
+
   const [error, setError] = useState<boolean>(false);
 
-  const getSelectedAddress = (): AddressWithMetaData | undefined => {
-    if (selectedAddress === "userAddress") {
-      return userEnteredAddress;
-    } else if (selectedAddress === "suggested") {
-      if (suggestedAddress === undefined) {
-        throw Error("suggestedAddress was selected but it is not defined");
+  const getSelectedAddresses = () => {
+    let error = false;
+    const addresses = Object.entries(selectedAddress).reduce((acc, [k, v]) => {
+      const key = k as T;
+      const selection = v as addressOptions;
+      if (selection === "userAddress") {
+        acc[key] = addressConfigMap[key].userEnteredAddress;
+      } else if (
+        selection === "suggested" &&
+        addressConfigMap[key].suggestedAddress
+      ) {
+        acc[key] = addressConfigMap[key].suggestedAddress!;
+      } else {
+        error = true;
       }
-      return suggestedAddress;
-    }
-    return undefined;
+      return acc;
+    }, {} as Record<T, AddressWithMetaData>);
+    if (error) return undefined;
+    return addresses;
   };
 
-  const validate = () => {
-    if (selectedAddress) {
+  const validate = (key: T) => {
+    if (selectedAddress[key]) {
       return;
     }
     setError(true);
   };
 
   const onSave = () => {
-    const address = getSelectedAddress();
-    address ? onConfirm(address) : setError(true);
+    const addresses = getSelectedAddresses();
+    addresses ? onConfirm(addresses) : setError(true);
   };
 
   const getAlert = () => {
-    if (suggestedAddress) {
+    if (addressConfig.every(({ suggestedAddress }) => suggestedAddress)) {
       return null;
     }
     return (
@@ -79,16 +100,21 @@ export const AddressConfirmationModal: React.FC<Props> = ({
     );
   };
 
-  const getSuggestedOption = (): {
+  const getSuggestedOption = (
+    key: T
+  ): {
     value: addressOptions;
     label: ReactNode;
     disabled?: boolean;
     className?: string;
   } => {
-    if (suggestedAddress) {
+    if (addressConfigMap[key].suggestedAddress) {
       return {
         value: "suggested",
-        label: getLabel("Use suggested address", suggestedAddress),
+        label: getLabel(
+          "Use suggested address",
+          addressConfigMap[key].suggestedAddress!
+        ),
       };
     }
     return {
@@ -103,13 +129,16 @@ export const AddressConfirmationModal: React.FC<Props> = ({
     };
   };
 
-  const onChange = (selection: addressOptions) => {
-    setSelectedAddress(selection);
+  const onChange = (key: T, selection: addressOptions) => {
+    setSelectedAddress((addresses) => ({
+      ...addresses,
+      [key]: selection,
+    }));
     setError(!selection);
   };
 
   const closeModal = () => {
-    setSelectedAddress(undefined);
+    setSelectedAddress({});
     setError(false);
     onClose();
   };
@@ -119,26 +148,33 @@ export const AddressConfirmationModal: React.FC<Props> = ({
       <Modal.Header>Address validation</Modal.Header>
       <div className="border-top border-base-lighter margin-x-neg-205"></div>
       {getAlert()}
-      <p className="address__instructions">
-        Please select an option to continue:
-      </p>
-      <RadioGroup
-        name="addressSelect"
-        className="address__select margin-top-0"
-        buttons={[
-          {
-            value: "userAddress",
-            label: getLabel("Use address as entered", userEnteredAddress),
-          },
-          getSuggestedOption(),
-        ]}
-        selectedRadio={selectedAddress}
-        onChange={onChange}
-        onBlur={validate}
-        validationStatus={error ? "error" : undefined}
-        variant="tile"
-        errorMessage={error ? ERROR_MESSAGE : undefined}
-      />
+      {addressConfig.map((address) => (
+        <div key={address.key}>
+          <p className="address__instructions">
+            {address.label || "Please select an option to continue:"}
+          </p>
+          <RadioGroup
+            name="addressSelect"
+            className="address__select margin-top-0"
+            buttons={[
+              {
+                value: "userAddress",
+                label: getLabel(
+                  "Use address as entered",
+                  address.userEnteredAddress
+                ),
+              },
+              getSuggestedOption(address.key),
+            ]}
+            selectedRadio={selectedAddress[address.key]}
+            onChange={(v: addressOptions) => onChange(address.key, v)}
+            onBlur={() => validate(address.key)}
+            validationStatus={error ? "error" : undefined}
+            variant="tile"
+            errorMessage={error ? ERROR_MESSAGE : undefined}
+          />
+        </div>
+      ))}
       <div className="margin-top-4">
         <div className="border-top border-base-lighter margin-bottom-2 margin-x-neg-205"></div>
         <Modal.Footer>
