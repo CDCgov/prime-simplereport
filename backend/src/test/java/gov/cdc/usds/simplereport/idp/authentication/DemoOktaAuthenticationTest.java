@@ -88,12 +88,12 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void setRecoveryQuestionsSuccessful() throws Exception {
+  void setRecoveryQuestionSuccessful() throws Exception {
     JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     String userId = json.getString(USER_ID_KEY);
     String question = "Who was your third grade teacher?";
     String answer = "Teacher";
-    _auth.setRecoveryQuestions(userId, question, answer);
+    _auth.setRecoveryQuestion(userId, question, answer);
     assertThat(_auth.getUser(userId).getRecoveryQuestion()).isEqualTo(question);
     assertThat(_auth.getUser(userId).getRecoveryAnswer()).isEqualTo(answer);
   }
@@ -104,7 +104,7 @@ class DemoOktaAuthenticationTest {
         assertThrows(
             OktaAuthenticationFailureException.class,
             () -> {
-              _auth.setRecoveryQuestions(
+              _auth.setRecoveryQuestion(
                   "fakeUserId", "Who was your third grade teacher?", "Teacher");
             });
 
@@ -112,27 +112,27 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void cannotSetRecoveryQuestions_withBlankQuestion() throws Exception {
+  void cannotSetRecoveryQuestion_withBlankQuestion() throws Exception {
     JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     String userId = json.getString(USER_ID_KEY);
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
             () -> {
-              _auth.setRecoveryQuestions(userId, " ", "Teacher");
+              _auth.setRecoveryQuestion(userId, " ", "Teacher");
             });
     assertThat(exception.getMessage()).isEqualTo("Recovery question cannot be empty.");
   }
 
   @Test
-  void cannotSetRecoveryQuestions_withBlankAnswer() throws Exception {
+  void cannotSetRecoveryQuestion_withBlankAnswer() throws Exception {
     JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     String userId = json.getString(USER_ID_KEY);
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
             () -> {
-              _auth.setRecoveryQuestions(userId, "Who was your third grade teacher?", " ");
+              _auth.setRecoveryQuestion(userId, "Who was your third grade teacher?", " ");
             });
     assertThat(exception.getMessage()).isEqualTo("Recovery answer cannot be empty.");
   }

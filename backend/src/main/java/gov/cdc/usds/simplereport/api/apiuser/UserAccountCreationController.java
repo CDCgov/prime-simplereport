@@ -63,7 +63,7 @@ public class UserAccountCreationController {
   @PostMapping("/set-recovery-question")
   public void setRecoveryQuestions(
       @RequestBody SetRecoveryQuestionRequest requestBody, HttpServletRequest request) {
-    _oktaAuth.setRecoveryQuestions(
+    _oktaAuth.setRecoveryQuestion(
         request.getSession().getAttribute(USER_ID_KEY).toString(),
         requestBody.getQuestion(),
         requestBody.getAnswer());
