@@ -61,6 +61,8 @@ const RadioGroup = <T extends string>({
   return (
     <div
       className={classnames(
+        "usa-form-group",
+        "form-group--radio",
         validationStatus === "error" && "usa-form-group--error"
       )}
     >
@@ -91,7 +93,6 @@ const RadioGroup = <T extends string>({
           {(_, uid) => (
             <div
               className={classnames(
-                "usa-form-group",
                 variant === "horizontal" && "prime-radio--horizontal"
               )}
             >
