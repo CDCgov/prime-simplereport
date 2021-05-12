@@ -10,6 +10,11 @@ import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import { stateCodes, urls } from "../../../config/constants";
 import { getStateNameFromCode } from "../../utils/state";
+import {
+  getBestSuggestion,
+  suggestionIsCloseEnough,
+} from "../../utils/smartyStreets";
+import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
 
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
@@ -106,6 +111,13 @@ const createFieldError = (field: keyof FacilityErrors, facility: Facility) => {
   return allFacilityErrors[field];
 };
 
+type AddressSuggestionData = {
+  field: "facility" | "orderingProvider";
+  instruction: string;
+  address: AddressWithMetaData;
+  suggested: AddressWithMetaData | undefined;
+};
+
 interface Props {
   facility: Facility;
   deviceOptions: DeviceType[];
@@ -115,6 +127,11 @@ interface Props {
 const FacilityForm: React.FC<Props> = (props) => {
   const [facility, updateFormData] = useState<Facility>(props.facility);
   const [formChanged, updateFormChanged] = useState<boolean>(false);
+  const [addressModalOpen, setAddressModalOpen] = useState(false);
+  const [suggestedAddresses, setSuggestedAddresses] = useState<
+    AddressSuggestionData[]
+  >([]);
+
   const updateForm = (data: Facility) => {
     updateFormData(data);
     updateFormChanged(true);
@@ -148,11 +165,92 @@ const FacilityForm: React.FC<Props> = (props) => {
     facility
   );
 
+  const getFacilityAddress = (f: Nullable<Facility>): AddressWithMetaData => {
+    return {
+      street: f.street || "",
+      streetTwo: f.streetTwo,
+      city: f.city,
+      state: f.state || "",
+      zipCode: f.zipCode || "",
+      county: "",
+    };
+  };
+
+  const getOrderingProviderAddress = (
+    f: Nullable<Facility>
+  ): AddressWithMetaData | undefined => {
+    if (!f.orderingProvider) {
+      return undefined;
+    }
+
+    return {
+      street: f.orderingProvider.street || "",
+      streetTwo: f.orderingProvider.streetTwo,
+      city: f.orderingProvider.city,
+      state: f.orderingProvider.state || "",
+      zipCode: f.orderingProvider.zipCode || "",
+      county: "",
+    };
+  };
+
+  const validateFacilityAddresses = async () => {
+    const originalFacilityAddress = getFacilityAddress(facility);
+    const suggestedFacilityAddress = await getBestSuggestion(
+      originalFacilityAddress
+    );
+    const facilityCloseEnough = suggestionIsCloseEnough(
+      originalFacilityAddress,
+      suggestedFacilityAddress
+    );
+    let providerCloseEnough = true;
+    let suggestedOrderingProviderAddress: AddressWithMetaData | undefined;
+    const originalOrderingProviderAddress = getOrderingProviderAddress(
+      facility
+    );
+    if (originalOrderingProviderAddress) {
+      suggestedOrderingProviderAddress = await getBestSuggestion(
+        originalOrderingProviderAddress
+      );
+      providerCloseEnough = suggestionIsCloseEnough(
+        originalOrderingProviderAddress,
+        suggestedOrderingProviderAddress
+      );
+    }
+
+    if (facilityCloseEnough && providerCloseEnough) {
+      props.saveFacility(facility);
+    } else {
+      const suggestions: AddressSuggestionData[] = [];
+      if (!facilityCloseEnough) {
+        suggestions.push({
+          field: "facility",
+          instruction:
+            "Please select an option for facility address to continue:",
+          address: originalFacilityAddress,
+          suggested: suggestedFacilityAddress,
+        });
+      }
+      if (originalOrderingProviderAddress && !providerCloseEnough) {
+        suggestions.push({
+          field: "orderingProvider",
+          instruction:
+            "Please select an option for ordering provider address to continue",
+          address: originalOrderingProviderAddress,
+          suggested: suggestedOrderingProviderAddress,
+        });
+      }
+      setAddressModalOpen(true);
+      setSuggestedAddresses(suggestions);
+    }
+  };
+
+  const updateAddressesAndSave = (addresses: AddressWithMetaData[]) => {};
+
   const validateAndSaveFacility = async () => {
     if ((await validateFacility()) === "error") {
       return;
     }
-    props.saveFacility(facility);
+    validateFacilityAddresses();
   };
 
   return (
@@ -231,6 +329,21 @@ const FacilityForm: React.FC<Props> = (props) => {
             disabled={!formChanged}
           />
         </div>
+        <AddressConfirmationModal
+          userEnteredAddresses={suggestedAddresses.map(
+            ({ instruction, address, field }) => ({
+              instruction,
+              address,
+              field,
+            })
+          )}
+          suggestedAddresses={suggestedAddresses.map((a) => a.suggested)}
+          showModal={addressModalOpen}
+          onConfirm={(addresses) => {
+            updateAddressesAndSave(addresses);
+          }}
+          onClose={() => setAddressModalOpen(false)}
+        />
       </div>
     </>
   );
