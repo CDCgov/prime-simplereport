@@ -1,6 +1,6 @@
 import { FunctionComponent, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
-import { useDispatch, connect, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
@@ -8,7 +8,7 @@ import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
 import { reactPlugin } from "../AppInsights";
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import USAGovBanner from "../commonComponents/USAGovBanner";
-import { setInitialState } from "../store";
+import { RootState, setInitialState } from "../store";
 import { getActivationTokenFromUrl } from "../utils/url";
 import PageNotFound from "../commonComponents/PageNotFound";
 
@@ -36,7 +36,9 @@ const AccountCreation404Wrapper: FunctionComponent<WrapperProps> = ({
 
 const AccountCreationApp = () => {
   const dispatch = useDispatch();
-  const activationToken = useSelector((state: any) => state.activationToken);
+  const activationToken = useSelector<RootState, string>(
+    (state) => state.activationToken
+  );
 
   useEffect(() => {
     dispatch(
@@ -44,7 +46,8 @@ const AccountCreationApp = () => {
         activationToken: getActivationTokenFromUrl(),
       })
     );
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <AppInsightsContext.Provider value={reactPlugin}>
@@ -80,4 +83,4 @@ const AccountCreationApp = () => {
   );
 };
 
-export default connect()(AccountCreationApp);
+export default AccountCreationApp;

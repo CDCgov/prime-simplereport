@@ -31,6 +31,11 @@ export class AccountCreationApi {
         recoveryQuestion,
         recoveryAnswer,
       }),
+    }).then((res) => {
+      if (!res.ok) {
+        throw res;
+      }
+      return res.json();
     });
   }
 }

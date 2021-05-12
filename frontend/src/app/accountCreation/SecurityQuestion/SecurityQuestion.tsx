@@ -48,11 +48,11 @@ export const SecurityQuestion = () => {
           securityQuestion,
           securityAnswer
         );
+        setSubmitted(true);
       } catch (error) {
-        console.error(error);
+        setSecurityQuestionError(`API Error: ${error}`);
       } finally {
         setLoading(false);
-        setSubmitted(true);
       }
     }
   };

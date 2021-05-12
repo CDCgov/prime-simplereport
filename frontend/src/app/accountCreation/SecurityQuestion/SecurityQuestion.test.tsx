@@ -9,7 +9,11 @@ jest.mock("../AccountCreationApiService", () => ({
   AccountCreationApi: {
     setRecoveryQuestion: (recoveryQuestion: string, recoveryAnswer: string) => {
       return new Promise((res, rej) => {
-        res("success");
+        if (recoveryAnswer === "Valid answer") {
+          res("success");
+        } else {
+          rej("catastrophic failure");
+        }
       });
     },
   },
@@ -63,13 +67,29 @@ describe("SecurityQuestion", () => {
       ["In what city or town was your first job?"]
     );
     fireEvent.change(screen.getByLabelText("Answer", { exact: false }), {
-      target: { value: "New York" },
+      target: { value: "Valid answer" },
     });
     await act(async () => {
       await fireEvent.click(screen.getByText("Continue"));
     });
     expect(
       screen.getByText("Recovery question set successfully.")
+    ).toBeInTheDocument();
+  });
+
+  it("fails on submit with invalid response and displays API error", async () => {
+    userEvent.selectOptions(
+      screen.getByLabelText("Security question", { exact: false }),
+      ["In what city or town was your first job?"]
+    );
+    fireEvent.change(screen.getByLabelText("Answer", { exact: false }), {
+      target: { value: "Invalid answer" },
+    });
+    await act(async () => {
+      await fireEvent.click(screen.getByText("Continue"));
+    });
+    expect(
+      screen.getByText("API Error: catastrophic failure")
     ).toBeInTheDocument();
   });
 });

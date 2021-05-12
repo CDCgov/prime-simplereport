@@ -15,6 +15,7 @@ import {
   isAtLeast8Chars,
 } from "../../utils/text";
 import { AccountCreationApi } from "../AccountCreationApiService";
+import { RootState } from "../../store";
 
 export const PasswordForm = () => {
   // State setup
@@ -30,7 +31,9 @@ export const PasswordForm = () => {
   const [submitted, setSubmitted] = useState(false);
 
   // Get activation token from store
-  const activationToken = useSelector((state: any) => state.activationToken);
+  const activationToken = useSelector<RootState, string>(
+    (state) => state.activationToken
+  );
 
   // An array of functions that test for all of the password requirements
   const requirements = [hasLowerCase, hasUpperCase, hasNumber, isAtLeast8Chars];
@@ -110,17 +113,13 @@ export const PasswordForm = () => {
   const handleSubmit = async () => {
     if (validatePassword() && validatePasswordConfirmation()) {
       setLoading(true);
-      let success = false;
       try {
         await AccountCreationApi.setPassword(activationToken, password);
-        success = true;
+        setSubmitted(true);
       } catch (error) {
         setPasswordError(`API Error: ${error}`);
       } finally {
         setLoading(false);
-        if (success) {
-          setSubmitted(true);
-        }
       }
     }
   };
