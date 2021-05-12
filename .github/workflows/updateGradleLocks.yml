@@ -25,7 +25,7 @@ jobs:
     if: ${{ github.actor == 'dependabot[bot]' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
         with:
           fetch-depth: 0 # Disable shallow clones: we need to be able to push
       - name: Set up JDK ${{env.JAVA_VERSION}}
