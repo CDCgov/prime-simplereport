@@ -86,7 +86,9 @@ public class UserAccountCreationController {
    * @throws OktaAuthenticationFailureException if the provided phone number is invalid.
    */
   @PostMapping("/enroll-sms-mfa")
-  public void enrollSmsMfa(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {}
+  public void enrollSmsMfa(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
+    // WIP: doesn't interact with Okta yet.
+  }
 
   /**
    * Enrolls a user in voice call MFA.
@@ -97,7 +99,9 @@ public class UserAccountCreationController {
    */
   @PostMapping("/enroll-voice-call-mfa")
   public void enrollVoiceCallMfa(
-      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {}
+      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
+        // WIP: doesn't interact with Okta yet.
+      }
 
   /**
    * Enrolls a user in email MFA.
@@ -108,7 +112,9 @@ public class UserAccountCreationController {
    */
   @PostMapping("/enroll-email-mfa")
   public void enrollEmailMfa(
-      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {}
+      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
+        // WIP: doesn't interact with Okta yet.
+      }
 
   /**
    * Begins the enrollment process for authenticator apps.
@@ -120,7 +126,9 @@ public class UserAccountCreationController {
    */
   @GetMapping("/authenticator-qr")
   public void getAuthQrCode(
-      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {}
+      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
+        // WIP: doesn't interact with Okta yet.
+      }
 
   /**
    * Verifies the passcode sent to a user to complete the MFA enrollment process for SMS, voice
@@ -133,7 +141,9 @@ public class UserAccountCreationController {
    */
   @PostMapping("/verify-activation-passcode")
   public void verifyActivationPasscode(
-      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {}
+      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
+        // WIP: doesn't interact with Okta yet.
+      }
 
   /**
    * Resends the activation passcode sent to a user (required for MFA enrollment).
@@ -141,5 +151,7 @@ public class UserAccountCreationController {
    * @param request contains session information about the user, including their Okta id.
    */
   @PostMapping("/resend-activation-passcode")
-  public void resendActivationPasscode(HttpServletRequest request) {}
+  public void resendActivationPasscode(HttpServletRequest request) {
+    // WIP: doesn't interact with Okta yet.
+  }
 }
