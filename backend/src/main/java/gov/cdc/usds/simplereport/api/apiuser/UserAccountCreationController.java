@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.apiuser;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQUEST;
 
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
+import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
@@ -86,8 +87,12 @@ public class UserAccountCreationController {
    * @throws OktaAuthenticationFailureException if the provided phone number is invalid.
    */
   @PostMapping("/enroll-sms-mfa")
-  public void enrollSmsMfa(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
-    // WIP: doesn't interact with Okta yet.
+  public void enrollSmsMfa(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
+      throws OktaAuthenticationFailureException {
+    String factorId =
+        _oktaAuth.enrollSmsMfa(
+            request.getSession().getAttribute(USER_ID_KEY).toString(), requestBody.getUserInput());
+    request.getSession().setAttribute("factorId", factorId);
   }
 
   /**
@@ -100,8 +105,8 @@ public class UserAccountCreationController {
   @PostMapping("/enroll-voice-call-mfa")
   public void enrollVoiceCallMfa(
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
-        // WIP: doesn't interact with Okta yet.
-      }
+    // WIP: doesn't interact with Okta yet.
+  }
 
   /**
    * Enrolls a user in email MFA.
@@ -113,8 +118,8 @@ public class UserAccountCreationController {
   @PostMapping("/enroll-email-mfa")
   public void enrollEmailMfa(
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
-        // WIP: doesn't interact with Okta yet.
-      }
+    // WIP: doesn't interact with Okta yet.
+  }
 
   /**
    * Begins the enrollment process for authenticator apps.
@@ -125,10 +130,9 @@ public class UserAccountCreationController {
    * @throws OktaAuthenticationFailureException if Okta cannot enroll the user in MFA.
    */
   @GetMapping("/authenticator-qr")
-  public void getAuthQrCode(
-      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
-        // WIP: doesn't interact with Okta yet.
-      }
+  public void getAuthQrCode(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
+    // WIP: doesn't interact with Okta yet.
+  }
 
   /**
    * Verifies the passcode sent to a user to complete the MFA enrollment process for SMS, voice
@@ -142,8 +146,8 @@ public class UserAccountCreationController {
   @PostMapping("/verify-activation-passcode")
   public void verifyActivationPasscode(
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
-        // WIP: doesn't interact with Okta yet.
-      }
+    // WIP: doesn't interact with Okta yet.
+  }
 
   /**
    * Resends the activation passcode sent to a user (required for MFA enrollment).

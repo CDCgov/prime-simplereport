@@ -8,6 +8,7 @@ import com.okta.sdk.resource.user.PasswordCredential;
 import com.okta.sdk.resource.user.RecoveryQuestionCredential;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserCredentials;
+import com.okta.sdk.resource.user.factor.SmsUserFactor;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
@@ -133,6 +134,29 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       user.update();
     } catch (ResourceException e) {
       throw new OktaAuthenticationFailureException("Error setting recovery questions", e);
+    }
+  }
+
+  /**
+   * Using the Okta management SDK, enroll a user in SMS MFA. If successful, this enrollment
+   * triggers a text to the user's phone with an activation passcode.
+   *
+   * @param userId the user id of the user making the request.
+   * @param phoneNumber the user-provided phone number to enroll.
+   * @return factorId the Okta-generated id for the phone number factor.
+   * @throws OktaAuthenticationFailureException if the phone number is invalid or Okta cannot enroll
+   *     it as an MFA option.
+   */
+  public String enrollSmsMfa(String userId, String phoneNumber)
+      throws OktaAuthenticationFailureException {
+    try {
+      SmsUserFactor smsFactor = _client.instantiate(SmsUserFactor.class);
+      smsFactor.getProfile().setPhoneNumber(phoneNumber);
+      User user = _client.getUser(userId);
+      user.enrollFactor(smsFactor);
+      return smsFactor.getId();
+    } catch (ResourceException e) {
+      throw new OktaAuthenticationFailureException("Error setting SMS MFA", e);
     }
   }
 }

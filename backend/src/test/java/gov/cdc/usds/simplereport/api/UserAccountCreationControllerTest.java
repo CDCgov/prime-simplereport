@@ -46,6 +46,8 @@ class UserAccountCreationControllerTest {
   private static final String VALID_RECOVERY_QUESTION_REQUEST =
       "{\"question\":\"Who was your third grade teacher?\", \"answer\" : \"Jane Doe\"}";
 
+  private static final String VALID_ENROLL_SMS_MFA_REQUEST = "{\"userInput\":\"(555)-867-5309\"}";
+
   @BeforeEach
   public void setup() throws Exception {
     _oktaAuth.reset();
@@ -164,5 +166,48 @@ class UserAccountCreationControllerTest {
     assertThat(setRecoveryQuestionResponse.getAttribute("userId"))
         .isEqualTo("userId " + "validActivationToken");
     assertEquals(setPasswordResponse, setRecoveryQuestionResponse);
+  }
+
+  @Test
+  void enrollSmsMfaIsOk() throws Exception {
+    MockHttpSession session = new MockHttpSession();
+
+    MockHttpServletRequestBuilder setPasswordBuilder =
+        post(ResourceLinks.USER_SET_PASSWORD)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .header("X-Forwarded-For", "1.1.1.1")
+            .header("User-Agent", "Chrome")
+            .content(VALID_PASSWORD_REQUEST)
+            .session(session);
+
+    MockHttpServletRequestBuilder enrollSmsMfaBuilder =
+        post(ResourceLinks.USER_ENROLL_SMS_MFA)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(VALID_ENROLL_SMS_MFA_REQUEST)
+            .session(session);
+
+    HttpSession setPasswordResponse =
+        this._mockMvc
+            .perform(setPasswordBuilder)
+            .andExpect(status().isOk())
+            .andReturn()
+            .getRequest()
+            .getSession(false);
+
+    HttpSession enrollSmsMfaResponse =
+        this._mockMvc
+            .perform(enrollSmsMfaBuilder)
+            .andExpect(status().isOk())
+            .andReturn()
+            .getRequest()
+            .getSession(false);
+
+    assertThat(setPasswordResponse.getAttribute("userId"))
+        .isEqualTo(enrollSmsMfaResponse.getAttribute("userId"));
+    assertThat(enrollSmsMfaResponse.getAttribute("factorId")).isNotNull();
   }
 }

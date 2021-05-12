@@ -19,4 +19,7 @@ public interface OktaAuthentication {
 
   public void setRecoveryQuestions(String userId, String recoveryQuestion, String answer)
       throws OktaAuthenticationFailureException;
+
+  public String enrollSmsMfa(String userId, String phoneNumber)
+      throws OktaAuthenticationFailureException;
 }

@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.JSONObject;
@@ -18,7 +19,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   private static final int MINIMUM_PASSWORD_LENGTH = 8;
 
-  private HashMap<String, DemoUser> idToUserMap;
+  private HashMap<String, DemoAuthUser> idToUserMap;
 
   public DemoOktaAuthentication() {
     this.idToUserMap = new HashMap<>();
@@ -32,7 +33,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     }
     String stateToken = "stateToken " + activationToken;
     String userId = "userId " + activationToken;
-    this.idToUserMap.put(userId, new DemoUser(userId));
+    this.idToUserMap.put(userId, new DemoAuthUser(userId));
     JSONObject json = new JSONObject();
     json.put("stateToken", stateToken);
     json.put("userId", userId);
@@ -45,9 +46,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   public void setPassword(String userId, char[] password)
       throws OktaAuthenticationFailureException {
-    if (!idToUserMap.containsKey(userId)) {
-      throw new OktaAuthenticationFailureException("User id not recognized.");
-    }
+        System.out.println("BOOYAH in demo set password");
+    validateUser(userId);
     if (password.length < MINIMUM_PASSWORD_LENGTH) {
       throw new OktaAuthenticationFailureException("Password is too short.");
     }
@@ -63,9 +63,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   public void setRecoveryQuestions(String userId, String question, String answer)
       throws OktaAuthenticationFailureException {
-    if (!idToUserMap.containsKey(userId)) {
-      throw new OktaAuthenticationFailureException("User id not recognized.");
-    }
+    validateUser(userId);
     if (question.isBlank()) {
       throw new OktaAuthenticationFailureException("Recovery question cannot be empty.");
     }
@@ -73,12 +71,33 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       throw new OktaAuthenticationFailureException("Recovery answer cannot be empty.");
     }
 
-    DemoUser user = idToUserMap.get(userId);
+    DemoAuthUser user = idToUserMap.get(userId);
     user.setRecoveryQuestion(question);
     user.setRecoveryAnswer(answer);
   }
 
-  public DemoUser getUser(String userId) {
+  public String enrollSmsMfa(String userId, String phoneNumber)
+      throws OktaAuthenticationFailureException {
+    System.out.println("BOOYAH in demo enroll sms");
+    System.out.println("userId is: " + userId);
+    validateUser(userId);
+    String strippedPhoneNumber = phoneNumber.replaceAll("[^\\d]", "");
+    if (strippedPhoneNumber.length() != 10) {
+      throw new OktaAuthenticationFailureException("Phone number is invalid.");
+    }
+    String factorId = "smsFactor " + strippedPhoneNumber;
+    DemoMfa smsMfa = new DemoMfa("smsFactor", strippedPhoneNumber, factorId);
+    idToUserMap.get(userId).setMfa(smsMfa);
+    return factorId;
+  }
+
+  public void validateUser(String userId) throws OktaAuthenticationFailureException {
+    if (!idToUserMap.containsKey(userId)) {
+      throw new OktaAuthenticationFailureException("User id not recognized.");
+    }
+  }
+
+  public DemoAuthUser getUser(String userId) {
     return this.idToUserMap.get(userId);
   }
 
@@ -86,15 +105,28 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     this.idToUserMap.clear();
   }
 
-  class DemoUser {
+  class DemoAuthUser {
 
     @Getter private String id;
     @Getter @Setter private String password;
     @Getter @Setter private String recoveryQuestion;
     @Getter @Setter private String recoveryAnswer;
+    @Getter @Setter private DemoMfa mfa;
 
-    public DemoUser(String id) {
+    public DemoAuthUser(String id) {
       this.id = id;
     }
   }
+
+  @AllArgsConstructor
+  class DemoMfa {
+
+    @Getter @Setter private String factorType;
+    @Getter @Setter private String factorProfile;
+    @Getter @Setter private String factorId;
+  }
+
+  // next steps:
+  // add this to the account creation controller
+  // update tests in both demo auth and creation controller
 }
