@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -145,10 +146,12 @@ class AccountRequestControllerTest {
             "kyvuzoxy@mailinator.com",
             "Reprehenderit nostr");
     assertNull(sentMails.get(0).getAttachments());
+    assertNull(sentMails.get(0).getTemplateId());
 
     // mail 2: to requester (simplereport new user email)
-    assertThat(sentMails.get(1).getTemplateId())
-        .isEqualTo(EmailProviderTemplate.ACCOUNT_REQUEST.getTemplateGuid());
+    assertThat(sentMails.get(1).getPersonalization().get(0).getTos().get(0).getEmail())
+        .isEqualTo("kyvuzoxy@mailinator.com");
+    assertNotNull(sentMails.get(1).getTemplateId());
   }
 
   @Test

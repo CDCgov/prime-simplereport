@@ -125,7 +125,7 @@ public class EmailService {
         new Email(sendGridProperties.getFromEmail(), sendGridProperties.getFromDisplayName()));
 
     // Use SendGrid Dynamic Template (subject and body configured in SendGrid web app)
-    mail.setTemplateId(providerTemplate.getTemplateGuid());
+    mail.setTemplateId(sendGridProperties.getDynamicTemplateGuid(providerTemplate));
 
     Personalization personalization = new Personalization();
     personalization.addTo(new Email(toEmail));
