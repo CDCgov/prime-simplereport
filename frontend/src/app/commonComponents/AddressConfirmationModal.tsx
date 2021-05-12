@@ -42,6 +42,8 @@ export const AddressConfirmationModal = <T extends string>({
     {} as Record<T, AddressSuggestionConfig<T>>
   );
 
+  const multipleAddresses = addressSuggestionConfig.length > 1;
+
   const [error, setError] = useState(new Set<T>());
 
   const getSelectedAddresses = () => {
@@ -94,7 +96,9 @@ export const AddressConfirmationModal = <T extends string>({
     return (
       <Alert
         type="warning"
-        body="The address you entered could not be verified"
+        body={`The address${
+          multipleAddresses ? "es" : ""
+        } you entered could not be verified`}
         role="alert"
         slim
       />
@@ -198,7 +202,9 @@ export const AddressConfirmationModal = <T extends string>({
         <Modal.Footer>
           <Button variant="unstyled" onClick={closeModal}>
             <FontAwesomeIcon icon={"arrow-left"} />
-            <span className="margin-left-1">Go back to edit address</span>
+            <span className="margin-left-1">
+              Go back to edit address{multipleAddresses ? "es" : ""}
+            </span>
           </Button>
           <Button
             id="save-confirmed-address"
