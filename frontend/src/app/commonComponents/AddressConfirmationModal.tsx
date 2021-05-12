@@ -9,7 +9,7 @@ import RadioGroup from "./RadioGroup";
 import Modal from "./Modal";
 import "./AddressConfirmation.scss";
 
-type AddressConfig<T> = {
+export type AddressSuggestionConfig<T> = {
   key: T;
   label?: string;
   userEnteredAddress: AddressWithMetaData;
@@ -17,7 +17,7 @@ type AddressConfig<T> = {
 };
 
 interface Props<T extends string> {
-  addressConfig: AddressConfig<T>[];
+  addressSuggestionConfig: AddressSuggestionConfig<T>[];
   showModal: boolean;
   onConfirm: (addresses: Record<T, AddressWithMetaData>) => void;
   onClose: () => void;
@@ -26,7 +26,7 @@ interface Props<T extends string> {
 type addressOptions = "userAddress" | "suggested";
 const ERROR_MESSAGE = "Please choose to an address or go back to edit";
 export const AddressConfirmationModal = <T extends string>({
-  addressConfig,
+  addressSuggestionConfig,
   showModal,
   onConfirm,
   onClose,
@@ -34,10 +34,13 @@ export const AddressConfirmationModal = <T extends string>({
   const [selectedAddress, setSelectedAddress] = useState<
     Partial<Record<T, addressOptions>>
   >({});
-  const addressConfigMap = addressConfig.reduce((acc, el) => {
-    acc[el.key] = el;
-    return acc;
-  }, {} as Record<T, AddressConfig<T>>);
+  const addressSuggestionConfigMap = addressSuggestionConfig.reduce(
+    (acc, el) => {
+      acc[el.key] = el;
+      return acc;
+    },
+    {} as Record<T, AddressSuggestionConfig<T>>
+  );
 
   const [error, setError] = useState<boolean>(false);
 
@@ -47,12 +50,12 @@ export const AddressConfirmationModal = <T extends string>({
       const key = k as T;
       const selection = v as addressOptions;
       if (selection === "userAddress") {
-        acc[key] = addressConfigMap[key].userEnteredAddress;
+        acc[key] = addressSuggestionConfigMap[key].userEnteredAddress;
       } else if (
         selection === "suggested" &&
-        addressConfigMap[key].suggestedAddress
+        addressSuggestionConfigMap[key].suggestedAddress
       ) {
-        acc[key] = addressConfigMap[key].suggestedAddress!;
+        acc[key] = addressSuggestionConfigMap[key].suggestedAddress!;
       } else {
         error = true;
       }
@@ -75,7 +78,9 @@ export const AddressConfirmationModal = <T extends string>({
   };
 
   const getAlert = () => {
-    if (addressConfig.every(({ suggestedAddress }) => suggestedAddress)) {
+    if (
+      addressSuggestionConfig.every(({ suggestedAddress }) => suggestedAddress)
+    ) {
       return null;
     }
     return (
@@ -108,12 +113,12 @@ export const AddressConfirmationModal = <T extends string>({
     disabled?: boolean;
     className?: string;
   } => {
-    if (addressConfigMap[key].suggestedAddress) {
+    if (addressSuggestionConfigMap[key].suggestedAddress) {
       return {
         value: "suggested",
         label: getLabel(
           "Use suggested address",
-          addressConfigMap[key].suggestedAddress!
+          addressSuggestionConfigMap[key].suggestedAddress!
         ),
       };
     }
@@ -148,13 +153,13 @@ export const AddressConfirmationModal = <T extends string>({
       <Modal.Header>Address validation</Modal.Header>
       <div className="border-top border-base-lighter margin-x-neg-205"></div>
       {getAlert()}
-      {addressConfig.map((address) => (
+      {addressSuggestionConfig.map((address) => (
         <div key={address.key}>
           <p className="address__instructions">
             {address.label || "Please select an option to continue:"}
           </p>
           <RadioGroup
-            name="addressSelect"
+            name={`addressSelect-${address.key}`}
             className="address__select margin-top-0"
             buttons={[
               {
@@ -182,7 +187,13 @@ export const AddressConfirmationModal = <T extends string>({
             <FontAwesomeIcon icon={"arrow-left"} />
             <span className="margin-left-1">Go back to edit address</span>
           </Button>
-          <Button id="save-confirmed-address" onClick={onSave}>
+          <Button
+            id="save-confirmed-address"
+            onClick={onSave}
+            disabled={addressSuggestionConfig.some(
+              ({ key }) => !selectedAddress[key]
+            )}
+          >
             Save changes
           </Button>
         </Modal.Footer>

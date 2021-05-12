@@ -14,7 +14,10 @@ import {
   getBestSuggestion,
   suggestionIsCloseEnough,
 } from "../../utils/smartyStreets";
-import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
+import {
+  AddressConfirmationModal,
+  AddressSuggestionConfig,
+} from "../../commonComponents/AddressConfirmationModal";
 
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
@@ -111,12 +114,7 @@ const createFieldError = (field: keyof FacilityErrors, facility: Facility) => {
   return allFacilityErrors[field];
 };
 
-type AddressSuggestionData = {
-  field: "facility" | "orderingProvider";
-  instruction: string;
-  address: AddressWithMetaData;
-  suggested: AddressWithMetaData | undefined;
-};
+type AddressOptions = "facility" | "provider";
 
 interface Props {
   facility: Facility;
@@ -129,7 +127,7 @@ const FacilityForm: React.FC<Props> = (props) => {
   const [formChanged, updateFormChanged] = useState<boolean>(false);
   const [addressModalOpen, setAddressModalOpen] = useState(false);
   const [suggestedAddresses, setSuggestedAddresses] = useState<
-    AddressSuggestionData[]
+    AddressSuggestionConfig<AddressOptions>[]
   >([]);
 
   const updateForm = (data: Facility) => {
@@ -220,23 +218,22 @@ const FacilityForm: React.FC<Props> = (props) => {
     if (facilityCloseEnough && providerCloseEnough) {
       props.saveFacility(facility);
     } else {
-      const suggestions: AddressSuggestionData[] = [];
+      const suggestions: AddressSuggestionConfig<AddressOptions>[] = [];
       if (!facilityCloseEnough) {
         suggestions.push({
-          field: "facility",
-          instruction:
-            "Please select an option for facility address to continue:",
-          address: originalFacilityAddress,
-          suggested: suggestedFacilityAddress,
+          key: "facility",
+          label: "Please select an option for facility address to continue:",
+          userEnteredAddress: originalFacilityAddress,
+          suggestedAddress: suggestedFacilityAddress,
         });
       }
       if (originalOrderingProviderAddress && !providerCloseEnough) {
         suggestions.push({
-          field: "orderingProvider",
-          instruction:
+          key: "provider",
+          label:
             "Please select an option for ordering provider address to continue",
-          address: originalOrderingProviderAddress,
-          suggested: suggestedOrderingProviderAddress,
+          userEnteredAddress: originalOrderingProviderAddress,
+          suggestedAddress: suggestedOrderingProviderAddress,
         });
       }
       setAddressModalOpen(true);
@@ -244,7 +241,21 @@ const FacilityForm: React.FC<Props> = (props) => {
     }
   };
 
-  const updateAddressesAndSave = (addresses: AddressWithMetaData[]) => {};
+  const updateAddressesAndSave = (
+    addresses: Partial<Record<AddressOptions, AddressWithMetaData>>
+  ) => {
+    const adjustedFacility: Facility = {
+      ...facility,
+      ...addresses.facility,
+      orderingProvider: {
+        ...facility.orderingProvider,
+        ...addresses.provider,
+      },
+    };
+    console.log(adjustedFacility);
+    updateFormData(adjustedFacility);
+    props.saveFacility(adjustedFacility);
+  };
 
   const validateAndSaveFacility = async () => {
     if ((await validateFacility()) === "error") {
@@ -330,14 +341,7 @@ const FacilityForm: React.FC<Props> = (props) => {
           />
         </div>
         <AddressConfirmationModal
-          userEnteredAddresses={suggestedAddresses.map(
-            ({ instruction, address, field }) => ({
-              instruction,
-              address,
-              field,
-            })
-          )}
-          suggestedAddresses={suggestedAddresses.map((a) => a.suggested)}
+          addressSuggestionConfig={suggestedAddresses}
           showModal={addressModalOpen}
           onConfirm={(addresses) => {
             updateAddressesAndSave(addresses);

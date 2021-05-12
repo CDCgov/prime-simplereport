@@ -435,7 +435,7 @@ const PersonForm = (props: Props) => {
       </FormGroup>
       {props.getFooter && props.getFooter(validateForm, formChanged)}
       <AddressConfirmationModal
-        addressConfig={[
+        addressSuggestionConfig={[
           {
             key: "person",
             userEnteredAddress: getAddress(patient),
