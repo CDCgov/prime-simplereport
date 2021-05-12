@@ -181,6 +181,22 @@ const FacilityForm: React.FC<Props> = (props) => {
       return undefined;
     }
 
+    const addressFields: (keyof Facility["orderingProvider"])[] = [
+      "street",
+      "streetTwo",
+      "city",
+      "state",
+      "zipCode",
+    ];
+
+    if (
+      addressFields.every(
+        (el) => !f.orderingProvider || !f.orderingProvider[el]?.trim()
+      )
+    ) {
+      return undefined;
+    }
+
     return {
       street: f.orderingProvider.street || "",
       streetTwo: f.orderingProvider.streetTwo,
