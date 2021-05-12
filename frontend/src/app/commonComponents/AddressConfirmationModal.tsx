@@ -24,7 +24,7 @@ interface Props<T extends string> {
 }
 
 type addressOptions = "userAddress" | "suggested";
-const ERROR_MESSAGE = "Please choose to an address or go back to edit";
+const ERROR_MESSAGE = "Please choose an address or go back to edit";
 export const AddressConfirmationModal = <T extends string>({
   addressSuggestionConfig,
   showModal,
@@ -42,10 +42,10 @@ export const AddressConfirmationModal = <T extends string>({
     {} as Record<T, AddressSuggestionConfig<T>>
   );
 
-  const [error, setError] = useState<boolean>(false);
+  const [error, setError] = useState(new Set<T>());
 
   const getSelectedAddresses = () => {
-    let error = false;
+    const errors = new Set<T>();
     const addresses = Object.entries(selectedAddress).reduce((acc, [k, v]) => {
       const key = k as T;
       const selection = v as addressOptions;
@@ -57,11 +57,11 @@ export const AddressConfirmationModal = <T extends string>({
       ) {
         acc[key] = addressSuggestionConfigMap[key].suggestedAddress!;
       } else {
-        error = true;
+        errors.add(key);
       }
       return acc;
     }, {} as Record<T, AddressWithMetaData>);
-    if (error) return undefined;
+    if (errors.size) return errors;
     return addresses;
   };
 
@@ -69,12 +69,20 @@ export const AddressConfirmationModal = <T extends string>({
     if (selectedAddress[key]) {
       return;
     }
-    setError(true);
+    setError((e) => {
+      const errors = new Set(e);
+      errors.add(key);
+      return errors;
+    });
   };
 
   const onSave = () => {
     const addresses = getSelectedAddresses();
-    addresses ? onConfirm(addresses) : setError(true);
+    if (addresses instanceof Set) {
+      setError(addresses);
+    } else {
+      onConfirm(addresses);
+    }
   };
 
   const getAlert = () => {
@@ -139,12 +147,17 @@ export const AddressConfirmationModal = <T extends string>({
       ...addresses,
       [key]: selection,
     }));
-    setError(!selection);
+    setError((e) => {
+      const errors = new Set(e);
+      const operation = !selection ? "add" : "delete";
+      errors[operation](key);
+      return errors;
+    });
   };
 
   const closeModal = () => {
     setSelectedAddress({});
-    setError(false);
+    setError(new Set());
     onClose();
   };
 
@@ -174,9 +187,9 @@ export const AddressConfirmationModal = <T extends string>({
             selectedRadio={selectedAddress[address.key]}
             onChange={(v: addressOptions) => onChange(address.key, v)}
             onBlur={() => validate(address.key)}
-            validationStatus={error ? "error" : undefined}
+            validationStatus={error.has(address.key) ? "error" : undefined}
             variant="tile"
-            errorMessage={error ? ERROR_MESSAGE : undefined}
+            errorMessage={error.has(address.key) ? ERROR_MESSAGE : undefined}
           />
         </div>
       ))}

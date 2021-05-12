@@ -345,6 +345,7 @@ const FacilityForm: React.FC<Props> = (props) => {
           showModal={addressModalOpen}
           onConfirm={(addresses) => {
             updateAddressesAndSave(addresses);
+            setAddressModalOpen(false);
           }}
           onClose={() => setAddressModalOpen(false)}
         />
