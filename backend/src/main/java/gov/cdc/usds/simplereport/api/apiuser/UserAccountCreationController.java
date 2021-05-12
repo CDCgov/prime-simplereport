@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.apiuser;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQUEST;
 
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
 import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 import javax.annotation.PostConstruct;
@@ -49,7 +50,7 @@ public class UserAccountCreationController {
       throws Exception {
     JSONObject oktaResponse =
         _oktaAuth.activateUser(
-            request.getHeader("authorization"),
+            requestBody.getActivationToken(),
             request.getHeader("X-Forwarded-For"),
             request.getHeader("User-Agent"));
     String userId = oktaResponse.getString(USER_ID_KEY);
@@ -68,10 +69,10 @@ public class UserAccountCreationController {
    */
   @PostMapping("/set-recovery-question")
   public void setRecoveryQuestions(
-      @RequestBody UserAccountCreationRequest requestBody, HttpServletRequest request) {
+      @RequestBody SetRecoveryQuestionRequest requestBody, HttpServletRequest request) {
     _oktaAuth.setRecoveryQuestions(
         request.getSession().getAttribute(USER_ID_KEY).toString(),
-        requestBody.getRecoveryQuestion(),
-        requestBody.getRecoveryAnswer());
+        requestBody.getQuestion(),
+        requestBody.getAnswer());
   }
 }

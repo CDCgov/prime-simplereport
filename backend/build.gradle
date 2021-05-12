@@ -74,6 +74,10 @@ dependencies {
 
     // dev tools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
 }
 
 springBoot {

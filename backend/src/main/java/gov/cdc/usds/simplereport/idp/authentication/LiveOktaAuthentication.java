@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.idp.authentication;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
+import com.okta.sdk.resource.ResourceException;
 import com.okta.sdk.resource.user.PasswordCredential;
 import com.okta.sdk.resource.user.RecoveryQuestionCredential;
 import com.okta.sdk.resource.user.User;
@@ -103,7 +104,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       creds.setPassword(passwordCred);
       user.setCredentials(creds);
       user.update();
-    } catch (Exception e) {
+    } catch (ResourceException e) {
       throw new OktaAuthenticationFailureException("Error setting user's password", e);
     }
   }
@@ -130,7 +131,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       creds.setRecoveryQuestion(recoveryCred);
       user.setCredentials(creds);
       user.update();
-    } catch (Exception e) {
+    } catch (ResourceException e) {
       throw new OktaAuthenticationFailureException("Error setting recovery questions", e);
     }
   }
