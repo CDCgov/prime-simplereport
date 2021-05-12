@@ -38,10 +38,16 @@ const validFacility: Facility = {
   defaultDevice: devices[0].internalId,
 };
 
+jest.mock("../utils/smartyStreets", () => ({
+  getBestSuggestion: () => undefined,
+  suggestionIsCloseEnough: () => false,
+}));
+
 describe("FacilityForm", () => {
   beforeEach(() => {
     saveFacility = jest.fn();
   });
+
   it("submits a valid form", async () => {
     render(
       <MemoryRouter>
@@ -57,10 +63,8 @@ describe("FacilityForm", () => {
       screen.getByLabelText("Testing facility name", { exact: false }),
       { target: { value: "Bar Facility" } }
     );
-    await waitFor(() => {
-      fireEvent.click(saveButton);
-      expect(saveFacility).toBeCalled();
-    });
+    fireEvent.click(saveButton);
+    await validateAddress(saveFacility);
   });
   it("provides validation feedback during form completion", async () => {
     render(
@@ -112,7 +116,7 @@ describe("FacilityForm", () => {
         />
       </MemoryRouter>
     );
-    const saveButton = await screen.getAllByText("Save changes")[0];
+    const saveButton = (await screen.findAllByText("Save changes"))[0];
     const emailInput = screen.getByLabelText("Email", {
       exact: false,
     });
@@ -136,7 +140,7 @@ describe("FacilityForm", () => {
     await waitFor(async () => {
       fireEvent.click(saveButton);
     });
-    expect(saveFacility).toBeCalledTimes(1);
+    await validateAddress(saveFacility);
   });
   it("only accepts live jurisdictions", async () => {
     render(
@@ -165,3 +169,11 @@ describe("FacilityForm", () => {
     expect(state).toBeInTheDocument();
   });
 });
+
+async function validateAddress(saveFacility: (facility: Facility) => void) {
+  await screen.findByText("Address validation");
+  fireEvent.click(screen.getByLabelText("Use address", { exact: false }));
+  const button = screen.getAllByText("Save changes")[2];
+  fireEvent.click(button);
+  expect(saveFacility).toBeCalledTimes(1);
+}

@@ -189,11 +189,7 @@ const FacilityForm: React.FC<Props> = (props) => {
       "zipCode",
     ];
 
-    if (
-      addressFields.every(
-        (el) => !f.orderingProvider || !f.orderingProvider[el]?.trim()
-      )
-    ) {
+    if (addressFields.every((el) => !f.orderingProvider?.[el]?.trim())) {
       return undefined;
     }
 
@@ -268,7 +264,6 @@ const FacilityForm: React.FC<Props> = (props) => {
         ...addresses.provider,
       },
     };
-    console.log(adjustedFacility);
     updateFormData(adjustedFacility);
     props.saveFacility(adjustedFacility);
   };
