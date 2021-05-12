@@ -48,11 +48,12 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void cannotSetPassword_unlessActivationIsCalled() throws Exception {
+    char[] password = "dummyPassword!".toCharArray();
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
             () -> {
-              _auth.setPassword("invalidUserId", "dummyPassword!".toCharArray());
+              _auth.setPassword("invalidUserId", password);
             });
     assertThat(exception.getMessage()).isEqualTo("User id not recognized.");
   }
@@ -61,11 +62,12 @@ class DemoOktaAuthenticationTest {
   void passwordTooShort() throws Exception {
     JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     String userId = json.getString(USER_ID_KEY);
+    char[] password = "short".toCharArray();
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
             () -> {
-              _auth.setPassword(userId, "short".toCharArray());
+              _auth.setPassword(userId, password);
             });
     assertThat(exception.getMessage()).isEqualTo("Password is too short.");
   }
@@ -74,11 +76,12 @@ class DemoOktaAuthenticationTest {
   void passwordNoSpecialCharacters() throws Exception {
     JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     String userId = json.getString(USER_ID_KEY);
+    char[] password = "longPasswordWithoutSpecialCharacters".toCharArray();
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
             () -> {
-              _auth.setPassword(userId, "longPasswordWithoutSpecialCharacters".toCharArray());
+              _auth.setPassword(userId, password);
             });
     assertThat(exception.getMessage())
         .isEqualTo("Password does not contain any special characters.");
