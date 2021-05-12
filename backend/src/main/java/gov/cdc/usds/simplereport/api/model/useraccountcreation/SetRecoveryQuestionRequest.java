@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserAccountCreationRequest {
-  private String activationToken;
-  private String password;
+public class SetRecoveryQuestionRequest {
+  String question;
+  String answer;
 }

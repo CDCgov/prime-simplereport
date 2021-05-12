@@ -40,12 +40,10 @@ class UserAccountCreationControllerTest {
 
   @Autowired private DemoOktaAuthentication _oktaAuth;
 
-  private static final String VALID_ACTIVATION_TOKEN = "validActivationToken";
-
-  private static final String VALID_PASSWORD_REQUEST = "{\"password\":\"superStrongPassword!\"}";
+  private static final String VALID_PASSWORD_REQUEST = "{\"activationToken\":\"validActivationToken\", \"password\":\"superStrongPassword!\"}";
 
   private static final String VALID_RECOVERY_QUESTION_REQUEST =
-      "{\"recoveryQuestion\":\"Who was your third grade teacher?\", \"recoveryAnswer\" : \"Jane Doe\"}";
+      "{\"question\":\"Who was your third grade teacher?\", \"answer\" : \"Jane Doe\"}";
 
   @BeforeEach
   public void setup() throws Exception {
@@ -59,7 +57,6 @@ class UserAccountCreationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .header("authorization", VALID_ACTIVATION_TOKEN)
             .header("X-Forwarded-For", "1.1.1.1")
             .header("User-Agent", "Chrome")
             .content(VALID_PASSWORD_REQUEST);
@@ -69,12 +66,14 @@ class UserAccountCreationControllerTest {
 
   @Test
   void setPassword_failsWithoutActivationToken() throws Exception {
+    String passwordRequestNoActivation = "{\"password\":\"superStrongPassword!\"}";
+
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.USER_SET_PASSWORD)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .content(VALID_PASSWORD_REQUEST);
+            .content(passwordRequestNoActivation);
 
     this._mockMvc.perform(builder).andExpect(status().isForbidden());
   }
@@ -86,20 +85,17 @@ class UserAccountCreationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .header("authorization", VALID_ACTIVATION_TOKEN)
             .header("X-Forwarded-For", "1.1.1.1")
             .header("User-Agent", "Chrome")
             .content(VALID_PASSWORD_REQUEST);
 
-    String secondValidPasswordRequest = "{\"password\":\"secondSuperStrongPassword!?\"}";
-    String secondValidActivationToken = "anotherValidAuthToken";
+    String secondValidPasswordRequest = "{\"activationToken\":\"anotherValidAuthToken\", \"password\":\"secondSuperStrongPassword!?\"}";
 
     MockHttpServletRequestBuilder secondBuilder =
         post(ResourceLinks.USER_SET_PASSWORD)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .header("authorization", secondValidActivationToken)
             .header("X-Forwarded-For", "1.1.1.1")
             .header("User-Agent", "Chrome")
             .content(secondValidPasswordRequest);
@@ -121,8 +117,8 @@ class UserAccountCreationControllerTest {
             .getSession(false);
 
     assertThat(firstSession.getId()).isNotEqualTo(secondSession.getId());
-    assertThat(firstSession.getAttribute("stateToken"))
-        .isEqualTo("stateToken " + VALID_ACTIVATION_TOKEN);
+    assertThat(firstSession.getAttribute("userId"))
+        .isEqualTo("userId " + "validActivationToken");
   }
 
   @Test
@@ -134,7 +130,6 @@ class UserAccountCreationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .header("authorization", VALID_ACTIVATION_TOKEN)
             .header("X-Forwarded-For", "1.1.1.1")
             .header("User-Agent", "Chrome")
             .content(VALID_PASSWORD_REQUEST)
@@ -166,7 +161,7 @@ class UserAccountCreationControllerTest {
 
     // assert that the userId is propagated to the recovery question session
     assertThat(setRecoveryQuestionResponse.getAttribute("userId"))
-        .isEqualTo("userId " + VALID_ACTIVATION_TOKEN);
+        .isEqualTo("userId " + "validActivationToken");
     assertEquals(setPasswordResponse, setRecoveryQuestionResponse);
   }
 }
