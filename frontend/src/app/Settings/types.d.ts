@@ -80,10 +80,6 @@ interface PhoneNumber {
   number: string;
 }
 
-interface PhoneNumbers {
-  phoneNumber: [PhoneNumber];
-}
-
 interface SettingsData {
   organization: {
     internalId: string;

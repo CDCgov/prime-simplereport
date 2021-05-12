@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { PHONE_TYPE_VALUES } from "../../constants";
@@ -22,14 +22,18 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 }) => {
   const [errors, setErrors] = useState<PhoneNumberErrors[]>([]);
 
-  if (phoneNumbers.length === 0) {
-    phoneNumbers = [
-      {
-        type: "",
-        number: "",
-      },
-    ];
-  }
+  const phoneNumbersOrDefault = useMemo(
+    () =>
+      phoneNumbers.length > 0
+        ? phoneNumbers
+        : [
+            {
+              type: "",
+              number: "",
+            },
+          ],
+    [phoneNumbers]
+  );
 
   const clearError = useCallback(
     (idx: number, field: keyof PhoneNumberErrors) => {
@@ -56,7 +60,10 @@ const ManagePhoneNumbers: React.FC<Props> = ({
     async (idx: number, field: keyof PhoneNumber) => {
       try {
         clearError(idx, field);
-        await phoneNumberUpdateSchema.validateAt(field, phoneNumbers[idx]);
+        await phoneNumberUpdateSchema.validateAt(
+          field,
+          phoneNumbersOrDefault[idx]
+        );
       } catch (e) {
         setErrors((existingErrors) => {
           const newErrors = [...existingErrors];
@@ -69,31 +76,39 @@ const ManagePhoneNumbers: React.FC<Props> = ({
         });
       }
     },
-    [phoneNumbers, clearError]
+    [phoneNumbersOrDefault, clearError]
   );
 
   const onPhoneTypeChange = (index: number, newPhoneType: string) => {
-    const newPhoneNumbers = Array.from(phoneNumbers);
+    const newPhoneNumbers = Array.from(phoneNumbersOrDefault);
 
-    newPhoneNumbers[index]["type"] = newPhoneType;
+    newPhoneNumbers[index] = {
+      ...newPhoneNumbers[index],
+      type: newPhoneType,
+    };
+
     updatePhoneNumbers(newPhoneNumbers);
   };
 
   const onPhoneNumberChange = (index: number, newPhoneNumber: string) => {
-    const newPhoneNumbers = Array.from(phoneNumbers);
+    const newPhoneNumbers = Array.from(phoneNumbersOrDefault);
 
-    newPhoneNumbers[index]["number"] = newPhoneNumber;
+    newPhoneNumbers[index] = {
+      ...newPhoneNumbers[index],
+      number: newPhoneNumber,
+    };
+
     updatePhoneNumbers(newPhoneNumbers);
   };
 
   const onPhoneNumberRemove = (index: number) => {
-    const newPhoneNumbers = Array.from(phoneNumbers);
+    const newPhoneNumbers = Array.from(phoneNumbersOrDefault);
     newPhoneNumbers.splice(index, 1);
     updatePhoneNumbers(newPhoneNumbers);
   };
 
   const onAddPhoneNumber = () => {
-    const newPhoneNumbers = Array.from(phoneNumbers);
+    const newPhoneNumbers = Array.from(phoneNumbersOrDefault);
     newPhoneNumbers.push({
       type: "",
       number: "",
@@ -102,7 +117,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   };
 
   const generatePhoneNumberRows = () => {
-    return phoneNumbers.map((phoneNumber, idx) => {
+    return phoneNumbersOrDefault.map((phoneNumber, idx) => {
       const isPrimary = idx === 0;
 
       return (
