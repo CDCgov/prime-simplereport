@@ -265,7 +265,7 @@ const PersonForm = (props: Props) => {
             errors={errors}
             hidden={props.hideFacilitySelect}
           />
-          <fieldset className="usa-fieldset">
+          <fieldset className="usa-fieldset usa-form-group">
             <label className="usa-label" htmlFor="preferred-language">
               Preferred language
             </label>
@@ -375,7 +375,7 @@ const PersonForm = (props: Props) => {
           selectedRadio={patient.race}
           onChange={onPersonChange("race")}
         />
-        <fieldset className="usa-fieldset">
+        <fieldset className="usa-fieldset usa-form-group">
           <legend className="usa-legend">Tribal affiliation</legend>
           <ComboBox
             id="tribal-affiliation"
