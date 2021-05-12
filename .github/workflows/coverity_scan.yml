@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: "14"
       - name: Cache npm local files
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.5
         with:
           path: |
             ./frontend/node_modules
@@ -36,7 +36,7 @@ jobs:
         with:
           java-version: 11
       - name: Cache Java Dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.5
         with:
           path: |
             ~/.gradle/caches

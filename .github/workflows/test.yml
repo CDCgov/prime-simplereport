@@ -44,7 +44,7 @@ jobs:
         with:
           java-version: ${{env.JAVA_VERSION}}
       - name: Cache Java Dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.5
         with:
           path: |
             ~/.gradle/caches
@@ -79,7 +79,7 @@ jobs:
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache npm local files
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.5
         with:
           path: |
             ./frontend/node_modules
@@ -105,7 +105,7 @@ jobs:
         with:
           java-version: ${{env.JAVA_VERSION}}
       - name: Cache Java Dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.5
         with:
           path: |
             ~/.gradle/caches
@@ -122,7 +122,7 @@ jobs:
         with:
           java-version: ${{env.JAVA_VERSION}}
       - name: Cache Java Dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.5
         with:
           path: |
             ~/.gradle/caches
@@ -139,7 +139,7 @@ jobs:
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache npm local files
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.5
         with:
           path: |
             ./frontend/node_modules
