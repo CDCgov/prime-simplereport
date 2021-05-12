@@ -598,8 +598,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   }
 }
 
-.usa-fieldset + .usa-fieldset,
-.form-group--radio {
+.usa-form-group {
   margin-top: units(3);
 }
 
@@ -637,7 +636,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   // Two-column checkbox layout
   @include at-media("mobile-lg") {
     .symptom-checkboxes {
-      .usa-form-group {
+      .checkboxes {
         column-count: 2;
 
         .usa-checkbox:first-child {
