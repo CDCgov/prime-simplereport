@@ -75,4 +75,11 @@ public class UserAccountCreationController {
         requestBody.getQuestion(),
         requestBody.getAnswer());
   }
+
+  // the following MFA options need endpoints established:
+  // SMS
+  // email
+  // voice call
+  // authenticator apps
+  // FIDO2 (somehow)
 }
