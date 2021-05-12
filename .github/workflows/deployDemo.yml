@@ -35,7 +35,7 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
     steps:
       - uses: actions/checkout@v2
-      - uses: azure/login@v1
+      - uses: azure/login@v1.3.0
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - uses: hashicorp/setup-terraform@v1
@@ -57,7 +57,7 @@ jobs:
       - uses: actions/setup-node@v2.1.5
         with:
           node-version: "14"
-      - uses: azure/login@v1
+      - uses: azure/login@v1.3.0
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - uses: ./.github/actions/deploy-front-end
