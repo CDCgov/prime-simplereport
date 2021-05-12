@@ -6,6 +6,8 @@ import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.Getter;
+import lombok.Setter;
 import org.json.JSONObject;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -86,44 +88,13 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   class DemoUser {
 
-    private String id;
-    private String password;
-    private String recoveryQuestion;
-    private String recoveryAnswer;
+    @Getter private String id;
+    @Getter @Setter private String password;
+    @Getter @Setter private String recoveryQuestion;
+    @Getter @Setter private String recoveryAnswer;
 
     public DemoUser(String id) {
       this.id = id;
-      this.password = "";
-      this.recoveryQuestion = "";
-      this.recoveryAnswer = "";
-    }
-
-    public void setPassword(String password) {
-      this.password = password;
-    }
-
-    public void setRecoveryQuestion(String recoveryQuestion) {
-      this.recoveryQuestion = recoveryQuestion;
-    }
-
-    public void setRecoveryAnswer(String recoveryAnswer) {
-      this.recoveryAnswer = recoveryAnswer;
-    }
-
-    public String getUserId() {
-      return this.id;
-    }
-
-    public String getPassword() {
-      return this.password;
-    }
-
-    public String getRecoveryQuestion() {
-      return this.recoveryQuestion;
-    }
-
-    public String getRecoveryAnswer() {
-      return this.recoveryAnswer;
     }
   }
 }
