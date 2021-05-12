@@ -60,6 +60,8 @@ describe("areValidPhoneNumbers", () => {
         number: "(631) 867-5309",
         type: "",
       });
+
+      expect(areValidPhoneNumbers(phoneNumbers)).toBe(false);
     });
   });
 });

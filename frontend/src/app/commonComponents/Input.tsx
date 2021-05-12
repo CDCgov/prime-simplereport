@@ -47,7 +47,6 @@ export const Input = <T extends { [key: string]: any }>({
       onChange={onChangeHandler}
       onBlur={() => {
         validate(field);
-        getValidationStatus(field);
       }}
       validationStatus={getValidationStatus(field)}
       errorMessage={inputErrors[field]}
