@@ -50,11 +50,7 @@ const Checkboxes = (props: Props) => {
       )}
     >
       <fieldset
-        className={classnames(
-          "usa-fieldset prime-checkboxes",
-          validationStatus === "error" && "usa-form-group--error",
-          props.className
-        )}
+        className={classnames("usa-fieldset prime-checkboxes", props.className)}
       >
         <legend
           className={classnames(
