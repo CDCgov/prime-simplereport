@@ -40,7 +40,8 @@ class UserAccountCreationControllerTest {
 
   @Autowired private DemoOktaAuthentication _oktaAuth;
 
-  private static final String VALID_PASSWORD_REQUEST = "{\"activationToken\":\"validActivationToken\", \"password\":\"superStrongPassword!\"}";
+  private static final String VALID_PASSWORD_REQUEST =
+      "{\"activationToken\":\"validActivationToken\", \"password\":\"superStrongPassword!\"}";
 
   private static final String VALID_RECOVERY_QUESTION_REQUEST =
       "{\"question\":\"Who was your third grade teacher?\", \"answer\" : \"Jane Doe\"}";
@@ -89,7 +90,8 @@ class UserAccountCreationControllerTest {
             .header("User-Agent", "Chrome")
             .content(VALID_PASSWORD_REQUEST);
 
-    String secondValidPasswordRequest = "{\"activationToken\":\"anotherValidAuthToken\", \"password\":\"secondSuperStrongPassword!?\"}";
+    String secondValidPasswordRequest =
+        "{\"activationToken\":\"anotherValidAuthToken\", \"password\":\"secondSuperStrongPassword!?\"}";
 
     MockHttpServletRequestBuilder secondBuilder =
         post(ResourceLinks.USER_SET_PASSWORD)
@@ -117,8 +119,7 @@ class UserAccountCreationControllerTest {
             .getSession(false);
 
     assertThat(firstSession.getId()).isNotEqualTo(secondSession.getId());
-    assertThat(firstSession.getAttribute("userId"))
-        .isEqualTo("userId " + "validActivationToken");
+    assertThat(firstSession.getAttribute("userId")).isEqualTo("userId " + "validActivationToken");
   }
 
   @Test

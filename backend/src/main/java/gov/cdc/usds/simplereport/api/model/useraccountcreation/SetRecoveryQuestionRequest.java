@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class SetRecoveryQuestionRequest {
-  String question;
-  String answer;
+  private String question;
+  private String answer;
 }
