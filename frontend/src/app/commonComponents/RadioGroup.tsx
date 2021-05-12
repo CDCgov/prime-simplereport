@@ -62,7 +62,6 @@ const RadioGroup = <T extends string>({
     <div
       className={classnames(
         "usa-form-group",
-        "form-group--radio",
         validationStatus === "error" && "usa-form-group--error"
       )}
     >
