@@ -3,8 +3,6 @@ package gov.cdc.usds.simplereport.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -16,13 +14,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.sendgrid.helpers.mail.Mail;
 import gov.cdc.usds.simplereport.api.accountrequest.AccountRequestController;
+import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
 import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
@@ -31,10 +29,8 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailProvider;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
-
 import java.util.List;
 import java.util.UUID;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -45,7 +41,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -136,6 +131,50 @@ class AccountRequestControllerTest {
     String requestBody =
         "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"email\":\"kyvuzoxy@mailinator.com\",\"work-phone-number\":\"+1 (969) 768-2863\",\"cell-phone-number\":\"+1 (319) 682-3114\",\"street-address1\":\"707 White Milton Extension\",\"street-address2\":\"Apt 3\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"organization-name\":\"Day Hayes Trading\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-street-address2\":\"UNAVAILABLE\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"facility-type\":\"Urgent care center\",\"facility-type-other\":\"My special facility\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Abbott IDNow, BD Veritor, Cue, LumiraDX\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}";
 
+    DeviceType device1 = mock(DeviceType.class);
+    DeviceType device2 = mock(DeviceType.class);
+    DeviceType device3 = mock(DeviceType.class);
+    DeviceType device4 = mock(DeviceType.class);
+    UUID deviceUuid1 = UUID.randomUUID();
+    UUID deviceUuid2 = UUID.randomUUID();
+    UUID deviceUuid3 = UUID.randomUUID();
+    UUID deviceUuid4 = UUID.randomUUID();
+    when(device1.getName()).thenReturn("Abbott IDNow");
+    when(device1.getModel()).thenReturn("ID Now");
+    when(device1.getInternalId()).thenReturn(deviceUuid1);
+    when(device2.getName()).thenReturn("BD Veritor");
+    when(device2.getModel()).thenReturn("BD Veritor System for Rapid Detection of SARS-CoV-2*");
+    when(device2.getInternalId()).thenReturn(deviceUuid2);
+    when(device3.getName()).thenReturn("Cue");
+    when(device3.getModel()).thenReturn("CueTM COVID-19 Test*");
+    when(device3.getInternalId()).thenReturn(deviceUuid3);
+    when(device4.getName()).thenReturn("LumiraDX");
+    when(device4.getModel()).thenReturn("LumiraDx SARS-CoV-2 Ag Test*");
+    when(device4.getInternalId()).thenReturn(deviceUuid4);
+    when(deviceTypeService.fetchDeviceTypes())
+        .thenReturn(List.of(device1, device2, device3, device4));
+
+    DeviceSpecimenTypeHolder ds = mock(DeviceSpecimenTypeHolder.class);
+    when(deviceTypeService.getTypesForFacility(
+            eq(deviceUuid4.toString()),
+            eq(
+                List.of(
+                    deviceUuid1.toString(),
+                    deviceUuid2.toString(),
+                    deviceUuid3.toString(),
+                    deviceUuid4.toString()))))
+        .thenReturn(ds);
+
+    StreetAddress facilityAddress = mock(StreetAddress.class);
+    when(addressValidationService.getValidatedAddress(
+            "707 White Milton Extension",
+            "Apt 3",
+            "Reprehenderit nostr",
+            "RI",
+            "13046",
+            "facility"))
+        .thenReturn(facilityAddress);
+
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.ACCOUNT_REQUEST)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -185,55 +224,23 @@ class AccountRequestControllerTest {
         "simplereport-site-onboarding-guide.pdf",
         sentMails.get(1).getAttachments().get(0).getFilename());
 
-    DeviceType device1 = mock(DeviceType.class);
-    DeviceType device2 = mock(DeviceType.class);
-    DeviceType device3 = mock(DeviceType.class);
-    DeviceType device4 = mock(DeviceType.class);
-    UUID deviceUuid1 = UUID.randomUUID();
-    UUID deviceUuid2 = UUID.randomUUID();
-    UUID deviceUuid3 = UUID.randomUUID();
-    UUID deviceUuid4 = UUID.randomUUID();
-    when(device1.getName()).thenReturn("Abbott IDNow");
-    when(device1.getModel()).thenReturn("ID Now");
-    when(device1.getInternalId()).thenReturn(deviceUuid1);
-    when(device2.getName()).thenReturn("BD Veritor");
-    when(device2.getModel()).thenReturn("BD Veritor System for Rapid Detection of SARS-CoV-2*");
-    when(device2.getInternalId()).thenReturn(deviceUuid2);
-    when(device3.getName()).thenReturn("LumiraDX");
-    when(device3.getModel()).thenReturn("LumiraDx SARS-CoV-2 Ag Test*");
-    when(device3.getInternalId()).thenReturn(deviceUuid3);
-    when(device4.getName()).thenReturn("Cue");
-    when(device4.getModel()).thenReturn("CueTM COVID-19 Test*");
-    when(device4.getInternalId()).thenReturn(deviceUuid4);
-    when(deviceTypeService.fetchDeviceTypes()).thenReturn(List.of(device1, device2, device3, device4));
+    verify(deviceTypeService, times(1))
+        .getTypesForFacility(
+            deviceUuid4.toString(),
+            List.of(
+                deviceUuid1.toString(),
+                deviceUuid2.toString(),
+                deviceUuid3.toString(),
+                deviceUuid4.toString()));
 
-    // verify(deviceTypeService, times(1))
-    //     .getTypesForFacility(
-    //         deviceUuid3.toString(),
-    //         List.of(deviceUuid1.toString(), deviceUuid2.toString(), deviceUuid3.toString(), deviceUuid4.toString()));
-    DeviceSpecimenTypeHolder ds = mock(DeviceSpecimenTypeHolder.class);
-    when(deviceTypeService.getTypesForFacility(
-        eq(deviceUuid3.toString()), 
-        eq(List.of(deviceUuid1.toString(), deviceUuid2.toString(), deviceUuid3.toString(), deviceUuid4.toString()))))
-      .thenReturn(ds);
-
-    // verify(addressValidationService, times(1))
-    //     .getValidatedAddress(
-    //       "707 White Milton Extension", 
-    //       "Apt 3", 
-    //       "Reprehenderit nostr", 
-    //       "RI", 
-    //       "13046", 
-    //       "facility");
-    StreetAddress facilityAddress = mock(StreetAddress.class);
-    when(addressValidationService.getValidatedAddress(
-        "707 White Milton Extension", 
-        "Apt 3", 
-        "Reprehenderit nostr", 
-        "RI", 
-        "13046", 
-        "facility"))
-      .thenReturn(facilityAddress);
+    verify(addressValidationService, times(1))
+        .getValidatedAddress(
+            "707 White Milton Extension",
+            "Apt 3",
+            "Reprehenderit nostr",
+            "RI",
+            "13046",
+            "facility");
 
     verify(orgService, times(1))
         .createOrganization(
@@ -249,6 +256,32 @@ class AccountRequestControllerTest {
             addressCaptor.capture(),
             eq("(583) 883-4172"),
             eq("Quis sit eiusmod Nam"));
+
+    assertThat(externalIdCaptor.getValue()).startsWith("RI-Day-Hayes-Trading-");
+    assertThat(nameCaptor.getValue().getFirstName()).isEqualTo("Sawyer");
+    assertNull(nameCaptor.getValue().getMiddleName());
+    assertThat(nameCaptor.getValue().getLastName()).isEqualTo("Sears");
+    assertNull(nameCaptor.getValue().getSuffix());
+    assertThat(addressCaptor.getValue().getStreetOne()).isEqualTo("290 East Rocky Second Street");
+    assertThat(addressCaptor.getValue().getStreetTwo()).isEqualTo("UNAVAILABLE");
+    assertThat(addressCaptor.getValue().getCity()).isEqualTo("Dicta cumque sit ip");
+    assertThat(addressCaptor.getValue().getState()).isEqualTo("AR");
+    assertThat(addressCaptor.getValue().getPostalCode()).isEqualTo("43675");
+    assertThat(addressCaptor.getValue().getCounty()).isEqualTo("Asperiores illum in");
+
+    verify(apiUserService, times(1))
+        .createUser(
+            eq("kyvuzoxy@mailinator.com"),
+            nameCaptor.capture(),
+            externalIdCaptor.capture(),
+            eq(Role.ADMIN),
+            eq(false));
+
+    assertThat(nameCaptor.getValue().getFirstName()).isEqualTo("Mary");
+    assertNull(nameCaptor.getValue().getMiddleName());
+    assertThat(nameCaptor.getValue().getLastName()).isEqualTo("Lopez");
+    assertNull(nameCaptor.getValue().getSuffix());
+    assertThat(externalIdCaptor.getValue()).startsWith("RI-Day-Hayes-Trading-");
   }
 
   @Test
@@ -265,5 +298,9 @@ class AccountRequestControllerTest {
 
     this._mockMvc.perform(builder).andExpect(status().isBadRequest());
     verifyNoInteractions(emailService);
+    verifyNoInteractions(deviceTypeService);
+    verifyNoInteractions(addressValidationService);
+    verifyNoInteractions(orgService);
+    verifyNoInteractions(apiUserService);
   }
 }

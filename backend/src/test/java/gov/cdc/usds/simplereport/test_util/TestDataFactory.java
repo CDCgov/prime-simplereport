@@ -30,7 +30,6 @@ import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
