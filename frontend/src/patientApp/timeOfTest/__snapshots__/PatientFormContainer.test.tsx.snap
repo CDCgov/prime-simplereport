@@ -311,7 +311,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   </div>
                 </div>
                 <div
-                  className=""
+                  className="usa-form-group"
                 >
                   <fieldset
                     className="usa-fieldset prime-radios margin-top-3"
@@ -329,7 +329,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       </abbr>
                     </legend>
                     <div
-                      className="usa-form-group"
+                      className=""
                     >
                       <div
                         className="usa-radio"

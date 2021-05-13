@@ -336,7 +336,7 @@ Object {
                         </div>
                       </div>
                       <div
-                        class=""
+                        class="usa-form-group"
                       >
                         <fieldset
                           class="usa-fieldset prime-radios margin-top-3"
@@ -354,7 +354,7 @@ Object {
                             </abbr>
                           </legend>
                           <div
-                            class="usa-form-group"
+                            class=""
                           >
                             <div
                               class="usa-radio"
@@ -1755,7 +1755,7 @@ Object {
                       </div>
                     </div>
                     <div
-                      class=""
+                      class="usa-form-group"
                     >
                       <fieldset
                         class="usa-fieldset prime-radios margin-top-3"
@@ -1773,7 +1773,7 @@ Object {
                           </abbr>
                         </legend>
                         <div
-                          class="usa-form-group"
+                          class=""
                         >
                           <div
                             class="usa-radio"
