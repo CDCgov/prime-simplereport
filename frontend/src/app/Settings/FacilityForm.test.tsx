@@ -85,12 +85,7 @@ jest.mock("../utils/smartyStreets", () => ({
     const lookup = addresses.find(({ bad }) => bad.street === address.street);
     return Promise.resolve(lookup ? lookup.good : undefined);
   },
-  suggestionIsCloseEnough: (address1: AddressWithMetaData) => {
-    if (address1.street === "123 Fake St") {
-      return true;
-    }
-    return false;
-  },
+  suggestionIsCloseEnough: () => false,
 }));
 
 describe("FacilityForm", () => {
