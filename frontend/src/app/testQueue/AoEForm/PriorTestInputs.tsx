@@ -58,6 +58,7 @@ const PriorTestInputs: React.FC<Props> = ({
   const previousTestEntry = (
     <>
       <Label htmlFor="meeting-time">Date of most recent test</Label>
+      <span className="usa-hint">mm/dd/yyyy</span>
       <DatePicker
         className="maxw-mobile"
         id="prior_test_date"

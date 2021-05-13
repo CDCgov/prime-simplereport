@@ -72,6 +72,7 @@ const SymptomInputs: React.FC<Props> = ({
       {!noSymptoms && (
         <>
           <Label htmlFor="meeting-time">Date of symptom onset</Label>
+          <span className="usa-hint">mm/dd/yyyy</span>
           <DatePicker
             className="maxw-mobile"
             id="symptom_onset"
