@@ -126,7 +126,7 @@ public class OrganizationInitializingService {
                   }
                 })
             .collect(Collectors.toMap(Organization::getExternalId, Function.identity()));
-    // All existing orgs in the DB which aren't reflected in config properties should 
+    // All existing orgs in the DB which aren't reflected in config properties should
     // still be reflected in demo Okta environment
     _orgRepo.findAll().stream()
         .filter(o -> !orgsByExternalId.containsKey(o.getExternalId()))
@@ -152,7 +152,7 @@ public class OrganizationInitializingService {
         "Creating facilities {} with {} devices configured",
         facilitiesByName.keySet(),
         configuredDs.size());
-    // All existing facilities in the DB which aren't reflected in config properties should 
+    // All existing facilities in the DB which aren't reflected in config properties should
     // still be reflected in demo Okta environment
     _facilityRepo.findAll().stream()
         .filter(f -> !facilities.contains(f))
