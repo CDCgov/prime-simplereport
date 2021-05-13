@@ -126,6 +126,11 @@ public class OrganizationInitializingService {
                   }
                 })
             .collect(Collectors.toMap(Organization::getExternalId, Function.identity()));
+    // All existing orgs in the DB which aren't reflected in config properties should 
+    // still be reflected in demo Okta environment
+    _orgRepo.findAll().stream()
+        .filter(o -> !orgsByExternalId.containsKey(o.getExternalId()))
+        .forEach(o -> orgsByExternalId.put(o.getExternalId(), o));
     orgsByExternalId.values().forEach(this::initOktaOrg);
 
     Map<String, Facility> facilitiesByName =
@@ -147,6 +152,11 @@ public class OrganizationInitializingService {
         "Creating facilities {} with {} devices configured",
         facilitiesByName.keySet(),
         configuredDs.size());
+    // All existing facilities in the DB which aren't reflected in config properties should 
+    // still be reflected in demo Okta environment
+    _facilityRepo.findAll().stream()
+        .filter(f -> !facilities.contains(f))
+        .forEach(f -> facilities.add(f));
     facilities.stream()
         .forEach(
             f -> {
@@ -219,6 +229,12 @@ public class OrganizationInitializingService {
         initOktaUser(identity, org, authorizedFacilities, roles);
       }
     }
+    // All existing users in the DB who aren't reflected in config properties can't be
+    // integrated into the demo Okta environment because we have no way of deriving their
+    // old organization or roles (since those were stored in-memory), so just delete them.
+    _apiUserRepo.findAll().stream()
+        .filter(u -> _oktaRepo.getOrganizationRoleClaimsForUser(u.getLoginEmail()).isEmpty())
+        .forEach(u -> _apiUserRepo.delete(u));
   }
 
   public void initCurrentUser() {
