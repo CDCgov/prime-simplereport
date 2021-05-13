@@ -1,8 +1,8 @@
 import React from "react";
+import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 import Checkboxes from "../../commonComponents/Checkboxes";
-import TextInput from "../../commonComponents/TextInput";
 
 interface Symptoms {
   [key: string]: boolean;
@@ -70,21 +70,24 @@ const SymptomInputs: React.FC<Props> = ({
         )}
       </div>
       {!noSymptoms && (
-        <TextInput
-          type="date"
-          label="Date of symptom onset"
-          name="symptom_onset"
-          value={onsetDate}
-          onChange={(e) => setOnsetDate(e.target.value)}
-          min="2020-02-01"
-          max={new Date().toISOString().split("T")[0]}
-          required={Object.keys(currentSymptoms).some(
-            (key) => currentSymptoms[key]
-          )}
-          errorMessage={symptomOnsetError}
-          validationStatus={symptomOnsetError ? "error" : undefined}
-          inputRef={symptomOnsetRef}
-        />
+        <>
+          <Label htmlFor="meeting-time">Date of symptom onset</Label>
+          <DatePicker
+            className="maxw-mobile"
+            id="symptom_onset"
+            name="symptom_onset"
+            defaultValue={onsetDate}
+            minDate="2020-02-01"
+            maxDate={new Date().toISOString().split("T")[0]}
+            // onChange={(e) => setOnsetDate(e.target.value)}
+            required={Object.keys(currentSymptoms).some(
+              (key) => currentSymptoms[key]
+            )}
+            // errorMessage={symptomOnsetError}
+            // validationStatus={symptomOnsetError ? "error" : undefined}
+            // inputRef={symptomOnsetRef}
+          />
+        </>
       )}
     </>
   );
