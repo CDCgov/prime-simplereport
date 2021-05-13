@@ -15,7 +15,6 @@ import { DatePicker, Label } from "@trussworks/react-uswds";
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import Dropdown from "../commonComponents/Dropdown";
-import TextInput from "../commonComponents/TextInput";
 import LabeledText from "../commonComponents/LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import { displayFullName, showNotification } from "../utils";
