@@ -26,7 +26,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   }
 
   public JSONObject activateUser(
-      String activationToken, String requestingIpAddress, String userAgent)
+      String activationToken, String crossForwardedHeader, String userAgent)
       throws InvalidActivationLinkException {
     if (activationToken == null || activationToken.isEmpty()) {
       throw new InvalidActivationLinkException();
@@ -61,7 +61,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     idToUserMap.get(userId).setPassword(String.valueOf(password));
   }
 
-  public void setRecoveryQuestions(String userId, String question, String answer)
+  public void setRecoveryQuestion(String userId, String question, String answer)
       throws OktaAuthenticationFailureException {
     validateUser(userId);
     if (question.isBlank()) {

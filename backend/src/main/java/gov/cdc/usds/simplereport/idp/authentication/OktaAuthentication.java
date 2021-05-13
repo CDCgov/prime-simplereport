@@ -12,12 +12,12 @@ import org.json.JSONObject;
 public interface OktaAuthentication {
 
   public JSONObject activateUser(
-      String activationToken, String requestingIpAddress, String userAgent)
+      String activationToken, String crossForwardedHeader, String userAgent)
       throws InvalidActivationLinkException;
 
   public void setPassword(String userId, char[] password) throws OktaAuthenticationFailureException;
 
-  public void setRecoveryQuestions(String userId, String recoveryQuestion, String answer)
+  public void setRecoveryQuestion(String userId, String recoveryQuestion, String answer)
       throws OktaAuthenticationFailureException;
 
   public String enrollSmsMfa(String userId, String phoneNumber)
