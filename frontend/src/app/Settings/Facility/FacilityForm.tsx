@@ -243,7 +243,7 @@ const FacilityForm: React.FC<Props> = (props) => {
         suggestions.push({
           key: "provider",
           label:
-            "Please select an option for ordering provider address to continue",
+            "Please select an option for ordering provider address to continue:",
           userEnteredAddress: originalOrderingProviderAddress,
           suggestedAddress: suggestedOrderingProviderAddress,
         });
