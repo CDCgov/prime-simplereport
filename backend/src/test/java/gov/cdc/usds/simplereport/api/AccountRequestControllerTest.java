@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -27,6 +27,7 @@ import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailProvider;
+import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import java.util.List;
@@ -195,11 +196,7 @@ class AccountRequestControllerTest {
 
     // mail 2: to requester (simplereport new user email)
     verify(emailService, times(1))
-        .send(
-            "kyvuzoxy@mailinator.com",
-            "Next Steps for SimpleReport",
-            "account-next-steps",
-            "simplereport-site-onboarding-guide.pdf");
+        .sendWithProviderTemplate("kyvuzoxy@mailinator.com", EmailProviderTemplate.ACCOUNT_REQUEST);
 
     verify(mockSendGrid, times(2)).send(mail.capture());
     List<Mail> sentMails = mail.getAllValues();
@@ -213,16 +210,12 @@ class AccountRequestControllerTest {
             "kyvuzoxy@mailinator.com",
             "Reprehenderit nostr");
     assertNull(sentMails.get(0).getAttachments());
+    assertNull(sentMails.get(0).getTemplateId());
 
     // mail 2: to requester (simplereport new user email)
-    assertThat(sentMails.get(1).getContent().get(0).getValue())
-        .contains(
-            "Administrator Identity Verification", "SimpleReport Training", "Terms of Service");
-    assertEquals(1, sentMails.get(1).getAttachments().size());
-    assertEquals("application/pdf", sentMails.get(1).getAttachments().get(0).getType());
-    assertEquals(
-        "simplereport-site-onboarding-guide.pdf",
-        sentMails.get(1).getAttachments().get(0).getFilename());
+    assertThat(sentMails.get(1).getPersonalization().get(0).getTos().get(0).getEmail())
+        .isEqualTo("kyvuzoxy@mailinator.com");
+    assertNotNull(sentMails.get(1).getTemplateId());
 
     verify(deviceTypeService, times(1))
         .getTypesForFacility(

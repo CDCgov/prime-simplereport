@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
+import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import java.io.IOException;
@@ -91,12 +92,11 @@ public class AccountRequestController {
     if (LOG.isInfoEnabled()) {
       LOG.info("Account request submitted: {}", objectMapper.writeValueAsString(body));
     }
+    
+    // send summary email to SR support
     _es.send(sendGridProperties.getAccountRequestRecipient(), subject, body);
-    _es.send(
-        body.getEmail(),
-        "Next Steps for SimpleReport",
-        "account-next-steps",
-        "simplereport-site-onboarding-guide.pdf");
+    // send next-steps email to requester
+    _es.sendWithProviderTemplate(body.getEmail(), EmailProviderTemplate.ACCOUNT_REQUEST);
 
     Map<String, String> reqVars =
         body.toTemplateVariables().entrySet().stream()

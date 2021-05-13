@@ -13,7 +13,7 @@ Array [
     No previous test data found
   </div>,
   <div
-    className=""
+    className="usa-form-group"
   >
     <fieldset
       className="usa-fieldset prime-radios"
@@ -24,7 +24,7 @@ Array [
         Is this your first covid test?
       </legend>
       <div
-        className="usa-form-group prime-radio--horizontal"
+        className="prime-radio--horizontal"
       >
         <div
           className="usa-radio prime-radio--horizontal__container"
@@ -94,38 +94,42 @@ Array [
       value=""
     />
   </div>,
-  <fieldset
-    className="usa-fieldset prime-checkboxes"
+  <div
+    className="usa-form-group"
   >
-    <legend
-      className="usa-legend usa-sr-only"
+    <fieldset
+      className="usa-fieldset prime-checkboxes"
     >
-      Date of most recent test unknown?
-    </legend>
-    <div
-      className="usa-form-group"
-    >
-      <div
-        className="usa-checkbox"
+      <legend
+        className="usa-legend usa-sr-only"
       >
-        <input
-          checked={true}
-          className="usa-checkbox__input"
-          id="3-val-0"
-          name="mostRecentTestUnknown"
-          onChange={[Function]}
-          type="checkbox"
-          value="UNKNOWN"
-        />
-        <label
-          className="usa-checkbox__label"
-          htmlFor="3-val-0"
+        Date of most recent test unknown?
+      </legend>
+      <div
+        className="checkboxes"
+      >
+        <div
+          className="usa-checkbox"
         >
-          Unknown
-        </label>
+          <input
+            checked={true}
+            className="usa-checkbox__input"
+            id="3-val-0"
+            name="mostRecentTestUnknown"
+            onChange={[Function]}
+            type="checkbox"
+            value="UNKNOWN"
+          />
+          <label
+            className="usa-checkbox__label"
+            htmlFor="3-val-0"
+          >
+            Unknown
+          </label>
+        </div>
       </div>
-    </div>
-  </fieldset>,
+    </fieldset>
+  </div>,
   <div
     className="usa-form-group prime-dropdown "
   >
