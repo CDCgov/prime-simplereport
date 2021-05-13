@@ -7,9 +7,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class SetRecoveryQuestionRequest {
-  @Size(max = 256)
+  @Size(max = RequestConstants.STANDARD_REQUEST_STRING_LIMIT)
   private String question;
 
-  @Size(max = 256)
+  @Size(max = RequestConstants.STANDARD_REQUEST_STRING_LIMIT)
   private String answer;
 }
