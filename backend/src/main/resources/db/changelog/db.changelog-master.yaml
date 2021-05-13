@@ -2051,3 +2051,7 @@ databaseChangeLog:
                   NOW(),
                   updated_by
                 FROM ${database.defaultSchemaName}.person;
+                UPDATE ${database.defaultSchemaName}.person p SET
+                  primary_phone_internal_id = pn.internal_id
+                FROM ${database.defaultSchemaName}.phone_number pn
+                WHERE p.internal_id=pn.person_internal_id;
