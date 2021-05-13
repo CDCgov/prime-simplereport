@@ -1,7 +1,10 @@
 package gov.cdc.usds.simplereport.service;
 
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientRegistrationLinkException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import org.springframework.stereotype.Service;
@@ -33,5 +36,19 @@ public class PatientRegistrationLinkService {
   public boolean flagRegistrationRequest() {
     contextHolder.setPatientRegistrationRequest(true);
     return true;
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public String createRegistrationLink(Organization org, String link) {
+    PatientRegistrationLink prl = new PatientRegistrationLink(org, link);
+    prlrepo.save(prl);
+    return link;
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public String createRegistrationLink(Facility fac, String link) {
+    PatientRegistrationLink prl = new PatientRegistrationLink(fac, link);
+    prlrepo.save(prl);
+    return link;
   }
 }

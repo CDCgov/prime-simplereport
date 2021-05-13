@@ -71,4 +71,13 @@ extend type Mutation {
     externalId: String!
     verified: Boolean!
   ): Boolean
+  createOrganizationRegistrationLink(
+    organizationExternalId: String!
+    link: String!
+  ): String
+  createFacilityRegistrationLink(
+    organizationExternalId: String!
+    facilityId: ID!
+    link: String!
+  ): String
 }

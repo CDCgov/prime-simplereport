@@ -95,8 +95,6 @@ simple-report-initialization:
   patient-registration-links:
     - patient-registration-link: dis-org
       organization-external-id: DIS_ORG
-    - patient-registration-link: dat-org
-      organization-external-id: DAT_ORG
 simple-report:
   demo-users:
     site-admin-emails:
