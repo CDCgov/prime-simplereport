@@ -7,9 +7,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class UserAccountCreationRequest {
-  @Size(max = 512)
+  @Size(max = RequestConstants.LARGE_REQUEST_STRING_LIMIT)
   private String activationToken;
 
-  @Size(max = 256)
+  @Size(max = RequestConstants.STANDARD_REQUEST_STRING_LIMIT)
   private String password;
 }
