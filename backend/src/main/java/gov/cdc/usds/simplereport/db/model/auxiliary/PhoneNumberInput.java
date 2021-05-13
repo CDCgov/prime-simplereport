@@ -8,9 +8,9 @@ public class PhoneNumberInput {
 
   public PhoneNumberInput() {}
 
-  public PhoneNumberInput(String number, String type) {
-    this.number = number;
+  public PhoneNumberInput(String type, String number) {
     this.type = type;
+    this.number = number;
   }
 
   public String getType() {

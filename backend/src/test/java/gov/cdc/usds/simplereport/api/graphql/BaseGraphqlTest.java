@@ -290,7 +290,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
         firstName,
         lastName,
         birthDate,
-        List.of(new PhoneNumberInput(phone, "MOBILE")),
+        List.of(new PhoneNumberInput("MOBILE", phone)),
         lookupId,
         facilityId,
         expectedError);

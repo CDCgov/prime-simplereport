@@ -279,6 +279,6 @@ public class TestDataFactory {
   }
 
   public static List<PhoneNumberInput> getListOfOnePhoneNumberInput() {
-    return List.of(new PhoneNumberInput("(503) 867-5309", "MOBILE"));
+    return List.of(new PhoneNumberInput("MOBILE", "(503) 867-5309"));
   }
 }
