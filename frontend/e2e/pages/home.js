@@ -127,8 +127,8 @@ function verifyQuestionnaireCompleted(patientName) {
 }
 
 module.exports = {
-  url: function(path = '') {
-    return this.api.launchUrl + "/" + path;
+  url: function () {
+    return this.api.launchUrl + "/queue";
   },
   commands: [
     {

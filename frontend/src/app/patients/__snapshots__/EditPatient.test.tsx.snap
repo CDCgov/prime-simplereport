@@ -248,8 +248,8 @@ Object {
                         </option>
                       </select>
                     </div>
-                    <fieldset
-                      class="usa-fieldset"
+                    <div
+                      class="usa-form-group"
                     >
                       <label
                         class="usa-label"
@@ -257,7 +257,7 @@ Object {
                       >
                         Preferred language
                       </label>
-                    </fieldset>
+                    </div>
                   </div>
                   <div
                     class="usa-form"
@@ -912,7 +912,7 @@ Object {
                     This information is collected as part of public health efforts to recognize and address inequality in health outcomes.
                   </p>
                   <div
-                    class=""
+                    class="usa-form-group"
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
@@ -923,7 +923,7 @@ Object {
                         Race
                       </legend>
                       <div
-                        class="usa-form-group"
+                        class=""
                       >
                         <div
                           class="usa-radio"
@@ -1054,17 +1054,18 @@ Object {
                       </div>
                     </fieldset>
                   </div>
-                  <fieldset
-                    class="usa-fieldset"
+                  <div
+                    class="usa-form-group"
                   >
-                    <legend
+                    <label
                       class="usa-legend"
+                      for="tribal-affiliation"
                     >
                       Tribal affiliation
-                    </legend>
-                  </fieldset>
+                    </label>
+                  </div>
                   <div
-                    class=""
+                    class="usa-form-group"
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
@@ -1075,7 +1076,7 @@ Object {
                         Are you Hispanic or Latino?
                       </legend>
                       <div
-                        class="usa-form-group"
+                        class=""
                       >
                         <div
                           class="usa-radio"
@@ -1135,7 +1136,7 @@ Object {
                     </fieldset>
                   </div>
                   <div
-                    class=""
+                    class="usa-form-group"
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
@@ -1146,7 +1147,7 @@ Object {
                         Biological sex
                       </legend>
                       <div
-                        class="usa-form-group"
+                        class=""
                       >
                         <div
                           class="usa-radio"
@@ -1237,7 +1238,7 @@ Object {
                     Other
                   </legend>
                   <div
-                    class=""
+                    class="usa-form-group"
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
@@ -1260,7 +1261,7 @@ Object {
                         For example: nursing home, group home, prison, jail, or military
                       </span>
                       <div
-                        class="usa-form-group"
+                        class=""
                       >
                         <div
                           class="usa-radio"
@@ -1321,7 +1322,7 @@ Object {
                     </fieldset>
                   </div>
                   <div
-                    class=""
+                    class="usa-form-group"
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
@@ -1339,7 +1340,7 @@ Object {
                         </abbr>
                       </legend>
                       <div
-                        class="usa-form-group"
+                        class=""
                       >
                         <div
                           class="usa-radio"
@@ -1666,8 +1667,8 @@ Object {
                       </option>
                     </select>
                   </div>
-                  <fieldset
-                    class="usa-fieldset"
+                  <div
+                    class="usa-form-group"
                   >
                     <label
                       class="usa-label"
@@ -1675,7 +1676,7 @@ Object {
                     >
                       Preferred language
                     </label>
-                  </fieldset>
+                  </div>
                 </div>
                 <div
                   class="usa-form"
@@ -2330,7 +2331,7 @@ Object {
                   This information is collected as part of public health efforts to recognize and address inequality in health outcomes.
                 </p>
                 <div
-                  class=""
+                  class="usa-form-group"
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
@@ -2341,7 +2342,7 @@ Object {
                       Race
                     </legend>
                     <div
-                      class="usa-form-group"
+                      class=""
                     >
                       <div
                         class="usa-radio"
@@ -2472,17 +2473,18 @@ Object {
                     </div>
                   </fieldset>
                 </div>
-                <fieldset
-                  class="usa-fieldset"
+                <div
+                  class="usa-form-group"
                 >
-                  <legend
+                  <label
                     class="usa-legend"
+                    for="tribal-affiliation"
                   >
                     Tribal affiliation
-                  </legend>
-                </fieldset>
+                  </label>
+                </div>
                 <div
-                  class=""
+                  class="usa-form-group"
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
@@ -2493,7 +2495,7 @@ Object {
                       Are you Hispanic or Latino?
                     </legend>
                     <div
-                      class="usa-form-group"
+                      class=""
                     >
                       <div
                         class="usa-radio"
@@ -2553,7 +2555,7 @@ Object {
                   </fieldset>
                 </div>
                 <div
-                  class=""
+                  class="usa-form-group"
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
@@ -2564,7 +2566,7 @@ Object {
                       Biological sex
                     </legend>
                     <div
-                      class="usa-form-group"
+                      class=""
                     >
                       <div
                         class="usa-radio"
@@ -2655,7 +2657,7 @@ Object {
                   Other
                 </legend>
                 <div
-                  class=""
+                  class="usa-form-group"
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
@@ -2678,7 +2680,7 @@ Object {
                       For example: nursing home, group home, prison, jail, or military
                     </span>
                     <div
-                      class="usa-form-group"
+                      class=""
                     >
                       <div
                         class="usa-radio"
@@ -2739,7 +2741,7 @@ Object {
                   </fieldset>
                 </div>
                 <div
-                  class=""
+                  class="usa-form-group"
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
@@ -2757,7 +2759,7 @@ Object {
                       </abbr>
                     </legend>
                     <div
-                      class="usa-form-group"
+                      class=""
                     >
                       <div
                         class="usa-radio"

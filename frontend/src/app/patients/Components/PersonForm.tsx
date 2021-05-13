@@ -268,7 +268,7 @@ const PersonForm = (props: Props) => {
             errors={errors}
             hidden={props.hideFacilitySelect}
           />
-          <fieldset className="usa-fieldset">
+          <div className="usa-form-group">
             <label className="usa-label" htmlFor="preferred-language">
               Preferred language
             </label>
@@ -287,7 +287,7 @@ const PersonForm = (props: Props) => {
                 );
               }}
             />
-          </fieldset>
+          </div>
         </div>
         <div className="usa-form">
           <Input
@@ -371,8 +371,10 @@ const PersonForm = (props: Props) => {
           selectedRadio={patient.race}
           onChange={onPersonChange("race")}
         />
-        <fieldset className="usa-fieldset">
-          <legend className="usa-legend">Tribal affiliation</legend>
+        <div className="usa-form-group">
+          <label className="usa-legend" htmlFor="tribal-affiliation">
+            Tribal affiliation
+          </label>
           <ComboBox
             id="tribal-affiliation"
             name="tribal-affiliation"
@@ -382,7 +384,7 @@ const PersonForm = (props: Props) => {
             }
             defaultValue={String(patient.tribalAffiliation)}
           />
-        </fieldset>
+        </div>
         <RadioGroup
           legend="Are you Hispanic or Latino?"
           name="ethnicity"

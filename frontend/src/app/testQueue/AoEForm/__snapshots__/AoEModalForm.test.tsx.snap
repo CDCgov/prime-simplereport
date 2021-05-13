@@ -39,7 +39,7 @@ Array [
     Test questionnaire
   </h2>,
   <div
-    className=""
+    className="usa-form-group"
   >
     <fieldset
       className="usa-fieldset prime-radios margin-top-205"
@@ -50,7 +50,7 @@ Array [
         How would you like to complete the questionnaire?
       </legend>
       <div
-        className="usa-form-group"
+        className=""
       >
         <div
           className="usa-radio"
@@ -153,7 +153,7 @@ Array [
     Test questionnaire
   </h2>,
   <div
-    className=""
+    className="usa-form-group"
   >
     <fieldset
       className="usa-fieldset prime-radios margin-top-205"
@@ -164,7 +164,7 @@ Array [
         How would you like to complete the questionnaire?
       </legend>
       <div
-        className="usa-form-group"
+        className=""
       >
         <div
           className="usa-radio"
@@ -256,7 +256,7 @@ Array [
     Test questionnaire
   </h2>,
   <div
-    className=""
+    className="usa-form-group"
   >
     <fieldset
       className="usa-fieldset prime-radios margin-top-205"
@@ -267,7 +267,7 @@ Array [
         How would you like to complete the questionnaire?
       </legend>
       <div
-        className="usa-form-group"
+        className=""
       >
         <div
           className="usa-radio"

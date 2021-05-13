@@ -225,8 +225,8 @@ exports[`PatientFormContainer snapshot 1`] = `
                   </option>
                 </select>
               </div>
-              <fieldset
-                className="usa-fieldset"
+              <div
+                className="usa-form-group"
               >
                 <label
                   className="usa-label"
@@ -234,7 +234,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                 >
                   Preferred language
                 </label>
-              </fieldset>
+              </div>
             </div>
             <div
               className="usa-form"
@@ -910,7 +910,7 @@ exports[`PatientFormContainer snapshot 1`] = `
               This information is collected as part of public health efforts to recognize and address inequality in health outcomes.
             </p>
             <div
-              className=""
+              className="usa-form-group"
             >
               <fieldset
                 className="usa-fieldset prime-radios"
@@ -921,7 +921,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   Race
                 </legend>
                 <div
-                  className="usa-form-group"
+                  className=""
                 >
                   <div
                     className="usa-radio"
@@ -1073,17 +1073,18 @@ exports[`PatientFormContainer snapshot 1`] = `
                 </div>
               </fieldset>
             </div>
-            <fieldset
-              className="usa-fieldset"
+            <div
+              className="usa-form-group"
             >
-              <legend
+              <label
                 className="usa-legend"
+                htmlFor="tribal-affiliation"
               >
                 Tribal affiliation
-              </legend>
-            </fieldset>
+              </label>
+            </div>
             <div
-              className=""
+              className="usa-form-group"
             >
               <fieldset
                 className="usa-fieldset prime-radios"
@@ -1094,7 +1095,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   Are you Hispanic or Latino?
                 </legend>
                 <div
-                  className="usa-form-group"
+                  className=""
                 >
                   <div
                     className="usa-radio"
@@ -1163,7 +1164,7 @@ exports[`PatientFormContainer snapshot 1`] = `
               </fieldset>
             </div>
             <div
-              className=""
+              className="usa-form-group"
             >
               <fieldset
                 className="usa-fieldset prime-radios"
@@ -1174,7 +1175,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   Biological sex
                 </legend>
                 <div
-                  className="usa-form-group"
+                  className=""
                 >
                   <div
                     className="usa-radio"
@@ -1277,7 +1278,7 @@ exports[`PatientFormContainer snapshot 1`] = `
               Other
             </legend>
             <div
-              className=""
+              className="usa-form-group"
             >
               <fieldset
                 className="usa-fieldset prime-radios"
@@ -1300,7 +1301,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   For example: nursing home, group home, prison, jail, or military
                 </span>
                 <div
-                  className="usa-form-group"
+                  className=""
                 >
                   <div
                     className="usa-radio"
@@ -1372,7 +1373,7 @@ exports[`PatientFormContainer snapshot 1`] = `
               </fieldset>
             </div>
             <div
-              className=""
+              className="usa-form-group"
             >
               <fieldset
                 className="usa-fieldset prime-radios"
@@ -1390,7 +1391,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   </abbr>
                 </legend>
                 <div
-                  className="usa-form-group"
+                  className=""
                 >
                   <div
                     className="usa-radio"
