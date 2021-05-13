@@ -92,7 +92,7 @@ public class AccountRequestController {
     if (LOG.isInfoEnabled()) {
       LOG.info("Account request submitted: {}", objectMapper.writeValueAsString(body));
     }
-    
+
     // send summary email to SR support
     _es.send(sendGridProperties.getAccountRequestRecipient(), subject, body);
     // send next-steps email to requester
