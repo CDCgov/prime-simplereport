@@ -10,6 +10,7 @@ import {
 } from "@microsoft/applicationinsights-react-js";
 import classnames from "classnames";
 import moment from "moment";
+import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
@@ -498,15 +499,16 @@ const QueueItem: any = ({
   const testDateFields =
     useCurrentDateTime === "false" ? (
       <li className="prime-li">
-        <TextInput
-          type="datetime-local"
-          label="Test date"
-          name="meeting-time"
-          value={isoDateToDatetimeLocal(dateTested)}
-          min="2020-01-01T00:00"
-          max={moment().add(1, "days").format("YYYY-MM-DDThh:mm")} // TODO: is this a reasonable max?
-          onChange={onDateTestedChange}
-        />
+        <div className="usa-form-group">
+          <Label htmlFor="meeting-time">Test date</Label>
+          <DatePicker
+            id="meeting-time"
+            name="meeting-time"
+            defaultValue={isoDateToDatetimeLocal(dateTested)}
+            minDate="2020-01-01"
+            maxDate={moment().add(1, "days").format("YYYY-MM-DDThh:mm")} // TODO: is this a reasonable max?
+          />
+        </div>
       </li>
     ) : null;
 
