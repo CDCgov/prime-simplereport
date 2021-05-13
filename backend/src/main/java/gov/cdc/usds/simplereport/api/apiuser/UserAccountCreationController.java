@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQ
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollSmsMfaRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
 import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
@@ -87,7 +88,7 @@ public class UserAccountCreationController {
    * @throws OktaAuthenticationFailureException if the provided phone number is invalid.
    */
   @PostMapping("/enroll-sms-mfa")
-  public void enrollSmsMfa(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
+  public void enrollSmsMfa(@RequestBody EnrollSmsMfaRequest requestBody, HttpServletRequest request)
       throws OktaAuthenticationFailureException {
     String factorId =
         _oktaAuth.enrollSmsMfa(

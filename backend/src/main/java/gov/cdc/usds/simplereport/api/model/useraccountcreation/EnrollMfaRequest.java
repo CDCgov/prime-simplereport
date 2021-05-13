@@ -6,5 +6,5 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class EnrollMfaRequest {
-    private String userInput;
+  private String userInput;
 }

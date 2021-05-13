@@ -46,7 +46,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   public void setPassword(String userId, char[] password)
       throws OktaAuthenticationFailureException {
-        System.out.println("BOOYAH in demo set password");
+    System.out.println("BOOYAH in demo set password");
     validateUser(userId);
     if (password.length < MINIMUM_PASSWORD_LENGTH) {
       throw new OktaAuthenticationFailureException("Password is too short.");

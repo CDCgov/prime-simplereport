@@ -46,7 +46,7 @@ class UserAccountCreationControllerTest {
   private static final String VALID_RECOVERY_QUESTION_REQUEST =
       "{\"question\":\"Who was your third grade teacher?\", \"answer\" : \"Jane Doe\"}";
 
-  private static final String VALID_ENROLL_SMS_MFA_REQUEST = "{\"userInput\":\"(555)-867-5309\"}";
+  private static final String VALID_ENROLL_SMS_MFA_REQUEST = "{\"userInput\":\"555-867-5309\"}";
 
   @BeforeEach
   public void setup() throws Exception {
@@ -208,6 +208,6 @@ class UserAccountCreationControllerTest {
 
     assertThat(setPasswordResponse.getAttribute("userId"))
         .isEqualTo(enrollSmsMfaResponse.getAttribute("userId"));
-    assertThat(enrollSmsMfaResponse.getAttribute("factorId")).isNotNull();
+        assertThat(enrollSmsMfaResponse.getAttribute("factorId")).isNotNull();
   }
 }
