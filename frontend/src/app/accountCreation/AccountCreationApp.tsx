@@ -46,8 +46,7 @@ const AccountCreationApp = () => {
         activationToken: getActivationTokenFromUrl(),
       })
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch]);
 
   return (
     <AppInsightsContext.Provider value={reactPlugin}>
