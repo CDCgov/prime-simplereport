@@ -505,7 +505,7 @@ const QueueItem: any = ({
             id="meeting-time"
             name="meeting-time"
             defaultValue={isoDateToDatetimeLocal(dateTested)}
-            minDate="2020-01-01"
+            minDate="2020-01-01T00:00"
             maxDate={moment().add(1, "days").format("YYYY-MM-DDThh:mm")} // TODO: is this a reasonable max?
           />
         </div>
