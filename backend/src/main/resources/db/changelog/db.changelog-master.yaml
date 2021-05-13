@@ -1968,3 +1968,90 @@ databaseChangeLog:
               ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN creation_time TYPE bigint USING EXTRACT(EPOCH FROM creation_time);
               ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN last_access_time TYPE bigint USING EXTRACT(EPOCH FROM last_access_time);
               ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN expiry_time TYPE bigint USING EXTRACT(EPOCH FROM expiry_time);
+  - changeSet:
+      id: add-phone-number-table
+      author: nathan@skylight.digital
+      comment: Add table to track user phone numbers
+      changes:
+          - sql:
+            remarks: Create the enumerations needed for tracking a phone number's type
+            sql: |
+              CREATE TYPE ${database.defaultSchemaName}.PHONE_TYPES as ENUM('MOBILE', 'LANDLINE');
+            rollback:
+              sql: |
+                DROP TYPE ${database.defaultSchemaName}.PHONE_TYPES;
+          - createTable:
+              tableName: phone_number
+              remarks: A join table to Person that stores phone numbers with phone type
+              columns:
+                 - column:
+                     name: internal_id
+                     type: *idtype
+                     remarks: The internal database identifier for this entity
+                     constraints:
+                       primaryKey: true
+                       nullable: false
+                 - column:
+                     name: person_internal_id
+                     type: *idtype
+                     remarks: A foreign key to a person
+                     constraints:
+                       nullable: false
+                       foreignKeyName: fk__internal_id__person
+                       references: person
+                 - column:
+                     name: type
+                     type: ${database.defaultSchemaName}.PHONE_TYPES
+                     remarks: Enumeration of phone type, or null
+                     defaultValue: null
+                     constraints:
+                       nullable: true
+                 - column:
+                     name: number
+                     type: *string
+                     remarks: A person's contact telephone number
+                     constraints:
+                       nullable: false
+                 - column: *created_at_column
+                 - column: *created_by_column
+                 - column: *updated_at_column
+                 - column: *updated_by_column
+          - addColumn:
+              tableName: person
+              columns:
+                - column:
+                    name: primary_phone_internal_id
+                    afterColumn: telephone
+                    type: *idtype
+                    remarks: The identifier of the primary phone number for this patient
+                    constraints:
+                      nullable: true
+                      foreignKeyName: fk__primary__phone__number
+                      referencedTableName: phone_number
+          - sql:
+              remarks: Populate new `phone_number` table with existing `person.telephone` values
+              sql: |
+                INSERT INTO ${database.defaultSchemaName}.phone_number (
+                  internal_id,
+                  person_internal_id,
+                  type,
+                  number,
+                  created_at,
+                  created_by,
+                  updated_at,
+                  updated_by
+                )
+                SELECT
+                  gen_random_uuid(),
+                  internal_id,
+                  null,
+                  telephone,
+                  NOW(),
+                  created_by,
+                  NOW(),
+                  updated_by
+                FROM ${database.defaultSchemaName}.person;
+                UPDATE ${database.defaultSchemaName}.person p SET
+                  primary_phone_internal_id = pn.internal_id
+                FROM ${database.defaultSchemaName}.phone_number pn
+                WHERE p.internal_id=pn.person_internal_id;
