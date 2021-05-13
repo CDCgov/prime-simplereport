@@ -1969,6 +1969,26 @@ databaseChangeLog:
               ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN last_access_time TYPE bigint USING EXTRACT(EPOCH FROM last_access_time);
               ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN expiry_time TYPE bigint USING EXTRACT(EPOCH FROM expiry_time);
   - changeSet:
+      id: set-null-telephone-to-empty-string
+      author: nclyde@skylight.digital
+      comment: Sets null values for telephone in the person table to empty string so that the next migration will run successfully
+      changes:
+          - sql:
+            remarks: Sets null values for telephone in the person table to empty string
+            sql: |
+              WITH migration_user as (
+                SELECT internal_id as migrations_user_id
+                FROM ${database.defaultSchemaName}.api_user
+                WHERE login_email = '${migrations_user_email}')
+              UPDATE ${database.defaultSchemaName}.person SET telephone='', updated_at=now(), updated_by=(SELECT migrations_user_id from migration_user) WHERE telephone IS NULL;
+            rollback:
+              sql: |
+                WITH migration_user as (
+                  SELECT internal_id as migrations_user_id
+                  FROM ${database.defaultSchemaName}.api_user
+                  WHERE login_email = '${migrations_user_email}')
+                UPDATE ${database.defaultSchemaName}.person SET telephone=null, updated_at=now(), updated_by=(SELECT migrations_user_id from migration_user) WHERE telephone='';
+  - changeSet:
       id: add-phone-number-table
       author: nathan@skylight.digital
       comment: Add table to track user phone numbers
