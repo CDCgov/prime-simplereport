@@ -13,7 +13,7 @@ class PersonUpdateTest {
     var serialized =
         "{"
             + "\"telephone\":\"(212) 867-5309\","
-            + "\"phoneNumbers\":[{\"type\":\"MOBILE\",\"number\":\"(270) 991-9270\"}],"
+            + "\"phoneNumbers\":[{\"type\":\"MOBILE\",\"number\":\"(270) 867-5309\"},{\"type\":\"LANDLINE\",\"number\":\"(631) 867-5309\"}],"
             + "\"role\":\"UNKNOWN\","
             + "\"email\":\"user@domain.tld\","
             + "\"race\":\"refused\","

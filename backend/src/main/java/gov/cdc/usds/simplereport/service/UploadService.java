@@ -124,7 +124,7 @@ public class UploadService {
             parsePhoneNumbers(
                 List.of(
                     new PhoneNumberInput(
-                        parsePhoneNumber((getRow(row, "PhoneNumber", true))), "LANDLINE"))),
+                        parsePhoneNumber((getRow(row, "PhoneNumber", true))), null))),
             parsePersonRole(getRow(row, "Role", false)),
             parseEmail(getRow(row, "Email", false)),
             parseRaceDisplayValue(getRow(row, "Race", false)),
