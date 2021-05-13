@@ -51,13 +51,13 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * https://developer.okta.com/docs/reference/api/authn/#response-example-for-activation-token-success-user-without-password
    *
    * @param activationToken the token passed from Okta when creating a new user.
-   * @param requestingIpAddress the IP address of the user requesting a new account.
+   * @param crossForwardedHeader the IP address of the user requesting a new account.
    * @param userAgent the user agent of the user requesting a new account.
    * @return The state token affiliated with this request by Okta.
    * @throws Exception if the state token is not returned by Okta.
    */
   public JSONObject activateUser(
-      String activationToken, String requestingIpAddress, String userAgent)
+      String activationToken, String crossForwardedHeader, String userAgent)
       throws InvalidActivationLinkException {
     JSONObject requestBody = new JSONObject();
     requestBody.put("token", activationToken);
@@ -72,7 +72,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
                               headers.setContentType(MediaType.APPLICATION_JSON);
                               headers.setAccept(List.of(MediaType.APPLICATION_JSON));
                               headers.add(HttpHeaders.USER_AGENT, userAgent);
-                              headers.add("X-Forwarded-For", requestingIpAddress);
+                              headers.add("X-Forwarded-For", crossForwardedHeader);
                               headers.add("Authorization", authorizationToken);
                               return execution.execute(request, body);
                             }))
@@ -118,7 +118,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * @throws OktaAuthenticationFailureException if the recovery question/answer doesn't meet Okta
    *     requirements.
    */
-  public void setRecoveryQuestions(String userId, String question, String answer)
+  public void setRecoveryQuestion(String userId, String question, String answer)
       throws OktaAuthenticationFailureException {
     try {
       User user = _client.getUser(userId);

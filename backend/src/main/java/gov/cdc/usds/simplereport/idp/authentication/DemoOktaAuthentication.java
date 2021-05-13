@@ -18,21 +18,21 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   private static final int MINIMUM_PASSWORD_LENGTH = 8;
 
-  private HashMap<String, DemoUser> idToUserMap;
+  private HashMap<String, DemoAuthUser> idToUserMap;
 
   public DemoOktaAuthentication() {
     this.idToUserMap = new HashMap<>();
   }
 
   public JSONObject activateUser(
-      String activationToken, String requestingIpAddress, String userAgent)
+      String activationToken, String crossForwardedHeader, String userAgent)
       throws InvalidActivationLinkException {
     if (activationToken == null || activationToken.isEmpty()) {
       throw new InvalidActivationLinkException();
     }
     String stateToken = "stateToken " + activationToken;
     String userId = "userId " + activationToken;
-    this.idToUserMap.put(userId, new DemoUser(userId));
+    this.idToUserMap.put(userId, new DemoAuthUser(userId));
     JSONObject json = new JSONObject();
     json.put("stateToken", stateToken);
     json.put("userId", userId);
@@ -61,7 +61,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     idToUserMap.get(userId).setPassword(String.valueOf(password));
   }
 
-  public void setRecoveryQuestions(String userId, String question, String answer)
+  public void setRecoveryQuestion(String userId, String question, String answer)
       throws OktaAuthenticationFailureException {
     if (!idToUserMap.containsKey(userId)) {
       throw new OktaAuthenticationFailureException("User id not recognized.");
@@ -73,12 +73,12 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       throw new OktaAuthenticationFailureException("Recovery answer cannot be empty.");
     }
 
-    DemoUser user = idToUserMap.get(userId);
+    DemoAuthUser user = idToUserMap.get(userId);
     user.setRecoveryQuestion(question);
     user.setRecoveryAnswer(answer);
   }
 
-  public DemoUser getUser(String userId) {
+  public DemoAuthUser getUser(String userId) {
     return this.idToUserMap.get(userId);
   }
 
@@ -86,14 +86,14 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     this.idToUserMap.clear();
   }
 
-  class DemoUser {
+  class DemoAuthUser {
 
     @Getter private String id;
     @Getter @Setter private String password;
     @Getter @Setter private String recoveryQuestion;
     @Getter @Setter private String recoveryAnswer;
 
-    public DemoUser(String id) {
+    public DemoAuthUser(String id) {
       this.id = id;
     }
   }
