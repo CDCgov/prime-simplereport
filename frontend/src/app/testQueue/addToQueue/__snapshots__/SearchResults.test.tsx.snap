@@ -39,7 +39,7 @@ exports[`SearchResults should show matching results 1`] = `
           <th
             scope="col"
           >
-            Actions
+            Action
           </th>
         </tr>
       </thead>

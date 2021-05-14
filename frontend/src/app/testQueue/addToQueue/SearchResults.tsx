@@ -71,7 +71,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
           <tr>
             <th scope="col">Full name</th>
             <th scope="col">Date of birth</th>
-            <th scope="col">Actions</th>
+            <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
