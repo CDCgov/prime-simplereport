@@ -5,10 +5,8 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PatientRegistrationLinkService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
-
 import java.util.Arrays;
 import java.util.UUID;
-
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,7 +25,8 @@ public class PatientRegistrationMutationResolver implements GraphQLMutationResol
     return _prls.createRegistrationLink(org, link);
   }
 
-  public String createFacilityRegistrationLink(String organizationExternalId, UUID facilityUuid, String link) {
+  public String createFacilityRegistrationLink(
+      String organizationExternalId, UUID facilityUuid, String link) {
     Organization org = _os.getOrganization(organizationExternalId);
     Facility fac = _os.getFacilities(org, Arrays.asList((facilityUuid))).iterator().next();
     return _prls.createRegistrationLink(fac, link);

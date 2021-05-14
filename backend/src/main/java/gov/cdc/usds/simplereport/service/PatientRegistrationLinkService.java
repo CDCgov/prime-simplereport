@@ -1,8 +1,8 @@
 package gov.cdc.usds.simplereport.service;
 
-import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientRegistrationLinkException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
