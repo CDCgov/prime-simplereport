@@ -80,13 +80,17 @@ const SymptomInputs: React.FC<Props> = ({
             defaultValue={onsetDate}
             minDate="2020-02-01"
             maxDate={new Date().toISOString().split("T")[0]}
-            // onChange={(e) => setOnsetDate(e.target.value)}
+            onChange={(date) => {
+              if (date) {
+                setOnsetDate(date);
+              }
+            }}
             required={Object.keys(currentSymptoms).some(
               (key) => currentSymptoms[key]
             )}
             // errorMessage={symptomOnsetError}
             // validationStatus={symptomOnsetError ? "error" : undefined}
-            // inputRef={symptomOnsetRef}
+            ref={symptomOnsetRef}
           />
         </>
       )}
