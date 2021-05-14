@@ -284,7 +284,7 @@ const PersonForm = (props: Props) => {
               hidden={props.hideFacilitySelect}
             />
           )}
-          <fieldset className="usa-fieldset">
+          <div className="usa-form-group">
             <label className="usa-label" htmlFor="preferred-language">
               Preferred language
             </label>
@@ -303,7 +303,7 @@ const PersonForm = (props: Props) => {
                 );
               }}
             />
-          </fieldset>
+          </div>
         </div>
         <div className="usa-form">
           <Input
