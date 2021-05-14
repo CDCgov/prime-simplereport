@@ -357,8 +357,8 @@ describe("TestResultsList", () => {
     userEvent.click(screen.getByText("Filter"));
     expect(await screen.findByText("Search by name")).toBeInTheDocument();
     userEvent.type(screen.getByRole("searchbox"), "Cragell");
-    expect(await screen.findByText("Get test results")).toBeInTheDocument();
-    userEvent.click(screen.getByText("Get test results"));
+    expect(await screen.findByText("Filter")).toBeInTheDocument();
+    userEvent.click(screen.getByText("Filter"));
     expect(
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();

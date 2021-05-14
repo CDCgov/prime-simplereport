@@ -49,7 +49,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
       return (
         <Button
           variant="unstyled"
-          label="Get test results"
+          label="Filter"
           onClick={() => {
             props.onPatientSelect(patient);
           }}
