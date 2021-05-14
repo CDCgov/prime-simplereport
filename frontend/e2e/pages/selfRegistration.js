@@ -22,7 +22,7 @@ function enterInformation(dobFormat) {
   const address = "736 Jackson PI NW";
   const state = "DC";
   const zip = "20503";
-  const studentId = faker.random.uuid();
+  const studentId = faker.datatype.uuid();
 
   this.expect
     .section("@enterInformation")
@@ -30,6 +30,7 @@ function enterInformation(dobFormat) {
   this.section.enterInformation.setValue("@firstName", firstName);
   this.section.enterInformation.setValue("@dob", dobForInput);
   this.section.enterInformation.setValue("@phone", phone);
+  this.section.enterInformation.click("@phoneType-0");
   this.section.enterInformation.setValue("@address", address);
   this.section.enterInformation.setValue("@state", state);
   this.section.enterInformation.setValue("@zip", zip);
@@ -71,7 +72,8 @@ module.exports = {
         firstName: 'input[name="firstName"]',
         lastName: 'input[name="lastName"]',
         dob: 'input[name="birthDate"]',
-        phone: 'input[name="telephone"]',
+        phone: 'input[name="number"]',
+        "phoneType-0": 'input[name="phoneType-0"]+label',
         address: 'input[name="street"]',
         state: 'select[name="state"]',
         zip: 'input[name="zipCode"]',
