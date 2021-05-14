@@ -73,6 +73,12 @@ const SymptomInputs: React.FC<Props> = ({
         <>
           <Label htmlFor="meeting-time">Date of symptom onset</Label>
           <span className="usa-hint">mm/dd/yyyy</span>
+          {symptomOnsetError === "error" && (
+            <span className="usa-error-message" role="alert">
+              <span className="usa-sr-only">Error: </span>
+              {symptomOnsetError}
+            </span>
+          )}
           <DatePicker
             className="maxw-mobile"
             id="symptom_onset"
@@ -88,8 +94,6 @@ const SymptomInputs: React.FC<Props> = ({
             required={Object.keys(currentSymptoms).some(
               (key) => currentSymptoms[key]
             )}
-            // errorMessage={symptomOnsetError}
-            // validationStatus={symptomOnsetError ? "error" : undefined}
             ref={symptomOnsetRef}
           />
         </>
