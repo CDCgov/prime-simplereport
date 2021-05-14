@@ -80,4 +80,6 @@ extend type Mutation {
     facilityId: ID!
     link: String!
   ): String
+  updateRegistrationLink(link: String!, newLink: String!): String
+  setRegistrationLinkIsDeleted(link: String, deleted: Boolean!): String
 }

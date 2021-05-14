@@ -32,4 +32,12 @@ public class PatientRegistrationMutationResolver implements GraphQLMutationResol
     Facility fac = _os.getFacilities(org, Arrays.asList((facilityUuid))).iterator().next();
     return _prls.createRegistrationLink(fac, link);
   }
+
+  public String updateRegistrationLink(String link, String newLink) {
+    return _prls.updateRegistrationLink(link, newLink);
+  }
+
+  public String setRegistrationLinkIsDeleted(String link, Boolean deleted) {
+    return _prls.updateRegistrationLink(link, deleted);
+  }
 }

@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.repository;
 
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
 import java.util.Optional;
 
@@ -8,4 +9,9 @@ public interface PatientRegistrationLinkRepository
 
   public Optional<PatientRegistrationLink> findByPatientRegistrationLink(
       String patientRegistrationLink);
+
+  public Optional<PatientRegistrationLink> findByPatientRegistrationLinkAndIsDeleted(
+      String patientRegistrationLink, Boolean isDeleted);
+
+  public Optional<PatientRegistrationLink> findByOrganization(Organization org);
 }

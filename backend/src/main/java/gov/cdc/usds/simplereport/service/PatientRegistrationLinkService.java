@@ -29,7 +29,7 @@ public class PatientRegistrationLinkService {
   public PatientRegistrationLink getPatientRegistrationLink(String patientRegistrationLink)
       throws InvalidPatientRegistrationLinkException {
     return prlrepo
-        .findByPatientRegistrationLink(patientRegistrationLink)
+        .findByPatientRegistrationLinkAndIsDeleted(patientRegistrationLink, false)
         .orElseThrow(() -> new InvalidPatientRegistrationLinkException());
   }
 
@@ -50,5 +50,21 @@ public class PatientRegistrationLinkService {
     PatientRegistrationLink prl = new PatientRegistrationLink(fac, link);
     prlrepo.save(prl);
     return link;
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public String updateRegistrationLink(String link, String newLink) {
+    PatientRegistrationLink prl = prlrepo.findByPatientRegistrationLink(link).get();
+    prl.setLink(newLink);
+    prlrepo.save(prl);
+    return prl.getLink();
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public String updateRegistrationLink(String link, Boolean deleted) {
+    PatientRegistrationLink prl = prlrepo.findByPatientRegistrationLink(link).get();
+    prl.setIsDeleted(deleted);
+    prlrepo.save(prl);
+    return prl.getLink();
   }
 }
