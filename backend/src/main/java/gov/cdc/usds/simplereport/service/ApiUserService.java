@@ -233,7 +233,8 @@ public class ApiUserService {
                   PATIENT_REGISTRATION_EMAIL,
                   new PersonName("", "", "Patient Registration User", ""));
           LOG.info(
-              "Magic patient registration user not found. Created {}", magicUser.getInternalId());
+              "Magic patient registration user not found. Created Person={}",
+              magicUser.getInternalId());
           _apiUserRepo.save(magicUser);
           return magicUser;
         });

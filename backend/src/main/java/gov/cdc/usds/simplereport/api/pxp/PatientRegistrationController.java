@@ -84,7 +84,8 @@ public class PatientRegistrationController {
             body.getEmployedInHealthcare(),
             body.getPreferredLanguage());
 
-    LOG.info("Patient {} self-registered from {}", p.getInternalId(), registrationLink.getLink());
+    LOG.info(
+        "Patient={} self-registered from link={}", p.getInternalId(), registrationLink.getLink());
   }
 
   @GetMapping("/entity-name")
