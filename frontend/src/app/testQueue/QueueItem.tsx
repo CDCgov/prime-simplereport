@@ -518,6 +518,8 @@ const QueueItem: any = ({
             label={"Test time"}
             name={"test-time"}
             hintText="hh:mm"
+            type="time"
+            step="60"
             onChange={onDateTestedChange}
           />
         </div>
