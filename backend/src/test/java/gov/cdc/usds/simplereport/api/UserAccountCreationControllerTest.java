@@ -208,6 +208,22 @@ class UserAccountCreationControllerTest {
 
     assertThat(setPasswordResponse.getAttribute("userId"))
         .isEqualTo(enrollSmsMfaResponse.getAttribute("userId"));
-        assertThat(enrollSmsMfaResponse.getAttribute("factorId")).isNotNull();
+    assertThat(enrollSmsMfaResponse.getAttribute("factorId")).isNotNull();
   }
+
+  @Test
+  void cannotEnrollMfa_withoutActivatedUser() throws Exception {
+    MockHttpSession session = new MockHttpSession();
+
+    MockHttpServletRequestBuilder enrollSmsMfaBuilder =
+    post(ResourceLinks.USER_ENROLL_SMS_MFA)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .accept(MediaType.APPLICATION_JSON)
+        .characterEncoding("UTF-8")
+        .content(VALID_ENROLL_SMS_MFA_REQUEST)
+        .session(session);
+
+    this._mockMvc.perform(enrollSmsMfaBuilder).andExpect(status().isForbidden());
+  }
+
 }

@@ -5,12 +5,13 @@ import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQ
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
-import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollSmsMfaRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
 import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,8 +75,9 @@ public class UserAccountCreationController {
   @PostMapping("/set-recovery-question")
   public void setRecoveryQuestions(
       @RequestBody SetRecoveryQuestionRequest requestBody, HttpServletRequest request) {
+        String userId = getUserId(request.getSession());
     _oktaAuth.setRecoveryQuestion(
-        request.getSession().getAttribute(USER_ID_KEY).toString(),
+        userId,
         requestBody.getQuestion(),
         requestBody.getAnswer());
   }
@@ -90,9 +92,10 @@ public class UserAccountCreationController {
   @PostMapping("/enroll-sms-mfa")
   public void enrollSmsMfa(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
       throws OktaAuthenticationFailureException {
+        String userId = getUserId(request.getSession());
     String factorId =
         _oktaAuth.enrollSmsMfa(
-            request.getSession().getAttribute(USER_ID_KEY).toString(), requestBody.getUserInput());
+            userId, requestBody.getUserInput());
     request.getSession().setAttribute("factorId", factorId);
   }
 
@@ -158,5 +161,14 @@ public class UserAccountCreationController {
   @PostMapping("/resend-activation-passcode")
   public void resendActivationPasscode(HttpServletRequest request) {
     // WIP: doesn't interact with Okta yet.
+  }
+
+  private String getUserId(HttpSession session) throws OktaAuthenticationFailureException {
+    Object userId = session.getAttribute(USER_ID_KEY);
+    if (userId != null) {
+      return userId.toString();
+    } else {
+      throw new OktaAuthenticationFailureException("User id not found; user could not be authenticated.");
+    }
   }
 }

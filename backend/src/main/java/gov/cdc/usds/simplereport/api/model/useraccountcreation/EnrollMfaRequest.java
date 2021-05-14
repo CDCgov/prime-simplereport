@@ -1,9 +1,7 @@
 package gov.cdc.usds.simplereport.api.model.useraccountcreation;
 
-import javax.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import javax.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
