@@ -10,6 +10,7 @@ import PrimeErrorBoundary from "../app/PrimeErrorBoundary";
 import USAGovBanner from "../app/commonComponents/USAGovBanner";
 import { setInitialState } from "../app/store";
 import { getPatientLinkIdFromUrl } from "../app/utils/url";
+import PageNotFound from "../app/commonComponents/PageNotFound";
 
 import PatientHeader from "./PatientHeader";
 import TermsOfService from "./timeOfTest/TermsOfService";
@@ -19,7 +20,6 @@ import PatientLanding from "./timeOfTest/PatientLanding";
 import PatientProfileContainer from "./timeOfTest/PatientProfileContainer";
 import PatientFormContainer from "./timeOfTest/PatientFormContainer";
 import TestResult from "./timeOfTest/TestResult";
-import Patient404 from "./timeOfTest/Patient404";
 import GuardedRoute from "./GuardedRoute";
 
 interface WrapperProps {
@@ -33,7 +33,7 @@ const PatientLinkURL404Wrapper: FunctionComponent<WrapperProps> = ({
     return <>Loading...</>;
   }
   if (plid === null) {
-    return <Patient404 />;
+    return <PageNotFound />;
   }
   return <>{children}</>;
 };
