@@ -8,8 +8,8 @@ import java.util.concurrent.ScheduledFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.task.TaskSchedulerBuilder;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
@@ -18,13 +18,14 @@ public class ScheduledTasksService {
 
   private static final Logger LOG = LoggerFactory.getLogger(ScheduledTasksService.class);
 
-  private final TaskScheduler _scheduler;
+  private final ThreadPoolTaskScheduler _scheduler;
   private final DataHubUploaderService _dataHubUploaderService;
 
   public ScheduledTasksService(
       DataHubUploaderService dataHubUploaderService, TaskSchedulerBuilder schedulerBuilder) {
     _dataHubUploaderService = dataHubUploaderService;
     _scheduler = schedulerBuilder.build();
+    _scheduler.initialize();
   }
 
   public Map<String, ScheduledFuture<?>> scheduleUploads(DataHubConfig config) {
