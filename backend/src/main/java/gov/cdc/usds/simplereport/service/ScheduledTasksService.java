@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.task.TaskSchedulerBuilder;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,9 @@ public class ScheduledTasksService {
   public ScheduledTasksService(
       DataHubUploaderService dataHubUploaderService, TaskSchedulerBuilder schedulerBuilder) {
     _dataHubUploaderService = dataHubUploaderService;
-    _scheduler = schedulerBuilder.build();
+    ThreadPoolTaskScheduler scheduler = schedulerBuilder.build();
+    scheduler.initialize();
+    _scheduler = scheduler;
   }
 
   public Map<String, ScheduledFuture<?>> scheduleUploads(DataHubConfig config) {
