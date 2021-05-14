@@ -63,19 +63,21 @@ const useBarcodeReader = (
   }, [device, videoRef, handleScannedResult]);
   const initMediaDevicesAccess = () => {
     console.log("[INIT]: Code reader start initialization");
-    navigator.mediaDevices
-      .getUserMedia({ audio: false, video: true })
-      .then((stream) => {
-        console.log("[SUCCESS]: Code reader init success");
-        setStreams(stream.active);
-        stream.getTracks().forEach(function (track) {
-          track.stop();
+    if (navigator && navigator.mediaDevices) {
+      navigator.mediaDevices
+        .getUserMedia({ audio: false, video: true })
+        .then((stream) => {
+          console.log("[SUCCESS]: Code reader init success");
+          setStreams(stream.active);
+          stream.getTracks().forEach(function (track) {
+            track.stop();
+          });
+        })
+        .catch((err) => {
+          console.log("[STREAM_PERMISSION_ERROR]", err);
+          setPermissionError(true);
         });
-      })
-      .catch((err) => {
-        console.log("[STREAM_PERMISSION_ERROR]", err);
-        setPermissionError(true);
-      });
+    }
   };
   useEffect(() => {
     initMediaDevicesAccess();
