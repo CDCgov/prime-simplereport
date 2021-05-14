@@ -3,7 +3,7 @@ package gov.cdc.usds.simplereport.api.pxp;
 import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
-import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
+import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
@@ -13,12 +13,14 @@ import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponse;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.PatientPreferences;
+import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
+import gov.cdc.usds.simplereport.service.PatientRegistrationLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
@@ -33,9 +35,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -59,6 +63,8 @@ public class PatientExperienceController {
   @Autowired private PersonService ps;
 
   @Autowired private PatientLinkService pls;
+
+  @Autowired private PatientRegistrationLinkService prls;
 
   @Autowired private TestOrderService tos;
 
@@ -95,7 +101,7 @@ public class PatientExperienceController {
     PersonUpdate person = body.getData();
     return ps.updateMe(
         StreetAddress.deAndReSerializeForSafety(person.getAddress()),
-        parsePhoneNumber(person.getTelephone()),
+        parsePhoneNumbers(person.getPhoneNumbers()),
         person.getRole(),
         parseEmail(person.getEmail()),
         parseRace(person.getRace()),
@@ -125,5 +131,19 @@ public class PatientExperienceController {
 
     ps.updateMyTestResultDeliveryPreference(data.getTestResultDelivery());
     pls.expireMyPatientLink();
+  }
+
+  // PostAuthorize will need to be updated once there is a concept of a general patient registration
+  // user that can be used for audit logging
+  @PreAuthorize("permitAll()")
+  @PostAuthorize("permitAll()")
+  @GetMapping("/register/entity-name")
+  public String getEntityName(
+      @RequestParam String patientRegistrationLink, HttpServletRequest request) {
+    PatientRegistrationLink link = prls.getPatientRegistrationLink(patientRegistrationLink);
+    if (link.getFacility() != null) {
+      return link.getFacility().getFacilityName();
+    }
+    return link.getOrganization().getOrganizationName();
   }
 }

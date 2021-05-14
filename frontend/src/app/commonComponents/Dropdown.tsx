@@ -81,7 +81,11 @@ const Dropdown: React.FC<Props & SelectProps> = ({
           )}
           {hintText && <span className="usa-hint">{hintText}</span>}
           <select
-            className={classnames("usa-select", selectClassName)}
+            className={classnames(
+              "usa-select",
+              selectClassName,
+              validationStatus === "error" && "usa-input--error"
+            )}
             name={name}
             id={id}
             aria-required={required || "false"}

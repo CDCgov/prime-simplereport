@@ -9,6 +9,7 @@ interface SearchResultsProps {
   patients: Patient[];
   shouldShowSuggestions: boolean;
   loading: boolean;
+  dropDownRef?: React.RefObject<HTMLDivElement>;
 }
 
 interface QueueProps extends SearchResultsProps {
@@ -23,7 +24,7 @@ interface TestResultsProps extends SearchResultsProps {
 }
 
 const SearchResults = (props: QueueProps | TestResultsProps) => {
-  const { patients, shouldShowSuggestions, loading } = props;
+  const { patients, shouldShowSuggestions, loading, dropDownRef } = props;
 
   const [dialogPatient, setDialogPatient] = useState<Patient | null>(null);
   const [canAddToQueue, setCanAddToQueue] = useState(false);
@@ -87,7 +88,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
   }
 
   const results = (
-    <div className="card-container shadow-3 results-dropdown">
+    <div className="card-container shadow-3 results-dropdown" ref={dropDownRef}>
       <div className="usa-card__body">{resultsContent}</div>
     </div>
   );

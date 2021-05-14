@@ -20,6 +20,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.config.annotation.CorsRegistration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -68,20 +69,28 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
         // If this configuration changes, please update the documentation on both sides
         .antMatchers(HttpMethod.POST, WebConfiguration.PATIENT_EXPERIENCE)
         .permitAll()
+        .antMatchers(HttpMethod.GET, WebConfiguration.PATIENT_EXPERIENCE)
+        .permitAll()
 
         // Account requests are unauthorized
         .antMatchers(HttpMethod.POST, WebConfiguration.ACCOUNT_REQUEST + "/**")
+        .permitAll()
+
+        // User account creation request authorization is handled in UserAccountCreationController
+        .antMatchers(HttpMethod.POST, WebConfiguration.USER_ACCOUNT_REQUEST + "/**")
         .permitAll()
 
         // Anything else goes through Okta
         .anyRequest()
         .authenticated()
 
-        // We don't have sessions, so can't have CSRF. Spring's automatic CSRF support
-        // breaks the REST controller, so, disable it:
+        // Most of the app doesn't use sessions, so can't have CSRF. Spring's automatic CSRF
+        // breaks the REST controller, so we disable it for most paths.
+        // USER_ACCOUNT_REQUEST does use sessions, so CSRF is enabled there.
         .and()
         .csrf()
-        .disable();
+        .requireCsrfProtectionMatcher(
+            new AntPathRequestMatcher(WebConfiguration.USER_ACCOUNT_REQUEST, "POST"));
 
     Okta.configureResourceServer401ResponseBody(http);
   }

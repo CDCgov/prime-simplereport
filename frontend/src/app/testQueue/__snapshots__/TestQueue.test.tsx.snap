@@ -218,37 +218,41 @@ exports[`TestQueue should render the test queue 1`] = `
                     <li
                       class="prime-li"
                     >
-                      <fieldset
-                        class="usa-fieldset prime-checkboxes"
+                      <div
+                        class="usa-form-group"
                       >
-                        <legend
-                          class="usa-legend"
+                        <fieldset
+                          class="usa-fieldset prime-checkboxes"
                         >
-                          Test date
-                        </legend>
-                        <div
-                          class="usa-form-group"
-                        >
-                          <div
-                            class="usa-checkbox"
+                          <legend
+                            class="usa-legend"
                           >
-                            <input
-                              checked=""
-                              class="usa-checkbox__input"
-                              id="2-val-0"
-                              name="currentDateTime"
-                              type="checkbox"
-                              value="true"
-                            />
-                            <label
-                              class="usa-checkbox__label"
-                              for="2-val-0"
+                            Test date
+                          </legend>
+                          <div
+                            class="checkboxes"
+                          >
+                            <div
+                              class="usa-checkbox"
                             >
-                              Use current date
-                            </label>
+                              <input
+                                checked=""
+                                class="usa-checkbox__input"
+                                id="2-val-0"
+                                name="currentDateTime"
+                                type="checkbox"
+                                value="true"
+                              />
+                              <label
+                                class="usa-checkbox__label"
+                                for="2-val-0"
+                              >
+                                Use current date
+                              </label>
+                            </div>
                           </div>
-                        </div>
-                      </fieldset>
+                        </fieldset>
+                      </div>
                     </li>
                   </ul>
                 </div>
@@ -265,73 +269,77 @@ exports[`TestQueue should render the test queue 1`] = `
                 >
                   SARS-CoV-2 results
                 </h4>
-                <fieldset
-                  class="usa-fieldset prime-radios"
+                <div
+                  class="usa-form-group"
                 >
-                  <legend
-                    class="usa-legend usa-sr-only"
+                  <fieldset
+                    class="usa-fieldset prime-radios"
                   >
-                    Test result
-                  </legend>
-                  <div
-                    class="usa-form-group"
-                  >
-                    <div
-                      class="usa-radio"
+                    <legend
+                      class="usa-legend usa-sr-only"
                     >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="3-val-POSITIVE"
-                        name="covid-test-result-abc"
-                        type="radio"
-                        value="POSITIVE"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="3-val-POSITIVE"
-                      >
-                        Positive (+)
-                      </label>
-                    </div>
+                      Test result
+                    </legend>
                     <div
-                      class="usa-radio"
+                      class=""
                     >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="3-val-NEGATIVE"
-                        name="covid-test-result-abc"
-                        type="radio"
-                        value="NEGATIVE"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="3-val-NEGATIVE"
+                      <div
+                        class="usa-radio"
                       >
-                        Negative (-)
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="3-val-UNDETERMINED"
-                        name="covid-test-result-abc"
-                        type="radio"
-                        value="UNDETERMINED"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="3-val-UNDETERMINED"
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="3-val-POSITIVE"
+                          name="covid-test-result-abc"
+                          type="radio"
+                          value="POSITIVE"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="3-val-POSITIVE"
+                        >
+                          Positive (+)
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
                       >
-                        Inconclusive
-                      </label>
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="3-val-NEGATIVE"
+                          name="covid-test-result-abc"
+                          type="radio"
+                          value="NEGATIVE"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="3-val-NEGATIVE"
+                        >
+                          Negative (-)
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="3-val-UNDETERMINED"
+                          name="covid-test-result-abc"
+                          type="radio"
+                          value="UNDETERMINED"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="3-val-UNDETERMINED"
+                        >
+                          Inconclusive
+                        </label>
+                      </div>
                     </div>
-                  </div>
-                </fieldset>
+                  </fieldset>
+                </div>
                 <div
                   class="prime-test-result-submit"
                 >
@@ -519,37 +527,41 @@ exports[`TestQueue should render the test queue 1`] = `
                     <li
                       class="prime-li"
                     >
-                      <fieldset
-                        class="usa-fieldset prime-checkboxes"
+                      <div
+                        class="usa-form-group"
                       >
-                        <legend
-                          class="usa-legend"
+                        <fieldset
+                          class="usa-fieldset prime-checkboxes"
                         >
-                          Test date
-                        </legend>
-                        <div
-                          class="usa-form-group"
-                        >
-                          <div
-                            class="usa-checkbox"
+                          <legend
+                            class="usa-legend"
                           >
-                            <input
-                              checked=""
-                              class="usa-checkbox__input"
-                              id="5-val-0"
-                              name="currentDateTime"
-                              type="checkbox"
-                              value="true"
-                            />
-                            <label
-                              class="usa-checkbox__label"
-                              for="5-val-0"
+                            Test date
+                          </legend>
+                          <div
+                            class="checkboxes"
+                          >
+                            <div
+                              class="usa-checkbox"
                             >
-                              Use current date
-                            </label>
+                              <input
+                                checked=""
+                                class="usa-checkbox__input"
+                                id="5-val-0"
+                                name="currentDateTime"
+                                type="checkbox"
+                                value="true"
+                              />
+                              <label
+                                class="usa-checkbox__label"
+                                for="5-val-0"
+                              >
+                                Use current date
+                              </label>
+                            </div>
                           </div>
-                        </div>
-                      </fieldset>
+                        </fieldset>
+                      </div>
                     </li>
                   </ul>
                 </div>
@@ -566,73 +578,77 @@ exports[`TestQueue should render the test queue 1`] = `
                 >
                   SARS-CoV-2 results
                 </h4>
-                <fieldset
-                  class="usa-fieldset prime-radios"
+                <div
+                  class="usa-form-group"
                 >
-                  <legend
-                    class="usa-legend usa-sr-only"
+                  <fieldset
+                    class="usa-fieldset prime-radios"
                   >
-                    Test result
-                  </legend>
-                  <div
-                    class="usa-form-group"
-                  >
-                    <div
-                      class="usa-radio"
+                    <legend
+                      class="usa-legend usa-sr-only"
                     >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="6-val-POSITIVE"
-                        name="covid-test-result-def"
-                        type="radio"
-                        value="POSITIVE"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="6-val-POSITIVE"
-                      >
-                        Positive (+)
-                      </label>
-                    </div>
+                      Test result
+                    </legend>
                     <div
-                      class="usa-radio"
+                      class=""
                     >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="6-val-NEGATIVE"
-                        name="covid-test-result-def"
-                        type="radio"
-                        value="NEGATIVE"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="6-val-NEGATIVE"
+                      <div
+                        class="usa-radio"
                       >
-                        Negative (-)
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="6-val-UNDETERMINED"
-                        name="covid-test-result-def"
-                        type="radio"
-                        value="UNDETERMINED"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="6-val-UNDETERMINED"
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="6-val-POSITIVE"
+                          name="covid-test-result-def"
+                          type="radio"
+                          value="POSITIVE"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="6-val-POSITIVE"
+                        >
+                          Positive (+)
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
                       >
-                        Inconclusive
-                      </label>
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="6-val-NEGATIVE"
+                          name="covid-test-result-def"
+                          type="radio"
+                          value="NEGATIVE"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="6-val-NEGATIVE"
+                        >
+                          Negative (-)
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="6-val-UNDETERMINED"
+                          name="covid-test-result-def"
+                          type="radio"
+                          value="UNDETERMINED"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="6-val-UNDETERMINED"
+                        >
+                          Inconclusive
+                        </label>
+                      </div>
                     </div>
-                  </div>
-                </fieldset>
+                  </fieldset>
+                </div>
                 <div
                   class="prime-test-result-submit"
                 >
