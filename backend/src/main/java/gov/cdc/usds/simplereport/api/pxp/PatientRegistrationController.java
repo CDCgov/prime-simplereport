@@ -1,10 +1,15 @@
 package gov.cdc.usds.simplereport.api.pxp;
 
+import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
+import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
+
 import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PatientRegistration;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.service.PatientRegistrationLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
+import java.util.List;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -42,7 +47,7 @@ public class PatientRegistrationController {
 
   @PostMapping("")
   public void register(@RequestBody PatientRegistration body, HttpServletRequest request) {
-    _currentPatientContextHolder.setPatientRegistrationRequest(true);
+    _currentPatientContextHolder.setIsPatientRegistrationRequest(true);
 
     PatientRegistrationLink registrationLink =
         _patientRegLinkService.getPatientRegistrationLink(body.getRegistrationLink());
@@ -51,6 +56,12 @@ public class PatientRegistrationController {
             ? registrationLink.getFacility().getInternalId()
             : null;
 
+    List<PhoneNumberInput> backwardsCompatiblePhoneNumbers =
+        body.getPhoneNumbers() != null
+            ? body.getPhoneNumbers()
+            : List.of(new PhoneNumberInput(null, parsePhoneNumber(body.getTelephone())));
+
+    // TODO: call translator parse methods
     Person p =
         _personService.addPatient(
             registrationLink.getOrganization(),
@@ -62,7 +73,7 @@ public class PatientRegistrationController {
             body.getSuffix(),
             body.getBirthDate(),
             body.getAddress(),
-            body.getTelephone(),
+            parsePhoneNumbers(backwardsCompatiblePhoneNumbers),
             body.getRole(),
             body.getEmail(),
             body.getRace(),

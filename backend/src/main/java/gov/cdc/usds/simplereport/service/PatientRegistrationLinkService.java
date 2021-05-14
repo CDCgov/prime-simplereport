@@ -31,7 +31,7 @@ public class PatientRegistrationLinkService {
   }
 
   public boolean flagRegistrationRequest() {
-    contextHolder.setPatientRegistrationRequest(true);
+    contextHolder.setIsPatientRegistrationRequest(true);
     return true;
   }
 }
