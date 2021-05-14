@@ -214,7 +214,8 @@ public class ApiUserService {
   }
 
   private static final String NOREPLY = "-noreply@simplereport.gov";
-  private static final String PATIENT_REGISTRATION_EMAIL = "patient-registration" + NOREPLY;
+  private static final String PATIENT_SELF_REGISTRATION_EMAIL =
+      "patient-self-registration" + NOREPLY;
 
   private String getPatientIdEmail(Person patient) {
     return patient.getInternalId() + NOREPLY;
@@ -225,13 +226,13 @@ public class ApiUserService {
    * migration, but the app shouldn't crash if that row is missing. Instead, create it!
    */
   private ApiUser getPatientRegistrationApiUser() {
-    Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(PATIENT_REGISTRATION_EMAIL);
+    Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(PATIENT_SELF_REGISTRATION_EMAIL);
     return found.orElseGet(
         () -> {
           ApiUser magicUser =
               new ApiUser(
-                  PATIENT_REGISTRATION_EMAIL,
-                  new PersonName("", "", "Patient Registration User", ""));
+                  PATIENT_SELF_REGISTRATION_EMAIL,
+                  new PersonName("", "", "Patient Self-Registration User", ""));
           LOG.info(
               "Magic patient registration user not found. Created Person={}",
               magicUser.getInternalId());
