@@ -12,7 +12,7 @@ import classnames from "classnames";
 import moment from "moment";
 
 import Alert from "../commonComponents/Alert";
-import Button from "../commonComponents/Button";
+import Button from "../commonComponents/Button/Button";
 import Dropdown from "../commonComponents/Dropdown";
 import TextInput from "../commonComponents/TextInput";
 import LabeledText from "../commonComponents/LabeledText";

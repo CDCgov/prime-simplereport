@@ -1,7 +1,7 @@
 import { Route, RouteComponentProps, Switch } from "react-router-dom";
 
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
-import Button from "../commonComponents/Button";
+import Button from "../commonComponents/Button/Button";
 
 import ManageOrganizationContainer from "./ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";

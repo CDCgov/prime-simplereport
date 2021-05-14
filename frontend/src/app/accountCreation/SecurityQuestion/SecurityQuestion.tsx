@@ -1,42 +1,81 @@
 import { useState } from "react";
+import { Redirect } from "react-router";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Dropdown from "../../commonComponents/Dropdown";
 import TextInput from "../../commonComponents/TextInput";
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import {
   accountCreationSteps,
   securityQuestions,
 } from "../../../config/constants";
+import { AccountCreationApi } from "../AccountCreationApiService";
 
 export const SecurityQuestion = () => {
+  // State setup
   const [securityQuestion, setSecurityQuestion] = useState("");
   const [securityQuestionError, setSecurityQuestionError] = useState("");
   const [securityAnswer, setSecurityAnswer] = useState("");
   const [securityAnswerError, setSecurityAnswerError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
-  const validateSecurityQuestion = () => {
+  const validateSecurityQuestion = (): boolean => {
+    let error = "";
     if (securityQuestion === "") {
-      setSecurityQuestionError("Enter a security question");
-    } else {
-      setSecurityQuestionError("");
+      error = "Enter a security question";
     }
+    setSecurityQuestionError(error);
+    return error === "";
   };
 
-  const validateSecurityAnswer = () => {
+  const validateSecurityAnswer = (): boolean => {
+    let error = "";
     if (securityAnswer === "") {
-      setSecurityAnswerError("Enter a security answer");
-    } else {
-      setSecurityAnswerError("");
+      error = "Enter a security answer";
+    }
+    setSecurityAnswerError(error);
+    return error === "";
+  };
+
+  const handleSubmit = async () => {
+    if (validateSecurityQuestion() && validateSecurityAnswer()) {
+      setLoading(true);
+      try {
+        await AccountCreationApi.setRecoveryQuestion(
+          securityQuestion,
+          securityAnswer
+        );
+        setSubmitted(true);
+      } catch (error) {
+        setSecurityQuestionError(`API Error: ${error}`);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
-  const handleSubmit = () => {
-    validateSecurityQuestion();
-    validateSecurityAnswer();
-  };
+  if (loading) {
+    return (
+      <main>
+        <div className="grid-container maxw-tablet">
+          <p className="margin-top-3">Validating security question...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (submitted) {
+    return (
+      <Redirect
+        to={{
+          pathname: "/mfa-select",
+        }}
+      />
+    );
+  }
 
   return (
     <CardBackground>

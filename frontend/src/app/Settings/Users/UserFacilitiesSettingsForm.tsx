@@ -5,7 +5,7 @@ import classnames from "classnames";
 
 import Checkboxes from "../../commonComponents/Checkboxes";
 import Dropdown from "../../commonComponents/Dropdown";
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 
 import { UpdateUser } from "./ManageUsers";
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";

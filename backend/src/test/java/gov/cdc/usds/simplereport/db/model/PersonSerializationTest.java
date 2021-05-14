@@ -115,7 +115,6 @@ class PersonSerializationTest {
             "Jr.",
             LocalDate.of(BIRTH_YEAR, BIRTH_MONTH, BIRTH_DAY),
             addy,
-            "1234556",
             null,
             "a@b.c",
             "marathon",

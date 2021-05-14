@@ -63,6 +63,16 @@ type TestDescription {
   loincCode: String!
 }
 
+type PhoneNumber {
+  type: PhoneType,
+  number: String
+}
+
+input PhoneNumberInput {
+  type: String,
+  number: String
+}
+
 # User-management types
 
 # Note: the login username is the user's email
@@ -123,6 +133,8 @@ type Patient
   state: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   zipCode: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   telephone: String
+    @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+  phoneNumbers: [PhoneNumber]
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   email: String
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
@@ -323,7 +335,8 @@ type Mutation {
     city: String
     state: String!
     zipCode: String!
-    telephone: String!
+    telephone: String
+    phoneNumbers: [PhoneNumberInput!]
     role: String
     email: String
     county: String
@@ -354,7 +367,8 @@ type Mutation {
         regexp: "[0-9]{5}(-[0-9]{4})?"
         message: "Use ZIP or ZIP+4 format"
       )
-    telephone: String!
+    telephone: String
+    phoneNumbers: [PhoneNumberInput!]
     role: String @Size(min: 0, max: 32)
     email: String @Size(min: 3, max: 254)
     county: String

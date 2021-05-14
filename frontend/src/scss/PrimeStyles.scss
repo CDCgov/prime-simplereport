@@ -189,17 +189,14 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   max-height:
     calc(
       100vh - #{units(6)} - #{$results-dropdown-spacing}
-    ); // uses header height on small screens
-  overflow-y: scroll;
+    ); // uses header height on small screens// uses header height on small screens
+  overflow-y: auto;
   position: absolute;
   top: units(4);
   z-index: z-index(500);
 
   @include at-media("desktop") {
-    max-height:
-      calc(
-        100vh - 70px - #{$results-dropdown-spacing}
-      ); // uses header height on large screens
+    max-height: calc(100vh - 70px - #{$results-dropdown-spacing});
   }
 }
 
@@ -602,7 +599,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   }
 }
 
-.usa-fieldset + .usa-fieldset {
+.usa-form-group {
   margin-top: units(3);
 }
 
@@ -640,7 +637,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   // Two-column checkbox layout
   @include at-media("mobile-lg") {
     .symptom-checkboxes {
-      .usa-form-group {
+      .checkboxes {
         column-count: 2;
 
         .usa-checkbox:first-child {
