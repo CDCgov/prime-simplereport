@@ -32,7 +32,8 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
   SpringTemplateEngine _templateEngine;
 
   private static final SendGridProperties FAKE_PROPERTIES =
-      new SendGridProperties(true, null, "me@example.com", List.of(), List.of());
+      new SendGridProperties(
+          true, null, "me@example.com", "My Display Name", List.of(), List.of(), Map.of());
 
   @Mock EmailProvider mockSendGrid;
   @Captor ArgumentCaptor<Mail> mail;

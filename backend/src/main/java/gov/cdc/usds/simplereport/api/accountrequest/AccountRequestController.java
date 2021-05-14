@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.WaitlistRequest;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
+import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
@@ -56,11 +57,10 @@ public class AccountRequestController {
     if (LOG.isInfoEnabled()) {
       LOG.info("Account request submitted: {}", objectMapper.writeValueAsString(body));
     }
+
+    // send summary email to SR support
     emailService.send(sendGridProperties.getAccountRequestRecipient(), subject, body);
-    emailService.send(
-        body.getEmail(),
-        "Next Steps for SimpleReport",
-        "account-next-steps",
-        "simplereport-site-onboarding-guide.pdf");
+    // send next-steps email to requester
+    emailService.sendWithProviderTemplate(body.getEmail(), EmailProviderTemplate.ACCOUNT_REQUEST);
   }
 }
