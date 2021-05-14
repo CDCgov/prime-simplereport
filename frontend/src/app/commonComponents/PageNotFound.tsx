@@ -1,4 +1,4 @@
-const Patient404 = () => {
+const PageNotFound = () => {
   return (
     <main>
       <div className="grid-container usa-section maxw-tablet usa-prose">
@@ -13,4 +13,4 @@ const Patient404 = () => {
   );
 };
 
-export default Patient404;
+export default PageNotFound;

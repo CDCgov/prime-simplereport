@@ -17,7 +17,7 @@ public class CurrentPatientContextHolder {
   private PatientLink _currentPatientLink;
   private Person _currentPatient;
   private Organization _organization;
-  private boolean isPatientRegistrationRequest = false;
+  private boolean isPatientSelfRegistrationRequest = false;
 
   public TestOrder getLinkedOrder() {
     return _currentLinkedOrder;
@@ -59,11 +59,11 @@ public class CurrentPatientContextHolder {
     setPatient(currentPatient);
   }
 
-  public boolean isPatientRegistrationRequest() {
-    return isPatientRegistrationRequest;
+  public boolean isPatientSelfRegistrationRequest() {
+    return isPatientSelfRegistrationRequest;
   }
 
-  public void setPatientRegistrationRequest(boolean isPatientRegistrationRequest) {
-    this.isPatientRegistrationRequest = isPatientRegistrationRequest;
+  public void setIsPatientSelfRegistrationRequest(boolean isPatientRegistrationRequest) {
+    this.isPatientSelfRegistrationRequest = isPatientRegistrationRequest;
   }
 }

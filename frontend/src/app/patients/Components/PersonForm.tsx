@@ -34,6 +34,9 @@ import { AddressConfirmationModal } from "../../commonComponents/AddressConfirma
 import ComboBox from "../../commonComponents/ComboBox";
 
 import FacilitySelect from "./FacilitySelect";
+import ManagePhoneNumbers from "./ManagePhoneNumbers";
+
+export type ValidateField = (field: keyof PersonErrors) => Promise<void>;
 
 export enum PersonFormView {
   APP,
@@ -188,7 +191,7 @@ const PersonForm = (props: Props) => {
           return;
         }
         if (!focusedOnError) {
-          document.getElementsByName(name)[0].focus();
+          document.getElementsByName(name)[0]?.focus();
           focusedOnError = true;
         }
         showError(toast, "Please correct before submitting", error);
@@ -314,18 +317,11 @@ const PersonForm = (props: Props) => {
         </div>
       </FormGroup>
       <FormGroup title="Contact information">
+        <ManagePhoneNumbers
+          phoneNumbers={patient.phoneNumbers || []}
+          updatePhoneNumbers={onPersonChange("phoneNumbers")}
+        />
         <div className="usa-form">
-          <div className="grid-row grid-gap">
-            <div className="mobile-lg:grid-col-6">
-              <Input
-                {...commonInputProps}
-                field="telephone"
-                label="Phone number"
-                type="tel"
-                required
-              />
-            </div>
-          </div>
           <Input
             {...commonInputProps}
             field="email"
@@ -391,8 +387,10 @@ const PersonForm = (props: Props) => {
           selectedRadio={patient.race}
           onChange={onPersonChange("race")}
         />
-        <fieldset className="usa-fieldset">
-          <legend className="usa-legend">Tribal affiliation</legend>
+        <div className="usa-form-group">
+          <label className="usa-legend" htmlFor="tribal-affiliation">
+            Tribal affiliation
+          </label>
           <ComboBox
             id="tribal-affiliation"
             name="tribal-affiliation"
@@ -402,7 +400,7 @@ const PersonForm = (props: Props) => {
             }
             defaultValue={String(patient.tribalAffiliation)}
           />
-        </fieldset>
+        </div>
         <RadioGroup
           legend="Are you Hispanic or Latino?"
           name="ethnicity"

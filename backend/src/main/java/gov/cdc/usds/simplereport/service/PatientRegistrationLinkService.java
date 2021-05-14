@@ -33,8 +33,8 @@ public class PatientRegistrationLinkService {
         .orElseThrow(() -> new InvalidPatientRegistrationLinkException());
   }
 
-  public boolean flagRegistrationRequest() {
-    contextHolder.setPatientRegistrationRequest(true);
+  public boolean flagSelfRegistrationRequest() {
+    contextHolder.setIsPatientSelfRegistrationRequest(true);
     return true;
   }
 

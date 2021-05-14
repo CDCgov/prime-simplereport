@@ -97,7 +97,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="20"
+                        for="43"
                       >
                         First name
                         <abbr
@@ -112,7 +112,7 @@ Object {
                         aria-disabled="false"
                         aria-required="true"
                         class="usa-input"
-                        id="20"
+                        id="43"
                         name="firstName"
                         type="text"
                         value="Eugenia"
@@ -123,7 +123,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="21"
+                        for="44"
                       >
                         Middle name
                       </label>
@@ -131,7 +131,7 @@ Object {
                         aria-disabled="false"
                         aria-required="false"
                         class="usa-input"
-                        id="21"
+                        id="44"
                         name="middleName"
                         type="text"
                         value=""
@@ -142,7 +142,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="22"
+                        for="45"
                       >
                         Last name
                         <abbr
@@ -157,7 +157,7 @@ Object {
                         aria-disabled="false"
                         aria-required="true"
                         class="usa-input"
-                        id="22"
+                        id="45"
                         name="lastName"
                         type="text"
                         value="Franecki"
@@ -172,14 +172,14 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="23"
+                        for="46"
                       >
                         Role
                       </label>
                       <select
                         aria-required="false"
                         class="usa-select"
-                        id="23"
+                        id="46"
                         name="role"
                       >
                         <option
@@ -214,7 +214,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="24"
+                        for="47"
                       >
                         Facility
                         <abbr
@@ -228,7 +228,7 @@ Object {
                       <select
                         aria-required="true"
                         class="usa-select"
-                        id="24"
+                        id="47"
                         name="facilityId"
                       >
                         <option
@@ -248,8 +248,8 @@ Object {
                         </option>
                       </select>
                     </div>
-                    <fieldset
-                      class="usa-fieldset"
+                    <div
+                      class="usa-form-group"
                     >
                       <label
                         class="usa-label"
@@ -257,7 +257,7 @@ Object {
                       >
                         Preferred language
                       </label>
-                    </fieldset>
+                    </div>
                   </div>
                   <div
                     class="usa-form"
@@ -267,7 +267,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="25"
+                        for="48"
                       >
                         Date of birth (mm/dd/yyyy)
                         <abbr
@@ -282,7 +282,7 @@ Object {
                         aria-disabled="false"
                         aria-required="true"
                         class="usa-input"
-                        id="25"
+                        id="48"
                         name="birthDate"
                         type="date"
                         value="1939-10-11"
@@ -305,20 +305,18 @@ Object {
                   <div
                     class="usa-form"
                   >
-                    <div
-                      class="grid-row grid-gap"
-                    >
+                    <div>
                       <div
-                        class="mobile-lg:grid-col-6"
+                        class="display-flex"
                       >
                         <div
-                          class="usa-form-group"
+                          class="usa-form-group flex-fill"
                         >
                           <label
                             class="usa-label"
-                            for="26"
+                            for="49"
                           >
-                            Phone number
+                            Primary phone number
                             <abbr
                               class="usa-hint usa-hint--required"
                               title="required"
@@ -330,27 +328,113 @@ Object {
                           <input
                             aria-required="true"
                             class="usa-input"
-                            id="26"
-                            name="telephone"
-                            type="tel"
+                            id="49"
+                            name="number"
+                            type="text"
                             value="(634) 397-4114"
                           />
                         </div>
                       </div>
+                      <div
+                        class="usa-form-group"
+                      >
+                        <fieldset
+                          class="usa-fieldset prime-radios margin-top-3"
+                        >
+                          <legend
+                            class="usa-legend"
+                          >
+                            Phone type
+                            <abbr
+                              class="usa-hint usa-hint--required"
+                              title="required"
+                            >
+                               
+                              *
+                            </abbr>
+                          </legend>
+                          <div
+                            class=""
+                          >
+                            <div
+                              class="usa-radio"
+                            >
+                              <input
+                                checked=""
+                                class="usa-radio__input"
+                                data-required="true"
+                                id="50-val-MOBILE"
+                                name="phoneType-0"
+                                type="radio"
+                                value="MOBILE"
+                              />
+                              <label
+                                class="usa-radio__label"
+                                for="50-val-MOBILE"
+                              >
+                                Mobile
+                              </label>
+                            </div>
+                            <div
+                              class="usa-radio"
+                            >
+                              <input
+                                class="usa-radio__input"
+                                data-required="true"
+                                id="50-val-LANDLINE"
+                                name="phoneType-0"
+                                type="radio"
+                                value="LANDLINE"
+                              />
+                              <label
+                                class="usa-radio__label"
+                                for="50-val-LANDLINE"
+                              >
+                                Landline
+                              </label>
+                            </div>
+                          </div>
+                        </fieldset>
+                      </div>
                     </div>
+                    <button
+                      class="usa-button usa-button--unstyled margin-top-2"
+                      type="button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                        data-icon="plus"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      Add another number
+                    </button>
+                  </div>
+                  <div
+                    class="usa-form"
+                  >
                     <div
                       class="usa-form-group"
                     >
                       <label
                         class="usa-label"
-                        for="27"
+                        for="51"
                       >
                         Email address
                       </label>
                       <input
                         aria-required="false"
                         class="usa-input"
-                        id="27"
+                        id="51"
                         name="email"
                         type="email"
                         value="foo@bar.com"
@@ -365,7 +449,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="28"
+                        for="52"
                       >
                         Street address 1
                         <abbr
@@ -379,7 +463,7 @@ Object {
                       <input
                         aria-required="true"
                         class="usa-input"
-                        id="28"
+                        id="52"
                         name="street"
                         type="text"
                         value="736 Jackson PI NW"
@@ -394,14 +478,14 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="29"
+                        for="53"
                       >
                         Street address 2
                       </label>
                       <input
                         aria-required="false"
                         class="usa-input"
-                        id="29"
+                        id="53"
                         name="streetTwo"
                         type="text"
                         value="DC"
@@ -416,14 +500,14 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="30"
+                        for="54"
                       >
                         City
                       </label>
                       <input
                         aria-required="false"
                         class="usa-input"
-                        id="30"
+                        id="54"
                         name="city"
                         type="text"
                         value=""
@@ -434,14 +518,14 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="31"
+                        for="55"
                       >
                         County
                       </label>
                       <input
                         aria-required="false"
                         class="usa-input"
-                        id="31"
+                        id="55"
                         name="county"
                         type="text"
                         value=""
@@ -458,7 +542,7 @@ Object {
                         >
                           <label
                             class="usa-label"
-                            for="32"
+                            for="56"
                           >
                             State
                             <abbr
@@ -472,7 +556,7 @@ Object {
                           <select
                             aria-required="true"
                             class="usa-select"
-                            id="32"
+                            id="56"
                             name="state"
                           >
                             <option
@@ -786,7 +870,7 @@ Object {
                         >
                           <label
                             class="usa-label"
-                            for="33"
+                            for="57"
                           >
                             Zip code
                             <abbr
@@ -800,7 +884,7 @@ Object {
                           <input
                             aria-required="true"
                             class="usa-input"
-                            id="33"
+                            id="57"
                             name="zipCode"
                             type="text"
                             value=""
@@ -827,306 +911,319 @@ Object {
                   >
                     This information is collected as part of public health efforts to recognize and address inequality in health outcomes.
                   </p>
-                  <fieldset
-                    class="usa-fieldset prime-radios"
+                  <div
+                    class="usa-form-group"
                   >
-                    <legend
-                      class="usa-legend"
+                    <fieldset
+                      class="usa-fieldset prime-radios"
                     >
-                      Race
-                    </legend>
-                    <div
-                      class="usa-form-group"
-                    >
-                      <div
-                        class="usa-radio"
+                      <legend
+                        class="usa-legend"
                       >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="34-val-native"
-                          name="race"
-                          type="radio"
-                          value="native"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="34-val-native"
-                        >
-                          American Indian/Alaskan Native
-                        </label>
-                      </div>
+                        Race
+                      </legend>
                       <div
-                        class="usa-radio"
+                        class=""
                       >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="34-val-asian"
-                          name="race"
-                          type="radio"
-                          value="asian"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="34-val-asian"
+                        <div
+                          class="usa-radio"
                         >
-                          Asian
-                        </label>
-                      </div>
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="34-val-black"
-                          name="race"
-                          type="radio"
-                          value="black"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="34-val-black"
+                          <input
+                            class="usa-radio__input"
+                            data-required="false"
+                            id="58-val-native"
+                            name="race"
+                            type="radio"
+                            value="native"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="58-val-native"
+                          >
+                            American Indian/Alaskan Native
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
                         >
-                          Black/African American
-                        </label>
-                      </div>
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="34-val-pacific"
-                          name="race"
-                          type="radio"
-                          value="pacific"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="34-val-pacific"
+                          <input
+                            class="usa-radio__input"
+                            data-required="false"
+                            id="58-val-asian"
+                            name="race"
+                            type="radio"
+                            value="asian"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="58-val-asian"
+                          >
+                            Asian
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
                         >
-                          Native Hawaiian/other Pacific Islander
-                        </label>
-                      </div>
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="34-val-white"
-                          name="race"
-                          type="radio"
-                          value="white"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="34-val-white"
+                          <input
+                            class="usa-radio__input"
+                            data-required="false"
+                            id="58-val-black"
+                            name="race"
+                            type="radio"
+                            value="black"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="58-val-black"
+                          >
+                            Black/African American
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
                         >
-                          White
-                        </label>
-                      </div>
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="34-val-other"
-                          name="race"
-                          type="radio"
-                          value="other"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="34-val-other"
+                          <input
+                            class="usa-radio__input"
+                            data-required="false"
+                            id="58-val-pacific"
+                            name="race"
+                            type="radio"
+                            value="pacific"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="58-val-pacific"
+                          >
+                            Native Hawaiian/other Pacific Islander
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
                         >
-                          Other
-                        </label>
-                      </div>
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="34-val-refused"
-                          name="race"
-                          type="radio"
-                          value="refused"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="34-val-refused"
+                          <input
+                            class="usa-radio__input"
+                            data-required="false"
+                            id="58-val-white"
+                            name="race"
+                            type="radio"
+                            value="white"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="58-val-white"
+                          >
+                            White
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
                         >
-                          Prefer not to answer
-                        </label>
+                          <input
+                            class="usa-radio__input"
+                            data-required="false"
+                            id="58-val-other"
+                            name="race"
+                            type="radio"
+                            value="other"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="58-val-other"
+                          >
+                            Other
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
+                        >
+                          <input
+                            class="usa-radio__input"
+                            data-required="false"
+                            id="58-val-refused"
+                            name="race"
+                            type="radio"
+                            value="refused"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="58-val-refused"
+                          >
+                            Prefer not to answer
+                          </label>
+                        </div>
                       </div>
-                    </div>
-                  </fieldset>
-                  <fieldset
-                    class="usa-fieldset"
+                    </fieldset>
+                  </div>
+                  <div
+                    class="usa-form-group"
                   >
-                    <legend
+                    <label
                       class="usa-legend"
+                      for="tribal-affiliation"
                     >
                       Tribal affiliation
-                    </legend>
-                  </fieldset>
-                  <fieldset
-                    class="usa-fieldset prime-radios"
+                    </label>
+                  </div>
+                  <div
+                    class="usa-form-group"
                   >
-                    <legend
-                      class="usa-legend"
+                    <fieldset
+                      class="usa-fieldset prime-radios"
                     >
-                      Are you Hispanic or Latino?
-                    </legend>
-                    <div
-                      class="usa-form-group"
-                    >
-                      <div
-                        class="usa-radio"
+                      <legend
+                        class="usa-legend"
                       >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="35-val-hispanic"
-                          name="ethnicity"
-                          type="radio"
-                          value="hispanic"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="35-val-hispanic"
-                        >
-                          Yes
-                        </label>
-                      </div>
+                        Are you Hispanic or Latino?
+                      </legend>
                       <div
-                        class="usa-radio"
+                        class=""
                       >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="35-val-not_hispanic"
-                          name="ethnicity"
-                          type="radio"
-                          value="not_hispanic"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="35-val-not_hispanic"
+                        <div
+                          class="usa-radio"
                         >
-                          No
-                        </label>
-                      </div>
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="35-val-refused"
-                          name="ethnicity"
-                          type="radio"
-                          value="refused"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="35-val-refused"
+                          <input
+                            class="usa-radio__input"
+                            data-required="false"
+                            id="59-val-hispanic"
+                            name="ethnicity"
+                            type="radio"
+                            value="hispanic"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="59-val-hispanic"
+                          >
+                            Yes
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
                         >
-                          Prefer not to answer
-                        </label>
+                          <input
+                            class="usa-radio__input"
+                            data-required="false"
+                            id="59-val-not_hispanic"
+                            name="ethnicity"
+                            type="radio"
+                            value="not_hispanic"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="59-val-not_hispanic"
+                          >
+                            No
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
+                        >
+                          <input
+                            class="usa-radio__input"
+                            data-required="false"
+                            id="59-val-refused"
+                            name="ethnicity"
+                            type="radio"
+                            value="refused"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="59-val-refused"
+                          >
+                            Prefer not to answer
+                          </label>
+                        </div>
                       </div>
-                    </div>
-                  </fieldset>
-                  <fieldset
-                    class="usa-fieldset prime-radios"
+                    </fieldset>
+                  </div>
+                  <div
+                    class="usa-form-group"
                   >
-                    <legend
-                      class="usa-legend"
+                    <fieldset
+                      class="usa-fieldset prime-radios"
                     >
-                      Biological sex
-                    </legend>
-                    <div
-                      class="usa-form-group"
-                    >
-                      <div
-                        class="usa-radio"
+                      <legend
+                        class="usa-legend"
                       >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="36-val-female"
-                          name="gender"
-                          type="radio"
-                          value="female"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="36-val-female"
-                        >
-                          Female
-                        </label>
-                      </div>
+                        Biological sex
+                      </legend>
                       <div
-                        class="usa-radio"
+                        class=""
                       >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="36-val-male"
-                          name="gender"
-                          type="radio"
-                          value="male"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="36-val-male"
+                        <div
+                          class="usa-radio"
                         >
-                          Male
-                        </label>
-                      </div>
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="36-val-other"
-                          name="gender"
-                          type="radio"
-                          value="other"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="36-val-other"
+                          <input
+                            class="usa-radio__input"
+                            data-required="false"
+                            id="60-val-female"
+                            name="gender"
+                            type="radio"
+                            value="female"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="60-val-female"
+                          >
+                            Female
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
                         >
-                          Other
-                        </label>
-                      </div>
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="36-val-refused"
-                          name="gender"
-                          type="radio"
-                          value="refused"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="36-val-refused"
+                          <input
+                            class="usa-radio__input"
+                            data-required="false"
+                            id="60-val-male"
+                            name="gender"
+                            type="radio"
+                            value="male"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="60-val-male"
+                          >
+                            Male
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
                         >
-                          Prefer not to answer
-                        </label>
+                          <input
+                            class="usa-radio__input"
+                            data-required="false"
+                            id="60-val-other"
+                            name="gender"
+                            type="radio"
+                            value="other"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="60-val-other"
+                          >
+                            Other
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
+                        >
+                          <input
+                            class="usa-radio__input"
+                            data-required="false"
+                            id="60-val-refused"
+                            name="gender"
+                            type="radio"
+                            value="refused"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="60-val-refused"
+                          >
+                            Prefer not to answer
+                          </label>
+                        </div>
                       </div>
-                    </div>
-                  </fieldset>
+                    </fieldset>
+                  </div>
                 </fieldset>
               </div>
               <div
@@ -1140,161 +1237,169 @@ Object {
                   >
                     Other
                   </legend>
-                  <fieldset
-                    class="usa-fieldset prime-radios"
+                  <div
+                    class="usa-form-group"
                   >
-                    <legend
-                      class="usa-legend"
+                    <fieldset
+                      class="usa-fieldset prime-radios"
                     >
-                      Are you a resident in a congregate living setting?
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
+                      <legend
+                        class="usa-legend"
                       >
-                         
-                        *
-                      </abbr>
-                    </legend>
-                    <span
-                      class="usa-hint"
-                    >
-                      For example: nursing home, group home, prison, jail, or military
-                    </span>
-                    <div
-                      class="usa-form-group"
-                    >
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          checked=""
-                          class="usa-radio__input"
-                          data-required="true"
-                          id="37-val-YES"
-                          name="residentCongregateSetting"
-                          type="radio"
-                          value="YES"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="37-val-YES"
+                        Are you a resident in a congregate living setting?
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
                         >
-                          Yes
-                        </label>
-                      </div>
-                      <div
-                        class="usa-radio"
+                           
+                          *
+                        </abbr>
+                      </legend>
+                      <span
+                        class="usa-hint"
                       >
-                        <input
-                          class="usa-radio__input"
-                          data-required="true"
-                          id="37-val-NO"
-                          name="residentCongregateSetting"
-                          type="radio"
-                          value="NO"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="37-val-NO"
-                        >
-                          No
-                        </label>
-                      </div>
+                        For example: nursing home, group home, prison, jail, or military
+                      </span>
                       <div
-                        class="usa-radio"
+                        class=""
                       >
-                        <input
-                          class="usa-radio__input"
-                          data-required="true"
-                          id="37-val-UNKNOWN"
-                          name="residentCongregateSetting"
-                          type="radio"
-                          value="UNKNOWN"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="37-val-UNKNOWN"
+                        <div
+                          class="usa-radio"
                         >
-                          Unknown
-                        </label>
+                          <input
+                            checked=""
+                            class="usa-radio__input"
+                            data-required="true"
+                            id="61-val-YES"
+                            name="residentCongregateSetting"
+                            type="radio"
+                            value="YES"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="61-val-YES"
+                          >
+                            Yes
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
+                        >
+                          <input
+                            class="usa-radio__input"
+                            data-required="true"
+                            id="61-val-NO"
+                            name="residentCongregateSetting"
+                            type="radio"
+                            value="NO"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="61-val-NO"
+                          >
+                            No
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
+                        >
+                          <input
+                            class="usa-radio__input"
+                            data-required="true"
+                            id="61-val-UNKNOWN"
+                            name="residentCongregateSetting"
+                            type="radio"
+                            value="UNKNOWN"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="61-val-UNKNOWN"
+                          >
+                            Unknown
+                          </label>
+                        </div>
                       </div>
-                    </div>
-                  </fieldset>
-                  <fieldset
-                    class="usa-fieldset prime-radios"
+                    </fieldset>
+                  </div>
+                  <div
+                    class="usa-form-group"
                   >
-                    <legend
-                      class="usa-legend"
+                    <fieldset
+                      class="usa-fieldset prime-radios"
                     >
-                      Are you a health care worker?
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
+                      <legend
+                        class="usa-legend"
                       >
-                         
-                        *
-                      </abbr>
-                    </legend>
-                    <div
-                      class="usa-form-group"
-                    >
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          checked=""
-                          class="usa-radio__input"
-                          data-required="true"
-                          id="38-val-YES"
-                          name="employedInHealthcare"
-                          type="radio"
-                          value="YES"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="38-val-YES"
+                        Are you a health care worker?
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
                         >
-                          Yes
-                        </label>
-                      </div>
+                           
+                          *
+                        </abbr>
+                      </legend>
                       <div
-                        class="usa-radio"
+                        class=""
                       >
-                        <input
-                          class="usa-radio__input"
-                          data-required="true"
-                          id="38-val-NO"
-                          name="employedInHealthcare"
-                          type="radio"
-                          value="NO"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="38-val-NO"
+                        <div
+                          class="usa-radio"
                         >
-                          No
-                        </label>
-                      </div>
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          class="usa-radio__input"
-                          data-required="true"
-                          id="38-val-UNKNOWN"
-                          name="employedInHealthcare"
-                          type="radio"
-                          value="UNKNOWN"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="38-val-UNKNOWN"
+                          <input
+                            checked=""
+                            class="usa-radio__input"
+                            data-required="true"
+                            id="62-val-YES"
+                            name="employedInHealthcare"
+                            type="radio"
+                            value="YES"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="62-val-YES"
+                          >
+                            Yes
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
                         >
-                          Unknown
-                        </label>
+                          <input
+                            class="usa-radio__input"
+                            data-required="true"
+                            id="62-val-NO"
+                            name="employedInHealthcare"
+                            type="radio"
+                            value="NO"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="62-val-NO"
+                          >
+                            No
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
+                        >
+                          <input
+                            class="usa-radio__input"
+                            data-required="true"
+                            id="62-val-UNKNOWN"
+                            name="employedInHealthcare"
+                            type="radio"
+                            value="UNKNOWN"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="62-val-UNKNOWN"
+                          >
+                            Unknown
+                          </label>
+                        </div>
                       </div>
-                    </div>
-                  </fieldset>
+                    </fieldset>
+                  </div>
                 </fieldset>
               </div>
               <div
@@ -1411,7 +1516,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="20"
+                      for="43"
                     >
                       First name
                       <abbr
@@ -1426,7 +1531,7 @@ Object {
                       aria-disabled="false"
                       aria-required="true"
                       class="usa-input"
-                      id="20"
+                      id="43"
                       name="firstName"
                       type="text"
                       value="Eugenia"
@@ -1437,7 +1542,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="21"
+                      for="44"
                     >
                       Middle name
                     </label>
@@ -1445,7 +1550,7 @@ Object {
                       aria-disabled="false"
                       aria-required="false"
                       class="usa-input"
-                      id="21"
+                      id="44"
                       name="middleName"
                       type="text"
                       value=""
@@ -1456,7 +1561,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="22"
+                      for="45"
                     >
                       Last name
                       <abbr
@@ -1471,7 +1576,7 @@ Object {
                       aria-disabled="false"
                       aria-required="true"
                       class="usa-input"
-                      id="22"
+                      id="45"
                       name="lastName"
                       type="text"
                       value="Franecki"
@@ -1486,14 +1591,14 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="23"
+                      for="46"
                     >
                       Role
                     </label>
                     <select
                       aria-required="false"
                       class="usa-select"
-                      id="23"
+                      id="46"
                       name="role"
                     >
                       <option
@@ -1528,7 +1633,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="24"
+                      for="47"
                     >
                       Facility
                       <abbr
@@ -1542,7 +1647,7 @@ Object {
                     <select
                       aria-required="true"
                       class="usa-select"
-                      id="24"
+                      id="47"
                       name="facilityId"
                     >
                       <option
@@ -1562,8 +1667,8 @@ Object {
                       </option>
                     </select>
                   </div>
-                  <fieldset
-                    class="usa-fieldset"
+                  <div
+                    class="usa-form-group"
                   >
                     <label
                       class="usa-label"
@@ -1571,7 +1676,7 @@ Object {
                     >
                       Preferred language
                     </label>
-                  </fieldset>
+                  </div>
                 </div>
                 <div
                   class="usa-form"
@@ -1581,7 +1686,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="25"
+                      for="48"
                     >
                       Date of birth (mm/dd/yyyy)
                       <abbr
@@ -1596,7 +1701,7 @@ Object {
                       aria-disabled="false"
                       aria-required="true"
                       class="usa-input"
-                      id="25"
+                      id="48"
                       name="birthDate"
                       type="date"
                       value="1939-10-11"
@@ -1619,20 +1724,18 @@ Object {
                 <div
                   class="usa-form"
                 >
-                  <div
-                    class="grid-row grid-gap"
-                  >
+                  <div>
                     <div
-                      class="mobile-lg:grid-col-6"
+                      class="display-flex"
                     >
                       <div
-                        class="usa-form-group"
+                        class="usa-form-group flex-fill"
                       >
                         <label
                           class="usa-label"
-                          for="26"
+                          for="49"
                         >
-                          Phone number
+                          Primary phone number
                           <abbr
                             class="usa-hint usa-hint--required"
                             title="required"
@@ -1644,27 +1747,113 @@ Object {
                         <input
                           aria-required="true"
                           class="usa-input"
-                          id="26"
-                          name="telephone"
-                          type="tel"
+                          id="49"
+                          name="number"
+                          type="text"
                           value="(634) 397-4114"
                         />
                       </div>
                     </div>
+                    <div
+                      class="usa-form-group"
+                    >
+                      <fieldset
+                        class="usa-fieldset prime-radios margin-top-3"
+                      >
+                        <legend
+                          class="usa-legend"
+                        >
+                          Phone type
+                          <abbr
+                            class="usa-hint usa-hint--required"
+                            title="required"
+                          >
+                             
+                            *
+                          </abbr>
+                        </legend>
+                        <div
+                          class=""
+                        >
+                          <div
+                            class="usa-radio"
+                          >
+                            <input
+                              checked=""
+                              class="usa-radio__input"
+                              data-required="true"
+                              id="50-val-MOBILE"
+                              name="phoneType-0"
+                              type="radio"
+                              value="MOBILE"
+                            />
+                            <label
+                              class="usa-radio__label"
+                              for="50-val-MOBILE"
+                            >
+                              Mobile
+                            </label>
+                          </div>
+                          <div
+                            class="usa-radio"
+                          >
+                            <input
+                              class="usa-radio__input"
+                              data-required="true"
+                              id="50-val-LANDLINE"
+                              name="phoneType-0"
+                              type="radio"
+                              value="LANDLINE"
+                            />
+                            <label
+                              class="usa-radio__label"
+                              for="50-val-LANDLINE"
+                            >
+                              Landline
+                            </label>
+                          </div>
+                        </div>
+                      </fieldset>
+                    </div>
                   </div>
+                  <button
+                    class="usa-button usa-button--unstyled margin-top-2"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                      data-icon="plus"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 448 512"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    Add another number
+                  </button>
+                </div>
+                <div
+                  class="usa-form"
+                >
                   <div
                     class="usa-form-group"
                   >
                     <label
                       class="usa-label"
-                      for="27"
+                      for="51"
                     >
                       Email address
                     </label>
                     <input
                       aria-required="false"
                       class="usa-input"
-                      id="27"
+                      id="51"
                       name="email"
                       type="email"
                       value="foo@bar.com"
@@ -1679,7 +1868,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="28"
+                      for="52"
                     >
                       Street address 1
                       <abbr
@@ -1693,7 +1882,7 @@ Object {
                     <input
                       aria-required="true"
                       class="usa-input"
-                      id="28"
+                      id="52"
                       name="street"
                       type="text"
                       value="736 Jackson PI NW"
@@ -1708,14 +1897,14 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="29"
+                      for="53"
                     >
                       Street address 2
                     </label>
                     <input
                       aria-required="false"
                       class="usa-input"
-                      id="29"
+                      id="53"
                       name="streetTwo"
                       type="text"
                       value="DC"
@@ -1730,14 +1919,14 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="30"
+                      for="54"
                     >
                       City
                     </label>
                     <input
                       aria-required="false"
                       class="usa-input"
-                      id="30"
+                      id="54"
                       name="city"
                       type="text"
                       value=""
@@ -1748,14 +1937,14 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="31"
+                      for="55"
                     >
                       County
                     </label>
                     <input
                       aria-required="false"
                       class="usa-input"
-                      id="31"
+                      id="55"
                       name="county"
                       type="text"
                       value=""
@@ -1772,7 +1961,7 @@ Object {
                       >
                         <label
                           class="usa-label"
-                          for="32"
+                          for="56"
                         >
                           State
                           <abbr
@@ -1786,7 +1975,7 @@ Object {
                         <select
                           aria-required="true"
                           class="usa-select"
-                          id="32"
+                          id="56"
                           name="state"
                         >
                           <option
@@ -2100,7 +2289,7 @@ Object {
                       >
                         <label
                           class="usa-label"
-                          for="33"
+                          for="57"
                         >
                           Zip code
                           <abbr
@@ -2114,7 +2303,7 @@ Object {
                         <input
                           aria-required="true"
                           class="usa-input"
-                          id="33"
+                          id="57"
                           name="zipCode"
                           type="text"
                           value=""
@@ -2141,306 +2330,319 @@ Object {
                 >
                   This information is collected as part of public health efforts to recognize and address inequality in health outcomes.
                 </p>
-                <fieldset
-                  class="usa-fieldset prime-radios"
+                <div
+                  class="usa-form-group"
                 >
-                  <legend
-                    class="usa-legend"
+                  <fieldset
+                    class="usa-fieldset prime-radios"
                   >
-                    Race
-                  </legend>
-                  <div
-                    class="usa-form-group"
-                  >
-                    <div
-                      class="usa-radio"
+                    <legend
+                      class="usa-legend"
                     >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="34-val-native"
-                        name="race"
-                        type="radio"
-                        value="native"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="34-val-native"
-                      >
-                        American Indian/Alaskan Native
-                      </label>
-                    </div>
+                      Race
+                    </legend>
                     <div
-                      class="usa-radio"
+                      class=""
                     >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="34-val-asian"
-                        name="race"
-                        type="radio"
-                        value="asian"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="34-val-asian"
+                      <div
+                        class="usa-radio"
                       >
-                        Asian
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="34-val-black"
-                        name="race"
-                        type="radio"
-                        value="black"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="34-val-black"
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="58-val-native"
+                          name="race"
+                          type="radio"
+                          value="native"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="58-val-native"
+                        >
+                          American Indian/Alaskan Native
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
                       >
-                        Black/African American
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="34-val-pacific"
-                        name="race"
-                        type="radio"
-                        value="pacific"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="34-val-pacific"
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="58-val-asian"
+                          name="race"
+                          type="radio"
+                          value="asian"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="58-val-asian"
+                        >
+                          Asian
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
                       >
-                        Native Hawaiian/other Pacific Islander
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="34-val-white"
-                        name="race"
-                        type="radio"
-                        value="white"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="34-val-white"
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="58-val-black"
+                          name="race"
+                          type="radio"
+                          value="black"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="58-val-black"
+                        >
+                          Black/African American
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
                       >
-                        White
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="34-val-other"
-                        name="race"
-                        type="radio"
-                        value="other"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="34-val-other"
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="58-val-pacific"
+                          name="race"
+                          type="radio"
+                          value="pacific"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="58-val-pacific"
+                        >
+                          Native Hawaiian/other Pacific Islander
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
                       >
-                        Other
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="34-val-refused"
-                        name="race"
-                        type="radio"
-                        value="refused"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="34-val-refused"
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="58-val-white"
+                          name="race"
+                          type="radio"
+                          value="white"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="58-val-white"
+                        >
+                          White
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
                       >
-                        Prefer not to answer
-                      </label>
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="58-val-other"
+                          name="race"
+                          type="radio"
+                          value="other"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="58-val-other"
+                        >
+                          Other
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="58-val-refused"
+                          name="race"
+                          type="radio"
+                          value="refused"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="58-val-refused"
+                        >
+                          Prefer not to answer
+                        </label>
+                      </div>
                     </div>
-                  </div>
-                </fieldset>
-                <fieldset
-                  class="usa-fieldset"
+                  </fieldset>
+                </div>
+                <div
+                  class="usa-form-group"
                 >
-                  <legend
+                  <label
                     class="usa-legend"
+                    for="tribal-affiliation"
                   >
                     Tribal affiliation
-                  </legend>
-                </fieldset>
-                <fieldset
-                  class="usa-fieldset prime-radios"
+                  </label>
+                </div>
+                <div
+                  class="usa-form-group"
                 >
-                  <legend
-                    class="usa-legend"
+                  <fieldset
+                    class="usa-fieldset prime-radios"
                   >
-                    Are you Hispanic or Latino?
-                  </legend>
-                  <div
-                    class="usa-form-group"
-                  >
-                    <div
-                      class="usa-radio"
+                    <legend
+                      class="usa-legend"
                     >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="35-val-hispanic"
-                        name="ethnicity"
-                        type="radio"
-                        value="hispanic"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="35-val-hispanic"
-                      >
-                        Yes
-                      </label>
-                    </div>
+                      Are you Hispanic or Latino?
+                    </legend>
                     <div
-                      class="usa-radio"
+                      class=""
                     >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="35-val-not_hispanic"
-                        name="ethnicity"
-                        type="radio"
-                        value="not_hispanic"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="35-val-not_hispanic"
+                      <div
+                        class="usa-radio"
                       >
-                        No
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="35-val-refused"
-                        name="ethnicity"
-                        type="radio"
-                        value="refused"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="35-val-refused"
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="59-val-hispanic"
+                          name="ethnicity"
+                          type="radio"
+                          value="hispanic"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="59-val-hispanic"
+                        >
+                          Yes
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
                       >
-                        Prefer not to answer
-                      </label>
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="59-val-not_hispanic"
+                          name="ethnicity"
+                          type="radio"
+                          value="not_hispanic"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="59-val-not_hispanic"
+                        >
+                          No
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="59-val-refused"
+                          name="ethnicity"
+                          type="radio"
+                          value="refused"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="59-val-refused"
+                        >
+                          Prefer not to answer
+                        </label>
+                      </div>
                     </div>
-                  </div>
-                </fieldset>
-                <fieldset
-                  class="usa-fieldset prime-radios"
+                  </fieldset>
+                </div>
+                <div
+                  class="usa-form-group"
                 >
-                  <legend
-                    class="usa-legend"
+                  <fieldset
+                    class="usa-fieldset prime-radios"
                   >
-                    Biological sex
-                  </legend>
-                  <div
-                    class="usa-form-group"
-                  >
-                    <div
-                      class="usa-radio"
+                    <legend
+                      class="usa-legend"
                     >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="36-val-female"
-                        name="gender"
-                        type="radio"
-                        value="female"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="36-val-female"
-                      >
-                        Female
-                      </label>
-                    </div>
+                      Biological sex
+                    </legend>
                     <div
-                      class="usa-radio"
+                      class=""
                     >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="36-val-male"
-                        name="gender"
-                        type="radio"
-                        value="male"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="36-val-male"
+                      <div
+                        class="usa-radio"
                       >
-                        Male
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="36-val-other"
-                        name="gender"
-                        type="radio"
-                        value="other"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="36-val-other"
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="60-val-female"
+                          name="gender"
+                          type="radio"
+                          value="female"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="60-val-female"
+                        >
+                          Female
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
                       >
-                        Other
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="36-val-refused"
-                        name="gender"
-                        type="radio"
-                        value="refused"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="36-val-refused"
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="60-val-male"
+                          name="gender"
+                          type="radio"
+                          value="male"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="60-val-male"
+                        >
+                          Male
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
                       >
-                        Prefer not to answer
-                      </label>
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="60-val-other"
+                          name="gender"
+                          type="radio"
+                          value="other"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="60-val-other"
+                        >
+                          Other
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="60-val-refused"
+                          name="gender"
+                          type="radio"
+                          value="refused"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="60-val-refused"
+                        >
+                          Prefer not to answer
+                        </label>
+                      </div>
                     </div>
-                  </div>
-                </fieldset>
+                  </fieldset>
+                </div>
               </fieldset>
             </div>
             <div
@@ -2454,161 +2656,169 @@ Object {
                 >
                   Other
                 </legend>
-                <fieldset
-                  class="usa-fieldset prime-radios"
+                <div
+                  class="usa-form-group"
                 >
-                  <legend
-                    class="usa-legend"
+                  <fieldset
+                    class="usa-fieldset prime-radios"
                   >
-                    Are you a resident in a congregate living setting?
-                    <abbr
-                      class="usa-hint usa-hint--required"
-                      title="required"
+                    <legend
+                      class="usa-legend"
                     >
-                       
-                      *
-                    </abbr>
-                  </legend>
-                  <span
-                    class="usa-hint"
-                  >
-                    For example: nursing home, group home, prison, jail, or military
-                  </span>
-                  <div
-                    class="usa-form-group"
-                  >
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        checked=""
-                        class="usa-radio__input"
-                        data-required="true"
-                        id="37-val-YES"
-                        name="residentCongregateSetting"
-                        type="radio"
-                        value="YES"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="37-val-YES"
+                      Are you a resident in a congregate living setting?
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
                       >
-                        Yes
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
+                         
+                        *
+                      </abbr>
+                    </legend>
+                    <span
+                      class="usa-hint"
                     >
-                      <input
-                        class="usa-radio__input"
-                        data-required="true"
-                        id="37-val-NO"
-                        name="residentCongregateSetting"
-                        type="radio"
-                        value="NO"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="37-val-NO"
-                      >
-                        No
-                      </label>
-                    </div>
+                      For example: nursing home, group home, prison, jail, or military
+                    </span>
                     <div
-                      class="usa-radio"
+                      class=""
                     >
-                      <input
-                        class="usa-radio__input"
-                        data-required="true"
-                        id="37-val-UNKNOWN"
-                        name="residentCongregateSetting"
-                        type="radio"
-                        value="UNKNOWN"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="37-val-UNKNOWN"
+                      <div
+                        class="usa-radio"
                       >
-                        Unknown
-                      </label>
+                        <input
+                          checked=""
+                          class="usa-radio__input"
+                          data-required="true"
+                          id="61-val-YES"
+                          name="residentCongregateSetting"
+                          type="radio"
+                          value="YES"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="61-val-YES"
+                        >
+                          Yes
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="true"
+                          id="61-val-NO"
+                          name="residentCongregateSetting"
+                          type="radio"
+                          value="NO"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="61-val-NO"
+                        >
+                          No
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="true"
+                          id="61-val-UNKNOWN"
+                          name="residentCongregateSetting"
+                          type="radio"
+                          value="UNKNOWN"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="61-val-UNKNOWN"
+                        >
+                          Unknown
+                        </label>
+                      </div>
                     </div>
-                  </div>
-                </fieldset>
-                <fieldset
-                  class="usa-fieldset prime-radios"
+                  </fieldset>
+                </div>
+                <div
+                  class="usa-form-group"
                 >
-                  <legend
-                    class="usa-legend"
+                  <fieldset
+                    class="usa-fieldset prime-radios"
                   >
-                    Are you a health care worker?
-                    <abbr
-                      class="usa-hint usa-hint--required"
-                      title="required"
+                    <legend
+                      class="usa-legend"
                     >
-                       
-                      *
-                    </abbr>
-                  </legend>
-                  <div
-                    class="usa-form-group"
-                  >
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        checked=""
-                        class="usa-radio__input"
-                        data-required="true"
-                        id="38-val-YES"
-                        name="employedInHealthcare"
-                        type="radio"
-                        value="YES"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="38-val-YES"
+                      Are you a health care worker?
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
                       >
-                        Yes
-                      </label>
-                    </div>
+                         
+                        *
+                      </abbr>
+                    </legend>
                     <div
-                      class="usa-radio"
+                      class=""
                     >
-                      <input
-                        class="usa-radio__input"
-                        data-required="true"
-                        id="38-val-NO"
-                        name="employedInHealthcare"
-                        type="radio"
-                        value="NO"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="38-val-NO"
+                      <div
+                        class="usa-radio"
                       >
-                        No
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="true"
-                        id="38-val-UNKNOWN"
-                        name="employedInHealthcare"
-                        type="radio"
-                        value="UNKNOWN"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="38-val-UNKNOWN"
+                        <input
+                          checked=""
+                          class="usa-radio__input"
+                          data-required="true"
+                          id="62-val-YES"
+                          name="employedInHealthcare"
+                          type="radio"
+                          value="YES"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="62-val-YES"
+                        >
+                          Yes
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
                       >
-                        Unknown
-                      </label>
+                        <input
+                          class="usa-radio__input"
+                          data-required="true"
+                          id="62-val-NO"
+                          name="employedInHealthcare"
+                          type="radio"
+                          value="NO"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="62-val-NO"
+                        >
+                          No
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="true"
+                          id="62-val-UNKNOWN"
+                          name="employedInHealthcare"
+                          type="radio"
+                          value="UNKNOWN"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="62-val-UNKNOWN"
+                        >
+                          Unknown
+                        </label>
+                      </div>
                     </div>
-                  </div>
-                </fieldset>
+                  </fieldset>
+                </div>
               </fieldset>
             </div>
             <div

@@ -47,6 +47,87 @@ describe("EditPatient", () => {
     });
   });
 
+  describe("phone number input", () => {
+    beforeEach(async () => {
+      const mocks = [
+        {
+          request: {
+            query: GET_PATIENT,
+            variables: {
+              id: mockPatientID,
+            },
+          },
+          result: {
+            data: {
+              patient: {
+                firstName: "Eugenia",
+                middleName: null,
+                lastName: "Franecki",
+                birthDate: "1939-10-11",
+                street: "736 Jackson PI NW",
+                streetTwo: "DC",
+                city: null,
+                state: "DC",
+                zipCode: null,
+                telephone: "(634) 397-4114",
+                phoneNumbers: [
+                  {
+                    type: "LANDLINE",
+                    number: "(631) 867-5309",
+                  },
+                  {
+                    type: "MOBILE",
+                    number: "(634) 397-4114",
+                  },
+                ],
+                role: "UNKNOWN",
+                email: "foo@bar.com",
+                county: null,
+                race: null,
+                ethnicity: null,
+                gender: null,
+                residentCongregateSetting: true,
+                employedInHealthcare: true,
+                facility: null,
+              },
+            },
+          },
+        },
+      ];
+
+      render(
+        <MemoryRouter>
+          <Provider store={store}>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <EditPatient
+                facilityId={mockFacilityID}
+                patientId={mockPatientID}
+              />
+            </MockedProvider>
+          </Provider>
+        </MemoryRouter>
+      );
+
+      await act(async () => {
+        await screen.findAllByText("Franecki, Eugenia", { exact: false });
+      });
+    });
+
+    it("populates primary phone number field with patient `telephone`", () => {
+      const legend = "Primary phone number";
+      const input = screen.getByLabelText(legend, { exact: false });
+
+      if (input === null) {
+        throw Error(`Unable to corresponding input for ${legend}`);
+      }
+
+      // In the GraphQL response, this was the second entry in the
+      // phone numbers array, but the array should be sorted to place the
+      // value matching `patient.telephone` first
+      expect(input.value).toBe("(634) 397-4114");
+    });
+  });
+
   describe("facility select input", () => {
     let component: any;
     beforeEach(async () => {
@@ -71,6 +152,12 @@ describe("EditPatient", () => {
                 state: "DC",
                 zipCode: null,
                 telephone: "(634) 397-4114",
+                phoneNumbers: [
+                  {
+                    type: "MOBILE",
+                    number: "(634) 397-4114",
+                  },
+                ],
                 role: "UNKNOWN",
                 email: "foo@bar.com",
                 county: null,
@@ -157,6 +244,12 @@ describe("EditPatient", () => {
                 state: "DC",
                 zipCode: null,
                 telephone: "(634) 397-4114",
+                phoneNumbers: [
+                  {
+                    type: "MOBILE",
+                    number: "(634) 397-4114",
+                  },
+                ],
                 role: "UNKNOWN",
                 email: "foo@bar.com",
                 county: null,

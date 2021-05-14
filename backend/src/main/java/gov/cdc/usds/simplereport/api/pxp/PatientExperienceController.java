@@ -3,7 +3,7 @@ package gov.cdc.usds.simplereport.api.pxp;
 import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
-import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
+import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
@@ -55,11 +55,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class PatientExperienceController {
   private static final Logger LOG = LoggerFactory.getLogger(PatientExperienceController.class);
 
-  private final PersonService ps;
-  private final PatientLinkService pls;
-  private final TestOrderService tos;
-  private final TestEventService tes;
-  private final TimeOfConsentService tocs;
+  private final PersonService _ps;
+  private final PatientLinkService _pls;
+  private final TestOrderService _tos;
+  private final TestEventService _tes;
+  private final TimeOfConsentService _tocs;
 
   public PatientExperienceController(
       PersonService personService,
@@ -67,11 +67,11 @@ public class PatientExperienceController {
       TestOrderService testOrderService,
       TestEventService testEventService,
       TimeOfConsentService timeOfConsentService) {
-    this.ps = personService;
-    this.pls = patientLinkService;
-    this.tos = testOrderService;
-    this.tes = testEventService;
-    this.tocs = timeOfConsentService;
+    this._ps = personService;
+    this._pls = patientLinkService;
+    this._tos = testOrderService;
+    this._tes = testEventService;
+    this._tocs = timeOfConsentService;
   }
 
   @PostConstruct
@@ -87,12 +87,12 @@ public class PatientExperienceController {
   public PxpVerifyResponse getPatientLinkVerify(
       @RequestBody PxpRequestWrapper<Void> body, HttpServletRequest request) {
     UUID plid = UUID.fromString(body.getPatientLinkId());
-    PatientLink pl = pls.getPatientLink(plid);
+    PatientLink pl = _pls.getPatientLink(plid);
     OrderStatus os = pl.getTestOrder().getOrderStatus();
-    Person p = pls.getPatientFromLink(plid);
-    PatientPreferences pp = ps.getPatientPreferences(p);
-    TestEvent te = tes.getLastTestResultsForPatient(p);
-    tocs.storeTimeOfConsent(pl);
+    Person p = _pls.getPatientFromLink(plid);
+    PatientPreferences pp = _ps.getPatientPreferences(p);
+    TestEvent te = _tes.getLastTestResultsForPatient(p);
+    _tocs.storeTimeOfConsent(pl);
 
     return new PxpVerifyResponse(p, os, te, pp);
   }
@@ -101,9 +101,9 @@ public class PatientExperienceController {
   public Person updatePatient(
       @RequestBody PxpRequestWrapper<PersonUpdate> body, HttpServletRequest request) {
     PersonUpdate person = body.getData();
-    return ps.updateMe(
+    return _ps.updateMe(
         StreetAddress.deAndReSerializeForSafety(person.getAddress()),
-        parsePhoneNumber(person.getTelephone()),
+        parsePhoneNumbers(person.getPhoneNumbers()),
         person.getRole(),
         parseEmail(person.getEmail()),
         parseRace(person.getRace()),
@@ -121,7 +121,7 @@ public class PatientExperienceController {
     AoEQuestions data = body.getData();
     Map<String, Boolean> symptomsMap = parseSymptoms(data.getSymptoms());
 
-    tos.updateMyTimeOfTestQuestions(
+    _tos.updateMyTimeOfTestQuestions(
         data.getPregnancy(),
         symptomsMap,
         data.isFirstTest(),
@@ -131,7 +131,7 @@ public class PatientExperienceController {
         data.getSymptomOnset(),
         data.getNoSymptoms());
 
-    ps.updateMyTestResultDeliveryPreference(data.getTestResultDelivery());
-    pls.expireMyPatientLink();
+    _ps.updateMyTestResultDeliveryPreference(data.getTestResultDelivery());
+    _pls.expireMyPatientLink();
   }
 }

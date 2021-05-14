@@ -65,6 +65,7 @@ const SearchInput = ({
             value={queryString}
             onChange={onInputChange}
             ref={inputRef}
+            onFocus={onInputChange}
           />
           <button
             type="submit"

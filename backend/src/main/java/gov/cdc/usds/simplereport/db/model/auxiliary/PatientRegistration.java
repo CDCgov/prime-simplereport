@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.cdc.usds.simplereport.api.model.PersonUpdate;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 public class PatientRegistration extends PersonUpdate {
@@ -26,6 +27,7 @@ public class PatientRegistration extends PersonUpdate {
       @JsonProperty("birthDate") LocalDate birthDate,
       @JsonProperty("address") StreetAddress address,
       @JsonProperty("telephone") String telephone,
+      @JsonProperty("phoneNumbers") List<PhoneNumberInput> phoneNumbers,
       @JsonProperty("role") PersonRole role,
       @JsonProperty("email") String email,
       @JsonProperty("race") String race,
@@ -38,6 +40,7 @@ public class PatientRegistration extends PersonUpdate {
     super(
         address,
         telephone,
+        phoneNumbers,
         role,
         email,
         race,
@@ -102,6 +105,7 @@ public class PatientRegistration extends PersonUpdate {
         && Objects.equals(birthDate, that.birthDate)
         && Objects.equals(getAddress(), that.getAddress())
         && Objects.equals(getTelephone(), that.getTelephone())
+        && Objects.equals(getPhoneNumbers(), that.getPhoneNumbers())
         && getRole() == that.getRole()
         && Objects.equals(getEmail(), that.getEmail())
         && Objects.equals(getRace(), that.getRace())
@@ -125,6 +129,7 @@ public class PatientRegistration extends PersonUpdate {
         birthDate,
         getAddress(),
         getTelephone(),
+        getPhoneNumbers(),
         getRole(),
         getEmail(),
         getRace(),

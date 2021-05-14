@@ -9,11 +9,13 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientPreferences;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person.SpecField;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.repository.PatientPreferencesRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
+import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +37,7 @@ public class PersonService {
   private final OrganizationService _os;
   private final PersonRepository _repo;
   private final PatientPreferencesRepository _prefRepo;
+  private final PhoneNumberRepository _phoneRepo;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000; // this is high because the searchBar
@@ -47,11 +50,13 @@ public class PersonService {
       OrganizationService os,
       PersonRepository repo,
       PatientPreferencesRepository prefRepo,
-      CurrentPatientContextHolder patientContext) {
+      CurrentPatientContextHolder patientContext,
+      PhoneNumberRepository phoneRepo) {
     _patientContext = patientContext;
     _os = os;
     _repo = repo;
     _prefRepo = prefRepo;
+    _phoneRepo = phoneRepo;
   }
 
   private void updatePersonFacility(Person person, UUID facilityId) {
@@ -190,7 +195,7 @@ public class PersonService {
       String suffix,
       LocalDate birthDate,
       StreetAddress address,
-      String telephone,
+      List<PhoneNumber> phoneNumbers,
       PersonRole role,
       String email,
       String race,
@@ -210,7 +215,7 @@ public class PersonService {
         suffix,
         birthDate,
         address,
-        telephone,
+        phoneNumbers,
         role,
         email,
         race,
@@ -222,7 +227,8 @@ public class PersonService {
         preferredLanguage);
   }
 
-  @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
+  // IMPLICIT AUTHORIZATION: this is used for self-registration
+  // TODO: move to a separate service, with the other self-service methods
   public Person addPatient(
       Organization organization,
       UUID facilityId,
@@ -233,7 +239,7 @@ public class PersonService {
       String suffix,
       LocalDate birthDate,
       StreetAddress address,
-      String telephone,
+      List<PhoneNumber> phoneNumbers,
       PersonRole role,
       String email,
       String race,
@@ -253,7 +259,6 @@ public class PersonService {
             suffix,
             birthDate,
             address,
-            telephone,
             role,
             email,
             race,
@@ -265,6 +270,7 @@ public class PersonService {
     updatePersonFacility(newPatient, facilityId);
     Person savedPerson = _repo.save(newPatient);
     upsertPreferredLanguage(savedPerson, preferredLanguage);
+    updatePhoneNumbers(newPatient, phoneNumbers);
     return savedPerson;
   }
 
@@ -272,7 +278,7 @@ public class PersonService {
   // is verified, so there is no authorization check
   public Person updateMe(
       StreetAddress address,
-      String telephone,
+      List<PhoneNumber> phoneNumbers,
       PersonRole role,
       String email,
       String race,
@@ -291,7 +297,6 @@ public class PersonService {
         toUpdate.getSuffix(),
         toUpdate.getBirthDate(),
         address,
-        telephone,
         role,
         email,
         race,
@@ -301,7 +306,32 @@ public class PersonService {
         residentCongregateSetting,
         employedInHealthcare);
     upsertPreferredLanguage(toUpdate, preferredLanguage);
+    updatePhoneNumbers(toUpdate, phoneNumbers);
     return _repo.save(toUpdate);
+  }
+
+  /**
+   * This method updates the PhoneNumbers provided by adding/deleting them from the
+   * PhoneNumberRepository. It updates the PrimaryPhone on the Person, but does <em>not</em> save
+   * that object, expecting it to be saved upstream.
+   */
+  private void updatePhoneNumbers(Person person, List<PhoneNumber> incoming) {
+    if (incoming == null) {
+      return;
+    }
+    incoming.forEach(phoneNumber -> phoneNumber.setPerson(person));
+
+    var existingNumbers = person.getPhoneNumbers();
+
+    if (existingNumbers != null) {
+      _phoneRepo.deleteAll(existingNumbers);
+    }
+
+    _phoneRepo.saveAll(incoming);
+
+    if (!incoming.isEmpty()) {
+      person.setPrimaryPhone(incoming.get(0));
+    }
   }
 
   public PatientPreferences getPatientPreferences(Person person) {
@@ -349,7 +379,7 @@ public class PersonService {
       String suffix,
       LocalDate birthDate,
       StreetAddress address,
-      String telephone,
+      List<PhoneNumber> phoneNumbers,
       PersonRole role,
       String email,
       String race,
@@ -368,7 +398,6 @@ public class PersonService {
         suffix,
         birthDate,
         address,
-        telephone,
         role,
         email,
         race,
@@ -377,7 +406,7 @@ public class PersonService {
         gender,
         residentCongregateSetting,
         employedInHealthcare);
-
+    updatePhoneNumbers(patientToUpdate, phoneNumbers);
     upsertPreferredLanguage(patientToUpdate, preferredLanguage);
     updatePersonFacility(patientToUpdate, facilityId);
     return _repo.save(patientToUpdate);

@@ -43,7 +43,7 @@ module.exports = {
         .verifyEmail("foo@bar.com")
         .completeQuestionnaire();
 
-      browser.page.home().navigate().verifyQuestionnaireCompleted(patientName);
+      browser.page.home().navigate('queue').verifyQuestionnaireCompleted(patientName);
     });
   },
   "4. View the test result through patient experience": (browser) => {

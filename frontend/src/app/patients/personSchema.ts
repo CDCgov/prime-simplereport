@@ -7,6 +7,7 @@ import {
   ETHNICITY_VALUES,
   GENDER_VALUES,
   TRIBAL_AFFILIATION_VALUES,
+  PHONE_TYPE_VALUES,
 } from "../constants";
 import { Option } from "../commonComponents/Dropdown";
 import { languages } from "../../config/constants";
@@ -54,10 +55,41 @@ export function phoneNumberIsValid(input: any) {
   return phoneUtil.isValidNumber(number);
 }
 
+export function areValidPhoneNumbers(phoneNumbers: any) {
+  // At least one phone number is required
+  if (!phoneNumbers || phoneNumbers.length === 0) {
+    return false;
+  }
+
+  return phoneNumbers.every((phoneNumber: any, idx: number) => {
+    // The first phone number is considered the "primary" phone number and must
+    // be provided
+    if (idx === 0) {
+      if (!phoneNumber || !phoneNumber.number || !phoneNumber.type) {
+        return false;
+      }
+    } else {
+      // Subsequent phone numbers are optional and may be fully blank...
+      if (!phoneNumber || (!phoneNumber.number && !phoneNumber.type)) {
+        return true;
+      }
+
+      // ...but not partially blank...
+      if (!phoneNumber.number || !phoneNumber.type) {
+        return false;
+      }
+    }
+
+    // ...and must validate if provided
+    return phoneNumberIsValid(phoneNumber.number);
+  });
+}
+
 const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
   lookupId: yup.string().nullable(),
   role: yup.mixed().oneOf([...getValues(ROLE_VALUES), "UNKNOWN", "", null]),
-  telephone: yup.string().test(phoneNumberIsValid).required(),
+  telephone: yup.mixed().optional(),
+  phoneNumbers: yup.array().test(areValidPhoneNumbers).required(),
   email: yup.string().email().nullable(),
   street: yup.string().required(),
   streetTwo: yup.string().nullable(),
@@ -75,6 +107,15 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
     .oneOf([...getValues(TRIBAL_AFFILIATION_VALUES), "", null]),
   preferredLanguage: yup.mixed().oneOf([...languages, "", null]),
 };
+
+const updatePhoneNumberSchemata: Record<keyof PhoneNumber, yup.AnySchema> = {
+  number: yup.string().test(phoneNumberIsValid).required(),
+  type: yup.mixed().oneOf(getValues(PHONE_TYPE_VALUES)),
+};
+
+export const phoneNumberUpdateSchema: yup.SchemaOf<PhoneNumber> = yup.object(
+  updatePhoneNumberSchemata
+);
 
 export const personUpdateSchema: yup.SchemaOf<PersonUpdateFields> = yup.object(
   updateFieldSchemata
@@ -110,6 +151,7 @@ export const allPersonErrors: Required<PersonErrors> = {
   facilityId: "Facility is required",
   birthDate: "Date of birth is missing or incorrectly formatted",
   telephone: "Phone number is missing or invalid",
+  phoneNumbers: "Phone number is missing or invalid",
   email: "Email is missing or incorrectly formatted",
   street: "Street is missing",
   streetTwo: "Street Two is incorrectly formatted",
@@ -125,4 +167,11 @@ export const allPersonErrors: Required<PersonErrors> = {
     "Are you a resident in a congregate living setting? is required",
   employedInHealthcare: "Are you a health care worker? is required",
   preferredLanguage: "Preferred language is incorrectly formatted",
+};
+
+export type PhoneNumberErrors = Partial<Record<keyof PhoneNumber, string>>;
+
+export const allPhoneNumberErrors: Required<PhoneNumberErrors> = {
+  number: "Phone number is missing or invalid",
+  type: "Phone type is missing or invalid",
 };
