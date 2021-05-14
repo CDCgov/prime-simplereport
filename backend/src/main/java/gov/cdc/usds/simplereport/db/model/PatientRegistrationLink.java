@@ -35,7 +35,7 @@ public class PatientRegistrationLink extends EternalAuditedEntity {
   }
 
   public Organization getOrganization() {
-    if (organization == null && facility != null) {
+    if (facility != null) {
       return facility.getOrganization();
     }
     return organization;
