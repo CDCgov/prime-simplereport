@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import moment from "moment";
 
 import Button from "../../commonComponents/Button/Button";
 import AoEModalForm from "../AoEForm/AoEModalForm";
@@ -78,7 +79,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
           {patients.map((p) => (
             <tr key={p.internalId}>
               <td>{displayFullName(p.firstName, p.middleName, p.lastName)}</td>
-              <td>{p.birthDate}</td>
+              <td>{moment(p.birthDate).format("MM/DD/YYYY")}</td>
               <td>{actionByPage(p)}</td>
             </tr>
           ))}
