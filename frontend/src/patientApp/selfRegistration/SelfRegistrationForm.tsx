@@ -19,7 +19,10 @@ export const SelfRegistrationForm = ({ savePerson }: Props) => {
         patient={EMPTY_PERSON}
         savePerson={savePerson}
         getFooter={(onSave) => (
-          <Button className="margin-top-3" onClick={onSave}>
+          <Button
+            className="self-registration-button margin-top-3"
+            onClick={onSave}
+          >
             Submit
           </Button>
         )}

@@ -81,7 +81,7 @@ module.exports = {
         lookupId: 'input[name="lookupId"]',
         resident: 'input[name="residentCongregateSetting"]+label',
         healthcareWorker: 'input[name="employedInHealthcare"]+label',
-        saveButton: ".usa-button",
+        saveButton: ".self-registration-button",
       },
     },
     confirmAddressModal: {
