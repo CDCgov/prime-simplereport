@@ -119,12 +119,10 @@ export const AddressConfirmationModal: React.FC<Props> = ({
       <Modal.Header>Address validation</Modal.Header>
       <div className="border-top border-base-lighter margin-x-neg-205"></div>
       {getAlert()}
-      <p className="address__instructions">
-        Please select an option to continue:
-      </p>
       <RadioGroup
         name="addressSelect"
         className="address__select margin-top-0"
+        legend="Please select an option to continue:"
         buttons={[
           {
             value: "userAddress",
