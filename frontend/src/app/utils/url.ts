@@ -1,12 +1,16 @@
-export function getFacilityIdFromUrl(): string | null {
+const getParameterFromUrl = (param: string): string | null => {
   const queryParams = new URLSearchParams(window.location.search);
-  return queryParams.has("facility") ? queryParams.get("facility") : null;
-}
+  return queryParams.has(param) ? queryParams.get(param) : null;
+};
 
-export function getPatientLinkIdFromUrl(): string | null {
-  const queryParams = new URLSearchParams(window.location.search);
-  return queryParams.has("plid") ? queryParams.get("plid") : null;
-}
+export const getFacilityIdFromUrl = (): string | null =>
+  getParameterFromUrl("facility");
+
+export const getPatientLinkIdFromUrl = (): string | null =>
+  getParameterFromUrl("plid");
+
+export const getActivationTokenFromUrl = (): string | null =>
+  getParameterFromUrl("activationToken");
 
 export function getUrl(): string | null {
   if (process.env.REACT_APP_BASE_URL) {

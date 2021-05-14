@@ -3,12 +3,15 @@ package gov.cdc.usds.simplereport.api.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import java.util.List;
 import java.util.Objects;
 
 public class PersonUpdate {
   private final StreetAddress address;
   private final String telephone;
+  private final List<PhoneNumberInput> phoneNumbers;
   private final PersonRole role;
   private final String email;
   private final String race;
@@ -23,6 +26,7 @@ public class PersonUpdate {
   public PersonUpdate(
       @JsonProperty("address") StreetAddress address,
       @JsonProperty("telephone") String telephone,
+      @JsonProperty("phoneNumbers") List<PhoneNumberInput> phoneNumbers,
       @JsonProperty("role") PersonRole role,
       @JsonProperty("email") String email,
       @JsonProperty("race") String race,
@@ -34,6 +38,7 @@ public class PersonUpdate {
       @JsonProperty("preferredLanguage") String preferredLanguage) {
     this.address = address;
     this.telephone = telephone;
+    this.phoneNumbers = phoneNumbers;
     this.role = role;
     this.email = email;
     this.race = race;
@@ -85,6 +90,10 @@ public class PersonUpdate {
     return telephone;
   }
 
+  public List<PhoneNumberInput> getPhoneNumbers() {
+    return phoneNumbers;
+  }
+
   public String getPreferredLanguage() {
     return preferredLanguage;
   }
@@ -100,6 +109,7 @@ public class PersonUpdate {
     PersonUpdate that = (PersonUpdate) o;
     return Objects.equals(address, that.address)
         && Objects.equals(telephone, that.telephone)
+        && Objects.equals(phoneNumbers, that.phoneNumbers)
         && role == that.role
         && Objects.equals(email, that.email)
         && Objects.equals(race, that.race)
@@ -115,6 +125,7 @@ public class PersonUpdate {
     return Objects.hash(
         address,
         telephone,
+        phoneNumbers,
         role,
         email,
         race,

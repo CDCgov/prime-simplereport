@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 0.14.10
+          terraform_version: 0.15.1
       - name: Terraform fmt
         run: terraform fmt -check -recursive
 
@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 0.14.10
+          terraform_version: 0.15.1
       - name: Terraform Init
         run: |
           pushd dev; pushd persistent; terraform init -backend=false; popd; terraform init -backend=false; popd

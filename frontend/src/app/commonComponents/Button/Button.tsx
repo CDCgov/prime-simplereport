@@ -1,7 +1,7 @@
 import React from "react";
 import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "../../styles/fontAwesome";
+import "../../../styles/fontAwesome";
 
 interface Props {
   type?: "button" | "submit";

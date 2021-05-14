@@ -18,6 +18,7 @@ import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
@@ -25,6 +26,7 @@ import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -257,7 +259,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
       String firstName,
       String lastName,
       String birthDate,
-      String phone,
+      List<PhoneNumberInput> phoneNumbers,
       String lookupId,
       Optional<UUID> facilityId,
       Optional<String> expectedError)
@@ -268,10 +270,30 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
             .put("firstName", firstName)
             .put("lastName", lastName)
             .put("birthDate", birthDate)
-            .put("telephone", phone)
+            .putPOJO("phoneNumbers", phoneNumbers)
             .put("lookupId", lookupId)
             .put("facilityId", facilityId.map(UUID::toString).orElse(null));
     return runQuery("add-person", variables, expectedError.orElse(null));
+  }
+
+  protected ObjectNode executeAddPersonMutation(
+      String firstName,
+      String lastName,
+      String birthDate,
+      String phone,
+      String lookupId,
+      Optional<UUID> facilityId,
+      Optional<String> expectedError)
+      throws IOException {
+
+    return executeAddPersonMutation(
+        firstName,
+        lastName,
+        birthDate,
+        List.of(new PhoneNumberInput("MOBILE", phone)),
+        lookupId,
+        facilityId,
+        expectedError);
   }
 
   protected void updateSelfPrivileges(

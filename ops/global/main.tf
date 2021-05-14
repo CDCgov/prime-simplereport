@@ -35,6 +35,8 @@ resource "azurerm_log_analytics_workspace" "sr" {
 // Okta configuration
 module "okta" {
   source = "../services/okta-global"
+
+  all_users_group_id = data.okta_group.everyone.id
 }
 
 // App Insights for Azure Functions
@@ -45,4 +47,18 @@ module "insights" {
   rg_location   = data.azurerm_resource_group.rg.location
   rg_name       = data.azurerm_resource_group.rg.name
   tags          = local.management_tags
+}
+
+module "pagerduty_demo" {
+  source                  = "../services/pagerduty"
+  resource_group_name     = data.azurerm_resource_group.rg.name
+  pagerduty_service_name  = "SimpleReport - Demo"
+  action_group_short_name = "SR-NonProd"
+}
+
+module "pagerduty_prod" {
+  source                  = "../services/pagerduty"
+  resource_group_name     = data.azurerm_resource_group.rg.name
+  pagerduty_service_name  = "SimpleReport - Production"
+  action_group_short_name = "SR-Prod"
 }

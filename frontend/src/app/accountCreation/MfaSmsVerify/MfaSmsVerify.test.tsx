@@ -7,10 +7,21 @@ describe("Verify SMS MFA", () => {
     render(<MfaSmsVerify />);
   });
 
-  it("can type a security code", () => {
-    fireEvent.change(screen.getByLabelText("One-time security code"), {
-      target: { value: "123" },
-    });
-    expect(screen.getByText("Verify your security code.")).toBeInTheDocument();
+  it("can enter a security code", () => {
+    fireEvent.change(
+      screen.getByLabelText("One-time security code", { exact: false }),
+      {
+        target: { value: "123" },
+      }
+    );
+    fireEvent.click(screen.getByText("Verify"));
+    expect(
+      screen.queryByText("Enter your security code")
+    ).not.toBeInTheDocument();
+  });
+
+  it("requires a security code", () => {
+    fireEvent.click(screen.getByText("Verify"));
+    expect(screen.getByText("Enter your security code")).toBeInTheDocument();
   });
 });

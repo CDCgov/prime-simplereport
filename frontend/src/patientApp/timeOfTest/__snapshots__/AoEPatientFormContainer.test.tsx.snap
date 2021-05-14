@@ -111,384 +111,392 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
           <div
             className="usa-fieldset"
           >
-            <fieldset
-              className="usa-fieldset prime-checkboxes"
+            <div
+              className="usa-form-group"
             >
-              <legend
-                className="usa-legend"
+              <fieldset
+                className="usa-fieldset prime-checkboxes"
               >
-                Are you experiencing any of the following symptoms?
-                <abbr
-                  className="usa-hint usa-hint--required"
-                  title="required"
+                <legend
+                  className="usa-legend"
                 >
-                   
-                  *
-                </abbr>
-              </legend>
-              <div
-                className="usa-form-group"
-              >
-                <div
-                  className="usa-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="1-val-0"
-                    name="no_symptoms"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="no"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="1-val-0"
+                  Are you experiencing any of the following symptoms?
+                  <abbr
+                    className="usa-hint usa-hint--required"
+                    title="required"
                   >
-                    No Symptoms
-                  </label>
+                     
+                    *
+                  </abbr>
+                </legend>
+                <div
+                  className="checkboxes"
+                >
+                  <div
+                    className="usa-checkbox"
+                  >
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="1-val-0"
+                      name="no_symptoms"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="no"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="1-val-0"
+                    >
+                      No Symptoms
+                    </label>
+                  </div>
                 </div>
-              </div>
-            </fieldset>
+              </fieldset>
+            </div>
             <div
               className="border-top-1px border-base-lighter margin-y-2"
             />
-            <fieldset
-              className="usa-fieldset prime-checkboxes symptom-checkboxes"
+            <div
+              className="usa-form-group"
             >
-              <legend
-                className="usa-legend usa-sr-only"
+              <fieldset
+                className="usa-fieldset prime-checkboxes symptom-checkboxes"
               >
-                What are your symptoms?
-              </legend>
-              <div
-                className="usa-form-group"
-              >
-                <div
-                  className="usa-checkbox"
+                <legend
+                  className="usa-legend usa-sr-only"
                 >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="2-val-0"
-                    name="symptom_list"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="426000000"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="2-val-0"
-                  >
-                    Fever over 100.4F
-                  </label>
-                </div>
+                  What are your symptoms?
+                </legend>
                 <div
-                  className="usa-checkbox"
+                  className="checkboxes"
                 >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="2-val-1"
-                    name="symptom_list"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="103001002"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="2-val-1"
+                  <div
+                    className="usa-checkbox"
                   >
-                    Feeling feverish
-                  </label>
-                </div>
-                <div
-                  className="usa-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="2-val-2"
-                    name="symptom_list"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="43724002"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="2-val-2"
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="2-val-0"
+                      name="symptom_list"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="426000000"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="2-val-0"
+                    >
+                      Fever over 100.4F
+                    </label>
+                  </div>
+                  <div
+                    className="usa-checkbox"
                   >
-                    Chills
-                  </label>
-                </div>
-                <div
-                  className="usa-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="2-val-3"
-                    name="symptom_list"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="49727002"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="2-val-3"
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="2-val-1"
+                      name="symptom_list"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="103001002"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="2-val-1"
+                    >
+                      Feeling feverish
+                    </label>
+                  </div>
+                  <div
+                    className="usa-checkbox"
                   >
-                    Cough
-                  </label>
-                </div>
-                <div
-                  className="usa-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="2-val-4"
-                    name="symptom_list"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="267036007"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="2-val-4"
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="2-val-2"
+                      name="symptom_list"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="43724002"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="2-val-2"
+                    >
+                      Chills
+                    </label>
+                  </div>
+                  <div
+                    className="usa-checkbox"
                   >
-                    Shortness of breath
-                  </label>
-                </div>
-                <div
-                  className="usa-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="2-val-5"
-                    name="symptom_list"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="230145002"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="2-val-5"
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="2-val-3"
+                      name="symptom_list"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="49727002"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="2-val-3"
+                    >
+                      Cough
+                    </label>
+                  </div>
+                  <div
+                    className="usa-checkbox"
                   >
-                    Difficulty breathing
-                  </label>
-                </div>
-                <div
-                  className="usa-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="2-val-6"
-                    name="symptom_list"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="84229001"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="2-val-6"
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="2-val-4"
+                      name="symptom_list"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="267036007"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="2-val-4"
+                    >
+                      Shortness of breath
+                    </label>
+                  </div>
+                  <div
+                    className="usa-checkbox"
                   >
-                    Fatigue
-                  </label>
-                </div>
-                <div
-                  className="usa-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="2-val-7"
-                    name="symptom_list"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="68962001"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="2-val-7"
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="2-val-5"
+                      name="symptom_list"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="230145002"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="2-val-5"
+                    >
+                      Difficulty breathing
+                    </label>
+                  </div>
+                  <div
+                    className="usa-checkbox"
                   >
-                    Muscle or body aches
-                  </label>
-                </div>
-                <div
-                  className="usa-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="2-val-8"
-                    name="symptom_list"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="25064002"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="2-val-8"
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="2-val-6"
+                      name="symptom_list"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="84229001"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="2-val-6"
+                    >
+                      Fatigue
+                    </label>
+                  </div>
+                  <div
+                    className="usa-checkbox"
                   >
-                    Headache
-                  </label>
-                </div>
-                <div
-                  className="usa-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="2-val-9"
-                    name="symptom_list"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="36955009"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="2-val-9"
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="2-val-7"
+                      name="symptom_list"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="68962001"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="2-val-7"
+                    >
+                      Muscle or body aches
+                    </label>
+                  </div>
+                  <div
+                    className="usa-checkbox"
                   >
-                    New loss of taste
-                  </label>
-                </div>
-                <div
-                  className="usa-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="2-val-10"
-                    name="symptom_list"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="44169009"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="2-val-10"
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="2-val-8"
+                      name="symptom_list"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="25064002"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="2-val-8"
+                    >
+                      Headache
+                    </label>
+                  </div>
+                  <div
+                    className="usa-checkbox"
                   >
-                    New loss of smell
-                  </label>
-                </div>
-                <div
-                  className="usa-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="2-val-11"
-                    name="symptom_list"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="162397003"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="2-val-11"
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="2-val-9"
+                      name="symptom_list"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="36955009"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="2-val-9"
+                    >
+                      New loss of taste
+                    </label>
+                  </div>
+                  <div
+                    className="usa-checkbox"
                   >
-                    Sore throat
-                  </label>
-                </div>
-                <div
-                  className="usa-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="2-val-12"
-                    name="symptom_list"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="68235000"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="2-val-12"
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="2-val-10"
+                      name="symptom_list"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="44169009"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="2-val-10"
+                    >
+                      New loss of smell
+                    </label>
+                  </div>
+                  <div
+                    className="usa-checkbox"
                   >
-                    Nasal congestion
-                  </label>
-                </div>
-                <div
-                  className="usa-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="2-val-13"
-                    name="symptom_list"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="64531003"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="2-val-13"
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="2-val-11"
+                      name="symptom_list"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="162397003"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="2-val-11"
+                    >
+                      Sore throat
+                    </label>
+                  </div>
+                  <div
+                    className="usa-checkbox"
                   >
-                    Runny nose
-                  </label>
-                </div>
-                <div
-                  className="usa-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="2-val-14"
-                    name="symptom_list"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="422587007"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="2-val-14"
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="2-val-12"
+                      name="symptom_list"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="68235000"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="2-val-12"
+                    >
+                      Nasal congestion
+                    </label>
+                  </div>
+                  <div
+                    className="usa-checkbox"
                   >
-                    Nausea
-                  </label>
-                </div>
-                <div
-                  className="usa-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="2-val-15"
-                    name="symptom_list"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="422400008"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="2-val-15"
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="2-val-13"
+                      name="symptom_list"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="64531003"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="2-val-13"
+                    >
+                      Runny nose
+                    </label>
+                  </div>
+                  <div
+                    className="usa-checkbox"
                   >
-                    Vomiting
-                  </label>
-                </div>
-                <div
-                  className="usa-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="usa-checkbox__input"
-                    id="2-val-16"
-                    name="symptom_list"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="62315008"
-                  />
-                  <label
-                    className="usa-checkbox__label"
-                    htmlFor="2-val-16"
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="2-val-14"
+                      name="symptom_list"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="422587007"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="2-val-14"
+                    >
+                      Nausea
+                    </label>
+                  </div>
+                  <div
+                    className="usa-checkbox"
                   >
-                    Diarrhea
-                  </label>
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="2-val-15"
+                      name="symptom_list"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="422400008"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="2-val-15"
+                    >
+                      Vomiting
+                    </label>
+                  </div>
+                  <div
+                    className="usa-checkbox"
+                  >
+                    <input
+                      checked={false}
+                      className="usa-checkbox__input"
+                      id="2-val-16"
+                      name="symptom_list"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="62315008"
+                    />
+                    <label
+                      className="usa-checkbox__label"
+                      htmlFor="2-val-16"
+                    >
+                      Diarrhea
+                    </label>
+                  </div>
                 </div>
-              </div>
-            </fieldset>
+              </fieldset>
+            </div>
           </div>
           <div
             className="usa-form-group"
@@ -537,61 +545,65 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
             >
               No previous test data found
             </div>
-            <fieldset
-              className="usa-fieldset prime-radios"
+            <div
+              className="usa-form-group"
             >
-              <legend
-                className="usa-legend usa-sr-only"
+              <fieldset
+                className="usa-fieldset prime-radios"
               >
-                Is this your first covid test?
-              </legend>
-              <div
-                className="usa-form-group prime-radio--horizontal"
-              >
-                <div
-                  className="usa-radio prime-radio--horizontal__container"
+                <legend
+                  className="usa-legend usa-sr-only"
                 >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="4-val-YES"
-                    name="prior_test_flag"
-                    onChange={[Function]}
-                    type="radio"
-                    value="YES"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="4-val-YES"
-                  >
-                    Yes
-                  </label>
-                </div>
+                  Is this your first covid test?
+                </legend>
                 <div
-                  className="usa-radio prime-radio--horizontal__container"
+                  className="prime-radio--horizontal"
                 >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="4-val-NO"
-                    name="prior_test_flag"
-                    onChange={[Function]}
-                    type="radio"
-                    value="NO"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="4-val-NO"
+                  <div
+                    className="usa-radio prime-radio--horizontal__container"
                   >
-                    No
-                  </label>
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="4-val-YES"
+                      name="prior_test_flag"
+                      onChange={[Function]}
+                      type="radio"
+                      value="YES"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="4-val-YES"
+                    >
+                      Yes
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio prime-radio--horizontal__container"
+                  >
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="4-val-NO"
+                      name="prior_test_flag"
+                      onChange={[Function]}
+                      type="radio"
+                      value="NO"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="4-val-NO"
+                    >
+                      No
+                    </label>
+                  </div>
                 </div>
-              </div>
-            </fieldset>
+              </fieldset>
+            </div>
           </div>
         </fieldset>
       </div>
@@ -606,82 +618,86 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
           >
             Pregnancy
           </legend>
-          <fieldset
-            className="usa-fieldset prime-radios"
+          <div
+            className="usa-form-group"
           >
-            <legend
-              className="usa-legend"
+            <fieldset
+              className="usa-fieldset prime-radios"
             >
-              Currently pregnant?
-            </legend>
-            <div
-              className="usa-form-group"
-            >
-              <div
-                className="usa-radio"
+              <legend
+                className="usa-legend"
               >
-                <input
-                  checked={false}
-                  className="usa-radio__input"
-                  data-required="false"
-                  disabled={false}
-                  id="5-val-77386006"
-                  name="pregnancy"
-                  onChange={[Function]}
-                  type="radio"
-                  value="77386006"
-                />
-                <label
-                  className="usa-radio__label"
-                  htmlFor="5-val-77386006"
-                >
-                  Yes
-                </label>
-              </div>
+                Currently pregnant?
+              </legend>
               <div
-                className="usa-radio"
+                className=""
               >
-                <input
-                  checked={false}
-                  className="usa-radio__input"
-                  data-required="false"
-                  disabled={false}
-                  id="5-val-60001007"
-                  name="pregnancy"
-                  onChange={[Function]}
-                  type="radio"
-                  value="60001007"
-                />
-                <label
-                  className="usa-radio__label"
-                  htmlFor="5-val-60001007"
+                <div
+                  className="usa-radio"
                 >
-                  No
-                </label>
-              </div>
-              <div
-                className="usa-radio"
-              >
-                <input
-                  checked={false}
-                  className="usa-radio__input"
-                  data-required="false"
-                  disabled={false}
-                  id="5-val-261665006"
-                  name="pregnancy"
-                  onChange={[Function]}
-                  type="radio"
-                  value="261665006"
-                />
-                <label
-                  className="usa-radio__label"
-                  htmlFor="5-val-261665006"
+                  <input
+                    checked={false}
+                    className="usa-radio__input"
+                    data-required="false"
+                    disabled={false}
+                    id="5-val-77386006"
+                    name="pregnancy"
+                    onChange={[Function]}
+                    type="radio"
+                    value="77386006"
+                  />
+                  <label
+                    className="usa-radio__label"
+                    htmlFor="5-val-77386006"
+                  >
+                    Yes
+                  </label>
+                </div>
+                <div
+                  className="usa-radio"
                 >
-                  Prefer not to answer
-                </label>
+                  <input
+                    checked={false}
+                    className="usa-radio__input"
+                    data-required="false"
+                    disabled={false}
+                    id="5-val-60001007"
+                    name="pregnancy"
+                    onChange={[Function]}
+                    type="radio"
+                    value="60001007"
+                  />
+                  <label
+                    className="usa-radio__label"
+                    htmlFor="5-val-60001007"
+                  >
+                    No
+                  </label>
+                </div>
+                <div
+                  className="usa-radio"
+                >
+                  <input
+                    checked={false}
+                    className="usa-radio__input"
+                    data-required="false"
+                    disabled={false}
+                    id="5-val-261665006"
+                    name="pregnancy"
+                    onChange={[Function]}
+                    type="radio"
+                    value="261665006"
+                  />
+                  <label
+                    className="usa-radio__label"
+                    htmlFor="5-val-261665006"
+                  >
+                    Prefer not to answer
+                  </label>
+                </div>
               </div>
-            </div>
-          </fieldset>
+            </fieldset>
+          </div>
         </fieldset>
       </div>
       <div

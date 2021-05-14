@@ -3,7 +3,7 @@ import { Story, Meta } from "@storybook/react";
 import { CardContainer } from "./CardContainer";
 
 export default {
-  title: "App/Components/Card container",
+  title: "Components/Card/Card container",
   component: CardContainer,
   argTypes: {
     logo: { control: "boolean" },

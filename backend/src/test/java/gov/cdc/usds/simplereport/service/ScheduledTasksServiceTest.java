@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import java.util.Collections;
@@ -14,7 +15,8 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.scheduling.TaskScheduler;
+import org.springframework.boot.task.TaskSchedulerBuilder;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
 class ScheduledTasksServiceTest {
@@ -26,14 +28,17 @@ class ScheduledTasksServiceTest {
     DataHubConfig config =
         new DataHubConfig(true, "http://mock.com", 20, "NOPE", "", uploadSchedule, null);
 
-    TaskScheduler scheduler = mock(TaskScheduler.class);
+    ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+    TaskSchedulerBuilder schedulerBuilder = mock(TaskSchedulerBuilder.class);
     ArgumentCaptor<CronTrigger> captureTrigger = ArgumentCaptor.forClass(CronTrigger.class);
     ArgumentCaptor<Runnable> captureMethod = ArgumentCaptor.forClass(Runnable.class);
 
     DataHubUploaderService uploader = mock(DataHubUploaderService.class);
 
+    when(schedulerBuilder.build()).thenReturn(scheduler);
+
     Map<String, ScheduledFuture<?>> scheduledUploads =
-        new ScheduledTasksService(uploader, scheduler).scheduleUploads(config);
+        new ScheduledTasksService(uploader, schedulerBuilder).scheduleUploads(config);
     assertEquals(Set.of(cronExpression), scheduledUploads.keySet());
 
     verify(scheduler, only()).schedule(captureMethod.capture(), captureTrigger.capture());
@@ -49,17 +54,21 @@ class ScheduledTasksServiceTest {
     DataHubConfig config =
         new DataHubConfig(true, "http://mock.com", 20, "NOPE", "", Collections.emptyList(), null);
 
-    TaskScheduler scheduler = mock(TaskScheduler.class);
+    ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+    TaskSchedulerBuilder schedulerBuilder = mock(TaskSchedulerBuilder.class);
     ArgumentCaptor<CronTrigger> captureTrigger = ArgumentCaptor.forClass(CronTrigger.class);
     ArgumentCaptor<Runnable> captureMethod = ArgumentCaptor.forClass(Runnable.class);
 
     DataHubUploaderService uploader = mock(DataHubUploaderService.class);
 
+    when(schedulerBuilder.build()).thenReturn(scheduler);
+
     Map<String, ScheduledFuture<?>> scheduledUploads =
-        new ScheduledTasksService(uploader, scheduler).scheduleUploads(config);
+        new ScheduledTasksService(uploader, schedulerBuilder).scheduleUploads(config);
     assertEquals(Collections.emptyMap(), scheduledUploads);
 
-    verify(scheduler, never()).schedule(captureMethod.capture(), captureTrigger.capture());
+    verify(schedulerBuilder.build(), never())
+        .schedule(captureMethod.capture(), captureTrigger.capture());
     verify(uploader, never()).dataHubUploaderTask();
   }
 }
