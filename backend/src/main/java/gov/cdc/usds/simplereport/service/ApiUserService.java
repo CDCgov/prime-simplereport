@@ -246,7 +246,7 @@ public class ApiUserService {
         return getPatientApiUser();
       }
 
-      if (_contextHolder.isPatientRegistrationRequest()) {
+      if (_contextHolder.isPatientSelfRegistrationRequest()) {
         return getPatientRegistrationApiUser();
       }
 

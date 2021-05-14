@@ -47,7 +47,7 @@ public class PatientRegistrationController {
 
   @PostMapping("")
   public void register(@RequestBody PatientRegistration body, HttpServletRequest request) {
-    _currentPatientContextHolder.setIsPatientRegistrationRequest(true);
+    _currentPatientContextHolder.setIsPatientSelfRegistrationRequest(true);
 
     PatientRegistrationLink registrationLink =
         _patientRegLinkService.getPatientRegistrationLink(body.getRegistrationLink());
