@@ -123,12 +123,21 @@ public class AccountRequestController {
     testingDevicesSubmitted.removeIf(d -> d.toLowerCase().startsWith("other"));
     List<String> testingDeviceIds =
         testingDevicesSubmitted.stream()
-            .map(d -> Optional.ofNullable(deviceNamesToIds.get(d)).orElse(deviceModelsToIds.get(d)))
+            .map(d -> {
+              String deviceId = Optional.ofNullable(deviceNamesToIds.get(d)).orElse(deviceModelsToIds.get(d));
+              if (deviceId == null) {
+                throw RuntimeException(String.format("Submitted device=%s not registered in DB.", d));
+              }
+              return deviceId;
+            })
             .collect(Collectors.toList());
     String defaultTestingDeviceId =
         Optional.ofNullable(deviceNamesToIds.get(reqVars.get("defaultTestingDevice")))
             .orElse(deviceModelsToIds.get(reqVars.get("defaultTestingDevice")));
-
+    if (defaultTestingDeviceId == null) {
+      throw RuntimeException(String.format("Submitted default device=%s not registered in DB.", 
+          reqVars.get("defaultTestingDevice")));
+    }
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
         _dts.getTypesForFacility(defaultTestingDeviceId, testingDeviceIds);
 
