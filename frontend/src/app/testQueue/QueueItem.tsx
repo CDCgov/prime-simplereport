@@ -16,6 +16,7 @@ import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import Dropdown from "../commonComponents/Dropdown";
 import LabeledText from "../commonComponents/LabeledText";
+import TextInput from "../commonComponents/TextInput";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import { displayFullName, showNotification } from "../utils";
 import { patientPropType, devicePropType } from "../propTypes";
@@ -497,19 +498,30 @@ const QueueItem: any = ({
 
   const testDateFields =
     useCurrentDateTime === "false" ? (
-      <li className="prime-li">
-        <div className="usa-form-group">
-          <Label htmlFor="meeting-time">Test date</Label>
-          <DatePicker
-            id="meeting-time"
-            name="meeting-time"
-            defaultValue={isoDateToDatetimeLocal(dateTested)}
-            minDate="2020-01-01T00:00"
-            maxDate={moment().add(1, "days").format("YYYY-MM-DDThh:mm")} // TODO: is this a reasonable max?
-            // onChange={onDateTestedChange}
+      <>
+        <div className="prime-li tablet:grid-col-4 padding-left-1">
+          <div className="usa-form-group">
+            <Label htmlFor="meeting-time">Test date</Label>
+            <span className="usa-hint">mm/dd/yyyy</span>
+            <DatePicker
+              id="meeting-time"
+              name="meeting-time"
+              defaultValue={isoDateToDatetimeLocal(dateTested)}
+              minDate="2020-01-01T00:00"
+              maxDate={moment().add(1, "days").format("YYYY-MM-DDThh:mm")} // TODO: is this a reasonable max?
+              // onChange={onDateTestedChange}
+            />
+          </div>
+        </div>
+        <div className="prime-li tablet:grid-col-2 padding-right-1 padding-left-05">
+          <TextInput
+            label={"Test time"}
+            name={"test-time"}
+            hintText="hh:mm"
+            onChange={onDateTestedChange}
           />
         </div>
-      </li>
+      </>
     ) : null;
 
   const timer = useTestTimer(internalId, deviceTestLength);
@@ -536,77 +548,73 @@ const QueueItem: any = ({
                 <h2>{patientFullNameLastFirst}</h2>
                 <TestTimerWidget timer={timer} />
               </div>
-              <div className="usa-card__body">
-                <div className="grid-row">
-                  <ul className="prime-ul">
-                    <li className="prime-li">
-                      <LabeledText
-                        text={patient.telephone}
-                        label="Phone number"
+              <div className="margin-top-2 margin-left-2 margin-bottom-2">
+                <div className="prime-ul grid-row grid-gap">
+                  <li className="prime-li tablet:grid-col-3">
+                    <LabeledText
+                      text={patient.telephone}
+                      label="Phone number"
+                    />
+                  </li>
+                  <li className="prime-li tablet:grid-col-3">
+                    <LabeledText
+                      text={moment(patient.birthDate).format("MM/DD/yyyy")}
+                      label="Date of birth"
+                    />
+                  </li>
+                  <li className="prime-li tablet:grid-col-3">
+                    <Button
+                      variant="unstyled"
+                      label="Test questionnaire"
+                      onClick={openAoeModal}
+                    />
+                    {isAoeModalOpen && (
+                      <AoEModalForm
+                        saveButtonText="Continue"
+                        onClose={closeAoeModal}
+                        patient={patient}
+                        loadState={aoeAnswers}
+                        saveCallback={saveAoeCallback}
+                        patientLinkId={patientLinkId}
                       />
-                    </li>
-                    <li className="prime-li">
-                      <LabeledText
-                        text={moment(patient.birthDate).format("MM/DD/yyyy")}
-                        label="Date of birth"
-                      />
-                    </li>
-                    <li className="prime-li">
-                      <Button
-                        variant="unstyled"
-                        label="Test questionnaire"
-                        onClick={openAoeModal}
-                      />
-                      {isAoeModalOpen && (
-                        <AoEModalForm
-                          saveButtonText="Continue"
-                          onClose={closeAoeModal}
-                          patient={patient}
-                          loadState={aoeAnswers}
-                          saveCallback={saveAoeCallback}
-                          patientLinkId={patientLinkId}
-                        />
-                      )}
-                      <p>
-                        <AskOnEntryTag aoeAnswers={aoeAnswers} />
-                      </p>
-                    </li>
-                  </ul>
+                    )}
+                    <p>
+                      <AskOnEntryTag aoeAnswers={aoeAnswers} />
+                    </p>
+                  </li>
                 </div>
-                <div className="grid-row">
-                  <ul className="prime-ul test-information-ul">
-                    <li className="prime-li">
-                      <Dropdown
-                        options={options}
-                        label="Device"
-                        name="testDevice"
-                        selectedValue={deviceId}
-                        onChange={onDeviceChange}
-                      />
-                    </li>
-                    {testDateFields}
-                    <li className="prime-li">
-                      <Checkboxes
-                        boxes={[
-                          {
-                            value: useCurrentDateTime,
-                            label: "Use current date",
-                            checked: useCurrentDateTime === "true",
-                          },
-                        ]}
-                        className={
-                          useCurrentDateTime === "false"
-                            ? "testdate-checkbox"
-                            : ""
-                        }
-                        legend={
-                          useCurrentDateTime === "true" ? "Test date" : null
-                        }
-                        name="currentDateTime"
-                        onChange={onUseCurrentDateChange}
-                      />
-                    </li>
-                  </ul>
+                <div className="prime-ul grid-row test-information-ul">
+                  <div className="prime-li flex-align-self-end tablet:grid-col-3 padding-right-1">
+                    <Dropdown
+                      options={options}
+                      label="Device"
+                      name="testDevice"
+                      selectedValue={deviceId}
+                      onChange={onDeviceChange}
+                    />
+                  </div>
+                  {testDateFields}
+                  <div className="prime-li tablet:grid-col-3 padding-left-1">
+                    <Checkboxes
+                      boxes={[
+                        {
+                          value: useCurrentDateTime,
+                          label: "Use current date",
+                          checked: useCurrentDateTime === "true",
+                        },
+                      ]}
+                      className={
+                        useCurrentDateTime === "false"
+                          ? "testdate-checkbox"
+                          : ""
+                      }
+                      legend={
+                        useCurrentDateTime === "true" ? "Test date" : null
+                      }
+                      name="currentDateTime"
+                      onChange={onUseCurrentDateChange}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
