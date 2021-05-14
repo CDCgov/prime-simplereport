@@ -73,7 +73,7 @@ const SymptomInputs: React.FC<Props> = ({
         <>
           <Label htmlFor="meeting-time">Date of symptom onset</Label>
           <span className="usa-hint">mm/dd/yyyy</span>
-          {symptomOnsetError === "error" && (
+          {symptomOnsetError && (
             <span className="usa-error-message" role="alert">
               <span className="usa-sr-only">Error: </span>
               {symptomOnsetError}
