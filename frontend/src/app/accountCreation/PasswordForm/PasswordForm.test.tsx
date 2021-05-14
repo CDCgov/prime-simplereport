@@ -1,10 +1,43 @@
 import { render, screen, fireEvent } from "@testing-library/react";
+import { act } from "react-dom/test-utils";
+import { Provider } from "react-redux";
+import { MemoryRouter, Route } from "react-router";
+import createMockStore from "redux-mock-store";
 
 import { PasswordForm } from "./PasswordForm";
 
+const mockStore = createMockStore([]);
+
+const store = mockStore({
+  activationToken: "foo",
+});
+
+jest.mock("../AccountCreationApiService", () => ({
+  AccountCreationApi: {
+    setPassword: (activationToken: string, password: string) => {
+      return new Promise((res, rej) => {
+        if (password === "validPASS123!") {
+          res("success");
+        } else {
+          rej("utter failure");
+        }
+      });
+    },
+  },
+}));
+
 describe("PasswordForm", () => {
   beforeEach(() => {
-    render(<PasswordForm />);
+    render(
+      <MemoryRouter initialEntries={["/set-password"]}>
+        <Provider store={store}>
+          <Route path="/set-password" component={PasswordForm} />
+          <Route path="/set-recovery-question">
+            <p>Password set successfully.</p>
+          </Route>
+        </Provider>
+      </MemoryRouter>
+    );
   });
 
   const strengthLabel = (label: string) => (content: string, element: any) => {
@@ -63,6 +96,25 @@ describe("PasswordForm", () => {
     expect(screen.getByText(strengthLabel("Good"))).toBeInTheDocument();
   });
 
+  it("requires password to be valid", () => {
+    fireEvent.change(screen.getByLabelText("Password *"), {
+      target: { value: "foo" },
+    });
+    fireEvent.change(
+      screen.getByLabelText("Confirm password", { exact: false }),
+      {
+        target: { value: "foo" },
+      }
+    );
+    expect(screen.getByText(strengthLabel("Weak"))).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Continue"));
+    expect(
+      screen.getByText(
+        "Your password must have at least 8 characters, an uppercase letter, and a number"
+      )
+    ).toBeInTheDocument();
+  });
+
   it("requires passwords to match", () => {
     fireEvent.change(screen.getByLabelText("Password *"), {
       target: { value: "fooBAR123!" },
@@ -76,5 +128,39 @@ describe("PasswordForm", () => {
     expect(screen.getByText(strengthLabel("Good"))).toBeInTheDocument();
     fireEvent.click(screen.getByText("Continue"));
     expect(screen.getByText("Passwords must match")).toBeInTheDocument();
+  });
+
+  it("succeeds on submit with valid password", async () => {
+    fireEvent.change(screen.getByLabelText("Password *"), {
+      target: { value: "validPASS123!" },
+    });
+    fireEvent.change(
+      screen.getByLabelText("Confirm password", { exact: false }),
+      {
+        target: { value: "validPASS123!" },
+      }
+    );
+    expect(screen.getByText(strengthLabel("Good"))).toBeInTheDocument();
+    await act(async () => {
+      await fireEvent.click(screen.getByText("Continue"));
+    });
+    expect(screen.getByText("Password set successfully.")).toBeInTheDocument();
+  });
+
+  it("fails on submit with invalid password", async () => {
+    fireEvent.change(screen.getByLabelText("Password *"), {
+      target: { value: "INvalidPASS123!" },
+    });
+    fireEvent.change(
+      screen.getByLabelText("Confirm password", { exact: false }),
+      {
+        target: { value: "INvalidPASS123!" },
+      }
+    );
+    expect(screen.getByText(strengthLabel("Good"))).toBeInTheDocument();
+    await act(async () => {
+      await fireEvent.click(screen.getByText("Continue"));
+    });
+    expect(screen.getByText("API Error: utter failure")).toBeInTheDocument();
   });
 });

@@ -43,61 +43,59 @@ const Checkboxes = (props: Props) => {
   } = props;
 
   return (
-    <fieldset
+    <div
       className={classnames(
-        "usa-fieldset prime-checkboxes",
-        validationStatus === "error" && "usa-form-group--error",
-        props.className
+        "usa-form-group",
+        validationStatus === "error" && "usa-form-group--error"
       )}
     >
-      <legend
-        className={classnames(
-          "usa-legend",
-          validationStatus === "error" && "usa-label--error",
-          legendSrOnly && "usa-sr-only"
-        )}
+      <fieldset
+        className={classnames("usa-fieldset prime-checkboxes", props.className)}
       >
-        {required ? <Required label={legend} /> : <Optional label={legend} />}
-      </legend>
-      {validationStatus === "error" && (
-        <div className="usa-error-message" role="alert">
-          <span className="usa-sr-only">Error: </span>
-          {errorMessage}
-        </div>
-      )}
-      <UIDConsumer>
-        {(_, uid) => (
-          <div
-            className={classnames(
-              "usa-form-group",
-              validationStatus === "error" && "usa-form-group--error"
-            )}
-          >
-            {boxes.map(
-              ({ value, label, disabled, checked, ...inputProps }, i) => (
-                <div className="usa-checkbox" key={uid(i)}>
-                  <input
-                    className="usa-checkbox__input"
-                    checked={checked || checkedValues?.[value] || false}
-                    id={uid(i)}
-                    onChange={onChange}
-                    type="checkbox"
-                    value={value}
-                    name={name}
-                    ref={inputRef}
-                    disabled={disabled || props.disabled}
-                    {...inputProps}
-                  />
-                  <label className="usa-checkbox__label" htmlFor={uid(i)}>
-                    {label}
-                  </label>
-                </div>
-              )
-            )}
+        <legend
+          className={classnames(
+            "usa-legend",
+            validationStatus === "error" && "usa-label--error",
+            legendSrOnly && "usa-sr-only"
+          )}
+        >
+          {required ? <Required label={legend} /> : <Optional label={legend} />}
+        </legend>
+        {validationStatus === "error" && (
+          <div className="usa-error-message" role="alert">
+            <span className="usa-sr-only">Error: </span>
+            {errorMessage}
           </div>
         )}
-      </UIDConsumer>
-    </fieldset>
+        <UIDConsumer>
+          {(_, uid) => (
+            <div className="checkboxes">
+              {boxes.map(
+                ({ value, label, disabled, checked, ...inputProps }, i) => (
+                  <div className="usa-checkbox" key={uid(i)}>
+                    <input
+                      className="usa-checkbox__input"
+                      checked={checked || checkedValues?.[value] || false}
+                      id={uid(i)}
+                      onChange={onChange}
+                      type="checkbox"
+                      value={value}
+                      name={name}
+                      ref={inputRef}
+                      disabled={disabled || props.disabled}
+                      {...inputProps}
+                    />
+                    <label className="usa-checkbox__label" htmlFor={uid(i)}>
+                      {label}
+                    </label>
+                  </div>
+                )
+              )}
+            </div>
+          )}
+        </UIDConsumer>
+      </fieldset>
+    </div>
   );
 };
 

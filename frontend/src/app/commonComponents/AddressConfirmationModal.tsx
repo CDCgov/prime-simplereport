@@ -171,31 +171,28 @@ export const AddressConfirmationModal = <T extends string>({
       <div className="border-top border-base-lighter margin-x-neg-205"></div>
       {getAlert()}
       {addressSuggestionConfig.map((address) => (
-        <div key={address.key}>
-          <p className="address__instructions">
-            {address.label || "Please select an option to continue:"}
-          </p>
-          <RadioGroup
-            name={`addressSelect-${address.key}`}
-            className="address__select margin-top-0"
-            buttons={[
-              {
-                value: "userAddress",
-                label: getLabel(
-                  "Use address as entered",
-                  address.userEnteredAddress
-                ),
-              },
-              getSuggestedOption(address.key),
-            ]}
-            selectedRadio={selectedAddress[address.key]}
-            onChange={(v: addressOptions) => onChange(address.key, v)}
-            onBlur={() => validate(address.key)}
-            validationStatus={error.has(address.key) ? "error" : undefined}
-            variant="tile"
-            errorMessage={error.has(address.key) ? ERROR_MESSAGE : undefined}
-          />
-        </div>
+        <RadioGroup
+          key={address.key}
+          name={`addressSelect-${address.key}`}
+          legend={address.label || "Please select an option to continue:"}
+          className="address__select margin-top-0"
+          buttons={[
+            {
+              value: "userAddress",
+              label: getLabel(
+                "Use address as entered",
+                address.userEnteredAddress
+              ),
+            },
+            getSuggestedOption(address.key),
+          ]}
+          selectedRadio={selectedAddress[address.key]}
+          onChange={(v: addressOptions) => onChange(address.key, v)}
+          onBlur={() => validate(address.key)}
+          validationStatus={error.has(address.key) ? "error" : undefined}
+          variant="tile"
+          errorMessage={error.has(address.key) ? ERROR_MESSAGE : undefined}
+        />
       ))}
       <div className="margin-top-4">
         <div className="border-top border-base-lighter margin-bottom-2 margin-x-neg-205"></div>

@@ -1,7 +1,10 @@
 variable "env" {}
 variable "app_service_plan_id" {}
 variable "app_service_id" {}
-variable "action_group_id" {}
+variable "action_group_ids" {
+  description = "The IDs of the monitor action group resources to send events to"
+  type        = list(string)
+}
 
 variable "severity" {
   default = 3
@@ -22,5 +25,9 @@ variable "tags" {
 
 # Thresholds
 variable "mem_threshold" {
+  default = 70
+}
+
+variable "cpu_threshold" {
   default = 70
 }
