@@ -126,7 +126,7 @@ public class AccountRequestController {
             .map(d -> {
               String deviceId = Optional.ofNullable(deviceNamesToIds.get(d)).orElse(deviceModelsToIds.get(d));
               if (deviceId == null) {
-                throw RuntimeException(String.format("Submitted device=%s not registered in DB.", d));
+                throw new RuntimeException(String.format("Submitted device=%s not registered in DB.", d));
               }
               return deviceId;
             })
@@ -135,7 +135,7 @@ public class AccountRequestController {
         Optional.ofNullable(deviceNamesToIds.get(reqVars.get("defaultTestingDevice")))
             .orElse(deviceModelsToIds.get(reqVars.get("defaultTestingDevice")));
     if (defaultTestingDeviceId == null) {
-      throw RuntimeException(String.format("Submitted default device=%s not registered in DB.", 
+      throw new RuntimeException(String.format("Submitted default device=%s not registered in DB.", 
           reqVars.get("defaultTestingDevice")));
     }
     DeviceSpecimenTypeHolder deviceSpecimenTypes =

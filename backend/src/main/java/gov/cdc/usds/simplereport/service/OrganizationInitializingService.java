@@ -229,12 +229,6 @@ public class OrganizationInitializingService {
         initOktaUser(identity, org, authorizedFacilities, roles);
       }
     }
-    // All existing users in the DB who aren't reflected in config properties can't be
-    // integrated into the demo Okta environment because we have no way of deriving their
-    // old organization or roles (since those were stored in-memory), so just delete them.
-    _apiUserRepo.findAll().stream()
-        .filter(u -> _oktaRepo.getOrganizationRoleClaimsForUser(u.getLoginEmail()).isEmpty())
-        .forEach(u -> _apiUserRepo.delete(u));
   }
 
   public void initCurrentUser() {
