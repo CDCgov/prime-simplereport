@@ -266,9 +266,11 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             + _patientLink.getInternalId()
             + "\",\"dateOfBirth\":\""
             + dob
-            + "\",\"data\":{\"telephone\":\""
+            + "\",\"data\":{\"phoneNumbers\":"
+            + "[{\"type\":\"MOBILE\",\"number\":\""
             + newTelephone
-            + "\",\"role\":\"UNKNOWN\",\"email\":\""
+            + "\"},{\"type\":\"LANDLINE\",\"number\":\"(631) 867-5309"
+            + "\"}],\"role\":\"UNKNOWN\",\"email\":\""
             + newEmail
             + "\",\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,\"zipCode\":\"67890\"}}}";
 
