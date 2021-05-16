@@ -53,7 +53,6 @@ public class ApiUserService {
 
   private static final Logger LOG = LoggerFactory.getLogger(ApiUserService.class);
 
-  @AuthorizationConfiguration.RequireGlobalAdminUser
   public UserInfo createUser(
       String username, PersonName name, String organizationExternalId, Role role, boolean active) {
     Organization org = _orgService.getOrganization(organizationExternalId);

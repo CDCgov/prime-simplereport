@@ -4,6 +4,7 @@ import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -22,6 +23,7 @@ public class UserMutationResolver implements GraphQLMutationResolver {
     _us = us;
   }
 
+  @AuthorizationConfiguration.RequireGlobalAdminUser
   public User addUser(
       PersonName name,
       String firstName,

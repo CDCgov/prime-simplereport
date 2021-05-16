@@ -215,7 +215,6 @@ public class OrganizationService {
   }
 
   @Transactional(readOnly = false)
-  @AuthorizationConfiguration.RequireGlobalAdminUser
   public Organization createOrganization(
       String name,
       String externalId,
