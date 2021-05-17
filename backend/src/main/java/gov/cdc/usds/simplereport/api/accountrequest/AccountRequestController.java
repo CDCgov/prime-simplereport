@@ -191,17 +191,17 @@ public class AccountRequestController {
         reqVars.get("npi"));
 
     /**
-     * Note: we are sending the emails *after* creating the organization so the validation
-     * logic in the organization creation process functions as a CAPTCHA. But we are sending
-     * the emails *before* creating the user so that if sendgrid etc fails, we aren't left
-     * with an Okta entity created for the user that can't be automatically rolled back.
-     * (When we add automatic Okta rollback mechanisms down the road, this won't be an issue.)
+     * Note: we are sending the emails *after* creating the organization so the validation logic in
+     * the organization creation process functions as a CAPTCHA. But we are sending the emails
+     * *before* creating the user so that if sendgrid etc fails, we aren't left with an Okta entity
+     * created for the user that can't be automatically rolled back. (When we add automatic Okta
+     * rollback mechanisms down the road, this won't be an issue.)
      */
     // send summary email to SR support
     _es.send(sendGridProperties.getAccountRequestRecipient(), subject, body);
     // send next-steps email to requester
     _es.sendWithProviderTemplate(body.getEmail(), EmailProviderTemplate.ACCOUNT_REQUEST);
-    
+
     _aus.createUser(reqVars.get("email"), adminName, orgExternalId, Role.ADMIN, false);
   }
 }
