@@ -101,7 +101,7 @@ Array [
     </fieldset>
   </div>,
   <div
-    className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right"
+    className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right mobile-bottom mobile-footer"
   >
     <button
       className="usa-button margin-right-205"
