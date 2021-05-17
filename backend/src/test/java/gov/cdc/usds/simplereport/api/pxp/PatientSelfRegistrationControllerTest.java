@@ -20,9 +20,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-class PatientRegistrationControllerTest extends BaseFullStackTest {
+class PatientSelfRegistrationControllerTest extends BaseFullStackTest {
   @Autowired private MockMvc _mockMvc;
-  @Autowired private PatientRegistrationController _controller;
+  @Autowired private PatientSelfRegistrationController _controller;
 
   private Organization _org;
   private Facility _site;

@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-public class PatientRegistration extends PersonUpdate {
+public class PatientSelfRegistration extends PersonUpdate {
   private final String registrationLink;
   private final String lookupId;
   private final String firstName;
@@ -17,7 +17,7 @@ public class PatientRegistration extends PersonUpdate {
   private final LocalDate birthDate;
 
   @JsonCreator
-  public PatientRegistration(
+  public PatientSelfRegistration(
       @JsonProperty("registrationLink") String registrationLink,
       @JsonProperty("lookupId") String lookupId,
       @JsonProperty("firstName") String firstName,
@@ -95,7 +95,7 @@ public class PatientRegistration extends PersonUpdate {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    PatientRegistration that = (PatientRegistration) o;
+    PatientSelfRegistration that = (PatientSelfRegistration) o;
     return Objects.equals(registrationLink, that.registrationLink)
         && Objects.equals(lookupId, that.lookupId)
         && Objects.equals(firstName, that.firstName)

@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
-import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientRegistrationLinkException;
+import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientSelfRegistrationLinkException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
@@ -11,12 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 // We will likely want to want security for the others in the near future.
 @Service("patientRegistrationLinkService")
 @Transactional(readOnly = false)
-public class PatientRegistrationLinkService {
+public class PatientSelfRegistrationLinkService {
 
   private PatientRegistrationLinkRepository prlrepo;
   private CurrentPatientContextHolder contextHolder;
 
-  PatientRegistrationLinkService(
+  PatientSelfRegistrationLinkService(
       PatientRegistrationLinkRepository prlrepo,
       CurrentPatientContextHolder currentPatientContextHolder) {
     this.prlrepo = prlrepo;
@@ -24,10 +24,10 @@ public class PatientRegistrationLinkService {
   }
 
   public PatientRegistrationLink getPatientRegistrationLink(String patientRegistrationLink)
-      throws InvalidPatientRegistrationLinkException {
+      throws InvalidPatientSelfRegistrationLinkException {
     return prlrepo
         .findByPatientRegistrationLink(patientRegistrationLink)
-        .orElseThrow(() -> new InvalidPatientRegistrationLinkException());
+        .orElseThrow(() -> new InvalidPatientSelfRegistrationLinkException());
   }
 
   public boolean flagSelfRegistrationRequest() {

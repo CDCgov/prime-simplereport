@@ -225,7 +225,7 @@ public class ApiUserService {
    * The Patient Registration User should <em>always</em> exist. Originally it was created in a
    * migration, but the app shouldn't crash if that row is missing. Instead, create it!
    */
-  private ApiUser getPatientRegistrationApiUser() {
+  private ApiUser getPatientSelfRegistrationApiUser() {
     Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(PATIENT_SELF_REGISTRATION_EMAIL);
     return found.orElseGet(
         () -> {
@@ -249,7 +249,7 @@ public class ApiUserService {
       }
 
       if (_contextHolder.isPatientSelfRegistrationRequest()) {
-        return getPatientRegistrationApiUser();
+        return getPatientSelfRegistrationApiUser();
       }
 
       throw new UnidentifiedUserException();

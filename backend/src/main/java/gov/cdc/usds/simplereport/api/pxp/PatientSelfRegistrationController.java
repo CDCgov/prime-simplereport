@@ -5,9 +5,9 @@ import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
 
 import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PatientRegistration;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PatientSelfRegistration;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
-import gov.cdc.usds.simplereport.service.PatientRegistrationLinkService;
+import gov.cdc.usds.simplereport.service.PatientSelfRegistrationLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import java.util.List;
 import java.util.UUID;
@@ -26,27 +26,28 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/pxp/register")
-@PreAuthorize("@patientRegistrationLinkService.flagSelfRegistrationRequest()")
+@PreAuthorize("@patientSelfRegistrationLinkService.flagSelfRegistrationRequest()")
 @PostAuthorize("@restAuditLogManager.logRestSuccess(#request, returnObject)")
 @Validated
-public class PatientRegistrationController {
-  private static final Logger LOG = LoggerFactory.getLogger(PatientRegistrationController.class);
+public class PatientSelfRegistrationController {
+  private static final Logger LOG =
+      LoggerFactory.getLogger(PatientSelfRegistrationController.class);
 
-  private final PatientRegistrationLinkService _patientRegLinkService;
+  private final PatientSelfRegistrationLinkService _patientRegLinkService;
   private final PersonService _personService;
   private final CurrentPatientContextHolder _currentPatientContextHolder;
 
-  public PatientRegistrationController(
+  public PatientSelfRegistrationController(
       PersonService personService,
-      PatientRegistrationLinkService patientRegistrationLinkService,
+      PatientSelfRegistrationLinkService patientSelfRegistrationLinkService,
       CurrentPatientContextHolder currentPatientContextHolder) {
     _personService = personService;
-    _patientRegLinkService = patientRegistrationLinkService;
+    _patientRegLinkService = patientSelfRegistrationLinkService;
     _currentPatientContextHolder = currentPatientContextHolder;
   }
 
   @PostMapping("")
-  public void register(@RequestBody PatientRegistration body, HttpServletRequest request) {
+  public void register(@RequestBody PatientSelfRegistration body, HttpServletRequest request) {
     _currentPatientContextHolder.setIsPatientSelfRegistrationRequest(true);
 
     PatientRegistrationLink registrationLink =
