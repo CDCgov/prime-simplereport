@@ -3,6 +3,8 @@ package gov.cdc.usds.simplereport.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -30,6 +32,7 @@ import gov.cdc.usds.simplereport.service.email.EmailProvider;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
+import gov.cdc.usds.simplereport.service.model.UserInfo;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -69,7 +72,7 @@ class AccountRequestControllerTest {
   @MockBean private DeviceTypeService deviceTypeService;
   @MockBean private AddressValidationService addressValidationService;
   @MockBean private ApiUserService apiUserService;
-  @MockBean private CurrentUserContextHolder _contextHolder;
+  @MockBean private CurrentUserContextHolder contextHolder;
 
   @MockBean private EmailProvider mockSendGrid;
   @SpyBean private EmailService emailService;
@@ -177,6 +180,15 @@ class AccountRequestControllerTest {
             "facility"))
         .thenReturn(facilityAddress);
 
+    UserInfo user = mock(UserInfo.class);
+    when(apiUserService.createUser(
+            eq("kyvuzoxy@mailinator.com"),
+            any(PersonName.class),
+            anyString(),
+            eq(Role.ADMIN),
+            eq(false)))
+        .thenReturn(user);
+
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.ACCOUNT_REQUEST)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -249,6 +261,8 @@ class AccountRequestControllerTest {
     assertThat(nameCaptor.getValue().getLastName()).isEqualTo("Lopez");
     assertNull(nameCaptor.getValue().getSuffix());
     assertThat(externalIdCaptor.getValue()).startsWith("RI-Day-Hayes-Trading-");
+
+    verify(contextHolder, times(1)).setUser(user);
 
     verify(orgService, times(1))
         .createOrganization(
