@@ -1,7 +1,13 @@
 package gov.cdc.usds.simplereport.api.pxp;
 
+import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
+import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
+import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
+import static gov.cdc.usds.simplereport.api.Translators.parseRace;
+import static gov.cdc.usds.simplereport.api.Translators.parseString;
+import static gov.cdc.usds.simplereport.api.Translators.parseTribalAffiliation;
 
 import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -51,7 +57,7 @@ public class PatientSelfRegistrationController {
     _currentPatientContextHolder.setIsPatientSelfRegistrationRequest(true);
 
     PatientRegistrationLink registrationLink =
-        _patientRegLinkService.getPatientRegistrationLink(body.getRegistrationLink());
+        _patientRegLinkService.getPatientRegistrationLink(parseString(body.getRegistrationLink()));
     UUID facilityIdOrNull =
         registrationLink.getFacility() != null
             ? registrationLink.getFacility().getInternalId()
@@ -62,28 +68,27 @@ public class PatientSelfRegistrationController {
             ? body.getPhoneNumbers()
             : List.of(new PhoneNumberInput(null, parsePhoneNumber(body.getTelephone())));
 
-    // TODO: call translator parse methods
     Person p =
         _personService.addPatient(
             registrationLink.getOrganization(),
             facilityIdOrNull,
-            body.getLookupId(),
-            body.getFirstName(),
-            body.getMiddleName(),
-            body.getLastName(),
-            body.getSuffix(),
+            parseString(body.getLookupId()),
+            parseString(body.getFirstName()),
+            parseString(body.getMiddleName()),
+            parseString(body.getLastName()),
+            parseString(body.getSuffix()),
             body.getBirthDate(),
             body.getAddress(),
             parsePhoneNumbers(backwardsCompatiblePhoneNumbers),
             body.getRole(),
-            body.getEmail(),
-            body.getRace(),
-            body.getEthnicity(),
-            body.getTribalAffiliation(),
-            body.getGender(),
+            parseEmail(body.getEmail()),
+            parseRace(body.getRace()),
+            parseEthnicity(body.getEthnicity()),
+            parseTribalAffiliation(body.getTribalAffiliation()),
+            parseGender(body.getGender()),
             body.getResidentCongregateSetting(),
             body.getEmployedInHealthcare(),
-            body.getPreferredLanguage());
+            parseString(body.getPreferredLanguage()));
 
     LOG.info(
         "Patient={} self-registered from link={}", p.getInternalId(), registrationLink.getLink());

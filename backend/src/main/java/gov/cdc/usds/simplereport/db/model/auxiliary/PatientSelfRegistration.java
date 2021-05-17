@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.db.model.auxiliary;
 
+import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.cdc.usds.simplereport.api.model.PersonUpdate;
@@ -28,7 +30,7 @@ public class PatientSelfRegistration extends PersonUpdate {
       @JsonProperty("address") StreetAddress address,
       @JsonProperty("telephone") String telephone,
       @JsonProperty("phoneNumbers") List<PhoneNumberInput> phoneNumbers,
-      @JsonProperty("role") PersonRole role,
+      @JsonProperty("role") String role,
       @JsonProperty("email") String email,
       @JsonProperty("race") String race,
       @JsonProperty("ethnicity") String ethnicity,
@@ -41,7 +43,7 @@ public class PatientSelfRegistration extends PersonUpdate {
         address,
         telephone,
         phoneNumbers,
-        role,
+        parsePersonRole(role),
         email,
         race,
         ethnicity,
