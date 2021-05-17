@@ -3,12 +3,12 @@ package gov.cdc.usds.simplereport.api.accountrequest;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.ACCOUNT_REQUEST;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gov.cdc.usds.simplereport.api.CurrentUserContextHolder;
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.WaitlistRequest;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
@@ -19,6 +19,7 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
+import gov.cdc.usds.simplereport.service.model.UserInfo;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +33,7 @@ import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,6 +50,7 @@ public class AccountRequestController {
   private final EmailService _es;
   private final SendGridProperties sendGridProperties;
   private final ObjectMapper objectMapper;
+  private final CurrentUserContextHolder _contextHolder;
 
   private static final Logger LOG = LoggerFactory.getLogger(AccountRequestController.class);
 
@@ -57,7 +60,8 @@ public class AccountRequestController {
       DeviceTypeService dts,
       AddressValidationService avs,
       ApiUserService aus,
-      EmailService es) {
+      EmailService es,
+      CurrentUserContextHolder contextHolder) {
     this.sendGridProperties = sendGridProperties;
     this._os = os;
     this._dts = dts;
@@ -65,6 +69,7 @@ public class AccountRequestController {
     this._aus = aus;
     this._es = es;
     this.objectMapper = new ObjectMapper();
+    this._contextHolder = contextHolder;
   }
 
   @PostConstruct
@@ -87,6 +92,7 @@ public class AccountRequestController {
    * org
    */
   @PostMapping("")
+  @Transactional(readOnly = false)
   public void submitAccountRequest(@Valid @RequestBody AccountRequest body) throws IOException {
     String subject = "New account request";
     if (LOG.isInfoEnabled()) {
@@ -177,21 +183,22 @@ public class AccountRequestController {
             reqVars.get("organizationName").replace(' ', '-').replace(':', '-'),
             UUID.randomUUID().toString());
 
-    Organization org =
-        _os.createOrganization(
-            reqVars.get("organizationName"),
-            orgExternalId,
-            reqVars.get("facilityName"),
-            reqVars.get("cliaNumber"),
-            facilityAddress,
-            Translators.parsePhoneNumber(reqVars.get("facilityPhoneNumber")),
-            null,
-            deviceSpecimenTypes,
-            providerName,
-            providerAddress,
-            Translators.parsePhoneNumber(reqVars.get("opPhoneNumber")),
-            reqVars.get("npi"));
+    UserInfo user =
+        _aus.createUser(reqVars.get("email"), adminName, orgExternalId, Role.ADMIN, false);
+    _contextHolder.setUser(user);
 
-    _aus.createUser(reqVars.get("email"), adminName, orgExternalId, Role.ADMIN, false);
+    _os.createOrganization(
+        reqVars.get("organizationName"),
+        orgExternalId,
+        reqVars.get("facilityName"),
+        reqVars.get("cliaNumber"),
+        facilityAddress,
+        Translators.parsePhoneNumber(reqVars.get("facilityPhoneNumber")),
+        null,
+        deviceSpecimenTypes,
+        providerName,
+        providerAddress,
+        Translators.parsePhoneNumber(reqVars.get("opPhoneNumber")),
+        reqVars.get("npi"));
   }
 }

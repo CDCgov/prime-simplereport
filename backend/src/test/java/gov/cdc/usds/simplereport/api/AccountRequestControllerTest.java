@@ -69,6 +69,7 @@ class AccountRequestControllerTest {
   @MockBean private DeviceTypeService deviceTypeService;
   @MockBean private AddressValidationService addressValidationService;
   @MockBean private ApiUserService apiUserService;
+  @MockBean private CurrentUserContextHolder _contextHolder;
 
   @MockBean private EmailProvider mockSendGrid;
   @SpyBean private EmailService emailService;
@@ -235,6 +236,20 @@ class AccountRequestControllerTest {
             "13046",
             "facility");
 
+    verify(apiUserService, times(1))
+        .createUser(
+            eq("kyvuzoxy@mailinator.com"),
+            nameCaptor.capture(),
+            externalIdCaptor.capture(),
+            eq(Role.ADMIN),
+            eq(false));
+
+    assertThat(nameCaptor.getValue().getFirstName()).isEqualTo("Mary");
+    assertNull(nameCaptor.getValue().getMiddleName());
+    assertThat(nameCaptor.getValue().getLastName()).isEqualTo("Lopez");
+    assertNull(nameCaptor.getValue().getSuffix());
+    assertThat(externalIdCaptor.getValue()).startsWith("RI-Day-Hayes-Trading-");
+
     verify(orgService, times(1))
         .createOrganization(
             eq("Day Hayes Trading"),
@@ -261,20 +276,6 @@ class AccountRequestControllerTest {
     assertThat(addressCaptor.getValue().getState()).isEqualTo("AR");
     assertThat(addressCaptor.getValue().getPostalCode()).isEqualTo("43675");
     assertThat(addressCaptor.getValue().getCounty()).isEqualTo("Asperiores illum in");
-
-    verify(apiUserService, times(1))
-        .createUser(
-            eq("kyvuzoxy@mailinator.com"),
-            nameCaptor.capture(),
-            externalIdCaptor.capture(),
-            eq(Role.ADMIN),
-            eq(false));
-
-    assertThat(nameCaptor.getValue().getFirstName()).isEqualTo("Mary");
-    assertNull(nameCaptor.getValue().getMiddleName());
-    assertThat(nameCaptor.getValue().getLastName()).isEqualTo("Lopez");
-    assertNull(nameCaptor.getValue().getSuffix());
-    assertThat(externalIdCaptor.getValue()).startsWith("RI-Day-Hayes-Trading-");
   }
 
   @Test

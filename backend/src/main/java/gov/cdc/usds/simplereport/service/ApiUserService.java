@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import gov.cdc.usds.simplereport.api.CurrentUserContextHolder;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
@@ -49,7 +50,9 @@ public class ApiUserService {
 
   @Autowired private OktaRepository _oktaRepo;
 
-  @Autowired private CurrentPatientContextHolder _contextHolder;
+  @Autowired private CurrentPatientContextHolder _patientContextHolder;
+
+  @Autowired private CurrentUserContextHolder _userContextHolder;
 
   private static final Logger LOG = LoggerFactory.getLogger(ApiUserService.class);
 
@@ -186,7 +189,7 @@ public class ApiUserService {
   }
 
   private ApiUser getPatientApiUser() {
-    Person patient = _contextHolder.getPatient();
+    Person patient = _patientContextHolder.getPatient();
     if (patient == null) {
       throw new UnidentifiedUserException();
     }
@@ -209,7 +212,7 @@ public class ApiUserService {
       LOG.info(
           "Patient user with id={} self-created from link {}",
           user.getInternalId(),
-          _contextHolder.getPatientLink().getInternalId());
+          _patientContextHolder.getPatientLink().getInternalId());
       return user;
     }
   }
@@ -221,7 +224,10 @@ public class ApiUserService {
   private ApiUser getCurrentApiUser() {
     IdentityAttributes userIdentity = _supplier.get();
     if (userIdentity == null) {
-      if (_contextHolder.hasPatientLink()) {
+      if (_userContextHolder.hasBeenPopulated()) {
+        // we're in an account request interaction
+        return _userContextHolder.getUser().getWrapped();
+      } else if (_patientContextHolder.hasPatientLink()) {
         // we're in a patient experience interaction
         return getPatientApiUser();
       }
