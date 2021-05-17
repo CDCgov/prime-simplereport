@@ -72,7 +72,7 @@ class AccountRequestControllerTest {
   @MockBean private DeviceTypeService deviceTypeService;
   @MockBean private AddressValidationService addressValidationService;
   @MockBean private ApiUserService apiUserService;
-  @MockBean private CurrentUserContextHolder contextHolder;
+  @MockBean private CurrentAccountRequestContextHolder contextHolder;
 
   @MockBean private EmailProvider mockSendGrid;
   @SpyBean private EmailService emailService;
@@ -180,15 +180,6 @@ class AccountRequestControllerTest {
             "facility"))
         .thenReturn(facilityAddress);
 
-    UserInfo user = mock(UserInfo.class);
-    when(apiUserService.createUser(
-            eq("kyvuzoxy@mailinator.com"),
-            any(PersonName.class),
-            anyString(),
-            eq(Role.ADMIN),
-            eq(false)))
-        .thenReturn(user);
-
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.ACCOUNT_REQUEST)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -261,8 +252,6 @@ class AccountRequestControllerTest {
     assertThat(nameCaptor.getValue().getLastName()).isEqualTo("Lopez");
     assertNull(nameCaptor.getValue().getSuffix());
     assertThat(externalIdCaptor.getValue()).startsWith("RI-Day-Hayes-Trading-");
-
-    verify(contextHolder, times(1)).setUser(user);
 
     verify(orgService, times(1))
         .createOrganization(

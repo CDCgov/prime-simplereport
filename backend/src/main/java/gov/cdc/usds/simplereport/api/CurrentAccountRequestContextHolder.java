@@ -8,18 +8,14 @@ import org.springframework.web.context.WebApplicationContext;
 
 @Repository
 @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class CurrentUserContextHolder {
-  private UserInfo _user;
+public class CurrentAccountRequestContextHolder {
+  private boolean _isAccountRequest = false;
 
-  public UserInfo getUser() {
-    return _user;
+  public void setIsAccountRequest(boolean status) {
+    this._isAccountRequest = status;
   }
 
-  public boolean hasBeenPopulated() {
-    return _user != null;
-  }
-
-  public void setUser(UserInfo user) {
-    this._user = user;
+  public boolean isAccountRequest() {
+    return _isAccountRequest;
   }
 }

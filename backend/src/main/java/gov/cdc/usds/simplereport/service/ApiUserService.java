@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
-import gov.cdc.usds.simplereport.api.CurrentUserContextHolder;
+import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
@@ -52,7 +52,7 @@ public class ApiUserService {
 
   @Autowired private CurrentPatientContextHolder _patientContextHolder;
 
-  @Autowired private CurrentUserContextHolder _userContextHolder;
+  @Autowired private CurrentAccountRequestContextHolder _accountRequestContextHolder;
 
   private static final Logger LOG = LoggerFactory.getLogger(ApiUserService.class);
 
@@ -217,20 +217,47 @@ public class ApiUserService {
     }
   }
 
+  private static final String NOREPLY = "-noreply@simplereport.gov";
+  private static final String PATIENT_SELF_REGISTRATION_EMAIL =
+      "patient-self-registration" + NOREPLY;
+  private static final String ACCOUNT_REQUEST_EMAIL =
+      "account-request" + NOREPLY;
+
   private String getPatientIdEmail(Person patient) {
-    return patient.getInternalId() + "-noreply@simplereport.gov";
+    return patient.getInternalId() + NOREPLY;
+  }
+
+  /**
+   * The Account Request User should <em>always</em> exist.
+   */
+  private ApiUser getAccountRequestApiUser() {
+    Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(ACCOUNT_REQUEST_EMAIL);
+    return found.orElseGet(
+        () -> {
+          ApiUser magicUser =
+              new ApiUser(
+                  ACCOUNT_REQUEST_EMAIL,
+                  new PersonName("", "", "Account Request Self-Registered User", ""));
+          LOG.info(
+              "Magic patient registration user not found. Created Person={}",
+              magicUser.getInternalId());
+          _apiUserRepo.save(magicUser);
+          return magicUser;
+        });
   }
 
   private ApiUser getCurrentApiUser() {
     IdentityAttributes userIdentity = _supplier.get();
     if (userIdentity == null) {
-      if (_userContextHolder.hasBeenPopulated()) {
-        // we're in an account request interaction
-        return _userContextHolder.getUser().getWrapped();
-      } else if (_patientContextHolder.hasPatientLink()) {
+      if (_patientContextHolder.hasPatientLink()) {
         // we're in a patient experience interaction
         return getPatientApiUser();
       }
+
+      if (_accountRequestContextHolder.isAccountRequest()) {
+        return getAccountRequestApiUser();
+      }
+      
       throw new UnidentifiedUserException();
     }
 
