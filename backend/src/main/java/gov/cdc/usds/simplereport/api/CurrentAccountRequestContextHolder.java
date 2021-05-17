@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api;
 
-import gov.cdc.usds.simplereport.service.model.UserInfo;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Repository;
