@@ -777,72 +777,6 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     runQuery("users-query", "Current user does not have permission to request [/users]");
   }
 
-  @Test
-  void getUser_adminUser_success() {
-    useOrgAdmin();
-
-    // necessary to get user id
-    List<ObjectNode> usersRetrieved = fetchUserList();
-    assertTrue(usersRetrieved.size() >= 2);
-
-    ObjectNode nobodyUserFromList =
-        usersRetrieved.stream()
-            .filter(node -> "nobody@example.com".equals(node.get("email").asText()))
-            .findAny()
-            .get();
-
-    String nobodyUserId = nobodyUserFromList.get("id").asText();
-
-    // this is the query being tested
-    JsonNode userRetrieved = runQuery("user-query", getGetUserVariables(nobodyUserId)).get("user");
-
-    assertEquals(
-        nobodyUserFromList.get("firstName").asText(), userRetrieved.get("firstName").asText());
-    assertEquals(nobodyUserFromList.get("email").asText(), userRetrieved.get("email").asText());
-    assertEquals("DIS_ORG", userRetrieved.get("organization").get("externalId").asText());
-    assertEquals(
-        EnumSet.of(
-            UserPermission.UPDATE_TEST,
-            UserPermission.START_TEST,
-            UserPermission.SEARCH_PATIENTS,
-            UserPermission.SUBMIT_TEST),
-        extractPermissionsFromUser((ObjectNode) userRetrieved));
-  }
-
-  @Test
-  void getUser_adminUserWrongOrg_failure() {
-    useOrgAdmin();
-
-    // necessary to get user id
-    List<ObjectNode> usersRetrieved = fetchUserList();
-    assertTrue(usersRetrieved.size() >= 2);
-
-    ObjectNode nobodyUserFromList =
-        usersRetrieved.stream()
-            .filter(node -> "nobody@example.com".equals(node.get("email").asText()))
-            .findAny()
-            .get();
-
-    String nobodyUserId = nobodyUserFromList.get("id").asText();
-
-    // user has permission to make the query, but not to access the user
-    useOutsideOrgAdmin();
-    runQuery(
-        "user-query",
-        getGetUserVariables(nobodyUserId),
-        "Current user does not have permission for this action");
-  }
-
-  @Test
-  void getUser_orgUser_failure() {
-    // user id doesn't matter since requester doesn't have permission anyway
-    UUID randomUUID = UUID.randomUUID();
-    runQuery(
-        "user-query",
-        getGetUserVariables(randomUUID.toString()),
-        "Current user does not have permission to request [/user]");
-  }
-
   private List<ObjectNode> toList(ArrayNode arr) {
     List<ObjectNode> list = new ArrayList<>();
     for (int i = 0; i < arr.size(); i++) {
@@ -901,11 +835,6 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             .put("middleName", middleName)
             .put("lastName", lastName)
             .put("suffix", suffix);
-    return variables;
-  }
-
-  private ObjectNode getGetUserVariables(String id) {
-    ObjectNode variables = JsonNodeFactory.instance.objectNode().put("id", id);
     return variables;
   }
 

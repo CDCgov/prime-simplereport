@@ -4,6 +4,7 @@ import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.Role;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -156,6 +157,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     return new ApiFacility(facility);
   }
 
+  @AuthorizationConfiguration.RequireGlobalAdminUser
   public ApiOrganization createOrganization(
       String name,
       String externalId,
@@ -228,7 +230,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             providerAddress,
             Translators.parsePhoneNumber(orderingProviderTelephone),
             orderingProviderNPI);
-    _aus.createUser(adminEmail, adminName, externalId, Role.ADMIN);
+    _aus.createUser(adminEmail, adminName, externalId, Role.ADMIN, true);
     List<Facility> facilities = _os.getFacilities(org);
     return new ApiOrganization(org, facilities);
   }

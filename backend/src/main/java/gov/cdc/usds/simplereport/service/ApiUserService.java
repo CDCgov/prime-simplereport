@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
@@ -49,31 +50,34 @@ public class ApiUserService {
 
   @Autowired private OktaRepository _oktaRepo;
 
-  @Autowired private CurrentPatientContextHolder _contextHolder;
+  @Autowired private CurrentPatientContextHolder _patientContextHolder;
+
+  @Autowired private CurrentAccountRequestContextHolder _accountRequestContextHolder;
 
   private static final Logger LOG = LoggerFactory.getLogger(ApiUserService.class);
 
-  @AuthorizationConfiguration.RequireGlobalAdminUser
   public UserInfo createUser(
-      String username, PersonName name, String organizationExternalId, Role role) {
+      String username, PersonName name, String organizationExternalId, Role role, boolean active) {
     Organization org = _orgService.getOrganization(organizationExternalId);
-    return createUserHelper(username, name, org, role);
+    return createUserHelper(username, name, org, role, active);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
-  public UserInfo createUserInCurrentOrg(String username, PersonName name, Role role) {
+  public UserInfo createUserInCurrentOrg(
+      String username, PersonName name, Role role, boolean active) {
     Organization org = _orgService.getCurrentOrganization();
-    return createUserHelper(username, name, org, role);
+    return createUserHelper(username, name, org, role, true);
   }
 
-  private UserInfo createUserHelper(String username, PersonName name, Organization org, Role role) {
+  private UserInfo createUserHelper(
+      String username, PersonName name, Organization org, Role role, boolean active) {
     IdentityAttributes userIdentity = new IdentityAttributes(username, name);
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
     // for now, all new users have no access to any facilities by default unless they are admins
     Set<OrganizationRole> roles =
         EnumSet.of(role.toOrganizationRole(), OrganizationRole.getDefault());
     Optional<OrganizationRoleClaims> roleClaims =
-        _oktaRepo.createUser(userIdentity, org, Set.of(), roles);
+        _oktaRepo.createUser(userIdentity, org, Set.of(), roles, active);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
     boolean isAdmin = isAdmin(apiUser);
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
@@ -185,7 +189,7 @@ public class ApiUserService {
   }
 
   private ApiUser getPatientApiUser() {
-    Person patient = _contextHolder.getPatient();
+    Person patient = _patientContextHolder.getPatient();
     if (patient == null) {
       throw new UnidentifiedUserException();
     }
@@ -208,22 +212,49 @@ public class ApiUserService {
       LOG.info(
           "Patient user with id={} self-created from link {}",
           user.getInternalId(),
-          _contextHolder.getPatientLink().getInternalId());
+          _patientContextHolder.getPatientLink().getInternalId());
       return user;
     }
   }
 
+  private static final String NOREPLY = "-noreply@simplereport.gov";
+  private static final String PATIENT_SELF_REGISTRATION_EMAIL =
+      "patient-self-registration" + NOREPLY;
+  private static final String ACCOUNT_REQUEST_EMAIL = "account-request" + NOREPLY;
+
   private String getPatientIdEmail(Person patient) {
-    return patient.getInternalId() + "-noreply@simplereport.gov";
+    return patient.getInternalId() + NOREPLY;
+  }
+
+  /** The Account Request User should <em>always</em> exist. */
+  private ApiUser getAccountRequestApiUser() {
+    Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(ACCOUNT_REQUEST_EMAIL);
+    return found.orElseGet(
+        () -> {
+          ApiUser magicUser =
+              new ApiUser(
+                  ACCOUNT_REQUEST_EMAIL,
+                  new PersonName("", "", "Account Request Self-Registration User", ""));
+          _apiUserRepo.save(magicUser);
+          LOG.info(
+              "Magic account request self-registration user not found. Created Person={}",
+              magicUser.getInternalId());
+          return magicUser;
+        });
   }
 
   private ApiUser getCurrentApiUser() {
     IdentityAttributes userIdentity = _supplier.get();
     if (userIdentity == null) {
-      if (_contextHolder.hasPatientLink()) {
+      if (_patientContextHolder.hasPatientLink()) {
         // we're in a patient experience interaction
         return getPatientApiUser();
       }
+
+      if (_accountRequestContextHolder.isAccountRequest()) {
+        return getAccountRequestApiUser();
+      }
+
       throw new UnidentifiedUserException();
     }
 
