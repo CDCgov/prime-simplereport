@@ -34,7 +34,7 @@ export const MfaSmsVerify = () => {
         </p>
         <div className="display-flex">
           <TextInput
-            className="flex-fill"
+            className="flex-fill margin-top-0"
             label={"One-time security code"}
             name={"security-code"}
             type={"tel"}
