@@ -1,0 +1,79 @@
+
+@mixin for-size($size) {
+  @if $size == phone {
+    @media only screen and (max-width: 767px) {
+      @content;
+    }
+  }
+
+  @if $size == phone-landscape {
+    @media only screen and (max-width: 767px) and (orientation: landscape) {
+      @content;
+    }
+  }
+
+  @if $size == phone-landscape-lg {
+    @media only screen and (max-width: 880px) and (orientation: landscape) {
+      @content;
+    }
+  }
+
+  @if $size == phone-sm {
+    @media only screen and (min-width: 600px) {
+      @content;
+    }
+  }
+
+  @if $size == phone-xs {
+    @media only screen and (max-width: 600px) {
+      @content;
+    }
+  }
+
+  @if $size == tablet-or-phone {
+    @media only screen and (max-width: 1024px) {
+      @content;
+    }
+  }
+
+  @if $size == tablet {
+    @media only screen and (min-width: 768px) and (max-width: 1024px) {
+      @content;
+    }
+  }
+
+  @if $size == tablet-md {
+    @media only screen and (min-width: 768px) and (max-width: 870px) {
+      @content;
+    }
+  }
+
+  @if $size == desktop {
+    @media only screen and (min-width: 1024px) {
+      @content;
+    }
+  }
+
+  @if $size == desktop-lg {
+    @media only screen and (min-width: 1920px) {
+      @content;
+    }
+  }
+
+  @if $size == desktop-md {
+    @media only screen and (min-width: 1440px) and (max-width: 1919px) {
+      @content;
+    }
+  }
+
+  @if $size == desktop-sm {
+    @media only screen and (min-width: 1024px) and (max-width: 1439px) {
+      @content;
+    }
+  }
+}
+
+@mixin reset-spacing() {
+  margin: 0;
+  padding: 0;
+}
