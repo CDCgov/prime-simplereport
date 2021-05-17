@@ -14,8 +14,11 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
 
 /**
@@ -61,7 +64,17 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   private List<String> tribalAffiliation;
 
   @Column private String ethnicity;
-  @Column private String telephone;
+
+  /**
+   * Note that for the purposes of all upserts, the <em>first</em> phone number in a
+   * List<PhoneNumber> is considered to be the primary
+   */
+  @OneToOne(fetch = FetchType.EAGER)
+  private PhoneNumber primaryPhone;
+
+  @OneToMany(mappedBy = "person")
+  private List<PhoneNumber> phoneNumbers;
+
   @Column private String email;
 
   @Column(nullable = true)
@@ -94,7 +107,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       String suffix,
       LocalDate birthDate,
       StreetAddress address,
-      String telephone,
       PersonRole role,
       String email,
       String race,
@@ -107,7 +119,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.lookupId = lookupId;
     this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
     this.birthDate = birthDate;
-    this.telephone = telephone;
     this.address = address;
     this.role = role;
     this.email = email;
@@ -134,7 +145,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       String suffix,
       LocalDate birthDate,
       StreetAddress address,
-      String telephone,
       PersonRole role,
       String email,
       String race,
@@ -149,7 +159,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.nameInfo.setLastName(lastName);
     this.nameInfo.setSuffix(suffix);
     this.birthDate = birthDate;
-    this.telephone = telephone;
     this.address = address;
     this.role = role;
     this.email = email;
@@ -167,6 +176,10 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   public void setFacility(Facility f) {
     facility = f;
+  }
+
+  public void setPrimaryPhone(PhoneNumber phoneNumber) {
+    this.primaryPhone = phoneNumber;
   }
 
   public String getLookupId() {
@@ -202,7 +215,14 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   }
 
   public String getTelephone() {
-    return telephone;
+    if (primaryPhone == null) {
+      return "";
+    }
+    return primaryPhone.getNumber();
+  }
+
+  public List<PhoneNumber> getPhoneNumbers() {
+    return phoneNumbers;
   }
 
   public String getEmail() {
