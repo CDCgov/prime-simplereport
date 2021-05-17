@@ -1,3 +1,5 @@
+@import "./mixins";
+
 .prime-home {
   background-color: color("base-lightest");
   padding-top: units(2);
@@ -331,10 +333,9 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 //test queue search
 .results-dropdown {
   height: auto;
-  max-height:
-    calc(
-      100vh - #{units(6)} - #{$results-dropdown-spacing}
-    ); // uses header height on small screens// uses header height on small screens
+  max-height: calc(
+    100vh - #{units(6)} - #{$results-dropdown-spacing}
+  ); // uses header height on small screens// uses header height on small screens
   overflow-y: auto;
   position: absolute;
   top: units(4);
@@ -899,8 +900,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   }
 
   .usa-step-indicator__segment::before {
-    box-shadow:
-      inset 0 0 0 units(0.5) color("base-lighter"),
+    box-shadow: inset 0 0 0 units(0.5) color("base-lighter"),
       0 0 0 0.25rem color("base-lightest");
   }
 
@@ -947,10 +947,9 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   margin-right: units(-2.5);
   padding-right: units(2);
   padding-top: units(1);
-  width:
-    calc(
-      #{units("tablet")} - #{units(2)} - #{units(1px)}
-    ); // tablet - margin - border
+  width: calc(
+    #{units("tablet")} - #{units(2)} - #{units(1px)}
+  ); // tablet - margin - border
 }
 
 .sr-time-of-test-buttons-footer {
@@ -1015,4 +1014,26 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 .usa-label {
   margin-top: 0;
+}
+
+@include for-size(phone) {
+  .modal__footer--sticky {
+    bottom: 0;
+    z-index: 1;
+    position: absolute;
+    width: 100%;
+    right: 0;
+    padding: 0 units(2.5);
+  }
+
+  .aoe-modal__footer {
+    @include reset-spacing();
+    width: 100%;
+  }
+
+  [aria-label="Test questionnaire"] {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+  }
 }
