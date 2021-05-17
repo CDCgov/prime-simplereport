@@ -74,7 +74,7 @@ Array [
   <label
     className="usa-label"
     data-testid="label"
-    htmlFor="meeting-time"
+    htmlFor="prior_test_date"
   >
     Date of most recent test
   </label>,
