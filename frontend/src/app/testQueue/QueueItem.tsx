@@ -490,7 +490,9 @@ const QueueItem: any = ({
             <DatePicker
               id="meeting-time"
               name="meeting-time"
-              defaultValue={selectedDate.toISOString()}
+              defaultValue={selectedDate.format(
+                moment.HTML5_FMT.DATETIME_LOCAL
+              )}
               minDate="2020-01-01T00:00"
               maxDate={moment().add(1, "days").format("YYYY-MM-DDThh:mm")} // TODO: is this a reasonable max?
               onChange={(date) => {
