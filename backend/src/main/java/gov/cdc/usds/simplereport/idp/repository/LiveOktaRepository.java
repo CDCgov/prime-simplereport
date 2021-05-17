@@ -384,12 +384,15 @@ public class LiveOktaRepository implements OktaRepository {
     }
 
     String orgName = facility.getOrganization().getOrganizationName();
+    String facilityGroupName = generateFacilityGroupName(orgExternalId, facility.getInternalId());
     Group g =
         GroupBuilder.instance()
-            .setName(generateFacilityGroupName(orgExternalId, facility.getInternalId()))
+            .setName(facilityGroupName)
             .setDescription(generateFacilityGroupDescription(orgName, facility.getFacilityName()))
             .buildAndCreate(_client);
     _app.createApplicationGroupAssignment(g.getId());
+
+    LOG.info("Created Okta group={}", facilityGroupName);
 
     _app.update();
   }
