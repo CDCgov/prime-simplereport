@@ -513,7 +513,7 @@ const QueueItem: any = ({
             />
           </div>
         </div>
-        <div className="prime-li tablet:grid-col-2 padding-right-1 padding-left-05">
+        <div className="prime-li tablet:grid padding-right-1 padding-left-05">
           <TextInput
             label={"Test time"}
             name={"test-time"}
@@ -596,7 +596,7 @@ const QueueItem: any = ({
                     />
                   </div>
                   {testDateFields}
-                  <div className="prime-li tablet:grid-col-3 padding-left-1">
+                  <div className="prime-li tablet:grid-col padding-left-1">
                     <Checkboxes
                       boxes={[
                         {

@@ -209,7 +209,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     </div>
                   </div>
                   <div
-                    class="prime-li tablet:grid-col-3 padding-left-1"
+                    class="prime-li tablet:grid-col padding-left-1"
                   >
                     <div
                       class="usa-form-group"
@@ -510,7 +510,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     </div>
                   </div>
                   <div
-                    class="prime-li tablet:grid-col-3 padding-left-1"
+                    class="prime-li tablet:grid-col padding-left-1"
                   >
                     <div
                       class="usa-form-group"
