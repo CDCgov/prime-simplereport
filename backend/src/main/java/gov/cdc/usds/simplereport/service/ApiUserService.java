@@ -237,8 +237,8 @@ public class ApiUserService {
                   new PersonName("", "", "Account Request Self-Registration User", ""));
           _apiUserRepo.save(magicUser);
           LOG.info(
-            "Magic account request self-registration user not found. Created Person={}",
-            magicUser.getInternalId());
+              "Magic account request self-registration user not found. Created Person={}",
+              magicUser.getInternalId());
           return magicUser;
         });
   }
