@@ -234,11 +234,11 @@ public class ApiUserService {
           ApiUser magicUser =
               new ApiUser(
                   ACCOUNT_REQUEST_EMAIL,
-                  new PersonName("", "", "Account Request Self-Registered User", ""));
-          LOG.info(
-              "Magic patient registration user not found. Created Person={}",
-              magicUser.getInternalId());
+                  new PersonName("", "", "Account Request Self-Registration User", ""));
           _apiUserRepo.save(magicUser);
+          LOG.info(
+            "Magic account request self-registration user not found. Created Person={}",
+            magicUser.getInternalId());
           return magicUser;
         });
   }
