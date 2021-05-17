@@ -84,8 +84,8 @@ const App = () => {
   }
 
   if (error) {
-    console.log("[SERVER ERROR]: ", error )
-    return <p>Server connection error...</p>
+    console.log("[SERVER ERROR]: ", error);
+    return <p>Server connection error...</p>;
   }
 
   return (
