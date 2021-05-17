@@ -220,16 +220,13 @@ public class ApiUserService {
   private static final String NOREPLY = "-noreply@simplereport.gov";
   private static final String PATIENT_SELF_REGISTRATION_EMAIL =
       "patient-self-registration" + NOREPLY;
-  private static final String ACCOUNT_REQUEST_EMAIL =
-      "account-request" + NOREPLY;
+  private static final String ACCOUNT_REQUEST_EMAIL = "account-request" + NOREPLY;
 
   private String getPatientIdEmail(Person patient) {
     return patient.getInternalId() + NOREPLY;
   }
 
-  /**
-   * The Account Request User should <em>always</em> exist.
-   */
+  /** The Account Request User should <em>always</em> exist. */
   private ApiUser getAccountRequestApiUser() {
     Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(ACCOUNT_REQUEST_EMAIL);
     return found.orElseGet(
@@ -257,7 +254,7 @@ public class ApiUserService {
       if (_accountRequestContextHolder.isAccountRequest()) {
         return getAccountRequestApiUser();
       }
-      
+
       throw new UnidentifiedUserException();
     }
 
