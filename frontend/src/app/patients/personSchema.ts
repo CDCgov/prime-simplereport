@@ -125,11 +125,7 @@ export const personSchema: yup.SchemaOf<RequiredPersonFields> = yup.object({
   firstName: yup.string().required(),
   middleName: yup.string().nullable(),
   lastName: yup.string().required(),
-  birthDate: yup
-    .date()
-    .required()
-    .max(new Date(), "Date cannot be in the future")
-    .min(new Date("1-1-1900"), "Date cannot be less than 1900"),
+  birthDate: yup.date().required().max(new Date()).min(new Date("1/1/1900")),
   facilityId: yup.string().nullable().min(1) as any,
   ...updateFieldSchemata,
 });
