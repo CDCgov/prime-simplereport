@@ -1,21 +1,23 @@
+import { MockedProvider } from "@apollo/client/testing";
+
 import "../src/styles/App.css";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
   backgrounds: {
-    default: 'white',
+    default: "white",
     values: [
       {
-        name: 'white',
-        value: '#fff',
+        name: "white",
+        value: "#fff",
       },
       {
-        name: 'light gray',
-        value: '#f0f0f0',
+        name: "light gray",
+        value: "#f0f0f0",
       },
       {
-        name: 'dark',
-        value: '#1b1b1b',
+        name: "dark",
+        value: "#1b1b1b",
       },
     ],
   },
@@ -24,5 +26,8 @@ export const parameters = {
       color: /(background|color)$/i,
       date: /Date$/,
     },
+  },
+  apolloClient: {
+    MockedProvider,
   },
 };

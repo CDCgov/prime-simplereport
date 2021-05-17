@@ -183,7 +183,7 @@ const isoDateToDatetimeLocal = (isoDateString: string | undefined) => {
   return datetimeLocalString;
 };
 
-interface QueueItemProps {
+export interface QueueItemProps {
   internalId: string;
   patient: {
     internalId: string;
