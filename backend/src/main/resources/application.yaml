@@ -25,8 +25,8 @@ spring:
     store-type: jdbc
     timeout: 15m
     jdbc:
-        initialize-schema: never
-        table-name: ${spring.jpa.properties.hibernate.default_schema}.spring_session
+      initialize-schema: never
+      table-name: ${spring.jpa.properties.hibernate.default_schema}.spring_session
 graphql:
   servlet:
     mapping: /graphql
@@ -75,7 +75,7 @@ simple-report:
     account-request-recipient:
       - support@simplereport.gov
       - Protect-ServiceDesk@hhs.gov
-    waitlist-recipient: 
+    waitlist-recipient:
       - support@simplereport.gov
     dynamic-templates:
       # The templates are added and edited at: https://mc.sendgrid.com/dynamic-templates
@@ -84,6 +84,8 @@ simple-report:
       # The values of the map are the GUID value for the Dynamic Template (also found in the SendGrid web
       # app).  New versions of the template do not change this value.
       ACCOUNT_REQUEST: d-7b0c7810ce5643f295e169f38b8db015
+  dynamics:
+    enabled: false
   cors:
     allowed-methods:
       - GET

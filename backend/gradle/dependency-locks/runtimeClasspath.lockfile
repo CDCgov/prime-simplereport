@@ -16,6 +16,7 @@ com.fasterxml.jackson.module:jackson-module-parameter-names:2.11.3
 com.fasterxml:classmate:1.5.1
 com.github.stephenc.jcip:jcip-annotations:1.0-1
 com.google.code.findbugs:jsr305:1.3.9
+com.google.code.gson:gson:2.8.6
 com.google.http-client:google-http-client-jackson2:1.21.0
 com.google.http-client:google-http-client:1.21.0
 com.googlecode.libphonenumber:libphonenumber:8.12.15
@@ -33,6 +34,7 @@ com.graphql-java-kickstart:graphql-spring-boot-starter:11.0.0
 com.graphql-java:graphql-java-extended-validation:16.0.0
 com.graphql-java:graphql-java:16.1
 com.graphql-java:java-dataloader:2.2.3
+com.microsoft.azure:adal4j:1.6.7
 com.microsoft.azure:applicationinsights-core:2.6.2
 com.nimbusds:content-type:2.1
 com.nimbusds:lang-tag:1.4.4
