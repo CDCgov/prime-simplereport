@@ -80,6 +80,7 @@ describe("SelfRegistration", () => {
       });
     });
     screen.getAllByLabelText("No").forEach(fireEvent.click);
+    fireEvent.click(screen.getByLabelText("Mobile"));
     fireEvent.click(screen.getByText("Submit"));
     await screen.findByText("Address validation");
     fireEvent.click(screen.getByLabelText("Use address", { exact: false }));
@@ -95,7 +96,7 @@ const filledForm = {
   "Middle name": faker.name.middleName(),
   "Last name": faker.name.lastName(),
   "Date of birth": "1970-09-22",
-  "Phone number": "7038675309",
+  "Primary phone number": "7038675309",
   "Street address 1": faker.address.streetAddress(),
   State: "MD",
   "Zip code": "12345",
