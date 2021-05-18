@@ -2075,11 +2075,3 @@ databaseChangeLog:
                   primary_phone_internal_id = pn.internal_id
                 FROM ${database.defaultSchemaName}.phone_number pn
                 WHERE p.internal_id=pn.person_internal_id;
-  - changeSet:
-      id: rename-patient-self-registration-link
-      author: adam@skylight.digital
-      comment: Rename patient_registration_link to patient_self_registration_link
-      changes:
-          - renameTable:
-              oldTableName: patient_registration_link
-              newTableName: patient_self_registration_link

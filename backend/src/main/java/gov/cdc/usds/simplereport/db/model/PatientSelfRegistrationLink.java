@@ -4,8 +4,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "patient_registration_link")
 public class PatientSelfRegistrationLink extends EternalAuditedEntity {
   @OneToOne(optional = true)
   @JoinColumn(name = "facility_id")
