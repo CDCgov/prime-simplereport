@@ -381,7 +381,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
     padding-right: units(2.5);
   }
 
-  .usa-select,
   .usa-form-group {
     @include at-media("desktop") {
       margin-top: 0;
