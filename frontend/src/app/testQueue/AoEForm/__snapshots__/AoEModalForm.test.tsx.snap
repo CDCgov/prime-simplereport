@@ -101,7 +101,7 @@ Array [
     </fieldset>
   </div>,
   <div
-    className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right modal__submit--container"
+    className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right aoe-modal__submit-container"
   >
     <button
       className="usa-button margin-right-205"
