@@ -13,7 +13,7 @@ describe("MFA Email", () => {
     });
     fireEvent.click(screen.getByText("Send code"));
     expect(
-      screen.queryByText("Email address is invalid")
+      screen.queryByText("Enter a valid email address")
     ).not.toBeInTheDocument();
   });
 
@@ -24,7 +24,7 @@ describe("MFA Email", () => {
 
   it("requires a valid email", () => {
     fireEvent.change(screen.getByLabelText("Email address", { exact: false }), {
-      target: { value: "name@email.com" },
+      target: { value: "notanemail" },
     });
     fireEvent.click(screen.getByText("Send code"));
     expect(screen.getByText("Enter a valid email address")).toBeInTheDocument();
