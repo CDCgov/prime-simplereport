@@ -6,7 +6,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
+import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -173,8 +173,8 @@ public class InitialSetupProperties {
       this.organizationExternalId = organizationExternalId;
     }
 
-    public PatientRegistrationLink makePatientRegistrationLink(Organization org, String link) {
-      return new PatientRegistrationLink(org, link);
+    public PatientSelfRegistrationLink makePatientRegistrationLink(Organization org, String link) {
+      return new PatientSelfRegistrationLink(org, link);
     }
 
     public String getLink() {
