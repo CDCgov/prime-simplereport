@@ -11,7 +11,6 @@ import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,11 +74,8 @@ public class UserAccountCreationController {
   @PostMapping("/set-recovery-question")
   public void setRecoveryQuestions(
       @RequestBody SetRecoveryQuestionRequest requestBody, HttpServletRequest request) {
-        String userId = getUserId(request.getSession());
-    _oktaAuth.setRecoveryQuestion(
-        userId,
-        requestBody.getQuestion(),
-        requestBody.getAnswer());
+    String userId = getUserId(request.getSession());
+    _oktaAuth.setRecoveryQuestion(userId, requestBody.getQuestion(), requestBody.getAnswer());
   }
 
   /**
@@ -92,10 +88,8 @@ public class UserAccountCreationController {
   @PostMapping("/enroll-sms-mfa")
   public void enrollSmsMfa(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
       throws OktaAuthenticationFailureException {
-        String userId = getUserId(request.getSession());
-    String factorId =
-        _oktaAuth.enrollSmsMfa(
-            userId, requestBody.getUserInput());
+    String userId = getUserId(request.getSession());
+    String factorId = _oktaAuth.enrollSmsMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute("factorId", factorId);
   }
 
@@ -168,7 +162,8 @@ public class UserAccountCreationController {
     if (userId != null) {
       return userId.toString();
     } else {
-      throw new OktaAuthenticationFailureException("User id not found; user could not be authenticated.");
+      throw new OktaAuthenticationFailureException(
+          "User id not found; user could not be authenticated.");
     }
   }
 }

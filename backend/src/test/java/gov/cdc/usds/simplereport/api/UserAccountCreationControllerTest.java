@@ -2,10 +2,12 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import gov.cdc.usds.simplereport.api.apiuser.UserAccountCreationController;
+import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication;
@@ -216,14 +218,22 @@ class UserAccountCreationControllerTest {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder enrollSmsMfaBuilder =
-    post(ResourceLinks.USER_ENROLL_SMS_MFA)
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .accept(MediaType.APPLICATION_JSON)
-        .characterEncoding("UTF-8")
-        .content(VALID_ENROLL_SMS_MFA_REQUEST)
-        .session(session);
+        post(ResourceLinks.USER_ENROLL_SMS_MFA)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(VALID_ENROLL_SMS_MFA_REQUEST)
+            .session(session);
 
-    this._mockMvc.perform(enrollSmsMfaBuilder).andExpect(status().isForbidden());
+    this._mockMvc.perform(enrollSmsMfaBuilder).andExpect(status().is5xxServerError());
+
+    // Exception exception = assertThrows(OktaAuthenticationFailureException.class, 
+    //     () -> {
+    //         this._mockMvc.perform(enrollSmsMfaBuilder);
+    //     }
+    // );
+    // assertThat(exception.getMessage()).isEqualTo("User id not found; user could not be authenticated.");
+
+
   }
-
 }
