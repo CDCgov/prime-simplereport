@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientPreferences;
+import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person.SpecField;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
@@ -205,32 +206,34 @@ public class PersonService {
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
       String preferredLanguage) {
-    return addPatient(
-        _os.getCurrentOrganization(),
-        facilityId,
-        lookupId,
-        firstName,
-        middleName,
-        lastName,
-        suffix,
-        birthDate,
-        address,
-        phoneNumbers,
-        role,
-        email,
-        race,
-        ethnicity,
-        tribalAffiliation,
-        gender,
-        residentCongregateSetting,
-        employedInHealthcare,
-        preferredLanguage);
+    Person newPatient =
+        new Person(
+            _os.getCurrentOrganization(),
+            lookupId,
+            firstName,
+            middleName,
+            lastName,
+            suffix,
+            birthDate,
+            address,
+            role,
+            email,
+            race,
+            ethnicity,
+            Arrays.asList(tribalAffiliation),
+            gender,
+            residentCongregateSetting,
+            employedInHealthcare);
+    updatePersonFacility(newPatient, facilityId);
+    Person savedPerson = _repo.save(newPatient);
+    upsertPreferredLanguage(savedPerson, preferredLanguage);
+    updatePhoneNumbers(newPatient, phoneNumbers);
+    return savedPerson;
   }
 
   // IMPLICIT AUTHORIZATION: this is used for self-registration
   public Person addPatient(
-      Organization organization,
-      UUID facilityId,
+      PatientSelfRegistrationLink link,
       String lookupId,
       String firstName,
       String middleName,
@@ -250,7 +253,7 @@ public class PersonService {
       String preferredLanguage) {
     Person newPatient =
         new Person(
-            organization,
+            link.getOrganization(),
             lookupId,
             firstName,
             middleName,
@@ -266,7 +269,7 @@ public class PersonService {
             gender,
             residentCongregateSetting,
             employedInHealthcare);
-    updatePersonFacility(newPatient, facilityId);
+    newPatient.setFacility(link.getFacility());
     Person savedPerson = _repo.save(newPatient);
     upsertPreferredLanguage(savedPerson, preferredLanguage);
     updatePhoneNumbers(newPatient, phoneNumbers);

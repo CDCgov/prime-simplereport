@@ -16,7 +16,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.service.PatientSelfRegistrationLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import java.util.List;
-import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,10 +57,6 @@ public class PatientSelfRegistrationController {
 
     PatientSelfRegistrationLink registrationLink =
         _patientRegLinkService.getPatientRegistrationLink(parseString(body.getRegistrationLink()));
-    UUID facilityIdOrNull =
-        registrationLink.getFacility() != null
-            ? registrationLink.getFacility().getInternalId()
-            : null;
 
     List<PhoneNumberInput> backwardsCompatiblePhoneNumbers =
         body.getPhoneNumbers() != null
@@ -70,8 +65,7 @@ public class PatientSelfRegistrationController {
 
     Person p =
         _personService.addPatient(
-            registrationLink.getOrganization(),
-            facilityIdOrNull,
+            registrationLink,
             parseString(body.getLookupId()),
             parseString(body.getFirstName()),
             parseString(body.getMiddleName()),
