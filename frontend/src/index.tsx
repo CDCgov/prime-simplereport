@@ -63,7 +63,7 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
       console.warn("redirect-to:", process.env.REACT_APP_BASE_URL);
       window.location.replace(process.env.REACT_APP_BASE_URL);
     } else {
-      appInsights.trackException({error: networkError});
+      appInsights.trackException({ error: networkError });
       showError(
         toast,
         "Please check for errors and try again",

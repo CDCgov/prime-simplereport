@@ -84,8 +84,8 @@ const App = () => {
   }
 
   if (error) {
-  appInsights.trackException({error});
- return <p>Server connection error...</p>;
+    appInsights.trackException({ error });
+    return <p>Server connection error...</p>;
   }
 
   return (
