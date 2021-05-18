@@ -1,5 +1,3 @@
-@import "./mixins";
-
 .prime-home {
   background-color: color("base-lightest");
   padding-top: units(2);
@@ -901,7 +899,9 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   }
 
   .usa-step-indicator__segment::before {
-    box-shadow: inset 0 0 0 units(0.5) color("base-lighter"), 0 0 0 0.25rem color("base-lightest");
+    box-shadow:
+      inset 0 0 0 units(0.5) color("base-lighter"),
+      0 0 0 0.25rem color("base-lightest");
   }
 
   .usa-step-indicator__segment--complete,
@@ -937,30 +937,51 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 }
 
 .aoe-modal__footer {
-  background: color("white");
-  border-bottom-left-radius: units(2px);
-  border-top: units(1px) solid color("base-lighter");
-  box-shadow: 0 units(-0.5) units(1) 0 rgba(0, 0, 0, 0.1);
-  margin-bottom: calc(#{units(-2)} + #{units(1px)}); // negative margin + border
-  margin-left: units(-2.5);
-  margin-right: units(-2.5);
-  width: calc(#{units("tablet")} - #{units(2)} - #{units(1px)}); // tablet - margin - border
-  padding: units(2.5);
+  @include at-media(mobile) {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: auto;
+  }
+
+  @include at-media(desktop) {
+    background: color("white");
+    border-bottom-left-radius: units(2px);
+    border-top: units(1px) solid color("base-lighter");
+    box-shadow: 0 units(-0.5) units(1) 0 rgba(0, 0, 0, 0.1);
+    margin-bottom:
+      calc(
+        #{units(-2)} + #{units(1px)}
+      ); // negative margin + border
+    margin-left: units(-2.5);
+    margin-right: units(-2.5);
+    width:
+      calc(
+        #{units("tablet")} - #{units(2)} - #{units(1px)}
+      ); // tablet - margin - border
+    padding: units(2.5);
+  }
 }
 
 .sr-time-of-test-buttons-footer {
   text-align: right;
 }
 
-.modal__footer--sticky {
-  bottom: units(7);
-  z-index: 1;
-}
-
 [aria-label="Test questionnaire"] {
-  margin: units(5) 0;
-  max-height: stretch;
-  width: units("tablet");
+  @include at-media(mobile) {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  @include at-media(desktop) {
+    margin: units(5) 0;
+    max-height: stretch;
+    width: units("tablet");
+    position: relative !important;
+    inset: unset !important;
+  }
 }
 
 @-moz-document url-prefix() {
@@ -1012,21 +1033,8 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   margin-top: 0;
 }
 
-@include for-size(phone) {
-  .aoe-modal__footer {
-    @include reset-spacing();
-    width: 100%;
-    height: auto;
-  }
-
-  [aria-label="Test questionnaire"] {
-    margin: 0;
-    height: 100%;
-    width: 100%;
-    max-height: 100vh;
-  }
-
-  .mobile-bottom {
+.modal__footer--sticky {
+  @include at-media(mobile) {
     z-index: 1;
     position: absolute;
     width: 100%;
@@ -1037,13 +1045,34 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
     background: color("white");
   }
 
-  .mobile-footer {
+  @include at-media(desktop) {
+    position: fixed;
+    width: unset;
+    right: unset;
+    padding: 0;
+    bottom: units(7);
+  }
+}
+
+.modal__submit--container {
+  @include at-media(mobile) {
+    z-index: 1;
+    position: absolute;
+    width: 100%;
+    right: 0;
+    bottom: 0;
+    padding: units(2.5);
+    background: color("white");
     margin-left: 0 !important;
     margin-right: 0 !important;
-    padding: units(2.5);
   }
 
-  .qr-mobile {
-    padding-bottom: units(8);
+  @include at-media(desktop) {
+    box-shadow: unset;
+    margin: unset;
   }
+}
+
+.section__qr--container {
+  padding-bottom: units(8);
 }
