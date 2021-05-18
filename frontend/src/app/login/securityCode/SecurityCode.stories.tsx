@@ -6,7 +6,6 @@ export default {
   title: "App/Login/Security code",
   component: SecurityCode,
   argTypes: {},
-  args: { phoneNumber: "(530) 867-5309" },
 } as Meta;
 
 const Template: Story = (args) => <SecurityCode {...args} />;
