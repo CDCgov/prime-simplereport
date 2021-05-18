@@ -108,7 +108,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseGender(gender),
         residentCongregateSetting,
         employedInHealthcare,
-        preferredLanguage);
+        parseString(preferredLanguage));
   }
 
   public Person updatePatient(
@@ -166,7 +166,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseGender(gender),
         residentCongregateSetting,
         employedInHealthcare,
-        preferredLanguage);
+        parseString(preferredLanguage));
   }
 
   public Person setPatientIsDeleted(UUID id, Boolean deleted) {

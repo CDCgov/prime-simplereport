@@ -14,7 +14,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
+import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
@@ -166,11 +166,11 @@ public class OrganizationInitializingService {
             });
 
     for (ConfigPatientRegistrationLink p : _props.getPatientRegistrationLinks()) {
-      Optional<PatientRegistrationLink> link =
+      Optional<PatientSelfRegistrationLink> link =
           _prlRepository.findByPatientRegistrationLink(p.getLink());
       if (!link.isPresent()) {
         LOG.info("Creating patient registration link {}", p.getLink());
-        PatientRegistrationLink prl =
+        PatientSelfRegistrationLink prl =
             p.makePatientRegistrationLink(
                 orgsByExternalId.get(p.getOrganizationExternalId()), p.getLink());
         _prlRepository.save(prl);
