@@ -101,12 +101,7 @@ public class AccountRequestController {
         body.toTemplateVariables().entrySet().stream()
             .collect(
                 HashMap::new,
-                (m, e) ->
-                    m.put(
-                        e.getKey(),
-                        e.getValue() == null || e.getValue().toString().length() == 0
-                            ? null
-                            : e.getValue().toString()),
+                (m, e) -> m.put(e.getKey(), e.getValue() == null ? null : e.getValue().toString()),
                 HashMap::putAll);
 
     List<DeviceType> devices = _dts.fetchDeviceTypes();

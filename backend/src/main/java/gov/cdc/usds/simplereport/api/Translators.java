@@ -44,7 +44,7 @@ public class Translators {
   }
 
   public static String parsePhoneNumber(String userSuppliedPhoneNumber) {
-    if (userSuppliedPhoneNumber == null) {
+    if (StringUtils.isBlank(userSuppliedPhoneNumber)) {
       return null;
     }
 
