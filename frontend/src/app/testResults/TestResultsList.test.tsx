@@ -287,7 +287,6 @@ const mocks = [
       },
     },
   },
-
   {
     request: {
       query: QUERY_PATIENT,
@@ -299,6 +298,34 @@ const mocks = [
     result: {
       data: {
         patients,
+      },
+    },
+  },
+  {
+    request: {
+      query: resultsCountQuery,
+      variables: {
+        facilityId: "1",
+      },
+    },
+    result: {
+      data: {
+        testResultsCount: testResults.length,
+      },
+    },
+  },
+  {
+    request: {
+      query: testResultQuery,
+      variables: {
+        facilityId: "1",
+        pageNumber: 0,
+        pageSize: 20,
+      },
+    },
+    result: {
+      data: {
+        testResults,
       },
     },
   },
@@ -363,6 +390,41 @@ describe("TestResultsList", () => {
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();
     expect(screen.queryByText("Colleer, Barde X")).not.toBeInTheDocument();
+  });
+
+  it("should be able to clear patient filter", async () => {
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks}>
+            <TestResultsList page={1} />
+          </MockedProvider>
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(
+      await screen.findByText("Test Results", { exact: false })
+    ).toBeInTheDocument();
+
+    // Apply filter
+    userEvent.click(screen.getByText("Filter"));
+    expect(await screen.findByText("Search by name")).toBeInTheDocument();
+    userEvent.type(screen.getByRole("searchbox"), "Cragell");
+    expect(await screen.findByText("Filter")).toBeInTheDocument();
+    userEvent.click(screen.getByText("Filter"));
+
+    // Clear filter
+    expect(await screen.findByText("Filter")).toBeInTheDocument();
+    userEvent.click(screen.getByText("Filter"));
+    expect(await screen.findByText("Clear filters")).toBeInTheDocument();
+    userEvent.click(screen.getByText("Clear filters"));
+
+    // All results, filter no longer applied
+    expect(
+      await screen.findByText("Cragell, Barb Whitaker")
+    ).toBeInTheDocument();
+    expect(await screen.queryByText("Colleer, Barde X")).toBeInTheDocument();
   });
 
   it("opens the test detail view", async () => {
