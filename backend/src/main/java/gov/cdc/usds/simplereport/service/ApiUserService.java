@@ -226,6 +226,25 @@ public class ApiUserService {
     return patient.getInternalId() + NOREPLY;
   }
 
+  /**
+   * The Patient Registration User should <em>always</em> exist. Originally it was created in a
+   * migration, but the app shouldn't crash if that row is missing. Instead, create it!
+   */
+  private ApiUser getPatientSelfRegistrationApiUser() {
+    Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(PATIENT_SELF_REGISTRATION_EMAIL);
+    return found.orElseGet(
+        () -> {
+          ApiUser magicUser =
+              new ApiUser(
+                  PATIENT_SELF_REGISTRATION_EMAIL,
+                  new PersonName("", "", "Patient Self-Registration User", ""));
+          LOG.info(
+              "Magic patient registration user not found. Created Person={}",
+              magicUser.getInternalId());
+          _apiUserRepo.save(magicUser);
+          return magicUser;
+        });
+  }
   /** The Account Request User should <em>always</em> exist. */
   private ApiUser getAccountRequestApiUser() {
     Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(ACCOUNT_REQUEST_EMAIL);
@@ -247,14 +266,14 @@ public class ApiUserService {
     IdentityAttributes userIdentity = _supplier.get();
     if (userIdentity == null) {
       if (_patientContextHolder.hasPatientLink()) {
-        // we're in a patient experience interaction
         return getPatientApiUser();
       }
-
+      if (_patientContextHolder.isPatientSelfRegistrationRequest()) {
+        return getPatientSelfRegistrationApiUser();
+      }
       if (_accountRequestContextHolder.isAccountRequest()) {
         return getAccountRequestApiUser();
       }
-
       throw new UnidentifiedUserException();
     }
 

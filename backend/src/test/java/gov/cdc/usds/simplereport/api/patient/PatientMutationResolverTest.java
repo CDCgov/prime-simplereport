@@ -96,7 +96,7 @@ class PatientMutationResolverTest {
 
     verify(personService)
         .addPatient(
-            any(),
+            any(UUID.class),
             any(),
             any(),
             any(),
