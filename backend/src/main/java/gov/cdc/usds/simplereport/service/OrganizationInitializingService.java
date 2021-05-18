@@ -166,7 +166,11 @@ public class OrganizationInitializingService {
             });
 
     for (ConfigPatientRegistrationLink p : _props.getPatientRegistrationLinks()) {
-      Organization org = _orgRepo.findByExternalId(p.getOrganizationExternalId()).get();
+      Optional<Organization> orgLookup = _orgRepo.findByExternalId(p.getOrganizationExternalId());
+      if (!orgLookup.isPresent()) {
+        continue;
+      }
+      Organization org = orgLookup.get();
       Optional<PatientSelfRegistrationLink> link = _prlRepository.findByOrganization(org);
       if (!link.isPresent()) {
         LOG.info("Creating patient registration link {}", p.getLink());

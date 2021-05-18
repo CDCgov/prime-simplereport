@@ -54,7 +54,10 @@ public class PatientSelfRegistrationLinkService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public String updateRegistrationLink(String link, String newLink) {
-    PatientSelfRegistrationLink prl = prlrepo.findByPatientRegistrationLink(link).get();
+    PatientSelfRegistrationLink prl =
+        prlrepo
+            .findByPatientRegistrationLink(link)
+            .orElseThrow(InvalidPatientSelfRegistrationLinkException::new);
     prl.setLink(newLink);
     prlrepo.save(prl);
     return prl.getLink();
@@ -62,7 +65,10 @@ public class PatientSelfRegistrationLinkService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public String updateRegistrationLink(String link, Boolean deleted) {
-    PatientSelfRegistrationLink prl = prlrepo.findByPatientRegistrationLink(link).get();
+    PatientSelfRegistrationLink prl =
+        prlrepo
+            .findByPatientRegistrationLink(link)
+            .orElseThrow(InvalidPatientSelfRegistrationLinkException::new);
     prl.setIsDeleted(deleted);
     prlrepo.save(prl);
     return prl.getLink();
