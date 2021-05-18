@@ -206,53 +206,9 @@ public class PersonService {
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
       String preferredLanguage) {
-    return addPatient(
-        _os.getCurrentOrganization(),
-        facilityId,
-        lookupId,
-        firstName,
-        middleName,
-        lastName,
-        suffix,
-        birthDate,
-        address,
-        phoneNumbers,
-        role,
-        email,
-        race,
-        ethnicity,
-        tribalAffiliation,
-        gender,
-        residentCongregateSetting,
-        employedInHealthcare,
-        preferredLanguage);
-  }
-
-  // IMPLICIT AUTHORIZATION: this is used for self-registration
-  // TODO: move to a separate service, with the other self-service methods
-  public Person addPatient(
-      Organization organization,
-      UUID facilityId,
-      String lookupId,
-      String firstName,
-      String middleName,
-      String lastName,
-      String suffix,
-      LocalDate birthDate,
-      StreetAddress address,
-      List<PhoneNumber> phoneNumbers,
-      PersonRole role,
-      String email,
-      String race,
-      String ethnicity,
-      String tribalAffiliation,
-      String gender,
-      Boolean residentCongregateSetting,
-      Boolean employedInHealthcare,
-      String preferredLanguage) {
     Person newPatient =
         new Person(
-            organization,
+            _os.getCurrentOrganization(),
             lookupId,
             firstName,
             middleName,
