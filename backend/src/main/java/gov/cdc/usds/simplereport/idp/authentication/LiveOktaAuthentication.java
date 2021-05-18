@@ -104,7 +104,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public void setPassword(String userId, char[] password)
       throws OktaAuthenticationFailureException {
     try {
-      LOG.info("setting password for user");
+      LOG.info("setting password for user: " + userId);
       User user = _client.getUser(userId);
       UserCredentials creds = user.getCredentials();
       PasswordCredential passwordCred =
