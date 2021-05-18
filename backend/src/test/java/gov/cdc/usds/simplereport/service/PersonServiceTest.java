@@ -65,7 +65,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   void roundTrip() {
     makeFacilities();
     _service.addPatient(
-        null,
+        (UUID) null,
         "FOO",
         "Fred",
         null,
@@ -139,7 +139,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     UUID facilityId = fac.getInternalId();
 
     _service.addPatient(
-        null,
+        (UUID) null,
         null,
         "Pebbles",
         null,
@@ -209,7 +209,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     assertSecurityError(
         () ->
             _service.addPatient(
-                null,
+                (UUID) null,
                 null,
                 "Fred",
                 null,
