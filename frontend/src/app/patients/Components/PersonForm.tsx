@@ -31,6 +31,9 @@ import { AddressConfirmationModal } from "../../commonComponents/AddressConfirma
 import ComboBox from "../../commonComponents/ComboBox";
 
 import FacilitySelect from "./FacilitySelect";
+import ManagePhoneNumbers from "./ManagePhoneNumbers";
+
+export type ValidateField = (field: keyof PersonErrors) => Promise<void>;
 
 const boolToYesNoUnknown = (
   value: boolean | null | undefined
@@ -173,7 +176,7 @@ const PersonForm = (props: Props) => {
           return;
         }
         if (!focusedOnError) {
-          document.getElementsByName(name)[0].focus();
+          document.getElementsByName(name)[0]?.focus();
           focusedOnError = true;
         }
         showError(toast, "Please correct before submitting", error);
@@ -265,7 +268,7 @@ const PersonForm = (props: Props) => {
             errors={errors}
             hidden={props.hideFacilitySelect}
           />
-          <fieldset className="usa-fieldset">
+          <div className="usa-form-group">
             <label className="usa-label" htmlFor="preferred-language">
               Preferred language
             </label>
@@ -284,7 +287,7 @@ const PersonForm = (props: Props) => {
                 );
               }}
             />
-          </fieldset>
+          </div>
         </div>
         <div className="usa-form">
           <Input
@@ -298,18 +301,11 @@ const PersonForm = (props: Props) => {
         </div>
       </FormGroup>
       <FormGroup title="Contact information">
+        <ManagePhoneNumbers
+          phoneNumbers={patient.phoneNumbers || []}
+          updatePhoneNumbers={onPersonChange("phoneNumbers")}
+        />
         <div className="usa-form">
-          <div className="grid-row grid-gap">
-            <div className="mobile-lg:grid-col-6">
-              <Input
-                {...commonInputProps}
-                field="telephone"
-                label="Phone number"
-                type="tel"
-                required
-              />
-            </div>
-          </div>
           <Input
             {...commonInputProps}
             field="email"
@@ -375,8 +371,10 @@ const PersonForm = (props: Props) => {
           selectedRadio={patient.race}
           onChange={onPersonChange("race")}
         />
-        <fieldset className="usa-fieldset">
-          <legend className="usa-legend">Tribal affiliation</legend>
+        <div className="usa-form-group">
+          <label className="usa-legend" htmlFor="tribal-affiliation">
+            Tribal affiliation
+          </label>
           <ComboBox
             id="tribal-affiliation"
             name="tribal-affiliation"
@@ -386,7 +384,7 @@ const PersonForm = (props: Props) => {
             }
             defaultValue={String(patient.tribalAffiliation)}
           />
-        </fieldset>
+        </div>
         <RadioGroup
           legend="Are you Hispanic or Latino?"
           name="ethnicity"
@@ -435,10 +433,15 @@ const PersonForm = (props: Props) => {
       </FormGroup>
       {props.getFooter && props.getFooter(validateForm, formChanged)}
       <AddressConfirmationModal
-        userEnteredAddress={getAddress(patient)}
-        suggestedAddress={addressSuggestion}
+        addressSuggestionConfig={[
+          {
+            key: "person",
+            userEnteredAddress: getAddress(patient),
+            suggestedAddress: addressSuggestion,
+          },
+        ]}
         showModal={addressModalOpen}
-        onConfirm={onSave}
+        onConfirm={(data) => onSave(data.person)}
         onClose={() => setAddressModalOpen(false)}
       />
     </>

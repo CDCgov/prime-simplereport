@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(
     code = HttpStatus.NOT_FOUND,
-    reason = "No registation link with the supplied ID was found.")
-public class InvalidPatientRegistrationLinkException extends RuntimeException {
+    reason = "No registration link with the supplied ID was found.")
+public class InvalidPatientSelfRegistrationLinkException extends RuntimeException {
   private static final long serialVersionUID = 1L;
 }

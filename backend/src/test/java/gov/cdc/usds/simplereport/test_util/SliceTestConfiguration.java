@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.test_util;
 
+import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuditingConfig;
@@ -81,6 +82,7 @@ import org.springframework.security.test.context.support.WithMockUser;
   ApiUserService.class,
   OrganizationInitializingService.class,
   CurrentPatientContextHolder.class,
+  CurrentAccountRequestContextHolder.class,
   CurrentOrganizationRolesContextHolder.class
 })
 @EnableConfigurationProperties({

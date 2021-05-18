@@ -3,7 +3,7 @@ package gov.cdc.usds.simplereport.api.pxp;
 import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
-import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
+import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
@@ -13,14 +13,12 @@ import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponse;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.PatientPreferences;
-import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
-import gov.cdc.usds.simplereport.service.PatientRegistrationLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
@@ -31,15 +29,12 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -60,17 +55,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class PatientExperienceController {
   private static final Logger LOG = LoggerFactory.getLogger(PatientExperienceController.class);
 
-  @Autowired private PersonService ps;
+  private final PersonService _ps;
+  private final PatientLinkService _pls;
+  private final TestOrderService _tos;
+  private final TestEventService _tes;
+  private final TimeOfConsentService _tocs;
 
-  @Autowired private PatientLinkService pls;
-
-  @Autowired private PatientRegistrationLinkService prls;
-
-  @Autowired private TestOrderService tos;
-
-  @Autowired private TestEventService tes;
-
-  @Autowired private TimeOfConsentService tocs;
+  public PatientExperienceController(
+      PersonService personService,
+      PatientLinkService patientLinkService,
+      TestOrderService testOrderService,
+      TestEventService testEventService,
+      TimeOfConsentService timeOfConsentService) {
+    this._ps = personService;
+    this._pls = patientLinkService;
+    this._tos = testOrderService;
+    this._tes = testEventService;
+    this._tocs = timeOfConsentService;
+  }
 
   @PostConstruct
   private void init() {
@@ -85,12 +87,12 @@ public class PatientExperienceController {
   public PxpVerifyResponse getPatientLinkVerify(
       @RequestBody PxpRequestWrapper<Void> body, HttpServletRequest request) {
     UUID plid = UUID.fromString(body.getPatientLinkId());
-    PatientLink pl = pls.getPatientLink(plid);
+    PatientLink pl = _pls.getPatientLink(plid);
     OrderStatus os = pl.getTestOrder().getOrderStatus();
-    Person p = pls.getPatientFromLink(plid);
-    PatientPreferences pp = ps.getPatientPreferences(p);
-    TestEvent te = tes.getLastTestResultsForPatient(p);
-    tocs.storeTimeOfConsent(pl);
+    Person p = _pls.getPatientFromLink(plid);
+    PatientPreferences pp = _ps.getPatientPreferences(p);
+    TestEvent te = _tes.getLastTestResultsForPatient(p);
+    _tocs.storeTimeOfConsent(pl);
 
     return new PxpVerifyResponse(p, os, te, pp);
   }
@@ -99,9 +101,9 @@ public class PatientExperienceController {
   public Person updatePatient(
       @RequestBody PxpRequestWrapper<PersonUpdate> body, HttpServletRequest request) {
     PersonUpdate person = body.getData();
-    return ps.updateMe(
+    return _ps.updateMe(
         StreetAddress.deAndReSerializeForSafety(person.getAddress()),
-        parsePhoneNumber(person.getTelephone()),
+        parsePhoneNumbers(person.getPhoneNumbers()),
         person.getRole(),
         parseEmail(person.getEmail()),
         parseRace(person.getRace()),
@@ -119,7 +121,7 @@ public class PatientExperienceController {
     AoEQuestions data = body.getData();
     Map<String, Boolean> symptomsMap = parseSymptoms(data.getSymptoms());
 
-    tos.updateMyTimeOfTestQuestions(
+    _tos.updateMyTimeOfTestQuestions(
         data.getPregnancy(),
         symptomsMap,
         data.isFirstTest(),
@@ -129,21 +131,7 @@ public class PatientExperienceController {
         data.getSymptomOnset(),
         data.getNoSymptoms());
 
-    ps.updateMyTestResultDeliveryPreference(data.getTestResultDelivery());
-    pls.expireMyPatientLink();
-  }
-
-  // PostAuthorize will need to be updated once there is a concept of a general patient registration
-  // user that can be used for audit logging
-  @PreAuthorize("permitAll()")
-  @PostAuthorize("permitAll()")
-  @GetMapping("/register/entity-name")
-  public String getEntityName(
-      @RequestParam String patientRegistrationLink, HttpServletRequest request) {
-    PatientRegistrationLink link = prls.getPatientRegistrationLink(patientRegistrationLink);
-    if (link.getFacility() != null) {
-      return link.getFacility().getFacilityName();
-    }
-    return link.getOrganization().getOrganizationName();
+    _ps.updateMyTestResultDeliveryPreference(data.getTestResultDelivery());
+    _pls.expireMyPatientLink();
   }
 }

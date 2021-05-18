@@ -173,37 +173,41 @@ exports[`QueueItem correctly renders the test queue 1`] = `
                 <li
                   class="prime-li"
                 >
-                  <fieldset
-                    class="usa-fieldset prime-checkboxes"
+                  <div
+                    class="usa-form-group"
                   >
-                    <legend
-                      class="usa-legend"
+                    <fieldset
+                      class="usa-fieldset prime-checkboxes"
                     >
-                      Test date
-                    </legend>
-                    <div
-                      class="usa-form-group"
-                    >
-                      <div
-                        class="usa-checkbox"
+                      <legend
+                        class="usa-legend"
                       >
-                        <input
-                          checked=""
-                          class="usa-checkbox__input"
-                          id="2-val-0"
-                          name="currentDateTime"
-                          type="checkbox"
-                          value="true"
-                        />
-                        <label
-                          class="usa-checkbox__label"
-                          for="2-val-0"
+                        Test date
+                      </legend>
+                      <div
+                        class="checkboxes"
+                      >
+                        <div
+                          class="usa-checkbox"
                         >
-                          Use current date
-                        </label>
+                          <input
+                            checked=""
+                            class="usa-checkbox__input"
+                            id="2-val-0"
+                            name="currentDateTime"
+                            type="checkbox"
+                            value="true"
+                          />
+                          <label
+                            class="usa-checkbox__label"
+                            for="2-val-0"
+                          >
+                            Use current date
+                          </label>
+                        </div>
                       </div>
-                    </div>
-                  </fieldset>
+                    </fieldset>
+                  </div>
                 </li>
               </ul>
             </div>
@@ -221,7 +225,7 @@ exports[`QueueItem correctly renders the test queue 1`] = `
               SARS-CoV-2 results
             </h4>
             <div
-              class=""
+              class="usa-form-group"
             >
               <fieldset
                 class="usa-fieldset prime-radios"
@@ -232,7 +236,7 @@ exports[`QueueItem correctly renders the test queue 1`] = `
                   Test result
                 </legend>
                 <div
-                  class="usa-form-group"
+                  class=""
                 >
                   <div
                     class="usa-radio"

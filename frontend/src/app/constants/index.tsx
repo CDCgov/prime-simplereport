@@ -48,6 +48,11 @@ export const YES_NO_VALUES: { value: YesNo; label: string }[] = [
   { label: "No", value: "NO" },
 ];
 
+export const PHONE_TYPE_VALUES: { value: PhoneType; label: string }[] = [
+  { label: "Mobile", value: "MOBILE" },
+  { label: "Landline", value: "LANDLINE" },
+];
+
 export const YES_NO_UNKNOWN_VALUES: {
   value: YesNoUnknown;
   label: string;

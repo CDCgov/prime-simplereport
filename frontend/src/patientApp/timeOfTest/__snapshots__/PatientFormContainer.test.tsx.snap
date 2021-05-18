@@ -225,8 +225,8 @@ exports[`PatientFormContainer snapshot 1`] = `
                   </option>
                 </select>
               </div>
-              <fieldset
-                className="usa-fieldset"
+              <div
+                className="usa-form-group"
               >
                 <label
                   className="usa-label"
@@ -234,7 +234,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                 >
                   Preferred language
                 </label>
-              </fieldset>
+              </div>
             </div>
             <div
               className="usa-form"
@@ -278,20 +278,18 @@ exports[`PatientFormContainer snapshot 1`] = `
             <div
               className="usa-form"
             >
-              <div
-                className="grid-row grid-gap"
-              >
+              <div>
                 <div
-                  className="mobile-lg:grid-col-6"
+                  className="display-flex"
                 >
                   <div
-                    className="usa-form-group"
+                    className="usa-form-group flex-fill"
                   >
                     <label
                       className="usa-label"
                       htmlFor="6"
                     >
-                      Phone number
+                      Primary phone number
                       <abbr
                         className="usa-hint usa-hint--required"
                         title="required"
@@ -304,28 +302,122 @@ exports[`PatientFormContainer snapshot 1`] = `
                       aria-required={true}
                       className="usa-input"
                       id="6"
-                      name="telephone"
+                      name="number"
                       onBlur={[Function]}
                       onChange={[Function]}
-                      type="tel"
+                      type="text"
                       value=""
                     />
                   </div>
                 </div>
+                <div
+                  className="usa-form-group"
+                >
+                  <fieldset
+                    className="usa-fieldset prime-radios margin-top-3"
+                  >
+                    <legend
+                      className="usa-legend"
+                    >
+                      Phone type
+                      <abbr
+                        className="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
+                    </legend>
+                    <div
+                      className=""
+                    >
+                      <div
+                        className="usa-radio"
+                      >
+                        <input
+                          checked={false}
+                          className="usa-radio__input"
+                          data-required={true}
+                          disabled={false}
+                          id="7-val-MOBILE"
+                          name="phoneType-0"
+                          onChange={[Function]}
+                          type="radio"
+                          value="MOBILE"
+                        />
+                        <label
+                          className="usa-radio__label"
+                          htmlFor="7-val-MOBILE"
+                        >
+                          Mobile
+                        </label>
+                      </div>
+                      <div
+                        className="usa-radio"
+                      >
+                        <input
+                          checked={false}
+                          className="usa-radio__input"
+                          data-required={true}
+                          disabled={false}
+                          id="7-val-LANDLINE"
+                          name="phoneType-0"
+                          onChange={[Function]}
+                          type="radio"
+                          value="LANDLINE"
+                        />
+                        <label
+                          className="usa-radio__label"
+                          htmlFor="7-val-LANDLINE"
+                        >
+                          Landline
+                        </label>
+                      </div>
+                    </div>
+                  </fieldset>
+                </div>
               </div>
+              <button
+                className="usa-button usa-button--unstyled margin-top-2"
+                onClick={[Function]}
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  className="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                  data-icon="plus"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  style={Object {}}
+                  viewBox="0 0 448 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                    fill="currentColor"
+                    style={Object {}}
+                  />
+                </svg>
+                Add another number
+              </button>
+            </div>
+            <div
+              className="usa-form"
+            >
               <div
                 className="usa-form-group"
               >
                 <label
                   className="usa-label"
-                  htmlFor="7"
+                  htmlFor="8"
                 >
                   Email address
                 </label>
                 <input
                   aria-required="false"
                   className="usa-input"
-                  id="7"
+                  id="8"
                   name="email"
                   onBlur={[Function]}
                   onChange={[Function]}
@@ -342,7 +434,7 @@ exports[`PatientFormContainer snapshot 1`] = `
               >
                 <label
                   className="usa-label"
-                  htmlFor="8"
+                  htmlFor="9"
                 >
                   Street address 1
                   <abbr
@@ -356,32 +448,8 @@ exports[`PatientFormContainer snapshot 1`] = `
                 <input
                   aria-required={true}
                   className="usa-input"
-                  id="8"
-                  name="street"
-                  onBlur={[Function]}
-                  onChange={[Function]}
-                  type="text"
-                  value=""
-                />
-              </div>
-            </div>
-            <div
-              className="usa-form"
-            >
-              <div
-                className="usa-form-group"
-              >
-                <label
-                  className="usa-label"
-                  htmlFor="9"
-                >
-                  Street address 2
-                </label>
-                <input
-                  aria-required="false"
-                  className="usa-input"
                   id="9"
-                  name="streetTwo"
+                  name="street"
                   onBlur={[Function]}
                   onChange={[Function]}
                   type="text"
@@ -399,12 +467,36 @@ exports[`PatientFormContainer snapshot 1`] = `
                   className="usa-label"
                   htmlFor="10"
                 >
-                  City
+                  Street address 2
                 </label>
                 <input
                   aria-required="false"
                   className="usa-input"
                   id="10"
+                  name="streetTwo"
+                  onBlur={[Function]}
+                  onChange={[Function]}
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+            <div
+              className="usa-form"
+            >
+              <div
+                className="usa-form-group"
+              >
+                <label
+                  className="usa-label"
+                  htmlFor="11"
+                >
+                  City
+                </label>
+                <input
+                  aria-required="false"
+                  className="usa-input"
+                  id="11"
                   name="city"
                   onBlur={[Function]}
                   onChange={[Function]}
@@ -417,14 +509,14 @@ exports[`PatientFormContainer snapshot 1`] = `
               >
                 <label
                   className="usa-label"
-                  htmlFor="11"
+                  htmlFor="12"
                 >
                   County
                 </label>
                 <input
                   aria-required="false"
                   className="usa-input"
-                  id="11"
+                  id="12"
                   name="county"
                   onBlur={[Function]}
                   onChange={[Function]}
@@ -443,7 +535,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   >
                     <label
                       className="usa-label"
-                      htmlFor="12"
+                      htmlFor="13"
                     >
                       State
                       <abbr
@@ -457,7 +549,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <select
                       aria-required={true}
                       className="usa-select"
-                      id="12"
+                      id="13"
                       name="state"
                       onBlur={[Function]}
                       onChange={[Function]}
@@ -774,7 +866,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   >
                     <label
                       className="usa-label"
-                      htmlFor="13"
+                      htmlFor="14"
                     >
                       Zip code
                       <abbr
@@ -788,7 +880,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <input
                       aria-required={true}
                       className="usa-input"
-                      id="13"
+                      id="14"
                       name="zipCode"
                       onBlur={[Function]}
                       onChange={[Function]}
@@ -818,7 +910,7 @@ exports[`PatientFormContainer snapshot 1`] = `
               This information is collected as part of public health efforts to recognize and address inequality in health outcomes.
             </p>
             <div
-              className=""
+              className="usa-form-group"
             >
               <fieldset
                 className="usa-fieldset prime-radios"
@@ -829,7 +921,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   Race
                 </legend>
                 <div
-                  className="usa-form-group"
+                  className=""
                 >
                   <div
                     className="usa-radio"
@@ -839,7 +931,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="14-val-native"
+                      id="15-val-native"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -847,7 +939,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="14-val-native"
+                      htmlFor="15-val-native"
                     >
                       American Indian/Alaskan Native
                     </label>
@@ -860,7 +952,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="14-val-asian"
+                      id="15-val-asian"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -868,7 +960,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="14-val-asian"
+                      htmlFor="15-val-asian"
                     >
                       Asian
                     </label>
@@ -881,7 +973,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="14-val-black"
+                      id="15-val-black"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -889,7 +981,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="14-val-black"
+                      htmlFor="15-val-black"
                     >
                       Black/African American
                     </label>
@@ -902,7 +994,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="14-val-pacific"
+                      id="15-val-pacific"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -910,7 +1002,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="14-val-pacific"
+                      htmlFor="15-val-pacific"
                     >
                       Native Hawaiian/other Pacific Islander
                     </label>
@@ -923,7 +1015,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="14-val-white"
+                      id="15-val-white"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -931,7 +1023,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="14-val-white"
+                      htmlFor="15-val-white"
                     >
                       White
                     </label>
@@ -944,7 +1036,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="14-val-other"
+                      id="15-val-other"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -952,7 +1044,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="14-val-other"
+                      htmlFor="15-val-other"
                     >
                       Other
                     </label>
@@ -965,97 +1057,8 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="14-val-refused"
-                      name="race"
-                      onChange={[Function]}
-                      type="radio"
-                      value="refused"
-                    />
-                    <label
-                      className="usa-radio__label"
-                      htmlFor="14-val-refused"
-                    >
-                      Prefer not to answer
-                    </label>
-                  </div>
-                </div>
-              </fieldset>
-            </div>
-            <fieldset
-              className="usa-fieldset"
-            >
-              <legend
-                className="usa-legend"
-              >
-                Tribal affiliation
-              </legend>
-            </fieldset>
-            <div
-              className=""
-            >
-              <fieldset
-                className="usa-fieldset prime-radios"
-              >
-                <legend
-                  className="usa-legend"
-                >
-                  Are you Hispanic or Latino?
-                </legend>
-                <div
-                  className="usa-form-group"
-                >
-                  <div
-                    className="usa-radio"
-                  >
-                    <input
-                      checked={false}
-                      className="usa-radio__input"
-                      data-required="false"
-                      disabled={false}
-                      id="15-val-hispanic"
-                      name="ethnicity"
-                      onChange={[Function]}
-                      type="radio"
-                      value="hispanic"
-                    />
-                    <label
-                      className="usa-radio__label"
-                      htmlFor="15-val-hispanic"
-                    >
-                      Yes
-                    </label>
-                  </div>
-                  <div
-                    className="usa-radio"
-                  >
-                    <input
-                      checked={false}
-                      className="usa-radio__input"
-                      data-required="false"
-                      disabled={false}
-                      id="15-val-not_hispanic"
-                      name="ethnicity"
-                      onChange={[Function]}
-                      type="radio"
-                      value="not_hispanic"
-                    />
-                    <label
-                      className="usa-radio__label"
-                      htmlFor="15-val-not_hispanic"
-                    >
-                      No
-                    </label>
-                  </div>
-                  <div
-                    className="usa-radio"
-                  >
-                    <input
-                      checked={false}
-                      className="usa-radio__input"
-                      data-required="false"
-                      disabled={false}
                       id="15-val-refused"
-                      name="ethnicity"
+                      name="race"
                       onChange={[Function]}
                       type="radio"
                       value="refused"
@@ -1071,7 +1074,97 @@ exports[`PatientFormContainer snapshot 1`] = `
               </fieldset>
             </div>
             <div
-              className=""
+              className="usa-form-group"
+            >
+              <label
+                className="usa-legend"
+                htmlFor="tribal-affiliation"
+              >
+                Tribal affiliation
+              </label>
+            </div>
+            <div
+              className="usa-form-group"
+            >
+              <fieldset
+                className="usa-fieldset prime-radios"
+              >
+                <legend
+                  className="usa-legend"
+                >
+                  Are you Hispanic or Latino?
+                </legend>
+                <div
+                  className=""
+                >
+                  <div
+                    className="usa-radio"
+                  >
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="16-val-hispanic"
+                      name="ethnicity"
+                      onChange={[Function]}
+                      type="radio"
+                      value="hispanic"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="16-val-hispanic"
+                    >
+                      Yes
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
+                  >
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="16-val-not_hispanic"
+                      name="ethnicity"
+                      onChange={[Function]}
+                      type="radio"
+                      value="not_hispanic"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="16-val-not_hispanic"
+                    >
+                      No
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
+                  >
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="16-val-refused"
+                      name="ethnicity"
+                      onChange={[Function]}
+                      type="radio"
+                      value="refused"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="16-val-refused"
+                    >
+                      Prefer not to answer
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+            <div
+              className="usa-form-group"
             >
               <fieldset
                 className="usa-fieldset prime-radios"
@@ -1082,7 +1175,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   Biological sex
                 </legend>
                 <div
-                  className="usa-form-group"
+                  className=""
                 >
                   <div
                     className="usa-radio"
@@ -1092,7 +1185,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="16-val-female"
+                      id="17-val-female"
                       name="gender"
                       onChange={[Function]}
                       type="radio"
@@ -1100,7 +1193,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="16-val-female"
+                      htmlFor="17-val-female"
                     >
                       Female
                     </label>
@@ -1113,7 +1206,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="16-val-male"
+                      id="17-val-male"
                       name="gender"
                       onChange={[Function]}
                       type="radio"
@@ -1121,7 +1214,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="16-val-male"
+                      htmlFor="17-val-male"
                     >
                       Male
                     </label>
@@ -1134,7 +1227,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="16-val-other"
+                      id="17-val-other"
                       name="gender"
                       onChange={[Function]}
                       type="radio"
@@ -1142,7 +1235,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="16-val-other"
+                      htmlFor="17-val-other"
                     >
                       Other
                     </label>
@@ -1155,7 +1248,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="16-val-refused"
+                      id="17-val-refused"
                       name="gender"
                       onChange={[Function]}
                       type="radio"
@@ -1163,7 +1256,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="16-val-refused"
+                      htmlFor="17-val-refused"
                     >
                       Prefer not to answer
                     </label>
@@ -1185,7 +1278,7 @@ exports[`PatientFormContainer snapshot 1`] = `
               Other
             </legend>
             <div
-              className=""
+              className="usa-form-group"
             >
               <fieldset
                 className="usa-fieldset prime-radios"
@@ -1208,97 +1301,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   For example: nursing home, group home, prison, jail, or military
                 </span>
                 <div
-                  className="usa-form-group"
-                >
-                  <div
-                    className="usa-radio"
-                  >
-                    <input
-                      checked={true}
-                      className="usa-radio__input"
-                      data-required={true}
-                      disabled={false}
-                      id="17-val-YES"
-                      name="residentCongregateSetting"
-                      onBlur={[Function]}
-                      onChange={[Function]}
-                      type="radio"
-                      value="YES"
-                    />
-                    <label
-                      className="usa-radio__label"
-                      htmlFor="17-val-YES"
-                    >
-                      Yes
-                    </label>
-                  </div>
-                  <div
-                    className="usa-radio"
-                  >
-                    <input
-                      checked={false}
-                      className="usa-radio__input"
-                      data-required={true}
-                      disabled={false}
-                      id="17-val-NO"
-                      name="residentCongregateSetting"
-                      onBlur={[Function]}
-                      onChange={[Function]}
-                      type="radio"
-                      value="NO"
-                    />
-                    <label
-                      className="usa-radio__label"
-                      htmlFor="17-val-NO"
-                    >
-                      No
-                    </label>
-                  </div>
-                  <div
-                    className="usa-radio"
-                  >
-                    <input
-                      checked={false}
-                      className="usa-radio__input"
-                      data-required={true}
-                      disabled={false}
-                      id="17-val-UNKNOWN"
-                      name="residentCongregateSetting"
-                      onBlur={[Function]}
-                      onChange={[Function]}
-                      type="radio"
-                      value="UNKNOWN"
-                    />
-                    <label
-                      className="usa-radio__label"
-                      htmlFor="17-val-UNKNOWN"
-                    >
-                      Unknown
-                    </label>
-                  </div>
-                </div>
-              </fieldset>
-            </div>
-            <div
-              className=""
-            >
-              <fieldset
-                className="usa-fieldset prime-radios"
-              >
-                <legend
-                  className="usa-legend"
-                >
-                  Are you a health care worker?
-                  <abbr
-                    className="usa-hint usa-hint--required"
-                    title="required"
-                  >
-                     
-                    *
-                  </abbr>
-                </legend>
-                <div
-                  className="usa-form-group"
+                  className=""
                 >
                   <div
                     className="usa-radio"
@@ -1309,7 +1312,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       data-required={true}
                       disabled={false}
                       id="18-val-YES"
-                      name="employedInHealthcare"
+                      name="residentCongregateSetting"
                       onBlur={[Function]}
                       onChange={[Function]}
                       type="radio"
@@ -1331,7 +1334,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       data-required={true}
                       disabled={false}
                       id="18-val-NO"
-                      name="employedInHealthcare"
+                      name="residentCongregateSetting"
                       onBlur={[Function]}
                       onChange={[Function]}
                       type="radio"
@@ -1353,7 +1356,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       data-required={true}
                       disabled={false}
                       id="18-val-UNKNOWN"
-                      name="employedInHealthcare"
+                      name="residentCongregateSetting"
                       onBlur={[Function]}
                       onChange={[Function]}
                       type="radio"
@@ -1362,6 +1365,96 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <label
                       className="usa-radio__label"
                       htmlFor="18-val-UNKNOWN"
+                    >
+                      Unknown
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+            <div
+              className="usa-form-group"
+            >
+              <fieldset
+                className="usa-fieldset prime-radios"
+              >
+                <legend
+                  className="usa-legend"
+                >
+                  Are you a health care worker?
+                  <abbr
+                    className="usa-hint usa-hint--required"
+                    title="required"
+                  >
+                     
+                    *
+                  </abbr>
+                </legend>
+                <div
+                  className=""
+                >
+                  <div
+                    className="usa-radio"
+                  >
+                    <input
+                      checked={true}
+                      className="usa-radio__input"
+                      data-required={true}
+                      disabled={false}
+                      id="19-val-YES"
+                      name="employedInHealthcare"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      type="radio"
+                      value="YES"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="19-val-YES"
+                    >
+                      Yes
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
+                  >
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required={true}
+                      disabled={false}
+                      id="19-val-NO"
+                      name="employedInHealthcare"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      type="radio"
+                      value="NO"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="19-val-NO"
+                    >
+                      No
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
+                  >
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required={true}
+                      disabled={false}
+                      id="19-val-UNKNOWN"
+                      name="employedInHealthcare"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      type="radio"
+                      value="UNKNOWN"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="19-val-UNKNOWN"
                     >
                       Unknown
                     </label>

@@ -3,13 +3,17 @@ package gov.cdc.usds.simplereport.api;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -40,7 +44,7 @@ public class Translators {
   }
 
   public static String parsePhoneNumber(String userSuppliedPhoneNumber) {
-    if (userSuppliedPhoneNumber == null) {
+    if (StringUtils.isBlank(userSuppliedPhoneNumber)) {
       return null;
     }
 
@@ -51,6 +55,34 @@ public class Translators {
           PhoneNumberUtil.PhoneNumberFormat.NATIONAL);
     } catch (NumberParseException parseException) {
       throw IllegalGraphqlArgumentException.invalidInput(userSuppliedPhoneNumber, "phone number");
+    }
+  }
+
+  public static List<PhoneNumber> parsePhoneNumbers(List<PhoneNumberInput> phoneNumbers) {
+    if (phoneNumbers == null) {
+      return List.of();
+    }
+
+    return phoneNumbers.stream()
+        .map(
+            phoneNumberInput ->
+                new PhoneNumber(
+                    parsePhoneType(phoneNumberInput.getType()),
+                    parsePhoneNumber(phoneNumberInput.getNumber())))
+        .collect(Collectors.toList());
+  }
+
+  private static PhoneType parsePhoneType(String t) {
+    String type = parseString(t);
+    if (type == null) {
+      // When we no longer require backwards compatibility with an old UI, we can parse this
+      // more strictly
+      return null;
+    }
+    try {
+      return PhoneType.valueOf(type.toUpperCase());
+    } catch (IllegalArgumentException e) {
+      throw new IllegalGraphqlArgumentException("Invalid PhoneType received");
     }
   }
 
