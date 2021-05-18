@@ -149,7 +149,8 @@ export const allPersonErrors: Required<PersonErrors> = {
   lookupId: "Lookup ID is incorrectly formatted",
   role: "Role is incorrectly formatted",
   facilityId: "Facility is required",
-  birthDate: "Date of birth must be present, correctly formatted (MM/DD/YYY), and in the past",
+  birthDate:
+    "Date of birth must be present, correctly formatted (MM/DD/YYY), and in the past",
   telephone: "Phone number is missing or invalid",
   phoneNumbers: "Phone number is missing or invalid",
   email: "Email is missing or incorrectly formatted",
