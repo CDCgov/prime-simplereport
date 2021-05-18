@@ -1,7 +1,7 @@
 terraform {
   required_providers {
-    okta = {
-      source = "oktadeveloper/okta"
+    pagerduty = {
+      source = "pagerduty/pagerduty"
     }
   }
   required_version = ">= 0.15.1"

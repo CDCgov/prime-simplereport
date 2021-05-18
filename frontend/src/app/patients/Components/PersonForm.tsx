@@ -449,10 +449,15 @@ const PersonForm = (props: Props) => {
       </FormGroup>
       {props.getFooter && props.getFooter(validateForm, formChanged)}
       <AddressConfirmationModal
-        userEnteredAddress={getAddress(patient)}
-        suggestedAddress={addressSuggestion}
+        addressSuggestionConfig={[
+          {
+            key: "person",
+            userEnteredAddress: getAddress(patient),
+            suggestedAddress: addressSuggestion,
+          },
+        ]}
         showModal={addressModalOpen}
-        onConfirm={onSave}
+        onConfirm={(data) => onSave(data.person)}
         onClose={() => setAddressModalOpen(false)}
       />
     </>

@@ -63,7 +63,7 @@ public class CurrentPatientContextHolder {
     return isPatientSelfRegistrationRequest;
   }
 
-  public void setIsPatientSelfRegistrationRequest(boolean isPatientRegistrationRequest) {
-    this.isPatientSelfRegistrationRequest = isPatientRegistrationRequest;
+  public void setIsPatientSelfRegistrationRequest(boolean isPatientSelfRegistrationRequest) {
+    this.isPatientSelfRegistrationRequest = isPatientSelfRegistrationRequest;
   }
 }

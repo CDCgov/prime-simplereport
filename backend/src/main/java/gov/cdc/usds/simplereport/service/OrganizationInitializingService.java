@@ -14,7 +14,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
+import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
@@ -126,6 +126,11 @@ public class OrganizationInitializingService {
                   }
                 })
             .collect(Collectors.toMap(Organization::getExternalId, Function.identity()));
+    // All existing orgs in the DB which aren't reflected in config properties should
+    // still be reflected in demo Okta environment
+    _orgRepo.findAll().stream()
+        .filter(o -> !orgsByExternalId.containsKey(o.getExternalId()))
+        .forEach(o -> orgsByExternalId.put(o.getExternalId(), o));
     orgsByExternalId.values().forEach(this::initOktaOrg);
 
     Map<String, Facility> facilitiesByName =
@@ -147,6 +152,11 @@ public class OrganizationInitializingService {
         "Creating facilities {} with {} devices configured",
         facilitiesByName.keySet(),
         configuredDs.size());
+    // All existing facilities in the DB which aren't reflected in config properties should
+    // still be reflected in demo Okta environment
+    _facilityRepo.findAll().stream()
+        .filter(f -> !facilities.contains(f))
+        .forEach(f -> facilities.add(f));
     facilities.stream()
         .forEach(
             f -> {
@@ -157,10 +167,10 @@ public class OrganizationInitializingService {
 
     for (ConfigPatientRegistrationLink p : _props.getPatientRegistrationLinks()) {
       Organization org = _orgRepo.findByExternalId(p.getOrganizationExternalId()).get();
-      Optional<PatientRegistrationLink> link = _prlRepository.findByOrganization(org);
+      Optional<PatientSelfRegistrationLink> link = _prlRepository.findByOrganization(org);
       if (!link.isPresent()) {
         LOG.info("Creating patient registration link {}", p.getLink());
-        PatientRegistrationLink prl =
+        PatientSelfRegistrationLink prl =
             p.makePatientRegistrationLink(
                 orgsByExternalId.get(p.getOrganizationExternalId()), p.getLink());
         _prlRepository.save(prl);
@@ -251,7 +261,7 @@ public class OrganizationInitializingService {
       Set<OrganizationRole> roles) {
     try {
       LOG.info("Creating user {} in Okta", user.getUsername());
-      _oktaRepo.createUser(user, org, facilities, roles);
+      _oktaRepo.createUser(user, org, facilities, roles, true);
     } catch (ResourceException e) {
       LOG.info("User {} already exists in Okta", user.getUsername());
     }

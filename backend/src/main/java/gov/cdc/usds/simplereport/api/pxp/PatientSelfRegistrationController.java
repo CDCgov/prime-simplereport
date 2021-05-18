@@ -1,16 +1,21 @@
 package gov.cdc.usds.simplereport.api.pxp;
 
+import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
+import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
+import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
+import static gov.cdc.usds.simplereport.api.Translators.parseRace;
+import static gov.cdc.usds.simplereport.api.Translators.parseString;
+import static gov.cdc.usds.simplereport.api.Translators.parseTribalAffiliation;
 
-import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
+import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PatientRegistration;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PatientSelfRegistration;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
-import gov.cdc.usds.simplereport.service.PatientRegistrationLinkService;
+import gov.cdc.usds.simplereport.service.PatientSelfRegistrationLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import java.util.List;
-import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,63 +31,58 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/pxp/register")
-@PreAuthorize("@patientRegistrationLinkService.flagSelfRegistrationRequest()")
+@PreAuthorize("@patientSelfRegistrationLinkService.flagSelfRegistrationRequest()")
 @PostAuthorize("@restAuditLogManager.logRestSuccess(#request, returnObject)")
 @Validated
-public class PatientRegistrationController {
-  private static final Logger LOG = LoggerFactory.getLogger(PatientRegistrationController.class);
+public class PatientSelfRegistrationController {
+  private static final Logger LOG =
+      LoggerFactory.getLogger(PatientSelfRegistrationController.class);
 
-  private final PatientRegistrationLinkService _patientRegLinkService;
+  private final PatientSelfRegistrationLinkService _patientRegLinkService;
   private final PersonService _personService;
   private final CurrentPatientContextHolder _currentPatientContextHolder;
 
-  public PatientRegistrationController(
+  public PatientSelfRegistrationController(
       PersonService personService,
-      PatientRegistrationLinkService patientRegistrationLinkService,
+      PatientSelfRegistrationLinkService patientSelfRegistrationLinkService,
       CurrentPatientContextHolder currentPatientContextHolder) {
     _personService = personService;
-    _patientRegLinkService = patientRegistrationLinkService;
+    _patientRegLinkService = patientSelfRegistrationLinkService;
     _currentPatientContextHolder = currentPatientContextHolder;
   }
 
   @PostMapping("")
-  public void register(@RequestBody PatientRegistration body, HttpServletRequest request) {
+  public void register(@RequestBody PatientSelfRegistration body, HttpServletRequest request) {
     _currentPatientContextHolder.setIsPatientSelfRegistrationRequest(true);
 
-    PatientRegistrationLink registrationLink =
-        _patientRegLinkService.getPatientRegistrationLink(body.getRegistrationLink());
-    UUID facilityIdOrNull =
-        registrationLink.getFacility() != null
-            ? registrationLink.getFacility().getInternalId()
-            : null;
+    PatientSelfRegistrationLink registrationLink =
+        _patientRegLinkService.getPatientRegistrationLink(parseString(body.getRegistrationLink()));
 
     List<PhoneNumberInput> backwardsCompatiblePhoneNumbers =
         body.getPhoneNumbers() != null
             ? body.getPhoneNumbers()
             : List.of(new PhoneNumberInput(null, parsePhoneNumber(body.getTelephone())));
 
-    // TODO: call translator parse methods
     Person p =
         _personService.addPatient(
-            registrationLink.getOrganization(),
-            facilityIdOrNull,
-            body.getLookupId(),
-            body.getFirstName(),
-            body.getMiddleName(),
-            body.getLastName(),
-            body.getSuffix(),
+            registrationLink,
+            parseString(body.getLookupId()),
+            parseString(body.getFirstName()),
+            parseString(body.getMiddleName()),
+            parseString(body.getLastName()),
+            parseString(body.getSuffix()),
             body.getBirthDate(),
             body.getAddress(),
             parsePhoneNumbers(backwardsCompatiblePhoneNumbers),
             body.getRole(),
-            body.getEmail(),
-            body.getRace(),
-            body.getEthnicity(),
-            body.getTribalAffiliation(),
-            body.getGender(),
+            parseEmail(body.getEmail()),
+            parseRace(body.getRace()),
+            parseEthnicity(body.getEthnicity()),
+            parseTribalAffiliation(body.getTribalAffiliation()),
+            parseGender(body.getGender()),
             body.getResidentCongregateSetting(),
             body.getEmployedInHealthcare(),
-            body.getPreferredLanguage());
+            parseString(body.getPreferredLanguage()));
 
     LOG.info(
         "Patient={} self-registered from link={}", p.getInternalId(), registrationLink.getLink());
@@ -91,7 +91,7 @@ public class PatientRegistrationController {
   @GetMapping("/entity-name")
   public String getEntityName(
       @RequestParam String patientRegistrationLink, HttpServletRequest request) {
-    PatientRegistrationLink link =
+    PatientSelfRegistrationLink link =
         _patientRegLinkService.getPatientRegistrationLink(patientRegistrationLink);
     if (link.getFacility() != null) {
       return link.getFacility().getFacilityName();
