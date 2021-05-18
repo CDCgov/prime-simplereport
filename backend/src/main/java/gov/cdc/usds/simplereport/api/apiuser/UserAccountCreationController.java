@@ -48,6 +48,7 @@ public class UserAccountCreationController {
   public void activateAccountAndSetPassword(
       @RequestBody UserAccountCreationRequest requestBody, HttpServletRequest request)
       throws Exception {
+    LOG.info("endpoint hit: initialize-and-set-password");
     JSONObject oktaResponse =
         _oktaAuth.activateUser(
             requestBody.getActivationToken(),
