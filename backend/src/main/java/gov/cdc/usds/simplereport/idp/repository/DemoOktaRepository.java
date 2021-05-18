@@ -46,7 +46,8 @@ public class DemoOktaRepository implements OktaRepository {
       IdentityAttributes userIdentity,
       Organization org,
       Set<Facility> facilities,
-      Set<OrganizationRole> roles) {
+      Set<OrganizationRole> roles,
+      boolean active) {
     String organizationExternalId = org.getExternalId();
     Set<OrganizationRole> rolesToCreate = EnumSet.of(OrganizationRole.getDefault());
     rolesToCreate.addAll(roles);
@@ -71,6 +72,10 @@ public class DemoOktaRepository implements OktaRepository {
     usernameOrgRolesMap.put(userIdentity.getUsername(), orgRoles);
 
     orgUsernamesMap.get(organizationExternalId).add(userIdentity.getUsername());
+
+    if (!active) {
+      inactiveUsernames.add(userIdentity.getUsername());
+    }
 
     return Optional.of(orgRoles);
   }
@@ -133,7 +138,9 @@ public class DemoOktaRepository implements OktaRepository {
   }
 
   // this method means nothing in a demo env
-  public void activateOrganization(Organization org) {}
+  public void activateOrganization(Organization org) {
+    inactiveUsernames.removeAll(orgUsernamesMap.get(org.getExternalId()));
+  }
 
   public void createFacility(Facility facility) {
     String orgExternalId = facility.getOrganization().getExternalId();
