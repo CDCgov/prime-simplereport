@@ -27,7 +27,7 @@ public class PatientSelfRegistrationLinkService {
       throws InvalidPatientSelfRegistrationLinkException {
     return prlrepo
         .findByPatientRegistrationLink(patientRegistrationLink)
-        .orElseThrow(() -> new InvalidPatientSelfRegistrationLinkException());
+        .orElseThrow(InvalidPatientSelfRegistrationLinkException::new);
   }
 
   public boolean flagSelfRegistrationRequest() {
