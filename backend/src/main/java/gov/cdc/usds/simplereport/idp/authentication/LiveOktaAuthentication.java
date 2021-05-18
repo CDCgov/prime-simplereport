@@ -84,8 +84,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
                             }))
             .build();
     String response = restTemplate.postForObject(_orgUrl, requestBody, String.class);
-    JSONObject responseJson = new JSONObject(response);
     LOG.info("activating user response: " + response);
+    JSONObject responseJson = new JSONObject(response);
     if (responseJson.has("stateToken") && responseJson.has("userId")) {
       return responseJson;
     } else {
