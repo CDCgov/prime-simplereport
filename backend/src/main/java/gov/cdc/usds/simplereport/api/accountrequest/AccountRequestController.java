@@ -104,7 +104,7 @@ public class AccountRequestController {
                 (m, e) ->
                     m.put(
                         e.getKey(),
-                        e.getValue() == null || e.getValue().toString().length() == 0
+                        e.getValue() == null
                             ? null
                             : e.getValue().toString()),
                 HashMap::putAll);
