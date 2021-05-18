@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -6,7 +6,16 @@ import Button from "../../commonComponents/Button/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
 
 export const MfaSelect = () => {
-  const [mfa, setMfa] = useState("");
+  const [mfaOption, setMfaOption] = useState("");
+  const [mfaOptionError, setMfaOptionError] = useState("");
+
+  const validateMfaOption = () => {
+    if (mfaOption === "") {
+      setMfaOptionError("Select an authentication option");
+    } else {
+      setMfaOptionError("");
+    }
+  };
 
   return (
     <CardBackground>
@@ -39,14 +48,17 @@ export const MfaSelect = () => {
               value: "email",
             },
           ]}
-          selectedRadio={mfa}
-          onChange={setMfa}
+          selectedRadio={mfaOption}
+          errorMessage={mfaOptionError}
+          validationStatus={mfaOptionError ? "error" : undefined}
+          onBlur={validateMfaOption}
+          onChange={setMfaOption}
         ></RadioGroup>
         <Button
           className="margin-top-3"
           label={"Sign in"}
           type={"submit"}
-          // onClick={handleSubmit}
+          onClick={validateMfaOption}
         />
       </Card>
       <p className="margin-top-4">

@@ -6,6 +6,18 @@ import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
 
 export const SecurityCode = () => {
+  const [code, setCode] = useState("");
+  const [codeError, setCodeError] = useState("");
+
+  const validateCode = (): boolean => {
+    let error = "";
+    if (code === "") {
+      error = "Enter your security code";
+    }
+    setCodeError(error);
+    return error === "";
+  };
+
   return (
     <CardBackground>
       <Card logo>
@@ -16,22 +28,22 @@ export const SecurityCode = () => {
         </p>
         <div className="display-flex">
           <TextInput
-            className="flex-fill margin-top-0"
+            className="flex-fill"
             label={"One-time security code"}
             name={"security-code"}
             type={"tel"}
             required
-            // value={code}
-            // errorMessage={codeError}
-            // validationStatus={codeError ? "error" : undefined}
-            // onBlur={validateCode}
-            // onChange={(evt) => setCode(evt.currentTarget.value)}
+            value={code}
+            errorMessage={codeError}
+            validationStatus={codeError ? "error" : undefined}
+            onBlur={validateCode}
+            onChange={(evt) => setCode(evt.currentTarget.value)}
           />
           <Button
             className="margin-top-3 flex-align-self-end margin-left-1"
             label={"Submit"}
             type={"submit"}
-            // onClick={validateCode}
+            onClick={validateCode}
           />
         </div>
         <Button
