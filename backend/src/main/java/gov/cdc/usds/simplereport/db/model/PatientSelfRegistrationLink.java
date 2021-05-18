@@ -6,7 +6,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
-public class PatientRegistrationLink extends EternalAuditedEntity {
+public class PatientSelfRegistrationLink extends EternalAuditedEntity {
   @OneToOne(optional = true)
   @JoinColumn(name = "facility_id")
   private Facility facility;
@@ -18,14 +18,14 @@ public class PatientRegistrationLink extends EternalAuditedEntity {
   @Column(nullable = false)
   private String patientRegistrationLink;
 
-  public PatientRegistrationLink() {}
+  public PatientSelfRegistrationLink() {}
 
-  public PatientRegistrationLink(Organization org, String link) {
+  public PatientSelfRegistrationLink(Organization org, String link) {
     this.organization = org;
     this.patientRegistrationLink = link;
   }
 
-  public PatientRegistrationLink(Facility fac, String link) {
+  public PatientSelfRegistrationLink(Facility fac, String link) {
     this.facility = fac;
     this.patientRegistrationLink = link;
   }

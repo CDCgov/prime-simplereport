@@ -10,7 +10,7 @@ import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.api.ResourceLinks;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
+import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.logging.LoggingConstants;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,8 +26,8 @@ class PatientSelfRegistrationControllerTest extends BaseFullStackTest {
 
   private Organization _org;
   private Facility _site;
-  private PatientRegistrationLink _orgRegistrationLink;
-  private PatientRegistrationLink _facilityRegistrationLink;
+  private PatientSelfRegistrationLink _orgRegistrationLink;
+  private PatientSelfRegistrationLink _facilityRegistrationLink;
 
   @BeforeEach
   void init() {

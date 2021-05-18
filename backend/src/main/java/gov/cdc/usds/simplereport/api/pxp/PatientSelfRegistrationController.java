@@ -9,7 +9,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseTribalAffiliation;
 
-import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
+import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PatientSelfRegistration;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
@@ -56,7 +56,7 @@ public class PatientSelfRegistrationController {
   public void register(@RequestBody PatientSelfRegistration body, HttpServletRequest request) {
     _currentPatientContextHolder.setIsPatientSelfRegistrationRequest(true);
 
-    PatientRegistrationLink registrationLink =
+    PatientSelfRegistrationLink registrationLink =
         _patientRegLinkService.getPatientRegistrationLink(parseString(body.getRegistrationLink()));
     UUID facilityIdOrNull =
         registrationLink.getFacility() != null
@@ -97,7 +97,7 @@ public class PatientSelfRegistrationController {
   @GetMapping("/entity-name")
   public String getEntityName(
       @RequestParam String patientRegistrationLink, HttpServletRequest request) {
-    PatientRegistrationLink link =
+    PatientSelfRegistrationLink link =
         _patientRegLinkService.getPatientRegistrationLink(patientRegistrationLink);
     if (link.getFacility() != null) {
       return link.getFacility().getFacilityName();

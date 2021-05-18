@@ -6,7 +6,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
-import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
+import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Provider;
@@ -215,16 +215,16 @@ public class TestDataFactory {
   }
 
   @Transactional
-  public PatientRegistrationLink createPatientRegistrationLink(Organization org) {
+  public PatientSelfRegistrationLink createPatientRegistrationLink(Organization org) {
     String link = UUID.randomUUID().toString();
-    PatientRegistrationLink prl = new PatientRegistrationLink(org, link);
+    PatientSelfRegistrationLink prl = new PatientSelfRegistrationLink(org, link);
     return _patientRegistrationLinkRepository.save(prl);
   }
 
   @Transactional
-  public PatientRegistrationLink createPatientRegistrationLink(Facility fac) {
+  public PatientSelfRegistrationLink createPatientRegistrationLink(Facility fac) {
     String link = UUID.randomUUID().toString();
-    PatientRegistrationLink prl = new PatientRegistrationLink(fac, link);
+    PatientSelfRegistrationLink prl = new PatientSelfRegistrationLink(fac, link);
     return _patientRegistrationLinkRepository.save(prl);
   }
 
