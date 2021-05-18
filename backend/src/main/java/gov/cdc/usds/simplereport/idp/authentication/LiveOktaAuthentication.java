@@ -13,6 +13,8 @@ import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.json.JSONObject;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Profile;
@@ -29,11 +31,14 @@ import org.springframework.web.client.RestTemplate;
 @Profile("!" + BeanProfiles.NO_OKTA_AUTH)
 @Service
 public class LiveOktaAuthentication implements OktaAuthentication {
+  private static final Logger LOG = LoggerFactory.getLogger(LiveOktaAuthentication.class);
+
   private Client _client;
   private String _apiToken;
   private String _orgUrl;
 
   public LiveOktaAuthentication(OktaClientProperties oktaClientProperties) {
+    LOG.info("WIP: liveOktaAuthentication initialized");
     _client =
         Clients.builder()
             .setOrgUrl(oktaClientProperties.getOrgUrl())
@@ -59,6 +64,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public JSONObject activateUser(
       String activationToken, String crossForwardedHeader, String userAgent)
       throws InvalidActivationLinkException {
+    LOG.info("activating user");
     JSONObject requestBody = new JSONObject();
     requestBody.put("token", activationToken);
     String authorizationToken = "SSWS " + _apiToken;
@@ -79,6 +85,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
             .build();
     String response = restTemplate.postForObject(_orgUrl, requestBody, String.class);
     JSONObject responseJson = new JSONObject(response);
+    LOG.info("activating user response: " + response);
     if (responseJson.has("stateToken") && responseJson.has("userId")) {
       return responseJson;
     } else {
@@ -97,6 +104,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public void setPassword(String userId, char[] password)
       throws OktaAuthenticationFailureException {
     try {
+      LOG.info("setting password for user");
       User user = _client.getUser(userId);
       UserCredentials creds = user.getCredentials();
       PasswordCredential passwordCred =
@@ -104,7 +112,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       creds.setPassword(passwordCred);
       user.setCredentials(creds);
       user.update();
+      LOG.info("set password successful");
     } catch (ResourceException e) {
+      LOG.info("resource exception thrown");
       throw new OktaAuthenticationFailureException("Error setting user's password", e);
     }
   }
