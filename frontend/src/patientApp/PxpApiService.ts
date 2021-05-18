@@ -33,6 +33,16 @@ interface UpdatePatientData
   };
 }
 
+export type SelfRegistrationData = Omit<
+  UpdatePatientData,
+  "facilityId" | "address"
+> & {
+  registrationLink: string;
+  address: Omit<UpdatePatientData["address"], "zipCode"> & {
+    postalCode: string | null;
+  };
+};
+
 export class PxpApi {
   static validateDateOfBirth(
     patientLinkId: string,
@@ -99,7 +109,7 @@ export class PxpApi {
     return res.text();
   };
 
-  static selfRegister = async (person: any): Promise<void> => {
+  static selfRegister = async (person: SelfRegistrationData): Promise<void> => {
     const res = await fetch(`${API_URL}/register`, {
       method: "POST",
       mode: "cors",

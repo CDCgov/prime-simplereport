@@ -7,7 +7,7 @@ import USAGovBanner from "../../app/commonComponents/USAGovBanner";
 import { showError } from "../../app/utils";
 import { formatFullName } from "../../app/utils/user";
 import PatientHeader from "../PatientHeader";
-import { PxpApi } from "../PxpApiService";
+import { PxpApi, SelfRegistrationData } from "../PxpApiService";
 import TermsOfService from "../timeOfTest/TermsOfService";
 
 import { Confirmation } from "./Confirmation";
@@ -38,7 +38,7 @@ export const SelfRegistration = () => {
       ...withoutAddress
     } = person;
 
-    const data = {
+    const data: SelfRegistrationData = {
       registrationLink,
       ...withoutAddress,
       address: {

@@ -88,7 +88,7 @@ module.exports = {
       selector: ".modal__container",
       elements: {
         save: "#save-confirmed-address",
-        addressSelect: 'input[name="addressSelect"]+label',
+        addressSelect: 'input[name="addressSelect-person"]+label',
       },
     },
     confirmationScreen: {
