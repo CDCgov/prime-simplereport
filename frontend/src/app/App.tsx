@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
 
-import { reactPlugin } from "./AppInsights";
+import { reactPlugin, appInsights } from "./AppInsights";
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import Header from "./commonComponents/Header";
@@ -84,8 +84,8 @@ const App = () => {
   }
 
   if (error) {
-    console.log("[SERVER ERROR]: ", error);
-    return <p>Server connection error...</p>;
+  appInsights.trackException({error});
+ return <p>Server connection error...</p>;
   }
 
   return (

@@ -22,8 +22,8 @@ import * as serviceWorker from "./serviceWorker";
 import "./styles/App.css";
 import { store } from "./app/store";
 import { showError } from "./app/utils";
+import { appInsights } from "./app/AppInsights";
 import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration";
-
 // Define the root element for modals
 if (process.env.NODE_ENV !== "test") {
   Modal.setAppElement("#root");
@@ -63,6 +63,7 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
       console.warn("redirect-to:", process.env.REACT_APP_BASE_URL);
       window.location.replace(process.env.REACT_APP_BASE_URL);
     } else {
+      appInsights.trackException({error: networkError});
       showError(
         toast,
         "Please check for errors and try again",
