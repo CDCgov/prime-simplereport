@@ -6,16 +6,15 @@ import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
-// import { emailIsValid } from "../../patients/personSchema";
 
 export const MfaEmail = () => {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [formIsDirty, setFormIsDirty] = useState(false);
 
-  const emailIsValid = (email: string) => {
+  const emailIsValid = (emailAddress: string) => {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
+    return re.test(String(emailAddress).toLowerCase());
   };
 
   const validateEmail = () => {

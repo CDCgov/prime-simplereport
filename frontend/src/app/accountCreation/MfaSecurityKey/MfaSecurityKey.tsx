@@ -1,6 +1,5 @@
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
-// import Button from "../../commonComponents/Button/Button";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 import iconLoader from "../../../../node_modules/uswds/dist/img/loader.svg";
