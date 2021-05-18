@@ -1,14 +1,13 @@
 package gov.cdc.usds.simplereport.db.model.auxiliary;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import org.junit.jupiter.api.Test;
 
-public class PatientSelfRegistrationTest {
+class PatientSelfRegistrationTest {
   @Test
   void equality() {
     PatientSelfRegistration a =
@@ -74,8 +73,8 @@ public class PatientSelfRegistrationTest {
             null,
             null,
             null);
-    assertTrue(a.equals(a2));
-    assertFalse(a.equals(b));
+    assertEquals(a, a2);
+    assertNotEquals(a, b);
   }
 
   @Test
