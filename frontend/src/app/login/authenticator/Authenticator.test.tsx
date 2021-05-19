@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 
 import { Authenticator } from "./Authenticator";
 
-describe("Verify Email MFA", () => {
+describe("Submit Email MFA", () => {
   beforeEach(() => {
     render(<Authenticator />);
   });
@@ -14,14 +14,14 @@ describe("Verify Email MFA", () => {
         target: { value: "123" },
       }
     );
-    fireEvent.click(screen.getByText("Verify"));
+    fireEvent.click(screen.getByText("Submit"));
     expect(
       screen.queryByText("Enter your security code")
     ).not.toBeInTheDocument();
   });
 
   it("requires a security code", () => {
-    fireEvent.click(screen.getByText("Verify"));
+    fireEvent.click(screen.getByText("Submit"));
     expect(screen.getByText("Enter your security code")).toBeInTheDocument();
   });
 });
