@@ -534,7 +534,7 @@ const QueueItem: any = ({
                 <h2>{patientFullNameLastFirst}</h2>
                 <TestTimerWidget timer={timer} />
               </div>
-              <div className="usa-card__body">
+              <div className="usa-card__body prime-test-body">
                 <div className="grid-row">
                   <ul className="prime-ul">
                     <li className="prime-li">
