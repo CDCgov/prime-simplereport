@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.config.authorization;
 
+import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
@@ -52,6 +53,7 @@ public class UserAuthorizationVerifier {
   private PatientLinkRepository _patientLinkRepo;
   private OktaRepository _oktaRepo;
   private AuthorizationService _authService;
+  private CurrentAccountRequestContextHolder _contextHolder;
 
   public UserAuthorizationVerifier(
       IdentitySupplier supplier,
@@ -63,7 +65,8 @@ public class UserAuthorizationVerifier {
       TestOrderRepository testOrderRepo,
       PatientLinkRepository patientLinkRepo,
       OktaRepository oktaRepo,
-      AuthorizationService authService) {
+      AuthorizationService authService,
+      CurrentAccountRequestContextHolder contextHolder) {
     super();
     this._supplier = supplier;
     this._orgService = orgService;
@@ -75,6 +78,7 @@ public class UserAuthorizationVerifier {
     this._patientLinkRepo = patientLinkRepo;
     this._oktaRepo = oktaRepo;
     this._authService = authService;
+    this._contextHolder = contextHolder;
   }
 
   public boolean userHasSiteAdminRole() {
@@ -283,5 +287,10 @@ public class UserAuthorizationVerifier {
   private ApiUser getUser(UUID id) {
     Optional<ApiUser> found = _userRepo.findByIdIncludeArchived(id);
     return found.orElseThrow(NonexistentUserException::new);
+  }
+
+  public boolean permitAllAccountRequests() {
+    _contextHolder.setIsAccountRequest(true);
+    return true;
   }
 }

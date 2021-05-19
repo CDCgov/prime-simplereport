@@ -102,7 +102,8 @@ public class LiveOktaRepository implements OktaRepository {
       IdentityAttributes userIdentity,
       Organization org,
       Set<Facility> facilities,
-      Set<OrganizationRole> roles) {
+      Set<OrganizationRole> roles,
+      boolean active) {
     // need to validate fields before adding them because Maps don't like nulls
     Map<String, Object> userProfileMap = new HashMap<String, Object>();
     if (userIdentity.getFirstName() != null && !userIdentity.getFirstName().isEmpty()) {
@@ -172,6 +173,7 @@ public class LiveOktaRepository implements OktaRepository {
     UserBuilder.instance()
         .setProfileProperties(userProfileMap)
         .setGroups(groupIdsToAdd)
+        .setActive(active)
         .buildAndCreate(_client);
 
     List<OrganizationRoleClaims> claims = _extractor.convertClaims(groupNamesToAdd);
@@ -382,12 +384,15 @@ public class LiveOktaRepository implements OktaRepository {
     }
 
     String orgName = facility.getOrganization().getOrganizationName();
+    String facilityGroupName = generateFacilityGroupName(orgExternalId, facility.getInternalId());
     Group g =
         GroupBuilder.instance()
-            .setName(generateFacilityGroupName(orgExternalId, facility.getInternalId()))
+            .setName(facilityGroupName)
             .setDescription(generateFacilityGroupDescription(orgName, facility.getFacilityName()))
             .buildAndCreate(_client);
     _app.createApplicationGroupAssignment(g.getId());
+
+    LOG.info("Created Okta group={}", facilityGroupName);
 
     _app.update();
   }

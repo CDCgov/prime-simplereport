@@ -40,23 +40,31 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   void createOrganization_standardUser_error() {
     DeviceSpecimenTypeHolder holder = getDeviceConfig();
-    assertSecurityError(
-        () -> {
-          PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
-          _service.createOrganization(
-              "Tim's org",
-              "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
-              "Facility 1",
-              "12345",
-              _dataFactory.getAddress(),
-              "123-456-7890",
-              "test@foo.com",
-              holder,
-              bill,
-              _dataFactory.getAddress(),
-              "123-456-7890",
-              "547329472");
-        });
+    PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
+    Organization org =
+        _service.createOrganization(
+            "Tim's org",
+            "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
+            "Facility 1",
+            "12345",
+            _dataFactory.getAddress(),
+            "123-456-7890",
+            "test@foo.com",
+            holder,
+            bill,
+            _dataFactory.getAddress(),
+            "123-456-7890",
+            "547329472");
+
+    assertEquals("Tim's org", org.getOrganizationName());
+    assertFalse(org.getIdentityVerified());
+    assertEquals("d6b3951b-6698-4ee7-9d63-aaadee85bac0", org.getExternalId());
+    List<Facility> facilities = _service.getFacilities(org);
+    assertNotNull(facilities);
+    assertEquals(1, facilities.size());
+    assertEquals("Facility 1", facilities.get(0).getFacilityName());
+    assertNotNull(facilities.get(0).getDefaultDeviceType());
+    assertEquals("Bill", facilities.get(0).getDefaultDeviceType().getName());
   }
 
   private DeviceSpecimenTypeHolder getDeviceConfig() {
@@ -88,7 +96,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             "547329472");
 
     assertEquals("Tim's org", org.getOrganizationName());
-    assertTrue(org.getIdentityVerified());
+    assertFalse(org.getIdentityVerified());
     assertEquals("d6b3951b-6698-4ee7-9d63-aaadee85bac0", org.getExternalId());
     List<Facility> facilities = _service.getFacilities(org);
     assertNotNull(facilities);

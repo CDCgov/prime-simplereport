@@ -79,6 +79,11 @@ enum TestResultDeliveryPreference {
   NONE
 }
 
+enum PhoneType {
+  MOBILE
+  LANDLINE
+}
+
 type NameInfo {
   firstName: String
   middleName: String
