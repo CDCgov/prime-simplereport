@@ -60,10 +60,91 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * @param userAgent the user agent of the user requesting a new account.
    * @return The state token affiliated with this request by Okta.
    * @throws Exception if the state token is not returned by Okta.
+   * 
+   * https://developer.okta.com/docs/reference/api/authn/#request-example-for-activation-token
+   * TODO(emmastephenson: update the response, because the userId is an embedded field)
    */
+
+
+   /**
+    * {
+  "stateToken": "005Oj4_rx1yAYP2MFNobMXlM2wJ3QEyzgifBd_T6Go",
+  "expiresAt": "2017-03-29T21:35:47.000Z",
+  "status": "PASSWORD_RESET",
+  "recoveryType": "ACCOUNT_ACTIVATION",
+  "_embedded": {
+    "user": {
+      "id": "00ub0oNGTSWTBKOLGLNR",
+      "passwordChanged": "2015-09-08T20:14:45.000Z",
+      "profile": {
+        "login": "dade.murphy@example.com",
+        "firstName": "Dade",
+        "lastName": "Murphy",
+        "locale": "en_US",
+        "timeZone": "America/Los_Angeles"
+      }
+    },
+    "policy": {
+      "expiration": {
+        "passwordExpireDays": 5
+      },
+      "complexity": {
+        "minLength": 8,
+        "minLowerCase": 1,
+        "minUpperCase": 1,
+        "minNumber": 1,
+        "minSymbol": 0
+      }
+    }
+  },
+  "_links": {
+    "next": {
+      "name": "resetPassword",
+      "href": "https://${yourOktaDomain}/api/v1/authn/credentials/reset_password",
+      "hints": {
+        "allow": [
+          "POST"
+        ]
+      }
+    },
+    "cancel": {
+      "href": "https://${yourOktaDomain}/api/v1/authn/cancel",
+      "hints": {
+        "allow": [
+          "POST"
+        ]
+      }
+    }
+  }
+}
+
+HTTP/1.1 401 Unauthorized
+Content-Type: application/json
+
+{
+  "errorCode": "E0000004",
+  "errorSummary": "Authentication failed",
+  "errorLink": "E0000004",
+  "errorId": "oae2fYYJmkuTg-NyozqBkb3sw",
+  "errorCauses": []
+}
+
+
+curl -v -X POST \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+-H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36" \
+-H "X-Forwarded-For: 23.235.46.133" \
+-d '{
+  "token": "o7AFoTGE9xjQiHQK6dAa"
+}' "https://${yourOktaDomain}/api/v1/authn"
+
+    */
   public JSONObject activateUser(
       String activationToken, String crossForwardedHeader, String userAgent)
       throws InvalidActivationLinkException {
+    System.out.println("activating user (printed)");
     LOG.info("activating user");
     JSONObject requestBody = new JSONObject();
     requestBody.put("token", activationToken);
@@ -83,12 +164,15 @@ public class LiveOktaAuthentication implements OktaAuthentication {
                               return execution.execute(request, body);
                             }))
             .build();
-    String response = restTemplate.postForObject(_orgUrl, requestBody, String.class);
+    String postUrl = _orgUrl + "/api/v1/authn";
+    String response = restTemplate.postForObject(postUrl, requestBody, String.class);
     LOG.info("activating user response: " + response);
     JSONObject responseJson = new JSONObject(response);
-    if (responseJson.has("stateToken") && responseJson.has("userId")) {
-      return responseJson;
-    } else {
+    try {
+     responseJson.getJSONObject("_embedded").getJSONObject("user").getString("id");
+     responseJson.getString("stateToken");
+     return responseJson;
+    } catch(NullPointerException e) {
       throw new InvalidActivationLinkException();
     }
   }
