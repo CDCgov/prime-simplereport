@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.boot.task.TaskSchedulerBuilder;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
@@ -41,7 +42,8 @@ class ScheduledTasksServiceTest {
         new ScheduledTasksService(uploader, schedulerBuilder).scheduleUploads(config);
     assertEquals(Set.of(cronExpression), scheduledUploads.keySet());
 
-    verify(scheduler, only()).schedule(captureMethod.capture(), captureTrigger.capture());
+    verify(scheduler, Mockito.times(1)).initialize();
+    verify(scheduler, Mockito.times(1)).schedule(captureMethod.capture(), captureTrigger.capture());
     CronTrigger trigger = captureTrigger.getValue();
     assertEquals(cronExpression, trigger.getExpression());
     verify(uploader, never()).dataHubUploaderTask();
