@@ -29,6 +29,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           ignoreLastBuildOnBranch: "**"  # Better comparisons after rebasing
+          exitZeroOnChanges: true
+          exitOnceUploaded: true
       - name: Publish to Chromatic (auto-accept changes on merge main)
         if: github.ref == 'refs/heads/main'
         uses: chromaui/action@v1
@@ -37,4 +39,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           ignoreLastBuildOnBranch: "**"
+          exitZeroOnChanges: true
+          exitOnceUploaded: true
           autoAcceptChanges: true  # handle squash-on-merge

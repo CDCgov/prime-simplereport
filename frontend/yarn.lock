@@ -6350,10 +6350,10 @@ chownr@^2.0.0:
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-2.0.0.tgz#15bfbe53d2eab4cf70f18a8cd68ebe5b3cb1dece"
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
 
-chromatic@^5.8.2:
-  version "5.8.2"
-  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-5.8.2.tgz#542637b714825e12fe9b86f9031c0f6e30a36931"
-  integrity sha512-zakD9u51SEHE6HBY/CaO2nkK401WFXmjM6QRMXgTu6Xyktg/jZ+yP2+O38+D+bAftof/di5cTyMzXQVhQwu95Q==
+chromatic@^5.8.3:
+  version "5.8.3"
+  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-5.8.3.tgz#9dcce827be5e87760afb7574bc4e7b388db4ae91"
+  integrity sha512-zTLQGhlGO/bz7LNbEv2qXtarE93aG7vz5CnYNPukhyE1LK2LZaPdzTgaWU5Ah+7ZFPQGFMMAmJ6I6fU4WCUnYA==
   dependencies:
     "@actions/core" "^1.2.4"
     "@actions/github" "^4.0.0"
