@@ -81,10 +81,7 @@ export const MfaSelect = () => {
           validationStatus={mfaOptionError ? "error" : undefined}
           onBlur={validateMfaOption}
           onChange={setMfaOption}
-          // onBlur={validate}
-          // validationStatus={error ? "error" : undefined}
           variant="tile"
-          // errorMessage={error ? ERROR_MESSAGE : undefined}
         />
         <Button
           className="margin-top-3"
