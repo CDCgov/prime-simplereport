@@ -381,7 +381,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
     padding-right: units(2.5);
   }
 
-  .usa-select,
   .usa-form-group {
     @include at-media("desktop") {
       margin-top: 0;
@@ -788,4 +787,8 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   margin-bottom: units(-0.5);
   padding: units(2.5) units(3);
   position: relative;
+}
+
+.usa-label {
+  margin-top: 0;
 }
