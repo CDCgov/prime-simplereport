@@ -23,7 +23,7 @@ import WithFacility from "./facilitySelect/WithFacility";
 import { appPermissions } from "./permissions";
 import Settings from "./Settings/Settings";
 
-const WHOAMI_QUERY = gql`
+export const WHOAMI_QUERY = gql`
   query WhoAmI {
     whoami {
       id
