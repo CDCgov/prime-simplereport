@@ -1,6 +1,8 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
+import * as clia from "../utils/clia";
+
 import FacilityForm from "./Facility/FacilityForm";
 
 let saveFacility: jest.Mock;
@@ -12,7 +14,7 @@ const devices: DeviceType[] = [
 
 const validFacility: Facility = {
   name: "Foo Facility",
-  cliaNumber: "some-number",
+  cliaNumber: "12D4567890",
   phone: "(202) 395-3080",
   street: "736 Jackson Pl NW",
   zipCode: "20503",
@@ -213,6 +215,46 @@ describe("FacilityForm", () => {
     const state = await screen.findByText("Palau", { exact: false });
     expect(state).toBeInTheDocument();
   });
+
+  describe("CLIA number validation", () => {
+    describe("when validation is not required for state", () => {
+      beforeEach(() => {
+        jest
+          .spyOn(clia, "stateRequiresCLIANumberValidation")
+          .mockReturnValue(false);
+      });
+
+      afterEach(() => {
+        jest.spyOn(clia, "stateRequiresCLIANumberValidation").mockRestore();
+      });
+
+      it("does not validate CLIA numbers in states that do not require it", async () => {
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={validFacility}
+              deviceOptions={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const cliaInput = screen.getByLabelText("CLIA number", {
+          exact: false,
+        });
+        fireEvent.change(cliaInput, {
+          target: { value: "invalid-clia-number" },
+        });
+        fireEvent.blur(cliaInput);
+
+        const saveButton = await screen.getAllByText("Save changes")[0];
+        fireEvent.click(saveButton);
+        await validateAddress(saveFacility);
+        expect(saveFacility).toBeCalledTimes(1);
+      });
+    });
+  });
+
   describe("Address validation", () => {
     it("uses suggested addresses", async () => {
       const facility: Facility = {

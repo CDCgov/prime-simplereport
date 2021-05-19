@@ -2,6 +2,10 @@ import * as yup from "yup";
 import { PhoneNumberUtil } from "google-libphonenumber";
 
 import { liveJurisdictions } from "../../../config/constants";
+import {
+  isValidCLIANumber,
+  stateRequiresCLIANumberValidation,
+} from "../../utils/clia";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -30,7 +34,20 @@ const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
 
 export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
   name: yup.string().required(),
-  cliaNumber: yup.string().required(),
+  cliaNumber: yup
+    .string()
+    .required()
+    .test((input, facility) => {
+      if (!stateRequiresCLIANumberValidation(facility.parent.state)) {
+        return true;
+      }
+
+      if (!input) {
+        return false;
+      }
+
+      return isValidCLIANumber(input);
+    }),
   street: yup.string().required(),
   zipCode: yup.string().required(),
   deviceTypes: yup.array().of(yup.string().required()).min(1).required(),
