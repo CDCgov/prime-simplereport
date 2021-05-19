@@ -1,10 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 
-import { MfaSmsVerify } from "./MfaSmsVerify";
+import { MfaEmailVerify } from "./MfaEmailVerify";
 
-describe("Verify SMS MFA", () => {
+describe("Verify Email MFA", () => {
   beforeEach(() => {
-    render(<MfaSmsVerify phoneNumber="(530) 867-5309" />);
+    render(<MfaEmailVerify email="foo@bar.com" />);
   });
 
   it("can enter a security code", () => {
