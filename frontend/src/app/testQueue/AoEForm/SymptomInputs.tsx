@@ -18,7 +18,7 @@ interface Props {
   symptomError: string | undefined;
   symptomOnsetError: string | undefined;
   symptomRef: React.RefObject<HTMLInputElement>;
-  symptomOnsetRef: React.RefObject<HTMLInputElement>;
+  symptomOnsetRef: React.ForwardedRef<HTMLInputElement>;
 }
 
 const SymptomInputs: React.FC<Props> = ({
@@ -31,6 +31,7 @@ const SymptomInputs: React.FC<Props> = ({
   symptomError,
   symptomOnsetError,
   symptomRef,
+
   symptomOnsetRef,
 }) => {
   return (
@@ -102,4 +103,9 @@ const SymptomInputs: React.FC<Props> = ({
   );
 };
 
-export default SymptomInputs;
+const WithRef = React.forwardRef<
+  HTMLInputElement,
+  Omit<Props, "symtomOnsetRef">
+>((props, ref) => <SymptomInputs {...props} symptomOnsetRef={ref} />);
+
+export default WithRef;

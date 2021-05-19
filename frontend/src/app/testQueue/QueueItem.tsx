@@ -168,22 +168,6 @@ if (process.env.NODE_ENV !== "test") {
   Modal.setAppElement("#root");
 }
 
-/*
-  Dates from the backend are coming in as ISO 8601 strings: (eg: "2021-01-11T23:56:53.103Z")
-  The datetime-local text input expects values in the following format *IN LOCAL TIME*: (eg: "2014-01-02T11:42:13.510")
-
-  AFAICT, there is no easy ISO -> datetime-local converter built into vanilla JS dates, so using moment
-
-*/
-const isoDateToDatetimeLocal = (isoDateString: string | undefined) => {
-  if (!isoDateString) {
-    return undefined;
-  }
-  let datetime = moment(isoDateString);
-  let datetimeLocalString = datetime.format(moment.HTML5_FMT.DATETIME_LOCAL);
-  return datetimeLocalString;
-};
-
 interface QueueItemProps {
   internalId: string;
   patient: {
@@ -273,9 +257,9 @@ const QueueItem: any = ({
     selectedDeviceTestLength
   );
 
-  const [useCurrentDateTime, updateUseCurrentDateTime] = useState<string>(
-    dateTestedProp ? "false" : "true"
-  );
+  const [useCurrentDateTime, updateUseCurrentDateTime] = useState<
+    "true" | "false"
+  >(dateTestedProp ? "false" : "true");
   // this is an ISO string
   // always assume the current date unless provided something else
   const [dateTested, updateDateTested] = useState<string | undefined>(
@@ -385,23 +369,21 @@ const QueueItem: any = ({
     updateQueueItem({ deviceId, dateTested, result: testResultValue });
   };
 
-  const onDateTestedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawDateString = e.target.value; // local time
-    const isValidDate = isValidCustomDateTested(rawDateString);
+  const onDateTestedChange = (date: moment.Moment) => {
+    const newDateTested = date.toISOString();
+    const isValidDate = isValidCustomDateTested(newDateTested);
 
     if (isValidDate) {
-      const dateTested = new Date(rawDateString).toISOString(); // local time
-
       /* the custom date input field manages its own state in the DOM, not in the react state
       The reason for this is an invalid custom date would update react. Updating another field in the queue item, like the test result, would attempt to submit the invalid date to the backend
       Instead, we are only going to update react if there is a *valid* date.
       this can be mitigated if the backend can reliably handle null/invalid dates (never needs to be the case, just default to current date)
       or if we change our updateQueuItem function to update only a single value at a time, which is a TODO for later
     */
-      updateDateTested(dateTested);
+      updateDateTested(newDateTested);
       updateQueueItem({
         deviceId,
-        dateTested: dateTested,
+        dateTested: newDateTested,
         result: testResultValue,
       });
     }
@@ -496,6 +478,8 @@ const QueueItem: any = ({
     </button>
   );
 
+  const selectedDate = dateTested ? moment(dateTested) : moment();
+
   const testDateFields =
     useCurrentDateTime === "false" ? (
       <>
@@ -506,10 +490,19 @@ const QueueItem: any = ({
             <DatePicker
               id="meeting-time"
               name="meeting-time"
-              defaultValue={isoDateToDatetimeLocal(dateTested)}
+              defaultValue={selectedDate.format(
+                moment.HTML5_FMT.DATETIME_LOCAL
+              )}
               minDate="2020-01-01T00:00"
               maxDate={moment().add(1, "days").format("YYYY-MM-DDThh:mm")} // TODO: is this a reasonable max?
-              // onChange={onDateTestedChange}
+              onChange={(date) => {
+                if (date) {
+                  const newDate = moment(date)
+                    .hour(selectedDate.hours())
+                    .minute(selectedDate.minutes());
+                  onDateTestedChange(newDate);
+                }
+              }}
             />
           </div>
         </div>
@@ -520,7 +513,14 @@ const QueueItem: any = ({
             hintText="hh:mm"
             type="time"
             step="60"
-            onChange={onDateTestedChange}
+            value={selectedDate.format("HH:mm")}
+            onChange={(e) => {
+              const [hours, minutes] = e.target.value.split(":");
+              const newDate = moment(selectedDate)
+                .hours(parseInt(hours))
+                .minutes(parseInt(minutes));
+              onDateTestedChange(newDate);
+            }}
           />
         </div>
       </>
