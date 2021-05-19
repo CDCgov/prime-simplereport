@@ -1,7 +1,7 @@
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 
-export const Locked = () => {
+export const AccountLocked = () => {
   return (
     <CardBackground>
       <Card logo>

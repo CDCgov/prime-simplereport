@@ -3,7 +3,7 @@ import { Story, Meta } from "@storybook/react";
 import { SecurityCode } from "./SecurityCode";
 
 export default {
-  title: "App/Login/Security code",
+  title: "App/Login/MFA: Security code",
   component: SecurityCode,
   argTypes: {},
 } as Meta;

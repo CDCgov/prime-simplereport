@@ -5,7 +5,7 @@ import { CardBackground } from "../../commonComponents/CardBackground/CardBackgr
 import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
 
-export const Email = () => {
+export const SignIn = () => {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [formIsDirty, setFormIsDirty] = useState(false);

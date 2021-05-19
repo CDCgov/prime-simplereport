@@ -1,14 +1,14 @@
 import { Story, Meta } from "@storybook/react";
 
-import { Email } from "./Email";
+import { SignIn } from "./SignIn";
 
 export default {
-  title: "App/Login/Email",
-  component: Email,
+  title: "App/Login/Sign in",
+  component: SignIn,
   argTypes: {},
 } as Meta;
 
-const Template: Story = (args) => <Email {...args} />;
+const Template: Story = (args) => <SignIn {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};

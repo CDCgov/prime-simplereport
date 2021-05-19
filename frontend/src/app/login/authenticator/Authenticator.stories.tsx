@@ -3,7 +3,7 @@ import { Story, Meta } from "@storybook/react";
 import { Authenticator } from "./Authenticator";
 
 export default {
-  title: "App/Login/Authenticator",
+  title: "App/Login/MFA: Authenticator",
   component: Authenticator,
   argTypes: {},
 } as Meta;
