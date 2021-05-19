@@ -38,10 +38,61 @@ const validFacility: Facility = {
   defaultDevice: devices[0].internalId,
 };
 
+// Hardcoded suggestion scenarios
+const addresses = [
+  {
+    bad: {
+      street: "123 Main St",
+      streetTwo: "Unit 05",
+      city: "Wasington",
+      state: "AZ",
+      zipCode: "13345",
+      county: "",
+    },
+    good: {
+      street: "123 Main St NW",
+      streetTwo: "Unit 50",
+      city: "Washington",
+      state: "AZ",
+      zipCode: "12345",
+      county: "Potomac",
+    },
+  },
+  {
+    bad: {
+      street: "827 Piedmont St",
+      streetTwo: "",
+      city: "Alexandria",
+      state: "FL",
+      zipCode: "22222",
+      county: "",
+    },
+    good: {
+      street: "827 Piedmont Dr.",
+      streetTwo: "",
+      city: "Arlington",
+      state: "FL",
+      zipCode: "22212",
+      county: "Alexandria",
+    },
+  },
+];
+
+jest.mock("../utils/smartyStreets", () => ({
+  getBestSuggestion: (
+    address: Address
+  ): Promise<AddressWithMetaData | undefined> => {
+    const lookup = addresses.find(({ bad }) => bad.street === address.street);
+    return Promise.resolve(lookup ? lookup.good : undefined);
+  },
+  suggestionIsCloseEnough: () => false,
+}));
+
 describe("FacilityForm", () => {
   beforeEach(() => {
     saveFacility = jest.fn();
   });
+
   it("submits a valid form", async () => {
     render(
       <MemoryRouter>
@@ -57,10 +108,8 @@ describe("FacilityForm", () => {
       screen.getByLabelText("Testing facility name", { exact: false }),
       { target: { value: "Bar Facility" } }
     );
-    await waitFor(() => {
-      fireEvent.click(saveButton);
-      expect(saveFacility).toBeCalled();
-    });
+    fireEvent.click(saveButton);
+    await validateAddress(saveFacility);
   });
   it("provides validation feedback during form completion", async () => {
     render(
@@ -112,7 +161,7 @@ describe("FacilityForm", () => {
         />
       </MemoryRouter>
     );
-    const saveButton = await screen.getAllByText("Save changes")[0];
+    const saveButton = (await screen.findAllByText("Save changes"))[0];
     const emailInput = screen.getByLabelText("Email", {
       exact: false,
     });
@@ -136,7 +185,7 @@ describe("FacilityForm", () => {
     await waitFor(async () => {
       fireEvent.click(saveButton);
     });
-    expect(saveFacility).toBeCalledTimes(1);
+    await validateAddress(saveFacility);
   });
   it("only accepts live jurisdictions", async () => {
     render(
@@ -164,4 +213,54 @@ describe("FacilityForm", () => {
     const state = await screen.findByText("Palau", { exact: false });
     expect(state).toBeInTheDocument();
   });
+  describe("Address validation", () => {
+    it("uses suggested addresses", async () => {
+      const facility: Facility = {
+        ...validFacility,
+        ...addresses[0].bad,
+        orderingProvider: {
+          ...validFacility.orderingProvider,
+          ...addresses[1].bad,
+        },
+      };
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={facility}
+            deviceOptions={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+      const saveButton = screen.getAllByText("Save changes")[0];
+      fireEvent.change(
+        screen.getByLabelText("Testing facility name", { exact: false }),
+        { target: { value: "La Croix Facility" } }
+      );
+      fireEvent.click(saveButton);
+      await validateAddress(saveFacility, "suggested address");
+      expect(saveFacility).toBeCalledWith({
+        ...validFacility,
+        name: "La Croix Facility",
+        ...addresses[0].good,
+        orderingProvider: {
+          ...validFacility.orderingProvider,
+          ...addresses[1].good,
+        },
+      });
+    });
+  });
 });
+
+async function validateAddress(
+  saveFacility: (facility: Facility) => void,
+  selection: "as entered" | "suggested address" = "as entered"
+) {
+  await screen.findByText("Address validation");
+  const radios = screen.getAllByLabelText(selection, { exact: false });
+  radios.forEach(fireEvent.click);
+  const button = screen.getAllByText("Save changes")[2];
+  expect(button).not.toBeDisabled();
+  fireEvent.click(button);
+  expect(saveFacility).toBeCalledTimes(1);
+}
