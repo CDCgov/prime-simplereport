@@ -10,7 +10,7 @@ exports[`TestResultInputForm should render with a value 1`] = `
     SARS-CoV-2 results
   </h4>
   <div
-    className=""
+    className="usa-form-group"
   >
     <fieldset
       className="usa-fieldset prime-radios"
@@ -21,7 +21,7 @@ exports[`TestResultInputForm should render with a value 1`] = `
         Test result
       </legend>
       <div
-        className="usa-form-group"
+        className=""
       >
         <div
           className="usa-radio"
@@ -117,7 +117,7 @@ exports[`TestResultInputForm should render without a value 1`] = `
     SARS-CoV-2 results
   </h4>
   <div
-    className=""
+    className="usa-form-group"
   >
     <fieldset
       className="usa-fieldset prime-radios"
@@ -128,7 +128,7 @@ exports[`TestResultInputForm should render without a value 1`] = `
         Test result
       </legend>
       <div
-        className="usa-form-group"
+        className=""
       >
         <div
           className="usa-radio"

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
+import PageNotFound from "../../app/commonComponents/PageNotFound";
 import { PxpApi } from "../PxpApiService";
-import Patient404 from "../timeOfTest/Patient404";
 
 type Props = {
   registrationLink: string;
@@ -33,7 +33,7 @@ export const RegistrationContainer: React.FC<Props> = ({
   }
 
   if (isLinkValid === false) {
-    return <Patient404 />;
+    return <PageNotFound />;
   }
 
   return <>{children}</>;

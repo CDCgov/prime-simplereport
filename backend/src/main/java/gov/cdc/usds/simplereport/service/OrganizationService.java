@@ -215,7 +215,6 @@ public class OrganizationService {
   }
 
   @Transactional(readOnly = false)
-  @AuthorizationConfiguration.RequireGlobalAdminUser
   public Organization createOrganization(
       String name,
       String externalId,
@@ -229,8 +228,8 @@ public class OrganizationService {
       StreetAddress providerAddress,
       String providerTelephone,
       String providerNPI) {
-    // for now, all new organizations have identity_verified = true by default
-    Organization org = _repo.save(new Organization(name, externalId, true));
+    // for now, all new organizations have identity_verified = false by default
+    Organization org = _repo.save(new Organization(name, externalId, false));
     Provider orderingProvider =
         _providerRepo.save(
             new Provider(providerName, providerNPI, providerAddress, providerTelephone));

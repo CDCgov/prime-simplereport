@@ -16,7 +16,6 @@ import gov.cdc.usds.simplereport.api.ResourceLinks;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
-import gov.cdc.usds.simplereport.db.model.PatientRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TimeOfConsent;
@@ -34,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -49,8 +47,9 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
   private Organization _org;
   private Facility _site;
-  private PatientRegistrationLink _orgRegistrationLink;
-  private PatientRegistrationLink _facilityRegistrationLink;
+  private Person _person;
+  private PatientLink _patientLink;
+  private TestOrder _testOrder;
 
   @BeforeEach
   void init() {
@@ -62,14 +61,8 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
           _person = _dataFactory.createFullPerson(_org);
           _testOrder = _dataFactory.createTestOrder(_person, _site);
           _patientLink = _dataFactory.createPatientLink(_testOrder);
-          _orgRegistrationLink = _dataFactory.createPatientRegistrationLink(_org);
-          _facilityRegistrationLink = _dataFactory.createPatientRegistrationLink(_site);
         });
   }
-
-  private Person _person;
-  private PatientLink _patientLink;
-  private TestOrder _testOrder;
 
   @Test
   void contextLoads() throws Exception {
@@ -266,9 +259,11 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             + _patientLink.getInternalId()
             + "\",\"dateOfBirth\":\""
             + dob
-            + "\",\"data\":{\"telephone\":\""
+            + "\",\"data\":{\"phoneNumbers\":"
+            + "[{\"type\":\"MOBILE\",\"number\":\""
             + newTelephone
-            + "\",\"role\":\"UNKNOWN\",\"email\":\""
+            + "\"},{\"type\":\"LANDLINE\",\"number\":\"(631) 867-5309"
+            + "\"}],\"role\":\"UNKNOWN\",\"email\":\""
             + newEmail
             + "\",\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,\"zipCode\":\"67890\"}}}";
 
@@ -286,6 +281,76 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.telephone", is(newTelephone)))
         .andExpect(jsonPath("$.email", is(newEmail)));
+  }
+
+  @Test
+  void updatePatientAcceptsPostalOrZipCode() throws Exception {
+    // GIVEN
+    String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    String newTelephone = "(212) 867-5309";
+    String newEmail = "fake@example.com";
+    String zipcode = "97209";
+
+    String requestBody =
+        "{\"patientLinkId\":\""
+            + _patientLink.getInternalId()
+            + "\",\"dateOfBirth\":\""
+            + dob
+            + "\",\"data\":{\"phoneNumbers\":"
+            + "[{\"type\":\"MOBILE\",\"number\":\""
+            + newTelephone
+            + "\"},{\"type\":\"LANDLINE\",\"number\":\"(631) 867-5309"
+            + "\"}],\"role\":\"UNKNOWN\",\"email\":\""
+            + newEmail
+            + "\",\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,"
+            + "\"zipCode\":\""
+            + zipcode
+            + "\"}}}";
+
+    // WHEN
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.UPDATE_PATIENT)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    // THEN
+    _mockMvc
+        .perform(builder)
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.zipCode", is(zipcode)));
+
+    String postalCode = "11561";
+    String requestBody2 =
+        "{\"patientLinkId\":\""
+            + _patientLink.getInternalId()
+            + "\",\"dateOfBirth\":\""
+            + dob
+            + "\",\"data\":{\"phoneNumbers\":"
+            + "[{\"type\":\"MOBILE\",\"number\":\""
+            + newTelephone
+            + "\"},{\"type\":\"LANDLINE\",\"number\":\"(631) 867-5309"
+            + "\"}],\"role\":\"UNKNOWN\",\"email\":\""
+            + newEmail
+            + "\",\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,"
+            + "\"postalCode\":\""
+            + postalCode
+            + "\"}}}";
+
+    // WHEN
+    MockHttpServletRequestBuilder builder2 =
+        post(ResourceLinks.UPDATE_PATIENT)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody2);
+
+    // THEN
+    _mockMvc
+        .perform(builder2)
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.zipCode", is(postalCode)));
   }
 
   @Test
@@ -343,41 +408,5 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
         .andExpect(status().isNotFound())
         .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER));
     assertNoAuditEvent();
-  }
-
-  @Test
-  void registrationEntityOrgNameFound() throws Exception {
-    String link = _orgRegistrationLink.getLink();
-
-    MockHttpServletRequestBuilder builder =
-        get(ResourceLinks.ENTITY_NAME).param("patientRegistrationLink", link);
-
-    MvcResult result =
-        this._mockMvc
-            .perform(builder)
-            .andExpect(status().isOk())
-            .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER))
-            .andReturn();
-
-    String content = result.getResponse().getContentAsString();
-    assertEquals(_org.getOrganizationName(), content);
-  }
-
-  @Test
-  void registrationEntityFacilityNameFound() throws Exception {
-    String link = _facilityRegistrationLink.getLink();
-
-    MockHttpServletRequestBuilder builder =
-        get(ResourceLinks.ENTITY_NAME).param("patientRegistrationLink", link);
-
-    MvcResult result =
-        this._mockMvc
-            .perform(builder)
-            .andExpect(status().isOk())
-            .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER))
-            .andReturn();
-
-    String content = result.getResponse().getContentAsString();
-    assertEquals(_site.getFacilityName(), content);
   }
 }
