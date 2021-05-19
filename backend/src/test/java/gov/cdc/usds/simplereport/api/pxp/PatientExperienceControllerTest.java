@@ -284,6 +284,76 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
   }
 
   @Test
+  void updatePatientAcceptsPostalOrZipCode() throws Exception {
+    // GIVEN
+    String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    String newTelephone = "(212) 867-5309";
+    String newEmail = "fake@example.com";
+    String zipcode = "97209";
+
+    String requestBody =
+        "{\"patientLinkId\":\""
+            + _patientLink.getInternalId()
+            + "\",\"dateOfBirth\":\""
+            + dob
+            + "\",\"data\":{\"phoneNumbers\":"
+            + "[{\"type\":\"MOBILE\",\"number\":\""
+            + newTelephone
+            + "\"},{\"type\":\"LANDLINE\",\"number\":\"(631) 867-5309"
+            + "\"}],\"role\":\"UNKNOWN\",\"email\":\""
+            + newEmail
+            + "\",\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,"
+            + "\"zipCode\":\""
+            + zipcode
+            + "\"}}}";
+
+    // WHEN
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.UPDATE_PATIENT)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    // THEN
+    _mockMvc
+        .perform(builder)
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.zipCode", is(zipcode)));
+
+    String postalCode = "11561";
+    String requestBody2 =
+        "{\"patientLinkId\":\""
+            + _patientLink.getInternalId()
+            + "\",\"dateOfBirth\":\""
+            + dob
+            + "\",\"data\":{\"phoneNumbers\":"
+            + "[{\"type\":\"MOBILE\",\"number\":\""
+            + newTelephone
+            + "\"},{\"type\":\"LANDLINE\",\"number\":\"(631) 867-5309"
+            + "\"}],\"role\":\"UNKNOWN\",\"email\":\""
+            + newEmail
+            + "\",\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,"
+            + "\"postalCode\":\""
+            + postalCode
+            + "\"}}}";
+
+    // WHEN
+    MockHttpServletRequestBuilder builder2 =
+        post(ResourceLinks.UPDATE_PATIENT)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody2);
+
+    // THEN
+    _mockMvc
+        .perform(builder2)
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.zipCode", is(postalCode)));
+  }
+
+  @Test
   void aoeSubmitCallsUpdate() throws Exception {
     // GIVEN
     String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
