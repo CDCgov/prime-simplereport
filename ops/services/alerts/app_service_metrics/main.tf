@@ -1,6 +1,10 @@
+locals {
+  env_title = title(var.env)
+}
+
 resource "azurerm_monitor_metric_alert" "cpu_util" {
   name                = "${var.env}-api-cpu"
-  description         = "CPU utilization is greater than 70%"
+  description         = "${local.env_title} CPU utilization is greater than ${var.cpu_threshold}%"
   resource_group_name = var.rg_name
   scopes              = [var.app_service_plan_id]
   frequency           = "PT1M"
@@ -12,17 +16,20 @@ resource "azurerm_monitor_metric_alert" "cpu_util" {
     metric_name      = "CpuPercentage"
     metric_namespace = "Microsoft.Web/serverfarms"
     operator         = "GreaterThanOrEqual"
-    threshold        = 70
+    threshold        = var.cpu_threshold
   }
 
-  action {
-    action_group_id = var.action_group_id
+  dynamic "action" {
+    for_each = var.action_group_ids
+    content {
+      action_group_id = action.value
+    }
   }
 }
 
 resource "azurerm_monitor_metric_alert" "mem_util" {
   name                = "${var.env}-api-mem"
-  description         = "Memory utilization is greater than 70%"
+  description         = "${local.env_title} memory utilization is greater than ${var.mem_threshold}%"
   resource_group_name = var.rg_name
   scopes              = [var.app_service_plan_id]
   frequency           = "PT1M"
@@ -38,14 +45,17 @@ resource "azurerm_monitor_metric_alert" "mem_util" {
     threshold        = var.mem_threshold
   }
 
-  action {
-    action_group_id = var.action_group_id
+  dynamic "action" {
+    for_each = var.action_group_ids
+    content {
+      action_group_id = action.value
+    }
   }
 }
 
 resource "azurerm_monitor_metric_alert" "http_response_time" {
   name                = "${var.env}-api-http-response"
-  description         = "Network response >= 1000ms(1s)"
+  description         = "${local.env_title} network response >= 1000ms(1s)"
   resource_group_name = var.rg_name
   scopes              = [var.app_service_id]
   frequency           = "PT1M"
@@ -61,15 +71,18 @@ resource "azurerm_monitor_metric_alert" "http_response_time" {
     threshold        = 1.000 #(1s/1000ms)
   }
 
-  action {
-    action_group_id = var.action_group_id
+  dynamic "action" {
+    for_each = var.action_group_ids
+    content {
+      action_group_id = action.value
+    }
   }
 }
 
 
 resource "azurerm_monitor_metric_alert" "http_5xx_errors" {
   name                = "${var.env}-api-5xx-errors"
-  description         = "Http Server 5xx Errors >= 10"
+  description         = "${local.env_title} HTTP Server 5xx Errors >= 10"
   resource_group_name = var.rg_name
   scopes              = [var.app_service_id]
   frequency           = "PT1M"
@@ -85,14 +98,17 @@ resource "azurerm_monitor_metric_alert" "http_5xx_errors" {
     threshold        = 10
   }
 
-  action {
-    action_group_id = var.action_group_id
+  dynamic "action" {
+    for_each = var.action_group_ids
+    content {
+      action_group_id = action.value
+    }
   }
 }
 
 resource "azurerm_monitor_metric_alert" "http_4xx_errors" {
   name                = "${var.env}-api-4xx-errors"
-  description         = "Http Server 4xx Errors >= 10"
+  description         = "${local.env_title} HTTP Server 4xx Errors >= 10"
   resource_group_name = var.rg_name
   scopes              = [var.app_service_id]
   frequency           = "PT1M"
@@ -108,7 +124,10 @@ resource "azurerm_monitor_metric_alert" "http_4xx_errors" {
     threshold        = 10
   }
 
-  action {
-    action_group_id = var.action_group_id
+  dynamic "action" {
+    for_each = var.action_group_ids
+    content {
+      action_group_id = action.value
+    }
   }
 }

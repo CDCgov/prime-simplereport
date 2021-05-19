@@ -16,11 +16,13 @@ import Modal from "react-modal";
 
 import App from "./app/App";
 import PatientApp from "./patientApp/PatientApp";
+import AccountCreationApp from "./app/accountCreation/AccountCreationApp";
 import HealthChecks from "./app/HealthChecks";
 import * as serviceWorker from "./serviceWorker";
 import "./styles/App.css";
 import { store } from "./app/store";
 import { showError } from "./app/utils";
+import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration";
 
 // Define the root element for modals
 if (process.env.NODE_ENV !== "test") {
@@ -89,6 +91,11 @@ ReactDOM.render(
           <Switch>
             <Route path="/health" component={HealthChecks} />
             <Route path="/pxp" component={PatientApp} />
+            <Route path="/uac" component={AccountCreationApp} />
+            <Route
+              path="/register/:registrationLink"
+              component={SelfRegistration}
+            />
             <Route path="/" component={App} />
           </Switch>
         </Router>

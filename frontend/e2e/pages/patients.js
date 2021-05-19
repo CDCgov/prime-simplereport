@@ -14,7 +14,7 @@ function addPatient(dobFormat) {
   const address = "736 Jackson PI NW";
   const state = "DC";
   const zip = "20503";
-  const studentId = faker.random.uuid();
+  const studentId = faker.datatype.uuid();
 
   this.expect.section("@navbar").to.be.visible;
   this.section.navbar.expect.element("@patientLink").to.be.visible;
@@ -27,6 +27,7 @@ function addPatient(dobFormat) {
   this.section.editPatient.setValue("@firstName", firstName);
   this.section.editPatient.setValue("@dob", dobForInput);
   this.section.editPatient.setValue("@phone", phone);
+  this.section.editPatient.click("@phoneType-0");
   this.section.editPatient.setValue("@address", address);
   this.section.editPatient.setValue("@state", state);
   this.section.editPatient.setValue("@zip", zip);
@@ -83,7 +84,8 @@ module.exports = {
         lastName: 'input[name="lastName"]',
         facility: 'select[name="facilityId"]',
         dob: 'input[name="birthDate"]',
-        phone: 'input[name="telephone"]',
+        phone: 'input[name="number"]',
+        "phoneType-0": 'input[name="phoneType-0"]+label',
         address: 'input[name="street"]',
         state: 'select[name="state"]',
         zip: 'input[name="zipCode"]',
@@ -98,7 +100,7 @@ module.exports = {
       selector: ".modal__container",
       elements: {
         save: "#save-confirmed-address",
-        addressSelect: 'input[name="addressSelect"]+label',
+        addressSelect: 'input[name="addressSelect-person"]+label',
       },
     },
   },

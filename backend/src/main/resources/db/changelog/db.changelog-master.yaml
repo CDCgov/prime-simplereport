@@ -1957,3 +1957,129 @@ databaseChangeLog:
           - addPrimaryKey:
               tableName: spring_session_attributes
               columnNames: session_primary_id, attribute_name
+  - changeSet:
+        id: alter-spring-session-types
+        author: emma@skylight.digital
+        comment: Change the creation_time, last_access_time, and expiry_time columns to be of type bigint instead of DATETIME. Spring expects bigints for these columns.
+        # https://github.com/spring-projects/spring-session/blob/main/spring-session-jdbc/src/main/resources/org/springframework/session/jdbc/schema-postgresql.sql#L4
+        changes:
+          - sql:
+            sql: |
+              ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN creation_time TYPE bigint USING EXTRACT(EPOCH FROM creation_time);
+              ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN last_access_time TYPE bigint USING EXTRACT(EPOCH FROM last_access_time);
+              ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN expiry_time TYPE bigint USING EXTRACT(EPOCH FROM expiry_time);
+  - changeSet:
+      id: set-null-telephone-to-empty-string
+      author: nclyde@skylight.digital
+      comment: Sets null values for telephone in the person table to empty string so that the next migration will run successfully
+      changes:
+          - sql:
+            remarks: Sets null values for telephone in the person table to empty string
+            sql: |
+              WITH migration_user as (
+                SELECT internal_id as migrations_user_id
+                FROM ${database.defaultSchemaName}.api_user
+                WHERE login_email = '${migrations_user_email}')
+              UPDATE ${database.defaultSchemaName}.person SET telephone='', updated_at=now(), updated_by=(SELECT migrations_user_id from migration_user) WHERE telephone IS NULL;
+            rollback:
+              sql: |
+                WITH migration_user as (
+                  SELECT internal_id as migrations_user_id
+                  FROM ${database.defaultSchemaName}.api_user
+                  WHERE login_email = '${migrations_user_email}')
+                UPDATE ${database.defaultSchemaName}.person SET telephone=null, updated_at=now(), updated_by=(SELECT migrations_user_id from migration_user) WHERE telephone='';
+  - changeSet:
+      id: add-phone-number-table
+      author: nathan@skylight.digital
+      comment: Add table to track user phone numbers
+      changes:
+          - sql:
+            remarks: Create the enumerations needed for tracking a phone number's type
+            sql: |
+              CREATE TYPE ${database.defaultSchemaName}.PHONE_TYPES as ENUM('MOBILE', 'LANDLINE');
+            rollback:
+              sql: |
+                DROP TYPE ${database.defaultSchemaName}.PHONE_TYPES;
+          - createTable:
+              tableName: phone_number
+              remarks: A join table to Person that stores phone numbers with phone type
+              columns:
+                 - column:
+                     name: internal_id
+                     type: *idtype
+                     remarks: The internal database identifier for this entity
+                     constraints:
+                       primaryKey: true
+                       nullable: false
+                 - column:
+                     name: person_internal_id
+                     type: *idtype
+                     remarks: A foreign key to a person
+                     constraints:
+                       nullable: false
+                       foreignKeyName: fk__internal_id__person
+                       references: person
+                 - column:
+                     name: type
+                     type: ${database.defaultSchemaName}.PHONE_TYPES
+                     remarks: Enumeration of phone type, or null
+                     defaultValue: null
+                     constraints:
+                       nullable: true
+                 - column:
+                     name: number
+                     type: *string
+                     remarks: A person's contact telephone number
+                     constraints:
+                       nullable: false
+                 - column: *created_at_column
+                 - column: *created_by_column
+                 - column: *updated_at_column
+                 - column: *updated_by_column
+          - addColumn:
+              tableName: person
+              columns:
+                - column:
+                    name: primary_phone_internal_id
+                    afterColumn: telephone
+                    type: *idtype
+                    remarks: The identifier of the primary phone number for this patient
+                    constraints:
+                      nullable: true
+                      foreignKeyName: fk__primary__phone__number
+                      referencedTableName: phone_number
+          - sql:
+              remarks: Populate new `phone_number` table with existing `person.telephone` values
+              sql: |
+                INSERT INTO ${database.defaultSchemaName}.phone_number (
+                  internal_id,
+                  person_internal_id,
+                  type,
+                  number,
+                  created_at,
+                  created_by,
+                  updated_at,
+                  updated_by
+                )
+                SELECT
+                  gen_random_uuid(),
+                  internal_id,
+                  null,
+                  telephone,
+                  NOW(),
+                  created_by,
+                  NOW(),
+                  updated_by
+                FROM ${database.defaultSchemaName}.person;
+                UPDATE ${database.defaultSchemaName}.person p SET
+                  primary_phone_internal_id = pn.internal_id
+                FROM ${database.defaultSchemaName}.phone_number pn
+                WHERE p.internal_id=pn.person_internal_id;
+  - changeSet:
+      id: actually-drop-organization-facility-name-constraint
+      author: jeremy.a.zitomer@omb.eop.gov
+      comment: Previously we tried to drop this constraint using "dropConstraint", which isn't a real liquibase operation so was silently ignored. How sad!
+      changes:
+        - dropUniqueConstraint:
+            tableName: organization
+            constraintName: uk__facility__name

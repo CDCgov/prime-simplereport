@@ -100,77 +100,81 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
             >
               Admins have full access to conduct tests, manage results and profiles, and manage settings and users
             </p>
-            <fieldset
-              class="usa-fieldset prime-radios margin-top-neg-1 margin-bottom-4"
+            <div
+              class="usa-form-group"
             >
-              <legend
-                class="usa-legend usa-sr-only"
+              <fieldset
+                class="usa-fieldset prime-radios margin-top-neg-1 margin-bottom-4"
               >
-                Roles
-              </legend>
-              <div
-                class="usa-form-group"
-              >
-                <div
-                  class="usa-radio"
+                <legend
+                  class="usa-legend usa-sr-only"
                 >
-                  <input
-                    class="usa-radio__input"
-                    data-required="false"
-                    disabled=""
-                    id="4-val-ADMIN"
-                    name="role"
-                    type="radio"
-                    value="ADMIN"
-                  />
-                  <label
-                    class="usa-radio__label text-base"
-                    for="4-val-ADMIN"
-                  >
-                    Admin (full permissions)
-                  </label>
-                </div>
+                  Roles
+                </legend>
                 <div
-                  class="usa-radio"
+                  class=""
                 >
-                  <input
-                    checked=""
-                    class="usa-radio__input"
-                    data-required="false"
-                    disabled=""
-                    id="4-val-USER"
-                    name="role"
-                    type="radio"
-                    value="USER"
-                  />
-                  <label
-                    class="usa-radio__label text-base"
-                    for="4-val-USER"
+                  <div
+                    class="usa-radio"
                   >
-                    Standard user (manage results and profiles)
-                  </label>
-                </div>
-                <div
-                  class="usa-radio"
-                >
-                  <input
-                    class="usa-radio__input"
-                    data-required="false"
-                    disabled=""
-                    id="4-val-ENTRY_ONLY"
-                    name="role"
-                    type="radio"
-                    value="ENTRY_ONLY"
-                  />
-                  <label
-                    class="usa-radio__label text-base"
-                    for="4-val-ENTRY_ONLY"
+                    <input
+                      class="usa-radio__input"
+                      data-required="false"
+                      disabled=""
+                      id="4-val-ADMIN"
+                      name="role"
+                      type="radio"
+                      value="ADMIN"
+                    />
+                    <label
+                      class="usa-radio__label text-base"
+                      for="4-val-ADMIN"
+                    >
+                      Admin (full permissions)
+                    </label>
+                  </div>
+                  <div
+                    class="usa-radio"
                   >
-                    Entry only (conduct tests)
-                  </label>
+                    <input
+                      checked=""
+                      class="usa-radio__input"
+                      data-required="false"
+                      disabled=""
+                      id="4-val-USER"
+                      name="role"
+                      type="radio"
+                      value="USER"
+                    />
+                    <label
+                      class="usa-radio__label text-base"
+                      for="4-val-USER"
+                    >
+                      Standard user (manage results and profiles)
+                    </label>
+                  </div>
+                  <div
+                    class="usa-radio"
+                  >
+                    <input
+                      class="usa-radio__input"
+                      data-required="false"
+                      disabled=""
+                      id="4-val-ENTRY_ONLY"
+                      name="role"
+                      type="radio"
+                      value="ENTRY_ONLY"
+                    />
+                    <label
+                      class="usa-radio__label text-base"
+                      for="4-val-ENTRY_ONLY"
+                    >
+                      Entry only (conduct tests)
+                    </label>
+                  </div>
                 </div>
-              </div>
-            </fieldset>
+              </fieldset>
+            </div>
             <h3
               class="margin-bottom-0"
             >
@@ -182,37 +186,41 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
             >
               Admins have access to all facilities
             </p>
-            <fieldset
-              class="usa-fieldset prime-checkboxes"
+            <div
+              class="usa-form-group"
             >
-              <legend
-                class="usa-legend usa-sr-only"
+              <fieldset
+                class="usa-fieldset prime-checkboxes"
               >
-                Access all facilities
-              </legend>
-              <div
-                class="usa-form-group"
-              >
-                <div
-                  class="usa-checkbox"
+                <legend
+                  class="usa-legend usa-sr-only"
                 >
-                  <input
-                    class="usa-checkbox__input"
-                    disabled=""
-                    id="5-val-0"
-                    name="all-facilities"
-                    type="checkbox"
-                    value="ALL_FACILITIES"
-                  />
-                  <label
-                    class="usa-checkbox__label"
-                    for="5-val-0"
+                  Access all facilities
+                </legend>
+                <div
+                  class="checkboxes"
+                >
+                  <div
+                    class="usa-checkbox"
                   >
-                    Access all facilities
-                  </label>
+                    <input
+                      class="usa-checkbox__input"
+                      disabled=""
+                      id="5-val-0"
+                      name="all-facilities"
+                      type="checkbox"
+                      value="ALL_FACILITIES"
+                    />
+                    <label
+                      class="usa-checkbox__label"
+                      for="5-val-0"
+                    >
+                      Access all facilities
+                    </label>
+                  </div>
                 </div>
-              </div>
-            </fieldset>
+              </fieldset>
+            </div>
             <table
               class="usa-table usa-table--borderless user-facilities"
               style="width: 100%;"
@@ -411,74 +419,78 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
             >
               Admins have full access to conduct tests, manage results and profiles, and manage settings and users
             </p>
-            <fieldset
-              class="usa-fieldset prime-radios margin-top-neg-1 margin-bottom-4"
+            <div
+              class="usa-form-group"
             >
-              <legend
-                class="usa-legend usa-sr-only"
+              <fieldset
+                class="usa-fieldset prime-radios margin-top-neg-1 margin-bottom-4"
               >
-                Roles
-              </legend>
-              <div
-                class="usa-form-group"
-              >
-                <div
-                  class="usa-radio"
+                <legend
+                  class="usa-legend usa-sr-only"
                 >
-                  <input
-                    class="usa-radio__input"
-                    data-required="false"
-                    id="1-val-ADMIN"
-                    name="role"
-                    type="radio"
-                    value="ADMIN"
-                  />
-                  <label
-                    class="usa-radio__label"
-                    for="1-val-ADMIN"
-                  >
-                    Admin (full permissions)
-                  </label>
-                </div>
+                  Roles
+                </legend>
                 <div
-                  class="usa-radio"
+                  class=""
                 >
-                  <input
-                    checked=""
-                    class="usa-radio__input"
-                    data-required="false"
-                    id="1-val-USER"
-                    name="role"
-                    type="radio"
-                    value="USER"
-                  />
-                  <label
-                    class="usa-radio__label"
-                    for="1-val-USER"
+                  <div
+                    class="usa-radio"
                   >
-                    Standard user (manage results and profiles)
-                  </label>
-                </div>
-                <div
-                  class="usa-radio"
-                >
-                  <input
-                    class="usa-radio__input"
-                    data-required="false"
-                    id="1-val-ENTRY_ONLY"
-                    name="role"
-                    type="radio"
-                    value="ENTRY_ONLY"
-                  />
-                  <label
-                    class="usa-radio__label"
-                    for="1-val-ENTRY_ONLY"
+                    <input
+                      class="usa-radio__input"
+                      data-required="false"
+                      id="1-val-ADMIN"
+                      name="role"
+                      type="radio"
+                      value="ADMIN"
+                    />
+                    <label
+                      class="usa-radio__label"
+                      for="1-val-ADMIN"
+                    >
+                      Admin (full permissions)
+                    </label>
+                  </div>
+                  <div
+                    class="usa-radio"
                   >
-                    Entry only (conduct tests)
-                  </label>
+                    <input
+                      checked=""
+                      class="usa-radio__input"
+                      data-required="false"
+                      id="1-val-USER"
+                      name="role"
+                      type="radio"
+                      value="USER"
+                    />
+                    <label
+                      class="usa-radio__label"
+                      for="1-val-USER"
+                    >
+                      Standard user (manage results and profiles)
+                    </label>
+                  </div>
+                  <div
+                    class="usa-radio"
+                  >
+                    <input
+                      class="usa-radio__input"
+                      data-required="false"
+                      id="1-val-ENTRY_ONLY"
+                      name="role"
+                      type="radio"
+                      value="ENTRY_ONLY"
+                    />
+                    <label
+                      class="usa-radio__label"
+                      for="1-val-ENTRY_ONLY"
+                    >
+                      Entry only (conduct tests)
+                    </label>
+                  </div>
                 </div>
-              </div>
-            </fieldset>
+              </fieldset>
+            </div>
             <h3
               class="margin-bottom-0"
             >
@@ -490,36 +502,40 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
             >
               All users must have access to at least one facility
             </p>
-            <fieldset
-              class="usa-fieldset prime-checkboxes"
+            <div
+              class="usa-form-group"
             >
-              <legend
-                class="usa-legend usa-sr-only"
+              <fieldset
+                class="usa-fieldset prime-checkboxes"
               >
-                Access all facilities
-              </legend>
-              <div
-                class="usa-form-group"
-              >
-                <div
-                  class="usa-checkbox"
+                <legend
+                  class="usa-legend usa-sr-only"
                 >
-                  <input
-                    class="usa-checkbox__input"
-                    id="2-val-0"
-                    name="all-facilities"
-                    type="checkbox"
-                    value="ALL_FACILITIES"
-                  />
-                  <label
-                    class="usa-checkbox__label"
-                    for="2-val-0"
+                  Access all facilities
+                </legend>
+                <div
+                  class="checkboxes"
+                >
+                  <div
+                    class="usa-checkbox"
                   >
-                    Access all facilities
-                  </label>
+                    <input
+                      class="usa-checkbox__input"
+                      id="2-val-0"
+                      name="all-facilities"
+                      type="checkbox"
+                      value="ALL_FACILITIES"
+                    />
+                    <label
+                      class="usa-checkbox__label"
+                      for="2-val-0"
+                    >
+                      Access all facilities
+                    </label>
+                  </div>
                 </div>
-              </div>
-            </fieldset>
+              </fieldset>
+            </div>
             <table
               class="usa-table usa-table--borderless user-facilities"
               style="width: 100%;"

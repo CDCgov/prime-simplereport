@@ -79,7 +79,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         _dataFactory.createValidFacility(_organizationService.getCurrentOrganization());
     Person p =
         _personService.addPatient(
-            null,
+            (UUID) null,
             "FOO",
             "Fred",
             null,
@@ -87,7 +87,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "Sr.",
             LocalDate.of(1865, 12, 25),
             _dataFactory.getAddress(),
-            "8883334444",
+            TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
             null,
             null,
@@ -141,7 +141,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p =
         _personService.addPatient(
-            null,
+            (UUID) null,
             "FOO",
             "Fred",
             null,
@@ -149,7 +149,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "Sr.",
             LocalDate.of(1865, 12, 25),
             _dataFactory.getAddress(),
-            "8883334444",
+            TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
             null,
             null,
@@ -183,7 +183,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     Person p =
         _personService.addPatient(
-            null,
+            (UUID) null,
             "FOO",
             "Fred",
             null,
@@ -191,7 +191,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "Sr.",
             LocalDate.of(1865, 12, 25),
             _dataFactory.getAddress(),
-            "8883334444",
+            TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
             null,
             null,
@@ -245,7 +245,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p =
         _personService.addPatient(
-            null,
+            (UUID) null,
             "FOO",
             "Fred",
             null,
@@ -253,7 +253,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "Sr.",
             LocalDate.of(1865, 12, 25),
             _dataFactory.getAddress(),
-            "8883334444",
+            TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
             null,
             null,
@@ -294,7 +294,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p =
         _personService.addPatient(
-            null,
+            (UUID) null,
             "FOO",
             "Fred",
             null,
@@ -302,7 +302,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "Sr.",
             LocalDate.of(1865, 12, 25),
             _dataFactory.getAddress(),
-            "8883334444",
+            TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
             null,
             null,
@@ -346,7 +346,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     Person p1 =
         _personService.addPatient(
-            null,
+            (UUID) null,
             "FOO",
             "Fred",
             null,
@@ -354,7 +354,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "Sr.",
             LocalDate.of(1865, 12, 25),
             _dataFactory.getAddress(),
-            "8883334444",
+            TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
             null,
             null,
@@ -374,7 +374,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "Jr.",
             LocalDate.of(1900, 1, 25),
             _dataFactory.getAddress(),
-            "2229993333",
+            TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STUDENT,
             null,
             null,
@@ -505,7 +505,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p =
         _personService.addPatient(
-            null,
+            (UUID) null,
             "FOO",
             "Fred",
             null,
@@ -513,7 +513,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "Sr.",
             LocalDate.of(1865, 12, 25),
             _dataFactory.getAddress(),
-            "8883334444",
+            TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
             null,
             null,
@@ -750,7 +750,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "Sr.",
             LocalDate.of(1865, 12, 25),
             _dataFactory.getAddress(),
-            "8883334444",
+            TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
             null,
             null,
@@ -790,7 +790,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
               "Sr.",
               LocalDate.of(1865, 12, 25),
               _dataFactory.getAddress(),
-              "8883334444",
+              TestDataFactory.getListOfOnePhoneNumber(),
               PersonRole.STAFF,
               null,
               null,

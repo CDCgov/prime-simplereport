@@ -37,6 +37,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -62,6 +63,23 @@ public class LiveOktaRepository implements OktaRepository {
 
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
+      Client client,
+      @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
+      OrganizationExtractor organizationExtractor) {
+    _rolePrefix = authorizationProperties.getRolePrefix();
+    _client = client;
+    try {
+      _app = _client.getApplication(oktaOAuth2ClientId);
+    } catch (ResourceException e) {
+      throw new MisconfiguredApplicationException(
+          "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
+    }
+    _extractor = organizationExtractor;
+  }
+
+  @Autowired
+  public LiveOktaRepository(
+      AuthorizationProperties authorizationProperties,
       OktaClientProperties oktaClientProperties,
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
       OrganizationExtractor organizationExtractor) {
@@ -84,7 +102,8 @@ public class LiveOktaRepository implements OktaRepository {
       IdentityAttributes userIdentity,
       Organization org,
       Set<Facility> facilities,
-      Set<OrganizationRole> roles) {
+      Set<OrganizationRole> roles,
+      boolean active) {
     // need to validate fields before adding them because Maps don't like nulls
     Map<String, Object> userProfileMap = new HashMap<String, Object>();
     if (userIdentity.getFirstName() != null && !userIdentity.getFirstName().isEmpty()) {
@@ -154,6 +173,7 @@ public class LiveOktaRepository implements OktaRepository {
     UserBuilder.instance()
         .setProfileProperties(userProfileMap)
         .setGroups(groupIdsToAdd)
+        .setActive(active)
         .buildAndCreate(_client);
 
     List<OrganizationRoleClaims> claims = _extractor.convertClaims(groupNamesToAdd);
@@ -364,12 +384,15 @@ public class LiveOktaRepository implements OktaRepository {
     }
 
     String orgName = facility.getOrganization().getOrganizationName();
+    String facilityGroupName = generateFacilityGroupName(orgExternalId, facility.getInternalId());
     Group g =
         GroupBuilder.instance()
-            .setName(generateFacilityGroupName(orgExternalId, facility.getInternalId()))
+            .setName(facilityGroupName)
             .setDescription(generateFacilityGroupDescription(orgName, facility.getFacilityName()))
             .buildAndCreate(_client);
     _app.createApplicationGroupAssignment(g.getId());
+
+    LOG.info("Created Okta group={}", facilityGroupName);
 
     _app.update();
   }
