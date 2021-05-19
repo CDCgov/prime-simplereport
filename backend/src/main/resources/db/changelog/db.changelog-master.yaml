@@ -2075,3 +2075,11 @@ databaseChangeLog:
                   primary_phone_internal_id = pn.internal_id
                 FROM ${database.defaultSchemaName}.phone_number pn
                 WHERE p.internal_id=pn.person_internal_id;
+  - changeSet:
+      id: actually-drop-organization-facility-name-constraint
+      author: jeremy.a.zitomer@omb.eop.gov
+      comment: Previously we tried to drop this constraint using "dropConstraint", which isn't a real liquibase operation so was silently ignored. How sad!
+      changes:
+        - dropUniqueConstraint:
+            tableName: organization
+            constraintName: uk__facility__name
