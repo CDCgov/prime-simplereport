@@ -36,10 +36,10 @@ simple-report:
   sendgrid:
     enabled: false
     from-email: support@simplereport.gov
-    account-request-recipient: 
+    account-request-recipient:
       - support@simplereport.gov
       - Protect-ServiceDesk@hhs.gov
-    waitlist-recipient: 
+    waitlist-recipient:
       - support@simplereport.gov
   demo-users:
     site-admin-emails:
