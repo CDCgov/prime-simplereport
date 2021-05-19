@@ -46,4 +46,8 @@ public class PatientSelfRegistrationLink extends EternalAuditedEntity {
   public String getLink() {
     return patientRegistrationLink;
   }
+
+  public void setLink(String link) {
+    this.patientRegistrationLink = link;
+  }
 }
