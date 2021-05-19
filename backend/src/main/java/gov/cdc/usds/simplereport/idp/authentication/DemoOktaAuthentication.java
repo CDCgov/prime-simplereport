@@ -46,7 +46,6 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   public void setPassword(String userId, char[] password)
       throws OktaAuthenticationFailureException {
-    System.out.println("BOOYAH in demo set password");
     validateUser(userId);
     if (password.length < MINIMUM_PASSWORD_LENGTH) {
       throw new OktaAuthenticationFailureException("Password is too short.");
@@ -78,8 +77,6 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   public String enrollSmsMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException {
-    System.out.println("BOOYAH in demo enroll sms");
-    System.out.println("userId is: " + userId);
     validateUser(userId);
     String strippedPhoneNumber = phoneNumber.replaceAll("[^\\d]", "");
     if (strippedPhoneNumber.length() != 10) {
@@ -125,8 +122,4 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     @Getter @Setter private String factorProfile;
     @Getter @Setter private String factorId;
   }
-
-  // next steps:
-  // add this to the account creation controller
-  // update tests in both demo auth and creation controller
 }
