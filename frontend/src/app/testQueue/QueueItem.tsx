@@ -485,11 +485,11 @@ const QueueItem: any = ({
       <>
         <div className="prime-li tablet:grid-col-4 padding-left-1">
           <div className="usa-form-group">
-            <Label htmlFor="meeting-time">Test date</Label>
+            <Label htmlFor="test-date">Test date</Label>
             <span className="usa-hint">mm/dd/yyyy</span>
             <DatePicker
-              id="meeting-time"
-              name="meeting-time"
+              id="test-date"
+              name="test-date"
               defaultValue={selectedDate.format(
                 moment.HTML5_FMT.DATETIME_LOCAL
               )}
