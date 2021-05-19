@@ -1,6 +1,6 @@
 import { MfaVerify } from "../MfaVerify/MfaVerify";
 
-export const SecurityCode = () => (
+export const AuthenticationApp = () => (
   <MfaVerify
     hint={
       <>

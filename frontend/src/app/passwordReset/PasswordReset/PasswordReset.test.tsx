@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router";
 import createMockStore from "redux-mock-store";
 
-import { PasswordForm } from "./PasswordForm";
+import { PasswordReset } from "./PasswordReset";
 
 const mockStore = createMockStore([]);
 
@@ -26,12 +26,12 @@ jest.mock("../AccountCreationApiService", () => ({
   },
 }));
 
-describe("PasswordForm", () => {
+describe("PasswordCreate", () => {
   beforeEach(() => {
     render(
       <MemoryRouter initialEntries={["/set-password"]}>
         <Provider store={store}>
-          <Route path="/set-password" component={PasswordForm} />
+          <Route path="/set-password" component={PasswordReset} />
           <Route path="/set-recovery-question">
             <p>Password set successfully.</p>
           </Route>

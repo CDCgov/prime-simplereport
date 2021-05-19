@@ -1,14 +1,14 @@
 import { Story, Meta } from "@storybook/react";
 
-import { SecurityCode } from "./SecurityCode";
+import { Phone } from "./Phone";
 
 export default {
   title: "App/Password reset/Phone call",
-  component: SecurityCode,
+  component: Phone,
   argTypes: {},
 } as Meta;
 
-const Template: Story = (args) => <SecurityCode {...args} />;
+const Template: Story = (args) => <Phone {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};

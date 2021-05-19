@@ -4,7 +4,7 @@ import { MfaVerify } from "../MfaVerify/MfaVerify";
 //   phoneNumber: string;
 // }
 
-export const SecurityCode = () => (
+export const Sms = () => (
   <MfaVerify
     hint={
       <>
@@ -12,6 +12,6 @@ export const SecurityCode = () => (
         sent a one-time security code. It will expire in 10 minutes.
       </>
     }
-    type="voice call"
+    type="text message (SMS)"
   />
 );
