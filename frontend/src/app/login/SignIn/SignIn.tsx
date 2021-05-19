@@ -4,28 +4,24 @@ import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
+import { emailIsValid } from "../../utils/email";
 
-export const Email = () => {
-  const [email, setEmail] = useState("");
+export const SignIn = () => {
+  const [emailAddress, setEmailAddress] = useState("");
   const [emailError, setEmailError] = useState("");
-  const [formIsDirty, setFormIsDirty] = useState(false);
+  const [dirty, setDirty] = useState(false);
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  const emailIsValid = (emailAddress: string) => {
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(emailAddress).toLowerCase());
-  };
-
-  const validateEmail = () => {
-    setFormIsDirty(true);
-    if (!email) {
+  const validateEmailAddress = () => {
+    setDirty(true);
+    if (!emailAddress) {
       setEmailError("Enter your email address");
       return;
     }
     let valid;
     try {
-      valid = emailIsValid(email);
+      valid = emailIsValid(emailAddress);
     } catch (e) {
       valid = false;
     }
@@ -36,20 +32,16 @@ export const Email = () => {
     }
   };
 
-  const handleSubmit = () => {
-    validateEmail();
-  };
-
   useEffect(() => {
-    if (formIsDirty) {
-      validateEmail();
+    if (dirty) {
+      validateEmailAddress();
     }
   });
 
   const validatePassword = (): boolean => {
     let error = "";
     if (password === "") {
-      error = "Enter a password";
+      error = "Enter your password";
     }
     setPasswordError(error);
     return error === "";
@@ -58,24 +50,22 @@ export const Email = () => {
   return (
     <CardBackground>
       <Card logo>
-        <h1 className="font-ui-sm margin-top-3">Set up your account</h1>
+        <h1 className="font-ui-sm margin-top-3">Sign in</h1>
         <TextInput
           label={"Email address"}
           name={"email"}
           type={"email"}
-          required
-          value={email}
+          value={emailAddress}
           errorMessage={emailError}
           validationStatus={emailError ? "error" : undefined}
-          onBlur={validateEmail}
-          onChange={(evt) => setEmail(evt.target.value)}
+          onBlur={validateEmailAddress}
+          onChange={(evt) => setEmailAddress(evt.target.value)}
         />
         <TextInput
           label={"Password"}
           name={"password"}
           type={"password"}
           value={password}
-          required
           errorMessage={passwordError}
           validationStatus={passwordError ? "error" : undefined}
           onBlur={validatePassword}
@@ -85,7 +75,7 @@ export const Email = () => {
           className="margin-top-3"
           label={"Sign in"}
           type={"submit"}
-          onClick={handleSubmit}
+          onClick={validateEmailAddress}
         />
       </Card>
       <p className="margin-top-4">

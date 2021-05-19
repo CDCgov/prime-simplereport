@@ -5,7 +5,7 @@ import { CardBackground } from "../../commonComponents/CardBackground/CardBackgr
 import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
 
-export const Authenticator = () => {
+export const MfaPhone = () => {
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState("");
 
@@ -21,12 +21,10 @@ export const Authenticator = () => {
   return (
     <CardBackground>
       <Card logo>
-        <h1 className="font-ui-sm margin-top-3">
-          Enter your authentication code
-        </h1>
+        <h1 className="font-ui-sm margin-top-3">Enter your security code</h1>
         <p className="usa-hint margin-bottom-0 line-height-sans-3">
-          Enter a one-time security code from your authenticator application
-          (Google Authenticator, Authy, etc.)
+          We sent a security code to ***-***-0042. This code will expire in 10
+          minutes.
         </p>
         <div className="display-flex">
           <TextInput
@@ -34,7 +32,6 @@ export const Authenticator = () => {
             label={"One-time security code"}
             name={"security-code"}
             type={"tel"}
-            required
             value={code}
             errorMessage={codeError}
             validationStatus={codeError ? "error" : undefined}
@@ -48,6 +45,11 @@ export const Authenticator = () => {
             onClick={validateCode}
           />
         </div>
+        <Button
+          className="usa-button--outline display-block margin-top-3"
+          label={"Send another code"}
+          type={"submit"}
+        />
       </Card>
       <p className="margin-top-4">
         <a href="#0">Choose another authentication method</a>
