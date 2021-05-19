@@ -15,14 +15,17 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Chromatic wants the history
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
       - name: Install dependencies
         run: yarn
-        working-directory: ./frontend
+        working-directory: frontend
       - name: Publish to Chromatic
         if: github.ref != 'refs/heads/main'
         uses: chromaui/action@v1
         with:
-          workingDir: ./frontend  # This parameter is undocumented
+          workingDir: frontend
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           ignoreLastBuildOnBranch: "**"  # Better comparisons after rebasing
@@ -30,7 +33,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: chromaui/action@v1
         with:
-          workingDir: ./frontend
+          workingDir: frontend
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           ignoreLastBuildOnBranch: "**"
