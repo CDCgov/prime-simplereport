@@ -8,7 +8,7 @@ import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
-import Button from "../commonComponents/Button";
+import Button from "../commonComponents/Button/Button";
 import { RootState } from "../store";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
@@ -26,7 +26,8 @@ export const ADD_PATIENT = gql`
     $city: String
     $state: String!
     $zipCode: String!
-    $telephone: String!
+    $telephone: String
+    $phoneNumbers: [PhoneNumberInput!]
     $role: String
     $lookupId: String
     $email: String
@@ -51,6 +52,7 @@ export const ADD_PATIENT = gql`
       state: $state
       zipCode: $zipCode
       telephone: $telephone
+      phoneNumbers: $phoneNumbers
       role: $role
       lookupId: $lookupId
       email: $email
@@ -94,7 +96,16 @@ const AddPatient = () => {
   }
 
   const savePerson = async (person: Nullable<PersonFormData>) => {
-    await addPatient({ variables: { ...person } });
+    await addPatient({
+      variables: {
+        ...person,
+        phoneNumbers: (person.phoneNumbers || []).filter(
+          (phoneNumber: PhoneNumber) => {
+            return phoneNumber && phoneNumber.number && phoneNumber.type;
+          }
+        ),
+      },
+    });
     showNotification(
       toast,
       <Alert
@@ -125,6 +136,7 @@ const AddPatient = () => {
             tribalAffiliation: null,
             birthDate: null,
             telephone: null,
+            phoneNumbers: null,
             county: null,
             email: null,
             street: null,

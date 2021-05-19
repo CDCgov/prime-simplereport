@@ -38,7 +38,7 @@ dependencies {
     // UI layer dependencies
     implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
     implementation "com.graphql-java-kickstart:graphiql-spring-boot-starter:${kickstartVersion}"
-    implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:3.0.0"
+    implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.0.0"
     implementation 'org.json:json:20201115'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -48,6 +48,9 @@ dependencies {
     implementation 'com.okta.sdk:okta-sdk-api:3.0.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-impl:3.0.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.1'
+
+    // SpringSession dependencies
+    runtimeOnly 'org.springframework.session:spring-session-jdbc'
 
     // App insights instrumentation
     implementation 'com.microsoft.azure:applicationinsights-core:2.6.2'
@@ -114,7 +117,7 @@ sonarqube {
         property "sonar.host.url", "https://sonarcloud.io"
         // In order to get both the frontend and backend code to report, we need to set the sonar project to the root directory.
         property "sonar.sources", "backend/src/main/java,frontend/src"
-        property "sonar.exclusions", "frontend/src/**/*.test.*,frontend/src/stories/**/*"
+        property "sonar.exclusions", "frontend/src/**/*.test.*,frontend/src/stories/**/*,frontend/src/**/*.stories.tsx"
         property "sonar.javascript.lcov.reportPaths", "frontend/coverage/lcov.info"
     }
 }

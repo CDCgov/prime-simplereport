@@ -38,7 +38,8 @@ public class EmailService {
       final Attachments attachments)
       throws IOException {
     Mail mail = new Mail();
-    mail.setFrom(new Email(sendGridProperties.getFromEmail()));
+    mail.setFrom(
+        new Email(sendGridProperties.getFromEmail(), sendGridProperties.getFromDisplayName()));
     mail.setSubject(subject);
     Personalization personalization = new Personalization();
     toEmail.stream().map(Email::new).forEach(personalization::addTo);
@@ -115,5 +116,21 @@ public class EmailService {
     final Attachments attachments = getAttachmentsFromResource(attachmentResourceName);
     return sendWithProvider(
         List.of(toEmail), subject, getContentFromTemplate(templateName), attachments);
+  }
+
+  public String sendWithProviderTemplate(
+      final String toEmail, final EmailProviderTemplate providerTemplate) throws IOException {
+    Mail mail = new Mail();
+    mail.setFrom(
+        new Email(sendGridProperties.getFromEmail(), sendGridProperties.getFromDisplayName()));
+
+    // Use SendGrid Dynamic Template (subject and body configured in SendGrid web app)
+    mail.setTemplateId(sendGridProperties.getDynamicTemplateGuid(providerTemplate));
+
+    Personalization personalization = new Personalization();
+    personalization.addTo(new Email(toEmail));
+    mail.addPersonalization(personalization);
+
+    return emailProvider.send(mail);
   }
 }

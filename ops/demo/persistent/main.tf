@@ -38,6 +38,12 @@ module "bastion" {
   tags = local.management_tags
 }
 
+resource "random_password" "random_nophi_password" {
+  length           = 30
+  special          = false
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
 module "db" {
   source      = "../../services/postgres_db"
   env         = local.env
@@ -49,6 +55,7 @@ module "db" {
   db_encryption_key_id = data.azurerm_key_vault_key.db_encryption_key.id
   public_access        = false
   log_workspace_id     = module.monitoring.log_analytics_workspace_id
+  nophi_user_password  = random_password.random_nophi_password.result
 
   tags = local.management_tags
 }

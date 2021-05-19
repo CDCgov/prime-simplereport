@@ -8,7 +8,7 @@
 ========================================
 */
 
-@import "app-settings";
+@import "settings/app-settings";
 
 // -------------------------------------
 // Import individual USWDS packages...
@@ -61,6 +61,11 @@
 @import "uswds";
 
 // -------------------------------------
+// Import custom utilities
+
+@import "utilities.scss";
+
+// -------------------------------------
 // Import custom components
 
 @import "components/card.scss";
@@ -68,6 +73,5 @@
 // -------------------------------------
 // Import theme custom styles
 
-@import "uswds-theme-custom-styles";
 @import "./AppLayout.scss";
 @import "./PrimeStyles.scss";

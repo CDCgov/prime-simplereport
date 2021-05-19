@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Redirect } from "react-router-dom";
 import { connect, useSelector } from "react-redux";
 
-import Button from "../../app/commonComponents/Button";
+import Button from "../../app/commonComponents/Button/Button";
 import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";
 
 import PatientProfile from "./PatientProfile";
