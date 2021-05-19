@@ -346,7 +346,9 @@ const PersonForm = (props: Props) => {
         </div>
         <div className="usa-form">
           <Input {...commonInputProps} field="city" label="City" />
-          <Input {...commonInputProps} field="county" label="County" />
+          {view !== PersonFormView.SELF_REGISTRATION && (
+            <Input {...commonInputProps} field="county" label="County" />
+          )}
           <div className="grid-row grid-gap">
             <div className="mobile-lg:grid-col-6">
               <Select
