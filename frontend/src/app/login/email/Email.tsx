@@ -58,7 +58,7 @@ export const Email = () => {
   return (
     <CardBackground>
       <Card logo>
-        <h1 className="font-ui-sm margin-top-3">Set up your account</h1>
+        <h1 className="font-ui-sm margin-top-3">Sign in</h1>
         <TextInput
           label={"Email address"}
           name={"email"}
