@@ -54,7 +54,7 @@ public class UserAccountCreationController {
             requestBody.getActivationToken(),
             request.getHeader("X-Forwarded-For"),
             request.getHeader("User-Agent"));
-    String userId = oktaResponse.getString(USER_ID_KEY);
+    String userId = oktaResponse.getJSONObject("_embedded").getJSONObject("user").getString("id");
     request.getSession().setAttribute(USER_ID_KEY, userId);
     request.getSession().setAttribute(STATE_TOKEN_KEY, oktaResponse.getString(STATE_TOKEN_KEY));
     _oktaAuth.setPassword(userId, requestBody.getPassword().toCharArray());
