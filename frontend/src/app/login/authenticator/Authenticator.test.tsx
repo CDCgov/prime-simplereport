@@ -15,13 +15,12 @@ describe("Submit Email MFA", () => {
       }
     );
     fireEvent.click(screen.getByText("Submit"));
-    expect(
-      screen.queryByText("Enter your security code")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("requires a security code", () => {
     fireEvent.click(screen.getByText("Submit"));
-    expect(screen.getByText("Enter your security code")).toBeInTheDocument();
+    const error = screen.getByRole("alert");
+    expect(error.textContent).toEqual("Error: Enter your security code");
   });
 });
