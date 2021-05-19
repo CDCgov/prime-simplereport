@@ -5,7 +5,7 @@ import { CardBackground } from "../../commonComponents/CardBackground/CardBackgr
 import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
 
-export const SecurityCode = () => {
+export const MfaPhone = () => {
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState("");
 

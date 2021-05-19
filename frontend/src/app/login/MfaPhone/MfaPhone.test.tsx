@@ -1,10 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 
-import { Authenticator } from "./Authenticator";
+import { MfaPhone } from "./MfaPhone";
 
 describe("Submit Email MFA", () => {
   beforeEach(() => {
-    render(<Authenticator />);
+    render(<MfaPhone />);
   });
 
   it("can enter a security code", () => {

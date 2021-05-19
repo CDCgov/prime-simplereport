@@ -5,7 +5,7 @@ import { CardBackground } from "../../commonComponents/CardBackground/CardBackgr
 import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
 
-export const Authenticator = () => {
+export const MfaAuthenticationApp = () => {
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState("");
 
@@ -26,7 +26,7 @@ export const Authenticator = () => {
         </h1>
         <p className="usa-hint margin-bottom-0 line-height-sans-3">
           Enter a one-time security code from your authenticator application
-          (Google Authenticator, Authy, etc.)
+          (Google Authenticator or Okta Verify)
         </p>
         <div className="display-flex">
           <TextInput
