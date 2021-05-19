@@ -63,7 +63,6 @@ export const Email = () => {
           label={"Email address"}
           name={"email"}
           type={"email"}
-          required
           value={email}
           errorMessage={emailError}
           validationStatus={emailError ? "error" : undefined}
@@ -75,7 +74,6 @@ export const Email = () => {
           name={"password"}
           type={"password"}
           value={password}
-          required
           errorMessage={passwordError}
           validationStatus={passwordError ? "error" : undefined}
           onBlur={validatePassword}
