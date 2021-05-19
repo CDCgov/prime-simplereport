@@ -49,7 +49,7 @@ export const Email = () => {
   const validatePassword = (): boolean => {
     let error = "";
     if (password === "") {
-      error = "Enter a password";
+      error = "Enter your password";
     }
     setPasswordError(error);
     return error === "";
