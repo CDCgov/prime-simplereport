@@ -4,7 +4,7 @@ import { MfaVerify } from "../MfaVerify/MfaVerify";
 //   phoneNumber: string;
 // }
 
-export const Phone = () => (
+export const VerifyPhone = () => (
   <MfaVerify
     hint={
       <>

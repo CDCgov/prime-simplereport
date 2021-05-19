@@ -1,10 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 
-import { Sms } from "./Sms";
+import { VerifySms } from "./VerifySms";
 
 describe("Verify Email MFA", () => {
   beforeEach(() => {
-    render(<Sms />);
+    render(<VerifySms />);
   });
 
   it("can enter a security code", () => {

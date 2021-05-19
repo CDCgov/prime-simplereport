@@ -3,7 +3,7 @@ import { Story, Meta } from "@storybook/react";
 import { Complete } from "./Complete";
 
 export default {
-  title: "App/Password reset/Complete",
+  title: "App/Password reset/Reset complete",
   component: Complete,
   argTypes: {},
 } as Meta;

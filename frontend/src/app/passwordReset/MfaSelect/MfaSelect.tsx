@@ -6,7 +6,7 @@ import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
 
-export const Email = () => {
+export const MfaSelect = () => {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [formIsDirty, setFormIsDirty] = useState(false);
