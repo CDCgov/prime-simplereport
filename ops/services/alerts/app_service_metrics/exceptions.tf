@@ -9,7 +9,7 @@ data "azurerm_log_analytics_workspace" "global" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "collect_appserviceconsolelogs" {
-  name                       = "${var.env} API App Service console logs"
+  name                       = "${local.env_title} API App Service console logs"
   target_resource_id         = var.app_service_id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.global.id
 
@@ -31,15 +31,15 @@ data "azurerm_resource_group" "app" {
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "graphql_query_validation_failures" {
   name                = "${var.env}-graphql-query-validation-failures"
+  description         = "${local.env_title} GraphQL query validation failures"
   location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
 
   action {
-    action_group = [var.action_group_id]
+    action_group = var.action_group_ids
   }
 
   data_source_id = var.app_service_id
-  description    = "Alert when GraphQL query validation failures occur in the API"
   enabled        = true
 
   query = <<-QUERY
