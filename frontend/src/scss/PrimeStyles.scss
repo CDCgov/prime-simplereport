@@ -58,9 +58,20 @@
   text-align: center;
 }
 
-.prime-search-input {
-  margin: 0 0 0.5em 0.6em;
-  min-width: 22em;
+.prime-search {
+  &-container {
+    width: 100%;
+  }
+
+  &-input {
+    margin: 0 0 0.5em;
+    width: 100%;
+
+    @include at-media(desktop) {
+      margin: 0 0 0.5em 0.6em;
+      max-width: 22em;
+    }
+  }
 }
 
 // patient in the queue
@@ -274,6 +285,9 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
         &:first-child {
           padding: 0.5rem;
+          max-width: 30vw;
+          text-overflow: ellipsis;
+          overflow-wrap: break-word;
         }
 
         @include at-media("desktop") {

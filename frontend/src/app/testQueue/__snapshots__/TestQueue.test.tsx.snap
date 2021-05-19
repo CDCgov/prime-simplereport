@@ -11,7 +11,9 @@ exports[`TestQueue should render the test queue 1`] = `
       <div
         class="grid-row position-relative"
       >
-        <div>
+        <div
+          class="prime-search-container"
+        >
           <form
             class="usa-search usa-search--small prime-search-input display-inline-block"
             role="search"
