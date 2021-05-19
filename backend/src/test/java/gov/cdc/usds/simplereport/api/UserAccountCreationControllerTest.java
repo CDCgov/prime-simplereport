@@ -225,15 +225,6 @@ class UserAccountCreationControllerTest {
             .content(VALID_ENROLL_SMS_MFA_REQUEST)
             .session(session);
 
-    this._mockMvc.perform(enrollSmsMfaBuilder).andExpect(status().is5xxServerError());
-
-    // Exception exception = assertThrows(OktaAuthenticationFailureException.class, 
-    //     () -> {
-    //         this._mockMvc.perform(enrollSmsMfaBuilder);
-    //     }
-    // );
-    // assertThat(exception.getMessage()).isEqualTo("User id not found; user could not be authenticated.");
-
-
+    this._mockMvc.perform(enrollSmsMfaBuilder).andExpect(status().is4xxClientError());
   }
 }
