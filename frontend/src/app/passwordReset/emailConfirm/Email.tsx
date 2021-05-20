@@ -53,7 +53,6 @@ export const Email = () => {
           label={"Email address"}
           name={"email"}
           type={"email"}
-          required
           value={email}
           errorMessage={emailError}
           validationStatus={emailError ? "error" : undefined}

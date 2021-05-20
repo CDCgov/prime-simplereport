@@ -89,7 +89,6 @@ export const SecurityQuestion = () => {
           label="Security question"
           name="security-question"
           hintText="If you forget your password, we’ll ask you this question to verify your identity."
-          required
           selectedValue={securityQuestion}
           options={securityQuestions.map((c) => ({ label: c, value: c }))}
           defaultSelect
@@ -103,7 +102,6 @@ export const SecurityQuestion = () => {
           label={"Answer"}
           name={"answer"}
           value={securityAnswer}
-          required
           errorMessage={securityAnswerError}
           validationStatus={securityAnswerError ? "error" : undefined}
           onBlur={validateSecurityAnswer}

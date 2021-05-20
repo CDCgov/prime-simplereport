@@ -27,7 +27,6 @@ export const SecurityAnswer = () => {
           label={"Where did you go for your favorite vacation?"}
           name={"security-code"}
           type={"tel"}
-          required
           value={code}
           errorMessage={codeError}
           validationStatus={codeError ? "error" : undefined}

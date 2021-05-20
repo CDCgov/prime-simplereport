@@ -66,7 +66,6 @@ export const MfaSms = () => {
           label={"Phone number"}
           name={"phone-number"}
           type={"tel"}
-          required
           value={phoneNumber}
           errorMessage={phoneNumberError}
           validationStatus={phoneNumberError ? "error" : undefined}

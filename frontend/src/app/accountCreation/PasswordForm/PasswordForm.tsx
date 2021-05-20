@@ -187,7 +187,6 @@ export const PasswordForm = () => {
         type={"password"}
         value={password}
         hintText="Your password must be at least 8 characters, include an uppercase and lowercase letter, and a number."
-        required
         errorMessage={passwordError}
         validationStatus={passwordError ? "error" : undefined}
         onBlur={validatePassword}
@@ -205,7 +204,6 @@ export const PasswordForm = () => {
         name={"confirm-password"}
         type={"password"}
         value={passwordConfirmation}
-        required
         errorMessage={passwordConfirmationError}
         validationStatus={passwordConfirmationError ? "error" : undefined}
         onBlur={validatePasswordConfirmation}

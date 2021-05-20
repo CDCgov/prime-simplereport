@@ -36,7 +36,6 @@ export const MfaVerify = (props: Props) => {
             label={"One-time security code"}
             name={"security-code"}
             type={"tel"}
-            required
             value={code}
             errorMessage={codeError}
             validationStatus={codeError ? "error" : undefined}
@@ -56,7 +55,7 @@ export const MfaVerify = (props: Props) => {
           type={"submit"}
         />
       </Card>
-      <p>
+      <p className="margin-top-4">
         <a href="#0">Return to sign in</a>
       </p>
     </CardBackground>
