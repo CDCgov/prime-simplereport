@@ -162,6 +162,7 @@ curl -v -X POST \
     String postUrl = _orgUrl + "/api/v1/authn";
 
     try {
+      LOG.info("RestTemplate", restTemplate.toString());
       String response = restTemplate.postForObject(postUrl, requestBody, String.class);
       LOG.info("activating user response: " + response);
       JSONObject responseJson = new JSONObject(response);
