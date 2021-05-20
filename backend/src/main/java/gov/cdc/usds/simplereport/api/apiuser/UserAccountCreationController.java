@@ -25,7 +25,6 @@ import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 public class UserAccountCreationController {
   private static final Logger LOG = LoggerFactory.getLogger(UserAccountCreationController.class);
 
-  private static final String STATE_TOKEN_KEY = "stateToken";
   private static final String USER_ID_KEY = "userId";
 
   @Autowired private OktaAuthentication _oktaAuth;

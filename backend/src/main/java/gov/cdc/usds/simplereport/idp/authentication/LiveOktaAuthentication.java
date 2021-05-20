@@ -49,19 +49,17 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   }
 
   /**
-   * Converts an activation token into a state token by sending a REST request to the Okta API. (The
-   * Okta Authentication SDK does not yet support translating an activation token to a state token.
-   * If that changes, update this method to use the SDK.) If successful, it moves the Okta state
-   * machine into a RESET_PASSWORD state.
+   * Converts an activation token into a user id by sending a REST request to the Okta API. (The
+   * Okta Authentication SDK does not yet support activating an activation token. If that changes, update this method to use the SDK.) 
+   * If successful, it moves the Okta state machine into a RESET_PASSWORD state.
    * https://developer.okta.com/docs/reference/api/authn/#response-example-for-activation-token-success-user-without-password
    *
    * @param activationToken the token passed from Okta when creating a new user.
    * @param crossForwardedHeader the IP address of the user requesting a new account.
    * @param userAgent the user agent of the user requesting a new account.
-   * @return The state token affiliated with this request by Okta.
-   * @throws Exception if the state token is not returned by Okta.
+   * @return The user id returned by Okta.
+   * @throws OktaAuthenticationFailureException if the state token is not returned by Okta.
    *     <p>https://developer.okta.com/docs/reference/api/authn/#request-example-for-activation-token
-   *     TODO(emmastephenson: update the response, because the userId is an embedded field)
    */
 
   /**
