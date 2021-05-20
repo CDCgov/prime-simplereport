@@ -160,14 +160,22 @@ curl -v -X POST \
                             }))
             .build();
     String postUrl = _orgUrl + "/api/v1/authn";
-    String response = restTemplate.postForObject(postUrl, requestBody, String.class);
-    LOG.info("activating user response: " + response);
-    JSONObject responseJson = new JSONObject(response);
+
     try {
+      String response = restTemplate.postForObject(postUrl, requestBody, String.class);
+      LOG.info("activating user response: " + response);
+      JSONObject responseJson = new JSONObject(response);
       return responseJson.getJSONObject("_embedded").getJSONObject("user").getString("id");
-    } catch (NullPointerException e) {
-      throw new InvalidActivationLinkException();
+    } catch (Exception e) {
+      throw new OktaAuthenticationFailureException("activation failed", e);
     }
+    // LOG.info("activating user response: " + response);
+    // JSONObject responseJson = new JSONObject(response);
+    // try {
+    //   return responseJson.getJSONObject("_embedded").getJSONObject("user").getString("id");
+    // } catch (NullPointerException e) {
+    //   throw new InvalidActivationLinkException();
+    // }
   }
 
   /**
