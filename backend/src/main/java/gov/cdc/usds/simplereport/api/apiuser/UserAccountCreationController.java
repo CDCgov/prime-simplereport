@@ -51,7 +51,6 @@ public class UserAccountCreationController {
   public void activateAccountAndSetPassword(
       @RequestBody UserAccountCreationRequest requestBody, HttpServletRequest request)
       throws InvalidActivationLinkException, OktaAuthenticationFailureException {
-    LOG.info("endpoint hit: initialize-and-set-password");
     String userId =
         _oktaAuth.activateUser(
             requestBody.getActivationToken(),
