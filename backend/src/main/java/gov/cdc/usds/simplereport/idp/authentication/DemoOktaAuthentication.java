@@ -26,7 +26,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   public String activateUser(String activationToken, String crossForwardedHeader, String userAgent)
       throws InvalidActivationLinkException {
     if (activationToken == null || activationToken.isEmpty()) {
-      throw new InvalidActivationLinkException();
+      throw new InvalidActivationLinkException("User could not be activated");
     }
     String userId = "userId " + activationToken;
     this.idToUserMap.put(userId, new DemoAuthUser(userId));
