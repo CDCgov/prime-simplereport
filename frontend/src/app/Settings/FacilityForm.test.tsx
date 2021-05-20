@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router";
 
 import * as clia from "../utils/clia";
 
+import { allFacilityErrors } from "./Facility/facilitySchema";
 import FacilityForm from "./Facility/FacilityForm";
 
 let saveFacility: jest.Mock;
@@ -217,6 +218,53 @@ describe("FacilityForm", () => {
   });
 
   describe("CLIA number validation", () => {
+    describe("when validation is required for state", () => {
+      beforeEach(() => {
+        jest
+          .spyOn(clia, "stateRequiresCLIANumberValidation")
+          .mockReturnValue(true);
+      });
+
+      afterEach(() => {
+        jest.spyOn(clia, "stateRequiresCLIANumberValidation").mockRestore();
+      });
+
+      it("displays an error if CLIA number is invalid and prevents form submission", async () => {
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={validFacility}
+              deviceOptions={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const cliaInput = screen.getByLabelText("CLIA number", {
+          exact: false,
+        });
+
+        fireEvent.change(cliaInput, {
+          target: { value: "invalid-clia-number" },
+        });
+        fireEvent.blur(cliaInput);
+
+        const expectedError = allFacilityErrors["cliaNumber"] as string;
+
+        expect(
+          await screen.findByText(expectedError, {
+            exact: false,
+          })
+        ).toBeInTheDocument();
+
+        const saveButton = screen.getAllByText("Save changes")[0];
+        await waitFor(async () => {
+          fireEvent.click(saveButton);
+        });
+        expect(saveFacility).toBeCalledTimes(0);
+      });
+    });
+
     describe("when validation is not required for state", () => {
       beforeEach(() => {
         jest
