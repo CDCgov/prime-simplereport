@@ -163,6 +163,8 @@ curl -v -X POST \
     headers.add("Authorization", authorizationToken);
     HttpEntity<String> entity = new HttpEntity<String>(requestBody.toString(), headers);
     RestTemplate restTemplate = new RestTemplate();
+    LOG.info("HEADERS:" + entity.getHeaders());
+    LOG.info("BODY: " + entity.getBody());
 
     // RestTemplate restTemplate =
     //     new RestTemplateBuilder(
