@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQ
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
+import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
 import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
@@ -50,7 +51,8 @@ public class UserAccountCreationController {
   @PostMapping("/initialize-and-set-password")
   public void activateAccountAndSetPassword(
       @RequestBody UserAccountCreationRequest requestBody, HttpServletRequest request)
-      throws Exception {
+      throws InvalidActivationLinkException, OktaAuthenticationFailureException {
+    LOG.info("endpoint hit: initialize-and-set-password");
     String userId =
         _oktaAuth.activateUser(
             requestBody.getActivationToken(),
