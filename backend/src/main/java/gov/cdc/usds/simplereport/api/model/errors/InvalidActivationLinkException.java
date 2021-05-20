@@ -8,4 +8,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
     reason = "Provided account activation token is invalid.")
 public class InvalidActivationLinkException extends RuntimeException {
   private static final long serialVersionUID = 1L;
+
+  public InvalidActivationLinkException(String message) {
+    super(message);
+  }
+
+  public InvalidActivationLinkException(String message, Throwable t) {
+    super(message, t);
+  }
 }

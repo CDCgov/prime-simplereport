@@ -19,6 +19,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -76,8 +77,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       String response = restTemplate.postForObject(postUrl, entity, String.class);
       JSONObject responseJson = new JSONObject(response);
       return responseJson.getJSONObject("_embedded").getJSONObject("user").getString("id");
-    } catch (Exception e) {
-      throw new OktaAuthenticationFailureException("activation failed", e);
+    } catch (RestClientException | NullPointerException e) {
+      throw new InvalidActivationLinkException("User could not be activated", e);
     }
   }
 
