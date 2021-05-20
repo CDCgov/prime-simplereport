@@ -8,7 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.Setter;
-import org.json.JSONObject;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -24,22 +23,17 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     this.idToUserMap = new HashMap<>();
   }
 
-  public JSONObject activateUser(
-      String activationToken, String crossForwardedHeader, String userAgent)
+  public String activateUser(String activationToken, String crossForwardedHeader, String userAgent)
       throws InvalidActivationLinkException {
     if (activationToken == null || activationToken.isEmpty()) {
       throw new InvalidActivationLinkException();
     }
-    String stateToken = "stateToken " + activationToken;
     String userId = "userId " + activationToken;
     this.idToUserMap.put(userId, new DemoAuthUser(userId));
-    JSONObject json = new JSONObject();
-    json.put("stateToken", stateToken);
-    json.put("userId", userId);
-    return json;
+    return userId;
   }
 
-  public JSONObject activateUser(String activationToken) throws InvalidActivationLinkException {
+  public String activateUser(String activationToken) throws InvalidActivationLinkException {
     return activateUser(activationToken, "", "");
   }
 
