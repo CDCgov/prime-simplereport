@@ -4,11 +4,13 @@ import static gov.cdc.usds.simplereport.config.AuthorizationConfiguration.AUTHOR
 import static gov.cdc.usds.simplereport.config.WebConfiguration.ACCOUNT_REQUEST;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.WaitlistRequest;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
@@ -41,6 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** Note that this controller is automatically authorized. */
 @PreAuthorize("@" + AUTHORIZER_BEAN + ".permitAllAccountRequests()")
+@PostAuthorize("@restAuditLogManager.logRestSuccess(#request, returnObject)")
 @RestController
 @RequestMapping(ACCOUNT_REQUEST)
 public class AccountRequestController {
@@ -51,6 +54,7 @@ public class AccountRequestController {
   private final EmailService _es;
   private final SendGridProperties sendGridProperties;
   private final ObjectMapper objectMapper;
+  private final CurrentAccountRequestContextHolder _contextHolder;
 
   private static final Logger LOG = LoggerFactory.getLogger(AccountRequestController.class);
 
@@ -60,13 +64,15 @@ public class AccountRequestController {
       DeviceTypeService dts,
       AddressValidationService avs,
       ApiUserService aus,
-      EmailService es) {
+      EmailService es,
+      CurrentAccountRequestContextHolder arch) {
     this.sendGridProperties = sendGridProperties;
     this._os = os;
     this._dts = dts;
     this._avs = avs;
     this._aus = aus;
     this._es = es;
+    this._contextHolder = arch;
     this.objectMapper = new ObjectMapper();
   }
 
@@ -171,19 +177,22 @@ public class AccountRequestController {
             reqVars.get("organizationName").replace(' ', '-').replace(':', '-'),
             UUID.randomUUID().toString());
 
-    _os.createOrganization(
-        reqVars.get("organizationName"),
-        orgExternalId,
-        reqVars.get("facilityName"),
-        reqVars.get("cliaNumber"),
-        facilityAddress,
-        Translators.parsePhoneNumber(reqVars.get("facilityPhoneNumber")),
-        null,
-        deviceSpecimenTypes,
-        providerName,
-        providerAddress,
-        Translators.parsePhoneNumber(reqVars.get("opPhoneNumber")),
-        reqVars.get("npi"));
+    Organization org =
+        _os.createOrganization(
+            reqVars.get("organizationName"),
+            orgExternalId,
+            reqVars.get("facilityName"),
+            reqVars.get("cliaNumber"),
+            facilityAddress,
+            Translators.parsePhoneNumber(reqVars.get("facilityPhoneNumber")),
+            null,
+            deviceSpecimenTypes,
+            providerName,
+            providerAddress,
+            Translators.parsePhoneNumber(reqVars.get("opPhoneNumber")),
+            reqVars.get("npi"));
+
+    _contextHolder.setCreatedOrg(org);
 
     /**
      * Note: we are sending the emails *after* creating the organization so the validation logic in

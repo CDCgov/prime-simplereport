@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.logging;
 
+import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -21,13 +22,18 @@ public class RestAuditLogManager {
   private static final Logger LOG = LoggerFactory.getLogger(RestAuditLogManager.class);
 
   private final AuditService _auditService;
-  private final CurrentPatientContextHolder _contextHolder;
+  private final CurrentPatientContextHolder _patientContextHolder;
+  private final CurrentAccountRequestContextHolder _accountRequestContextHolder;
 
   private static final int DEFAULT_SUCCESS = HttpStatus.OK.value();
 
-  public RestAuditLogManager(AuditService auditService, CurrentPatientContextHolder contextHolder) {
+  public RestAuditLogManager(
+      AuditService auditService,
+      CurrentPatientContextHolder patientContextHolder,
+      CurrentAccountRequestContextHolder accountRequestContextHolder) {
     this._auditService = auditService;
-    this._contextHolder = contextHolder;
+    this._patientContextHolder = patientContextHolder;
+    this._accountRequestContextHolder = accountRequestContextHolder;
   }
 
   /**
@@ -44,15 +50,20 @@ public class RestAuditLogManager {
    *     happened.).
    */
   public boolean logRestSuccess(HttpServletRequest request, Object resultObject) {
-    PatientLink patientLink = _contextHolder.getPatientLink();
-    if (patientLink == null && !_contextHolder.isPatientSelfRegistrationRequest()) {
+    PatientLink patientLink = _patientContextHolder.getPatientLink();
+    if (patientLink == null
+        && !_patientContextHolder.isPatientSelfRegistrationRequest()
+        && !_accountRequestContextHolder.isAccountRequest()) {
       LOG.error(
-          "Somehow reached PXP success handler outside of registration & with no patient link");
+          "Somehow reached PXP success handler outside of registration, account signup, & with no patient link");
       return false;
     }
     try {
       String requestId = MDC.get(LoggingConstants.REQUEST_ID_MDC_KEY);
-      Organization org = _contextHolder.getOrganization();
+      Organization org =
+          _accountRequestContextHolder.isAccountRequest()
+              ? _accountRequestContextHolder.getCreatedOrg()
+              : _patientContextHolder.getOrganization();
       _auditService.logRestEvent(requestId, request, DEFAULT_SUCCESS, org, patientLink);
     } catch (Exception e) {
       throw new RestAuditFailureException(e);
