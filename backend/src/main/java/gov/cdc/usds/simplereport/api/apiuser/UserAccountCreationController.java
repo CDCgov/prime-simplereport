@@ -8,7 +8,6 @@ import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreati
 import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,14 +48,15 @@ public class UserAccountCreationController {
       @RequestBody UserAccountCreationRequest requestBody, HttpServletRequest request)
       throws Exception {
     LOG.info("endpoint hit: initialize-and-set-password");
-    JSONObject oktaResponse =
+    String userId =
         _oktaAuth.activateUser(
             requestBody.getActivationToken(),
             request.getHeader("X-Forwarded-For"),
             request.getHeader("User-Agent"));
-    String userId = oktaResponse.getJSONObject("_embedded").getJSONObject("user").getString("id");
+    // String userId =
+    // oktaResponse.getJSONObject("_embedded").getJSONObject("user").getString("id");
     request.getSession().setAttribute(USER_ID_KEY, userId);
-    request.getSession().setAttribute(STATE_TOKEN_KEY, oktaResponse.getString(STATE_TOKEN_KEY));
+    // request.getSession().setAttribute(STATE_TOKEN_KEY, oktaResponse.getString(STATE_TOKEN_KEY));
     _oktaAuth.setPassword(userId, requestBody.getPassword().toCharArray());
   }
 
