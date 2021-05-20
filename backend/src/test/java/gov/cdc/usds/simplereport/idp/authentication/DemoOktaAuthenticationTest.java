@@ -214,14 +214,14 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void enrollEmailMfa_failsWithoutValidActivation() {
-    Exception exception = 
-    assertThrows(OktaAuthenticationFailureException.class, 
-      () -> {
-        _auth.enrollEmailMfa("fakeUserId", "me@example.com");
-      });
+    Exception exception =
+        assertThrows(
+            OktaAuthenticationFailureException.class,
+            () -> {
+              _auth.enrollEmailMfa("fakeUserId", "me@example.com");
+            });
 
-      assertThat(exception.getMessage()).isEqualTo("User id not recognized.");
-
+    assertThat(exception.getMessage()).isEqualTo("User id not recognized.");
   }
 
   @Test

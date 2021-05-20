@@ -89,7 +89,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     return factorId;
   }
 
-  public String enrollEmailMfa(String userId, String email) throws OktaAuthenticationFailureException {
+  public String enrollEmailMfa(String userId, String email)
+      throws OktaAuthenticationFailureException {
     validateUser(userId);
     if (!email.contains("@")) {
       throw new OktaAuthenticationFailureException("Email address is invalid.");
