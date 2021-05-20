@@ -58,9 +58,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * @return The state token affiliated with this request by Okta.
    * @throws Exception if the state token is not returned by Okta.
    */
-  public JSONObject activateUser(
-      String activationToken, String crossForwardedHeader, String userAgent)
+  public String activateUser(String activationToken, String crossForwardedHeader, String userAgent)
       throws InvalidActivationLinkException {
+    System.out.println("activating user (printed)");
     JSONObject requestBody = new JSONObject();
     requestBody.put("token", activationToken);
     String authorizationToken = "SSWS " + _apiToken;
@@ -79,11 +79,12 @@ public class LiveOktaAuthentication implements OktaAuthentication {
                               return execution.execute(request, body);
                             }))
             .build();
-    String response = restTemplate.postForObject(_orgUrl, requestBody, String.class);
+    String postUrl = _orgUrl + "/api/v1/authn";
+    String response = restTemplate.postForObject(postUrl, requestBody, String.class);
     JSONObject responseJson = new JSONObject(response);
-    if (responseJson.has("stateToken") && responseJson.has("userId")) {
-      return responseJson;
-    } else {
+    try {
+      return responseJson.getJSONObject("_embedded").getJSONObject("user").getString("id");
+    } catch (NullPointerException e) {
       throw new InvalidActivationLinkException();
     }
   }

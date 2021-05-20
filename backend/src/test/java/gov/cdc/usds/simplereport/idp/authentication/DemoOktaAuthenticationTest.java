@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication.DemoAuthUser;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,8 +13,9 @@ class DemoOktaAuthenticationTest {
 
   private DemoOktaAuthentication _auth = new DemoOktaAuthentication();
 
-  private static final String USER_ID_KEY = "userId";
   private static final String VALID_ACTIVATION_TOKEN = "valid_activation_token";
+  private static final String VALID_PHONE_NUMBER = "555-867-5309";
+  private static final String STRIPPED_PHONE_NUMBER = "5558675309";
 
   @BeforeEach
   public void setup() {
@@ -24,8 +24,7 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void activateUserSuccessful() throws Exception {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     assertThat(_auth.getUser(userId)).isNotNull();
   }
 
@@ -40,8 +39,7 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void setPasswordSuccessful() throws Exception {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     String password = "dummyPassword!";
     _auth.setPassword(userId, password.toCharArray());
     assertThat(_auth.getUser(userId).getPassword()).isEqualTo(password);
@@ -61,8 +59,7 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void passwordTooShort() throws Exception {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     char[] password = "short".toCharArray();
     Exception exception =
         assertThrows(
@@ -75,8 +72,7 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void passwordNoSpecialCharacters() throws Exception {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     char[] password = "longPasswordWithoutSpecialCharacters".toCharArray();
     Exception exception =
         assertThrows(
@@ -90,8 +86,7 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void setRecoveryQuestionSuccessful() throws Exception {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     String question = "Who was your third grade teacher?";
     String answer = "Teacher";
     _auth.setRecoveryQuestion(userId, question, answer);
@@ -114,8 +109,7 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void cannotSetRecoveryQuestion_withBlankQuestion() throws Exception {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
@@ -127,8 +121,7 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void cannotSetRecoveryQuestion_withBlankAnswer() throws Exception {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
@@ -140,16 +133,13 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void enrollSmsMfaSuccessful() throws Exception {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
-    String phoneNumber = "555-867-5309";
-    _auth.enrollSmsMfa(userId, phoneNumber);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    _auth.enrollSmsMfa(userId, VALID_PHONE_NUMBER);
     DemoAuthUser user = _auth.getUser(userId);
 
-    String strippedPhoneNumber = "5558675309";
-    assertThat(user.getMfa().getFactorProfile()).isEqualTo(strippedPhoneNumber);
+    assertThat(user.getMfa().getFactorProfile()).isEqualTo(STRIPPED_PHONE_NUMBER);
     assertThat(user.getMfa().getFactorType()).isEqualTo("smsFactor");
-    assertThat(user.getMfa().getFactorId()).isEqualTo("smsFactor " + strippedPhoneNumber);
+    assertThat(user.getMfa().getFactorId()).isEqualTo("smsFactor " + STRIPPED_PHONE_NUMBER);
   }
 
   @Test
@@ -158,7 +148,7 @@ class DemoOktaAuthenticationTest {
         assertThrows(
             OktaAuthenticationFailureException.class,
             () -> {
-              _auth.enrollSmsMfa("fakeUserId", "555-867-5309");
+              _auth.enrollSmsMfa("fakeUserId", VALID_PHONE_NUMBER);
             });
 
     assertThat(exception.getMessage()).isEqualTo("User id not recognized.");
@@ -166,8 +156,7 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void enrollSmsMfa_failsForInvalidPhoneNumber() {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
@@ -179,16 +168,13 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void enrollVoiceCallMfaSuccessful() throws Exception {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
-    String phoneNumber = "555-867-5309";
-    _auth.enrollVoiceCallMfa(userId, phoneNumber);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    _auth.enrollVoiceCallMfa(userId, VALID_PHONE_NUMBER);
     DemoAuthUser user = _auth.getUser(userId);
 
-    String strippedPhoneNumber = "5558675309";
-    assertThat(user.getMfa().getFactorProfile()).isEqualTo(strippedPhoneNumber);
+    assertThat(user.getMfa().getFactorProfile()).isEqualTo(STRIPPED_PHONE_NUMBER);
     assertThat(user.getMfa().getFactorType()).isEqualTo("callFactor");
-    assertThat(user.getMfa().getFactorId()).isEqualTo("callFactor " + strippedPhoneNumber);
+    assertThat(user.getMfa().getFactorId()).isEqualTo("callFactor " + STRIPPED_PHONE_NUMBER);
   }
 
   @Test
@@ -197,7 +183,7 @@ class DemoOktaAuthenticationTest {
         assertThrows(
             OktaAuthenticationFailureException.class,
             () -> {
-              _auth.enrollVoiceCallMfa("fakeUserId", "555-867-5309");
+              _auth.enrollVoiceCallMfa("fakeUserId", VALID_PHONE_NUMBER);
             });
 
     assertThat(exception.getMessage()).isEqualTo("User id not recognized.");
@@ -205,8 +191,7 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void enrollVoiceCallMfa_failsForInvalidPhoneNumber() {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
