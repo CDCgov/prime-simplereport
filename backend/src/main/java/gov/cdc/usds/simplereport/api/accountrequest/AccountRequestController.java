@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
+import gov.cdc.usds.simplereport.service.crm.CrmService;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
@@ -50,6 +51,7 @@ public class AccountRequestController {
   private final ApiUserService _aus;
   private final EmailService _es;
   private final SendGridProperties sendGridProperties;
+  private final CrmService _crm;
   private final ObjectMapper objectMapper;
 
   private static final Logger LOG = LoggerFactory.getLogger(AccountRequestController.class);
@@ -60,13 +62,15 @@ public class AccountRequestController {
       DeviceTypeService dts,
       AddressValidationService avs,
       ApiUserService aus,
-      EmailService es) {
+      EmailService es,
+      CrmService crm) {
     this.sendGridProperties = sendGridProperties;
     this._os = os;
     this._dts = dts;
     this._avs = avs;
     this._aus = aus;
     this._es = es;
+    this._crm = crm;
     this.objectMapper = new ObjectMapper();
   }
 
@@ -198,5 +202,7 @@ public class AccountRequestController {
     _es.sendWithProviderTemplate(body.getEmail(), EmailProviderTemplate.ACCOUNT_REQUEST);
 
     _aus.createUser(reqVars.get("email"), adminName, orgExternalId, Role.ADMIN, false);
+
+    _crm.submitAccountRequestData(body.asDynamicsData());
   }
 }

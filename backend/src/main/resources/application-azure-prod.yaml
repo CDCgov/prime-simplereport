@@ -14,6 +14,8 @@ simple-report:
       - https://simple-report-prod.azureedge.net
       - https://www.simplereport.gov
       - https://simplereport.gov
+  dynamics:
+    enabled: true
 twilio:
   enabled: true
   from-number: "+14045312484"

@@ -26,6 +26,7 @@ import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
+import gov.cdc.usds.simplereport.service.crm.CrmService;
 import gov.cdc.usds.simplereport.service.email.EmailProvider;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
@@ -70,6 +71,8 @@ class AccountRequestControllerTest {
   @MockBean private AddressValidationService addressValidationService;
   @MockBean private ApiUserService apiUserService;
   @MockBean private CurrentAccountRequestContextHolder contextHolder;
+
+  @MockBean private CrmService crmService;
 
   @MockBean private EmailProvider mockSendGrid;
   @SpyBean private EmailService emailService;

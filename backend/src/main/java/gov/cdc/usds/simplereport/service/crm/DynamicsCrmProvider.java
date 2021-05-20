@@ -5,6 +5,7 @@ import com.microsoft.aad.adal4j.AuthenticationResult;
 import com.microsoft.aad.adal4j.ClientCredential;
 import gov.cdc.usds.simplereport.properties.DynamicsProperties;
 import java.net.MalformedURLException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -13,11 +14,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import javax.annotation.PostConstruct;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 @ConditionalOnProperty(name = "simple-report.dynamics.enabled", havingValue = "true")
 @Primary
@@ -28,7 +37,8 @@ public class DynamicsCrmProvider implements CrmProvider {
   private static final Semaphore SEMAPHORE = new Semaphore(1);
 
   private static final String LOGIN_AUTHORITY = "https://login.microsoftonline.com/";
-  private static final long REFRESH_BEFORE_MS = 15 * 1000;
+  private static final String INTAKES_PATH = "/api/data/v9.2/bah_testingsiteintakes";
+  private static final long REFRESH_BEFORE_MS = 60 * 1000;
 
   private final DynamicsProperties _dynamicsProperties;
   private AuthenticationResult credentials;
@@ -42,7 +52,7 @@ public class DynamicsCrmProvider implements CrmProvider {
     LOG.info("Dynamics is enabled!");
   }
 
-  private String getToken() {
+  private String getAccessToken() {
     try {
       SEMAPHORE.acquire();
 
@@ -53,12 +63,9 @@ public class DynamicsCrmProvider implements CrmProvider {
         long remainingValidMs = expiresAt - now;
 
         if (remainingValidMs > REFRESH_BEFORE_MS) {
-          LOG.info("using existing credentials");
           return credentials.getAccessToken();
         }
       }
-
-      LOG.info("getting new credentials");
 
       ExecutorService service = Executors.newFixedThreadPool(1);
 
@@ -89,17 +96,28 @@ public class DynamicsCrmProvider implements CrmProvider {
 
   @Override
   public void submitAccountRequestData(final Map<String, Object> data) {
-    LOG.info(Thread.currentThread().getName());
-
-    final String accessToken = getToken();
-
-    try {
-      Thread.sleep(5000);
-    } catch (InterruptedException e) {
-      LOG.warn("interrupted sleep");
+    final String accessToken = getAccessToken();
+    if (accessToken == null) {
+      LOG.error("Could not get access token for dynamics");
+      return;
     }
 
-    LOG.info("SHOULD CALL DYNAMICS");
-    LOG.info(_dynamicsProperties.getClientId());
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+    headers.setBearerAuth(accessToken);
+    headers.add("OData-Version", "4.0");
+    headers.add("OData-MaxVersion", "4.0");
+
+    HttpEntity<Map<String, Object>> entity = new HttpEntity<>(data, headers);
+    String requestUrl = _dynamicsProperties.getResourceUrl() + INTAKES_PATH;
+
+    RestTemplate restTemplate = new RestTemplate();
+    ResponseEntity<JSONObject> response =
+        restTemplate.exchange(requestUrl, HttpMethod.POST, entity, JSONObject.class);
+
+    if (response.getStatusCode() != HttpStatus.NO_CONTENT) {
+      LOG.error("Dynamics request failed: {}", response.getBody());
+    }
   }
 }
