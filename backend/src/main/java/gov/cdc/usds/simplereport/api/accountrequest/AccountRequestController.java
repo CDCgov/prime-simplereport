@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +85,8 @@ public class AccountRequestController {
 
   /** Read the waitlist request and generate an email body, then send with the emailService */
   @PostMapping("/waitlist")
-  public void submitWaitlistRequest(@Valid @RequestBody WaitlistRequest body) throws IOException {
+  public void submitWaitlistRequest(
+      @Valid @RequestBody WaitlistRequest body, HttpServletRequest request) throws IOException {
     String subject = "New waitlist request";
     if (LOG.isInfoEnabled()) {
       LOG.info("Waitlist request submitted: {}", objectMapper.writeValueAsString(body));
@@ -98,7 +100,8 @@ public class AccountRequestController {
    */
   @PostMapping("")
   @Transactional(readOnly = false)
-  public void submitAccountRequest(@Valid @RequestBody AccountRequest body) throws IOException {
+  public void submitAccountRequest(
+      @Valid @RequestBody AccountRequest body, HttpServletRequest request) throws IOException {
     String subject = "New account request";
     if (LOG.isInfoEnabled()) {
       LOG.info("Account request submitted: {}", objectMapper.writeValueAsString(body));
