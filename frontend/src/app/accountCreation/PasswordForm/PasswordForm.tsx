@@ -4,7 +4,6 @@ import { Redirect } from "react-router";
 
 import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
-
 import {
   hasLowerCase,
   hasNumber,
