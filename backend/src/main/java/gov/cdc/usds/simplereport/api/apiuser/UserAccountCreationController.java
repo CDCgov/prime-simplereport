@@ -3,7 +3,11 @@ package gov.cdc.usds.simplereport.api.apiuser;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQUEST;
 
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
+<<<<<<< HEAD
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
+=======
+import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
+>>>>>>> 2f07a4ef (update accountCreationController to specify thrown exceptions)
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
 import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
