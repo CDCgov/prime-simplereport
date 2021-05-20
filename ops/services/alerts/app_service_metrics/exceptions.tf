@@ -52,6 +52,6 @@ AppServiceConsoleLogs
   time_window = 5
   trigger {
     operator  = "GreaterThan"
-    threshold = 3
+    threshold = 0
   }
 }
