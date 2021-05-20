@@ -61,6 +61,7 @@
 .prime-search {
   &-container {
     width: 100%;
+    margin-bottom: 0.5rem;
   }
 
   &-input {
@@ -81,6 +82,10 @@
     padding: 0 1em;
 
     @include at-media(desktop) {
+      border-left: 1px solid color($theme-color-prime-gray-light);
+    }
+
+    @include at-media(tablet) {
       border-left: 1px solid color($theme-color-prime-gray-light);
     }
 
@@ -116,6 +121,14 @@
         margin-top: 0;
       }
     }
+
+    @include at-media(tablet) {
+      flex-direction: row;
+
+      > button {
+        margin-top: 0;
+      }
+    }
   }
 
   &-body {
@@ -124,6 +137,67 @@
     .prime-li {
       > button {
         font-weight: 700;
+      }
+    }
+
+    .usa-form-group {
+      margin-top: 0;
+
+      .usa-label,
+      .usa-legend {
+        font-weight: 700;
+      }
+    }
+
+    .checkboxes {
+      @include at-media(desktop) {
+        margin-top: 1rem;
+      }
+
+      @include at-media(tablet) {
+        margin-top: 1rem;
+      }
+    }
+
+    .testdate-checkbox {
+      .checkboxes {
+        @include at-media(desktop) {
+          margin-top: 2.5rem;
+        }
+      }
+    }
+
+    .usa-select {
+      min-width: 197px;
+    }
+
+    .test-information-ul {
+      display: flex;
+      flex-flow: wrap;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+
+      @include at-media(desktop) {
+        flex-direction: row;
+        width: unset;
+      }
+
+      @include at-media(tablet) {
+        flex-direction: row;
+        width: unset;
+      }
+
+      .prime-li {
+        width: 100%;
+
+        @include at-media(desktop) {
+          width: unset;
+        }
+
+        @include at-media(tablet) {
+          width: unset;
+        }
       }
     }
   }
@@ -210,6 +284,11 @@
   cursor: pointer;
 
   @include at-media(desktop) {
+    top: -0.5rem;
+    right: -0.25rem;
+  }
+
+  @include at-media(tablet) {
     top: -0.5rem;
     right: -0.25rem;
   }
