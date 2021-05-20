@@ -58,7 +58,7 @@ export const MfaVerify = (props: Props) => {
           type={"submit"}
         />
       </Card>
-      <p className="margin-top-5">
+      <p className="margin-top-4">
         <a href="#0">Return to previous step</a>
       </p>
     </CardBackground>
