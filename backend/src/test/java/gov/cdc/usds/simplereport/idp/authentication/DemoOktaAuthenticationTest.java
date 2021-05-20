@@ -176,4 +176,43 @@ class DemoOktaAuthenticationTest {
             });
     assertThat(exception.getMessage()).isEqualTo("Phone number is invalid.");
   }
+
+  @Test
+  void enrollVoiceCallMfaSuccessful() throws Exception {
+    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    String userId = json.getString(USER_ID_KEY);
+    String phoneNumber = "555-867-5309";
+    _auth.enrollVoiceCallMfa(userId, phoneNumber);
+    DemoAuthUser user = _auth.getUser(userId);
+
+    String strippedPhoneNumber = "5558675309";
+    assertThat(user.getMfa().getFactorProfile()).isEqualTo(strippedPhoneNumber);
+    assertThat(user.getMfa().getFactorType()).isEqualTo("callFactor");
+    assertThat(user.getMfa().getFactorId()).isEqualTo("callFactor " + strippedPhoneNumber);
+  }
+
+  @Test
+  void enrollVoiceCallMfa_failsWithoutValidActivation() {
+    Exception exception =
+        assertThrows(
+            OktaAuthenticationFailureException.class,
+            () -> {
+              _auth.enrollVoiceCallMfa("fakeUserId", "555-867-5309");
+            });
+
+    assertThat(exception.getMessage()).isEqualTo("User id not recognized.");
+  }
+
+  @Test
+  void enrollVoiceCallMfa_failsForInvalidPhoneNumber() {
+    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    String userId = json.getString(USER_ID_KEY);
+    Exception exception =
+        assertThrows(
+            OktaAuthenticationFailureException.class,
+            () -> {
+              _auth.enrollVoiceCallMfa(userId, "555");
+            });
+    assertThat(exception.getMessage()).isEqualTo("Phone number is invalid.");
+  }
 }

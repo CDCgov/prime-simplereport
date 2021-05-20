@@ -8,6 +8,7 @@ import com.okta.sdk.resource.user.PasswordCredential;
 import com.okta.sdk.resource.user.RecoveryQuestionCredential;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserCredentials;
+import com.okta.sdk.resource.user.factor.CallUserFactor;
 import com.okta.sdk.resource.user.factor.SmsUserFactor;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
@@ -157,6 +158,29 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       return smsFactor.getId();
     } catch (ResourceException e) {
       throw new OktaAuthenticationFailureException("Error setting SMS MFA", e);
+    }
+  }
+
+  /**
+   * Using the Okta management SDK, enroll a user in voice call MFA. If successful, this enrollment
+   * triggers a phone call to the user with an activation passcode.
+   *
+   * @param userId the user id of the user making the enrollment request.
+   * @param phoneNumber the user-provided phone number to enroll.
+   * @return factorId the Okta-generated id for the voice call factor.
+   * @throws OktaAuthenticationFailureException if the phone number is invalid or Okta cannot enroll
+   *     it as an MFA option.
+   */
+  public String enrollVoiceCallMfa(String userId, String phoneNumber)
+      throws OktaAuthenticationFailureException {
+    try {
+      CallUserFactor callFactor = _client.instantiate(CallUserFactor.class);
+      callFactor.getProfile().setPhoneNumber(phoneNumber);
+      User user = _client.getUser(userId);
+      user.enrollFactor(callFactor);
+      return callFactor.getId();
+    } catch (ResourceException e) {
+      throw new OktaAuthenticationFailureException("Error setting voice call MFA", e);
     }
   }
 }

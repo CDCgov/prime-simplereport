@@ -103,7 +103,9 @@ public class UserAccountCreationController {
   @PostMapping("/enroll-voice-call-mfa")
   public void enrollVoiceCallMfa(
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
-    // WIP: doesn't interact with Okta yet.
+    String userId = getUserId(request.getSession());
+    String factorId = _oktaAuth.enrollVoiceCallMfa(userId, requestBody.getUserInput());
+    request.getSession().setAttribute("factorId", factorId);
   }
 
   /**

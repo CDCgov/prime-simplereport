@@ -78,13 +78,20 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   public String enrollSmsMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException {
     validateUser(userId);
-    String strippedPhoneNumber = phoneNumber.replaceAll("[^\\d]", "");
-    if (strippedPhoneNumber.length() != 10) {
-      throw new OktaAuthenticationFailureException("Phone number is invalid.");
-    }
+    String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
     String factorId = "smsFactor " + strippedPhoneNumber;
     DemoMfa smsMfa = new DemoMfa("smsFactor", strippedPhoneNumber, factorId);
     idToUserMap.get(userId).setMfa(smsMfa);
+    return factorId;
+  }
+
+  public String enrollVoiceCallMfa(String userId, String phoneNumber)
+      throws OktaAuthenticationFailureException {
+    validateUser(userId);
+    String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
+    String factorId = "callFactor " + strippedPhoneNumber;
+    DemoMfa callMfa = new DemoMfa("callFactor", strippedPhoneNumber, factorId);
+    idToUserMap.get(userId).setMfa(callMfa);
     return factorId;
   }
 
@@ -92,6 +99,14 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     if (!idToUserMap.containsKey(userId)) {
       throw new OktaAuthenticationFailureException("User id not recognized.");
     }
+  }
+
+  public String validatePhoneNumber(String phoneNumber) throws OktaAuthenticationFailureException {
+    String strippedPhoneNumber = phoneNumber.replaceAll("[^\\d]", "");
+    if (strippedPhoneNumber.length() != 10) {
+      throw new OktaAuthenticationFailureException("Phone number is invalid.");
+    }
+    return strippedPhoneNumber;
   }
 
   public DemoAuthUser getUser(String userId) {
