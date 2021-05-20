@@ -79,8 +79,6 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
-    //webClient, to make Java BE requests
-    // compile 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 springBoot {
