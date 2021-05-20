@@ -311,7 +311,9 @@ export const DetachedTestResultsList: any = ({
                   onClick={() => {
                     if (showFilters) {
                       setDebounced("");
+                      setSelectedPatientId("");
                     }
+
                     setShowFilters(!showFilters);
                   }}
                 >
