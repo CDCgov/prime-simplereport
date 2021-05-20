@@ -8,11 +8,13 @@ import Button from "../../commonComponents/Button/Button";
 interface Props {
   hint: ReactElement;
   type: string;
+  buttonSecond?: boolean;
 }
 
 export const MfaVerify = (props: Props) => {
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState("");
+  const buttonSecond = props.buttonSecond;
 
   const validateCode = (): boolean => {
     let error = "";
@@ -49,11 +51,13 @@ export const MfaVerify = (props: Props) => {
             onClick={validateCode}
           />
         </div>
-        <Button
-          className="usa-button--outline display-block margin-top-3"
-          label={"Send another code"}
-          type={"submit"}
-        />
+        {buttonSecond && (
+          <Button
+            className="usa-button--outline display-block margin-top-3"
+            label={"Send another code"}
+            type={"submit"}
+          />
+        )}
       </Card>
       <p className="margin-top-4">
         <a href="#0">Return to sign in</a>
