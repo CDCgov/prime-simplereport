@@ -64,7 +64,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    */
   public String activateUser(String activationToken, String crossForwardedHeader, String userAgent)
       throws InvalidActivationLinkException {
-    System.out.println("activating user (printed)");
     JSONObject requestBody = new JSONObject();
     requestBody.put("token", activationToken);
     String authorizationToken = "SSWS " + _apiToken;
