@@ -14,5 +14,6 @@ module "metric_alerts" {
   ]
 
 
-  mem_threshold = 80
+  mem_threshold = 85
+  cpu_threshold = 85
 }
