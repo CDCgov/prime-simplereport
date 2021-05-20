@@ -272,7 +272,7 @@ class UserAccountCreationControllerTest {
   }
 
   @Test
-  public void cannotEnrollVoiceCallMfa_withoutActivatedUser() throws Exception {
+  void cannotEnrollVoiceCallMfa_withoutActivatedUser() throws Exception {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder enrollSmsMfaBuilder =
@@ -287,7 +287,7 @@ class UserAccountCreationControllerTest {
   }
 
   @Test
-  public void cannotEnrollVoiceCallMfa_withoutValidPhoneNumber() throws Exception {
+  void cannotEnrollVoiceCallMfa_withoutValidPhoneNumber() throws Exception {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder activateUserBuilder =
@@ -314,7 +314,7 @@ class UserAccountCreationControllerTest {
   }
 
   @Test
-  public void enrollEmailMfa_isOk() throws Exception {
+  void enrollEmailMfa_isOk() throws Exception {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder activateUserBuilder =
@@ -357,7 +357,7 @@ class UserAccountCreationControllerTest {
   }
 
   @Test
-  public void cannotEnrollEmailMfa_withoutActivatedUser() throws Exception {
+  void cannotEnrollEmailMfa_withoutActivatedUser() throws Exception {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder enrollEmailMfaBuilder =
@@ -372,7 +372,7 @@ class UserAccountCreationControllerTest {
   }
 
   @Test
-  public void cannotEnrollEmailMfa_withoutValidEmail() throws Exception {
+  void cannotEnrollEmailMfa_withoutValidEmail() throws Exception {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder activateUserBuilder =
