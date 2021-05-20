@@ -9,6 +9,7 @@ import com.okta.sdk.resource.user.RecoveryQuestionCredential;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserCredentials;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
+
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
@@ -22,6 +23,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
 
 /**
  * Created by emmastephenson on 4/28/21
@@ -144,26 +146,43 @@ curl -v -X POST \
     JSONObject requestBody = new JSONObject();
     requestBody.put("token", activationToken);
     String authorizationToken = "SSWS " + _apiToken;
-    RestTemplate restTemplate =
-        new RestTemplateBuilder(
-                rt ->
-                    rt.getInterceptors()
-                        .add(
-                            (request, body, execution) -> {
-                              HttpHeaders headers = request.getHeaders();
-                              headers.setContentType(MediaType.APPLICATION_JSON);
-                              headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-                              headers.add(HttpHeaders.USER_AGENT, userAgent);
-                              headers.add("X-Forwarded-For", crossForwardedHeader);
-                              headers.add("Authorization", authorizationToken);
-                              return execution.execute(request, body);
-                            }))
-            .build();
+
+  /**
+   *  HttpHeaders headers = new HttpHeaders();
+ headers.setContentType(MediaType.TEXT_PLAIN);
+ HttpEntity<String> entity = new HttpEntity<String>(helloWorld, headers);
+ URI location = template.postForLocation("https://example.com", entity);
+ 
+   */
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+    headers.add(HttpHeaders.USER_AGENT, userAgent);
+    headers.add("X-Forwarded-For", crossForwardedHeader);
+    headers.add("Authorization", authorizationToken);
+    HttpEntity<String> entity = new HttpEntity<String>(requestBody.toString(), headers);
+    RestTemplate restTemplate = new RestTemplate();
+
+    // RestTemplate restTemplate =
+    //     new RestTemplateBuilder(
+    //             rt ->
+    //                 rt.getInterceptors()
+    //                     .add(
+    //                         (request, body, execution) -> {
+    //                           HttpHeaders headers = request.getHeaders();
+    //                           headers.setContentType(MediaType.APPLICATION_JSON);
+    //                           headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+    //                           headers.add(HttpHeaders.USER_AGENT, userAgent);
+    //                           headers.add("X-Forwarded-For", crossForwardedHeader);
+    //                           headers.add("Authorization", authorizationToken);
+    //                           return execution.execute(request, body);
+    //                         }))
+    //         .build();
     String postUrl = _orgUrl + "/api/v1/authn";
 
     try {
-      LOG.info("RestTemplate", restTemplate.toString());
-      String response = restTemplate.postForObject(postUrl, requestBody, String.class);
+      String response = restTemplate.postForObject(postUrl, entity, String.class);
       LOG.info("activating user response: " + response);
       JSONObject responseJson = new JSONObject(response);
       return responseJson.getJSONObject("_embedded").getJSONObject("user").getString("id");
