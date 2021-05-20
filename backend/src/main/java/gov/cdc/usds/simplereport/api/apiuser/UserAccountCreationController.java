@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserAccountCreationController {
   private static final Logger LOG = LoggerFactory.getLogger(UserAccountCreationController.class);
 
-  private static final String STATE_TOKEN_KEY = "stateToken";
   private static final String USER_ID_KEY = "userId";
 
   @Autowired private OktaAuthentication _oktaAuth;
@@ -53,10 +52,7 @@ public class UserAccountCreationController {
             requestBody.getActivationToken(),
             request.getHeader("X-Forwarded-For"),
             request.getHeader("User-Agent"));
-    // String userId =
-    // oktaResponse.getJSONObject("_embedded").getJSONObject("user").getString("id");
     request.getSession().setAttribute(USER_ID_KEY, userId);
-    // request.getSession().setAttribute(STATE_TOKEN_KEY, oktaResponse.getString(STATE_TOKEN_KEY));
     _oktaAuth.setPassword(userId, requestBody.getPassword().toCharArray());
   }
 
