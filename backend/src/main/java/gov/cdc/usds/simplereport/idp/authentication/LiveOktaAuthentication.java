@@ -70,7 +70,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     headers.add(HttpHeaders.USER_AGENT, userAgent);
     headers.add("X-Forwarded-For", crossForwardedHeader);
     headers.add("Authorization", authorizationToken);
-    HttpEntity<String> entity = new HttpEntity<String>(requestBody.toString(), headers);
+    HttpEntity<String> entity = new HttpEntity<>(requestBody.toString(), headers);
     RestTemplate restTemplate = new RestTemplate();
     String postUrl = _orgUrl + "/api/v1/authn";
     try {
