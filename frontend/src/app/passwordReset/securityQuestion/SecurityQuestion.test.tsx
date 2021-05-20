@@ -9,19 +9,19 @@ describe("Verify Email MFA", () => {
 
   it("can enter a security code", () => {
     fireEvent.change(
-      screen.getByLabelText("One-time security code", { exact: false }),
+      screen.getByLabelText("Where did you go for your favorite vacation?", {
+        exact: false,
+      }),
       {
-        target: { value: "123" },
+        target: { value: "Hawaii" },
       }
     );
-    fireEvent.click(screen.getByText("Verify"));
-    expect(
-      screen.queryByText("Enter your security code")
-    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText("Continue"));
+    expect(screen.queryByText("Enter an answer")).not.toBeInTheDocument();
   });
 
   it("requires a security code", () => {
     fireEvent.click(screen.getByText("Verify"));
-    expect(screen.getByText("Enter your security code")).toBeInTheDocument();
+    expect(screen.getByText("Enter an answer")).toBeInTheDocument();
   });
 });
