@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class DemoOktaAuthentication implements OktaAuthentication {
 
   private static final int MINIMUM_PASSWORD_LENGTH = 8;
+  private static final int PHONE_NUMBER_LENGTH = 10;
 
   private HashMap<String, DemoAuthUser> idToUserMap;
 
@@ -109,7 +110,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   public String validatePhoneNumber(String phoneNumber) throws OktaAuthenticationFailureException {
     String strippedPhoneNumber = phoneNumber.replaceAll("[^\\d]", "");
-    if (strippedPhoneNumber.length() != 10) {
+    if (strippedPhoneNumber.length() != PHONE_NUMBER_LENGTH) {
       throw new OktaAuthenticationFailureException("Phone number is invalid.");
     }
     return strippedPhoneNumber;
