@@ -4,12 +4,12 @@ import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQ
 
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
+import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
 import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserAccountCreationController {
   private static final Logger LOG = LoggerFactory.getLogger(UserAccountCreationController.class);
 
-  private static final String STATE_TOKEN_KEY = "stateToken";
   private static final String USER_ID_KEY = "userId";
 
   @Autowired private OktaAuthentication _oktaAuth;
@@ -49,15 +48,14 @@ public class UserAccountCreationController {
   @PostMapping("/initialize-and-set-password")
   public void activateAccountAndSetPassword(
       @RequestBody UserAccountCreationRequest requestBody, HttpServletRequest request)
-      throws Exception {
-    JSONObject oktaResponse =
+      throws InvalidActivationLinkException, OktaAuthenticationFailureException {
+    LOG.info("endpoint hit: initialize-and-set-password");
+    String userId =
         _oktaAuth.activateUser(
             requestBody.getActivationToken(),
             request.getHeader("X-Forwarded-For"),
             request.getHeader("User-Agent"));
-    String userId = oktaResponse.getString(USER_ID_KEY);
     request.getSession().setAttribute(USER_ID_KEY, userId);
-    request.getSession().setAttribute(STATE_TOKEN_KEY, oktaResponse.getString(STATE_TOKEN_KEY));
     _oktaAuth.setPassword(userId, requestBody.getPassword().toCharArray());
   }
 

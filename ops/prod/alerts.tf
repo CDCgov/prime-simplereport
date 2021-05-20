@@ -1,6 +1,7 @@
 module "metric_alerts" {
   source              = "../services/alerts/app_service_metrics"
   env                 = local.env
+  app_insights_id     = data.azurerm_application_insights.app_insights.id
   app_service_plan_id = module.simple_report_api.app_service_plan_id
   app_service_id      = module.simple_report_api.app_service_id
   severity            = 1

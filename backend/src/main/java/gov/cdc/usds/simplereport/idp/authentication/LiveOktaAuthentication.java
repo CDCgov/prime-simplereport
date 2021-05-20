@@ -14,11 +14,12 @@ import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureExcep
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
 import org.json.JSONObject;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -44,45 +45,40 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   }
 
   /**
-   * Converts an activation token into a state token by sending a REST request to the Okta API. (The
-   * Okta Authentication SDK does not yet support translating an activation token to a state token.
-   * If that changes, update this method to use the SDK.) If successful, it moves the Okta state
-   * machine into a RESET_PASSWORD state.
+   * Converts an activation token into a user id by sending a REST request to the Okta API. (The
+   * Okta Authentication SDK does not yet support activating an activation token. If that changes,
+   * update this method to use the SDK.) If successful, it moves the Okta state machine into a
+   * RESET_PASSWORD state.
+   * https://developer.okta.com/docs/reference/api/authn/#request-example-for-activation-token
    * https://developer.okta.com/docs/reference/api/authn/#response-example-for-activation-token-success-user-without-password
    *
    * @param activationToken the token passed from Okta when creating a new user.
-   * @param crossForwardedHeader the IP address of the user requesting a new account.
+   * @param crossForwardedHeader the IP address of the user requesting a new account, along with any
+   *     other IP addresses in the request chain (typically Azure).
    * @param userAgent the user agent of the user requesting a new account.
-   * @return The state token affiliated with this request by Okta.
-   * @throws Exception if the state token is not returned by Okta.
+   * @return The user id returned by Okta.
+   * @throws OktaAuthenticationFailureException if the state token is not returned by Okta.
    */
-  public JSONObject activateUser(
-      String activationToken, String crossForwardedHeader, String userAgent)
+  public String activateUser(String activationToken, String crossForwardedHeader, String userAgent)
       throws InvalidActivationLinkException {
     JSONObject requestBody = new JSONObject();
     requestBody.put("token", activationToken);
     String authorizationToken = "SSWS " + _apiToken;
-    RestTemplate restTemplate =
-        new RestTemplateBuilder(
-                rt ->
-                    rt.getInterceptors()
-                        .add(
-                            (request, body, execution) -> {
-                              HttpHeaders headers = request.getHeaders();
-                              headers.setContentType(MediaType.APPLICATION_JSON);
-                              headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-                              headers.add(HttpHeaders.USER_AGENT, userAgent);
-                              headers.add("X-Forwarded-For", crossForwardedHeader);
-                              headers.add("Authorization", authorizationToken);
-                              return execution.execute(request, body);
-                            }))
-            .build();
-    String response = restTemplate.postForObject(_orgUrl, requestBody, String.class);
-    JSONObject responseJson = new JSONObject(response);
-    if (responseJson.has("stateToken") && responseJson.has("userId")) {
-      return responseJson;
-    } else {
-      throw new InvalidActivationLinkException();
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+    headers.add(HttpHeaders.USER_AGENT, userAgent);
+    headers.add("X-Forwarded-For", crossForwardedHeader);
+    headers.add("Authorization", authorizationToken);
+    HttpEntity<String> entity = new HttpEntity<>(requestBody.toString(), headers);
+    RestTemplate restTemplate = new RestTemplate();
+    String postUrl = _orgUrl + "/api/v1/authn";
+    try {
+      String response = restTemplate.postForObject(postUrl, entity, String.class);
+      JSONObject responseJson = new JSONObject(response);
+      return responseJson.getJSONObject("_embedded").getJSONObject("user").getString("id");
+    } catch (RestClientException | NullPointerException e) {
+      throw new InvalidActivationLinkException("User could not be activated", e);
     }
   }
 

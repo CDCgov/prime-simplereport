@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +12,6 @@ class DemoOktaAuthenticationTest {
 
   private DemoOktaAuthentication _auth = new DemoOktaAuthentication();
 
-  private static final String USER_ID_KEY = "userId";
   private static final String VALID_ACTIVATION_TOKEN = "valid_activation_token";
 
   @BeforeEach
@@ -23,8 +21,7 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void activateUserSuccessful() throws Exception {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     assertThat(_auth.getUser(userId)).isNotNull();
   }
 
@@ -39,8 +36,7 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void setPasswordSuccessful() throws Exception {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     String password = "dummyPassword!";
     _auth.setPassword(userId, password.toCharArray());
     assertThat(_auth.getUser(userId).getPassword()).isEqualTo(password);
@@ -60,8 +56,7 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void passwordTooShort() throws Exception {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     char[] password = "short".toCharArray();
     Exception exception =
         assertThrows(
@@ -74,8 +69,7 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void passwordNoSpecialCharacters() throws Exception {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     char[] password = "longPasswordWithoutSpecialCharacters".toCharArray();
     Exception exception =
         assertThrows(
@@ -89,8 +83,7 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void setRecoveryQuestionSuccessful() throws Exception {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     String question = "Who was your third grade teacher?";
     String answer = "Teacher";
     _auth.setRecoveryQuestion(userId, question, answer);
@@ -113,8 +106,7 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void cannotSetRecoveryQuestion_withBlankQuestion() throws Exception {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
@@ -126,8 +118,7 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void cannotSetRecoveryQuestion_withBlankAnswer() throws Exception {
-    JSONObject json = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    String userId = json.getString(USER_ID_KEY);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
