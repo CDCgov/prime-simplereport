@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserAccountCreationController {
   private static final Logger LOG = LoggerFactory.getLogger(UserAccountCreationController.class);
 
-  private static final String STATE_TOKEN_KEY = "stateToken";
   private static final String USER_ID_KEY = "userId";
+  private static final String FACTOR_ID = "factorId";
 
   @Autowired private OktaAuthentication _oktaAuth;
 
@@ -87,7 +87,7 @@ public class UserAccountCreationController {
       throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollSmsMfa(userId, requestBody.getUserInput());
-    request.getSession().setAttribute("factorId", factorId);
+    request.getSession().setAttribute(FACTOR_ID, factorId);
   }
 
   /**
@@ -102,7 +102,7 @@ public class UserAccountCreationController {
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
     String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollVoiceCallMfa(userId, requestBody.getUserInput());
-    request.getSession().setAttribute("factorId", factorId);
+    request.getSession().setAttribute(FACTOR_ID, factorId);
   }
 
   /**
@@ -115,7 +115,9 @@ public class UserAccountCreationController {
   @PostMapping("/enroll-email-mfa")
   public void enrollEmailMfa(
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
-    // WIP: doesn't interact with Okta yet.
+    String userId = getUserId(request.getSession());
+    String factorId = _oktaAuth.enrollEmailMfa(userId, requestBody.getUserInput());
+    request.getSession().setAttribute(FACTOR_ID, factorId);
   }
 
   /**

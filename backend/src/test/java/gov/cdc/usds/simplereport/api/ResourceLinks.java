@@ -16,4 +16,6 @@ public final class ResourceLinks {
   public static final String USER_SET_RECOVERY_QUESTION = "/user-account/set-recovery-question";
   public static final String USER_ENROLL_SMS_MFA = "/user-account/enroll-sms-mfa";
   public static final String USER_ENROLL_VOICE_CALL_MFA = "/user-account/enroll-voice-call-mfa";
+  public static final String USER_ENROLL_EMAIL_MFA = "/user-account/enroll-email-mfa";
+  
 }

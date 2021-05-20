@@ -89,6 +89,17 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     return factorId;
   }
 
+  public String enrollEmailMfa(String userId, String email) throws OktaAuthenticationFailureException {
+    validateUser(userId);
+    if (!email.contains("@")) {
+      throw new OktaAuthenticationFailureException("Email address is invalid.");
+    }
+    String factorId = "emailFactor " + email;
+    DemoMfa emailMfa = new DemoMfa("emailFactor", email, factorId);
+    this.idToUserMap.get(userId).setMfa(emailMfa);
+    return factorId;
+  }
+
   public void validateUser(String userId) throws OktaAuthenticationFailureException {
     if (!this.idToUserMap.containsKey(userId)) {
       throw new OktaAuthenticationFailureException("User id not recognized.");

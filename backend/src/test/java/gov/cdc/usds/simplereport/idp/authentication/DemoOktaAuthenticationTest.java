@@ -200,4 +200,39 @@ class DemoOktaAuthenticationTest {
             });
     assertThat(exception.getMessage()).isEqualTo("Phone number is invalid.");
   }
+
+  @Test
+  void enrollEmailMfaSuccessful() throws OktaAuthenticationFailureException {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    _auth.enrollEmailMfa(userId, "me@example.com");
+    DemoAuthUser user = _auth.getUser(userId);
+
+    assertThat(user.getMfa().getFactorProfile()).isEqualTo("me@example.com");
+    assertThat(user.getMfa().getFactorType()).isEqualTo("emailFactor");
+    assertThat(user.getMfa().getFactorId()).isEqualTo("emailFactor me@example.com");
+  }
+
+  @Test
+  void enrollEmailMfa_failsWithoutValidActivation() {
+    Exception exception = 
+    assertThrows(OktaAuthenticationFailureException.class, 
+      () -> {
+        _auth.enrollEmailMfa("fakeUserId", "me@example.com");
+      });
+
+      assertThat(exception.getMessage()).isEqualTo("User id not recognized.");
+
+  }
+
+  @Test
+  void enrollEmailMfa_failsForInvalidEmail() {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    Exception exception =
+        assertThrows(
+            OktaAuthenticationFailureException.class,
+            () -> {
+              _auth.enrollEmailMfa(userId, "meexample.com");
+            });
+    assertThat(exception.getMessage()).isEqualTo("Email address is invalid.");
+  }
 }

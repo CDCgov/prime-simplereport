@@ -9,6 +9,7 @@ import com.okta.sdk.resource.user.RecoveryQuestionCredential;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserCredentials;
 import com.okta.sdk.resource.user.factor.CallUserFactor;
+import com.okta.sdk.resource.user.factor.EmailUserFactor;
 import com.okta.sdk.resource.user.factor.SmsUserFactor;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
@@ -182,6 +183,29 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       return callFactor.getId();
     } catch (ResourceException e) {
       throw new OktaAuthenticationFailureException("Error setting voice call MFA", e);
+    }
+  }
+
+  /**
+   * Using the Okta Management SDK, enroll a user in email MFA. If successful, this enrollment
+   * triggers an activation email to the user with an OTP.
+   *
+   * @param userId the user id of the user making the enrollment request.
+   * @param email the user-provided email address to enroll. (note: should we do any validation that
+   *     this email === the enrolled email?)
+   * @throws OktaAuthenticationFailureException if the email is invalid or Okta cannot enroll it as
+   *     an MFA option.
+   */
+  public String enrollEmailMfa(String userId, String email)
+      throws OktaAuthenticationFailureException {
+    try {
+      EmailUserFactor emailFactor = _client.instantiate(EmailUserFactor.class);
+      emailFactor.getProfile().setEmail(email);
+      User user = _client.getUser(userId);
+      user.enrollFactor(emailFactor);
+      return emailFactor.getId();
+    } catch (ResourceException e) {
+      throw new OktaAuthenticationFailureException("Error setting email MFA", e);
     }
   }
 }

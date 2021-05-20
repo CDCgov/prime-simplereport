@@ -23,4 +23,7 @@ public interface OktaAuthentication {
 
   public String enrollVoiceCallMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException;
+
+  public String enrollEmailMfa(String userId, String email)
+      throws OktaAuthenticationFailureException;
 }
