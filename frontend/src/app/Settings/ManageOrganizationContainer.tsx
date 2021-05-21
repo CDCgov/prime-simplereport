@@ -59,7 +59,9 @@ const ManageOrganizationContainer: any = () => {
   }
 
   const onSave = (name: string) => {
-    trackSaveSettings(null);
+    if(appInsights){
+      trackSaveSettings(null);
+    }
     setOrganization({
       variables: {
         name,

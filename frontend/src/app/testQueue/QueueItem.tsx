@@ -315,7 +315,9 @@ const QueueItem: any = ({
 
   const onTestResultSubmit = (forceSubmit: boolean = false) => {
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
-      trackSubmitTestResult({});
+      if (appInsights) {
+        trackSubmitTestResult({});
+      }
       setConfirmationType("none");
       submitTestResult({
         variables: {
@@ -395,7 +397,9 @@ const QueueItem: any = ({
 
   const removeFromQueue = () => {
     setConfirmationType("none");
-    trackRemovePatientFromQueue({});
+    if (appInsights) {
+      trackRemovePatientFromQueue({});
+    }
     removePatientFromQueue({
       variables: {
         patientId: removePatientId,
@@ -421,7 +425,9 @@ const QueueItem: any = ({
 
   const saveAoeCallback = (answers: any) => {
     setAoeAnswers(answers);
-    trackUpdateAoEResponse({});
+    if (appInsights) {
+      trackUpdateAoEResponse({});
+    }
     updateAoe({
       variables: {
         ...answers,
