@@ -135,7 +135,7 @@ export const selfRegistrationSchema: yup.SchemaOf<SelfRegistationFields> = yup.o
     firstName: yup.string().required(),
     middleName: yup.string().nullable(),
     lastName: yup.string().required(),
-    birthDate: yup.string().required(),
+    birthDate: yup.date().required().max(new Date()).min(new Date("1/1/1900")),
     ...updateFieldSchemata,
   }
 );

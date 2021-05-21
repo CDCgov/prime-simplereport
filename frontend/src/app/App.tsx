@@ -4,9 +4,8 @@ import { ToastContainer } from "react-toastify";
 import { useDispatch, connect } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import { Redirect, Route, Switch } from "react-router-dom";
-import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
+import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 
-import { reactPlugin, appInsights } from "./AppInsights";
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import Header from "./commonComponents/Header";
@@ -22,6 +21,7 @@ import AdminRoutes from "./admin/AdminRoutes";
 import WithFacility from "./facilitySelect/WithFacility";
 import { appPermissions } from "./permissions";
 import Settings from "./Settings/Settings";
+import { getAppInsights } from "./TelemetryService";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -47,6 +47,8 @@ export const WHOAMI_QUERY = gql`
 `;
 
 const App = () => {
+  let appInsights: null | ApplicationInsights | any = getAppInsights();
+
   const dispatch = useDispatch();
   const { data, loading, error } = useQuery(WHOAMI_QUERY, {
     fetchPolicy: "no-cache",
@@ -84,93 +86,92 @@ const App = () => {
   }
 
   if (error) {
-    appInsights.trackException({ error });
+    if (appInsights instanceof ApplicationInsights) {
+      appInsights.trackException({ error });
+    }
     return <p>Server connection error...</p>;
   }
-
   return (
-    <AppInsightsContext.Provider value={reactPlugin}>
-      <PrimeErrorBoundary>
-        <WithFacility>
-          <div className="App">
-            <div id="main-wrapper">
-              <USAGovBanner />
-              <Header />
-              <Switch>
-                <Route path="/login" component={LoginView} />
-                <Route
-                  path="/queue"
-                  render={() => {
-                    return <TestQueueContainer />;
-                  }}
-                />
-                <Route
-                  path="/"
-                  exact
-                  render={({ location }) => (
-                    <Redirect
-                      to={{
-                        ...location,
-                        pathname: data.whoami.isAdmin ? "/admin" : "/queue",
-                      }}
-                    />
-                  )}
-                />
-                <ProtectedRoute
-                  path="/results/:page?"
-                  render={({ match }: any) => {
-                    return <TestResultsList page={match.params.page} />;
-                  }}
-                  requiredPermissions={appPermissions.results.canView}
-                  userPermissions={data.whoami.permissions}
-                />
-                <ProtectedRoute
-                  path={`/patients/:page?`}
-                  render={({ match }: any) => {
-                    return <ManagePatientsContainer page={match.params.page} />;
-                  }}
-                  requiredPermissions={appPermissions.people.canView}
-                  userPermissions={data.whoami.permissions}
-                />
-                <ProtectedRoute
-                  path={`/patient/:patientId`}
-                  render={({ match }: any) => (
-                    <EditPatientContainer patientId={match.params.patientId} />
-                  )}
-                  requiredPermissions={appPermissions.people.canEdit}
-                  userPermissions={data.whoami.permissions}
-                />
-                <ProtectedRoute
-                  path={`/add-patient/`}
-                  render={() => <AddPatient />}
-                  requiredPermissions={appPermissions.people.canEdit}
-                  userPermissions={data.whoami.permissions}
-                />
-                <ProtectedRoute
-                  path="/settings"
-                  component={Settings}
-                  requiredPermissions={appPermissions.settings.canView}
-                  userPermissions={data.whoami.permissions}
-                />
-                <Route
-                  path={"/admin"}
-                  render={({ match }) => (
-                    <AdminRoutes match={match} isAdmin={data.whoami.isAdmin} />
-                  )}
-                />
-              </Switch>
-              <ToastContainer
-                autoClose={5000}
-                closeButton={false}
-                limit={2}
-                position="bottom-center"
-                hideProgressBar={true}
+    <PrimeErrorBoundary>
+      <WithFacility>
+        <div className="App">
+          <div id="main-wrapper">
+            <USAGovBanner />
+            <Header />
+            <Switch>
+              <Route path="/login" component={LoginView} />
+              <Route
+                path="/queue"
+                render={() => {
+                  return <TestQueueContainer />;
+                }}
               />
-            </div>
+              <Route
+                path="/"
+                exact
+                render={({ location }) => (
+                  <Redirect
+                    to={{
+                      ...location,
+                      pathname: data.whoami.isAdmin ? "/admin" : "/queue",
+                    }}
+                  />
+                )}
+              />
+              <ProtectedRoute
+                path="/results/:page?"
+                render={({ match }: any) => {
+                  return <TestResultsList page={match.params.page} />;
+                }}
+                requiredPermissions={appPermissions.results.canView}
+                userPermissions={data.whoami.permissions}
+              />
+              <ProtectedRoute
+                path={`/patients/:page?`}
+                render={({ match }: any) => {
+                  return <ManagePatientsContainer page={match.params.page} />;
+                }}
+                requiredPermissions={appPermissions.people.canView}
+                userPermissions={data.whoami.permissions}
+              />
+              <ProtectedRoute
+                path={`/patient/:patientId`}
+                render={({ match }: any) => (
+                  <EditPatientContainer patientId={match.params.patientId} />
+                )}
+                requiredPermissions={appPermissions.people.canEdit}
+                userPermissions={data.whoami.permissions}
+              />
+              <ProtectedRoute
+                path={`/add-patient/`}
+                render={() => <AddPatient />}
+                requiredPermissions={appPermissions.people.canEdit}
+                userPermissions={data.whoami.permissions}
+              />
+              <ProtectedRoute
+                path="/settings"
+                component={Settings}
+                requiredPermissions={appPermissions.settings.canView}
+                userPermissions={data.whoami.permissions}
+              />
+              <Route
+                path={"/admin"}
+                render={({ match }) => (
+                  <AdminRoutes match={match} isAdmin={data.whoami.isAdmin} />
+                )}
+              />
+            </Switch>
+            <ToastContainer
+              autoClose={5000}
+              closeButton={false}
+              limit={2}
+              position="bottom-center"
+              hideProgressBar={true}
+            />
           </div>
-        </WithFacility>
-      </PrimeErrorBoundary>
-    </AppInsightsContext.Provider>
+        </div>
+      </WithFacility>
+    </PrimeErrorBoundary>
   );
 };
 
