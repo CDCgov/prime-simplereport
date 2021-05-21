@@ -1,5 +1,6 @@
 import renderer from "react-test-renderer";
 import MockDate from "mockdate";
+import { createRef } from "react";
 
 import SymptomInputs from "./SymptomInputs";
 
@@ -19,6 +20,8 @@ describe("SymptomInputs", () => {
         setOnsetDate={jest.fn()}
         symptomError={undefined}
         symptomOnsetError={undefined}
+        symptomRef={createRef()}
+        symptomOnsetRef={createRef()}
       />
     );
   });
