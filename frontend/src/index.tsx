@@ -20,12 +20,13 @@ import PatientApp from "./patientApp/PatientApp";
 import AccountCreationApp from "./app/accountCreation/AccountCreationApp";
 import HealthChecks from "./app/HealthChecks";
 import * as serviceWorker from "./serviceWorker";
-import "./styles/App.css";
 import { store } from "./app/store";
 import { showError } from "./app/utils";
 import { getAppInsights } from "./app/TelemetryService";
 import TelemetryProvider from "./app/telemetry-provider";
 import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration";
+
+import "./styles/App.css";
 
 // Define the root element for modals
 if (process.env.NODE_ENV !== "test") {
