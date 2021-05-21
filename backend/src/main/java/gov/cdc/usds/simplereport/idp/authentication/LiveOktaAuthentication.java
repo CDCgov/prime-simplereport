@@ -213,7 +213,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * this method returns the factor id and a qr code. The qr code will be passed to the user for
    * them to finish setting enrolling in-app.
    *
-   * https://developer.okta.com/docs/reference/api/factors/#response-example-12
+   * <p>https://developer.okta.com/docs/reference/api/factors/#response-example-12
    *
    * @param userId the user id of the user making the enrollment request.
    * @param type the appType of the app being enrolled (for now, one of Okta Verify or Google
@@ -221,7 +221,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * @throws OktaAuthenticationFailureException if the app type is not recognized, Okta fails to
    *     enroll the MFA option, or the result from Okta does not contain a QR code.
    */
-  public FactorAndQrCode enrollAuthenticatorApp(String userId, String appType)
+  public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
     UserFactor factor = _client.instantiate(UserFactor.class);
     factor.setFactorType(FactorType.TOKEN_SOFTWARE_TOTP);

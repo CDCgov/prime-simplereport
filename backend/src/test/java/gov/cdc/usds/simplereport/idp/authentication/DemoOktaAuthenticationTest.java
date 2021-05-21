@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication.DemoAuthUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -234,5 +235,50 @@ class DemoOktaAuthenticationTest {
               _auth.enrollEmailMfa(userId, "meexample.com");
             });
     assertThat(exception.getMessage()).isEqualTo("Email address is invalid.");
+  }
+
+  @Test
+  void enrollAuthenticatorAppMfa_successful() throws Exception {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    FactorAndQrCode factorData = _auth.enrollAuthenticatorAppMfa(userId, "Google");
+    DemoAuthUser user = _auth.getUser(userId);
+
+    assertThat(factorData.getQrCodeLink()).isEqualTo("thisIsAFakeQrCode");
+
+    assertThat(user.getMfa().getFactorProfile()).isEqualTo("thisIsAFakeQrCode");
+    assertThat(user.getMfa().getFactorType()).isEqualTo("authApp: google");
+    assertThat(user.getMfa().getFactorId()).isEqualTo(factorData.getFactorId());
+  }
+
+  @Test
+  void enrollAuthenticatorAppMfa_successfulWithOktaVerify() throws Exception {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    _auth.enrollAuthenticatorAppMfa(userId, "okta");
+    DemoAuthUser user = _auth.getUser(userId);
+
+    assertThat(user.getMfa().getFactorType()).isEqualTo("authApp: okta");
+  }
+
+  @Test
+  void enrollAuthenticatorAppMfa_failsWithoutValidActivation() {
+    Exception exception =
+        assertThrows(
+            OktaAuthenticationFailureException.class,
+            () -> {
+              _auth.enrollAuthenticatorAppMfa("fakeUserId", "okta");
+            });
+    assertThat(exception.getMessage()).isEqualTo("User id not recognized.");
+  }
+
+  @Test
+  void enrollAuthenticatorAppMfa_failsWithInvalidAppType() {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    Exception exception =
+        assertThrows(
+            OktaAuthenticationFailureException.class,
+            () -> {
+              _auth.enrollAuthenticatorAppMfa(userId, "lastPass");
+            });
+    assertThat(exception.getMessage()).isEqualTo("App type not recognized.");
   }
 }

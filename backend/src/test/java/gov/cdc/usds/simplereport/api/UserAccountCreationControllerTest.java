@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -21,6 +22,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 @Import(DemoOktaAuthentication.class)
@@ -49,6 +51,8 @@ class UserAccountCreationControllerTest {
   private static final String VALID_ENROLL_PHONE_MFA_REQUEST = "{\"userInput\":\"555-867-5309\"}";
 
   private static final String VALID_ENROLL_EMAIL_MFA_REQUEST = "{\"userInput\":\"me@example.com\"}";
+
+  private static final String VALID_ENROLL_AUTH_APP_MFA_REQUEST = "{\"userInput\":\"okta\"}";
 
   @BeforeEach
   public void setup() throws Exception {
@@ -396,5 +400,89 @@ class UserAccountCreationControllerTest {
     this._mockMvc.perform(activateUserBuilder).andExpect(status().isOk());
 
     this._mockMvc.perform(enrollEmailMfaBuilder).andExpect(status().is4xxClientError());
+  }
+
+  @Test
+  void enrollAuthenticatorAppMfa_isOk() throws Exception {
+    MockHttpSession session = new MockHttpSession();
+
+    MockHttpServletRequestBuilder activateUserBuilder =
+        post(ResourceLinks.USER_SET_PASSWORD)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .header("X-Forwarded-For", "1.1.1.1")
+            .header("User-Agent", "Chrome")
+            .content(VALID_PASSWORD_REQUEST)
+            .session(session);
+
+    MockHttpServletRequestBuilder enrollAuthAppMfaBuilder =
+        get(ResourceLinks.USER_ENROLL_AUTH_APP_MFA)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(VALID_ENROLL_AUTH_APP_MFA_REQUEST)
+            .session(session);
+
+    HttpSession setPasswordResponse =
+        this._mockMvc
+            .perform(activateUserBuilder)
+            .andExpect(status().isOk())
+            .andReturn()
+            .getRequest()
+            .getSession(false);
+
+    MvcResult enrollAuthAppMfaResponse =
+        this._mockMvc.perform(enrollAuthAppMfaBuilder).andExpect(status().isOk()).andReturn();
+
+    HttpSession enrollAuthAppMfaResponseSession =
+        enrollAuthAppMfaResponse.getRequest().getSession(false);
+
+    assertThat(setPasswordResponse.getAttribute("userId"))
+        .isEqualTo(enrollAuthAppMfaResponseSession.getAttribute("userId"));
+    assertThat(enrollAuthAppMfaResponseSession.getAttribute("factorId")).isNotNull();
+    assertThat(enrollAuthAppMfaResponse.getResponse().getContentAsString()).contains("QrCode");
+  }
+
+  @Test
+  void cannotEnrollAuthAppMfa_withoutActivatedUser() throws Exception {
+    MockHttpSession session = new MockHttpSession();
+
+    MockHttpServletRequestBuilder enrollAuthAppMfaBuilder =
+        get(ResourceLinks.USER_ENROLL_AUTH_APP_MFA)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(VALID_ENROLL_AUTH_APP_MFA_REQUEST)
+            .session(session);
+
+    this._mockMvc.perform(enrollAuthAppMfaBuilder).andExpect(status().is4xxClientError());
+  }
+
+  @Test
+  void cannotEnrollAuthAppMfa_withInvalidAppType() throws Exception {
+    MockHttpSession session = new MockHttpSession();
+
+    MockHttpServletRequestBuilder activateUserBuilder =
+        post(ResourceLinks.USER_SET_PASSWORD)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .header("X-Forwarded-For", "1.1.1.1")
+            .header("User-Agent", "Chrome")
+            .content(VALID_PASSWORD_REQUEST)
+            .session(session);
+
+    MockHttpServletRequestBuilder enrollAuthAppMfaBuilder =
+        get(ResourceLinks.USER_ENROLL_AUTH_APP_MFA)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content("{\"userInput\":\"lastPass\"}")
+            .session(session);
+
+    this._mockMvc.perform(activateUserBuilder).andExpect(status().isOk());
+
+    this._mockMvc.perform(enrollAuthAppMfaBuilder).andExpect(status().is4xxClientError());
   }
 }

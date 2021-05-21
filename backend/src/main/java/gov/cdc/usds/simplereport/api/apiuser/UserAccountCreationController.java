@@ -135,7 +135,7 @@ public class UserAccountCreationController {
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
     String userId = getUserId(request.getSession());
     FactorAndQrCode factorData =
-        _oktaAuth.enrollAuthenticatorApp(userId, requestBody.getUserInput());
+        _oktaAuth.enrollAuthenticatorAppMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID, factorData.getFactorId());
     return factorData.getQrCodeLink();
   }

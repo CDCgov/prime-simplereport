@@ -28,6 +28,6 @@ public interface OktaAuthentication {
   public String enrollEmailMfa(String userId, String email)
       throws OktaAuthenticationFailureException;
 
-  public FactorAndQrCode enrollAuthenticatorApp(String userId, String type)
+  public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String type)
       throws OktaAuthenticationFailureException;
 }

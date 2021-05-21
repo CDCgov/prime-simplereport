@@ -103,7 +103,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     return factorId;
   }
 
-  public FactorAndQrCode enrollAuthenticatorApp(String userId, String appType)
+  public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
     validateUser(userId);
     String factorType = "";
@@ -118,7 +118,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
         throw new OktaAuthenticationFailureException("App type not recognized.");
     }
     String factorId = "authApp: " + userId;
-    DemoMfa appMfa = new DemoMfa(factorType, "", factorId);
+    DemoMfa appMfa = new DemoMfa(factorType, "thisIsAFakeQrCode", factorId);
     this.idToUserMap.get(userId).setMfa(appMfa);
     return new FactorAndQrCode(factorId, "thisIsAFakeQrCode");
   }
