@@ -3,10 +3,8 @@ name: Chromatic
 on:
   workflow_dispatch:
   push:
-    branches:
-      - "**"
     paths:
-      - "frontend/src/**"
+      - "frontend/**"
 
 jobs:
   chromatic-deployment:
