@@ -1,8 +1,8 @@
 import React from "react";
+import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 import Checkboxes from "../../commonComponents/Checkboxes";
-import TextInput from "../../commonComponents/TextInput";
 
 interface Symptoms {
   [key: string]: boolean;
@@ -18,7 +18,7 @@ interface Props {
   symptomError: string | undefined;
   symptomOnsetError: string | undefined;
   symptomRef: React.RefObject<HTMLInputElement>;
-  symptomOnsetRef: React.RefObject<HTMLInputElement>;
+  symptomOnsetRef: React.ForwardedRef<HTMLInputElement>;
 }
 
 const SymptomInputs: React.FC<Props> = ({
@@ -31,6 +31,7 @@ const SymptomInputs: React.FC<Props> = ({
   symptomError,
   symptomOnsetError,
   symptomRef,
+
   symptomOnsetRef,
 }) => {
   return (
@@ -70,24 +71,41 @@ const SymptomInputs: React.FC<Props> = ({
         )}
       </div>
       {!noSymptoms && (
-        <TextInput
-          type="date"
-          label="Date of symptom onset"
-          name="symptom_onset"
-          value={onsetDate}
-          onChange={(e) => setOnsetDate(e.target.value)}
-          min="2020-02-01"
-          max={new Date().toISOString().split("T")[0]}
-          required={Object.keys(currentSymptoms).some(
-            (key) => currentSymptoms[key]
+        <>
+          <Label htmlFor="meeting-time">Date of symptom onset</Label>
+          <span className="usa-hint">mm/dd/yyyy</span>
+          {symptomOnsetError && (
+            <span className="usa-error-message" role="alert">
+              <span className="usa-sr-only">Error: </span>
+              {symptomOnsetError}
+            </span>
           )}
-          errorMessage={symptomOnsetError}
-          validationStatus={symptomOnsetError ? "error" : undefined}
-          inputRef={symptomOnsetRef}
-        />
+          <DatePicker
+            className="maxw-mobile"
+            id="symptom_onset"
+            name="symptom_onset"
+            defaultValue={onsetDate}
+            minDate="2020-02-01"
+            maxDate={new Date().toISOString().split("T")[0]}
+            onChange={(date) => {
+              if (date) {
+                setOnsetDate(date);
+              }
+            }}
+            required={Object.keys(currentSymptoms).some(
+              (key) => currentSymptoms[key]
+            )}
+            ref={symptomOnsetRef}
+          />
+        </>
       )}
     </>
   );
 };
 
-export default SymptomInputs;
+const WithRef = React.forwardRef<
+  HTMLInputElement,
+  Omit<Props, "symtomOnsetRef">
+>((props, ref) => <SymptomInputs {...props} symptomOnsetRef={ref} />);
+
+export default WithRef;
