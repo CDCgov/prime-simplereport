@@ -89,7 +89,7 @@ exports[`QueueItem correctly renders the test queue 1`] = `
             class="margin-top-2 margin-left-2 margin-bottom-2"
           >
             <div
-              class="prime-ul grid-row grid-gap"
+              class="queue-item__body-list prime-ul grid-row grid-gap"
             >
               <li
                 class="prime-li tablet:grid-col-3"
@@ -164,7 +164,7 @@ exports[`QueueItem correctly renders the test queue 1`] = `
                 </div>
               </div>
               <div
-                class="prime-li tablet:grid-col padding-left-1"
+                class="prime-li tablet:grid-col tablet:padding-left-1"
               >
                 <div
                   class="usa-form-group"
@@ -217,7 +217,7 @@ exports[`QueueItem correctly renders the test queue 1`] = `
               SARS-CoV-2 results
             </h4>
             <div
-              class="usa-form-group"
+              class="usa-form-group prime-radio__group"
             >
               <fieldset
                 class="usa-fieldset prime-radios"

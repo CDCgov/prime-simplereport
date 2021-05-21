@@ -40,10 +40,10 @@ public class AccountRequest implements TemplateVariablesProvider {
 
   @JsonProperty @NotNull private String cliaNumber;
   @JsonProperty @NotNull private String testingDevices;
-  @JsonProperty private String testingDevicesOther;
+  @JsonProperty private String testingDeviceOther;
 
   @JsonProperty @NotNull
-  private String defaultTestDevice = ""; // remove default after prime-simplereport-site deployment
+  private String defaultTestingDevice; // remove default after prime-simplereport-site deployment
 
   @JsonProperty @NotNull private String accessDevices;
   @JsonProperty @NotNull private String browsers;
@@ -94,8 +94,8 @@ public class AccountRequest implements TemplateVariablesProvider {
     variableMap.put("facilityPhoneNumber", facilityPhoneNumber);
     variableMap.put("cliaNumber", cliaNumber);
     variableMap.put("testingDevices", testingDevices);
-    variableMap.put("testingDevicesOther", testingDevicesOther);
-    variableMap.put("defaultTestDevice", defaultTestDevice);
+    variableMap.put("testingDeviceOther", testingDeviceOther);
+    variableMap.put("defaultTestingDevice", defaultTestingDevice);
     variableMap.put("accessDevices", accessDevices);
     variableMap.put("browsers", browsers);
     variableMap.put("browsersOther", browsersOther);

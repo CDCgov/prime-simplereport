@@ -45,6 +45,7 @@ const initialState = {
       deviceTypeModel: "",
     },
   },
+  activationToken: "",
 };
 
 const reducers = (state = initialState, action: any) => {

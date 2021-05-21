@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.apiuser;
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.User;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
@@ -22,6 +23,7 @@ public class UserMutationResolver implements GraphQLMutationResolver {
     _us = us;
   }
 
+  @AuthorizationConfiguration.RequireGlobalAdminUser
   public User addUser(
       PersonName name,
       String firstName,
@@ -32,7 +34,7 @@ public class UserMutationResolver implements GraphQLMutationResolver {
       String organizationExternalID,
       Role role) {
     name = Translators.consolidateNameArguments(name, firstName, middleName, lastName, suffix);
-    UserInfo user = _us.createUser(email, name, organizationExternalID, role);
+    UserInfo user = _us.createUser(email, name, organizationExternalID, role, true);
     return new User(user);
   }
 
@@ -45,7 +47,7 @@ public class UserMutationResolver implements GraphQLMutationResolver {
       String email,
       Role role) {
     name = Translators.consolidateNameArguments(name, firstName, middleName, lastName, suffix);
-    UserInfo user = _us.createUserInCurrentOrg(email, name, role);
+    UserInfo user = _us.createUserInCurrentOrg(email, name, role, true);
     return new User(user);
   }
 

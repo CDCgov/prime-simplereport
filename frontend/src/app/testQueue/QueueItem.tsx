@@ -483,7 +483,7 @@ const QueueItem: any = ({
   const testDateFields =
     useCurrentDateTime === "false" ? (
       <>
-        <div className="prime-li tablet:grid-col-4 padding-left-1">
+        <div className="prime-li tablet:grid-col-4 tablet:padding-left-1">
           <div className="usa-form-group">
             <Label htmlFor="test-date">Test date</Label>
             <span className="usa-hint">mm/dd/yyyy</span>
@@ -506,7 +506,7 @@ const QueueItem: any = ({
             />
           </div>
         </div>
-        <div className="prime-li tablet:grid padding-right-1 padding-left-05">
+        <div className="prime-li tablet:grid padding-right-1 tablet:padding-left-05">
           <TextInput
             label={"Test time"}
             name={"test-time"}
@@ -551,7 +551,7 @@ const QueueItem: any = ({
                 <TestTimerWidget timer={timer} />
               </div>
               <div className="margin-top-2 margin-left-2 margin-bottom-2">
-                <div className="prime-ul grid-row grid-gap">
+                <div className="queue-item__description prime-ul grid-row grid-gap">
                   <li className="prime-li tablet:grid-col-3">
                     <LabeledText
                       text={patient.telephone}
@@ -585,7 +585,12 @@ const QueueItem: any = ({
                     </p>
                   </li>
                 </div>
-                <div className="prime-ul grid-row test-information-ul">
+                <div
+                  className={classnames(
+                    "queue-item__form prime-ul grid-row",
+                    useCurrentDateTime === "false" && "queue-item__form--open"
+                  )}
+                >
                   <div className="prime-li flex-align-self-end tablet:grid-col-3 padding-right-1">
                     <Dropdown
                       options={options}
@@ -596,7 +601,7 @@ const QueueItem: any = ({
                     />
                   </div>
                   {testDateFields}
-                  <div className="prime-li tablet:grid-col padding-left-1">
+                  <div className="prime-li tablet:grid-col tablet:padding-left-1">
                     <Checkboxes
                       boxes={[
                         {
