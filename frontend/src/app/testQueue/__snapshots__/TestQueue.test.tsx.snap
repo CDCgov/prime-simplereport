@@ -11,7 +11,9 @@ exports[`TestQueue should render the test queue 1`] = `
       <div
         class="grid-row position-relative"
       >
-        <div>
+        <div
+          class="prime-search-container"
+        >
           <form
             class="usa-search usa-search--small prime-search-input display-inline-block"
             role="search"
@@ -131,7 +133,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 </button>
               </div>
               <div
-                class="usa-card__body"
+                class="usa-card__body prime-test-body"
               >
                 <div
                   class="grid-row"
@@ -270,7 +272,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   SARS-CoV-2 results
                 </h4>
                 <div
-                  class="usa-form-group"
+                  class="usa-form-group prime-radio__group"
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
@@ -440,7 +442,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 </button>
               </div>
               <div
-                class="usa-card__body"
+                class="usa-card__body prime-test-body"
               >
                 <div
                   class="grid-row"
@@ -579,7 +581,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   SARS-CoV-2 results
                 </h4>
                 <div
-                  class="usa-form-group"
+                  class="usa-form-group prime-radio__group"
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
