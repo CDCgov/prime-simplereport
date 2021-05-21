@@ -4,26 +4,22 @@ import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
+import { emailIsValid } from "../../utils/email";
 
 export const Email = () => {
-  const [email, setEmail] = useState("");
+  const [emailAddress, setEmailAddress] = useState("");
   const [emailError, setEmailError] = useState("");
   const [formIsDirty, setFormIsDirty] = useState(false);
 
-  const emailIsValid = (emailAddress: string) => {
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(emailAddress).toLowerCase());
-  };
-
   const validateEmail = () => {
     setFormIsDirty(true);
-    if (!email) {
+    if (!emailAddress) {
       setEmailError("Enter your email address");
       return;
     }
     let valid;
     try {
-      valid = emailIsValid(email);
+      valid = emailIsValid(emailAddress);
     } catch (e) {
       valid = false;
     }
@@ -53,11 +49,11 @@ export const Email = () => {
           label={"Email address"}
           name={"email"}
           type={"email"}
-          value={email}
+          value={emailAddress}
           errorMessage={emailError}
           validationStatus={emailError ? "error" : undefined}
           onBlur={validateEmail}
-          onChange={(evt) => setEmail(evt.target.value)}
+          onChange={(evt) => setEmailAddress(evt.target.value)}
         />
         <Button
           className="margin-top-3"

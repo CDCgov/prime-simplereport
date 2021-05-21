@@ -13,6 +13,5 @@ export const VerifyPhone = () => (
       </>
     }
     type="voice call"
-    buttonSecond={true}
   />
 );

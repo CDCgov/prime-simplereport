@@ -13,6 +13,5 @@ export const VerifySms = () => (
       </>
     }
     type="text message (SMS)"
-    buttonSecond={true}
   />
 );
