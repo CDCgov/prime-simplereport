@@ -308,8 +308,8 @@ To view the Storybook locally:
 component development.  It provides regression testing and review.  It also allows for publication
 of the Storybook.
 
-Changes to the Storybook are sent to Chromatic when a pull request is made or code is merged to
-main that includes changes to the frontend source.
+Changes to the Storybook are sent to Chromatic when changes to the frontend source are push to a
+any branch.  The changes are automatically accepted on merge to `main`.
 
 View the [SimpleReport Storybook](https://main--60a556a7c807cc0039ec6786.chromatic.com/)
 
