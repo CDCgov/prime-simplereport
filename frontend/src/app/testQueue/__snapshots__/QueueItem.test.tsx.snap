@@ -86,7 +86,7 @@ exports[`QueueItem correctly renders the test queue 1`] = `
             </button>
           </div>
           <div
-            class="usa-card__body"
+            class="usa-card__body prime-test-body"
           >
             <div
               class="grid-row"
@@ -225,7 +225,7 @@ exports[`QueueItem correctly renders the test queue 1`] = `
               SARS-CoV-2 results
             </h4>
             <div
-              class="usa-form-group"
+              class="usa-form-group prime-radio__group"
             >
               <fieldset
                 class="usa-fieldset prime-radios"
