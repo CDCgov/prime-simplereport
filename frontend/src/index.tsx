@@ -26,7 +26,7 @@ import { getAppInsights } from "./app/TelemetryService";
 import TelemetryProvider from "./app/telemetry-provider";
 import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration";
 
-import "./styles/App.css";
+import "./index.css";
 
 // Define the root element for modals
 if (process.env.NODE_ENV !== "test") {

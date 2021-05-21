@@ -21,7 +21,7 @@ const createTelemetryService = () => {
     }
     if (!instrumentationKey) {
       throw new Error(
-        "Instrumentation key not provided in ./src/telemetry-provider.jsx"
+        "Instrumentation key not provided in"
       );
     }
 
