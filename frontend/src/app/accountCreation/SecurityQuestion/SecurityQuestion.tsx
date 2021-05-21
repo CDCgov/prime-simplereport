@@ -68,13 +68,7 @@ export const SecurityQuestion = () => {
   }
 
   if (submitted) {
-    return (
-      <Redirect
-        to={{
-          pathname: "/mfa-select",
-        }}
-      />
-    );
+    return <Redirect to="/mfa-select" />;
   }
 
   return (

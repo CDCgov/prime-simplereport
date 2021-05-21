@@ -11,12 +11,18 @@ import USAGovBanner from "../commonComponents/USAGovBanner";
 import { RootState, setInitialState } from "../store";
 import { getActivationTokenFromUrl } from "../utils/url";
 import PageNotFound from "../commonComponents/PageNotFound";
+import { MfaPhone } from "../login/MfaPhone/MfaPhone";
 
 import { PasswordForm } from "./PasswordForm/PasswordForm";
 import { SecurityQuestion } from "./SecurityQuestion/SecurityQuestion";
 import { MfaSelect } from "./MfaSelect/MfaSelect";
 import { MfaSms } from "./MfaSms/MfaSms";
 import { MfaComplete } from "./MfaComplete/MfaComplete";
+import { MfaOktaVerify } from "./MfaOktaVerify/MfaOktaVerify";
+import { MfaGoogleAuth } from "./MfaGoogleAuth/MfaGoogleAuth";
+import { MfaSecurityKey } from "./MfaSecurityKey/MfaSecurityKey";
+import { MfaSmsVerify } from "./MfaSmsVerify/MfaSmsVerify";
+import { MfaEmail } from "./MfaEmail/MfaEmail";
 
 interface WrapperProps {
   activationToken: string;
@@ -57,13 +63,20 @@ const AccountCreationApp = () => {
             <AccountCreation404Wrapper activationToken={activationToken}>
               <Router basename={`${process.env.PUBLIC_URL}/uac`}>
                 <Switch>
+                  <Route path="/" exact component={PasswordForm} />
                   <Route path="/set-password" component={PasswordForm} />
                   <Route
                     path="/set-recovery-question"
                     component={SecurityQuestion}
                   />
                   <Route path="/mfa-select" component={MfaSelect} />
-                  <Route path="/mfa-sms-verify" component={MfaSms} />
+                  <Route path="/mfa-sms/verify" component={MfaSmsVerify} />
+                  <Route path="/mfa-sms" component={MfaSms} />
+                  <Route path="/mfa-okta-verify" component={MfaOktaVerify} />
+                  <Route path="/mfa-google-auth" component={MfaGoogleAuth} />
+                  <Route path="/mfa-security-key" component={MfaSecurityKey} />
+                  <Route path="/mfa-phone" component={MfaPhone} />
+                  <Route path="/mfa-email" component={MfaEmail} />
                   <Route path="/success" component={MfaComplete} />
                 </Switch>
               </Router>

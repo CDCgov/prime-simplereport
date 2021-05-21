@@ -4,38 +4,59 @@ const headers = {
   Accept: "application/json",
 };
 
+const getOptions = (
+  body: any
+): {
+  method: string;
+  mode: RequestMode;
+  headers: HeadersInit;
+  body: string;
+} => {
+  return {
+    method: "POST",
+    mode: "cors",
+    headers,
+    body: JSON.stringify(body),
+  };
+};
+
+const request = (path: string, body: any): Promise<any> => {
+  return fetch(API_URL + path, getOptions(body)).then((res) => {
+    if (!res.ok) {
+      throw res;
+    }
+    return "success";
+  });
+};
+
 export class AccountCreationApi {
   static setPassword(activationToken: string, password: string): Promise<any> {
-    return fetch(`${API_URL}/initialize-and-set-password`, {
-      method: "POST",
-      mode: "cors",
-      headers,
-      body: JSON.stringify({
-        activationToken,
-        password,
-      }),
-    }).then((res) => {
-      if (!res.ok) {
-        throw res;
-      }
-      return res.json();
+    return request("/initialize-and-set-password", {
+      activationToken,
+      password,
     });
   }
 
   static setRecoveryQuestion(recoveryQuestion: string, recoveryAnswer: string) {
-    return fetch(`${API_URL}/set-recovery-question`, {
-      method: "POST",
-      mode: "cors",
-      headers,
-      body: JSON.stringify({
-        recoveryQuestion,
-        recoveryAnswer,
-      }),
-    }).then((res) => {
-      if (!res.ok) {
-        throw res;
-      }
-      return res.json();
+    return request("/set-recovery-question", {
+      recoveryQuestion,
+      recoveryAnswer,
     });
+  }
+
+  static enrollSmsMfa(phone: string) {
+    return request("/enroll-sms-mfa", { phone });
+  }
+
+  static enrollVoiceCallMfa(phone: string) {
+    return request("/enroll-voice-call-mfa", { phone });
+  }
+
+  static enrollEmailMfa(email: string) {
+    return request("/enroll-email-mfa", { email });
+  }
+
+  static verifyActivationPasscode(code: string) {
+    return request("/verify-activation-passcode", { code });
   }
 }

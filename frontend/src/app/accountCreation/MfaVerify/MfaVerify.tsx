@@ -1,4 +1,5 @@
 import { ReactElement, useState } from "react";
+import { Redirect } from "react-router";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -6,6 +7,7 @@ import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
+import { AccountCreationApi } from "../AccountCreationApiService";
 
 interface Props {
   hint: ReactElement;
@@ -14,14 +16,45 @@ interface Props {
 export const MfaVerify = (props: Props) => {
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const validateCode = () => {
+    let error = "";
     if (code === "") {
-      setCodeError("Enter your security code");
-    } else {
-      setCodeError("");
+      error = "Enter your security code";
+    }
+    setCodeError(error);
+    return error === "";
+  };
+
+  const handleSubmit = async () => {
+    if (validateCode()) {
+      setLoading(true);
+      try {
+        await AccountCreationApi.verifyActivationPasscode(code);
+        setSubmitted(true);
+      } catch (error) {
+        setCodeError(`API Error: ${error}`);
+      } finally {
+        setLoading(false);
+      }
     }
   };
+
+  if (loading) {
+    return (
+      <main>
+        <div className="grid-container maxw-tablet">
+          <p className="margin-top-3">Validating code...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (submitted) {
+    return <Redirect to="/success" />;
+  }
 
   return (
     <CardBackground>
@@ -57,6 +90,7 @@ export const MfaVerify = (props: Props) => {
           className="usa-button--outline display-block margin-top-3"
           label={"Send another code"}
           type={"submit"}
+          onClick={handleSubmit}
         />
       </Card>
       <p className="margin-top-5">
