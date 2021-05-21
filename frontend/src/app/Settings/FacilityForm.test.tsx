@@ -216,6 +216,93 @@ describe("FacilityForm", () => {
     const state = await screen.findByText("Palau", { exact: false });
     expect(state).toBeInTheDocument();
   });
+
+  describe("CLIA number validation", () => {
+    describe("when validation is required for state", () => {
+      beforeEach(() => {
+        jest
+          .spyOn(clia, "stateRequiresCLIANumberValidation")
+          .mockReturnValue(true);
+      });
+
+      afterEach(() => {
+        jest.spyOn(clia, "stateRequiresCLIANumberValidation").mockRestore();
+      });
+
+      it("displays an error if CLIA number is invalid and prevents form submission", async () => {
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={validFacility}
+              deviceOptions={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const cliaInput = screen.getByLabelText("CLIA number", {
+          exact: false,
+        });
+
+        fireEvent.change(cliaInput, {
+          target: { value: "invalid-clia-number" },
+        });
+        fireEvent.blur(cliaInput);
+
+        const expectedError = allFacilityErrors["cliaNumber"] as string;
+
+        expect(
+          await screen.findByText(expectedError, {
+            exact: false,
+          })
+        ).toBeInTheDocument();
+
+        const saveButton = screen.getAllByText("Save changes")[0];
+        await waitFor(async () => {
+          fireEvent.click(saveButton);
+        });
+        expect(saveFacility).toBeCalledTimes(0);
+      });
+    });
+
+    describe("when validation is not required for state", () => {
+      beforeEach(() => {
+        jest
+          .spyOn(clia, "stateRequiresCLIANumberValidation")
+          .mockReturnValue(false);
+      });
+
+      afterEach(() => {
+        jest.spyOn(clia, "stateRequiresCLIANumberValidation").mockRestore();
+      });
+
+      it("does not validate CLIA numbers in states that do not require it", async () => {
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={validFacility}
+              deviceOptions={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const cliaInput = screen.getByLabelText("CLIA number", {
+          exact: false,
+        });
+        fireEvent.change(cliaInput, {
+          target: { value: "invalid-clia-number" },
+        });
+        fireEvent.blur(cliaInput);
+
+        const saveButton = await screen.getAllByText("Save changes")[0];
+        fireEvent.click(saveButton);
+        await validateAddress(saveFacility);
+        expect(saveFacility).toBeCalledTimes(1);
+      });
+    });
+  });
+
   describe("Address validation", () => {
     it("uses suggested addresses", async () => {
       const facility: Facility = {
