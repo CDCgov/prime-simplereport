@@ -8,22 +8,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import gov.cdc.usds.simplereport.api.apiuser.UserAccountCreationController;
 import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
-import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
-import javax.servlet.http.HttpSession;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-@Import(DemoOktaAuthentication.class)
 @WebMvcTest(
     controllers = UserAccountCreationController.class,
     includeFilters =
@@ -38,19 +33,6 @@ class UserAccountCreationControllerTest {
 
   @Autowired private MockMvc _mockMvc;
 
-  @Autowired private DemoOktaAuthentication _oktaAuth;
-
-  private static final String VALID_PASSWORD_REQUEST =
-      "{\"activationToken\":\"validActivationToken\", \"password\":\"superStrongPassword!\"}";
-
-  private static final String VALID_RECOVERY_QUESTION_REQUEST =
-      "{\"question\":\"Who was your third grade teacher?\", \"answer\" : \"Jane Doe\"}";
-
-  @BeforeEach
-  public void setup() throws Exception {
-    _oktaAuth.reset();
-  }
-
   @Test
   void setPasswordIsOk() throws Exception {
     MockHttpServletRequestBuilder builder =
@@ -58,68 +40,49 @@ class UserAccountCreationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .header("X-Forwarded-For", "1.1.1.1")
-            .header("User-Agent", "Chrome")
-            .content(VALID_PASSWORD_REQUEST);
+            .content("{}");
 
     this._mockMvc.perform(builder).andExpect(status().isOk());
   }
 
   @Test
-  void setPassword_failsWithoutActivationToken() throws Exception {
-    String passwordRequestNoActivation = "{\"password\":\"superStrongPassword!\"}";
-
+  void setPassword_worksAsExpectedWithMultipleSessions() throws Exception {
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.USER_SET_PASSWORD)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .content(passwordRequestNoActivation);
+            .content("{}");
 
-    this._mockMvc.perform(builder).andExpect(status().isForbidden());
+    String firstRequest =
+        this._mockMvc
+            .perform(builder)
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    String secondRequest =
+        this._mockMvc
+            .perform(builder)
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    assertThat(firstRequest).isNotEqualTo(secondRequest);
   }
 
   @Test
-  void setPassword_worksAsExpectedWithMultipleSessions() throws Exception {
-    MockHttpServletRequestBuilder firstBuilder =
-        post(ResourceLinks.USER_SET_PASSWORD)
+  void setRecoveryQuestionsIsOk() throws Exception {
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.USER_SET_RECOVERY_QUESTION)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .header("X-Forwarded-For", "1.1.1.1")
-            .header("User-Agent", "Chrome")
-            .content(VALID_PASSWORD_REQUEST);
+            .content("{}");
 
-    String secondValidPasswordRequest =
-        "{\"activationToken\":\"anotherValidAuthToken\", \"password\":\"secondSuperStrongPassword!?\"}";
-
-    MockHttpServletRequestBuilder secondBuilder =
-        post(ResourceLinks.USER_SET_PASSWORD)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .header("X-Forwarded-For", "1.1.1.1")
-            .header("User-Agent", "Chrome")
-            .content(secondValidPasswordRequest);
-
-    HttpSession firstSession =
-        this._mockMvc
-            .perform(firstBuilder)
-            .andExpect(status().isOk())
-            .andReturn()
-            .getRequest()
-            .getSession(false);
-
-    HttpSession secondSession =
-        this._mockMvc
-            .perform(secondBuilder)
-            .andExpect(status().isOk())
-            .andReturn()
-            .getRequest()
-            .getSession(false);
-
-    assertThat(firstSession.getId()).isNotEqualTo(secondSession.getId());
-    assertThat(firstSession.getAttribute("userId")).isEqualTo("userId " + "validActivationToken");
+    this._mockMvc.perform(builder).andExpect(status().isOk());
   }
 
   @Test
@@ -131,9 +94,7 @@ class UserAccountCreationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .header("X-Forwarded-For", "1.1.1.1")
-            .header("User-Agent", "Chrome")
-            .content(VALID_PASSWORD_REQUEST)
+            .content("{}")
             .session(session);
 
     MockHttpServletRequestBuilder setRecoveryQuestionBuilder =
@@ -141,28 +102,25 @@ class UserAccountCreationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .content(VALID_RECOVERY_QUESTION_REQUEST)
+            .content("{}")
             .session(session);
 
-    HttpSession setPasswordResponse =
+    String setPasswordResponse =
         this._mockMvc
             .perform(setPasswordBuilder)
             .andExpect(status().isOk())
             .andReturn()
-            .getRequest()
-            .getSession(false);
+            .getResponse()
+            .getContentAsString();
 
-    HttpSession setRecoveryQuestionResponse =
+    String setRecoveryQuestionResponse =
         this._mockMvc
             .perform(setRecoveryQuestionBuilder)
             .andExpect(status().isOk())
             .andReturn()
-            .getRequest()
-            .getSession(false);
+            .getResponse()
+            .getContentAsString();
 
-    // assert that the userId is propagated to the recovery question session
-    assertThat(setRecoveryQuestionResponse.getAttribute("userId"))
-        .isEqualTo("userId " + "validActivationToken");
     assertEquals(setPasswordResponse, setRecoveryQuestionResponse);
   }
 }

@@ -2,35 +2,25 @@ package gov.cdc.usds.simplereport.api.apiuser;
 
 import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQUEST;
 
-import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
-import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
-import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
-import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
-import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
-import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
-import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 
 /** Controller used for user account creation. */
+// NOTE: This class is not currently functional; it's a WIP so that the frontend has endpoints to
+// query.
 @RestController
 @RequestMapping(USER_ACCOUNT_REQUEST)
 public class UserAccountCreationController {
   private static final Logger LOG = LoggerFactory.getLogger(UserAccountCreationController.class);
-
-  private static final String USER_ID_KEY = "userId";
-
-  @Autowired private OktaAuthentication _oktaAuth;
 
   @PostConstruct
   private void init() {
@@ -39,44 +29,27 @@ public class UserAccountCreationController {
   }
 
   /**
-   * Validates that the requesting user has been sent an invitation to SimpleReport, ensures the
-   * given password meets all requirements, and sets the password in Okta.
+   * WIP Validates that the requesting user has been sent an invitation to SimpleReport, ensures the
+   * given password meets all requirements, and sets the password in Okta. If the password doesn't
+   * meet requirements, sends a notice back to the frontend.
    *
-   * @param requestBody contains the password
-   * @param request contains all header information, including the activation token.
-   * @throws InvalidActivationLinkException if the activation token is invalid.
-   * @throws OktaAuthenticationFailureException if the password is invalid or if the user is not in
-   *     a RESET_PASSWORD state.
+   * @param session
+   * @return the session id (temporary)
    */
   @PostMapping("/initialize-and-set-password")
-  public void activateAccountAndSetPassword(
-      @RequestBody UserAccountCreationRequest requestBody, HttpServletRequest request)
-      throws InvalidActivationLinkException, OktaAuthenticationFailureException {
-    LOG.info("endpoint hit: initialize-and-set-password");
-    String userId =
-        _oktaAuth.activateUser(
-            requestBody.getActivationToken(),
-            request.getHeader("X-Forwarded-For"),
-            request.getHeader("User-Agent"));
-    request.getSession().setAttribute(USER_ID_KEY, userId);
-    _oktaAuth.setPassword(userId, requestBody.getPassword().toCharArray());
+  public String setPassword(HttpSession session) {
+    return session.getId();
   }
 
   /**
-   * Sets a recovery question and answer for a user.
+   * WIP Sets a recovery question for the given session/user in Okta.
    *
-   * @param requestBody contains the selected question and user-provided answer
-   * @param request contains session information about the user, including their id
-   * @throws OktaAuthenticationFailureException if the recovery question or answer don't meet Okta
-   *     standards (answers must be at least 4 chars long)
+   * @param session
+   * @return the session id (temporary)
    */
   @PostMapping("/set-recovery-question")
-  public void setRecoveryQuestions(
-      @RequestBody SetRecoveryQuestionRequest requestBody, HttpServletRequest request) {
-    _oktaAuth.setRecoveryQuestion(
-        request.getSession().getAttribute(USER_ID_KEY).toString(),
-        requestBody.getQuestion(),
-        requestBody.getAnswer());
+  public String setRecoveryQuestions(HttpSession session) {
+    return session.getId();
   }
 
   /**
