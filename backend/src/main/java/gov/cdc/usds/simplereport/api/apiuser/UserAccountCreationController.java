@@ -3,11 +3,10 @@ package gov.cdc.usds.simplereport.api.apiuser;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQUEST;
 
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
-<<<<<<< HEAD
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
-=======
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
->>>>>>> 2f07a4ef (update accountCreationController to specify thrown exceptions)
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
+import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
 import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
@@ -50,8 +49,17 @@ public class UserAccountCreationController {
    *     a RESET_PASSWORD state.
    */
   @PostMapping("/initialize-and-set-password")
-  public String setPassword(HttpSession session) {
-    return session.getId();
+  public void activateAccountAndSetPassword(
+      @RequestBody UserAccountCreationRequest requestBody, HttpServletRequest request)
+      throws InvalidActivationLinkException, OktaAuthenticationFailureException {
+    LOG.info("endpoint hit: initialize-and-set-password");
+    String userId =
+        _oktaAuth.activateUser(
+            requestBody.getActivationToken(),
+            request.getHeader("X-Forwarded-For"),
+            request.getHeader("User-Agent"));
+    request.getSession().setAttribute(USER_ID_KEY, userId);
+    _oktaAuth.setPassword(userId, requestBody.getPassword().toCharArray());
   }
 
   /**
