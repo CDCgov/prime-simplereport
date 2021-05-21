@@ -38,11 +38,6 @@
   list-style-type: none;
   padding: 0;
 
-  // p {
-  //   margin: 0;
-  //   margin-top: 0.5rem;
-  // }
-
   p {
     margin-bottom: 0;
     margin-top: units(1);
@@ -58,25 +53,16 @@
 }
 
 .prime-search-input {
-  margin-bottom: 0.5em;
-  min-width: 22em;
+  margin-bottom: units(1);
+  width: 100%;
+
+  @include at-media("mobile-lg") {
+    max-width: 22em;
+  }
 }
 
-.prime-search {
-  &-container {
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
-
-  &-input {
-    margin: 0 0 0.5em;
-    width: 100%;
-
-    @include at-media("desktop") {
-      margin: 0 0 0.5em 0.6em;
-      max-width: 22em;
-    }
-  }
+.prime-search-container {
+  margin-bottom: units(1);
 }
 
 // patient in the queue
@@ -339,9 +325,10 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 //test queue search
 .results-dropdown {
   height: auto;
-  max-height: calc(
-    100vh - #{units(6)} - #{$results-dropdown-spacing}
-  ); // uses header height on small screens// uses header height on small screens
+  max-height:
+    calc(
+      100vh - #{units(6)} - #{$results-dropdown-spacing}
+    ); // uses header height on small screens// uses header height on small screens
   overflow-y: auto;
   position: absolute;
   top: units(4);
@@ -888,7 +875,8 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   }
 
   .usa-step-indicator__segment::before {
-    box-shadow: inset 0 0 0 units(0.5) color("base-lighter"),
+    box-shadow:
+      inset 0 0 0 units(0.5) color("base-lighter"),
       0 0 0 0.25rem color("base-lightest");
   }
 
@@ -935,9 +923,10 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   margin-right: units(-2.5);
   padding-right: units(2);
   padding-top: units(1);
-  width: calc(
-    #{units("tablet")} - #{units(2)} - #{units(1px)}
-  ); // tablet - margin - border
+  width:
+    calc(
+      #{units("tablet")} - #{units(2)} - #{units(1px)}
+    ); // tablet - margin - border
 }
 
 .sr-time-of-test-buttons-footer {

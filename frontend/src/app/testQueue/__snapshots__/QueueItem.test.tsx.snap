@@ -89,7 +89,7 @@ exports[`QueueItem correctly renders the test queue 1`] = `
             class="margin-top-2 margin-left-2 margin-bottom-2"
           >
             <div
-              class="queue-item__body-list prime-ul grid-row grid-gap"
+              class="queue-item__description prime-ul grid-row grid-gap"
             >
               <li
                 class="prime-li tablet:grid-col-3"
@@ -130,7 +130,7 @@ exports[`QueueItem correctly renders the test queue 1`] = `
               </li>
             </div>
             <div
-              class="prime-ul grid-row test-information-ul"
+              class="queue-item__form prime-ul grid-row"
             >
               <div
                 class="prime-li flex-align-self-end tablet:grid-col-3 padding-right-1"
