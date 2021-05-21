@@ -11,7 +11,7 @@ const getDobFormat = (browser) => {
 };
 
 module.exports = {
-  // '@disabled': true,
+  // "@disabled": true,
   "1. Add a patient": (browser) => {
     ({ patientName, birthDate } = browser.page
       .patients()
@@ -43,7 +43,10 @@ module.exports = {
         .verifyEmail("foo@bar.com")
         .completeQuestionnaire();
 
-      browser.page.home().navigate('queue').verifyQuestionnaireCompleted(patientName);
+      browser.page
+        .home()
+        .navigate("queue")
+        .verifyQuestionnaireCompleted(patientName);
     });
   },
   "4. View the test result through patient experience": (browser) => {
@@ -63,5 +66,13 @@ module.exports = {
         .verifyBirthDate(birthDate)
         .viewTestResult();
     });
+  },
+  "5. Self registration through a registration link": (browser) => {
+    console.info(`Registering a patient through a self-registration link`);
+    browser.page
+      .selfRegistration()
+      .navigate()
+      .acceptTos()
+      .enterInformation(getDobFormat(browser));
   },
 };

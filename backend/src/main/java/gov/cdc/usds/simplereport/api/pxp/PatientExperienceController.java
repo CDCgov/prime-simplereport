@@ -98,21 +98,29 @@ public class PatientExperienceController {
   }
 
   @PostMapping("/patient")
-  public Person updatePatient(
+  public PxpVerifyResponse updatePatient(
       @RequestBody PxpRequestWrapper<PersonUpdate> body, HttpServletRequest request) {
     PersonUpdate person = body.getData();
-    return _ps.updateMe(
-        StreetAddress.deAndReSerializeForSafety(person.getAddress()),
-        parsePhoneNumbers(person.getPhoneNumbers()),
-        person.getRole(),
-        parseEmail(person.getEmail()),
-        parseRace(person.getRace()),
-        parseEthnicity(person.getEthnicity()),
-        person.getTribalAffiliation(),
-        parseGender(person.getGender()),
-        person.getResidentCongregateSetting(),
-        person.getEmployedInHealthcare(),
-        person.getPreferredLanguage());
+    Person updated =
+        _ps.updateMe(
+            StreetAddress.deAndReSerializeForSafety(person.getAddress()),
+            parsePhoneNumbers(person.getPhoneNumbers()),
+            person.getRole(),
+            parseEmail(person.getEmail()),
+            parseRace(person.getRace()),
+            parseEthnicity(person.getEthnicity()),
+            person.getTribalAffiliation(),
+            parseGender(person.getGender()),
+            person.getResidentCongregateSetting(),
+            person.getEmployedInHealthcare(),
+            person.getPreferredLanguage());
+
+    UUID plid = UUID.fromString(body.getPatientLinkId());
+    PatientLink pl = _pls.getPatientLink(plid);
+    OrderStatus os = pl.getTestOrder().getOrderStatus();
+    PatientPreferences pp = _ps.getPatientPreferences(updated);
+    TestEvent te = _tes.getLastTestResultsForPatient(updated);
+    return new PxpVerifyResponse(updated, os, te, pp);
   }
 
   @PostMapping("/questions")
