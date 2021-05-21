@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQ
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
 import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
@@ -130,8 +131,13 @@ public class UserAccountCreationController {
    * @throws OktaAuthenticationFailureException if Okta cannot enroll the user in MFA.
    */
   @GetMapping("/authenticator-qr")
-  public void getAuthQrCode(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
-    // WIP: doesn't interact with Okta yet.
+  public String getAuthQrCode(
+      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
+    String userId = getUserId(request.getSession());
+    FactorAndQrCode factorData =
+        _oktaAuth.enrollAuthenticatorApp(userId, requestBody.getUserInput());
+    request.getSession().setAttribute(FACTOR_ID, factorData.getFactorId());
+    return factorData.getQrCodeLink();
   }
 
   /**

@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.idp.authentication;
 
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -100,6 +101,26 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     DemoMfa emailMfa = new DemoMfa("emailFactor", email, factorId);
     this.idToUserMap.get(userId).setMfa(emailMfa);
     return factorId;
+  }
+
+  public FactorAndQrCode enrollAuthenticatorApp(String userId, String appType)
+      throws OktaAuthenticationFailureException {
+    validateUser(userId);
+    String factorType = "";
+    switch (appType.toLowerCase()) {
+      case "google":
+        factorType = "authApp: google";
+        break;
+      case "okta":
+        factorType = "authApp: okta";
+        break;
+      default:
+        throw new OktaAuthenticationFailureException("App type not recognized.");
+    }
+    String factorId = "authApp: " + userId;
+    DemoMfa appMfa = new DemoMfa(factorType, "", factorId);
+    this.idToUserMap.get(userId).setMfa(appMfa);
+    return new FactorAndQrCode(factorId, "thisIsAFakeQrCode");
   }
 
   public void validateUser(String userId) throws OktaAuthenticationFailureException {

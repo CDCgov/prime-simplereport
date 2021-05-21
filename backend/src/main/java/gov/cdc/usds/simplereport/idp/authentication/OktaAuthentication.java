@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.idp.authentication;
 
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 
 /**
  * Created by emmastephenson on 4/28/21
@@ -25,5 +26,8 @@ public interface OktaAuthentication {
       throws OktaAuthenticationFailureException;
 
   public String enrollEmailMfa(String userId, String email)
+      throws OktaAuthenticationFailureException;
+
+  public FactorAndQrCode enrollAuthenticatorApp(String userId, String type)
       throws OktaAuthenticationFailureException;
 }

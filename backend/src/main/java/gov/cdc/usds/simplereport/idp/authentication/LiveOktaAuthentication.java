@@ -10,10 +10,14 @@ import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserCredentials;
 import com.okta.sdk.resource.user.factor.CallUserFactor;
 import com.okta.sdk.resource.user.factor.EmailUserFactor;
+import com.okta.sdk.resource.user.factor.FactorProvider;
+import com.okta.sdk.resource.user.factor.FactorType;
 import com.okta.sdk.resource.user.factor.SmsUserFactor;
+import com.okta.sdk.resource.user.factor.UserFactor;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
 import org.json.JSONObject;
@@ -201,6 +205,49 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       return emailFactor.getId();
     } catch (ResourceException e) {
       throw new OktaAuthenticationFailureException("Error setting email MFA", e);
+    }
+  }
+
+  /**
+   * Using the Okta management SDK, enroll a user in an authentication app for MFA. If successful,
+   * this method returns the factor id and a qr code. The qr code will be passed to the user for
+   * them to finish setting enrolling in-app.
+   *
+   * https://developer.okta.com/docs/reference/api/factors/#response-example-12
+   *
+   * @param userId the user id of the user making the enrollment request.
+   * @param type the appType of the app being enrolled (for now, one of Okta Verify or Google
+   *     Authenticator.)
+   * @throws OktaAuthenticationFailureException if the app type is not recognized, Okta fails to
+   *     enroll the MFA option, or the result from Okta does not contain a QR code.
+   */
+  public FactorAndQrCode enrollAuthenticatorApp(String userId, String appType)
+      throws OktaAuthenticationFailureException {
+    UserFactor factor = _client.instantiate(UserFactor.class);
+    factor.setFactorType(FactorType.TOKEN_SOFTWARE_TOTP);
+    switch (appType.toLowerCase()) {
+      case "google":
+        factor.setProvider(FactorProvider.GOOGLE);
+        break;
+      case "okta":
+        factor.setProvider(FactorProvider.OKTA);
+        break;
+      default:
+        throw new OktaAuthenticationFailureException("App type not recognized.");
+    }
+    try {
+      User user = _client.getUser(userId);
+      user.enrollFactor(factor);
+      JSONObject embeddedJson = new JSONObject(factor.getEmbedded());
+      String qrCode =
+          embeddedJson
+              .getJSONObject("activation")
+              .getJSONObject("_links")
+              .getJSONObject("qrcode")
+              .getString("href");
+      return new FactorAndQrCode(factor.getId(), qrCode);
+    } catch (NullPointerException | ResourceException | IllegalArgumentException e) {
+      throw new OktaAuthenticationFailureException("Authentication app could not be enrolled", e);
     }
   }
 }
