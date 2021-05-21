@@ -47,7 +47,7 @@ export const WHOAMI_QUERY = gql`
 `;
 
 const App = () => {
-  let appInsights: null | ApplicationInsights | any = getAppInsights();
+  const appInsights = getAppInsights();
 
   const dispatch = useDispatch();
   const { data, loading, error } = useQuery(WHOAMI_QUERY, {

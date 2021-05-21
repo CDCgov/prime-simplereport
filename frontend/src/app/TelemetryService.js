@@ -20,9 +20,7 @@ const createTelemetryService = () => {
       throw new Error("Could not initialize Telemetry Service");
     }
     if (!instrumentationKey) {
-      throw new Error(
-        "Instrumentation key not provided in"
-      );
+      throw new Error("Instrumentation key not provided in");
     }
 
     reactPlugin = new ReactPlugin();
