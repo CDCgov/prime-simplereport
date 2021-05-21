@@ -8,7 +8,7 @@
   margin-bottom: 1.5rem;
 
   .usa-card__header {
-    padding: units(2.5);
+    padding: units(3);
     border-bottom: 1px solid color("base-lighter");
     display: flex;
     justify-content: space-between;
@@ -264,6 +264,12 @@
         color: color($theme-color-prime-gray-darkest);
       }
     }
+  }
+}
+
+.prime-card-container {
+  .usa-card__header {
+    padding: units(2.5);
   }
 }
 
