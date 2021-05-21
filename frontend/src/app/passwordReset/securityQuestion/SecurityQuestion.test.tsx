@@ -21,7 +21,7 @@ describe("Verify Email MFA", () => {
   });
 
   it("requires a security code", () => {
-    fireEvent.click(screen.getByText("Verify"));
+    fireEvent.click(screen.getByText("Continue"));
     expect(screen.getByText("Enter an answer")).toBeInTheDocument();
   });
 });
