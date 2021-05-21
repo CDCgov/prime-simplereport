@@ -2083,6 +2083,7 @@ databaseChangeLog:
         - dropUniqueConstraint:
             tableName: organization
             constraintName: uk__facility__name
+  - changeSet:
       id: add-email-back-to-api-user-view
       author: josh@skylight.digital
       comment: Add a column for email address to api_user_no_phi_view
@@ -2093,3 +2094,12 @@ databaseChangeLog:
             replaceIfExists: true
             fullDefinition: false
             selectQuery: SELECT internal_id, created_at, updated_at, last_seen, is_deleted, login_email FROM ${database.defaultSchemaName}.api_user
+            rollback:
+              - dropView:
+                  viewName: api_user_no_phi_view
+              - createView:
+                  viewName: api_user_no_phi_view
+                  remarks: A subset of the api_user table with columns containing PHI removed.
+                  replaceIfExists: true
+                  fullDefinition: false
+                  selectQuery: SELECT internal_id, created_at, updated_at, last_seen, is_deleted FROM ${database.defaultSchemaName}.api_user
