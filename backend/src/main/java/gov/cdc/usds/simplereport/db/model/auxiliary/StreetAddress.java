@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.model.auxiliary;
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +24,11 @@ public class StreetAddress {
 
   @Column private String city;
   @Column private String state;
-  @Column private String postalCode;
+
+  @JsonAlias({"zipCode", "zipcode"})
+  @Column
+  private String postalCode;
+
   @Column private String county;
 
   protected StreetAddress() {

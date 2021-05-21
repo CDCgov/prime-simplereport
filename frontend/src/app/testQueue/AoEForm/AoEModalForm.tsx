@@ -4,7 +4,7 @@ import Modal from "react-modal";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
 
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import { displayFullName, showError } from "../../utils";
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";

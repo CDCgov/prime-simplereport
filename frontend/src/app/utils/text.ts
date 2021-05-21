@@ -1,6 +1,6 @@
-export function capitalizeText(text = ""): string {
+export function capitalizeText(text: string | null): string {
   // capitalizes first letter
-  let result = text.toLowerCase();
+  let result = (text || "").toLowerCase();
   return result.charAt(0).toUpperCase() + result.slice(1);
 }
 
@@ -26,6 +26,10 @@ export function hasNumber(string: string) {
 
 export function hasSymbol(string: string) {
   return /[^A-Za-z 0-9]/.test(string);
+}
+
+export function isAtLeast8Chars(string: string) {
+  return string.length >= 8;
 }
 
 export function isAtLeast15Chars(string: string) {

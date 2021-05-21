@@ -3,7 +3,7 @@ import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
 import { toast } from "react-toastify";
 
-import Button from "../commonComponents/Button";
+import Button from "../commonComponents/Button/Button";
 import { displayFullName, showNotification } from "../utils";
 import "./TestResultCorrectionModal.scss";
 import {

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <% if (process.env.NODE_ENV !== 'development') { %>
     <meta
         http-equiv="Content-Security-Policy"
         content="
@@ -10,6 +11,7 @@
             img-src 'self' data:;
             connect-src 'self'  https://us-street.api.smartystreets.com www.google-analytics.com https://dc.services.visualstudio.com/v2/track %REACT_APP_BACKEND_URL%;
         ">
+        <% } %>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/%REACT_APP_ICON%" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

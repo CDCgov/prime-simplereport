@@ -5,7 +5,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,6 +47,9 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
   private Organization _org;
   private Facility _site;
+  private Person _person;
+  private PatientLink _patientLink;
+  private TestOrder _testOrder;
 
   @BeforeEach
   void init() {
@@ -60,10 +64,6 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
         });
   }
 
-  private Person _person;
-  private PatientLink _patientLink;
-  private TestOrder _testOrder;
-
   @Test
   void contextLoads() throws Exception {
     assertThat(_controller).isNotNull();
@@ -76,7 +76,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
         "{\"patientLinkId\":\"" + UUID.randomUUID() + "\",\"dateOfBirth\":\"" + dob + "\"}";
 
     MockHttpServletRequestBuilder builder =
-        put(ResourceLinks.VERIFY_LINK)
+        post(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -102,7 +102,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put(ResourceLinks.VERIFY_LINK)
+        post(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -126,7 +126,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put(ResourceLinks.VERIFY_LINK)
+        post(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -161,7 +161,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put(ResourceLinks.VERIFY_LINK)
+        post(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -191,7 +191,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder submitBuilder =
-        put(ResourceLinks.ANSWER_QUESTIONS)
+        post(ResourceLinks.ANSWER_QUESTIONS)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -201,14 +201,14 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // OKAY NOW DO IT AGAIN
     MockHttpServletRequestBuilder verifyBuilder =
-        put(ResourceLinks.VERIFY_LINK)
+        post(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
 
     MockHttpServletRequestBuilder secondSubmitBuilder =
-        put(ResourceLinks.ANSWER_QUESTIONS)
+        post(ResourceLinks.ANSWER_QUESTIONS)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -234,7 +234,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put(ResourceLinks.VERIFY_LINK)
+        post(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -259,15 +259,17 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             + _patientLink.getInternalId()
             + "\",\"dateOfBirth\":\""
             + dob
-            + "\",\"data\":{\"telephone\":\""
+            + "\",\"data\":{\"phoneNumbers\":"
+            + "[{\"type\":\"MOBILE\",\"number\":\""
             + newTelephone
-            + "\",\"role\":\"UNKNOWN\",\"email\":\""
+            + "\"},{\"type\":\"LANDLINE\",\"number\":\"(631) 867-5309"
+            + "\"}],\"role\":\"UNKNOWN\",\"email\":\""
             + newEmail
             + "\",\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,\"zipCode\":\"67890\"}}}";
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put(ResourceLinks.UPDATE_PATIENT)
+        post(ResourceLinks.UPDATE_PATIENT)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -279,6 +281,76 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.telephone", is(newTelephone)))
         .andExpect(jsonPath("$.email", is(newEmail)));
+  }
+
+  @Test
+  void updatePatientAcceptsPostalOrZipCode() throws Exception {
+    // GIVEN
+    String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    String newTelephone = "(212) 867-5309";
+    String newEmail = "fake@example.com";
+    String zipcode = "97209";
+
+    String requestBody =
+        "{\"patientLinkId\":\""
+            + _patientLink.getInternalId()
+            + "\",\"dateOfBirth\":\""
+            + dob
+            + "\",\"data\":{\"phoneNumbers\":"
+            + "[{\"type\":\"MOBILE\",\"number\":\""
+            + newTelephone
+            + "\"},{\"type\":\"LANDLINE\",\"number\":\"(631) 867-5309"
+            + "\"}],\"role\":\"UNKNOWN\",\"email\":\""
+            + newEmail
+            + "\",\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,"
+            + "\"zipCode\":\""
+            + zipcode
+            + "\"}}}";
+
+    // WHEN
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.UPDATE_PATIENT)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    // THEN
+    _mockMvc
+        .perform(builder)
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.zipCode", is(zipcode)));
+
+    String postalCode = "11561";
+    String requestBody2 =
+        "{\"patientLinkId\":\""
+            + _patientLink.getInternalId()
+            + "\",\"dateOfBirth\":\""
+            + dob
+            + "\",\"data\":{\"phoneNumbers\":"
+            + "[{\"type\":\"MOBILE\",\"number\":\""
+            + newTelephone
+            + "\"},{\"type\":\"LANDLINE\",\"number\":\"(631) 867-5309"
+            + "\"}],\"role\":\"UNKNOWN\",\"email\":\""
+            + newEmail
+            + "\",\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,"
+            + "\"postalCode\":\""
+            + postalCode
+            + "\"}}}";
+
+    // WHEN
+    MockHttpServletRequestBuilder builder2 =
+        post(ResourceLinks.UPDATE_PATIENT)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody2);
+
+    // THEN
+    _mockMvc
+        .perform(builder2)
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.zipCode", is(postalCode)));
   }
 
   @Test
@@ -300,7 +372,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put(ResourceLinks.ANSWER_QUESTIONS)
+        post(ResourceLinks.ANSWER_QUESTIONS)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -322,5 +394,19 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
         .andReturn()
         .getResponse()
         .getHeader(LoggingConstants.REQUEST_ID_HEADER);
+  }
+
+  @Test
+  void badRegistrationLinkThrows404() throws Exception {
+    String link = UUID.randomUUID().toString();
+
+    MockHttpServletRequestBuilder builder =
+        get(ResourceLinks.ENTITY_NAME).param("patientRegistrationLink", link);
+
+    this._mockMvc
+        .perform(builder)
+        .andExpect(status().isNotFound())
+        .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER));
+    assertNoAuditEvent();
   }
 }

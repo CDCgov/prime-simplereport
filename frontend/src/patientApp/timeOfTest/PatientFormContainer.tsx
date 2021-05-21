@@ -5,11 +5,13 @@ import { toast } from "react-toastify";
 
 import { setPatient as reduxSetPatient } from "../../app/store";
 import { PxpApi } from "../../patientApp/PxpApiService";
-import PersonForm from "../../app/patients/Components/PersonForm";
+import PersonForm, {
+  PersonFormView,
+} from "../../app/patients/Components/PersonForm";
 import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";
 import { showNotification } from "../../app/utils";
 import Alert from "../../app/commonComponents/Alert";
-import Button from "../../app/commonComponents/Button";
+import Button from "../../app/commonComponents/Button/Button";
 
 const PatientFormContainer = () => {
   const history = useHistory();
@@ -93,7 +95,7 @@ const PatientFormContainer = () => {
             patientId={patient.internalId}
             hideFacilitySelect={true}
             savePerson={savePerson}
-            isPatientView={true}
+            view={PersonFormView.PXP}
             getFooter={(onSave, formChanged) => (
               <div className="mobile-lg:display-flex flex-justify-end margin-top-2">
                 <Button

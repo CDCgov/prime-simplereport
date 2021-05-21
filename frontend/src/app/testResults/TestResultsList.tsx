@@ -4,7 +4,10 @@ import React, {
   Dispatch,
   MouseEventHandler,
   SetStateAction,
+  useCallback,
   useEffect,
+  useMemo,
+  useRef,
   useState,
 } from "react";
 import { useSelector } from "react-redux";
@@ -20,10 +23,11 @@ import {
 } from "../commonComponents/QueryWrapper";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import { getUrl } from "../utils/url";
+import { useOutsideClick } from "../utils/hooks";
 import Pagination from "../commonComponents/Pagination";
 import { TEST_RESULT_DESCRIPTIONS } from "../constants";
 import "./TestResultsList.scss";
-import Button from "../commonComponents/Button";
+import Button from "../commonComponents/Button/Button";
 import { useDebounce } from "../testQueue/addToQueue/useDebounce";
 import {
   MIN_SEARCH_CHARACTER_COUNT,
@@ -203,6 +207,7 @@ export const DetachedTestResultsList: any = ({
   const [markErrorId, setMarkErrorId] = useState(undefined);
   const [detailsModalId, setDetailsModalId] = useState<string>();
   const [showFilters, setShowFilters] = useState(false);
+  const [showSuggestion, setShowSuggestion] = useState(true);
 
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
@@ -223,6 +228,7 @@ export const DetachedTestResultsList: any = ({
   }, [queryString, queryPatients]);
 
   const onInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    setShowSuggestion(true);
     setDebounced(event.target.value);
   };
 
@@ -233,7 +239,19 @@ export const DetachedTestResultsList: any = ({
   const onPatientSelect = (patient: Patient) => {
     setDebounced("");
     setSelectedPatientId(patient.internalId);
+    setShowSuggestion(false);
   };
+
+  const dropDownRef = useRef(null);
+  const showDropdown = useMemo(() => allowQuery && showSuggestion, [
+    allowQuery,
+    showSuggestion,
+  ]);
+  const hideOnOutsideClick = useCallback(() => {
+    setShowSuggestion(false);
+  }, []);
+
+  useOutsideClick(dropDownRef, hideOnOutsideClick);
 
   if (printModalId) {
     return (
@@ -293,7 +311,9 @@ export const DetachedTestResultsList: any = ({
                   onClick={() => {
                     if (showFilters) {
                       setDebounced("");
+                      setSelectedPatientId("");
                     }
+
                     setShowFilters(!showFilters);
                   }}
                 >
@@ -318,8 +338,9 @@ export const DetachedTestResultsList: any = ({
                   page="test-results"
                   patients={patientData?.patients || []}
                   onPatientSelect={onPatientSelect}
-                  shouldShowSuggestions={allowQuery}
+                  shouldShowSuggestions={showDropdown}
                   loading={debounced !== queryString}
+                  dropDownRef={dropDownRef}
                 />
               </div>
             )}

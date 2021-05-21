@@ -4,63 +4,101 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { formatAddress, newLineSpan } from "../utils/address";
 
 import Alert from "./Alert";
-import Button from "./Button";
+import Button from "./Button/Button";
 import RadioGroup from "./RadioGroup";
 import Modal from "./Modal";
 import "./AddressConfirmation.scss";
 
-interface Props {
+export type AddressSuggestionConfig<T> = {
+  key: T;
+  label?: string;
   userEnteredAddress: AddressWithMetaData;
   suggestedAddress: AddressWithMetaData | undefined;
+};
+
+interface Props<T extends string> {
+  addressSuggestionConfig: AddressSuggestionConfig<T>[];
   showModal: boolean;
-  onConfirm: (address: AddressWithMetaData) => void;
+  onConfirm: (addresses: Record<T, AddressWithMetaData>) => void;
   onClose: () => void;
 }
 
 type addressOptions = "userAddress" | "suggested";
-const ERROR_MESSAGE = "Please choose to an address or go back to edit";
-export const AddressConfirmationModal: React.FC<Props> = ({
-  userEnteredAddress,
-  suggestedAddress,
+const ERROR_MESSAGE = "Please choose an address or go back to edit";
+export const AddressConfirmationModal = <T extends string>({
+  addressSuggestionConfig,
   showModal,
   onConfirm,
   onClose,
-}) => {
-  const [selectedAddress, setSelectedAddress] = useState<addressOptions>();
-  const [error, setError] = useState<boolean>(false);
+}: Props<T>) => {
+  const [selectedAddress, setSelectedAddress] = useState<
+    Partial<Record<T, addressOptions>>
+  >({});
+  const addressSuggestionConfigMap = addressSuggestionConfig.reduce(
+    (acc, el) => {
+      acc[el.key] = el;
+      return acc;
+    },
+    {} as Record<T, AddressSuggestionConfig<T>>
+  );
 
-  const getSelectedAddress = (): AddressWithMetaData | undefined => {
-    if (selectedAddress === "userAddress") {
-      return userEnteredAddress;
-    } else if (selectedAddress === "suggested") {
-      if (suggestedAddress === undefined) {
-        throw Error("suggestedAddress was selected but it is not defined");
+  const multipleAddresses = addressSuggestionConfig.length > 1;
+
+  const [error, setError] = useState(new Set<T>());
+
+  const getSelectedAddresses = () => {
+    const errors = new Set<T>();
+    const addresses = Object.entries(selectedAddress).reduce((acc, [k, v]) => {
+      const key = k as T;
+      const selection = v as addressOptions;
+      if (selection === "userAddress") {
+        acc[key] = addressSuggestionConfigMap[key].userEnteredAddress;
+      } else if (
+        selection === "suggested" &&
+        addressSuggestionConfigMap[key].suggestedAddress
+      ) {
+        acc[key] = addressSuggestionConfigMap[key].suggestedAddress!;
+      } else {
+        errors.add(key);
       }
-      return suggestedAddress;
-    }
-    return undefined;
+      return acc;
+    }, {} as Record<T, AddressWithMetaData>);
+    if (errors.size) return errors;
+    return addresses;
   };
 
-  const validate = () => {
-    if (selectedAddress) {
+  const validate = (key: T) => {
+    if (selectedAddress[key]) {
       return;
     }
-    setError(true);
+    setError((e) => {
+      const errors = new Set(e);
+      errors.add(key);
+      return errors;
+    });
   };
 
   const onSave = () => {
-    const address = getSelectedAddress();
-    address ? onConfirm(address) : setError(true);
+    const addresses = getSelectedAddresses();
+    if (addresses instanceof Set) {
+      setError(addresses);
+    } else {
+      onConfirm(addresses);
+    }
   };
 
   const getAlert = () => {
-    if (suggestedAddress) {
+    if (
+      addressSuggestionConfig.every(({ suggestedAddress }) => suggestedAddress)
+    ) {
       return null;
     }
     return (
       <Alert
         type="warning"
-        body="The address you entered could not be verified"
+        body={`The address${
+          multipleAddresses ? "es" : ""
+        } you entered could not be verified`}
         role="alert"
         slim
       />
@@ -79,16 +117,21 @@ export const AddressConfirmationModal: React.FC<Props> = ({
     );
   };
 
-  const getSuggestedOption = (): {
+  const getSuggestedOption = (
+    key: T
+  ): {
     value: addressOptions;
     label: ReactNode;
     disabled?: boolean;
     className?: string;
   } => {
-    if (suggestedAddress) {
+    if (addressSuggestionConfigMap[key].suggestedAddress) {
       return {
         value: "suggested",
-        label: getLabel("Use suggested address", suggestedAddress),
+        label: getLabel(
+          "Use suggested address",
+          addressSuggestionConfigMap[key].suggestedAddress!
+        ),
       };
     }
     return {
@@ -103,14 +146,22 @@ export const AddressConfirmationModal: React.FC<Props> = ({
     };
   };
 
-  const onChange = (selection: addressOptions) => {
-    setSelectedAddress(selection);
-    setError(!selection);
+  const onChange = (key: T, selection: addressOptions) => {
+    setSelectedAddress((addresses) => ({
+      ...addresses,
+      [key]: selection,
+    }));
+    setError((e) => {
+      const errors = new Set(e);
+      const operation = !selection ? "add" : "delete";
+      errors[operation](key);
+      return errors;
+    });
   };
 
   const closeModal = () => {
-    setSelectedAddress(undefined);
-    setError(false);
+    setSelectedAddress({});
+    setError(new Set());
     onClose();
   };
 
@@ -119,34 +170,46 @@ export const AddressConfirmationModal: React.FC<Props> = ({
       <Modal.Header>Address validation</Modal.Header>
       <div className="border-top border-base-lighter margin-x-neg-205"></div>
       {getAlert()}
-      <p className="address__instructions">
-        Please select an option to continue:
-      </p>
-      <RadioGroup
-        name="addressSelect"
-        className="address__select margin-top-0"
-        buttons={[
-          {
-            value: "userAddress",
-            label: getLabel("Use address as entered", userEnteredAddress),
-          },
-          getSuggestedOption(),
-        ]}
-        selectedRadio={selectedAddress}
-        onChange={onChange}
-        onBlur={validate}
-        validationStatus={error ? "error" : undefined}
-        variant="tile"
-        errorMessage={error ? ERROR_MESSAGE : undefined}
-      />
+      {addressSuggestionConfig.map((address) => (
+        <RadioGroup
+          key={address.key}
+          name={`addressSelect-${address.key}`}
+          legend={address.label || "Please select an option to continue:"}
+          className="address__select margin-top-0"
+          buttons={[
+            {
+              value: "userAddress",
+              label: getLabel(
+                "Use address as entered",
+                address.userEnteredAddress
+              ),
+            },
+            getSuggestedOption(address.key),
+          ]}
+          selectedRadio={selectedAddress[address.key]}
+          onChange={(v: addressOptions) => onChange(address.key, v)}
+          onBlur={() => validate(address.key)}
+          validationStatus={error.has(address.key) ? "error" : undefined}
+          variant="tile"
+          errorMessage={error.has(address.key) ? ERROR_MESSAGE : undefined}
+        />
+      ))}
       <div className="margin-top-4">
         <div className="border-top border-base-lighter margin-bottom-2 margin-x-neg-205"></div>
         <Modal.Footer>
           <Button variant="unstyled" onClick={closeModal}>
             <FontAwesomeIcon icon={"arrow-left"} />
-            <span className="margin-left-1">Go back to edit address</span>
+            <span className="margin-left-1">
+              Go back to edit address{multipleAddresses ? "es" : ""}
+            </span>
           </Button>
-          <Button id="save-confirmed-address" onClick={onSave}>
+          <Button
+            id="save-confirmed-address"
+            onClick={onSave}
+            disabled={addressSuggestionConfig.some(
+              ({ key }) => !selectedAddress[key]
+            )}
+          >
             Save changes
           </Button>
         </Modal.Footer>

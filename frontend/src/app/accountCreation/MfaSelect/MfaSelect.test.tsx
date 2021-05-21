@@ -14,4 +14,11 @@ describe("MfaSelect", () => {
     fireEvent.click(smsRadio);
     expect(smsRadio).toBeChecked();
   });
+
+  it("requires an mfa option", () => {
+    fireEvent.click(screen.getByText("Continue"));
+    expect(
+      screen.getByText("Select an authentication option")
+    ).toBeInTheDocument();
+  });
 });

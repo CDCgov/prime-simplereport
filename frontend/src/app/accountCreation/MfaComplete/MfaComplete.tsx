@@ -1,6 +1,6 @@
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 
 export const MfaComplete = () => {
