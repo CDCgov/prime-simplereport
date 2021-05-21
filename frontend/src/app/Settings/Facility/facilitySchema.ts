@@ -104,7 +104,7 @@ export const allFacilityErrors: Required<FacilityErrors> = {
   id: "ID is missing",
   email: "Email is incorrectly formatted",
   city: "City is incorrectly formatted",
-  cliaNumber: "CLIA number is missing or incorrectly formatted",
+  cliaNumber: "CLIA number should be 10 characters (##D#######)",
   defaultDevice: "A default device must be selected",
   deviceTypes: "There must be at least one device",
   name: "Facility name is missing",
