@@ -253,7 +253,22 @@ resource "azurerm_application_gateway" "load_balancer" {
         reroute = true
       }
     }
+    rewrite_rule {
+      name          = "registration-link"
+      rule_sequence = 102
 
+      condition {
+        ignore_case = true
+        pattern     = "^/register/"
+        variable    = "var_uri_path"
+      }
+
+      url {
+        path    = "/app"
+        query_string = null
+        reroute = true
+      }
+    }
     rewrite_rule {
       name          = "HSTS"
       rule_sequence = 101
