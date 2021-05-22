@@ -167,11 +167,12 @@ resource "azurerm_application_gateway" "load_balancer" {
   }
 
   # ------- Routing -------------------------
+  # HTTP -> HTTPS redirect
   request_routing_rule {
     name                        = local.redirect_rule
     rule_type                   = "Basic"
     http_listener_name          = "${var.name}-http"
-    redirect_configuration_name = "${var.name}-redirect"
+    redirect_configuration_name = local.redirect_rule
   }
 
   redirect_configuration {
@@ -183,6 +184,7 @@ resource "azurerm_application_gateway" "load_balancer" {
     target_listener_name = local.https_listener
   }
 
+  # HTTPS path-based routing
   request_routing_rule {
     name                       = "${var.name}-routing-https"
     rule_type                  = "PathBasedRouting"
@@ -196,14 +198,16 @@ resource "azurerm_application_gateway" "load_balancer" {
     name                               = "${var.env}-urlmap"
     default_backend_address_pool_name  = local.static_backend_pool
     default_backend_http_settings_name = local.static_backend_https_setting
-    //    default_rewrite_rule_set_name      = "simple-report-routing"
+    default_rewrite_rule_set_name      = "simple-report-routing"
 
     path_rule {
       name                       = "api"
       paths                      = ["/api/*", "/api"]
       backend_address_pool_name  = local.api_backend_pool
       backend_http_settings_name = local.api_backend_https_setting
-      //      rewrite_rule_set_name      = "simple-report-routing"
+      // this is the default, why would we set it again?
+      // because if we don't do this we get 404s on API calls
+      rewrite_rule_set_name = "simple-report-routing"
     }
 
     path_rule {
@@ -214,32 +218,53 @@ resource "azurerm_application_gateway" "load_balancer" {
     }
   }
 
-  //  rewrite_rule_set {
-  //    name = "simple-report-routing"
-  //    rewrite_rule {
-  //      name          = "api-wildcard"
-  //      rule_sequence = 100
-  //
-  //      condition {
-  //        ignore_case = true
-  //        negate      = false
-  //        pattern     = ".*api/(.*)"
-  //        variable    = "var_uri_path"
-  //      }
-  //    }
-  //
-  //    rewrite_rule {
-  //      name          = "react-app"
-  //      rule_sequence = 105
-  //
-  //      condition {
-  //        ignore_case = true
-  //        negate      = false
-  //        pattern     = ".*app/(.*)"
-  //        variable    = "var_uri_path"
-  //      }
-  //    }
-  //  }
+  rewrite_rule_set {
+    name = "simple-report-routing"
+
+    rewrite_rule {
+      name          = "api-wildcard"
+      rule_sequence = 100
+      condition {
+        ignore_case = true
+        negate      = false
+        pattern     = ".*api/(.*)"
+        variable    = "var_uri_path"
+      }
+
+      url {
+        path    = "/{var_uri_path_1}"
+        reroute = false
+      }
+    }
+
+    rewrite_rule {
+      name          = "react-app"
+      rule_sequence = 105
+
+      condition {
+        ignore_case = true
+        negate      = false
+        pattern     = ".*app/(.*)"
+        variable    = "var_uri_path"
+      }
+
+      url {
+        path    = "/app"
+        reroute = true
+      }
+    }
+
+    rewrite_rule {
+      name          = "HSTS"
+      rule_sequence = 101
+
+      response_header_configuration {
+        header_name  = "Strict-Transport-Security"
+        header_value = "max-age=31536000"
+      }
+    }
+
+  }
 
   autoscale_configuration {
     min_capacity = var.autoscale_min
@@ -252,17 +277,6 @@ resource "azurerm_application_gateway" "load_balancer" {
   ]
 
   tags = var.tags
-
-  # Azure doesn't not support rewrite rules efficiently so they must be manually built out
-
-  lifecycle {
-    ignore_changes = [
-      identity,
-      rewrite_rule_set,
-      url_path_map,
-      request_routing_rule,
-    ]
-  }
 }
 
 // Gateway analytics
