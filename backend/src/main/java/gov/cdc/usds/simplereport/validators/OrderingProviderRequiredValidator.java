@@ -29,9 +29,7 @@ public class OrderingProviderRequiredValidator {
 
     return !(name == null
         || Strings.isEmpty(name.getFirstName())
-        || Strings.isEmpty(name.getMiddleName())
         || Strings.isEmpty(name.getLastName())
-        || Strings.isEmpty(name.getSuffix())
         || Strings.isEmpty(npi)
         || Strings.isEmpty(telephone));
   }
