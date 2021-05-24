@@ -232,8 +232,9 @@ resource "azurerm_application_gateway" "load_balancer" {
       }
 
       url {
-        path    = "/{var_uri_path_1}"
-        reroute = false
+        path         = "/{var_uri_path_1}"
+        reroute      = false
+        query_string = "{var_query_string}"
       }
     }
 
@@ -249,8 +250,9 @@ resource "azurerm_application_gateway" "load_balancer" {
       }
 
       url {
-        path    = "/app"
-        reroute = true
+        path         = "/app"
+        query_string = "{var_query_string}"
+        reroute      = true
       }
     }
     rewrite_rule {
@@ -264,9 +266,9 @@ resource "azurerm_application_gateway" "load_balancer" {
       }
 
       url {
-        path    = "/app"
-        query_string = null
-        reroute = true
+        path         = "/app"
+        query_string = "{var_query_string}"
+        reroute      = true
       }
     }
     rewrite_rule {
