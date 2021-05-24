@@ -60,6 +60,7 @@ const TestResultInputForm: React.FC<Props> = ({
           ]}
           name={`covid-test-result-${queueItemId}`}
           selectedRadio={testResultValue}
+          wrapperClassName="prime-radio__group"
         />
         <div className="prime-test-result-submit">
           <Button

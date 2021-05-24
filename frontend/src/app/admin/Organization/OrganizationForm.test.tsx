@@ -12,7 +12,7 @@ const devices: DeviceType[] = [
 
 const validFacility: Facility = {
   name: "Foo Facility",
-  cliaNumber: "some-number",
+  cliaNumber: "12D4567890",
   phone: "(202) 395-3080",
   street: "736 Jackson Pl NW",
   zipCode: "20503",
