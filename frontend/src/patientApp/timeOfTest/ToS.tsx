@@ -1,19 +1,21 @@
+import { Trans, useTranslation } from "react-i18next";
+
 function ToS() {
+  const { t } = useTranslation();
+
   return (
     <>
       <p>12/4/2020</p>
-      <p>
-        As a Testing Facility (Facility) or its user (Facility User) accessing
-        or using SimpleReport (Application) provided by the Centers for Disease
-        Control and Prevention (CDC) and the U.S.Department of Health and Human
-        Services (HHS), in a CDC cloud environment (&quot; CDC Platform&quot;),
-        you acknowledge and agree that you are solely responsible for and shall
-        abide by these Terms of Service, as well as any relevant sections of{" "}
-        <a href="https://www.cdc.gov/other/information.html">
-          CDC&#39;s Privacy Policies
-        </a>{" "}
-        (collectively, Terms).
-      </p>
+      <Trans
+        t={t}
+        parent="p"
+        i18nKey="terms.intro"
+        components={[
+          <a href="https://www.cdc.gov/other/information.html">
+            Privacy policy link text
+          </a>,
+        ]}
+      />
       <h2 id="scope">Scope</h2>
       <p>
         SimpleReport is a free tool that makes it easy for Coronavirus Disease
@@ -38,8 +40,8 @@ function ToS() {
         If you are using the Application on behalf of a Facility, you represent
         and warrant that you have authority to bind that Facility to the Terms
         and by accepting the Terms, you are doing so on behalf of that Facility
-        (and all references to &quot;you&quot; in the Terms refer to you and
-        that Facility). In order to access the Application, as part of the
+        (and all references to "you" in the Terms refer to you and that
+        Facility). In order to access the Application, as part of the
         registration process for the Application, and for your continued use of
         the Application, you may be required to provide certain information
         (such as identification or contact details). Any such information you
@@ -59,8 +61,8 @@ function ToS() {
         <li>Administrator User</li>
       </ul>
       <p>
-        Upon a Facility&#39;s registration (and on an ongoing basis, as needed),
-        the Facility must designate at least one user from the Facility as the
+        Upon a Facility's registration (and on an ongoing basis, as needed), the
+        Facility must designate at least one user from the Facility as the
         Administrator. This Administrator will have more detailed identity
         verification. Once the Administrator has their identity verified, the
         Administrator can add other Facility Users to the Application. The
@@ -73,7 +75,7 @@ function ToS() {
       <h3 id="privacy">Privacy</h3>
       <p>
         You may use the Application to search, display, analyze, retrieve, view
-        and otherwise ‘get &#39; information from data you are sending via the
+        and otherwise "get" information from data you are sending via the
         Application and the Platform.Please note that the data which you are
         sending via the Application may be subject to the Privacy Act of 1974,
         the Health Insurance Portability and Accountability Act of 1996 (HIPAA),
@@ -120,8 +122,8 @@ function ToS() {
         as needed for workflow, record keeping, and reporting purposes.All
         COVID-19 test results will be automatically reported to the appropriate
         STLT Public Health Agency based on both the testing facility ZIP code
-        and the Patient&#39; s ZIP code, including all relevant fields as
-        defined in the{" "}
+        and the Patient's ZIP code, including all relevant fields as defined in
+        the{" "}
         <a href="https://www.hhs.gov/sites/default/files/covid-19-laboratory-data-reporting-guidance.pdf">
           HHS COVID-19 Laboratory Reporting Requirements
         </a>
@@ -207,43 +209,42 @@ function ToS() {
       </p>
       <p>
         CDC reserves the right (though not the obligation) to: (1) refuse to
-        provide the Application to you, if it is CDC&#39;s opinion that use
-        violates any federal law or CDC policy; or (2) terminate or deny you
-        access to and use of all or part of the Application at any time for any
-        reason which in CDC&#39;s sole discretion it deems necessary, including
-        to prevent violation of federal law or CDC policy. You may petition CDC
-        to regain access to the Application through the support email address
-        provided by CDC for the Application. If CDC determines in its sole
-        discretion that the circumstances which led to the refusal to provide
-        the Application or terminate access to the Application no longer exist,
-        then CDC may restore your access. All provisions of these Terms, which
-        by their nature should survive termination, shall survive termination
-        including, without limitation, warranty disclaimers, and limitations of
-        liability.
+        provide the Application to you, if it is CDC's opinion that use violates
+        any federal law or CDC policy; or (2) terminate or deny you access to
+        and use of all or part of the Application at any time for any reason
+        which in CDC's sole discretion it deems necessary, including to prevent
+        violation of federal law or CDC policy. You may petition CDC to regain
+        access to the Application through the support email address provided by
+        CDC for the Application. If CDC determines in its sole discretion that
+        the circumstances which led to the refusal to provide the Application or
+        terminate access to the Application no longer exist, then CDC may
+        restore your access. All provisions of these Terms, which by their
+        nature should survive termination, shall survive termination including,
+        without limitation, warranty disclaimers, and limitations of liability.
       </p>
       <h3 id="intellectual-property-license-grant-and-restrictions-">
         Intellectual Property – License Grant and Restrictions.
       </h3>
       <p>
-        The Application provided to User are for User&#39;s use. User may not
+        The Application provided to User are for User's use. User may not
         modify, copy, distribute, transmit, display, perform, reproduce,
         publish, license, create derivative works from, transfer, or sell any
         information, software, products, or services obtained from CDC. Material
         provided by CDC are either owned by or the licensed property of the
-        United States Department of Health and Human Services (&quot;HHS&quot;)
-        and the Centers for Disease Control and Prevention (CDC). HHS/CDC grants
-        to you a limited, non-exclusive, non-transferable license to access the
+        United States Department of Health and Human Services ("HHS") and the
+        Centers for Disease Control and Prevention (CDC). HHS/CDC grants to you
+        a limited, non-exclusive, non-transferable license to access the
         Application in the United States for the uses set forth in these Terms.
       </p>
       <h3 id="disclaimer-of-warranties">Disclaimer of Warranties</h3>
       <p>
-        The Application Platform is provided &quot;as is&quot; and on an
-        &quot;as-available&quot; basis. While CDC will do its best to ensure the
-        service is available and functional at all times, CDC hereby disclaims
-        all warranties of any kind, express or implied, including without
-        limitation the warranties of merchantability, fitness for a particular
-        purpose, and non-infringement. CDC makes no warranty that data will be
-        error free or that access thereto will be continuous or uninterrupted.
+        The Application Platform is provided "as is" and on an "as-available"
+        basis. While CDC will do its best to ensure the service is available and
+        functional at all times, CDC hereby disclaims all warranties of any
+        kind, express or implied, including without limitation the warranties of
+        merchantability, fitness for a particular purpose, and non-infringement.
+        CDC makes no warranty that data will be error free or that access
+        thereto will be continuous or uninterrupted.
       </p>
       <h3 id="limitations-on-liability">Limitations on Liability</h3>
       <p>
@@ -274,13 +275,13 @@ function ToS() {
       <p>
         You agree to indemnify and hold harmless HHS, including CDC, its
         contractors, employees, agents, and the like, from and against any and
-        all claims and expenses, including attorney&#39;s fees, arising out of
-        your use of the Application, including but not limited to violation of
-        these Terms.
+        all claims and expenses, including attorney's fees, arising out of your
+        use of the Application, including but not limited to violation of these
+        Terms.
       </p>
       <h3 id="no-waiver-of-rights">No Waiver of Rights</h3>
       <p>
-        CDC&#39;s failure to exercise or enforce any right or provision of these
+        CDC's failure to exercise or enforce any right or provision of these
         Terms shall not constitute waiver of such right or provision.
       </p>
       <h3 id="data-analytics-and-monitoring-metrics">
@@ -290,11 +291,11 @@ function ToS() {
         While using the Application, certain general data analytics on the usage
         patterns and performance of the Application may be gathered and stored
         automatically to assist with design and development of the Application.
-        This general usage data is not linked to an individual&#39;s identity
-        but IP address and device information may be included. Transactions are
-        audited and stored for site monitoring, performance, and troubleshooting
-        and may be tied to the individual performing an activity. Any such data
-        will be maintained consistent with applicable federal laws.
+        This general usage data is not linked to an individual's identity but IP
+        address and device information may be included. Transactions are audited
+        and stored for site monitoring, performance, and troubleshooting and may
+        be tied to the individual performing an activity. Any such data will be
+        maintained consistent with applicable federal laws.
       </p>
     </>
   );
