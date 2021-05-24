@@ -2134,3 +2134,23 @@ databaseChangeLog:
                   replaceIfExists: true
                   fullDefinition: false
                   selectQuery: SELECT internal_id, created_at, created_by, updated_at, updated_by, is_deleted, organization_id, facility_id, race, gender, ethnicity, county, state, employed_in_healthcare, role, resident_congregate_setting, tribal_affiliation FROM ${database.defaultSchemaName}.person
+  - changeSet:
+      id: add-email-back-to-api-user-view
+      author: josh@skylight.digital
+      comment: Add a column for email address to api_user_no_phi_view
+      changes:
+        - createView:
+            viewName: api_user_no_phi_view
+            remarks: A subset of the api_user table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: SELECT internal_id, created_at, updated_at, last_seen, is_deleted, login_email FROM ${database.defaultSchemaName}.api_user
+            rollback:
+              - dropView:
+                  viewName: api_user_no_phi_view
+              - createView:
+                  viewName: api_user_no_phi_view
+                  remarks: A subset of the api_user table with columns containing PHI removed.
+                  replaceIfExists: true
+                  fullDefinition: false
+                  selectQuery: SELECT internal_id, created_at, updated_at, last_seen, is_deleted FROM ${database.defaultSchemaName}.api_user
