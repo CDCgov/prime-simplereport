@@ -77,8 +77,8 @@
     "e2e:chrome": "./e2e.sh chrome",
     "e2e:brave": "./e2e.sh brave",
     "eject": "craco eject",
-    "compile-scss": "sass --load-path=./src/scss --load-path=./node_modules/uswds/dist/scss --style=compressed --no-source-map -w ./src/scss/App.scss  ./src/styles/App.css",
-    "watch-css": "yarn compile-scss && sass --load-path=./src/scss --load-path=./node_modules/uswds/dist/scss --style=compressed --no-source-map -w src/scss/App.scss ./src/styles/App.css",
+    "compile-scss": "sass --load-path=src/scss --load-path=./node_modules/uswds/dist/scss --style=compressed --no-source-map src/styles/App.css",
+    "watch-css": "yarn compile-scss && sass --load-path=src/scss --load-path=./node_modules/uswds/dist/scss --style=compressed --no-source-map -w src/scss/App.scss src/styles/App.css",
     "create-storybook-public": "rm -rf ./strybook_public && cp -R ./public ./storybook_public && cp mockServiceWorker.js ./storybook_public",
     "storybook": "yarn create-storybook-public && yarn watch-css & start-storybook -p 6006 -s storybook_public",
     "build-storybook": "yarn create-storybook-public && yarn compile-scss && build-storybook -s storybook_public"
