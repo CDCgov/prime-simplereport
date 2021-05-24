@@ -30,7 +30,7 @@ public class OrderingProviderRequiredValidatorTest {
 
   @Test
   void orderingProvidersRequiredPositive() {
-    assertFalse(validator.isValid(boba, "1235904154", "503-867-5309", "NY"));
+    assertTrue(validator.isValid(boba, "1235904154", "503-867-5309", "NY"));
   }
 
   @Test
