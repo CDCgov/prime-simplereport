@@ -498,26 +498,84 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
               </fieldset>
             </div>
           </div>
-          <div
-            className="usa-form-group"
+          <label
+            className="usa-label"
+            data-testid="label"
+            htmlFor="meeting-time"
           >
-            <label
-              className="usa-label"
-              htmlFor="3"
-            >
-              Date of symptom onset
-            </label>
+            Date of symptom onset
+          </label>
+          <span
+            className="usa-hint"
+          >
+            mm/dd/yyyy
+          </span>
+          <div
+            className="usa-date-picker usa-date-picker--initialized maxw-mobile"
+            data-testid="date-picker"
+            onBlur={[Function]}
+            onKeyDown={[Function]}
+          >
             <input
-              aria-required="false"
-              className="usa-input"
-              id="3"
-              max="2399-01-01"
-              min="2020-02-01"
+              aria-hidden={true}
+              className="usa-input usa-sr-only usa-date-picker__internal-input"
+              data-testid="date-picker-internal-input"
+              disabled={false}
               name="symptom_onset"
-              onChange={[Function]}
-              type="date"
+              readOnly={true}
+              required={false}
+              tabIndex={-1}
+              type="text"
               value=""
             />
+            <div
+              className="usa-date-picker__wrapper"
+              tabIndex={-1}
+            >
+              <input
+                className="usa-input usa-date-picker__external-input"
+                data-testid="date-picker-external-input"
+                id="symptom_onset"
+                onBlur={[Function]}
+                onFocus={[Function]}
+                onInput={[Function]}
+                required={false}
+                type="text"
+                value=""
+              />
+              <button
+                aria-haspopup={true}
+                aria-label="Toggle calendar"
+                className="usa-date-picker__button"
+                data-testid="date-picker-button"
+                onClick={[Function]}
+                type="button"
+              >
+                 
+              </button>
+              <div
+                aria-modal="true"
+                className="usa-date-picker__calendar"
+                data-testid="date-picker-calendar"
+                hidden={true}
+                onKeyDown={[Function]}
+                onKeyUp={[Function]}
+                role="dialog"
+                style={
+                  Object {
+                    "top": "0px",
+                  }
+                }
+              />
+              <div
+                aria-live="polite"
+                className="usa-sr-only usa-date-picker__status"
+                data-testid="date-picker-status"
+                role="status"
+              >
+                
+              </div>
+            </div>
           </div>
         </fieldset>
       </div>
@@ -567,7 +625,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="4-val-YES"
+                      id="3-val-YES"
                       name="prior_test_flag"
                       onChange={[Function]}
                       type="radio"
@@ -575,7 +633,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="4-val-YES"
+                      htmlFor="3-val-YES"
                     >
                       Yes
                     </label>
@@ -588,7 +646,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="4-val-NO"
+                      id="3-val-NO"
                       name="prior_test_flag"
                       onChange={[Function]}
                       type="radio"
@@ -596,7 +654,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="4-val-NO"
+                      htmlFor="3-val-NO"
                     >
                       No
                     </label>
@@ -640,7 +698,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     className="usa-radio__input"
                     data-required="false"
                     disabled={false}
-                    id="5-val-77386006"
+                    id="4-val-77386006"
                     name="pregnancy"
                     onChange={[Function]}
                     type="radio"
@@ -648,7 +706,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                   />
                   <label
                     className="usa-radio__label"
-                    htmlFor="5-val-77386006"
+                    htmlFor="4-val-77386006"
                   >
                     Yes
                   </label>
@@ -661,7 +719,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     className="usa-radio__input"
                     data-required="false"
                     disabled={false}
-                    id="5-val-60001007"
+                    id="4-val-60001007"
                     name="pregnancy"
                     onChange={[Function]}
                     type="radio"
@@ -669,7 +727,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                   />
                   <label
                     className="usa-radio__label"
-                    htmlFor="5-val-60001007"
+                    htmlFor="4-val-60001007"
                   >
                     No
                   </label>
@@ -682,7 +740,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     className="usa-radio__input"
                     data-required="false"
                     disabled={false}
-                    id="5-val-261665006"
+                    id="4-val-261665006"
                     name="pregnancy"
                     onChange={[Function]}
                     type="radio"
@@ -690,7 +748,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                   />
                   <label
                     className="usa-radio__label"
-                    htmlFor="5-val-261665006"
+                    htmlFor="4-val-261665006"
                   >
                     Prefer not to answer
                   </label>

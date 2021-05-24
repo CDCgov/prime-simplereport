@@ -5,7 +5,7 @@ exports[`SearchResults should say 'No Results' for no matches 1`] = `
   className="card-container shadow-3 results-dropdown"
 >
   <div
-    className="usa-card__body"
+    className="usa-card__body results-dropdown__body"
   >
     <p>
       No results
@@ -19,7 +19,7 @@ exports[`SearchResults should show matching results 1`] = `
   className="card-container shadow-3 results-dropdown"
 >
   <div
-    className="usa-card__body"
+    className="usa-card__body results-dropdown__body"
   >
     <table
       className="usa-table usa-table--borderless"

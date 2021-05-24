@@ -90,7 +90,9 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
 
   const results = (
     <div className="card-container shadow-3 results-dropdown" ref={dropDownRef}>
-      <div className="usa-card__body">{resultsContent}</div>
+      <div className="usa-card__body results-dropdown__body">
+        {resultsContent}
+      </div>
     </div>
   );
 

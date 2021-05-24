@@ -8,5 +8,7 @@ jest.mock("@microsoft/applicationinsights-react-js", () => {
   return {
     useAppInsightsContext: jest.fn(),
     useTrackEvent: () => jest.fn(),
+    withAITracking: (reactPlugin, Component) => <Component />,
+    ReactPlugin: Object,
   };
 });
