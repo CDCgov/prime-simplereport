@@ -3,9 +3,7 @@ import { ToastContainer } from "react-toastify";
 import { useDispatch, connect, useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
-import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
 
-import { reactPlugin } from "../app/AppInsights";
 import PrimeErrorBoundary from "../app/PrimeErrorBoundary";
 import USAGovBanner from "../app/commonComponents/USAGovBanner";
 import { setInitialState } from "../app/store";
@@ -53,57 +51,55 @@ const PatientApp = () => {
   });
 
   return (
-    <AppInsightsContext.Provider value={reactPlugin}>
-      <PrimeErrorBoundary>
-        <div className="App">
-          <div id="main-wrapper">
-            <USAGovBanner />
-            <PatientHeader />
-            <PatientLinkURL404Wrapper plid={plid}>
-              <Router basename={`${process.env.PUBLIC_URL}/pxp`}>
-                <Switch>
-                  <Route path="/" exact component={TermsOfService} />
-                  <Route path="/terms-of-service" component={TermsOfService} />
-                  <Route path="/birth-date-confirmation" component={DOB} />
-                  <GuardedRoute
-                    auth={auth}
-                    path="/patient-info-confirm"
-                    component={PatientProfileContainer}
-                  />
-                  <GuardedRoute
-                    auth={auth}
-                    path="/patient-info-edit"
-                    component={PatientFormContainer}
-                  />
-                  <GuardedRoute
-                    auth={auth}
-                    path="/patient-info-symptoms"
-                    component={AoEPatientFormContainer}
-                  />
-                  <GuardedRoute
-                    auth={auth}
-                    path="/success"
-                    component={PatientLanding}
-                  />
-                  <GuardedRoute
-                    auth={auth}
-                    path="/test-result"
-                    component={TestResult}
-                  />
-                </Switch>
-              </Router>
-              <ToastContainer
-                autoClose={5000}
-                closeButton={false}
-                limit={2}
-                position="bottom-center"
-                hideProgressBar={true}
-              />
-            </PatientLinkURL404Wrapper>
-          </div>
+    <PrimeErrorBoundary>
+      <div className="App">
+        <div id="main-wrapper">
+          <USAGovBanner />
+          <PatientHeader />
+          <PatientLinkURL404Wrapper plid={plid}>
+            <Router basename={`${process.env.PUBLIC_URL}/pxp`}>
+              <Switch>
+                <Route path="/" exact component={TermsOfService} />
+                <Route path="/terms-of-service" component={TermsOfService} />
+                <Route path="/birth-date-confirmation" component={DOB} />
+                <GuardedRoute
+                  auth={auth}
+                  path="/patient-info-confirm"
+                  component={PatientProfileContainer}
+                />
+                <GuardedRoute
+                  auth={auth}
+                  path="/patient-info-edit"
+                  component={PatientFormContainer}
+                />
+                <GuardedRoute
+                  auth={auth}
+                  path="/patient-info-symptoms"
+                  component={AoEPatientFormContainer}
+                />
+                <GuardedRoute
+                  auth={auth}
+                  path="/success"
+                  component={PatientLanding}
+                />
+                <GuardedRoute
+                  auth={auth}
+                  path="/test-result"
+                  component={TestResult}
+                />
+              </Switch>
+            </Router>
+            <ToastContainer
+              autoClose={5000}
+              closeButton={false}
+              limit={2}
+              position="bottom-center"
+              hideProgressBar={true}
+            />
+          </PatientLinkURL404Wrapper>
         </div>
-      </PrimeErrorBoundary>
-    </AppInsightsContext.Provider>
+      </div>
+    </PrimeErrorBoundary>
   );
 };
 
