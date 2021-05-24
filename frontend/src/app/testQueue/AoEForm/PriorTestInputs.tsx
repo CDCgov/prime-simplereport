@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import moment from "moment";
+import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import {
   COVID_RESULTS,
@@ -8,7 +9,6 @@ import {
 } from "../../constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown, { Option } from "../../commonComponents/Dropdown";
-import TextInput from "../../commonComponents/TextInput";
 import Optional from "../../commonComponents/Optional";
 import Checkboxes from "../../commonComponents/Checkboxes";
 
@@ -56,15 +56,17 @@ const PriorTestInputs: React.FC<Props> = ({
   );
   const previousTestEntry = (
     <>
-      <TextInput
-        type="date"
-        label="Date of most recent test"
+      <Label htmlFor="prior_test_date">Date of most recent test</Label>
+      <span className="usa-hint">mm/dd/yyyy</span>
+      <DatePicker
+        className="maxw-mobile"
+        id="prior_test_date"
         name="prior_test_date"
-        value={priorTestDate || undefined}
-        onChange={(e) => setPriorTestDate(e.target.value)}
-        max={new Date().toISOString().split("T")[0]}
-        min="2020-02-01"
+        defaultValue={priorTestDate || undefined}
+        minDate="2020-02-01"
+        maxDate={new Date().toISOString().split("T")[0]}
         disabled={!lastTestDateKnown}
+        onChange={setPriorTestDate}
       />
       <Checkboxes
         legend="Date of most recent test unknown?"

@@ -94,6 +94,8 @@ interface Props {
   data: any;
   trackAction: () => void;
   refetch: () => void;
+  loading: boolean;
+  loadingTotalResults: boolean;
   page: number;
   entriesPerPage: number;
   totalEntries: number;
@@ -199,6 +201,8 @@ export const DetachedTestResultsList: any = ({
   refetch,
   page,
   entriesPerPage,
+  loading,
+  loadingTotalResults,
   totalEntries,
   setSelectedPatientId,
   facilityId,
@@ -298,10 +302,12 @@ export const DetachedTestResultsList: any = ({
             <div className="usa-card__header">
               <h2>
                 Test Results
-                <span className="sr-showing-results-on-page">
-                  Showing {Math.min(entriesPerPage, totalEntries)} of{" "}
-                  {totalEntries}
-                </span>
+                {!loadingTotalResults && (
+                  <span className="sr-showing-results-on-page">
+                    Showing {Math.min(entriesPerPage, totalEntries)} of{" "}
+                    {totalEntries}
+                  </span>
+                )}
               </h2>
               <div>
                 <Button
@@ -361,12 +367,16 @@ export const DetachedTestResultsList: any = ({
               </table>
             </div>
             <div className="usa-card__footer">
-              <Pagination
-                baseRoute="/results"
-                currentPage={page}
-                entriesPerPage={entriesPerPage}
-                totalEntries={totalEntries}
-              />
+              {loading ? (
+                <p>Loading...</p>
+              ) : (
+                <Pagination
+                  baseRoute="/results"
+                  currentPage={page}
+                  entriesPerPage={entriesPerPage}
+                  totalEntries={totalEntries}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -386,6 +396,7 @@ type OmittedProps =
   | "pageCount"
   | "entriesPerPage"
   | "totalEntries"
+  | "loadingTotalResults"
   | "facilityId"
   | "setSelectedPatientId";
 
@@ -424,7 +435,7 @@ const TestResultsList = (props: TestResultsListProps) => {
 
   const {
     data: totalResults,
-    loading,
+    loading: loadingTotalResults,
     error,
     refetch: refetchCount,
   } = useQuery(resultsCountQuery, {
@@ -436,14 +447,11 @@ const TestResultsList = (props: TestResultsListProps) => {
     return <div>"No facility selected"</div>;
   }
 
-  if (loading) {
-    return <p>Loading</p>;
-  }
   if (error) {
     throw error;
   }
 
-  const totalEntries = totalResults.testResultsCount;
+  const totalEntries = totalResults?.testResultsCount || 0;
 
   return (
     <QueryWrapper<Props>
@@ -453,9 +461,11 @@ const TestResultsList = (props: TestResultsListProps) => {
       }}
       onRefetch={refetchCount}
       Component={DetachedTestResultsList}
+      displayLoadingIndicator={false}
       componentProps={{
         ...props,
         page: pageNumber,
+        loadingTotalResults,
         totalEntries,
         entriesPerPage,
         setSelectedPatientId,
