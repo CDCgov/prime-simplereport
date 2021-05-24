@@ -20,6 +20,7 @@ interface Props<T> {
   legendSrOnly?: boolean;
   buttons: Options<T>;
   className?: string;
+  wrapperClassName?: string;
   required?: boolean;
   selectedRadio?: T | null;
   errorMessage?: React.ReactNode;
@@ -41,6 +42,7 @@ const RadioGroup = <T extends string>({
   errorMessage,
   buttons,
   className,
+  wrapperClassName,
   required,
   variant,
   hintText,
@@ -62,6 +64,7 @@ const RadioGroup = <T extends string>({
     <div
       className={classnames(
         "usa-form-group",
+        wrapperClassName,
         validationStatus === "error" && "usa-form-group--error"
       )}
     >
