@@ -230,21 +230,18 @@ public class OrganizationService {
       String providerNPI) {
     // for now, all new organizations have identity_verified = false by default
     Organization org = _repo.save(new Organization(name, externalId, false));
-    Provider orderingProvider =
-        _providerRepo.save(
-            new Provider(providerName, providerNPI, providerAddress, providerTelephone));
     Facility facility =
-        new Facility(
-            org,
+        createFacilityNoPermissions(
             testingFacilityName,
             cliaNumber,
             facilityAddress,
             phone,
             email,
-            orderingProvider,
-            deviceSpecimenTypes.getDefault(),
-            deviceSpecimenTypes.getFullList());
-    _facilityRepo.save(facility);
+            deviceSpecimenTypes,
+            providerName,
+            providerAddress,
+            providerTelephone,
+            providerNPI);
     _oktaRepo.createOrganization(org);
     _oktaRepo.createFacility(facility);
     return org;
@@ -272,8 +269,7 @@ public class OrganizationService {
   }
 
   @Transactional(readOnly = false)
-  @AuthorizationConfiguration.RequirePermissionEditFacility
-  public Facility createFacility(
+  private Facility createFacilityNoPermissions(
       String testingFacilityName,
       String cliaNumber,
       StreetAddress facilityAddress,
@@ -302,5 +298,31 @@ public class OrganizationService {
     facility = _facilityRepo.save(facility);
     _oktaRepo.createFacility(facility);
     return facility;
+  }
+
+  @Transactional(readOnly = false)
+  @AuthorizationConfiguration.RequirePermissionEditFacility
+  public Facility createFacility(
+      String testingFacilityName,
+      String cliaNumber,
+      StreetAddress facilityAddress,
+      String phone,
+      String email,
+      DeviceSpecimenTypeHolder deviceSpecimenTypes,
+      PersonName providerName,
+      StreetAddress providerAddress,
+      String providerTelephone,
+      String providerNPI) {
+    return createFacilityNoPermissions(
+        testingFacilityName,
+        cliaNumber,
+        facilityAddress,
+        phone,
+        email,
+        deviceSpecimenTypes,
+        providerName,
+        providerAddress,
+        providerTelephone,
+        providerNPI);
   }
 }
