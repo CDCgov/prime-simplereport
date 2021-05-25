@@ -424,6 +424,7 @@ exports[`App Render main screen 1`] = `
                   >
                     <a
                       href="https://simplereport.gov/support"
+                      onClick={[Function]}
                       target="none"
                     >
                       Support

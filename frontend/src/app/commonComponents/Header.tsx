@@ -324,7 +324,11 @@ const Header: React.FC<{}> = () => {
                   </li>
                   <li className="usa-sidenav__item">{facility.name}</li>
                   <li className="usa-sidenav__item navlink__support">
-                    <a href="https://simplereport.gov/support" target="none">
+                    <a
+                      href="https://simplereport.gov/support"
+                      target="none"
+                      onClick={() => trackSupport}
+                    >
                       Support
                     </a>
                   </li>
@@ -332,7 +336,7 @@ const Header: React.FC<{}> = () => {
                     <Button
                       variant="unstyled"
                       label=" Log out"
-                      onClick={() => trackSupport}
+                      onClick={logout}
                     />
                   </li>
                 </ul>
