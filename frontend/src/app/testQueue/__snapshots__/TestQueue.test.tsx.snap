@@ -9,7 +9,7 @@ exports[`TestQueue should render the test queue 1`] = `
       class="grid-container"
     >
       <div
-        class="grid-row position-relative"
+        class="position-relative"
       >
         <div
           class="prime-search-container"
