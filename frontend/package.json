@@ -178,5 +178,10 @@
   },
   "resolutions": {
     "@storybook/react/babel-loader": "8.1.0"
-  }
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js"
+    }
+}
 }
