@@ -7,4 +7,10 @@ module.exports = {
     "@storybook/preset-create-react-app",
     "storybook-addon-apollo-client",
   ],
+  webpackFinal: (config) => {
+    config.resolve.alias[
+      "@microsoft/applicationinsights-react-js"
+    ] = require.resolve("../src/stories/__mocks__/appInsights.js");
+    return config;
+  },
 };

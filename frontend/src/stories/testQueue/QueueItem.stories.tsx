@@ -1,20 +1,34 @@
 import { Story, Meta } from "@storybook/react";
 
 import QueueItem, { QueueItemProps } from "../../app/testQueue/QueueItem";
+import { getMocks, StoryGraphQLProvider } from "../storyMocks";
 
 export default {
   title: "App/Test Queue/Queue Item",
   component: QueueItem,
-  parameters: { layout: "fullscreen" },
+  parameters: {
+    layout: "fullscreen",
+    msw: getMocks(
+      "EditQueueItem",
+      "SubmitTestResults",
+      "GetPatientsLastResult",
+      "SendPatientLinkSms",
+      "UpdateAOE",
+      "RemovePatientFromQueue"
+    ),
+  },
+  decorators: [
+    (Story) => (
+      <StoryGraphQLProvider>
+        <Story />
+      </StoryGraphQLProvider>
+    ),
+  ],
   argTypes: {},
   args: {},
 } as Meta;
 
-const Template: Story<QueueItemProps> = (args) => (
-  <div className="margin-top-3">
-    <QueueItem {...args} />
-  </div>
-);
+const Template: Story<QueueItemProps> = (args) => <QueueItem {...args} />;
 
 const defaultProps: QueueItemProps = {
   internalId: "abc-123",

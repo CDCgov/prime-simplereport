@@ -1,6 +1,9 @@
-import { MockedProvider } from "@apollo/client/testing";
-
+import { addDecorator } from "@storybook/react";
+import { initializeWorker, mswDecorator } from "msw-storybook-addon";
 import "../src/styles/App.css";
+
+initializeWorker();
+addDecorator(mswDecorator);
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -26,8 +29,5 @@ export const parameters = {
       color: /(background|color)$/i,
       date: /Date$/,
     },
-  },
-  apolloClient: {
-    MockedProvider,
   },
 };
