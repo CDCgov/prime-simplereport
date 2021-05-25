@@ -6,6 +6,7 @@ import {
   isValidCLIANumber,
   stateRequiresCLIANumberValidation,
 } from "../../utils/clia";
+import { requiresOrderProvider } from "../../utils/state";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -19,12 +20,32 @@ export type RequiredFacilityFields = PartialBy<
 type RequiredProviderFields = Nullable<Partial<Provider>>;
 
 const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
-  firstName: yup.string().nullable(),
+  firstName: yup
+    .string()
+    .when("state", (state: string, schema: yup.StringSchema) => {
+      return requiresOrderProvider(state)
+        ? schema.required()
+        : schema.nullable();
+    }),
   middleName: yup.string().nullable(),
-  lastName: yup.string().nullable(),
+  lastName: yup
+    .string()
+    .when("state", (state: string, schema: yup.StringSchema) => {
+      return requiresOrderProvider(state)
+        ? schema.required()
+        : schema.nullable();
+    }),
   suffix: yup.string().nullable(),
-  NPI: yup.string().nullable(),
-  phone: yup.string().nullable(),
+  NPI: yup.string().when("state", (state: string, schema: yup.StringSchema) => {
+    return requiresOrderProvider(state) ? schema.required() : schema.nullable();
+  }),
+  phone: yup
+    .string()
+    .when("state", (state: string, schema: yup.StringSchema) => {
+      return requiresOrderProvider(state)
+        ? schema.required()
+        : schema.nullable();
+    }),
   street: yup.string().nullable(),
   streetTwo: yup.string().nullable(),
   city: yup.string().nullable(),
@@ -98,7 +119,7 @@ export type FacilityErrors = Partial<
 >;
 
 const orderingProviderFormatError = (field: string) =>
-  `"Ordering provider ${field} is incorrectly formatted"`;
+  `Ordering provider ${field} is incorrectly formatted`;
 
 export const allFacilityErrors: Required<FacilityErrors> = {
   id: "ID is missing",
