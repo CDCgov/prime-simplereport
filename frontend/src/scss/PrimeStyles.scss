@@ -628,8 +628,8 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   }
 
   .usa-nav__primary {
-    .usa-nav__primary-item {
-      a {
+    > .usa-nav__primary-item {
+      > a {
         border-right: 1px solid color($theme-color-prime-gray-light);
         font-size: size("heading", "lg");
         font-weight: normal;
@@ -640,7 +640,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
         }
       }
 
-      &:first-child a {
+      &:first-child > a {
         border-left: 1px solid color($theme-color-prime-gray-light);
       }
     }
@@ -686,7 +686,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 }
 
 .prime-sidenav_inset {
-  padding: 0 0 13px 23px;
+  padding-left: units(2);
   color: black;
 
   li {
@@ -713,34 +713,58 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 .prime-staff-infobox {
   position: absolute;
-  right: 5.5em;
+  right: 73px;
   width: auto !important;
-  border: 1px solid #888;
+  border: 1px solid color("base-lighter");
   border-radius: 0.5rem;
   background-color: white; /* seems like this should be a theme */
   z-index: 10;
   visibility: hidden;
 
-  ul {
-    padding: 23px;
+  // ul {
+  //   padding: 23px;
+  // }
+  .usa-sidenav__sublist {
+    margin: units(2.5);
   }
 
   li {
     border-top-color: transparent;
-    padding: 7px;
+    margin-top: units(1);
   }
 
   /* Anchor in menu is rendered as a styled button. parent Nav forces it to look non-standard */
   button {
-    text-decoration: underline;
     color: #069;
+    font-weight: font-weight("normal");
+    text-decoration: underline;
+
+    @include at-media("desktop") {
+      font-size: size("body", "xs");
+      padding: 0;
+    }
   }
 
   &-sidemenu {
-    padding: 13px;
+    // padding: 13px;
 
     li {
       border-color: transparent;
+    }
+  }
+}
+
+.navlink__support {
+  @include at-media("desktop") {
+    // border-top: 1px solid color("base-lighter");
+    margin-top: units(2.5) !important;
+  }
+
+  a {
+    text-decoration: underline !important;
+
+    @include at-media("desktop") {
+      padding-left: 0;
     }
   }
 }

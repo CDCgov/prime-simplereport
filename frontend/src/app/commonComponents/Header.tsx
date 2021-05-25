@@ -188,12 +188,16 @@ const Header: React.FC<{}> = () => {
                   </span>
                 </li>
                 <li className="usa-sidenav__item">{facility.name}</li>
-                <li className="usa-sidenav__item">
-                  <Button variant="unstyled" label="Log out" onClick={logout} />
-                </li>
               </ul>
             </li>
-
+            <div>
+              <div className="navlink__support">
+                <a href="https://simplereport.gov/support" target="none">
+                  Support
+                </a>
+              </div>
+              <Button variant="unstyled" label="Log out" onClick={logout} />
+            </div>
             {canViewSettings ? (
               <li className="usa-nav__primary-item prime-settings-hidden">
                 <LinkWithQuery
@@ -308,7 +312,12 @@ const Header: React.FC<{}> = () => {
                     </span>
                   </li>
                   <li className="usa-sidenav__item">{facility.name}</li>
-                  <li className="usa-sidenav__item">
+                  <li className="usa-sidenav__item navlink__support">
+                    <a href="https://simplereport.gov/support" target="none">
+                      Support
+                    </a>
+                  </li>
+                  <li className="usa-sidenav__item margin-top-2">
                     <Button
                       variant="unstyled"
                       label=" Log out"
