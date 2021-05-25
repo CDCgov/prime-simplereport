@@ -32,8 +32,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service for fetching the device-type reference list (<i>not</i> the device types available for a
- * specific facility or organization).
+ * Service for fetching the device-type reference list (<i>not</i> the device
+ * types available for a specific facility or organization).
  */
 @Service
 @Transactional(readOnly = false)
@@ -54,16 +54,9 @@ public class TestOrderService {
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
 
-  public TestOrderService(
-      OrganizationService os,
-      DeviceTypeService dts,
-      TestOrderRepository repo,
-      PatientAnswersRepository parepo,
-      TestEventRepository terepo,
-      PersonService ps,
-      PatientLinkService pls,
-      SmsService smss,
-      CurrentPatientContextHolder patientContext) {
+  public TestOrderService(OrganizationService os, DeviceTypeService dts, TestOrderRepository repo,
+      PatientAnswersRepository parepo, TestEventRepository terepo, PersonService ps, PatientLinkService pls,
+      SmsService smss, CurrentPatientContextHolder patientContext) {
     _patientContext = patientContext;
     _os = os;
     _ps = ps;
@@ -95,8 +88,7 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
-  public List<TestEvent> getTestEventsResultsByPatient(
-      UUID patientId, int pageOffset, int pageSize) {
+  public List<TestEvent> getTestEventsResultsByPatient(UUID patientId, int pageOffset, int pageSize) {
     return _terepo.getTestEventResultsByPatient(patientId, PageRequest.of(pageOffset, pageSize));
   }
 
@@ -114,7 +106,8 @@ public class TestOrderService {
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListForPatient
   public List<TestEvent> getTestResults(Person patient) {
-    // NOTE: this may change. do we really want to limit visible test results to only
+    // NOTE: this may change. do we really want to limit visible test results to
+    // only
     // tests performed at accessible facilities?
     return _terepo.findAllByPatientAndFacilities(patient, _os.getAccessibleFacilities());
   }
@@ -127,15 +120,12 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   public TestOrder getTestOrder(Organization org, UUID id) {
-    return _repo
-        .fetchQueueItemByOrganizationAndId(org, id)
-        .orElseThrow(TestOrderService::noSuchOrderFound);
+    return _repo.fetchQueueItemByOrganizationAndId(org, id).orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
   @Deprecated // switch to specifying device-specimen combo
-  public TestOrder editQueueItem(
-      UUID testOrderId, String deviceId, String result, Date dateTested) {
+  public TestOrder editQueueItem(UUID testOrderId, String deviceId, String result, Date dateTested) {
     TestOrder order = this.getTestOrder(testOrderId);
 
     if (deviceId != null) {
@@ -151,14 +141,11 @@ public class TestOrderService {
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Deprecated // switch to using device specimen ID, using methods that ... don't exist yet!
-  public TestOrder addTestResult(
-      String deviceID, TestResult result, UUID patientId, Date dateTested)
-      throws NumberParseException {
+  public TestOrder addTestResult(String deviceID, TestResult result, UUID patientId, Date dateTested) {
     DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
-    TestOrder order =
-        _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
+    TestOrder order = _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
     order.setDeviceSpecimen(deviceSpecimen);
     order.setResult(result);
     order.setDateTestedBackdate(dateTested);
@@ -170,31 +157,27 @@ public class TestOrderService {
     order.setTestEventRef(testEvent);
     TestOrder savedOrder = _repo.save(order);
 
-    if (TestResultDeliveryPreference.SMS
-        == _ps.getPatientPreferences(person).getTestResultDelivery()) {
-      // After adding test result, create a new patient link and text it to the patient
+    if (TestResultDeliveryPreference.SMS == _ps.getPatientPreferences(person).getTestResultDelivery()) {
+      // After adding test result, create a new patient link and text it to the
+      // patient
       PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
       UUID internalId = patientLink.getInternalId();
-      _smss.sendToPatientLink(
-          internalId, "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
       savedOrder.setPatientLink(patientLink);
+      try {
+        _smss.sendToPatientLink(internalId,
+            "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
+      } catch (NumberParseException npe) {
+
+      }
     }
 
     return savedOrder;
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
-  public TestOrder addPatientToQueue(
-      UUID facilityId,
-      Person patient,
-      String pregnancy,
-      Map<String, Boolean> symptoms,
-      Boolean firstTest,
-      LocalDate priorTestDate,
-      String priorTestType,
-      TestResult priorTestResult,
-      LocalDate symptomOnsetDate,
-      Boolean noSymptoms) {
+  public TestOrder addPatientToQueue(UUID facilityId, Person patient, String pregnancy, Map<String, Boolean> symptoms,
+      Boolean firstTest, LocalDate priorTestDate, String priorTestType, TestResult priorTestResult,
+      LocalDate symptomOnsetDate, Boolean noSymptoms) {
     // Check if there is an existing queue entry for the patient. If there is one,
     // throw an exception.
     // If there is more than one, we throw a different exception: handling that case
@@ -203,32 +186,19 @@ public class TestOrderService {
     // an exception either way)
     Optional<TestOrder> existingOrder = _repo.fetchQueueItem(_os.getCurrentOrganization(), patient);
     if (existingOrder.isPresent()) {
-      throw new IllegalGraphqlArgumentException(
-          "Cannot create multiple queue entries for the same patient");
+      throw new IllegalGraphqlArgumentException("Cannot create multiple queue entries for the same patient");
     }
     Facility testFacility = _os.getFacilityInCurrentOrg(facilityId);
-    if (!patient
-            .getOrganization()
-            .getInternalId()
-            .equals(testFacility.getOrganization().getInternalId())
-        || (patient.getFacility() != null
-            && !patient.getFacility().getInternalId().equals(facilityId))) {
+    if (!patient.getOrganization().getInternalId().equals(testFacility.getOrganization().getInternalId())
+        || (patient.getFacility() != null && !patient.getFacility().getInternalId().equals(facilityId))) {
       throw new IllegalGraphqlArgumentException(
           "Cannot add patient to this queue: patient's facility and/or organization "
               + "are incompatible with facility of queue");
     }
     TestOrder newOrder = new TestOrder(patient, testFacility);
 
-    AskOnEntrySurvey survey =
-        new AskOnEntrySurvey(
-            pregnancy,
-            symptoms,
-            noSymptoms,
-            symptomOnsetDate,
-            firstTest,
-            priorTestDate,
-            priorTestType,
-            priorTestResult);
+    AskOnEntrySurvey survey = new AskOnEntrySurvey(pregnancy, symptoms, noSymptoms, symptomOnsetDate, firstTest,
+        priorTestDate, priorTestType, priorTestResult);
     PatientAnswers answers = new PatientAnswers(survey);
     _parepo.save(answers);
     newOrder.setAskOnEntrySurvey(answers);
@@ -239,39 +209,17 @@ public class TestOrderService {
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForPatient
-  public void updateTimeOfTestQuestions(
-      UUID patientId,
-      String pregnancy,
-      Map<String, Boolean> symptoms,
-      Boolean firstTest,
-      LocalDate priorTestDate,
-      String priorTestType,
-      TestResult priorTestResult,
-      LocalDate symptomOnsetDate,
-      Boolean noSymptoms) {
+  public void updateTimeOfTestQuestions(UUID patientId, String pregnancy, Map<String, Boolean> symptoms,
+      Boolean firstTest, LocalDate priorTestDate, String priorTestType, TestResult priorTestResult,
+      LocalDate symptomOnsetDate, Boolean noSymptoms) {
     TestOrder order = retrieveTestOrder(patientId);
 
-    updateTimeOfTest(
-        order,
-        pregnancy,
-        symptoms,
-        firstTest,
-        priorTestDate,
-        priorTestType,
-        priorTestResult,
-        symptomOnsetDate,
-        noSymptoms);
+    updateTimeOfTest(order, pregnancy, symptoms, firstTest, priorTestDate, priorTestType, priorTestResult,
+        symptomOnsetDate, noSymptoms);
   }
 
-  private void updateTimeOfTest(
-      TestOrder order,
-      String pregnancy,
-      Map<String, Boolean> symptoms,
-      Boolean firstTest,
-      LocalDate priorTestDate,
-      String priorTestType,
-      TestResult priorTestResult,
-      LocalDate symptomOnsetDate,
+  private void updateTimeOfTest(TestOrder order, String pregnancy, Map<String, Boolean> symptoms, Boolean firstTest,
+      LocalDate priorTestDate, String priorTestType, TestResult priorTestResult, LocalDate symptomOnsetDate,
       Boolean noSymptoms) {
     PatientAnswers answers = order.getAskOnEntrySurvey();
     AskOnEntrySurvey survey = answers.getSurvey();
@@ -327,8 +275,7 @@ public class TestOrderService {
 
     // generate a duplicate test_event that just has a status of REMOVED and the
     // reason
-    TestEvent newRemoveEvent =
-        new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
+    TestEvent newRemoveEvent = new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
     _terepo.save(newRemoveEvent);
 
     // order having reason text is way more useful when we allow actual corrections
@@ -360,25 +307,11 @@ public class TestOrderService {
   }
 
   // IMPLICITLY AUTHORIZED
-  public void updateMyTimeOfTestQuestions(
-      String pregnancy,
-      Map<String, Boolean> symptoms,
-      boolean firstTest,
-      LocalDate priorTestDate,
-      String priorTestType,
-      TestResult priorTestResult,
-      LocalDate symptomOnset,
+  public void updateMyTimeOfTestQuestions(String pregnancy, Map<String, Boolean> symptoms, boolean firstTest,
+      LocalDate priorTestDate, String priorTestType, TestResult priorTestResult, LocalDate symptomOnset,
       boolean noSymptoms) {
-    updateTimeOfTest(
-        _patientContext.getLinkedOrder(),
-        pregnancy,
-        symptoms,
-        firstTest,
-        priorTestDate,
-        priorTestType,
-        priorTestResult,
-        symptomOnset,
-        noSymptoms);
+    updateTimeOfTest(_patientContext.getLinkedOrder(), pregnancy, symptoms, firstTest, priorTestDate, priorTestType,
+        priorTestResult, symptomOnset, noSymptoms);
   }
 
   private static IllegalGraphqlArgumentException noSuchOrderFound() {
