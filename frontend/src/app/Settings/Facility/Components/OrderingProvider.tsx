@@ -1,6 +1,7 @@
 import React from "react";
 
 import { stateCodes } from "../../../../config/constants";
+import { requiresOrderProvider } from "../../../utils/state"
 import Dropdown from "../../../commonComponents/Dropdown";
 import TextInput from "../../../commonComponents/TextInput";
 
@@ -15,6 +16,9 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
   ) => {
     updateProvider({ ...provider, [e.target.name]: e.target.value });
   };
+
+  const isRequired = requiresOrderProvider(provider.state || "");
+
   return (
     <div className="prime-container card-container">
       <div className="usa-card__header">
@@ -24,6 +28,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
         <TextInput
           label="First name"
           name="firstName"
+          required={isRequired}
           value={provider.firstName || ""}
           onChange={onChange}
         />
@@ -36,6 +41,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
         <TextInput
           label="Last name"
           name="lastName"
+          required={isRequired}
           value={provider.lastName || ""}
           onChange={onChange}
         />
@@ -48,12 +54,14 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
         <TextInput
           label="NPI"
           name="NPI"
+          required={isRequired}
           value={provider.NPI || ""}
           onChange={onChange}
         />
         <TextInput
           label="Phone number"
           name="phone"
+          required={isRequired}
           value={provider.phone || ""}
           onChange={onChange}
         />
