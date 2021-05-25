@@ -242,7 +242,7 @@ exports[`App Render main screen 1`] = `
               >
                 <a
                   href="https://simplereport.gov/support"
-                  onClick={[Function]}
+                  onClick={[MockFunction]}
                   target="none"
                 >
                   Support
@@ -424,7 +424,7 @@ exports[`App Render main screen 1`] = `
                   >
                     <a
                       href="https://simplereport.gov/support"
-                      onClick={[Function]}
+                      onClick={[MockFunction]}
                       target="none"
                     >
                       Support
