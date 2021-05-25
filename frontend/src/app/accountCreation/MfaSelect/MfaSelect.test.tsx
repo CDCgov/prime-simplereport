@@ -116,7 +116,7 @@ describe("MfaSelect routing", () => {
     expect(emailRadio).toBeChecked();
     fireEvent.click(continueButton);
     expect(
-      screen.getByText("Get your security code via email")
+      screen.getByText("Get your security code via email.")
     ).toBeInTheDocument();
   });
 
