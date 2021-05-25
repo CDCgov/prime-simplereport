@@ -21,7 +21,7 @@ import { TrainingNotification } from "./TrainingNotification";
 
 const Header: React.FC<{}> = () => {
   const appInsights = useAppInsightsContext();
-  const trackSupport = useTrackEvent(appInsights, "Support", null, false);
+  const trackSupport = useTrackEvent(appInsights, "Support", {});
 
   const organization = useSelector(
     (state) => (state as any).organization as Organization
