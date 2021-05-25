@@ -9,7 +9,6 @@ import USAGovBanner from "../commonComponents/USAGovBanner";
 import { RootState, setInitialState } from "../store";
 import { getActivationTokenFromUrl } from "../utils/url";
 import PageNotFound from "../commonComponents/PageNotFound";
-import { MfaPhone } from "../login/MfaPhone/MfaPhone";
 
 import { PasswordForm } from "./PasswordForm/PasswordForm";
 import { SecurityQuestion } from "./SecurityQuestion/SecurityQuestion";
@@ -21,6 +20,9 @@ import { MfaGoogleAuth } from "./MfaGoogleAuth/MfaGoogleAuth";
 import { MfaSecurityKey } from "./MfaSecurityKey/MfaSecurityKey";
 import { MfaSmsVerify } from "./MfaSmsVerify/MfaSmsVerify";
 import { MfaEmail } from "./MfaEmail/MfaEmail";
+import { MfaEmailVerify } from "./MfaEmailVerify/MfaEmailVerify";
+import { MfaPhone } from "./MfaPhone/MfaPhone";
+import { MfaPhoneVerify } from "./MfaPhoneVerify/MfaPhoneVerify";
 
 interface WrapperProps {
   activationToken: string;
@@ -72,7 +74,9 @@ const AccountCreationApp = () => {
                 <Route path="/mfa-okta-verify" component={MfaOktaVerify} />
                 <Route path="/mfa-google-auth" component={MfaGoogleAuth} />
                 <Route path="/mfa-security-key" component={MfaSecurityKey} />
+                <Route path="/mfa-phone/verify" component={MfaPhoneVerify} />
                 <Route path="/mfa-phone" component={MfaPhone} />
+                <Route path="/mfa-email/verify" component={MfaEmailVerify} />
                 <Route path="/mfa-email" component={MfaEmail} />
                 <Route path="/success" component={MfaComplete} />
               </Switch>

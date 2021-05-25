@@ -6,7 +6,9 @@ export default {
   title: "App/Account set up/Step 3b: Verify Email security code",
   component: MfaEmailVerify,
   argTypes: {},
-  args: { email: "foo@bar.com" },
+  args: {
+    location: { state: { email: "foo@bar.com" } },
+  },
 } as Meta;
 
 type Props = React.ComponentProps<typeof MfaEmailVerify>;

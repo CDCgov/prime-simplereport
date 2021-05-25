@@ -26,13 +26,13 @@ describe("Verify SMS MFA", () => {
       <MemoryRouter
         initialEntries={[
           {
-            pathname: "/mfa-sms-verify",
+            pathname: "/mfa-sms/verify",
             state: { phoneNumber: "(530) 867-5309" },
           },
         ]}
       >
         <Switch>
-          <Route path="/mfa-sms-verify" component={MfaSmsVerify} />
+          <Route path="/mfa-sms/verify" component={MfaSmsVerify} />
           <Route path="/success" component={MfaComplete} />
         </Switch>
       </MemoryRouter>
