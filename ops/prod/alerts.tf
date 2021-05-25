@@ -11,7 +11,6 @@ module "metric_alerts" {
   mem_threshold = 80
 
   action_group_ids = [
-    data.terraform_remote_state.global.outputs.slack_alert_action_id,
     data.terraform_remote_state.global.outputs.pagerduty_prod_action_id
   ]
 
