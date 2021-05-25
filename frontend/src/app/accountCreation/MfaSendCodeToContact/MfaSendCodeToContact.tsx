@@ -9,9 +9,10 @@ import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 import { phoneNumberIsValid } from "../../patients/personSchema";
 import { emailIsValid } from "../../utils/email";
+import { capitalizeText } from "../../utils/text";
 
 interface Props {
-  type: "phone number" | "email";
+  type: "phone number" | "email address";
   serviceEnroll: Function;
   cardText: string;
   cardHint?: string;
@@ -32,6 +33,7 @@ export const MfaSendCodeToContact = (props: Props) => {
     let error = "";
     if (!contact) {
       error = `Enter your ${props.type}`;
+      setContactError(error);
       return false;
     }
 
@@ -106,9 +108,11 @@ export const MfaSendCodeToContact = (props: Props) => {
           <p className="usa-hint font-ui-2xs">{props.cardHint}</p>
         ) : null}
         <TextInput
-          label={"Phone number"}
-          name={"phone-number"}
-          type={"tel"}
+          label={capitalizeText(props.type)}
+          name={
+            props.type === "email address" ? "email-address" : "phone-number"
+          }
+          type={props.type === "email address" ? "email" : "tel"}
           required
           value={contact}
           errorMessage={contactError}

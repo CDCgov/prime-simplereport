@@ -4,7 +4,7 @@ import { MfaSendCodeToContact } from "../MfaSendCodeToContact/MfaSendCodeToConta
 export const MfaEmail = () => {
   return (
     <MfaSendCodeToContact
-      type="email"
+      type="email address"
       cardText="Get your security code via email"
       serviceEnroll={AccountCreationApi.enrollEmailMfa}
     />
