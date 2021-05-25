@@ -600,7 +600,7 @@ interface Person extends PersonUpdate {
   firstName: string;
   middleName: string;
   lastName: string;
-  birthDate: string;
+  birthDate: Date;
 }
 
 interface PersonUpdateFormData extends PersonUpdate {

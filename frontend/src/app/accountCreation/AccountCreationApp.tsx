@@ -3,9 +3,7 @@ import { ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
-import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
 
-import { reactPlugin } from "../AppInsights";
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import USAGovBanner from "../commonComponents/USAGovBanner";
 import { RootState, setInitialState } from "../store";
@@ -55,43 +53,41 @@ const AccountCreationApp = () => {
   }, [dispatch]);
 
   return (
-    <AppInsightsContext.Provider value={reactPlugin}>
-      <PrimeErrorBoundary>
-        <div className="App">
-          <div id="main-wrapper">
-            <USAGovBanner />
-            <AccountCreation404Wrapper activationToken={activationToken}>
-              <Router basename={`${process.env.PUBLIC_URL}/uac`}>
-                <Switch>
-                  <Route path="/" exact component={PasswordForm} />
-                  <Route path="/set-password" component={PasswordForm} />
-                  <Route
-                    path="/set-recovery-question"
-                    component={SecurityQuestion}
-                  />
-                  <Route path="/mfa-select" component={MfaSelect} />
-                  <Route path="/mfa-sms/verify" component={MfaSmsVerify} />
-                  <Route path="/mfa-sms" component={MfaSms} />
-                  <Route path="/mfa-okta-verify" component={MfaOktaVerify} />
-                  <Route path="/mfa-google-auth" component={MfaGoogleAuth} />
-                  <Route path="/mfa-security-key" component={MfaSecurityKey} />
-                  <Route path="/mfa-phone" component={MfaPhone} />
-                  <Route path="/mfa-email" component={MfaEmail} />
-                  <Route path="/success" component={MfaComplete} />
-                </Switch>
-              </Router>
-              <ToastContainer
-                autoClose={5000}
-                closeButton={false}
-                limit={2}
-                position="bottom-center"
-                hideProgressBar={true}
-              />
-            </AccountCreation404Wrapper>
-          </div>
+    <PrimeErrorBoundary>
+      <div className="App">
+        <div id="main-wrapper">
+          <USAGovBanner />
+          <AccountCreation404Wrapper activationToken={activationToken}>
+            <Router basename={`${process.env.PUBLIC_URL}/uac`}>
+              <Switch>
+                <Route path="/" exact component={PasswordForm} />
+                <Route path="/set-password" component={PasswordForm} />
+                <Route
+                  path="/set-recovery-question"
+                  component={SecurityQuestion}
+                />
+                <Route path="/mfa-select" component={MfaSelect} />
+                <Route path="/mfa-sms/verify" component={MfaSmsVerify} />
+                <Route path="/mfa-sms" component={MfaSms} />
+                <Route path="/mfa-okta-verify" component={MfaOktaVerify} />
+                <Route path="/mfa-google-auth" component={MfaGoogleAuth} />
+                <Route path="/mfa-security-key" component={MfaSecurityKey} />
+                <Route path="/mfa-phone" component={MfaPhone} />
+                <Route path="/mfa-email" component={MfaEmail} />
+                <Route path="/success" component={MfaComplete} />
+              </Switch>
+            </Router>
+            <ToastContainer
+              autoClose={5000}
+              closeButton={false}
+              limit={2}
+              position="bottom-center"
+              hideProgressBar={true}
+            />
+          </AccountCreation404Wrapper>
         </div>
-      </PrimeErrorBoundary>
-    </AppInsightsContext.Provider>
+      </div>
+    </PrimeErrorBoundary>
   );
 };
 
