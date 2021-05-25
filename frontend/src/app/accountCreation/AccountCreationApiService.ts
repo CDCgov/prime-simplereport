@@ -37,23 +37,23 @@ export class AccountCreationApi {
     });
   }
 
-  static setRecoveryQuestion(recoveryQuestion: string, recoveryAnswer: string) {
+  static setRecoveryQuestion(question: string, answer: string) {
     return request("/set-recovery-question", {
-      recoveryQuestion,
-      recoveryAnswer,
+      question,
+      answer,
     });
   }
 
   static enrollSmsMfa(phone: string) {
-    return request("/enroll-sms-mfa", { phone });
+    return request("/enroll-sms-mfa", { userInput: phone });
   }
 
   static enrollVoiceCallMfa(phone: string) {
-    return request("/enroll-voice-call-mfa", { phone });
+    return request("/enroll-voice-call-mfa", { userInput: phone });
   }
 
   static enrollEmailMfa(email: string) {
-    return request("/enroll-email-mfa", { email });
+    return request("/enroll-email-mfa", { userInput: email });
   }
 
   static verifyActivationPasscode(code: string) {
