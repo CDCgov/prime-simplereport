@@ -3,6 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import classNames from "classnames";
 import { v4 as uuidv4 } from "uuid";
 import { useSelector, connect } from "react-redux";
+import {
+  useAppInsightsContext,
+  useTrackEvent,
+} from "@microsoft/applicationinsights-react-js";
 
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import { formatFullName } from "../utils/user";
@@ -16,6 +20,9 @@ import { LinkWithQuery } from "./LinkWithQuery";
 import { TrainingNotification } from "./TrainingNotification";
 
 const Header: React.FC<{}> = () => {
+  const appInsights = useAppInsightsContext();
+  const trackSupport = useTrackEvent(appInsights, "Support", null, false);
+
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );
