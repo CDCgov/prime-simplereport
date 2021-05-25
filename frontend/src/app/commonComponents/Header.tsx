@@ -23,7 +23,7 @@ const Header: React.FC<{}> = () => {
   const appInsights = useAppInsightsContext();
   const trackSupport = useTrackEvent(appInsights, "Support", {});
 
-  const onSupportClick = (e: MouseEvent) => {
+  const handleSupportClick = (e: MouseEvent) => {
     if (appInsights) {
       trackSupport(e);
     }
@@ -208,7 +208,7 @@ const Header: React.FC<{}> = () => {
                 <a
                   href="https://simplereport.gov/support"
                   target="none"
-                  onClick={() => onSupportClick}
+                  onClick={() => handleSupportClick}
                 >
                   Support
                 </a>
@@ -333,7 +333,7 @@ const Header: React.FC<{}> = () => {
                     <a
                       href="https://simplereport.gov/support"
                       target="none"
-                      onClick={() => onSupportClick}
+                      onClick={() => handleSupportClick}
                     >
                       Support
                     </a>
