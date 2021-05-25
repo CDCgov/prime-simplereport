@@ -234,6 +234,8 @@ resource "azurerm_application_gateway" "load_balancer" {
       url {
         path         = "/{var_uri_path_1}"
         reroute      = false
+        # Per documentation, we should be able to leave this pass-through out. See however
+        # https://github.com/terraform-providers/terraform-provider-azurerm/issues/11563
         query_string = "{var_query_string}"
       }
     }
@@ -251,7 +253,9 @@ resource "azurerm_application_gateway" "load_balancer" {
 
       url {
         path         = "/app"
-        query_string = "{var_query_string}"
+        # This is probably excessive, but it was happening anyway: see
+        # https://github.com/terraform-providers/terraform-provider-azurerm/issues/11563
+        query_string = ""
         reroute      = true
       }
     }
@@ -267,7 +271,9 @@ resource "azurerm_application_gateway" "load_balancer" {
 
       url {
         path         = "/app"
-        query_string = "{var_query_string}"
+        # This is probably excessive, but it was happening anyway: see
+        # https://github.com/terraform-providers/terraform-provider-azurerm/issues/11563
+        query_string = ""
         reroute      = true
       }
     }
