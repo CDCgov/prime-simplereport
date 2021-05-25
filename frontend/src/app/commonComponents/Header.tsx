@@ -199,7 +199,11 @@ const Header: React.FC<{}> = () => {
             </li>
             <div>
               <div className="navlink__support">
-                <a href="https://simplereport.gov/support" target="none">
+                <a
+                  href="https://simplereport.gov/support"
+                  target="none"
+                  onClick={() => trackSupport}
+                >
                   Support
                 </a>
               </div>
@@ -328,7 +332,7 @@ const Header: React.FC<{}> = () => {
                     <Button
                       variant="unstyled"
                       label=" Log out"
-                      onClick={logout}
+                      onClick={() => trackSupport}
                     />
                   </li>
                 </ul>
