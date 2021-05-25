@@ -9,6 +9,7 @@ export type InjectedQueryWrapperProps =
   | "data"
   | "trackAction"
   | "refetch"
+  | "loading"
   | "startPolling"
   | "stopPolling";
 
@@ -57,6 +58,7 @@ export function QueryWrapper<ComponentProps>({
     ...componentProps,
     trackAction,
     data,
+    loading,
     refetch: passOnRefetch,
     startPolling,
     stopPolling,
