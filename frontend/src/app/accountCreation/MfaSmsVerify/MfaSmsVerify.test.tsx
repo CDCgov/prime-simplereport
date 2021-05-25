@@ -4,7 +4,9 @@ import { MfaSmsVerify } from "./MfaSmsVerify";
 
 describe("Verify SMS MFA", () => {
   beforeEach(() => {
-    render(<MfaSmsVerify phoneNumber="(530) 867-5309" />);
+    render(
+      <MfaSmsVerify location={{ state: { phoneNumber: "(530) 867-5309" } }} />
+    );
   });
 
   it("can enter a security code", () => {
