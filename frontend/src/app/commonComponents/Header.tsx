@@ -327,7 +327,7 @@ const Header: React.FC<{}> = () => {
                     <a
                       href="https://simplereport.gov/support"
                       target="none"
-                      onClick={() => trackSupport}
+                      onClick={trackSupport}
                     >
                       Support
                     </a>
