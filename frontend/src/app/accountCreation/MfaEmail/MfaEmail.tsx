@@ -5,7 +5,7 @@ export const MfaEmail = () => {
   return (
     <MfaSendCodeToContact
       type="email address"
-      cardText="Get your security code via email"
+      cardText="Get your security code via email."
       serviceEnroll={AccountCreationApi.enrollEmailMfa}
     />
   );
