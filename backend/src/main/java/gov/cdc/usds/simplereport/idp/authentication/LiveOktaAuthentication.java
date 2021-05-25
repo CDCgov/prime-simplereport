@@ -42,13 +42,22 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   private String _orgUrl;
 
   public LiveOktaAuthentication(OktaClientProperties oktaClientProperties) {
+    initialize(oktaClientProperties.getOrgUrl(), oktaClientProperties.getToken());
+  }
+
+  public LiveOktaAuthentication(String orgUrl, String token) {
+    initialize(orgUrl, token);
+  }
+
+  private void initialize(String orgUrl, String token) {
     _client =
         Clients.builder()
-            .setOrgUrl(oktaClientProperties.getOrgUrl())
-            .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
+            .setOrgUrl(orgUrl)
+            .setClientCredentials(new TokenClientCredentials(token))
             .build();
-    _apiToken = oktaClientProperties.getToken();
-    _orgUrl = oktaClientProperties.getOrgUrl();
+    _apiToken = token;
+    _orgUrl = orgUrl;
+    System.out.println("IN LIVEOKTAAUTHENTICATION" + _apiToken + _orgUrl);
   }
 
   /**
@@ -249,5 +258,13 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     } catch (NullPointerException | ResourceException | IllegalArgumentException e) {
       throw new OktaAuthenticationFailureException("Authentication app could not be enrolled", e);
     }
+  }
+
+  public String getOrgUrl() {
+    return _orgUrl;
+  }
+
+  public String getApiToken() {
+    return _apiToken;
   }
 }
