@@ -83,14 +83,14 @@ export const MfaVerify = (props: Props) => {
             className="margin-top-3 flex-align-self-end margin-left-1"
             label={"Verify"}
             type={"submit"}
-            onClick={validateCode}
+            onClick={handleSubmit}
           />
         </div>
         <Button
           className="usa-button--outline display-block margin-top-3"
           label={"Send another code"}
           type={"submit"}
-          onClick={handleSubmit}
+          onClick={() => {}}
         />
       </Card>
       <p className="margin-top-5">
