@@ -721,9 +721,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   z-index: 10;
   visibility: hidden;
 
-  // ul {
-  //   padding: 23px;
-  // }
   .usa-sidenav__sublist {
     margin: units(2.5);
   }
@@ -746,8 +743,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   }
 
   &-sidemenu {
-    // padding: 13px;
-
     li {
       border-color: transparent;
     }
@@ -756,7 +751,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 .navlink__support {
   @include at-media("desktop") {
-    // border-top: 1px solid color("base-lighter");
     margin-top: units(2.5) !important;
   }
 
