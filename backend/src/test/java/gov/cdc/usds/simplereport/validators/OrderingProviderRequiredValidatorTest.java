@@ -17,9 +17,9 @@ public class OrderingProviderRequiredValidatorTest {
 
   private OrderingProviderRequiredValidator validator;
 
-  private List<String> bypassedStates = List.of("ND", "MD");
-  private PersonName empty = new PersonName("", "", "", "");
-  private PersonName boba = new PersonName("Boba", "", "Fett", "");
+  private final List<String> bypassedStates = List.of("ND", "MD");
+  private final PersonName empty = new PersonName("", "", "", "");
+  private final PersonName boba = new PersonName("Boba", "", "Fett", "");
 
   @BeforeEach
   void init() {
@@ -59,8 +59,6 @@ public class OrderingProviderRequiredValidatorTest {
   void exceptionTest() {
     assertThrows(
         OrderingProviderRequiredException.class,
-        () -> {
-          validator.assertValidity(null, null, null, "NY");
-        });
+        () -> validator.assertValidity(null, null, null, "NY"));
   }
 }

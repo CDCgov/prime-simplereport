@@ -277,7 +277,7 @@ public class OrganizationService {
   }
 
   @Transactional(readOnly = false)
-  private Facility createFacilityNoPermissions(
+  Facility createFacilityNoPermissions(
       String testingFacilityName,
       String cliaNumber,
       StreetAddress facilityAddress,
