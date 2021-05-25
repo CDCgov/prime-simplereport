@@ -10,7 +10,8 @@ import {
 } from "@apollo/client";
 import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import { createUploadLink } from "apollo-upload-client";
-import { onError } from "@apollo/client/link/error";
+import { ErrorResponse, onError } from "@apollo/client/link/error";
+import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import { toast } from "react-toastify";
 import Modal from "react-modal";
 
@@ -19,10 +20,13 @@ import PatientApp from "./patientApp/PatientApp";
 import AccountCreationApp from "./app/accountCreation/AccountCreationApp";
 import HealthChecks from "./app/HealthChecks";
 import * as serviceWorker from "./serviceWorker";
-import "./styles/App.css";
 import { store } from "./app/store";
 import { showError } from "./app/utils";
+import { getAppInsights } from "./app/TelemetryService";
+import TelemetryProvider from "./app/telemetry-provider";
 import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration";
+
+import "./styles/App.css";
 
 // Define the root element for modals
 if (process.env.NODE_ENV !== "test") {
@@ -42,6 +46,8 @@ if (window.location.hash) {
   }
 }
 
+let appInsights: null | ApplicationInsights | any = null;
+
 const httpLink = createUploadLink({
   uri: `${process.env.REACT_APP_BACKEND_URL}/graphql`,
 });
@@ -56,11 +62,22 @@ const authMiddleware = new ApolloLink((operation, forward) => {
   return forward(operation);
 });
 
-const logoutLink = onError(({ networkError, graphQLErrors }) => {
+const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
   if (networkError && process.env.REACT_APP_BASE_URL) {
-    console.error("network error", networkError);
-    console.log("redirecting to", process.env.REACT_APP_BASE_URL);
-    window.location.replace(process.env.REACT_APP_BASE_URL);
+    if ("statusCode" in networkError && networkError.statusCode === 401) {
+      console.warn("[UNATHORIZED_ACCESS] !!");
+      console.warn("redirect-to:", process.env.REACT_APP_BASE_URL);
+      window.location.replace(process.env.REACT_APP_BASE_URL);
+    } else {
+      if (appInsights instanceof ApplicationInsights) {
+        appInsights.trackException({ error: networkError });
+      }
+      showError(
+        toast,
+        "Please check for errors and try again",
+        networkError.message
+      );
+    }
   }
   if (graphQLErrors) {
     const messages = graphQLErrors.map(({ message, locations, path }) => {
@@ -83,27 +100,37 @@ const client = new ApolloClient({
   link: logoutLink.concat(concat(authMiddleware, httpLink)),
 });
 
-ReactDOM.render(
+export const ReactApp = (
   <ApolloProvider client={client}>
     <React.StrictMode>
       <Provider store={store}>
         <Router basename={process.env.PUBLIC_URL}>
-          <Switch>
-            <Route path="/health" component={HealthChecks} />
-            <Route path="/pxp" component={PatientApp} />
-            <Route path="/uac" component={AccountCreationApp} />
-            <Route
-              path="/register/:registrationLink"
-              component={SelfRegistration}
-            />
-            <Route path="/" component={App} />
-          </Switch>
+          <TelemetryProvider
+            instrumentationKey={process.env.REACT_APP_APPINSIGHTS_KEY}
+            after={() => {
+              appInsights = getAppInsights();
+            }}
+          >
+            <Switch>
+              <Route path="/health" component={HealthChecks} />
+              <Route path="/pxp" component={PatientApp} />
+              <Route path="/uac" component={AccountCreationApp} />
+              <Route
+                path="/register/:registrationLink"
+                component={SelfRegistration}
+              />
+              <Route path="/" component={App} />
+              <Route component={() => <>Page not found</>} />
+            </Switch>
+          </TelemetryProvider>
         </Router>
       </Provider>
     </React.StrictMode>
-  </ApolloProvider>,
-  document.getElementById("root")
+  </ApolloProvider>
 );
+export const rootElement = document.getElementById("root");
+
+ReactDOM.render(ReactApp, rootElement);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

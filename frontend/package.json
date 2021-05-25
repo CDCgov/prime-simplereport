@@ -157,6 +157,7 @@
     "@types/smartystreets-javascript-sdk": "^1.6.2",
     "@types/uuid": "^8.3.0",
     "babel-loader": "8.1.0",
+    "chromatic": "^5.8.3",
     "chromedriver": "^88.0.0",
     "dayjs": "^1.10.4",
     "eslint-config-prettier": "^8.3.0",
@@ -177,5 +178,10 @@
   },
   "resolutions": {
     "@storybook/react/babel-loader": "8.1.0"
-  }
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js"
+    }
+}
 }
