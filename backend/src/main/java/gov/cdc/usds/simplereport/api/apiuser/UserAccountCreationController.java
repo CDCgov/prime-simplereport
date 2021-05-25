@@ -73,6 +73,7 @@ public class UserAccountCreationController {
   @PostMapping("/set-recovery-question")
   public void setRecoveryQuestions(
       @RequestBody SetRecoveryQuestionRequest requestBody, HttpServletRequest request) {
+        LOG.info("endpoint hit: set-recovery-question");
     String userId = getUserId(request.getSession());
     _oktaAuth.setRecoveryQuestion(userId, requestBody.getQuestion(), requestBody.getAnswer());
   }
@@ -87,6 +88,7 @@ public class UserAccountCreationController {
   @PostMapping("/enroll-sms-mfa")
   public void enrollSmsMfa(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
       throws OktaAuthenticationFailureException {
+        LOG.info("endpoint hit: enroll-sms-mfa");
     String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollSmsMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID, factorId);
@@ -102,6 +104,7 @@ public class UserAccountCreationController {
   @PostMapping("/enroll-voice-call-mfa")
   public void enrollVoiceCallMfa(
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
+        LOG.info("endpoint hit: enroll-voice-call-mfa");
     String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollVoiceCallMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID, factorId);
@@ -117,6 +120,7 @@ public class UserAccountCreationController {
   @PostMapping("/enroll-email-mfa")
   public void enrollEmailMfa(
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
+        LOG.info("endpoint hit: enroll-email-mfa");
     String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollEmailMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID, factorId);
@@ -133,6 +137,7 @@ public class UserAccountCreationController {
   @GetMapping("/authenticator-qr")
   public String getAuthQrCode(
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
+        LOG.info("endpoint hit: authenticator-qr");
     String userId = getUserId(request.getSession());
     FactorAndQrCode factorData =
         _oktaAuth.enrollAuthenticatorAppMfa(userId, requestBody.getUserInput());

@@ -21,6 +21,8 @@ import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -37,6 +39,8 @@ import org.springframework.web.client.RestTemplate;
 @Profile("!" + BeanProfiles.NO_OKTA_AUTH)
 @Service
 public class LiveOktaAuthentication implements OktaAuthentication {
+  private static final Logger LOG = LoggerFactory.getLogger(LiveOktaAuthentication.class);
+
   private Client _client;
   private String _apiToken;
   private String _orgUrl;
@@ -82,6 +86,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     String postUrl = _orgUrl + "/api/v1/authn";
     try {
       String response = restTemplate.postForObject(postUrl, entity, String.class);
+      LOG.debug("activate user response: " + response);
       JSONObject responseJson = new JSONObject(response);
       return responseJson.getJSONObject("_embedded").getJSONObject("user").getString("id");
     } catch (RestClientException | NullPointerException e) {
@@ -100,6 +105,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public void setPassword(String userId, char[] password)
       throws OktaAuthenticationFailureException {
     try {
+      LOG.debug("setting password: " + userId + " " + password.toString());
       User user = _client.getUser(userId);
       UserCredentials creds = user.getCredentials();
       PasswordCredential passwordCred =
@@ -107,6 +113,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       creds.setPassword(passwordCred);
       user.setCredentials(creds);
       user.update();
+      LOG.debug("set password response: " + _client.getUser(userId).toString());
     } catch (ResourceException e) {
       throw new OktaAuthenticationFailureException("Error setting user's password", e);
     }
@@ -124,6 +131,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public void setRecoveryQuestion(String userId, String question, String answer)
       throws OktaAuthenticationFailureException {
     try {
+      LOG.debug("setting user recovery question: " + question + " " + answer);
       User user = _client.getUser(userId);
       UserCredentials creds = user.getCredentials();
       RecoveryQuestionCredential recoveryCred =
@@ -134,6 +142,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       creds.setRecoveryQuestion(recoveryCred);
       user.setCredentials(creds);
       user.update();
+      LOG.debug("set recovery question response: " + _client.getUser(userId).toString());
     } catch (ResourceException e) {
       throw new OktaAuthenticationFailureException("Error setting recovery questions", e);
     }
@@ -152,10 +161,12 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public String enrollSmsMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException {
     try {
+      LOG.debug("enrolling sms factor: " + userId + " " + phoneNumber);
       SmsUserFactor smsFactor = _client.instantiate(SmsUserFactor.class);
       smsFactor.getProfile().setPhoneNumber(phoneNumber);
       User user = _client.getUser(userId);
       user.enrollFactor(smsFactor);
+      LOG.debug("enroll sms mfa response: " + _client.getUser(userId).toString());
       return smsFactor.getId();
     } catch (ResourceException e) {
       throw new OktaAuthenticationFailureException("Error setting SMS MFA", e);
@@ -175,10 +186,12 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public String enrollVoiceCallMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException {
     try {
+      LOG.debug("enrolling voice call factor: " + userId + " " + phoneNumber);
       CallUserFactor callFactor = _client.instantiate(CallUserFactor.class);
       callFactor.getProfile().setPhoneNumber(phoneNumber);
       User user = _client.getUser(userId);
       user.enrollFactor(callFactor);
+      LOG.debug("enroll voice call mfa response: " + _client.getUser(userId).toString());
       return callFactor.getId();
     } catch (ResourceException e) {
       throw new OktaAuthenticationFailureException("Error setting voice call MFA", e);
@@ -198,10 +211,12 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public String enrollEmailMfa(String userId, String email)
       throws OktaAuthenticationFailureException {
     try {
+      LOG.debug("enrolling email factor: " + userId + " " + email);
       EmailUserFactor emailFactor = _client.instantiate(EmailUserFactor.class);
       emailFactor.getProfile().setEmail(email);
       User user = _client.getUser(userId);
       user.enrollFactor(emailFactor);
+      LOG.debug("enroll email mfa response: ", _client.getUser(userId).toString());
       return emailFactor.getId();
     } catch (ResourceException e) {
       throw new OktaAuthenticationFailureException("Error setting email MFA", e);
@@ -239,12 +254,14 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       User user = _client.getUser(userId);
       user.enrollFactor(factor);
       JSONObject embeddedJson = new JSONObject(factor.getEmbedded());
+      LOG.debug("authApp enrollment response: " + embeddedJson.toString());
       String qrCode =
           embeddedJson
               .getJSONObject("activation")
               .getJSONObject("_links")
               .getJSONObject("qrcode")
               .getString("href");
+      LOG.debug("qrcode: " + qrCode);
       return new FactorAndQrCode(factor.getId(), qrCode);
     } catch (NullPointerException | ResourceException | IllegalArgumentException e) {
       throw new OktaAuthenticationFailureException("Authentication app could not be enrolled", e);
