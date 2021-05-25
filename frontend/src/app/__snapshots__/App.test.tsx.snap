@@ -462,7 +462,7 @@ exports[`App Render main screen 1`] = `
         className="grid-container"
       >
         <div
-          className="grid-row position-relative"
+          className="position-relative"
         >
           <div
             className="prime-search-container"
