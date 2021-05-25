@@ -3,7 +3,7 @@ import { Story, Meta } from "@storybook/react";
 import { MfaPhoneVerify } from "./MfaPhoneVerify";
 
 export default {
-  title: "App/Account set up/Step 3b: Verify SMS security code",
+  title: "App/Account set up/Step 3b: Verify Voice Call security code",
   component: MfaPhoneVerify,
   argTypes: {},
   args: {
