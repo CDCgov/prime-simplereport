@@ -415,8 +415,6 @@ describe("TestResultsList", () => {
     userEvent.click(screen.getByText("Filter"));
 
     // Clear filter
-    expect(await screen.findByText("Filter")).toBeInTheDocument();
-    userEvent.click(screen.getByText("Filter"));
     expect(await screen.findByText("Clear filters")).toBeInTheDocument();
     userEvent.click(screen.getByText("Clear filters"));
 
