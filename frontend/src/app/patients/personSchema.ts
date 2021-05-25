@@ -43,6 +43,8 @@ export type PersonUpdateFields = PartialBy<
   UpdateOptionalFields
 >;
 
+export type SelfRegistationFields = Omit<RequiredPersonFields, "facilityId">;
+
 const getValues = (options: Option[]) => options.map(({ value }) => value);
 
 export function phoneNumberIsValid(input: any) {
@@ -123,10 +125,20 @@ export const personSchema: yup.SchemaOf<RequiredPersonFields> = yup.object({
   firstName: yup.string().required(),
   middleName: yup.string().nullable(),
   lastName: yup.string().required(),
-  birthDate: yup.string().required(),
+  birthDate: yup.date().required().max(new Date()).min(new Date("1/1/1900")),
   facilityId: yup.string().nullable().min(1) as any,
   ...updateFieldSchemata,
 });
+
+export const selfRegistrationSchema: yup.SchemaOf<SelfRegistationFields> = yup.object(
+  {
+    firstName: yup.string().required(),
+    middleName: yup.string().nullable(),
+    lastName: yup.string().required(),
+    birthDate: yup.date().required().max(new Date()).min(new Date("1/1/1900")),
+    ...updateFieldSchemata,
+  }
+);
 
 export type PersonErrors = Partial<Record<keyof PersonFormData, string>>;
 
@@ -137,7 +149,8 @@ export const allPersonErrors: Required<PersonErrors> = {
   lookupId: "Lookup ID is incorrectly formatted",
   role: "Role is incorrectly formatted",
   facilityId: "Facility is required",
-  birthDate: "Date of birth is missing or incorrectly formatted",
+  birthDate:
+    "Date of birth must be present, correctly formatted (MM/DD/YYY), and in the past",
   telephone: "Phone number is missing or invalid",
   phoneNumbers: "Phone number is missing or invalid",
   email: "Email is missing or incorrectly formatted",

@@ -79,6 +79,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
         // User account creation request authorization is handled in UserAccountCreationController
         .antMatchers(HttpMethod.POST, WebConfiguration.USER_ACCOUNT_REQUEST + "/**")
         .permitAll()
+        .antMatchers(HttpMethod.GET, WebConfiguration.USER_ACCOUNT_REQUEST + "/**")
+        .permitAll()
 
         // Anything else goes through Okta
         .anyRequest()
@@ -90,7 +92,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
         .and()
         .csrf()
         .requireCsrfProtectionMatcher(
-            new AntPathRequestMatcher(WebConfiguration.USER_ACCOUNT_REQUEST, "POST"));
+            new AntPathRequestMatcher(WebConfiguration.USER_ACCOUNT_REQUEST));
 
     Okta.configureResourceServer401ResponseBody(http);
   }
