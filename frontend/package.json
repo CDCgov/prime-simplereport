@@ -57,7 +57,7 @@
     "prestart": "rm -rf .eslintcache && yarn",
     "start": "REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) npm-run-all -p watch-css start-js",
     "start-js": "react-scripts start",
-    "prebuild": "yarn compile-scss & yarn msw:cleanup",
+    "prebuild": "yarn compile-scss",
     "build": "INLINE_RUNTIME_CHUNK=false REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) react-scripts build",
     "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/static/commit.txt",
     "lint": "npm-run-all -p lint:eslint lint:prettier lint:stylelint",
@@ -76,9 +76,9 @@
     "eject": "react-scripts eject",
     "compile-scss": "node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss --output-style compressed -o ./src/styles/ ./src/scss/App.scss",
     "watch-css": "yarn compile-scss && node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss -o src/styles/ --watch --recursive src/scss/App.scss",
-    "storybook": "yarn watch-css & start-storybook -p 6006 -s public",
-    "build-storybook": "yarn compile-scss && build-storybook -s public",
-    "msw:cleanup": "rm public/mockServiceWorker.js"
+    "create-storybook-public": "rm -rf ./strybook_public && cp -R ./public ./storybook_public && cp mockServiceWorker.js ./storybook_public",
+    "storybook": "yarn create-storybook-public && yarn watch-css & start-storybook -p 6006 -s storybook_public",
+    "build-storybook": "yarn create-storybook-public && yarn compile-scss && build-storybook -s storybook_public"
   },
   "prettier": {
     "singleQuote": false
@@ -183,7 +183,7 @@
     "@storybook/react/babel-loader": "8.1.0"
   },
   "msw": {
-    "workerDirectory": "public"
+    "workerDirectory": "/storybook_public"
   },
   "jest": {
     "moduleNameMapper": {
