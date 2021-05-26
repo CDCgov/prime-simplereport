@@ -9,7 +9,7 @@ export const MfaEmailVerify = (props: Props) => (
     hint={
       <>
         We’ve sent an email to <b>{props.location.state.email}</b>. It will
-        expire in 10 minutes.
+        expire in 5 minutes.
       </>
     }
   />
