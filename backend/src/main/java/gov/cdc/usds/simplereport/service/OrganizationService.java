@@ -240,6 +240,7 @@ public class OrganizationService {
     Organization org = _repo.save(new Organization(name, externalId, false));
     Facility facility =
         createFacilityNoPermissions(
+            org,
             testingFacilityName,
             cliaNumber,
             facilityAddress,
@@ -278,6 +279,7 @@ public class OrganizationService {
 
   @Transactional(readOnly = false)
   Facility createFacilityNoPermissions(
+      Organization organization,
       String testingFacilityName,
       String cliaNumber,
       StreetAddress facilityAddress,
@@ -293,10 +295,9 @@ public class OrganizationService {
     Provider orderingProvider =
         _providerRepo.save(
             new Provider(providerName, providerNPI, providerAddress, providerTelephone));
-    Organization org = getCurrentOrganization();
     Facility facility =
         new Facility(
-            org,
+            organization,
             testingFacilityName,
             cliaNumber,
             facilityAddress,
@@ -324,6 +325,7 @@ public class OrganizationService {
       String providerTelephone,
       String providerNPI) {
     return createFacilityNoPermissions(
+        getCurrentOrganization(),
         testingFacilityName,
         cliaNumber,
         facilityAddress,
