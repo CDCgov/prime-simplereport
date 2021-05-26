@@ -303,6 +303,7 @@ const Header: React.FC<{}> = () => {
                   setStaffDetailsVisible(!staffDetailsVisible);
                 }}
                 activeClassName="active-nav-item"
+                data-testid="user-button"
               >
                 <FontAwesomeIcon
                   icon={"user-circle"}
@@ -334,6 +335,7 @@ const Header: React.FC<{}> = () => {
                       href="https://simplereport.gov/support"
                       target="none"
                       onClick={() => handleSupportClick}
+                      data-testid="support-link"
                     >
                       Support
                     </a>

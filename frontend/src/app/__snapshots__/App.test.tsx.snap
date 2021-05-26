@@ -367,6 +367,7 @@ exports[`App Render main screen 1`] = `
             >
               <a
                 aria-current={null}
+                data-testid="user-button"
                 href="/queue#?facility=fec4de56-f4cc-4c61-b3d5-76869ca71296"
                 onClick={[Function]}
               >
@@ -423,6 +424,7 @@ exports[`App Render main screen 1`] = `
                     className="usa-sidenav__item navlink__support"
                   >
                     <a
+                      data-testid="support-link"
                       href="https://simplereport.gov/support"
                       onClick={[Function]}
                       target="none"
