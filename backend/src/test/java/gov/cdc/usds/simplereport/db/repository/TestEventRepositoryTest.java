@@ -25,11 +25,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
-import javax.servlet.Filter;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -43,14 +40,15 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
 
   private Specification<TestEvent> filter(UUID facilityId, TestResult result) {
     return (root, query, cb) -> {
-      Join<TestEvent, TestOrder> order = 
-          root.join(TestEvent_.order);
+      Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
       order.on(cb.equal(root.get(TestEvent_.internalId), order.get(TestOrder_.testEvent)));
       query.orderBy(cb.desc(root.get(TestEvent_.createdAt)));
 
       Predicate p = cb.conjunction();
       if (facilityId != null) {
-        p = cb.and(p, cb.equal(root.get(TestEvent_.facility).get(Facility_.internalId), facilityId));
+        p =
+            cb.and(
+                p, cb.equal(root.get(TestEvent_.facility).get(Facility_.internalId), facilityId));
       }
       if (result != null) {
         p = cb.and(p, cb.equal(root.get(TestEvent_.result), result));
@@ -130,15 +128,16 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     pause();
     _dataFactory.doTest(adamOrder, TestResult.UNDETERMINED);
 
-    results = 
-        _repo.findAll(filter(facility.getInternalId(), null), PageRequest.of(0, 10)).toList();
+    results = _repo.findAll(filter(facility.getInternalId(), null), PageRequest.of(0, 10)).toList();
     assertEquals(3, results.size());
     assertEquals("Adam", results.get(0).getPatient().getFirstName());
     assertEquals("Charles", results.get(1).getPatient().getFirstName());
     assertEquals("Bradley", results.get(2).getPatient().getFirstName());
 
-    results = 
-        _repo.findAll(filter(facility.getInternalId(), TestResult.POSITIVE), PageRequest.of(0, 10)).toList();
+    results =
+        _repo
+            .findAll(filter(facility.getInternalId(), TestResult.POSITIVE), PageRequest.of(0, 10))
+            .toList();
     assertEquals(1, results.size());
     assertEquals("Charles", results.get(0).getPatient().getFirstName());
   }

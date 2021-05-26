@@ -112,9 +112,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     order.setReasonForCorrection(unitTestCorrectionStr);
     _repo.save(order);
     flush();
-    assertEquals(
-        unitTestCorrectionStr,
-        _repo.findByTestEvent(gtown, ev).getReasonForCorrection());
+    assertEquals(unitTestCorrectionStr, _repo.findByTestEvent(gtown, ev).getReasonForCorrection());
   }
 
   @Test

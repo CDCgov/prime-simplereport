@@ -26,11 +26,7 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
     }
 
     return tos.getTestEventsResults(
-        facilityId, 
-        patientId, 
-        Translators.parseTestResult(result), 
-        pageNumber, 
-        pageSize);
+        facilityId, patientId, Translators.parseTestResult(result), pageNumber, pageSize);
   }
 
   public int testResultsCount(UUID facilityId, UUID patientId, String result) {

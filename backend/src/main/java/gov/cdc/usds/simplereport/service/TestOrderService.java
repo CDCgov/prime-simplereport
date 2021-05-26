@@ -30,12 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -58,9 +56,8 @@ public class TestOrderService {
   private PatientLinkService _pls;
   private SmsService _smss;
   private final CurrentPatientContextHolder _patientContext;
-  
-  @PersistenceContext
-  EntityManager _entityManager;
+
+  @PersistenceContext EntityManager _entityManager;
 
   @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")
   private String patientLinkUrl;
@@ -98,10 +95,10 @@ public class TestOrderService {
   }
 
   // Specifications filters for queries
-  private Specification<TestEvent> buildTestEventSearchFilter(UUID facilityId, UUID patientId, TestResult result) {
+  private Specification<TestEvent> buildTestEventSearchFilter(
+      UUID facilityId, UUID patientId, TestResult result) {
     return (root, query, cb) -> {
-      Join<TestEvent, TestOrder> order = 
-          root.join(TestEvent_.order);
+      Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
       order.on(cb.equal(root.get(TestEvent_.internalId), order.get(TestOrder_.testEvent)));
       query.orderBy(cb.desc(root.get(TestEvent_.createdAt)));
 
@@ -110,10 +107,14 @@ public class TestOrderService {
         throw new IllegalGraphqlArgumentException(MISSING_ARG);
       }
       if (facilityId != null) {
-        p = cb.and(p, cb.equal(root.get(TestEvent_.facility).get(Facility_.internalId), facilityId));
+        p =
+            cb.and(
+                p, cb.equal(root.get(TestEvent_.facility).get(Facility_.internalId), facilityId));
       }
       if (patientId != null) {
-        p = cb.and(p, cb.equal(root.get(TestEvent_.patientData).get(Person_.internalId), patientId));
+        p =
+            cb.and(
+                p, cb.equal(root.get(TestEvent_.patientData).get(Person_.internalId), patientId));
       }
       if (result != null) {
         p = cb.and(p, cb.equal(root.get(TestEvent_.result), result));
@@ -126,9 +127,11 @@ public class TestOrderService {
   @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
   public List<TestEvent> getTestEventsResults(
       UUID facilityId, UUID patientId, TestResult result, int pageOffset, int pageSize) {
-    return _terepo.findAll(
-        buildTestEventSearchFilter(facilityId, patientId, result), 
-        PageRequest.of(pageOffset, pageSize)).toList();
+    return _terepo
+        .findAll(
+            buildTestEventSearchFilter(facilityId, patientId, result),
+            PageRequest.of(pageOffset, pageSize))
+        .toList();
   }
 
   @Transactional(readOnly = true)

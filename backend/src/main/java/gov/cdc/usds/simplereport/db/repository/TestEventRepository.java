@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,10 +17,10 @@ import org.springframework.data.jpa.repository.Query;
 
 /**
  * Note: over time, replace the specialized methods below with new uses of <code>findAll()</code>
- * using a custom <code>Specification</code>. 
+ * using a custom <code>Specification</code>.
  */
-public interface TestEventRepository extends AuditedEntityRepository<TestEvent>, 
-    JpaSpecificationExecutor<TestEvent> {
+public interface TestEventRepository
+    extends AuditedEntityRepository<TestEvent>, JpaSpecificationExecutor<TestEvent> {
   @Deprecated
   @Query("FROM #{#entityName} e WHERE e.patient = :p and e.facility in :facilities")
   public List<TestEvent> findAllByPatientAndFacilities(Person p, Collection<Facility> facilities);
