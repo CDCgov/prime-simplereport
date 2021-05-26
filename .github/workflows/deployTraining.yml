@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   release:
     types: [released]
+  schedule:
+    # Run this on a daily timer as well in order to reset the training DB
+    - cron: '* 9 * * *'
 
 env:
   DEPLOY_ENV: training
@@ -46,6 +49,12 @@ jobs:
           terraform_version: 0.15.1
       - name: Terraform Init
         run: make init-${{ env.DEPLOY_ENV }}
+      - name: Replace Azure training DB
+        run: |
+          cd ${{ env.DEPLOY_ENV }}/persistent
+          terraform taint module.db.azurerm_postgresql_database.simple_report
+          terraform apply -target="module.db.azurerm_postgresql_database.simple_report" -auto-approve
+          cd -
       - name: Azure deploy Api
         run: make deploy-${{ env.DEPLOY_ENV }}-api
       - name: Wait for staging deploy to complete
