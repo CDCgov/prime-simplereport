@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
+import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +41,7 @@ public class OrganizationService {
   private AuthorizationService _authService;
   private OktaRepository _oktaRepo;
   private CurrentOrganizationRolesContextHolder _currentOrgRolesContextHolder;
+  private OrderingProviderRequiredValidator _orderingProviderRequiredValidator;
 
   public OrganizationService(
       OrganizationRepository repo,
@@ -47,13 +49,15 @@ public class OrganizationService {
       AuthorizationService authService,
       ProviderRepository providerRepo,
       OktaRepository oktaRepo,
-      CurrentOrganizationRolesContextHolder currentOrgRolesContextHolder) {
+      CurrentOrganizationRolesContextHolder currentOrgRolesContextHolder,
+      OrderingProviderRequiredValidator orderingProviderRequiredValidator) {
     _repo = repo;
     _facilityRepo = facilityRepo;
     _authService = authService;
     _providerRepo = providerRepo;
     _oktaRepo = oktaRepo;
     _currentOrgRolesContextHolder = currentOrgRolesContextHolder;
+    _orderingProviderRequiredValidator = orderingProviderRequiredValidator;
   }
 
   public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
@@ -185,6 +189,7 @@ public class OrganizationService {
       StreetAddress orderingProviderAddress,
       String orderingProviderTelephone,
       DeviceSpecimenTypeHolder deviceSpecimenTypes) {
+
     Facility facility = this.getFacilityInCurrentOrg(facilityId);
     facility.setFacilityName(testingFacilityName);
     facility.setCliaNumber(cliaNumber);
@@ -200,6 +205,9 @@ public class OrganizationService {
     p.setProviderId(orderingProviderNPI);
     p.setTelephone(orderingProviderTelephone);
     p.setAddress(orderingProviderAddress);
+
+    _orderingProviderRequiredValidator.assertValidity(
+        p.getNameInfo(), p.getProviderId(), p.getTelephone(), facility.getAddress().getState());
 
     for (DeviceSpecimenType ds : deviceSpecimenTypes.getFullList()) {
       facility.addDeviceSpecimenType(ds);
@@ -230,21 +238,18 @@ public class OrganizationService {
       String providerNPI) {
     // for now, all new organizations have identity_verified = false by default
     Organization org = _repo.save(new Organization(name, externalId, false));
-    Provider orderingProvider =
-        _providerRepo.save(
-            new Provider(providerName, providerNPI, providerAddress, providerTelephone));
     Facility facility =
-        new Facility(
-            org,
+        createFacilityNoPermissions(
             testingFacilityName,
             cliaNumber,
             facilityAddress,
             phone,
             email,
-            orderingProvider,
-            deviceSpecimenTypes.getDefault(),
-            deviceSpecimenTypes.getFullList());
-    _facilityRepo.save(facility);
+            deviceSpecimenTypes,
+            providerName,
+            providerAddress,
+            providerTelephone,
+            providerNPI);
     _oktaRepo.createOrganization(org);
     _oktaRepo.createFacility(facility);
     return org;
@@ -272,8 +277,7 @@ public class OrganizationService {
   }
 
   @Transactional(readOnly = false)
-  @AuthorizationConfiguration.RequirePermissionEditFacility
-  public Facility createFacility(
+  Facility createFacilityNoPermissions(
       String testingFacilityName,
       String cliaNumber,
       StreetAddress facilityAddress,
@@ -284,6 +288,8 @@ public class OrganizationService {
       StreetAddress providerAddress,
       String providerTelephone,
       String providerNPI) {
+    _orderingProviderRequiredValidator.assertValidity(
+        providerName, providerNPI, providerTelephone, facilityAddress.getState());
     Provider orderingProvider =
         _providerRepo.save(
             new Provider(providerName, providerNPI, providerAddress, providerTelephone));
@@ -302,5 +308,31 @@ public class OrganizationService {
     facility = _facilityRepo.save(facility);
     _oktaRepo.createFacility(facility);
     return facility;
+  }
+
+  @Transactional(readOnly = false)
+  @AuthorizationConfiguration.RequirePermissionEditFacility
+  public Facility createFacility(
+      String testingFacilityName,
+      String cliaNumber,
+      StreetAddress facilityAddress,
+      String phone,
+      String email,
+      DeviceSpecimenTypeHolder deviceSpecimenTypes,
+      PersonName providerName,
+      StreetAddress providerAddress,
+      String providerTelephone,
+      String providerNPI) {
+    return createFacilityNoPermissions(
+        testingFacilityName,
+        cliaNumber,
+        facilityAddress,
+        phone,
+        email,
+        deviceSpecimenTypes,
+        providerName,
+        providerAddress,
+        providerTelephone,
+        providerNPI);
   }
 }

@@ -68,6 +68,9 @@ simple-report:
     # these are overridden by application-dev, -prod, -test, etc
     role-claim: dev_roles
     environment-name: "DEV"
+  ordering-providers:
+    states-not-required:
+      - ND
   sendgrid:
     enabled: false
     from-email: support@simplereport.gov
