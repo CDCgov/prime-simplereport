@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
+import WithPageTitle from "../commonComponents/PageTitle";
 import { hasPermission, appPermissions } from "../permissions";
 import { RootState } from "../store";
 
@@ -26,7 +27,8 @@ const ManagePatientsContainer = (props: { page?: number }) => {
   if (activeFacilityId.length < 1) {
     return <div>"No facility selected"</div>;
   }
-  return (
+  return (<>
+    <WithPageTitle title="People"/>
     <ManagePatients
       activeFacilityId={activeFacilityId}
       canEditUser={canEditUser}
@@ -34,6 +36,7 @@ const ManagePatientsContainer = (props: { page?: number }) => {
       currentPage={props.page}
       isAdmin={isAdmin}
     />
+    </>
   );
 };
 

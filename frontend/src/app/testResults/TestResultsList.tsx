@@ -37,6 +37,7 @@ import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 import { Patient } from "../patients/ManagePatients";
 import SearchResults from "../testQueue/addToQueue/SearchResults";
+import WithPageTitle from "../commonComponents/PageTitle";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
@@ -454,24 +455,27 @@ const TestResultsList = (props: TestResultsListProps) => {
   const totalEntries = totalResults?.testResultsCount || 0;
 
   return (
-    <QueryWrapper<Props>
-      query={testResultQuery}
-      queryOptions={{
-        variables: queryVariables,
-      }}
-      onRefetch={refetchCount}
-      Component={DetachedTestResultsList}
-      displayLoadingIndicator={false}
-      componentProps={{
-        ...props,
-        page: pageNumber,
-        loadingTotalResults,
-        totalEntries,
-        entriesPerPage,
-        setSelectedPatientId,
-        facilityId: activeFacilityId,
-      }}
-    />
+    <>
+      <WithPageTitle title="Results" />
+      <QueryWrapper<Props>
+        query={testResultQuery}
+        queryOptions={{
+          variables: queryVariables,
+        }}
+        onRefetch={refetchCount}
+        Component={DetachedTestResultsList}
+        displayLoadingIndicator={false}
+        componentProps={{
+          ...props,
+          page: pageNumber,
+          loadingTotalResults,
+          totalEntries,
+          entriesPerPage,
+          setSelectedPatientId,
+          facilityId: activeFacilityId,
+        }}
+      />
+    </>
   );
 };
 

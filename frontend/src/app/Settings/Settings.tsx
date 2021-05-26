@@ -2,6 +2,7 @@ import { Route, RouteComponentProps, Switch } from "react-router-dom";
 
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import Button from "../commonComponents/Button/Button";
+import WithPageTitle from "../commonComponents/PageTitle";
 
 import ManageOrganizationContainer from "./ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";
@@ -15,6 +16,8 @@ interface Params {
 
 const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
   return (
+    <>
+    <WithPageTitle title="Settings"/>
     <main className="prime-home">
       <div className="grid-container">
         <PrimeErrorBoundary
@@ -66,6 +69,7 @@ const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
         </PrimeErrorBoundary>
       </div>
     </main>
+    </ >
   );
 };
 
