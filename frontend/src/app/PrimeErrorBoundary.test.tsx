@@ -4,12 +4,6 @@ import { Component } from "react";
 
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
 
-jest.mock("./AppInsights", () => {
-  return {
-    appInsights: { trackException: jest.fn() },
-  };
-});
-
 class ComponentOfDeath extends Component<any, any> {
   public componentDidMount() {
     throw new Error("a really terrible uncaught exception!");

@@ -179,7 +179,9 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
   ) => {
     setDebounced("");
     setShowSuggestion(false);
-    trackAddPatientToQueue();
+    if (appInsights) {
+      trackAddPatientToQueue();
+    }
     let callback;
     const variables = {
       patientId: patient.internalId,
