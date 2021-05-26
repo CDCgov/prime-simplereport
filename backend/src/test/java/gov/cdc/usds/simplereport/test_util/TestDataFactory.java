@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
@@ -15,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName_;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
@@ -40,7 +42,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
@@ -171,6 +176,40 @@ public class TestDataFactory {
     return _personRepo.save(p);
   }
 
+  private Specification<Person> personFilter(PersonName n) {
+    return (root, query, cb) -> 
+        cb.and(
+            cb.equal(root.get(Person_.nameInfo).get(PersonName_.firstName), n.getFirstName()),
+            cb.equal(root.get(Person_.nameInfo).get(PersonName_.middleName), n.getMiddleName()),
+            cb.equal(root.get(Person_.nameInfo).get(PersonName_.lastName), n.getLastName()),
+            cb.equal(root.get(Person_.nameInfo).get(PersonName_.suffix), n.getSuffix()));
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public Person getPersonByName(PersonName n) {
+    List<Person> perple = _personRepo.findAll();
+    System.out.print("\n\n\nTARGET_FIRST_NAME="+n.getFirstName());
+    System.out.print("\n\n\nTARGET_MIDDLE_NAME="+n.getMiddleName());
+    System.out.print("\n\n\nTARGET_LAST_NAME="+n.getLastName());
+    System.out.print("\n\n\nTARGET_SUFFIX="+n.getSuffix());
+    perple.forEach(p -> {
+      System.out.print("\n\n\nFIRST_NAME="+p.getFirstName());
+      System.out.print("\n\n\nMIDDLE_NAME="+p.getMiddleName());
+      System.out.print("\n\n\nLAST_NAME="+p.getLastName());
+      System.out.print("\n\n\nSUFFIX="+p.getSuffix());
+    });
+    List<Person> people = _personRepo.findAll(personFilter(n), PageRequest.of(0, 10));
+    if (people.size() != 1) {
+      throw new RuntimeException(
+          String.format(
+              "Cannot retrieve person with name='%s %s', %d such people exist",
+              n.getFirstName(),
+              n.getLastName(),
+              people.size()));
+    }
+    return people.get(0);
+  }
+
   public TestOrder createTestOrder(Person p, Facility f) {
     AskOnEntrySurvey survey =
         new AskOnEntrySurvey(null, Collections.emptyMap(), null, null, null, null, null, null);
@@ -182,8 +221,12 @@ public class TestDataFactory {
   }
 
   public TestEvent createTestEvent(Person p, Facility f) {
+    return createTestEvent(p, f, TestResult.NEGATIVE);
+  }
+
+  public TestEvent createTestEvent(Person p, Facility f, TestResult r) {
     TestOrder o = createTestOrder(p, f);
-    o.setResult(TestResult.NEGATIVE);
+    o.setResult(r);
 
     TestEvent e = _testEventRepo.save(new TestEvent(o));
     o.setTestEventRef(e);

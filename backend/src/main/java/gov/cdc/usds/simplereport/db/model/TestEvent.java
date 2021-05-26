@@ -121,4 +121,12 @@ public class TestEvent extends BaseTestInfo {
   public UUID getPriorCorrectedTestEventId() {
     return priorCorrectedTestEventId;
   }
+
+  // these field names strings are used by Specification builders
+  public static final class SpecField {
+    public static final String CREATED_AT = "createdAt";
+    public static final String INTERNAL_ID = "internalId";
+    public static final String FACILITY = "facility";
+    private SpecField() {} // sonarcloud codesmell
+  }
 }

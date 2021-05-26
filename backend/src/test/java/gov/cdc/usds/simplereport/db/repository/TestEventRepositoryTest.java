@@ -6,10 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Facility_;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.TestOrder_;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -20,16 +23,52 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.servlet.Filter;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 class TestEventRepositoryTest extends BaseRepositoryTest {
 
   @Autowired private TestEventRepository _repo;
   @Autowired private TestDataFactory _dataFactory;
+
+  private Specification<TestEvent> filter(UUID facilityId, TestResult result) {
+    return (root, query, cb) -> {
+      Join<TestEvent, TestOrder> order = 
+          root.join(TestEvent_.order);
+      order.on(cb.equal(root.get(TestEvent_.internalId), order.get(TestOrder_.testEvent)));
+      query.orderBy(cb.desc(root.get(TestEvent_.createdAt)));
+
+      Predicate p = cb.conjunction();
+      if (facilityId != null) {
+        p = cb.and(p, cb.equal(root.get(TestEvent_.facility).get(Facility_.internalId), facilityId));
+      }
+      if (result != null) {
+        p = cb.and(p, cb.equal(root.get(TestEvent_.result), result));
+      }
+      return p;
+    };
+  }
+
+  private Specification<TestEvent> resultFilter(UUID facilityId) {
+    return (root, query, cb) -> {
+      Join<TestEvent, TestOrder> order = 
+          root.join(TestEvent_.order);
+      order.on(cb.equal(root.get(TestEvent_.internalId), order.get(TestOrder_.testEvent)));
+      query.orderBy(cb.desc(root.get(TestEvent_.createdAt)));
+
+      return cb.equal(root.get(TestEvent_.facility).get(Facility_.internalId), facilityId);
+    };
+  }
 
   @Test
   void testFindByPatient() {
@@ -93,7 +132,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     TestOrder bradleyOrder = _dataFactory.createTestOrder(brad, facility);
 
     List<TestEvent> results =
-        _repo.getTestEventResults(facility.getInternalId(), PageRequest.of(0, 10));
+        _repo.findAll(filter(facility.getInternalId(), null), PageRequest.of(0, 10)).toList();
     assertEquals(0, results.size());
 
     _dataFactory.doTest(bradleyOrder, TestResult.NEGATIVE);
@@ -102,11 +141,17 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     pause();
     _dataFactory.doTest(adamOrder, TestResult.UNDETERMINED);
 
-    results = _repo.getTestEventResults(facility.getInternalId(), PageRequest.of(0, 10));
+    results = 
+        _repo.findAll(filter(facility.getInternalId(), null), PageRequest.of(0, 10)).toList();
     assertEquals(3, results.size());
     assertEquals("Adam", results.get(0).getPatient().getFirstName());
     assertEquals("Charles", results.get(1).getPatient().getFirstName());
     assertEquals("Bradley", results.get(2).getPatient().getFirstName());
+
+    results = 
+        _repo.findAll(filter(facility.getInternalId(), TestResult.POSITIVE), PageRequest.of(0, 10)).toList();
+    assertEquals(1, results.size());
+    assertEquals("Charles", results.get(0).getPatient().getFirstName());
   }
 
   private void compareAskOnEntrySurvey(AskOnEntrySurvey a1, AskOnEntrySurvey a2) {
