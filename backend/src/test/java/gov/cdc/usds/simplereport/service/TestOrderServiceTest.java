@@ -718,19 +718,29 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p = _dataFactory.createFullPerson(org);
 
-    // Count queries with one order
+    // add some initial data
+    _dataFactory.createTestEvent(p, facility);
+    _dataFactory.createTestEvent(p, facility);
+
+    // count queries
     long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
-    _service.getTestEventsResults(facility.getInternalId(), null, null, 0, 50);
+    int firstQueryResults =
+        _service.getTestEventsResults(facility.getInternalId(), null, null, 0, 50).size();
     long firstPassTotal = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
 
     // add more data
     _dataFactory.createTestEvent(p, facility);
     _dataFactory.createTestEvent(p, facility);
+    _dataFactory.createTestEvent(p, facility);
+    _dataFactory.createTestEvent(p, facility);
+    _dataFactory.createTestEvent(p, facility);
 
-    // Count queries again and make queries made didn't increase
+    // count queries again and make queries made didn't increase
     startQueryCount = _hibernateQueryInterceptor.getQueryCount();
-    _service.getTestEventsResults(facility.getInternalId(), null, null, 0, 50);
+    int secondQueryResults =
+        _service.getTestEventsResults(facility.getInternalId(), null, null, 0, 50).size();
     long secondPassTotal = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
+    System.out.println("First had " + firstQueryResults + ", second had " + secondQueryResults);
     assertEquals(firstPassTotal, secondPassTotal);
   }
 
