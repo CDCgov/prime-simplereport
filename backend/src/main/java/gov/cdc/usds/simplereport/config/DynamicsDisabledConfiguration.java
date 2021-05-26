@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.config;
 
 import gov.cdc.usds.simplereport.service.crm.CrmProvider;
-import java.util.Map;
+import gov.cdc.usds.simplereport.service.model.crm.AccountRequestDynamicsData;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -16,6 +16,8 @@ public class DynamicsDisabledConfiguration {
   @Component
   class DisabledDynamics implements CrmProvider {
     @Override
-    public void submitAccountRequestData(Map<String, Object> data) {}
+    public void submitAccountRequestData(final AccountRequestDynamicsData dynamicsData) {
+      // do nothing implementation for Dynamics
+    }
   }
 }

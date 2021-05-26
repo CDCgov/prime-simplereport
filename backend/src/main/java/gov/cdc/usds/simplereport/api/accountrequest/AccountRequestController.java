@@ -203,6 +203,6 @@ public class AccountRequestController {
 
     _aus.createUser(reqVars.get("email"), adminName, orgExternalId, Role.ADMIN, false);
 
-    _crm.submitAccountRequestData(body.asDynamicsData());
+    _crm.submitAccountRequestData(body);
   }
 }

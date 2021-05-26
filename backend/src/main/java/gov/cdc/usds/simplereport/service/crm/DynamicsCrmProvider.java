@@ -4,6 +4,7 @@ import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
 import com.microsoft.aad.adal4j.ClientCredential;
 import gov.cdc.usds.simplereport.properties.DynamicsProperties;
+import gov.cdc.usds.simplereport.service.model.crm.AccountRequestDynamicsData;
 import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.Date;
@@ -38,7 +39,7 @@ public class DynamicsCrmProvider implements CrmProvider {
 
   private static final String LOGIN_AUTHORITY = "https://login.microsoftonline.com/";
   private static final String INTAKES_PATH = "/api/data/v9.2/bah_testingsiteintakes";
-  private static final long REFRESH_BEFORE_MS = 60 * 1000;
+  private static final long REFRESH_BEFORE_MS = 60 * 1000L;
 
   private final DynamicsProperties _dynamicsProperties;
   private AuthenticationResult credentials;
@@ -50,6 +51,28 @@ public class DynamicsCrmProvider implements CrmProvider {
   @PostConstruct
   void init() {
     LOG.info("Dynamics is enabled!");
+  }
+
+  private String getAccessTokenFromService() throws InterruptedException {
+    ExecutorService service = Executors.newFixedThreadPool(1);
+
+    try {
+      AuthenticationContext context =
+          new AuthenticationContext(
+              LOGIN_AUTHORITY + _dynamicsProperties.getTenantId(), true, service);
+      Future<AuthenticationResult> future =
+          context.acquireToken(
+              _dynamicsProperties.getResourceUrl(),
+              new ClientCredential(
+                  _dynamicsProperties.getClientId(), _dynamicsProperties.getClientSecret()),
+              null);
+
+      credentials = future.get();
+      return credentials.getAccessToken();
+    } catch (MalformedURLException | ExecutionException e) {
+      LOG.error("Unable to get credentials: {}", e.toString());
+      return null;
+    }
   }
 
   private String getAccessToken() {
@@ -67,27 +90,10 @@ public class DynamicsCrmProvider implements CrmProvider {
         }
       }
 
-      ExecutorService service = Executors.newFixedThreadPool(1);
-
-      try {
-        AuthenticationContext context =
-            new AuthenticationContext(
-                LOGIN_AUTHORITY + _dynamicsProperties.getTenantId(), true, service);
-        Future<AuthenticationResult> future =
-            context.acquireToken(
-                _dynamicsProperties.getResourceUrl(),
-                new ClientCredential(
-                    _dynamicsProperties.getClientId(), _dynamicsProperties.getClientSecret()),
-                null);
-
-        credentials = future.get();
-        return credentials.getAccessToken();
-      } catch (MalformedURLException | InterruptedException | ExecutionException e) {
-        LOG.warn("Unable to get credentials: {}", e.toString());
-        return null;
-      }
+      return getAccessTokenFromService();
     } catch (InterruptedException e) {
-      LOG.warn("Semaphore interrupted");
+      LOG.error("Interrupted: {}", e.toString());
+      Thread.currentThread().interrupt();
       return null;
     } finally {
       SEMAPHORE.release();
@@ -95,7 +101,7 @@ public class DynamicsCrmProvider implements CrmProvider {
   }
 
   @Override
-  public void submitAccountRequestData(final Map<String, Object> data) {
+  public void submitAccountRequestData(final AccountRequestDynamicsData dynamicsData) {
     final String accessToken = getAccessToken();
     if (accessToken == null) {
       LOG.error("Could not get access token for dynamics");
@@ -109,7 +115,7 @@ public class DynamicsCrmProvider implements CrmProvider {
     headers.add("OData-Version", "4.0");
     headers.add("OData-MaxVersion", "4.0");
 
-    HttpEntity<Map<String, Object>> entity = new HttpEntity<>(data, headers);
+    HttpEntity<Map<String, Object>> entity = new HttpEntity<>(dynamicsData.getDataMap(), headers);
     String requestUrl = _dynamicsProperties.getResourceUrl() + INTAKES_PATH;
 
     RestTemplate restTemplate = new RestTemplate();
@@ -117,7 +123,7 @@ public class DynamicsCrmProvider implements CrmProvider {
         restTemplate.exchange(requestUrl, HttpMethod.POST, entity, JSONObject.class);
 
     if (response.getStatusCode() != HttpStatus.NO_CONTENT) {
-      LOG.error("Dynamics request failed: {}", response.getBody());
+      LOG.error("Dynamics request failed with code: {} (expected 204)", response.getStatusCode());
     }
   }
 }

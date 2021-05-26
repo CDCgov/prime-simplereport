@@ -1,10 +1,15 @@
-package gov.cdc.usds.simplereport.api.model.accountrequest;
+package gov.cdc.usds.simplereport.service.model.crm;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public enum DynamicsValueMapping {
+  // These labels are derived from the values passed in our account request.
+  // The values are pulled from Dynamics 365.
+
   // Access devices
   AD_LAPTOP_COMPUTER(810050000),
   AD_DESKTOP_COMPUTER(810050001),
@@ -18,7 +23,6 @@ public enum DynamicsValueMapping {
   TD_LUMIRADX(810050003),
   TD_QUIDEL_SOFIA_2(810050004),
   TD_ACCESS_BIO_CARESTART(810050005),
-  //    TD_CUE(0),  // needs to be added to dynamics
   TD_OTHER(810050006),
 
   // Testing site type
@@ -29,8 +33,6 @@ public enum DynamicsValueMapping {
   TST_URGENT_CARE_CENTER(810050004),
   TST_AIRPORT(810050005),
   TST_OTHER(810050006),
-  // FQHC and Primary Care / Mental Health Outpatient don't exist in our frontend (but do in
-  // dynamics)
 
   // Browsers
   B_SAFARI(810050000),
@@ -55,24 +57,6 @@ public enum DynamicsValueMapping {
   SRT_12_HOURS(810050002),
   SRT_MORE_THAN_2_HOURS(810050003);
 
-  // 0- need credentials for prod dynamics instance
-  // 1- nowhere to put default testing device, nowhere to put "other" testing device
-  // 2- dynamics has same question label for questions about how long testing process takes and
-  //    how much time is spent submitting results
-  // 3- labels don't match on duration questions
-  // 4- address mappings (we have address2 and they have unit type and unit number
-  // 5- state mappings are annoying
-  // 6- addresses missing county
-  // 7- ** what happens if options are added/removed? **
-  // 8- do mappings match on sandbox/prod? (now, yes)  are they guaranteed to continue to match?
-  // 9- failure cases exist, for example if only "CUE" device is selected then dynamics will fail
-  //    because the set of values sent will be empty since there is no mapping
-  // 10- even if we look up the values of the selections in dynamics, matching will still rely
-  //    on the labels matching and will continue to be problematic.  We need a better method.
-  //    Changing labels in our UI will break the mapping as it is
-  // 11- facility phone number missing in dynamics
-  // 12- (other) "AA" state code offered by frontend, but rejected by backend
-
   public enum Prefix {
     AD, // Access Devices
     TD, // Testing Devices
@@ -83,6 +67,8 @@ public enum DynamicsValueMapping {
     SRT; // Estimated time spent submitting test results
   }
 
+  private static final Logger LOG = LoggerFactory.getLogger(DynamicsValueMapping.class);
+
   private static final int DEFAULT_VALUE = 810050000; // don't fail on invalid mappings
   private final int value;
 
@@ -92,7 +78,7 @@ public enum DynamicsValueMapping {
 
   /**
    * Convert a comma-separated string of our values to a comma-separated string of dynamics values.
-   * For example, the input string "CHROME,FIREFOX" might become "810050001,810050002" which can be
+   * For example, the input string "Chrome, Firefox" might become "810050001,810050002" which can be
    * sent to dynamics as the value for a multi select field.
    *
    * @param prefix value prefix
@@ -105,7 +91,7 @@ public enum DynamicsValueMapping {
       try {
         typeSet.add(getDynamicsCodeFromName(prefix, v));
       } catch (IllegalArgumentException e) {
-        System.out.println("value not found for: " + v);
+        LOG.warn("skipping value: no mapping found");
       }
     }
 

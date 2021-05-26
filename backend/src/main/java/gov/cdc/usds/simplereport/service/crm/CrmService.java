@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service.crm;
 
-import java.util.Map;
+import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
+import gov.cdc.usds.simplereport.service.model.crm.AccountRequestDynamicsData;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,8 @@ public class CrmService {
   }
 
   @Async
-  public void submitAccountRequestData(final Map<String, Object> data) {
-    _crmProvider.submitAccountRequestData(data);
+  public void submitAccountRequestData(final AccountRequest accountRequest) {
+    AccountRequestDynamicsData dynamicsData = new AccountRequestDynamicsData(accountRequest);
+    _crmProvider.submitAccountRequestData(dynamicsData);
   }
 }
