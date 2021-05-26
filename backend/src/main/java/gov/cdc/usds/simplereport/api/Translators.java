@@ -229,7 +229,7 @@ public class Translators {
     }
     try {
       result = result.toUpperCase();
-      if (result.equals("INCONCLUSIVE")) {
+      if ("INCONCLUSIVE".equals(result)) {
         result = TestResult.UNDETERMINED.name();
       }
       return TestResult.valueOf(result);
