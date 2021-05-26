@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import WithPageTitle from "../commonComponents/PageTitle";
+import WithPageTitle from "../commonComponents/WithPageTitle";
 
 import TestQueue from "./TestQueue";
 

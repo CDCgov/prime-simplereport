@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import WithPageTitle from "../commonComponents/PageTitle";
+import WithPageTitle from "../commonComponents/WithPageTitle";
 import { hasPermission, appPermissions } from "../permissions";
 import { RootState } from "../store";
 

@@ -11,7 +11,7 @@ import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import { RootState } from "../store";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
-import WithPageTitle from "../commonComponents/PageTitle";
+import WithPageTitle from "../commonComponents/WithPageTitle";
 
 import PersonForm from "./Components/PersonForm";
 

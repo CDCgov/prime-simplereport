@@ -37,7 +37,7 @@ import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 import { Patient } from "../patients/ManagePatients";
 import SearchResults from "../testQueue/addToQueue/SearchResults";
-import WithPageTitle from "../commonComponents/PageTitle";
+import WithPageTitle from "../commonComponents/WithPageTitle";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
