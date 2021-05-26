@@ -15,13 +15,27 @@ module.exports = {
       },
     },
   ],
-  webpackFinal: (config) => {
+  webpackFinal: async (config) => {
     config.resolve.alias[
       "@microsoft/applicationinsights-react-js"
     ] = require.resolve("../src/stories/__mocks__/appInsights.js");
     config.resolve.alias["./TestTimer"] = require.resolve(
       "../src/stories/__mocks__/TestTimer.ts"
     );
+    config.module.rules.push({
+      test: /\.scss$/,
+      use: [
+
+        {
+          loader: 'sass-resources-loader',
+          options: {
+            resources: [
+              './node_modules/uswds/dist/scss/packages/_required.scss'
+            ]
+          },
+        },
+      ],
+    },);
     return config;
   },
 };
