@@ -477,7 +477,6 @@ exports[`App Render main screen 1`] = `
         </nav>
       </div>
     </header>
-     
     <main
       className="prime-home"
     >
