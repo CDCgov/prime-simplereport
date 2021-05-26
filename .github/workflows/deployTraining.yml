@@ -8,6 +8,8 @@ on:
 env:
   DEPLOY_ENV: training
   NODE_VERSION: 14
+concurrency:
+  group: training-deploy
 
 jobs:
   docker-build:

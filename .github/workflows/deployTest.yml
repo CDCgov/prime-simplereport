@@ -3,6 +3,9 @@ name: Deploy Test
 on:
   workflow_dispatch:
 
+concurrency:
+  group: test-deploy
+  cancel-in-progress: true
 env:
   DEPLOY_ENV: test
   NODE_VERSION: 14

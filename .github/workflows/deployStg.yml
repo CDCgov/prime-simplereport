@@ -8,6 +8,8 @@ on:
 env:
   DEPLOY_ENV: stg
   NODE_VERSION: 14
+concurrency:
+  group: stg-deploy
 
 jobs:
   docker-build:

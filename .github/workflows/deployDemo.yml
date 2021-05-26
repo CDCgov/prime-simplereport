@@ -8,6 +8,8 @@ on:
 env:
   DEPLOY_ENV: demo
   NODE_VERSION: 14
+concurrency:
+  group: demo-deploy
 
 jobs:
   docker-build:

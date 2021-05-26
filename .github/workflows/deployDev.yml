@@ -9,6 +9,9 @@ on:
 env:
   DEPLOY_ENV: dev
   NODE_VERSION: 14
+concurrency:
+  group: dev-deploy
+  cancel-in-progress: true
 
 jobs:
   docker-build:
