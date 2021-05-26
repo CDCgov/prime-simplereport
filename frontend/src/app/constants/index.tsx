@@ -640,4 +640,4 @@ export const TRIBAL_AFFILIATION_VALUES: {
   ? fullTribalAffiliationValueSet.slice(0, 10)
   : fullTribalAffiliationValueSet;
 
-  export const HELMET_TEMPLATE = "%s | SimpleReport";
+export const HELMET_TEMPLATE = "%s | SimpleReport";

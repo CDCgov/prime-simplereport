@@ -8,8 +8,7 @@ interface Props {
 const WithPageTitle: React.FC<Props> = ({ title }) => {
   return (
     <div>
-      <Helmet
-      >
+      <Helmet>
         <title>{title}</title>
       </Helmet>
     </div>

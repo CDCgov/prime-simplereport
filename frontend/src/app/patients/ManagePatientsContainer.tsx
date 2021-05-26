@@ -27,15 +27,16 @@ const ManagePatientsContainer = (props: { page?: number }) => {
   if (activeFacilityId.length < 1) {
     return <div>"No facility selected"</div>;
   }
-  return (<>
-    <WithPageTitle title="People"/>
-    <ManagePatients
-      activeFacilityId={activeFacilityId}
-      canEditUser={canEditUser}
-      canDeleteUser={canDeleteUser}
-      currentPage={props.page}
-      isAdmin={isAdmin}
-    />
+  return (
+    <>
+      <WithPageTitle title="People" />
+      <ManagePatients
+        activeFacilityId={activeFacilityId}
+        canEditUser={canEditUser}
+        canDeleteUser={canDeleteUser}
+        currentPage={props.page}
+        isAdmin={isAdmin}
+      />
     </>
   );
 };

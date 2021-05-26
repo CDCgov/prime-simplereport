@@ -11,9 +11,16 @@ const TestQueueContainer = () => {
   );
 
   return (
-<>      <WithPageTitle title="Conduct test"/>
-    {!activeFacilityId.length ? <div>"No facility selected"</div> : <TestQueue activeFacilityId={activeFacilityId} />}
-    </>);
+    <>
+      {" "}
+      <WithPageTitle title="Conduct test" />
+      {!activeFacilityId.length ? (
+        <div>"No facility selected"</div>
+      ) : (
+        <TestQueue activeFacilityId={activeFacilityId} />
+      )}
+    </>
+  );
 };
 
 export default TestQueueContainer;

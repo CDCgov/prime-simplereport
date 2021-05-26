@@ -96,9 +96,7 @@ const App = () => {
   return (
     <PrimeErrorBoundary>
       <WithFacility>
-        <Helmet
-        titleTemplate={HELMET_TEMPLATE}
-        defaultTitle="Home"/>
+        <Helmet titleTemplate={HELMET_TEMPLATE} defaultTitle="Home" />
         <div className="App">
           <div id="main-wrapper">
             <USAGovBanner />
