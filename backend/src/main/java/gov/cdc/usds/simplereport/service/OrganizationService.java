@@ -238,6 +238,7 @@ public class OrganizationService {
       String providerNPI) {
     // for now, all new organizations have identity_verified = false by default
     Organization org = _repo.save(new Organization(name, externalId, false));
+    _oktaRepo.createOrganization(org);
     Facility facility =
         createFacilityNoPermissions(
             org,
@@ -251,7 +252,6 @@ public class OrganizationService {
             providerAddress,
             providerTelephone,
             providerNPI);
-    _oktaRepo.createOrganization(org);
     _oktaRepo.createFacility(facility);
     return org;
   }
