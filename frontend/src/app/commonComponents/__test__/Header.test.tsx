@@ -2,9 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router";
 import createMockStore from "redux-mock-store";
-import {
-  useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
+import { useTrackEvent } from "@microsoft/applicationinsights-react-js";
 
 import Header from "../Header";
 
@@ -28,8 +26,6 @@ jest.mock("@microsoft/applicationinsights-react-js", () => ({
   useAppInsightsContext: () => {},
   useTrackEvent: jest.fn(),
 }));
-
-const mockInsight = jest.fn()
 
 describe("Header.tsx", () => {
   const OLD_ENV = process.env;
@@ -85,5 +81,5 @@ describe("Header.tsx", () => {
       fireEvent.click(screen.getByTestId("support-link"));
     });
     expect(useTrackEvent).toHaveBeenCalledWith(undefined, "Support", {});
-  })
+  });
 });
