@@ -177,37 +177,22 @@ public class TestDataFactory {
   }
 
   private Specification<Person> personFilter(PersonName n) {
-    return (root, query, cb) -> 
+    return (root, query, cb) ->
         cb.and(
             cb.equal(root.get(Person_.nameInfo).get(PersonName_.firstName), n.getFirstName()),
-            cb.equal(root.get(Person_.nameInfo).get(PersonName_.middleName), n.getMiddleName()),
-            cb.equal(root.get(Person_.nameInfo).get(PersonName_.lastName), n.getLastName()),
-            cb.equal(root.get(Person_.nameInfo).get(PersonName_.suffix), n.getSuffix()));
+            cb.equal(root.get(Person_.nameInfo).get(PersonName_.lastName), n.getLastName()));
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public Person getPersonByName(PersonName n) {
-    List<Person> perple = _personRepo.findAll();
-    System.out.print("\n\n\nTARGET_FIRST_NAME="+n.getFirstName());
-    System.out.print("\n\n\nTARGET_MIDDLE_NAME="+n.getMiddleName());
-    System.out.print("\n\n\nTARGET_LAST_NAME="+n.getLastName());
-    System.out.print("\n\n\nTARGET_SUFFIX="+n.getSuffix());
-    perple.forEach(p -> {
-      System.out.print("\n\n\nFIRST_NAME="+p.getFirstName());
-      System.out.print("\n\n\nMIDDLE_NAME="+p.getMiddleName());
-      System.out.print("\n\n\nLAST_NAME="+p.getLastName());
-      System.out.print("\n\n\nSUFFIX="+p.getSuffix());
-    });
-    List<Person> people = _personRepo.findAll(personFilter(n), PageRequest.of(0, 10));
-    if (people.size() != 1) {
+    List<Person> perple = _personRepo.findAll(personFilter(n), PageRequest.of(0, 10));
+    if (perple.size() != 1) {
       throw new RuntimeException(
           String.format(
               "Cannot retrieve person with name='%s %s', %d such people exist",
-              n.getFirstName(),
-              n.getLastName(),
-              people.size()));
+              n.getFirstName(), n.getLastName(), perple.size()));
     }
-    return people.get(0);
+    return perple.get(0);
   }
 
   public TestOrder createTestOrder(Person p, Facility f) {
