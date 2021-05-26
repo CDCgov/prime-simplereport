@@ -4,7 +4,7 @@ import QueueItem, { QueueItemProps } from "../../app/testQueue/QueueItem";
 import { getMocks, StoryGraphQLProvider } from "../storyMocks";
 
 export default {
-  title: "App/Test Queue/Queue Item",
+  title: "App/Test queue/Queue item",
   component: QueueItem,
   parameters: {
     layout: "fullscreen",
