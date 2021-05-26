@@ -104,7 +104,7 @@ interface AddPatientResponse {
 }
 
 const AddPatient = () => {
-  useDocumentTitle("Add Patinet");
+  useDocumentTitle("Add Patient");
 
   const [addPatient, { loading }] = useMutation<
     AddPatientResponse,
@@ -147,7 +147,6 @@ const AddPatient = () => {
   };
 
   return (
-    <>
       <main className={"prime-edit-patient prime-home"}>
         <div className={"grid-container margin-bottom-4"}>
           <PersonForm
@@ -201,7 +200,6 @@ const AddPatient = () => {
           />
         </div>
       </main>
-    </>
   );
 };
 

@@ -456,7 +456,6 @@ const TestResultsList = (props: TestResultsListProps) => {
   const totalEntries = totalResults?.testResultsCount || 0;
 
   return (
-    <>
       <QueryWrapper<Props>
         query={testResultQuery}
         queryOptions={{
@@ -475,7 +474,6 @@ const TestResultsList = (props: TestResultsListProps) => {
           facilityId: activeFacilityId,
         }}
       />
-    </>
   );
 };
 

@@ -17,7 +17,6 @@ interface Params {
 const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
   useDocumentTitle("Settings");
   return (
-    <>
       <main className="prime-home">
         <div className="grid-container">
           <PrimeErrorBoundary
@@ -69,7 +68,6 @@ const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
           </PrimeErrorBoundary>
         </div>
       </main>
-    </>
   );
 };
 

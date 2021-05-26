@@ -36,8 +36,7 @@ const useDocumentTitle = (title: string, retainOnUnmount = false) => {
         document.title = defaultCurrentTitle;
       }
     };
-    //eslint-disable-next-line
-  }, []);
+  }, [retainOnUnmount, title]);
 };
 
 export { useOutsideClick, useDocumentTitle };
