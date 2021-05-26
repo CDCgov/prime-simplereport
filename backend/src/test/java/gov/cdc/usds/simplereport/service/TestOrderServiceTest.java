@@ -32,7 +32,6 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -840,19 +839,22 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     assertEquals(_e.getTestOrder().getInternalId(), _e.getTestOrderId());
 
-    List<TestEvent> events_before = _service.getTestEventsResults(facility.getInternalId(), null, null, 0, 50);
+    List<TestEvent> events_before =
+        _service.getTestEventsResults(facility.getInternalId(), null, null, 0, 50);
     assertEquals(1, events_before.size());
 
     // verify the original order was updated
-    TestOrder onlySavedOrder = _service.getTestResult(_e.getInternalId()).getTestOrder();
+    TestEvent refreshedTestResult = _service.getTestResult(_e.getInternalId());
+    TestOrder onlySavedOrder = refreshedTestResult.getTestOrder();
+    TestEvent mostRecentEvent = onlySavedOrder.getTestEvent();
     assertEquals(reasonMsg, onlySavedOrder.getReasonForCorrection());
-    assertEquals(
-        deleteMarkerEvent.getInternalId().toString(), onlySavedOrder.getTestEvent().toString());
+    assertEquals(deleteMarkerEvent.getInternalId(), mostRecentEvent.getInternalId());
     assertEquals(TestCorrectionStatus.REMOVED, onlySavedOrder.getCorrectionStatus());
 
     // make sure the original item is removed from the result and ONLY the
     // "corrected" removed one is shown
-    List<TestEvent> events_after = _service.getTestEventsResults(facility.getInternalId(), null, null, 0, 50);
+    List<TestEvent> events_after =
+        _service.getTestEventsResults(facility.getInternalId(), null, null, 0, 50);
     assertEquals(1, events_after.size());
     assertEquals(
         deleteMarkerEvent.getInternalId().toString(),
@@ -863,10 +865,14 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @WithSimpleReportOrgAdminUser
   void getTestEventsResults_pagination() {
     List<TestEvent> testEvents = makedata();
-    List<TestEvent> results_page0 = _service.getTestEventsResults(_site.getInternalId(), null, null, 0, 5);
-    List<TestEvent> results_page1 = _service.getTestEventsResults(_site.getInternalId(), null, null, 1, 5);
-    List<TestEvent> results_page2 = _service.getTestEventsResults(_site.getInternalId(), null, null, 2, 5);
-    List<TestEvent> results_page3 = _service.getTestEventsResults(_site.getInternalId(), null, null, 3, 5);
+    List<TestEvent> results_page0 =
+        _service.getTestEventsResults(_site.getInternalId(), null, null, 0, 5);
+    List<TestEvent> results_page1 =
+        _service.getTestEventsResults(_site.getInternalId(), null, null, 1, 5);
+    List<TestEvent> results_page2 =
+        _service.getTestEventsResults(_site.getInternalId(), null, null, 2, 5);
+    List<TestEvent> results_page3 =
+        _service.getTestEventsResults(_site.getInternalId(), null, null, 3, 5);
 
     Collections.reverse(testEvents);
 
@@ -880,68 +886,60 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @WithSimpleReportOrgAdminUser
   void getTestEventsResults_filtering() {
     List<TestEvent> testEvents = makedata();
-    List<TestEvent> positives = 
+    List<TestEvent> positives =
+        _service.getTestEventsResults(_site.getInternalId(), null, TestResult.POSITIVE, 0, 10);
+    List<TestEvent> negatives =
+        _service.getTestEventsResults(_site.getInternalId(), null, TestResult.NEGATIVE, 0, 10);
+    List<TestEvent> inconclusives =
+        _service.getTestEventsResults(_site.getInternalId(), null, TestResult.UNDETERMINED, 0, 10);
+    List<TestEvent> positivesAmos =
         _service.getTestEventsResults(
-            _site.getInternalId(), 
-            null, 
-            TestResult.POSITIVE, 
-            0, 
-            10);
-    List<TestEvent> negatives = 
-        _service.getTestEventsResults(
-            _site.getInternalId(), 
-            null, 
-            TestResult.NEGATIVE, 
-            0, 
-            10);
-    List<TestEvent> inconclusives = 
-        _service.getTestEventsResults(
-            _site.getInternalId(), 
-            null, 
-            TestResult.UNDETERMINED, 
-            0, 
-            10);
-    List<TestEvent> positivesAmos = 
-        _service.getTestEventsResults(
-            _site.getInternalId(), 
+            _site.getInternalId(),
             _dataFactory.getPersonByName(AMOS).getInternalId(),
-            TestResult.POSITIVE, 
-            0, 
+            TestResult.POSITIVE,
+            0,
             10);
-    List<TestEvent> negativesAmos = 
+    List<TestEvent> negativesAmos =
         _service.getTestEventsResults(
-            _site.getInternalId(), 
+            _site.getInternalId(),
             _dataFactory.getPersonByName(AMOS).getInternalId(),
-            TestResult.NEGATIVE, 
-            0, 
+            TestResult.NEGATIVE,
+            0,
             10);
 
     Collections.reverse(testEvents);
 
     assertTestResultsList(
-        positives, 
-        testEvents.stream().filter(t -> t.getResult() == TestResult.POSITIVE).collect(Collectors.toList()));
-    assertTestResultsList(
-        negatives, 
-        testEvents.stream().filter(t -> t.getResult() == TestResult.NEGATIVE).collect(Collectors.toList()));
-    assertTestResultsList(
-        inconclusives, 
-        testEvents.stream().filter(t -> t.getResult() == TestResult.UNDETERMINED).collect(Collectors.toList()));
-    assertTestResultsList(
-        positivesAmos, 
+        positives,
         testEvents.stream()
-            .filter(
-                t -> t.getResult() == TestResult.POSITIVE && 
-                t.getPatient().getNameInfo().equals(AMOS))
+            .filter(t -> t.getResult() == TestResult.POSITIVE)
             .collect(Collectors.toList()));
     assertTestResultsList(
-        negativesAmos, 
+        negatives,
+        testEvents.stream()
+            .filter(t -> t.getResult() == TestResult.NEGATIVE)
+            .collect(Collectors.toList()));
+    assertTestResultsList(
+        inconclusives,
+        testEvents.stream()
+            .filter(t -> t.getResult() == TestResult.UNDETERMINED)
+            .collect(Collectors.toList()));
+    assertTestResultsList(
+        positivesAmos,
         testEvents.stream()
             .filter(
-                t -> t.getResult() == TestResult.NEGATIVE && 
-                t.getPatient().getNameInfo().equals(AMOS))
+                t ->
+                    t.getResult() == TestResult.POSITIVE
+                        && t.getPatient().getNameInfo().equals(AMOS))
             .collect(Collectors.toList()));
-    
+    assertTestResultsList(
+        negativesAmos,
+        testEvents.stream()
+            .filter(
+                t ->
+                    t.getResult() == TestResult.NEGATIVE
+                        && t.getPatient().getNameInfo().equals(AMOS))
+            .collect(Collectors.toList()));
   }
 
   @Test
