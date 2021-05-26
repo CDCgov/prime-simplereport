@@ -8,8 +8,10 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 
+type MfaOptions = "SMS" | "Okta" | "Google" | "FIDO" | "Phone" | "Email" | "";
+
 export const MfaSelect = () => {
-  const [mfaOption, setMfaOption] = useState("");
+  const [mfaOption, setMfaOption] = useState<MfaOptions>("");
   const [mfaOptionError, setMfaOptionError] = useState("");
   const [submitted, setSubmitted] = useState(false);
 

@@ -8,15 +8,13 @@ const getOptions = (
   body: any
 ): {
   method: string;
-  mode: RequestMode;
   headers: HeadersInit;
-  body: string;
+  body: string | undefined;
 } => {
   return {
     method: "POST",
-    mode: "cors",
     headers,
-    body: JSON.stringify(body),
+    body: body ? JSON.stringify(body) : undefined,
   };
 };
 
@@ -58,5 +56,9 @@ export class AccountCreationApi {
 
   static verifyActivationPasscode(code: string) {
     return request("/verify-activation-passcode", { code });
+  }
+
+  static resendActivationPasscode() {
+    return request("/resend-activation-passcode", null);
   }
 }

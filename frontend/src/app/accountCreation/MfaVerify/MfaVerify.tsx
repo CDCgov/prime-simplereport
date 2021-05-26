@@ -8,6 +8,7 @@ import Button from "../../commonComponents/Button/Button";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 import { AccountCreationApi } from "../AccountCreationApiService";
+import Alert from "../../commonComponents/Alert";
 
 interface Props {
   hint: ReactElement;
@@ -18,6 +19,7 @@ export const MfaVerify = (props: Props) => {
   const [codeError, setCodeError] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [codeResendSuccess, setCodeResendSuccess] = useState(false);
 
   const validateCode = () => {
     let error = "";
@@ -25,7 +27,17 @@ export const MfaVerify = (props: Props) => {
       error = "Enter your security code";
     }
     setCodeError(error);
+    setCodeResendSuccess(false);
     return error === "";
+  };
+
+  const resendCode = async () => {
+    try {
+      await AccountCreationApi.resendActivationPasscode();
+      setCodeResendSuccess(true);
+    } catch (error) {
+      setCodeError(`API Error: ${error?.message}`);
+    }
   };
 
   const handleSubmit = async () => {
@@ -35,7 +47,7 @@ export const MfaVerify = (props: Props) => {
         await AccountCreationApi.verifyActivationPasscode(code);
         setSubmitted(true);
       } catch (error) {
-        setCodeError(`API Error: ${error}`);
+        setCodeError(`API Error: ${error?.message}`);
       } finally {
         setLoading(false);
       }
@@ -64,6 +76,13 @@ export const MfaVerify = (props: Props) => {
           currentStepValue={"2"}
           noLabels={true}
         />
+        {codeResendSuccess ? (
+          <Alert
+            type="success"
+            title="Verification code resent"
+            body="Another code has been sent."
+          />
+        ) : null}
         <p className="margin-bottom-0">Verify your security code.</p>
         <p className="usa-hint font-ui-2xs margin-bottom-0">{props.hint}</p>
         <div className="display-flex">
@@ -90,7 +109,7 @@ export const MfaVerify = (props: Props) => {
           className="usa-button--outline display-block margin-top-3"
           label={"Send another code"}
           type={"submit"}
-          onClick={() => {}}
+          onClick={resendCode}
         />
       </Card>
       <p className="margin-top-5">

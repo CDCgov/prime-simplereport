@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Redirect } from "react-router";
 
 import { Card } from "../../commonComponents/Card/Card";
@@ -28,7 +28,7 @@ export const MfaSendCodeToContact = (props: Props) => {
   const contactIsValid =
     props.type === "phone number" ? phoneNumberIsValid : emailIsValid;
 
-  const validateContact = () => {
+  const validateContact = useCallback(() => {
     setFormIsDirty(true);
     let error = "";
     if (!contact) {
@@ -49,7 +49,7 @@ export const MfaSendCodeToContact = (props: Props) => {
     }
     setContactError(error);
     return error === "";
-  };
+  }, [contact, contactIsValid, props.type]);
 
   const handleSubmit = async () => {
     if (validateContact()) {
@@ -58,7 +58,7 @@ export const MfaSendCodeToContact = (props: Props) => {
         await props.serviceEnroll(contact);
         setSubmitted(true);
       } catch (error) {
-        setContactError(`API Error: ${error}`);
+        setContactError(`API Error: ${error?.message}`);
       } finally {
         setLoading(false);
       }
@@ -69,7 +69,7 @@ export const MfaSendCodeToContact = (props: Props) => {
     if (formIsDirty) {
       validateContact();
     }
-  });
+  }, [formIsDirty, validateContact]);
 
   if (loading) {
     return (
