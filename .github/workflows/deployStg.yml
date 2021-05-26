@@ -1,9 +1,9 @@
 name: Deploy Stg
 
 on:
-  schedule:
-    - cron: '0 9 * * *' # Daily at 09:00 UTC
   workflow_dispatch:
+  release:
+    types: [prereleased]
 
 env:
   DEPLOY_ENV: stg
