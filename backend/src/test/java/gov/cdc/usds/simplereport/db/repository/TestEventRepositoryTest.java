@@ -59,17 +59,6 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     };
   }
 
-  private Specification<TestEvent> resultFilter(UUID facilityId) {
-    return (root, query, cb) -> {
-      Join<TestEvent, TestOrder> order = 
-          root.join(TestEvent_.order);
-      order.on(cb.equal(root.get(TestEvent_.internalId), order.get(TestOrder_.testEvent)));
-      query.orderBy(cb.desc(root.get(TestEvent_.createdAt)));
-
-      return cb.equal(root.get(TestEvent_.facility).get(Facility_.internalId), facilityId);
-    };
-  }
-
   @Test
   void testFindByPatient() {
     Organization org = _dataFactory.createValidOrg();
