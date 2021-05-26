@@ -456,24 +456,24 @@ const TestResultsList = (props: TestResultsListProps) => {
   const totalEntries = totalResults?.testResultsCount || 0;
 
   return (
-      <QueryWrapper<Props>
-        query={testResultQuery}
-        queryOptions={{
-          variables: queryVariables,
-        }}
-        onRefetch={refetchCount}
-        Component={DetachedTestResultsList}
-        displayLoadingIndicator={false}
-        componentProps={{
-          ...props,
-          page: pageNumber,
-          loadingTotalResults,
-          totalEntries,
-          entriesPerPage,
-          setSelectedPatientId,
-          facilityId: activeFacilityId,
-        }}
-      />
+    <QueryWrapper<Props>
+      query={testResultQuery}
+      queryOptions={{
+        variables: queryVariables,
+      }}
+      onRefetch={refetchCount}
+      Component={DetachedTestResultsList}
+      displayLoadingIndicator={false}
+      componentProps={{
+        ...props,
+        page: pageNumber,
+        loadingTotalResults,
+        totalEntries,
+        entriesPerPage,
+        setSelectedPatientId,
+        facilityId: activeFacilityId,
+      }}
+    />
   );
 };
 

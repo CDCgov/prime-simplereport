@@ -29,13 +29,13 @@ const ManagePatientsContainer = (props: { page?: number }) => {
     return <div>"No facility selected"</div>;
   }
   return (
-      <ManagePatients
-        activeFacilityId={activeFacilityId}
-        canEditUser={canEditUser}
-        canDeleteUser={canDeleteUser}
-        currentPage={props.page}
-        isAdmin={isAdmin}
-      />
+    <ManagePatients
+      activeFacilityId={activeFacilityId}
+      canEditUser={canEditUser}
+      canDeleteUser={canDeleteUser}
+      currentPage={props.page}
+      isAdmin={isAdmin}
+    />
   );
 };
 

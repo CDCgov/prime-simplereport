@@ -147,59 +147,59 @@ const AddPatient = () => {
   };
 
   return (
-      <main className={"prime-edit-patient prime-home"}>
-        <div className={"grid-container margin-bottom-4"}>
-          <PersonForm
-            patient={EMPTY_PERSON}
-            activeFacilityId={activeFacilityId}
-            savePerson={savePerson}
-            getHeader={(_, onSave, formChanged) => (
-              <div className="display-flex flex-justify">
-                <div>
-                  <div className="display-flex flex-align-center">
-                    <svg
-                      className="usa-icon text-base margin-left-neg-2px"
-                      aria-hidden="true"
-                      focusable="false"
-                      role="img"
-                    >
-                      <use xlinkHref={iconSprite + "#arrow_back"}></use>
-                    </svg>
-                    <LinkWithQuery to={`/patients`} className="margin-left-05">
-                      People
-                    </LinkWithQuery>
-                  </div>
-                  <div className="prime-edit-patient-heading margin-y-0">
-                    <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
-                      Add New {PATIENT_TERM_CAP}
-                    </h1>
-                  </div>
-                </div>
+    <main className={"prime-edit-patient prime-home"}>
+      <div className={"grid-container margin-bottom-4"}>
+        <PersonForm
+          patient={EMPTY_PERSON}
+          activeFacilityId={activeFacilityId}
+          savePerson={savePerson}
+          getHeader={(_, onSave, formChanged) => (
+            <div className="display-flex flex-justify">
+              <div>
                 <div className="display-flex flex-align-center">
-                  <button
-                    className="prime-save-patient-changes usa-button margin-right-0 "
-                    disabled={loading || !formChanged}
-                    onClick={onSave}
+                  <svg
+                    className="usa-icon text-base margin-left-neg-2px"
+                    aria-hidden="true"
+                    focusable="false"
+                    role="img"
                   >
-                    {loading ? "Saving..." : "Save changes"}
-                  </button>
+                    <use xlinkHref={iconSprite + "#arrow_back"}></use>
+                  </svg>
+                  <LinkWithQuery to={`/patients`} className="margin-left-05">
+                    People
+                  </LinkWithQuery>
+                </div>
+                <div className="prime-edit-patient-heading margin-y-0">
+                  <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
+                    Add New {PATIENT_TERM_CAP}
+                  </h1>
                 </div>
               </div>
-            )}
-            getFooter={(onSave, formChanged) => (
-              <div className="prime-edit-patient-heading">
-                <Button
-                  id="edit-patient-save-lower"
-                  className="prime-save-patient-changes"
+              <div className="display-flex flex-align-center">
+                <button
+                  className="prime-save-patient-changes usa-button margin-right-0 "
                   disabled={loading || !formChanged}
                   onClick={onSave}
-                  label={loading ? "Saving..." : "Save changes"}
-                />
+                >
+                  {loading ? "Saving..." : "Save changes"}
+                </button>
               </div>
-            )}
-          />
-        </div>
-      </main>
+            </div>
+          )}
+          getFooter={(onSave, formChanged) => (
+            <div className="prime-edit-patient-heading">
+              <Button
+                id="edit-patient-save-lower"
+                className="prime-save-patient-changes"
+                disabled={loading || !formChanged}
+                onClick={onSave}
+                label={loading ? "Saving..." : "Save changes"}
+              />
+            </div>
+          )}
+        />
+      </div>
+    </main>
   );
 };
 
