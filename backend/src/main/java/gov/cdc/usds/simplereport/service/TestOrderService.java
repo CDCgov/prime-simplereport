@@ -112,9 +112,7 @@ public class TestOrderService {
                 p, cb.equal(root.get(TestEvent_.facility).get(Facility_.internalId), facilityId));
       }
       if (patientId != null) {
-        p =
-            cb.and(
-                p, cb.equal(root.get(TestEvent_.patientData).get(Person_.internalId), patientId));
+        p = cb.and(p, cb.equal(root.get(TestEvent_.patient).get(Person_.internalId), patientId));
       }
       if (result != null) {
         p = cb.and(p, cb.equal(root.get(TestEvent_.result), result));
