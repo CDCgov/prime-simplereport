@@ -11,7 +11,7 @@ terraform {
       version = "~>2.0"
     }
     okta = {
-      source = "oktadeveloper/okta"
+      source = "okta/okta"
     }
     pagerduty = {
       source = "pagerduty/pagerduty"

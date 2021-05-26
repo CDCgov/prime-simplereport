@@ -106,6 +106,7 @@ org.jetbrains:annotations:13.0
 org.json:json:20201115
 org.liquibase:liquibase-core:3.10.3
 org.ow2.asm:asm:5.0.4
+org.projectlombok:lombok:1.18.20
 org.reactivestreams:reactive-streams:1.0.3
 org.slf4j:jul-to-slf4j:1.7.30
 org.slf4j:slf4j-api:1.7.30

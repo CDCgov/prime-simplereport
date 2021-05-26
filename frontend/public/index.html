@@ -9,12 +9,12 @@
             %REACT_APP_CONTENT_SECURITY_POLICY_SCRIPT_SRC%
             style-src 'self' 'unsafe-inline';
             img-src 'self' data:;
-            connect-src 'self'  https://us-street.api.smartystreets.com www.google-analytics.com https://dc.services.visualstudio.com/v2/track %REACT_APP_BACKEND_URL%;
+            connect-src 'self'  https://us-street.api.smartystreets.com www.google-analytics.com https://dc.services.visualstudio.com/v2/track %REACT_APP_BACKEND_URL%/ ;
         ">
         <% } %>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/%REACT_APP_ICON%" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"

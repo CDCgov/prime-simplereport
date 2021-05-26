@@ -1,6 +1,7 @@
 module "metric_alerts" {
   source              = "../services/alerts/app_service_metrics"
   env                 = local.env
+  app_insights_id     = data.azurerm_application_insights.app_insights.id
   app_service_plan_id = module.simple_report_api.app_service_plan_id
   app_service_id      = module.simple_report_api.app_service_id
   severity            = 1
@@ -9,7 +10,6 @@ module "metric_alerts" {
   mem_threshold       = 85
 
   action_group_ids = [
-    data.terraform_remote_state.global.outputs.slack_alert_action_id,
     data.terraform_remote_state.global.outputs.pagerduty_demo_action_id
   ]
 
