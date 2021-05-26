@@ -7,11 +7,9 @@ interface Props {
 
 const WithPageTitle: React.FC<Props> = ({ title }) => {
   return (
-    <>
-      <Helmet>
-        <title>{title}</title>
-      </Helmet>
-    </>
+    <Helmet>
+      <title>{title}</title>
+    </Helmet>
   );
 };
 
