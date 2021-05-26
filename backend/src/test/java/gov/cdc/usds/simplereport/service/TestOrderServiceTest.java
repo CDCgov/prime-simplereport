@@ -731,7 +731,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     startQueryCount = _hibernateQueryInterceptor.getQueryCount();
     _service.getTestEventsResults(facility.getInternalId(), null, null, 0, 50);
     long secondPassTotal = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
-    assertEquals(secondPassTotal, firstPassTotal);
+    assertEquals(firstPassTotal, secondPassTotal);
   }
 
   @Test
