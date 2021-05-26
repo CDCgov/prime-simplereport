@@ -188,10 +188,8 @@ const FacilityFormContainer: any = (props: Props) => {
   }
 
   const saveFacility = async (facility: Facility) => {
-    try {
+    if (appInsights) {
       trackSaveSettings(null);
-    } catch (e) {
-      console.log(e);
     }
     const provider = facility.orderingProvider;
     const saveFacility = props.facilityId ? updateFacility : addFacility;
