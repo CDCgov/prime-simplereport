@@ -1,25 +1,19 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import WithPageTitle from "../commonComponents/WithPageTitle";
+import { useDocumentTitle } from "../utils/hooks";
 
 import TestQueue from "./TestQueue";
 
 const TestQueueContainer = () => {
+  useDocumentTitle("Conduct test");
   const activeFacilityId = useSelector(
     (state) => (state as any).facility.id as string
   );
-
-  return (
-    <>
-      {" "}
-      <WithPageTitle title="Conduct test" />
-      {!activeFacilityId.length ? (
-        <div>"No facility selected"</div>
-      ) : (
-        <TestQueue activeFacilityId={activeFacilityId} />
-      )}
-    </>
+  return !activeFacilityId.length ? (
+    <div>"No facility selected"</div>
+  ) : (
+    <TestQueue activeFacilityId={activeFacilityId} />
   );
 };
 

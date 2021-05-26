@@ -11,7 +11,7 @@ import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import { RootState } from "../store";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
-import WithPageTitle from "../commonComponents/WithPageTitle";
+import { useDocumentTitle } from "../utils/hooks";
 
 import PersonForm from "./Components/PersonForm";
 
@@ -104,6 +104,8 @@ interface AddPatientResponse {
 }
 
 const AddPatient = () => {
+  useDocumentTitle("Add Patinet");
+
   const [addPatient, { loading }] = useMutation<
     AddPatientResponse,
     AddPatientParams
@@ -146,7 +148,6 @@ const AddPatient = () => {
 
   return (
     <>
-      <WithPageTitle title="Add Patinet" />
       <main className={"prime-edit-patient prime-home"}>
         <div className={"grid-container margin-bottom-4"}>
           <PersonForm

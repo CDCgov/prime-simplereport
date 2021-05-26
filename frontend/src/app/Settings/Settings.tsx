@@ -2,7 +2,7 @@ import { Route, RouteComponentProps, Switch } from "react-router-dom";
 
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import Button from "../commonComponents/Button/Button";
-import WithPageTitle from "../commonComponents/WithPageTitle";
+import { useDocumentTitle } from "../utils/hooks";
 
 import ManageOrganizationContainer from "./ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";
@@ -15,9 +15,9 @@ interface Params {
 }
 
 const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
+  useDocumentTitle("Settings");
   return (
     <>
-      <WithPageTitle title="Settings" />
       <main className="prime-home">
         <div className="grid-container">
           <PrimeErrorBoundary

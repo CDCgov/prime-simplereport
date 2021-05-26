@@ -23,7 +23,7 @@ import {
 } from "../commonComponents/QueryWrapper";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import { getUrl } from "../utils/url";
-import { useOutsideClick } from "../utils/hooks";
+import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
 import Pagination from "../commonComponents/Pagination";
 import { TEST_RESULT_DESCRIPTIONS } from "../constants";
 import "./TestResultsList.scss";
@@ -37,7 +37,6 @@ import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 import { Patient } from "../patients/ManagePatients";
 import SearchResults from "../testQueue/addToQueue/SearchResults";
-import WithPageTitle from "../commonComponents/WithPageTitle";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
@@ -404,6 +403,8 @@ type OmittedProps =
 type TestResultsListProps = Omit<Props, OmittedProps>;
 
 const TestResultsList = (props: TestResultsListProps) => {
+  useDocumentTitle("Results");
+
   const activeFacilityId = useSelector(
     (state) => (state as any).facility.id as string
   );
@@ -456,7 +457,6 @@ const TestResultsList = (props: TestResultsListProps) => {
 
   return (
     <>
-      <WithPageTitle title="Results" />
       <QueryWrapper<Props>
         query={testResultQuery}
         queryOptions={{

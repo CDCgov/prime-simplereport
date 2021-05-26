@@ -639,5 +639,3 @@ export const TRIBAL_AFFILIATION_VALUES: {
 }[] = process.env.REACT_APP_TEST_TRIBAL_AFFILIATION_BYPASS
   ? fullTribalAffiliationValueSet.slice(0, 10)
   : fullTribalAffiliationValueSet;
-
-export const HELMET_TEMPLATE = "%s | SimpleReport";

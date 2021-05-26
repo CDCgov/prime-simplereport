@@ -5,7 +5,6 @@ import { useDispatch, connect } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
-import { Helmet } from "react-helmet";
 
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
@@ -23,7 +22,6 @@ import WithFacility from "./facilitySelect/WithFacility";
 import { appPermissions } from "./permissions";
 import Settings from "./Settings/Settings";
 import { getAppInsights } from "./TelemetryService";
-import { HELMET_TEMPLATE } from "./constants";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -96,7 +94,6 @@ const App = () => {
   return (
     <PrimeErrorBoundary>
       <WithFacility>
-        <Helmet titleTemplate={HELMET_TEMPLATE} defaultTitle="Home" />
         <div className="App">
           <div id="main-wrapper">
             <USAGovBanner />
