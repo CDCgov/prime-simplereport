@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.idp.authentication;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
@@ -59,21 +60,19 @@ import com.okta.spring.boot.sdk.config.OktaClientProperties;
 
 // @Import(SliceTestConfiguration.class)
 @TestInstance(Lifecycle.PER_CLASS)
-// @Import(LiveOktaAuthentication.class)
-@SpringBootTest
-public class LiveOktaAuthenticationTest {
+// we probably need a fake application before it will retrieve the properties
+// otherwise how is it supposed to know what the properties are
+public class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
-  // @Value("${okta.client.org-url}")
+  @Value("${okta.client.org-url}")
   private String _orgUrl;
 
-  // @Value("${okta.client.token}")
+  @Value("${okta.client.token}")
   private String _token;
 
-  @Autowired private LiveOktaAuthentication _auth;
+  private LiveOktaAuthentication _auth;
 
-  @Autowired private TestRestTemplate _restTemplate;
-
-  // private RestTemplate _restTemplate;
+  private RestTemplate _restTemplate;
 
   private JSONObject _createUserResponse;
 
@@ -82,13 +81,11 @@ public class LiveOktaAuthenticationTest {
   @BeforeAll
   void initializeUser() {
     System.out.println("IN TEST INITIALIZATION");
-    System.out.println(_auth);
-    // _auth = new LiveOktaAuthentication(_orgUrl, _token);
-    _orgUrl = _auth.getOrgUrl();
-    _token = _auth.getApiToken();
     System.out.println("orgUrl: " + _orgUrl);
+    System.out.println("token: " + _token);
+    _auth = new LiveOktaAuthentication(_orgUrl, _token);
 
-    // _restTemplate = new RestTemplate();
+    _restTemplate = new RestTemplate();
     _createUserResponse = createUser();
     _activatedUserId = _createUserResponse.getString("id");
   }
@@ -115,6 +112,7 @@ public class LiveOktaAuthenticationTest {
     assertThat(response.getString("activated")).isNotNull();
   }
 
+  /*
   @Test
   void setPasswordSuccessful() throws Exception {
     String password = "fooBAR123";
@@ -152,6 +150,7 @@ public class LiveOktaAuthenticationTest {
       });
       assertThat(exception).hasMessage("Error setting user's password");
   }
+  */
 
   // WARNING: this issues an actual API call to Okta and creates an actual user! beware!
   // note to self: how to create this user under the correct organization? might be something like
@@ -168,8 +167,7 @@ public class LiveOktaAuthenticationTest {
     HttpEntity<String> entity = new HttpEntity<>(requestBody.toString(), createHeaders());
     String postUrl = _orgUrl + "/api/v1/users?activate=false";
     try {
-      RestTemplate restTemplate = new RestTemplate();
-      String response = restTemplate.postForObject(postUrl, entity, String.class);
+      String response = _restTemplate.postForObject(postUrl, entity, String.class);
       System.out.println("CREATE USER RESPONSE: " + response);
       return new JSONObject(response);
     } catch (Exception e) {

@@ -30,10 +30,10 @@ logging:
     # Other possibilities:
     # com.okta: DEBUG
     # org.springframework.security: DEBUG
-okta:
-  client:
-    org-url: https://hhs-prime.okta.com
-    token: ${OKTA_API_KEY:MISSING}
+# okta:
+#   client:
+#     org-url: https://hhs-prime.okta.com
+#     token: ${OKTA_API_KEY:MISSING}
 simple-report:
   authorization:
     environment-name: "UNITTEST"
