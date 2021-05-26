@@ -37,6 +37,15 @@ export function QueryWrapper<ComponentProps>({
 }): React.ReactElement {
   const appInsights = useAppInsightsContext();
   const trackAction = useTrackEvent(appInsights, "User Action", {});
+
+  const safeTrackAction = (action: any) => {
+    try {
+      trackAction(action);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const { data, loading, error, refetch, startPolling, stopPolling } = useQuery(
     query,
     {
@@ -56,7 +65,7 @@ export function QueryWrapper<ComponentProps>({
   };
   const props = ({
     ...componentProps,
-    trackAction,
+    trackAction: safeTrackAction,
     data,
     loading,
     refetch: passOnRefetch,

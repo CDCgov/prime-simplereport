@@ -128,9 +128,12 @@ const OrganizationFormContainer: any = (props: Props) => {
     facility: Facility,
     admin: FacilityAdmin
   ) => {
-    if (appInsights) {
+    try {
       trackSaveSettings(null);
+    } catch (err) {
+      console.log(err);
     }
+
     const provider = facility.orderingProvider;
     createOrganization({
       variables: {
