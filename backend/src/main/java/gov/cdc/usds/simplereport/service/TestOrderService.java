@@ -8,12 +8,10 @@ import gov.cdc.usds.simplereport.db.model.AuditedEntity_;
 import gov.cdc.usds.simplereport.db.model.BaseTestInfo_;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.Facility_;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -111,10 +109,16 @@ public class TestOrderService {
       if (facilityId != null) {
         p =
             cb.and(
-                p, cb.equal(root.get(BaseTestInfo_.facility).get(AuditedEntity_.internalId), facilityId));
+                p,
+                cb.equal(
+                    root.get(BaseTestInfo_.facility).get(AuditedEntity_.internalId), facilityId));
       }
       if (patientId != null) {
-        p = cb.and(p, cb.equal(root.get(BaseTestInfo_.patient).get(AuditedEntity_.internalId), patientId));
+        p =
+            cb.and(
+                p,
+                cb.equal(
+                    root.get(BaseTestInfo_.patient).get(AuditedEntity_.internalId), patientId));
       }
       if (result != null) {
         p = cb.and(p, cb.equal(root.get(BaseTestInfo_.result), result));
