@@ -36,9 +36,9 @@ directive @Pattern(
 
 # java.util.Date implementation
 scalar DateTime
-# java.time.LocalDate
-scalar Upload
+# custom scalar gov.cdc.usds.simplereport.api.FlexibleDateScalar
 scalar LocalDate
+scalar Upload
 
 enum ResultValue {
   POSITIVE
