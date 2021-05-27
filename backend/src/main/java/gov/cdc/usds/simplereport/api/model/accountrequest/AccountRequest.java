@@ -9,48 +9,49 @@ import java.util.Map;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 
+@Getter
 @JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
 public class AccountRequest implements TemplateVariablesProvider {
 
   private static final String TEMPLATE_NAME = "account-request";
 
-  @JsonProperty @NotNull @Getter private String firstName;
-  @JsonProperty @NotNull @Getter private String lastName;
-  @JsonProperty @NotNull @Getter private String email;
-  @JsonProperty @NotNull @Getter private String workPhoneNumber;
-  @JsonProperty @Getter private String cellPhoneNumber;
-  @JsonProperty @NotNull @Getter private String streetAddress1;
-  @JsonProperty @Getter private String streetAddress2;
-  @JsonProperty @NotNull @Getter private String city;
-  @JsonProperty @NotNull @Getter private String state;
-  @JsonProperty @NotNull @Getter private String zip;
-  @JsonProperty @NotNull @Getter private String county;
-  @JsonProperty @NotNull @Getter private String facilityType;
-  @JsonProperty @Getter private String facilityTypeOther;
-  @JsonProperty @Getter private String organizationName;
-  @JsonProperty @NotNull @Getter private String facilityName;
-  @JsonProperty @NotNull @Getter private String facilityPhoneNumber;
-  @JsonProperty @NotNull @Getter private String cliaNumber;
-  @JsonProperty @NotNull @Getter private String testingDevices;
-  @JsonProperty @Getter private String testingDeviceOther;
-  @JsonProperty @NotNull @Getter private String defaultTestingDevice;
-  @JsonProperty @NotNull @Getter private String accessDevices;
-  @JsonProperty @NotNull @Getter private String browsers;
-  @JsonProperty @Getter private String browsersOther;
-  @JsonProperty @Getter private String workflow;
-  @JsonProperty @NotNull @Getter private String recordsTestResults;
-  @JsonProperty @NotNull @Getter private String processTime;
-  @JsonProperty @NotNull @Getter private String submittingResultsTime;
-  @JsonProperty @Getter private String opFirstName;
-  @JsonProperty @Getter private String opLastName;
-  @JsonProperty @Getter private String npi;
-  @JsonProperty @Getter private String opPhoneNumber;
-  @JsonProperty @Getter private String opStreetAddress1;
-  @JsonProperty @Getter private String opStreetAddress2;
-  @JsonProperty @Getter private String opCity;
-  @JsonProperty @Getter private String opState;
-  @JsonProperty @Getter private String opZip;
-  @JsonProperty @Getter private String opCounty;
+  @JsonProperty @NotNull private String firstName;
+  @JsonProperty @NotNull private String lastName;
+  @JsonProperty @NotNull private String email;
+  @JsonProperty @NotNull private String workPhoneNumber;
+  @JsonProperty private String cellPhoneNumber;
+  @JsonProperty @NotNull private String streetAddress1;
+  @JsonProperty private String streetAddress2;
+  @JsonProperty @NotNull private String city;
+  @JsonProperty @NotNull private String state;
+  @JsonProperty @NotNull private String zip;
+  @JsonProperty @NotNull private String county;
+  @JsonProperty @NotNull private String facilityType;
+  @JsonProperty private String facilityTypeOther;
+  @JsonProperty private String organizationName;
+  @JsonProperty @NotNull private String facilityName;
+  @JsonProperty @NotNull private String facilityPhoneNumber;
+  @JsonProperty @NotNull private String cliaNumber;
+  @JsonProperty @NotNull private String testingDevices;
+  @JsonProperty private String testingDeviceOther;
+  @JsonProperty @NotNull private String defaultTestingDevice;
+  @JsonProperty @NotNull private String accessDevices;
+  @JsonProperty @NotNull private String browsers;
+  @JsonProperty private String browsersOther;
+  @JsonProperty private String workflow;
+  @JsonProperty @NotNull private String recordsTestResults;
+  @JsonProperty @NotNull private String processTime;
+  @JsonProperty @NotNull private String submittingResultsTime;
+  @JsonProperty private String opFirstName;
+  @JsonProperty private String opLastName;
+  @JsonProperty private String npi;
+  @JsonProperty private String opPhoneNumber;
+  @JsonProperty private String opStreetAddress1;
+  @JsonProperty private String opStreetAddress2;
+  @JsonProperty private String opCity;
+  @JsonProperty private String opState;
+  @JsonProperty private String opZip;
+  @JsonProperty private String opCounty;
 
   @Override
   public String getTemplateName() {
