@@ -6,7 +6,7 @@ import {
   isValidCLIANumber,
   stateRequiresCLIANumberValidation,
 } from "../../utils/clia";
-import { requiresOrderProvider } from "../../utils/state";
+import { isEmptyString } from "../../utils";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -20,32 +20,36 @@ export type RequiredFacilityFields = PartialBy<
 type RequiredProviderFields = Nullable<Partial<Provider>>;
 
 const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
-  firstName: yup
-    .string()
-    .when("state", (state: string, schema: yup.StringSchema) => {
-      return requiresOrderProvider(state)
-        ? schema.required()
-        : schema.nullable();
-    }),
-  middleName: yup.string().nullable(),
-  lastName: yup
-    .string()
-    .when("state", (state: string, schema: yup.StringSchema) => {
-      return requiresOrderProvider(state)
-        ? schema.required()
-        : schema.nullable();
-    }),
-  suffix: yup.string().nullable(),
-  NPI: yup.string().when("state", (state: string, schema: yup.StringSchema) => {
-    return requiresOrderProvider(state) ? schema.required() : schema.nullable();
+  firstName: yup.string().test(function (input = ""): boolean {
+    if (this?.options?.context?.orderingProviderIsRequired) {
+      return !isEmptyString(input);
+    }
+
+    return true;
   }),
-  phone: yup
-    .string()
-    .when("state", (state: string, schema: yup.StringSchema) => {
-      return requiresOrderProvider(state)
-        ? schema.required()
-        : schema.nullable();
-    }),
+  middleName: yup.string().nullable(),
+  lastName: yup.string().test(function (input = ""): boolean {
+    if (this?.options?.context?.orderingProviderIsRequired) {
+      return !isEmptyString(input);
+    }
+
+    return true;
+  }),
+  suffix: yup.string().nullable(),
+  NPI: yup.string().test(function (input = ""): boolean {
+    if (this?.options?.context?.orderingProviderIsRequired) {
+      return !isEmptyString(input);
+    }
+
+    return true;
+  }),
+  phone: yup.string().test(function (input = ""): boolean {
+    if (this?.options?.context?.orderingProviderIsRequired) {
+      return !isEmptyString(input);
+    }
+
+    return true;
+  }),
   street: yup.string().nullable(),
   streetTwo: yup.string().nullable(),
   city: yup.string().nullable(),

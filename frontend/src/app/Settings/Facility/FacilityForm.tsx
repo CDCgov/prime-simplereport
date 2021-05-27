@@ -9,7 +9,7 @@ import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import { stateCodes, urls } from "../../../config/constants";
-import { getStateNameFromCode } from "../../utils/state";
+import { getStateNameFromCode, requiresOrderProvider } from "../../utils/state";
 import {
   getBestSuggestion,
   suggestionIsCloseEnough,
@@ -46,7 +46,11 @@ export const useFacilityValidation = (facility: Facility) => {
     async (field: keyof FacilityErrors) => {
       try {
         clearError(field);
-        await facilitySchema.validateAt(field, facility);
+        await facilitySchema.validateAt(field, facility, {
+          context: {
+            orderingProviderIsRequired: requiresOrderProvider(facility.state),
+          },
+        });
       } catch (e) {
         const errorMessage = createFieldError(field, facility);
         setErrors((existingErrors) => ({
@@ -60,7 +64,12 @@ export const useFacilityValidation = (facility: Facility) => {
 
   const validateFacility = async () => {
     try {
-      await facilitySchema.validate(facility, { abortEarly: false });
+      await facilitySchema.validate(facility, {
+        abortEarly: false,
+        context: {
+          orderingProviderIsRequired: requiresOrderProvider(facility.state),
+        },
+      });
       return "";
     } catch (e) {
       const errors = e.inner.reduce(
@@ -330,7 +339,7 @@ const FacilityForm: React.FC<Props> = (props) => {
           </div>
         </div>
         <OrderingProviderSettings
-          provider={facility.orderingProvider}
+          facility={facility}
           updateProvider={updateProvider}
           errors={errors}
           validateField={validateField}

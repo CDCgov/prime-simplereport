@@ -131,7 +131,7 @@ const OrganizationForm: React.FC<Props> = (props) => {
           </div>
           <FacilityAdmin admin={admin} updateAdmin={updateAdmin} />
           <OrderingProviderSettings
-            provider={facility.orderingProvider}
+            facility={facility}
             updateProvider={updateProvider}
             errors={errors}
             validateField={validateField}

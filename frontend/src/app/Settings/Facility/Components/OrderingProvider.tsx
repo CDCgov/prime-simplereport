@@ -8,14 +8,14 @@ import Dropdown from "../../../commonComponents/Dropdown";
 import TextInput from "../../../commonComponents/TextInput";
 
 interface Props {
-  provider: Provider;
+  facility: Facility;
   updateProvider: (provider: Provider) => void;
   errors: FacilityErrors;
   validateField: ValidateField;
 }
 
 const OrderingProvider: React.FC<Props> = ({
-  provider,
+  facility,
   updateProvider,
   errors,
   validateField,
@@ -26,7 +26,8 @@ const OrderingProvider: React.FC<Props> = ({
     updateProvider({ ...provider, [e.target.name]: e.target.value });
   };
 
-  const isRequired = requiresOrderProvider(provider.state || "");
+  const { orderingProvider: provider } = facility;
+  const isRequired = requiresOrderProvider(facility.state || "");
 
   return (
     <div className="prime-container card-container">
