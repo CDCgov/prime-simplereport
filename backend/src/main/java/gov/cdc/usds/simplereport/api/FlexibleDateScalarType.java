@@ -11,63 +11,62 @@ import java.time.format.DateTimeFormatter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
-public class FlexibleDateScalarType {
+class FlexibleDateCoercion implements Coercing<Object, Object> {
   private static final DateTimeFormatter US_DASHDATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
   private static final DateTimeFormatter US_SLASHDATE_FORMATTER =
-      DateTimeFormatter.ofPattern("MM/dd/yyyy");
+      DateTimeFormatter.ofPattern("M/d/yyyy");
 
+  LocalDate convertImpl(Object input) {
+    if (input instanceof String) {
+      if (((String) input).contains("/")) {
+        return LocalDate.parse((String) input, US_SLASHDATE_FORMATTER);
+      } else if (((String) input).contains("-")) {
+        return LocalDate.parse((String) input, US_DASHDATE_FORMATTER);
+      }
+    } else if (input instanceof LocalDate) {
+      return (LocalDate) input;
+    }
+    return null;
+  }
+
+  @Override
+  public Object serialize(Object dataFetcherResult) {
+    LocalDate result = convertImpl(dataFetcherResult);
+    if (result == null) {
+      throw new CoercingSerializeException("Unable to serialize null value");
+    }
+    return result.format(US_DASHDATE_FORMATTER);
+  }
+
+  @Override
+  public Object parseValue(Object input) {
+    LocalDate result = convertImpl(input);
+    if (result == null) {
+      throw new CoercingParseValueException("Invalid value '" + input + "' for LocalDate");
+    }
+    return result;
+  }
+
+  @Override
+  public Object parseLiteral(Object input) {
+    String value = ((StringValue) input).getValue();
+    LocalDate result = convertImpl(value);
+    if (result == null) {
+      throw new CoercingParseLiteralException("Invalid value '" + input + "' for LocalDate");
+    }
+
+    return result;
+  }
+}
+
+@Configuration
+public class FlexibleDateScalarType {
   @Bean
   public GraphQLScalarType FlexibleDateScalar() {
     return GraphQLScalarType.newScalar()
         .name("LocalDate")
         .description("a scalar for multiple date formats. currently yyyy-MM-dd and MM/dd/yyyy")
-        .coercing(
-            new Coercing() {
-              private LocalDate convertImpl(Object input) {
-                if (input instanceof String) {
-                  if (((String) input).contains("/")) {
-                    return LocalDate.parse((String) input, US_SLASHDATE_FORMATTER);
-                  } else if (((String) input).contains("-")) {
-                    return LocalDate.parse((String) input, US_DASHDATE_FORMATTER);
-                  }
-                } else if (input instanceof LocalDate) {
-                  return (LocalDate) input;
-                }
-                return null;
-              }
-
-              @Override
-              public Object serialize(Object dataFetcherResult) {
-                LocalDate result = convertImpl(dataFetcherResult);
-                if (result == null) {
-                  throw new CoercingSerializeException("Unable to serialize null value");
-                }
-                return result.format(US_DASHDATE_FORMATTER);
-              }
-
-              @Override
-              public Object parseValue(Object input) {
-                LocalDate result = convertImpl(input);
-                if (result == null) {
-                  throw new CoercingParseValueException(
-                      "Invalid value '" + input + "' for LocalDate");
-                }
-                return result;
-              }
-
-              @Override
-              public Object parseLiteral(Object input) {
-                String value = ((StringValue) input).getValue();
-                LocalDate result = convertImpl(value);
-                if (result == null) {
-                  throw new CoercingParseLiteralException(
-                      "Invalid value '" + input + "' for LocalDate");
-                }
-
-                return result;
-              }
-            })
+        .coercing(new FlexibleDateCoercion())
         .build();
   }
 }
