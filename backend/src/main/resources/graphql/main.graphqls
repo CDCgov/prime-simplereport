@@ -402,10 +402,10 @@ type Mutation {
     pregnancy: String
     symptoms: String @Size(min: 0, max: 1024)
     firstTest: Boolean
-    priorTestDate: LocalDate
+    priorTestDate: FlexibleDate
     priorTestType: String
     priorTestResult: String
-    symptomOnset: LocalDate
+    symptomOnset: FlexibleDate
     noSymptoms: Boolean
     testResultDelivery: TestResultDeliveryPreference
   ): String @requiredPermissions(allOf: ["START_TEST"])

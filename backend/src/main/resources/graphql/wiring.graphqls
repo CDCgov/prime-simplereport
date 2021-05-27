@@ -39,6 +39,7 @@ scalar DateTime
 # java.time.LocalDate
 scalar LocalDate
 scalar Upload
+scalar FlexibleDate
 
 enum ResultValue {
   POSITIVE
