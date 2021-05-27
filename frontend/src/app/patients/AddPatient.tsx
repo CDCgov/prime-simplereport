@@ -11,6 +11,7 @@ import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import { RootState } from "../store";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
+import { useDocumentTitle } from "../utils/hooks";
 
 import PersonForm from "./Components/PersonForm";
 
@@ -103,6 +104,8 @@ interface AddPatientResponse {
 }
 
 const AddPatient = () => {
+  useDocumentTitle("Add Patient");
+
   const [addPatient, { loading }] = useMutation<
     AddPatientResponse,
     AddPatientParams
