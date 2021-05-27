@@ -4,6 +4,8 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.db.model.AuditedEntity_;
+import gov.cdc.usds.simplereport.db.model.BaseTestInfo_;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Facility_;
@@ -99,8 +101,8 @@ public class TestOrderService {
       UUID facilityId, UUID patientId, TestResult result) {
     return (root, query, cb) -> {
       Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
-      order.on(cb.equal(root.get(TestEvent_.internalId), order.get(TestOrder_.testEvent)));
-      query.orderBy(cb.desc(root.get(TestEvent_.createdAt)));
+      order.on(cb.equal(root.get(AuditedEntity_.internalId), order.get(TestOrder_.testEvent)));
+      query.orderBy(cb.desc(root.get(AuditedEntity_.createdAt)));
 
       Predicate p = cb.conjunction();
       if (facilityId == null && patientId == null) {
@@ -109,13 +111,13 @@ public class TestOrderService {
       if (facilityId != null) {
         p =
             cb.and(
-                p, cb.equal(root.get(TestEvent_.facility).get(Facility_.internalId), facilityId));
+                p, cb.equal(root.get(BaseTestInfo_.facility).get(AuditedEntity_.internalId), facilityId));
       }
       if (patientId != null) {
-        p = cb.and(p, cb.equal(root.get(TestEvent_.patient).get(Person_.internalId), patientId));
+        p = cb.and(p, cb.equal(root.get(BaseTestInfo_.patient).get(AuditedEntity_.internalId), patientId));
       }
       if (result != null) {
-        p = cb.and(p, cb.equal(root.get(TestEvent_.result), result));
+        p = cb.and(p, cb.equal(root.get(BaseTestInfo_.result), result));
       }
       return p;
     };
