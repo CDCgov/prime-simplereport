@@ -57,7 +57,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
             .build();
     _apiToken = token;
     _orgUrl = orgUrl;
-    System.out.println("IN LIVEOKTAAUTHENTICATION" + _apiToken + _orgUrl);
   }
 
   /**
@@ -258,13 +257,5 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     } catch (NullPointerException | ResourceException | IllegalArgumentException e) {
       throw new OktaAuthenticationFailureException("Authentication app could not be enrolled", e);
     }
-  }
-
-  public String getOrgUrl() {
-    return _orgUrl;
-  }
-
-  public String getApiToken() {
-    return _apiToken;
   }
 }
