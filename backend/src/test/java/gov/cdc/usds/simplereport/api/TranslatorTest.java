@@ -7,6 +7,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseRaceDisplayValue;
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
+import static gov.cdc.usds.simplereport.api.Translators.parseTestResult;
 import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
 import static gov.cdc.usds.simplereport.api.Translators.parseYesNo;
@@ -18,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+
 import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -193,6 +196,32 @@ class TranslatorTest {
         IllegalGraphqlArgumentException.class,
         () -> {
           parseEthnicity("xyz");
+        });
+  }
+
+  @Test
+  void testEmptyParseTestResult() {
+    assertNull(parseTestResult(""));
+  }
+
+  @Test
+  void testNullParseTestResult() {
+    assertNull(parseTestResult(null));
+  }
+
+  @Test
+  void testValidParseTestResult() {
+    assertEquals(TestResult.UNDETERMINED, parseTestResult("undetermined"));
+    assertEquals(TestResult.UNDETERMINED, parseTestResult("inconclusive"));
+    assertEquals(TestResult.POSITIVE, parseTestResult("positive"));
+  }
+
+  @Test
+  void testInvalidParseTestResult() {
+    assertThrows(
+        IllegalGraphqlArgumentException.class,
+        () -> {
+          parseTestResult("xyz");
         });
   }
 
