@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 
 const useOutsideClick = (
   ref: React.RefObject<HTMLDivElement>,
@@ -21,22 +21,4 @@ const useOutsideClick = (
   }, [ref, onClickOutside]);
 };
 
-const useDocumentTitle = (title: string, retainOnUnmount = false) => {
-  const defaultTitle = useRef<string>(document.title);
-
-  useEffect(() => {
-    document.title = title + " | SimpleReport";
-  }, [title]);
-
-  useEffect(() => {
-    const defaultCurrentTitle = defaultTitle.current;
-
-    return () => {
-      if (!retainOnUnmount) {
-        document.title = defaultCurrentTitle;
-      }
-    };
-  }, [retainOnUnmount, title]);
-};
-
-export { useOutsideClick, useDocumentTitle };
+export { useOutsideClick };
