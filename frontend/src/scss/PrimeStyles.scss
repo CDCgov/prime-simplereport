@@ -942,7 +942,8 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   width: 100%;
   height: auto;
 
-  @include at-media(desktop) {
+  @include at-media(tablet) {
+    @include u-padding-y(units(1));
     background: color("white");
     border-bottom-left-radius: units(2px);
     border-top: units(1px) solid color("base-lighter");
@@ -957,7 +958,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
       calc(
         #{units("tablet")} - #{units(2)} - #{units(1px)}
       ); // tablet - margin - border
-    padding: units(2.5);
+    padding-right: units(2);
   }
 }
 
@@ -970,7 +971,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   width: 100%;
   height: 100%;
 
-  @include at-media(desktop) {
+  @include at-media(tablet) {
     margin: units(5) 0;
     max-height: stretch;
     width: units("tablet");
@@ -1034,11 +1035,11 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   width: 100%;
   right: 0;
   bottom: 0;
-  padding: units(2.5);
+  padding: units(2) units(2.5);
   box-shadow: 0 units(-0.5) units(1) 0 rgba(0, 0, 0, 0.1);
   background: color("white");
 
-  @include at-media(desktop) {
+  @include at-media(tablet) {
     position: fixed;
     width: unset;
     right: unset;
@@ -1053,7 +1054,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   width: 100%;
   right: 0;
   bottom: 0;
-  padding: units(2.5) 0;
+  padding: units(2) 0;
   background: color("white");
   margin-left: 0 !important;
   margin-right: 0 !important;
@@ -1064,6 +1065,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   }
 }
 
-.aoe-modal__qr--container {
+.aoe-modal__qr-container {
   padding-bottom: units(8);
 }

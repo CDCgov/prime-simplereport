@@ -256,7 +256,7 @@ const AoEModalForm = (props: AoEModalProps) => {
       case "smartphone":
         innerContents = (
           <>
-            <section className="display-flex flex-justify-center margin-top-4 padding-top-5 border-top border-base-lighter aoe-modal__qr--container">
+            <section className="display-flex flex-justify-center margin-top-4 padding-top-5 border-top border-base-lighter aoe-modal__qr-container">
               <div className="text-center">
                 <p className="font-body-lg margin-y-0">
                   Point your camera at the QR code <br />
