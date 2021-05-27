@@ -30,4 +30,8 @@ public interface OktaAuthentication {
 
   public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String type)
       throws OktaAuthenticationFailureException;
+
+  public void verifyActivationPasscode(String userId, String factorId, String passcode) throws OktaAuthenticationFailureException;
+
+  public void resendActivationPasscode(String userId, String factorId) throws OktaAuthenticationFailureException;
 }

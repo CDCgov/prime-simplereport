@@ -189,9 +189,23 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
     deleteUserFactor(_userId, factorAndCode.getFactorId());
   }
 
+  @Test
+  @Order(9) 
+  void verifyActivationPasscodeSuccessful() throws Exception {
+    String factorId = _auth.enrollSmsMfa(_userId, PHONE_NUMBER);
+
+    JSONObject smsFactor = getUserFactor(_userId, factorId);
+    assertThat(smsFactor.getString("factorType")).isEqualTo("sms");
+    assertThat(smsFactor.getString("status")).isEqualTo("PENDING_ACTIVATION");
+    assertThat(smsFactor.getJSONObject("profile").getString("phoneNumber"))
+        .isEqualTo("+19999999999");
+
+    deleteUserFactor(_userId, factorId);
+  }
+
+
   // Negative Tests
   @Test
-  @Order(9)
   void testActivationFails_withInvalidToken() {
     Exception exception =
         assertThrows(
@@ -203,7 +217,6 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
   }
 
   @Test
-  @Order(10)
   void setPasswordFails_withInvalidPassword() {
     Exception exception =
         assertThrows(
@@ -215,7 +228,6 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
   }
 
   @Test
-  @Order(11)
   void setRecoveryQuestionFails_withInvalidQuestion() {
     Exception exception =
         assertThrows(
@@ -227,7 +239,6 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
   }
 
   @Test
-  @Order(12)
   void enrollSmsMfaFails_withInvalidPhoneNumber() {
     Exception exception =
         assertThrows(
@@ -239,7 +250,6 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
   }
 
   @Test
-  @Order(13)
   void enrollVoiceCallMfaFails_withInvalidPhoneNumber() {
     Exception exception =
         assertThrows(
@@ -251,7 +261,6 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
   }
 
   @Test
-  @Order(14)
   void enrollEmailMfaFails_withInvalidEmail() {
     Exception exception =
         assertThrows(
@@ -263,7 +272,6 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
   }
 
   @Test
-  @Order(15)
   void enrollAuthenticatorAppMfaFails_withInvalidAppType() {
     Exception exception =
         assertThrows(

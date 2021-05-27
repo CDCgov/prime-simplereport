@@ -28,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import com.okta.sdk.resource.user.factor.ActivateFactorRequest;
 
 /**
  * Created by emmastephenson on 4/28/21
@@ -257,5 +258,31 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     } catch (NullPointerException | ResourceException | IllegalArgumentException e) {
       throw new OktaAuthenticationFailureException("Authentication app could not be enrolled", e);
     }
+  }
+
+/**
+ * Using the Okta Management SDK, activate MFA enrollment with a user-provided passcode.
+ * This method should be used for sms, call, and authentication app MFA options.
+ * 
+ * https://developer.okta.com/docs/reference/api/factors/#activate-sms-factor
+ * 
+ * @param userId the user id of the user activating their MFA.
+ * @param factorId the factor id of the factor being activated. 
+ * @param passcode the user-provided passcode to use for activation. This will have been sent to the user via SMS, voice call, etc.
+ */
+  public void verifyActivationPasscode(String userId, String factorId, String passcode) throws OktaAuthenticationFailureException {
+    try {
+    User user = _client.getUser(userId);
+    UserFactor factor = user.getFactor(factorId);
+    ActivateFactorRequest activateFactor = _client.instantiate(ActivateFactorRequest.class);
+    activateFactor.setPassCode(passcode);
+    factor.activate(activateFactor);
+    } catch (ResourceException | NullPointerException | IllegalArgumentException e) {
+      throw new OktaAuthenticationFailureException("Activation passcode could not be verifed; MFA activation failed.", e);
+    }
+  } 
+
+  public void resendActivationPasscode(String userId, String factorId) throws OktaAuthenticationFailureException {
+    // WIP
   }
 }
