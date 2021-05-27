@@ -1,20 +1,23 @@
 import React from "react";
 
 // import { SeverityLevel } from "@microsoft/applicationinsights-web";
-import { appInsights } from "./AppInsights";
 import ErrorPage from "./commonComponents/ErrorPage";
+import { getAppInsights } from "./TelemetryService";
 
 export default class PrimeErrorBoundary extends React.Component {
   state = { hasError: false, error: null };
 
   componentDidCatch(error, info) {
     this.setState({ hasError: true, error });
-    appInsights.trackException({
-      error: error,
-      //   exception: error,
-      //   severityLevel: SeverityLevel.Error,
-      properties: { ...info },
-    });
+    const appInsights = getAppInsights();
+    if (appInsights) {
+      getAppInsights().trackException({
+        error: error,
+        //   exception: error,
+        //   severityLevel: SeverityLevel.Error,
+        properties: { ...info },
+      });
+    }
   }
 
   render() {

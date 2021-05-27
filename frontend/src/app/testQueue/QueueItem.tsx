@@ -315,7 +315,9 @@ const QueueItem: any = ({
 
   const onTestResultSubmit = (forceSubmit: boolean = false) => {
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
-      trackSubmitTestResult({});
+      if (appInsights) {
+        trackSubmitTestResult({});
+      }
       setConfirmationType("none");
       submitTestResult({
         variables: {
@@ -395,7 +397,9 @@ const QueueItem: any = ({
 
   const removeFromQueue = () => {
     setConfirmationType("none");
-    trackRemovePatientFromQueue({});
+    if (appInsights) {
+      trackRemovePatientFromQueue({});
+    }
     removePatientFromQueue({
       variables: {
         patientId: removePatientId,
@@ -421,10 +425,23 @@ const QueueItem: any = ({
 
   const saveAoeCallback = (answers: any) => {
     setAoeAnswers(answers);
-    trackUpdateAoEResponse({});
+    if (appInsights) {
+      trackUpdateAoEResponse({});
+    }
+
+    const symptomOnset = answers.symptomOnset
+      ? moment(answers.symptomOnset).format("YYYY-MM-DD")
+      : null;
+
+    const priorTestDate = answers.priorTestDate
+      ? moment(answers.priorTestDate).format("YYYY-MM-DD")
+      : null;
+
     updateAoe({
       variables: {
         ...answers,
+        symptomOnset,
+        priorTestDate,
         patientId: patient.internalId,
       },
     })
