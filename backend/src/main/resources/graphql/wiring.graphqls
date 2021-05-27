@@ -37,9 +37,8 @@ directive @Pattern(
 # java.util.Date implementation
 scalar DateTime
 # java.time.LocalDate
-scalar LocalDate
 scalar Upload
-scalar FlexibleDate
+scalar LocalDate
 
 enum ResultValue {
   POSITIVE

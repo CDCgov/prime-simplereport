@@ -78,6 +78,7 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
     @SuppressWarnings("checkstyle:IllegalCatch")
     public void onCompleted(ExecutionResult result, Throwable t) {
       LOG.trace("End of execution, audit entry being saved.");
+      LOG.warn("error {}", result.getErrors());
       List<String> errorPaths =
           result.getErrors().stream()
               .map(GraphQLError::getPath)
