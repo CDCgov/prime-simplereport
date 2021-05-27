@@ -4,6 +4,7 @@ import graphql.language.StringValue;
 import graphql.schema.Coercing;
 import graphql.schema.CoercingParseLiteralException;
 import graphql.schema.CoercingParseValueException;
+import graphql.schema.CoercingSerializeException;
 import graphql.schema.GraphQLScalarType;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -38,7 +39,11 @@ public class FlexibleDateScalarType {
 
               @Override
               public Object serialize(Object dataFetcherResult) {
-                return convertImpl(dataFetcherResult).format(US_DASHDATE_FORMATTER);
+                LocalDate result = convertImpl(dataFetcherResult);
+                if (result == null) {
+                  throw new CoercingSerializeException("Unable to serialize null value");
+                }
+                return result.format(US_DASHDATE_FORMATTER);
               }
 
               @Override
