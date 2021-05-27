@@ -1,5 +1,6 @@
 import React from "react";
 import { DatePicker, Label } from "@trussworks/react-uswds";
+import moment from "moment";
 
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 import Checkboxes from "../../commonComponents/Checkboxes";
@@ -88,9 +89,11 @@ const SymptomInputs: React.FC<Props> = ({
             minDate="2020-02-01"
             maxDate={new Date().toISOString().split("T")[0]}
             onChange={(date) => {
-              if (date) {
-                setOnsetDate(date);
+              if (!date) {
+                return;
               }
+              const formattedDate = moment(date).format("YYYY-MM-DD");
+              setOnsetDate(formattedDate);
             }}
             required={Object.keys(currentSymptoms).some(
               (key) => currentSymptoms[key]

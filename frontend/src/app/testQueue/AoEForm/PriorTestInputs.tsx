@@ -66,7 +66,12 @@ const PriorTestInputs: React.FC<Props> = ({
         minDate="2020-02-01"
         maxDate={new Date().toISOString().split("T")[0]}
         disabled={!lastTestDateKnown}
-        onChange={setPriorTestDate}
+        onChange={(date) => {
+          const formattedDate = date
+            ? moment(date).format("YYYY-MM-DD")
+            : undefined;
+          setPriorTestDate(formattedDate);
+        }}
       />
       <Checkboxes
         legend="Date of most recent test unknown?"
