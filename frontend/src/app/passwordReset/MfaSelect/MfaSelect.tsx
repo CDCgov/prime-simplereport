@@ -35,6 +35,7 @@ export const MfaSelect = () => {
 
   const handleSubmit = () => {
     validateEmail();
+    validateMfaOption();
   };
 
   useEffect(() => {
