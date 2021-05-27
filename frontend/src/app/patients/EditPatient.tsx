@@ -9,7 +9,6 @@ import { displayFullName, showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
-import { useDocumentTitle } from "../utils/hooks";
 
 import PersonForm from "./Components/PersonForm";
 
@@ -120,7 +119,6 @@ interface EditPatientResponse {
 }
 
 const EditPatient = (props: Props) => {
-  useDocumentTitle("Edit Patient");
   const { data, loading, error } = useQuery(GET_PATIENT, {
     variables: { id: props.patientId || "" },
     fetchPolicy: "no-cache",
