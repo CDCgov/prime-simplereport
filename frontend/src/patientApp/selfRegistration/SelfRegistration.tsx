@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams } from "react-router";
 import { toast, ToastContainer } from "react-toastify";
+import moment from "moment";
 import "react-toastify/dist/ReactToastify.css";
 
 import USAGovBanner from "../../app/commonComponents/USAGovBanner";
@@ -35,11 +36,17 @@ export const SelfRegistration = () => {
       county,
       zipCode,
       facilityId,
+      birthDate,
       ...withoutAddress
     } = person;
 
+    const formattedBirthDate = moment(birthDate).format(
+      "YYYY-MM-DD"
+    ) as ISODate;
+
     const data: SelfRegistrationData = {
       registrationLink,
+      birthDate: formattedBirthDate,
       ...withoutAddress,
       address: {
         street: [street, streetTwo],
