@@ -40,6 +40,9 @@ class FlexibleDateCoercion implements Coercing<Object, Object> {
 
   @Override
   public Object parseValue(Object input) {
+    if (((String) input).length() == 0) {
+      return null;
+    }
     LocalDate result = convertImpl(input);
     if (result == null) {
       throw new CoercingParseValueException("Invalid value '" + input + "' for LocalDate");
