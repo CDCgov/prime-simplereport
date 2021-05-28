@@ -82,7 +82,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
       </div>
     </div>
     <form
-      className="display-flex flex-column padding-bottom-10 tablet:padding-bottom-15"
+      className="display-flex flex-column padding-bottom-10"
       onSubmit={[Function]}
     >
       <p

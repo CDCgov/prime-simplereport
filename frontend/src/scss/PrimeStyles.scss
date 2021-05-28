@@ -943,7 +943,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   height: auto;
 
   @include at-media(tablet) {
-    @include u-padding-y(units(2));
+    @include u-padding-y(units(1));
     background: color("white");
     border-bottom-left-radius: units(2px);
     border-top: units(1px) solid color("base-lighter");
