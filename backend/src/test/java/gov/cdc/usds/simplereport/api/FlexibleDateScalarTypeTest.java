@@ -44,6 +44,7 @@ public class FlexibleDateScalarTypeTest {
     LocalDate y2k = LocalDate.parse("2000-01-01");
     assertEquals(y2k, converter.parseValue("2000-01-01"));
     assertEquals(y2k, converter.parseValue("01/01/2000"));
+    assertEquals(null, converter.parseValue(""));
   }
 
   @Test
