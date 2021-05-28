@@ -46,7 +46,7 @@ export const MfaSelect = () => {
               value: "Okta",
               label: "Okta Verify",
               labelDescription:
-                "Get a push notification sent through the Okta mobile app.",
+                "Get a push notification sent through the Okta Verify mobile app.",
               labelTag: secure,
             },
             {
@@ -59,8 +59,8 @@ export const MfaSelect = () => {
             {
               value: "FIDO",
               label: "Security key or biometric authentication",
-              labelDescription: `Add a security key or biometric authentication (such as Yubikey or Windows Hello)
-                as an authentication method to your account. Your security key must support the FIDO standard.`,
+              labelDescription: `Add a security key or biometric authentication (such as Yubikey or
+                Windows Hello) to your account. Your security key must support the FIDO standard.`,
               labelTag: secure,
             },
             {
