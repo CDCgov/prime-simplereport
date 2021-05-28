@@ -1060,7 +1060,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   margin-right: 0 !important;
 
   @include at-media(desktop) {
-    @include u-padding-y(0);
     box-shadow: unset;
     margin: unset;
   }
