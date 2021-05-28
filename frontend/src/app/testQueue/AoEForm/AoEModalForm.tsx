@@ -99,7 +99,7 @@ const SmsModalContents = ({
           </div>
         </div>
       )}
-      <div className="aoe-modal__submit-container border-top border-base-lighter margin-x-neg-205 margin-top-5 text-right">
+      <div className="aoe-modal__submit-container border-top border-base-lighter margin-top-5 text-right">
         {!smsSuccess ? (
           <Button
             className="margin-right-0"
@@ -271,7 +271,7 @@ const AoEModalForm = (props: AoEModalProps) => {
                 </div>
               </div>
             </section>
-            <div className="aoe-modal__submit-container border-top border-base-lighter margin-x-neg-205 margin-top-5 text-right">
+            <div className="aoe-modal__submit-container border-top border-base-lighter margin-top-5 text-right">
               <Button
                 className="margin-right-0"
                 label={saveButtonText}

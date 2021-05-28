@@ -943,7 +943,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   height: auto;
 
   @include at-media(tablet) {
-    @include u-padding-y(units(1));
+    @include u-padding-y(units(2));
     background: color("white");
     border-bottom-left-radius: units(2px);
     border-top: units(1px) solid color("base-lighter");
@@ -975,14 +975,19 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
     margin: units(5) 0;
     max-height: stretch;
     width: units("tablet");
+    height: unset;
     position: relative !important;
     inset: unset !important;
+    padding-bottom: 0 !important;
   }
 }
 
 @-moz-document url-prefix() {
   [aria-label="Test questionnaire"] {
-    max-height: calc(100vh - #{units(10)});
+    @include at-media(tablet) {
+
+      max-height: calc(100vh - #{units(10)});
+    }
   }
 }
 
@@ -1054,17 +1059,22 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   width: 100%;
   right: 0;
   bottom: 0;
-  padding: units(2);
+  margin: 0;
+  padding: units(2) units(2.5);
   background: color("white");
-  margin-left: 0 !important;
-  margin-right: 0 !important;
 
-  @include at-media(desktop) {
+  @include at-media(tablet) {
     box-shadow: unset;
-    margin: unset;
+    margin: 0 units(-2);
+    position: unset;
+    width: unset;
   }
 }
 
 .aoe-modal__qr-container {
-  padding-bottom: units(8);
+  padding-bottom: units(10);
+
+  @include at-media(tablet) {
+    padding-bottom: unset;
+  }
 }
