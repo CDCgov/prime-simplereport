@@ -17,6 +17,10 @@ import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.smartystreets.api.exceptions.BatchFullException;
+import com.smartystreets.api.us_street.Batch;
+import com.smartystreets.api.us_street.Candidate;
+import com.smartystreets.api.us_street.Lookup;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
@@ -26,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
@@ -88,8 +93,53 @@ public class UploadService {
     return value;
   }
 
+  public String getCounty(Lookup lookup, Map<String, String> row) {
+    ArrayList<Candidate> results = lookup.getResult();
+    if (results.isEmpty()) {
+      return getRow(row, "County", false);
+    }
+    return results.get(0).getMetadata().getCountyName();
+  }
+
+  public void processBatch(ArrayList<Map<String, String>> people, Batch addresses) {
+    _avs.bulkAddressLookup(addresses); // how will we know which row is bad if with fails?
+    for (int i = 0; i < addresses.size(); i++) {
+      Map<String, String> row = people.get(i);
+      Lookup lookup = addresses.get(i);
+      _ps.addPatient(
+          parseUUID(getRow(row, FACILITY_ID, false)),
+          null, // lookupID
+          parseString(getRow(row, "FirstName", true)),
+          parseString(getRow(row, "MiddleName", false)),
+          parseString(getRow(row, "LastName", true)),
+          parseString(getRow(row, "Suffix", false)),
+          parseUserShortDate(getRow(row, "DOB", true)),
+          new StreetAddress(
+              getRow(row, "Street", true),
+              getRow(row, "Street2", false),
+              getRow(row, "City", false),
+              getRow(row, "State", true),
+              getRow(row, "ZipCode", true),
+              getCounty(lookup, row)),
+          parsePhoneNumbers(
+              List.of(
+                  new PhoneNumberInput(
+                      null, parsePhoneNumber((getRow(row, "PhoneNumber", true)))))),
+          parsePersonRole(getRow(row, "Role", false)),
+          parseEmail(getRow(row, "Email", false)),
+          parseRaceDisplayValue(getRow(row, "Race", false)),
+          parseEthnicity(getRow(row, "Ethnicity", false)),
+          null,
+          parseGender(getRow(row, "biologicalSex", false)),
+          parseYesNo(getRow(row, "residentCongregateSetting", true)),
+          parseYesNo(getRow(row, "employedInHealthcare", true)),
+          null); // Not including preferredLanguage for now
+    }
+  }
+
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public String processPersonCSV(InputStream csvStream) throws IllegalGraphqlArgumentException {
+  public String processPersonCSV(InputStream csvStream)
+      throws IllegalGraphqlArgumentException, BatchFullException {
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
 
     // Since the CSV parser won't fail when give a single string, we simple check to see if it has
@@ -100,44 +150,34 @@ public class UploadService {
     }
 
     int rowNumber = 0;
-    while (valueIterator.hasNext()) {
-      final Map<String, String> row = getNextRow(valueIterator);
-      rowNumber++;
-      try {
-        StreetAddress address =
-            _avs.getValidatedAddress(
+    ArrayList<Map<String, String>> people = new ArrayList<Map<String, String>>();
+    Batch addresses = new Batch();
+    try {
+      while (valueIterator.hasNext()) {
+        rowNumber++;
+        final Map<String, String> row = getNextRow(valueIterator);
+        people.add(row);
+        Lookup lookup =
+            _avs.getStrictLookup(
                 getRow(row, "Street", true),
                 getRow(row, "Street2", false),
                 getRow(row, "City", false),
                 getRow(row, "State", true),
-                getRow(row, "ZipCode", true),
-                null);
-        _ps.addPatient(
-            parseUUID(getRow(row, FACILITY_ID, false)),
-            null, // lookupID
-            parseString(getRow(row, "FirstName", true)),
-            parseString(getRow(row, "MiddleName", false)),
-            parseString(getRow(row, "LastName", true)),
-            parseString(getRow(row, "Suffix", false)),
-            parseUserShortDate(getRow(row, "DOB", true)),
-            address,
-            parsePhoneNumbers(
-                List.of(
-                    new PhoneNumberInput(
-                        null, parsePhoneNumber((getRow(row, "PhoneNumber", true)))))),
-            parsePersonRole(getRow(row, "Role", false)),
-            parseEmail(getRow(row, "Email", false)),
-            parseRaceDisplayValue(getRow(row, "Race", false)),
-            parseEthnicity(getRow(row, "Ethnicity", false)),
-            null,
-            parseGender(getRow(row, "biologicalSex", false)),
-            parseYesNo(getRow(row, "residentCongregateSetting", true)),
-            parseYesNo(getRow(row, "employedInHealthcare", true)),
-            null); // Not including preferredLanguage for now
-      } catch (IllegalGraphqlArgumentException e) {
-        throw new IllegalGraphqlArgumentException(
-            "Error on row " + rowNumber + "; " + e.getMessage());
+                getRow(row, "ZipCode", true));
+        lookup.setInputId(String.valueOf(people.size() - 1));
+        addresses.add(lookup);
+        if (addresses.isFull()) {
+          processBatch(people, addresses);
+          people.clear();
+          addresses.clear();
+        }
       }
+      if (people.size() > 0) {
+        processBatch(people, addresses);
+      }
+    } catch (IllegalGraphqlArgumentException e) {
+      throw new IllegalGraphqlArgumentException(
+          "Error on row " + rowNumber + "; " + e.getMessage());
     }
     return "Successfully uploaded " + rowNumber + " record(s)";
   }

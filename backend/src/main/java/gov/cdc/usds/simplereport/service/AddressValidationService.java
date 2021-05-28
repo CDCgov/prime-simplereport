@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseString;
 
 import com.smartystreets.api.ClientBuilder;
 import com.smartystreets.api.exceptions.SmartyException;
+import com.smartystreets.api.us_street.Batch;
 import com.smartystreets.api.us_street.Candidate;
 import com.smartystreets.api.us_street.Client;
 import com.smartystreets.api.us_street.Lookup;
@@ -34,7 +35,7 @@ public class AddressValidationService {
     _client = new ClientBuilder(config.getId(), config.getToken()).buildUsStreetApiClient();
   }
 
-  private Lookup getStrictLookup(
+  public Lookup getStrictLookup(
       String street1, String street2, String city, String state, String postalCode) {
     Lookup lookup = new Lookup();
     lookup.setStreet(parseString(street1));
@@ -48,6 +49,16 @@ public class AddressValidationService {
     lookup.setZipCode(parseString(postalCode));
     lookup.setMatch(MatchType.STRICT);
     return lookup;
+  }
+
+  public void bulkAddressLookup(Batch batch) {
+    try {
+      _client.send(batch);
+    } catch (SmartyException | IOException ex) {
+      LOG.error("SmartyStreets address lookup failed", ex);
+      throw new IllegalGraphqlArgumentException(
+          "The server is unable to verify the address you entered. Please try again later");
+    }
   }
 
   public StreetAddress getValidatedAddress(Lookup lookup, String fieldName) {
