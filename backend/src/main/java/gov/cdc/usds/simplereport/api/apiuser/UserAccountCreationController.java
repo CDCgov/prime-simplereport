@@ -70,7 +70,8 @@ public class UserAccountCreationController {
    */
   @PostMapping("/set-recovery-question")
   public void setRecoveryQuestions(
-      @RequestBody SetRecoveryQuestionRequest requestBody, HttpServletRequest request) throws OktaAuthenticationFailureException {
+      @RequestBody SetRecoveryQuestionRequest requestBody, HttpServletRequest request)
+      throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
     _oktaAuth.setRecoveryQuestion(userId, requestBody.getQuestion(), requestBody.getAnswer());
   }
@@ -99,7 +100,8 @@ public class UserAccountCreationController {
    */
   @PostMapping("/enroll-voice-call-mfa")
   public void enrollVoiceCallMfa(
-      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) throws OktaAuthenticationFailureException {
+      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
+      throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollVoiceCallMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID, factorId);
@@ -113,8 +115,8 @@ public class UserAccountCreationController {
    * @throws OktaAuthenticationFailureException if the provided email address is invalid.
    */
   @PostMapping("/enroll-email-mfa")
-  public void enrollEmailMfa(
-      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) throws OktaAuthenticationFailureException {
+  public void enrollEmailMfa(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
+      throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollEmailMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID, factorId);
