@@ -234,7 +234,7 @@ const AoEForm: React.FC<Props> = ({
   return (
     <>
       <form
-        className="display-flex flex-column padding-bottom-10"
+        className="display-flex flex-column padding-bottom-10 tablet:padding-bottom-15"
         onSubmit={saveAnswers}
         ref={formRef}
       >
