@@ -1054,12 +1054,13 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   width: 100%;
   right: 0;
   bottom: 0;
-  padding: units(2) 0;
+  padding: units(2);
   background: color("white");
   margin-left: 0 !important;
   margin-right: 0 !important;
 
   @include at-media(desktop) {
+    @include u-padding-y(0);
     box-shadow: unset;
     margin: unset;
   }
