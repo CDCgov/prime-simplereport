@@ -1,4 +1,5 @@
 import { Story, Meta } from "@storybook/react";
+import { uniqueId } from "lodash";
 
 import QueueItem, { QueueItemProps } from "../../app/testQueue/QueueItem";
 import { getMocks, StoryGraphQLProvider } from "../storyMocks";
@@ -28,7 +29,13 @@ export default {
   args: {},
 } as Meta;
 
-const Template: Story<QueueItemProps> = (args) => <QueueItem {...args} />;
+const storyIds = Array(3)
+  .fill(null)
+  .map(() => uniqueId());
+
+const Template: Story<QueueItemProps> = (args) => {
+  return <QueueItem {...args} />;
+};
 
 const defaultProps: QueueItemProps = {
   internalId: "abc-123",
@@ -44,29 +51,56 @@ const defaultProps: QueueItemProps = {
     {
       name: "TestPro 4000",
       internalId: "tp4000",
-      testLength: 10,
+      testLength: 0.1,
     },
   ],
   // askOnEntry prop is incorrectly typed as "string" in the component
+  askOnEntry: {
+    noSymptoms: undefined,
+    firstTest: true,
+    pregnancy: "no",
+    symptoms: "{}",
+  } as any,
+  selectedDeviceId: "tp4000",
+  selectedDeviceTestLength: 0.1,
+  selectedTestResult: "UNKNOWN",
+  defaultDevice: {
+    internalId: "tp4000",
+  },
+  dateTestedProp: "",
+  refetchQueue: () => {},
+  facilityId: "100",
+  patientLinkId: "200",
+};
+
+export const Unstarted = Template.bind({});
+Unstarted.args = {
+  ...defaultProps,
+  internalId: storyIds[0],
+};
+
+export const FilledOut = Template.bind({});
+FilledOut.args = {
+  ...defaultProps,
+  internalId: storyIds[1],
   askOnEntry: {
     noSymptoms: true,
     firstTest: true,
     pregnancy: "no",
     symptoms: "{}",
   } as any,
-  selectedDeviceId: "tp4000",
-  selectedDeviceTestLength: 10,
-  selectedTestResult: "NEGATIVE",
-  defaultDevice: {
-    internalId: "tp4000",
-  },
   dateTestedProp: "2021-03-03T14:40:00Z",
-  refetchQueue: () => {},
-  facilityId: "100",
-  patientLinkId: "200",
 };
 
-export const Item = Template.bind({});
-Item.args = {
+export const CompletedTest = Template.bind({});
+CompletedTest.args = {
   ...defaultProps,
+  internalId: storyIds[2],
+  askOnEntry: {
+    noSymptoms: true,
+    firstTest: true,
+    pregnancy: "no",
+    symptoms: "{}",
+  } as any,
+  selectedTestResult: "NEGATIVE",
 };

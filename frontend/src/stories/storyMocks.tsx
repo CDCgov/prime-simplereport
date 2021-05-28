@@ -15,7 +15,7 @@ const mocks = {
           dateTested: req.body?.variables.dateTested || null,
           deviceType: {
             internalId: null,
-            testLength: "10",
+            testLength: "0.1",
             ...req.body?.variables.deviceType,
           },
         },
