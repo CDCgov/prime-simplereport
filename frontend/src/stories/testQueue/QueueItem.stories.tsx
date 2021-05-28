@@ -29,10 +29,6 @@ export default {
   args: {},
 } as Meta;
 
-const storyIds = Array(3)
-  .fill(null)
-  .map(() => uniqueId());
-
 const Template: Story<QueueItemProps> = (args) => {
   return <QueueItem {...args} />;
 };
@@ -76,13 +72,13 @@ const defaultProps: QueueItemProps = {
 export const Unstarted = Template.bind({});
 Unstarted.args = {
   ...defaultProps,
-  internalId: storyIds[0],
+  internalId: uniqueId(),
 };
 
 export const FilledOut = Template.bind({});
 FilledOut.args = {
   ...defaultProps,
-  internalId: storyIds[1],
+  internalId: uniqueId(),
   askOnEntry: {
     noSymptoms: true,
     firstTest: true,
@@ -92,10 +88,10 @@ FilledOut.args = {
   dateTestedProp: "2021-03-03T14:40:00Z",
 };
 
-export const CompletedTest = Template.bind({});
-CompletedTest.args = {
+export const CompletedIndicator = Template.bind({});
+CompletedIndicator.args = {
   ...defaultProps,
-  internalId: storyIds[2],
+  internalId: "completed-timer",
   askOnEntry: {
     noSymptoms: true,
     firstTest: true,
