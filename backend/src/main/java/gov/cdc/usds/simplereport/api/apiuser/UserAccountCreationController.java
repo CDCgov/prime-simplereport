@@ -56,6 +56,9 @@ public class UserAccountCreationController {
             requestBody.getActivationToken(),
             request.getHeader("X-Forwarded-For"),
             request.getHeader("User-Agent"));
+    if (userId.isEmpty()) {
+      throw new OktaAuthenticationFailureException("Returned user id is empty.");
+    }
     request.getSession().setAttribute(USER_ID_KEY, userId);
     _oktaAuth.setPassword(userId, requestBody.getPassword().toCharArray());
   }
