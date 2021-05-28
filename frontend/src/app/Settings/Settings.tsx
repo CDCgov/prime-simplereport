@@ -2,7 +2,6 @@ import { Route, RouteComponentProps, Switch } from "react-router-dom";
 
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import Button from "../commonComponents/Button/Button";
-import { useDocumentTitle } from "../utils/hooks";
 
 import ManageOrganizationContainer from "./ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";
@@ -15,7 +14,6 @@ interface Params {
 }
 
 const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
-  useDocumentTitle("Settings");
   return (
     <main className="prime-home">
       <div className="grid-container">
