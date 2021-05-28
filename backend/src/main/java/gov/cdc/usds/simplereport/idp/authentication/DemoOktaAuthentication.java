@@ -19,6 +19,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   private static final int MINIMUM_PASSWORD_LENGTH = 8;
   private static final int PHONE_NUMBER_LENGTH = 10;
+  private static final String PENDING_ACTIVATION = "PENDING_ACTIVATION";
+  private static final String ACTIVE = "ACTIVE";
 
   private HashMap<String, DemoAuthUser> idToUserMap;
 
@@ -76,7 +78,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     validateUser(userId);
     String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
     String factorId = "smsFactor " + strippedPhoneNumber;
-    DemoMfa smsMfa = new DemoMfa("smsFactor", strippedPhoneNumber, factorId);
+    DemoMfa smsMfa = new DemoMfa("smsFactor", strippedPhoneNumber, factorId, PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(smsMfa);
     return factorId;
   }
@@ -86,7 +88,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     validateUser(userId);
     String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
     String factorId = "callFactor " + strippedPhoneNumber;
-    DemoMfa callMfa = new DemoMfa("callFactor", strippedPhoneNumber, factorId);
+    DemoMfa callMfa = new DemoMfa("callFactor", strippedPhoneNumber, factorId, PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(callMfa);
     return factorId;
   }
@@ -98,11 +100,13 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       throw new OktaAuthenticationFailureException("Email address is invalid.");
     }
     String factorId = "emailFactor " + email;
-    DemoMfa emailMfa = new DemoMfa("emailFactor", email, factorId);
+    DemoMfa emailMfa = new DemoMfa("emailFactor", email, factorId, PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(emailMfa);
     return factorId;
   }
 
+  // unlike the real implementation, this returns a factor and passcode directly (instead of a qr
+  // code to use for enrollment.)
   public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
     validateUser(userId);
@@ -118,9 +122,40 @@ public class DemoOktaAuthentication implements OktaAuthentication {
         throw new OktaAuthenticationFailureException("App type not recognized.");
     }
     String factorId = "authApp: " + userId;
-    DemoMfa appMfa = new DemoMfa(factorType, "thisIsAFakeQrCode", factorId);
+    DemoMfa appMfa = new DemoMfa(factorType, "thisIsAFakeQrCode", factorId, PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(appMfa);
     return new FactorAndQrCode(factorId, "thisIsAFakeQrCode");
+  }
+
+  public void verifyActivationPasscode(String userId, String factorId, String passcode)
+      throws OktaAuthenticationFailureException {
+    validateUser(userId);
+    DemoMfa mfa = this.idToUserMap.get(userId).getMfa();
+    if (mfa == null || factorId != mfa.getFactorId()) {
+      throw new OktaAuthenticationFailureException("Could not retrieve factor.");
+    }
+    if (passcode.length() != 6) {
+      throw new OktaAuthenticationFailureException(
+          "Activation passcode could not be verifed; MFA activation failed.");
+    }
+    mfa.setStatus(ACTIVE);
+    this.idToUserMap.get(userId).setMfa(mfa);
+  }
+
+  public void resendActivationPasscode(String userId, String factorId)
+      throws OktaAuthenticationFailureException {
+    validateUser(userId);
+    DemoMfa mfa = this.idToUserMap.get(userId).getMfa();
+    if (mfa == null || factorId != mfa.getFactorId()) {
+      throw new OktaAuthenticationFailureException("Could not retrieve factor.");
+    }
+    System.out.println(mfa.getFactorType());
+    if (!(mfa.getFactorType() == "smsFactor"
+        || mfa.getFactorType() == "callFactor"
+        || mfa.getFactorType() == "emailFactor")) {
+      throw new OktaAuthenticationFailureException(
+          "The requested activation factor could not be resent; Okta returned an error.");
+    }
   }
 
   public void validateUser(String userId) throws OktaAuthenticationFailureException {
@@ -164,5 +199,6 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     @Getter @Setter private String factorType;
     @Getter @Setter private String factorProfile;
     @Getter @Setter private String factorId;
+    @Getter @Setter private String status;
   }
 }

@@ -8,6 +8,7 @@ import com.okta.sdk.resource.user.PasswordCredential;
 import com.okta.sdk.resource.user.RecoveryQuestionCredential;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserCredentials;
+import com.okta.sdk.resource.user.factor.ActivateFactorRequest;
 import com.okta.sdk.resource.user.factor.CallUserFactor;
 import com.okta.sdk.resource.user.factor.EmailUserFactor;
 import com.okta.sdk.resource.user.factor.FactorProvider;
@@ -24,11 +25,14 @@ import org.json.JSONObject;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import com.okta.sdk.resource.user.factor.ActivateFactorRequest;
 
 /**
  * Created by emmastephenson on 4/28/21
@@ -41,6 +45,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   private Client _client;
   private String _apiToken;
   private String _orgUrl;
+  private RestTemplate _restTemplate;
 
   public LiveOktaAuthentication(OktaClientProperties oktaClientProperties) {
     initialize(oktaClientProperties.getOrgUrl(), oktaClientProperties.getToken());
@@ -58,6 +63,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
             .build();
     _apiToken = token;
     _orgUrl = orgUrl;
+    _restTemplate = new RestTemplate();
   }
 
   /**
@@ -87,10 +93,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     headers.add("X-Forwarded-For", crossForwardedHeader);
     headers.add("Authorization", authorizationToken);
     HttpEntity<String> entity = new HttpEntity<>(requestBody.toString(), headers);
-    RestTemplate restTemplate = new RestTemplate();
     String postUrl = _orgUrl + "/api/v1/authn";
     try {
-      String response = restTemplate.postForObject(postUrl, entity, String.class);
+      String response = _restTemplate.postForObject(postUrl, entity, String.class);
       JSONObject responseJson = new JSONObject(response);
       return responseJson.getJSONObject("_embedded").getJSONObject("user").getString("id");
     } catch (RestClientException | NullPointerException e) {
@@ -260,29 +265,96 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     }
   }
 
-/**
- * Using the Okta Management SDK, activate MFA enrollment with a user-provided passcode.
- * This method should be used for sms, call, and authentication app MFA options.
- * 
- * https://developer.okta.com/docs/reference/api/factors/#activate-sms-factor
- * 
- * @param userId the user id of the user activating their MFA.
- * @param factorId the factor id of the factor being activated. 
- * @param passcode the user-provided passcode to use for activation. This will have been sent to the user via SMS, voice call, etc.
- */
-  public void verifyActivationPasscode(String userId, String factorId, String passcode) throws OktaAuthenticationFailureException {
+  /**
+   * Using the Okta Management SDK, activate MFA enrollment with a user-provided passcode. This
+   * method should be used for sms, call, and authentication app MFA options.
+   *
+   * <p>https://developer.okta.com/docs/reference/api/factors/#activate-sms-factor
+   *
+   * @param userId the user id of the user activating their MFA.
+   * @param factorId the factor id of the factor being activated.
+   * @param passcode the user-provided passcode to use for activation. This will have been sent to
+   *     the user via SMS, voice call, etc.
+   */
+  public void verifyActivationPasscode(String userId, String factorId, String passcode)
+      throws OktaAuthenticationFailureException {
     try {
-    User user = _client.getUser(userId);
-    UserFactor factor = user.getFactor(factorId);
-    ActivateFactorRequest activateFactor = _client.instantiate(ActivateFactorRequest.class);
-    activateFactor.setPassCode(passcode);
-    factor.activate(activateFactor);
+      User user = _client.getUser(userId);
+      UserFactor factor = user.getFactor(factorId);
+      ActivateFactorRequest activateFactor = _client.instantiate(ActivateFactorRequest.class);
+      activateFactor.setPassCode(passcode);
+      factor.activate(activateFactor);
     } catch (ResourceException | NullPointerException | IllegalArgumentException e) {
-      throw new OktaAuthenticationFailureException("Activation passcode could not be verifed; MFA activation failed.", e);
+      throw new OktaAuthenticationFailureException(
+          "Activation passcode could not be verifed; MFA activation failed.", e);
     }
-  } 
+  }
 
-  public void resendActivationPasscode(String userId, String factorId) throws OktaAuthenticationFailureException {
-    // WIP
+  /**
+   * Triggers Okta to resend an activation passcode. Should only be used for SMS, call, and email
+   * MFA options.
+   *
+   * <p>Note: this is not the same method that is used to send a challenge to the user; this is just
+   * for when the user is in a kind of activation limbo (they've enrolled but the factor has not
+   * been activated yet) Another note: there isn't a method in the SDK to re-request an activation
+   * passcode, so this is done directly via the API.
+   *
+   * <p>https://developer.okta.com/docs/reference/api/factors/#resend-sms-as-part-of-enrollment
+   *
+   * @param userId the user id of the user requesting a resend
+   * @param factorId the factor id that we need to re-request a code from.
+   * @throws OktaAuthenticationFailureException if the user or factor cannot be found.
+   * @throws IllegalStateException if the resend request comes too soon (Okta enforces a minimum 30
+   *     second pause between activation code requests.)
+   */
+  public void resendActivationPasscode(String userId, String factorId)
+      throws OktaAuthenticationFailureException {
+    HttpEntity<String> headers = new HttpEntity<>(createHeaders());
+    String getFactorUrl = _orgUrl + "/api/v1/users/" + userId + "/factors/" + factorId;
+    JSONObject getFactorResponse;
+    try {
+      ResponseEntity<String> response =
+          _restTemplate.exchange(getFactorUrl, HttpMethod.GET, headers, String.class);
+      getFactorResponse = new JSONObject(response.getBody());
+    } catch (RestClientException | ResourceException e) {
+      throw new OktaAuthenticationFailureException(
+          "An exception was thrown while fetching the user's factor.", e);
+    }
+    String provider = getFactorResponse.getString("provider");
+    String factorType = getFactorResponse.getString("factorType");
+    JSONObject profile = getFactorResponse.getJSONObject("profile");
+    JSONObject factorInformation = new JSONObject();
+    factorInformation.put("provider", provider);
+    factorInformation.put("factorType", factorType);
+    factorInformation.put("profile", profile);
+
+    HttpEntity<String> requestBody =
+        new HttpEntity<>(factorInformation.toString(), createHeaders());
+    String resendUrl = _orgUrl + "/api/v1/users/" + userId + "/factors/" + factorId + "/resend";
+    try {
+      ResponseEntity<String> response =
+          _restTemplate.exchange(resendUrl, HttpMethod.POST, requestBody, String.class);
+      if (response.getStatusCode() != HttpStatus.OK) {
+        throw new OktaAuthenticationFailureException(
+            "The requested activation factor could not be resent; Okta returned an error."
+                + response);
+      }
+    } catch (HttpClientErrorException e) {
+      if (e.getMessage().contains("429")) {
+        throw new IllegalStateException(
+            "An SMS message was recently sent. Please wait 30 seconds before trying again.", e);
+      }
+    } catch (RestClientException | ResourceException | NullPointerException e) {
+      throw new OktaAuthenticationFailureException(
+          "The requested activation factor could not be resent.", e);
+    }
+  }
+
+  private HttpHeaders createHeaders() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+    headers.add("Authorization", "SSWS " + _apiToken);
+    return headers;
   }
 }

@@ -79,6 +79,9 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
+    // TOTP Generator (only used for testing)
+    compile 'dev.samstevens.totp:totp:1.7.1'
+
 }
 
 springBoot {

@@ -281,4 +281,85 @@ class DemoOktaAuthenticationTest {
             });
     assertThat(exception.getMessage()).isEqualTo("App type not recognized.");
   }
+
+  @Test
+  void verifyActivationPasscode_successfulForSms() {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    String factorId = _auth.enrollSmsMfa(userId, VALID_PHONE_NUMBER);
+    DemoAuthUser user = _auth.getUser(userId);
+
+    assertThat(user.getMfa().getStatus()).isEqualTo("PENDING_ACTIVATION");
+
+    _auth.verifyActivationPasscode(userId, factorId, "123456");
+    assertThat(user.getMfa().getStatus()).isEqualTo("ACTIVE");
+  }
+
+  @Test
+  void verifyActivationPasscode_successfulForAuthApp() {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    FactorAndQrCode mfaResponse = _auth.enrollAuthenticatorAppMfa(userId, "google");
+    DemoAuthUser user = _auth.getUser(userId);
+
+    assertThat(user.getMfa().getFactorType()).isEqualTo("authApp: google");
+    assertThat(user.getMfa().getStatus()).isEqualTo("PENDING_ACTIVATION");
+
+    _auth.verifyActivationPasscode(userId, mfaResponse.getFactorId(), "123456");
+    assertThat(user.getMfa().getStatus()).isEqualTo("ACTIVE");
+  }
+
+  @Test
+  void verifyActivationPasscode_failsWithUnknownFactor() {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+
+    Exception exception =
+        assertThrows(
+            OktaAuthenticationFailureException.class,
+            () -> {
+              _auth.verifyActivationPasscode(userId, "fakeFactorId", "123456");
+            });
+    assertThat(exception).hasMessage("Could not retrieve factor.");
+  }
+
+  @Test
+  void verifyActivationPasscode_failsWithInvalidPasscode() {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    String factorId = _auth.enrollSmsMfa(userId, VALID_PHONE_NUMBER);
+
+    Exception exception =
+        assertThrows(
+            OktaAuthenticationFailureException.class,
+            () -> {
+              _auth.verifyActivationPasscode(userId, factorId, "1234");
+            });
+    assertThat(exception)
+        .hasMessage("Activation passcode could not be verifed; MFA activation failed.");
+  }
+
+  @Test
+  void resendActivationPasscode_successful() {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    String factorId = _auth.enrollSmsMfa(userId, VALID_PHONE_NUMBER);
+
+    try {
+      _auth.resendActivationPasscode(userId, factorId);
+    } catch (Exception e) {
+      throw new IllegalStateException("Activation passcode was not resent.", e);
+    }
+  }
+
+  @Test
+  void resendActivationPasscode_failsWithInvalidFactor() {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    FactorAndQrCode mfaResponse = _auth.enrollAuthenticatorAppMfa(userId, "okta");
+
+    Exception exception =
+        assertThrows(
+            OktaAuthenticationFailureException.class,
+            () -> {
+              _auth.resendActivationPasscode(userId, mfaResponse.getFactorId());
+            });
+
+    assertThat(exception)
+        .hasMessage("The requested activation factor could not be resent; Okta returned an error.");
+  }
 }

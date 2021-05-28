@@ -28,7 +28,7 @@ public class UserAccountCreationController {
   private static final Logger LOG = LoggerFactory.getLogger(UserAccountCreationController.class);
 
   private static final String USER_ID_KEY = "userId";
-  private static final String FACTOR_ID = "factorId";
+  private static final String FACTOR_ID_KEY = "factorId";
 
   @Autowired private OktaAuthentication _oktaAuth;
 
@@ -89,7 +89,7 @@ public class UserAccountCreationController {
       throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollSmsMfa(userId, requestBody.getUserInput());
-    request.getSession().setAttribute(FACTOR_ID, factorId);
+    request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
 
   /**
@@ -104,7 +104,7 @@ public class UserAccountCreationController {
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
     String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollVoiceCallMfa(userId, requestBody.getUserInput());
-    request.getSession().setAttribute(FACTOR_ID, factorId);
+    request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
 
   /**
@@ -119,7 +119,7 @@ public class UserAccountCreationController {
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
     String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollEmailMfa(userId, requestBody.getUserInput());
-    request.getSession().setAttribute(FACTOR_ID, factorId);
+    request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
 
   /**
@@ -136,7 +136,7 @@ public class UserAccountCreationController {
     String userId = getUserId(request.getSession());
     FactorAndQrCode factorData =
         _oktaAuth.enrollAuthenticatorAppMfa(userId, requestBody.getUserInput());
-    request.getSession().setAttribute(FACTOR_ID, factorData.getFactorId());
+    request.getSession().setAttribute(FACTOR_ID_KEY, factorData.getFactorId());
     return factorData.getQrCodeLink();
   }
 
@@ -152,17 +152,24 @@ public class UserAccountCreationController {
   @PostMapping("/verify-activation-passcode")
   public void verifyActivationPasscode(
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
-    // WIP: doesn't interact with Okta yet.
+    String userId = getUserId(request.getSession());
+    String factorId = getFactorId(request.getSession());
+    _oktaAuth.verifyActivationPasscode(userId, factorId, requestBody.getUserInput());
   }
 
   /**
    * Resends the activation passcode sent to a user (required for MFA enrollment).
    *
-   * @param request contains session information about the user, including their Okta id.
+   * @param request contains session information about the user, including their Okta id and factor
+   *     id.
+   * @throws OktaAuthenticationFailureException if the user/factor are not found on the request, or
+   *     if the resend request fails.
    */
   @PostMapping("/resend-activation-passcode")
   public void resendActivationPasscode(HttpServletRequest request) {
-    // WIP: doesn't interact with Okta yet.
+    String userId = getUserId(request.getSession());
+    String factorId = getFactorId(request.getSession());
+    _oktaAuth.resendActivationPasscode(userId, factorId);
   }
 
   private String getUserId(HttpSession session) throws OktaAuthenticationFailureException {
@@ -172,6 +179,16 @@ public class UserAccountCreationController {
     } else {
       throw new OktaAuthenticationFailureException(
           "User id not found; user could not be authenticated.");
+    }
+  }
+
+  private String getFactorId(HttpSession session) throws OktaAuthenticationFailureException {
+    Object factorId = session.getAttribute(FACTOR_ID_KEY);
+    if (factorId != null) {
+      return factorId.toString();
+    } else {
+      throw new OktaAuthenticationFailureException(
+          "Factor id not found; requested operation could not be performed.");
     }
   }
 }
