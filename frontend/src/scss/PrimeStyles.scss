@@ -1069,7 +1069,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
   @include at-media(tablet) {
     box-shadow: unset;
-    margin: 0 units(-2);
+    margin: 0 units(-2.5);
     position: unset;
     width: unset;
   }
