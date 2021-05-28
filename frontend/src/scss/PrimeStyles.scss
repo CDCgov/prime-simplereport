@@ -984,8 +984,12 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 @-moz-document url-prefix() {
   [aria-label="Test questionnaire"] {
-    @include at-media(tablet) {
+    .usa-label,
+    .usa-legend {
+      margin-top: 0;
+    }
 
+    @include at-media(tablet) {
       max-height: calc(100vh - #{units(10)});
     }
   }
