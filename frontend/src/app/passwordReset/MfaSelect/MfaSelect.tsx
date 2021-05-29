@@ -102,7 +102,7 @@ export const MfaSelect = () => {
           onChange={setMfaOption}
         ></RadioGroup>
         <p className="usa-hint font-ui-2xs margin-bottom-0">
-          Text message and voice call options will only work if you’ve connected
+          Text message and phone call options will only work if you’ve connected
           them to your SimpleReport account.
         </p>
         <Button
