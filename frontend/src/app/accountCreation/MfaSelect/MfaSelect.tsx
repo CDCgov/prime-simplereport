@@ -53,7 +53,7 @@ export const MfaSelect = () => {
               value: "Google",
               label: "Google Authenticator",
               labelDescription:
-                "Get a single-use code from Google Authenticator.",
+                "Get a single-use code from the Google Authenticator mobile app.",
               labelTag: secure,
             },
             {
