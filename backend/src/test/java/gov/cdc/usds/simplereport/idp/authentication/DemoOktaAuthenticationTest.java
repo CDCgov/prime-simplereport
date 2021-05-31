@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.okta.sdk.resource.user.factor.FactorType;
-
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
@@ -248,7 +247,7 @@ class DemoOktaAuthenticationTest {
     assertThat(factorData.getQrCodeLink()).isEqualTo("thisIsAFakeQrCode");
 
     assertThat(user.getMfa().getFactorProfile()).isEqualTo("thisIsAFakeQrCode");
-    assertThat(user.getMfa().getFactorType()).isEqualTo("authApp: google");
+    assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.TOKEN_SOFTWARE_TOTP);
     assertThat(user.getMfa().getFactorId()).isEqualTo(factorData.getFactorId());
   }
 
@@ -258,7 +257,9 @@ class DemoOktaAuthenticationTest {
     _auth.enrollAuthenticatorAppMfa(userId, "okta");
     DemoAuthUser user = _auth.getUser(userId);
 
-    assertThat(user.getMfa().getFactorType()).isEqualTo("authApp: okta");
+    System.out.println(user.getMfa().getFactorId());
+    assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.TOKEN_SOFTWARE_TOTP);
+    assertThat(user.getMfa().getFactorId()).isEqualTo("authApp: okta " + userId);
   }
 
   @Test

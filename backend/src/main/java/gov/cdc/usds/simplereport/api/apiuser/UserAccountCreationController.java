@@ -90,7 +90,7 @@ public class UserAccountCreationController {
   @PostMapping("/enroll-sms-mfa")
   public void enrollSmsMfa(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
       throws OktaAuthenticationFailureException {
-        LOG.info("endpoint hit: enroll-sms-mfa");
+    LOG.info("endpoint hit: enroll-sms-mfa");
     String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollSmsMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID, factorId);
@@ -138,7 +138,7 @@ public class UserAccountCreationController {
   @GetMapping("/authenticator-qr")
   public String getAuthQrCode(
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
-        LOG.info("endpoint hit: authenticator-qr");
+    LOG.info("endpoint hit: authenticator-qr");
     String userId = getUserId(request.getSession());
     FactorAndQrCode factorData =
         _oktaAuth.enrollAuthenticatorAppMfa(userId, requestBody.getUserInput());
