@@ -137,7 +137,6 @@ public class UserAccountCreationController {
   @GetMapping("/authenticator-qr")
   public String getAuthQrCode(
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
-    LOG.info("endpoint hit: authenticator-qr");
     String userId = getUserId(request.getSession());
     FactorAndQrCode factorData =
         _oktaAuth.enrollAuthenticatorAppMfa(userId, requestBody.getUserInput());
