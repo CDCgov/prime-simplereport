@@ -3,6 +3,8 @@ package gov.cdc.usds.simplereport.idp.authentication;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.okta.sdk.resource.user.factor.FactorType;
+
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication.DemoAuthUser;
@@ -138,8 +140,8 @@ class DemoOktaAuthenticationTest {
     DemoAuthUser user = _auth.getUser(userId);
 
     assertThat(user.getMfa().getFactorProfile()).isEqualTo(STRIPPED_PHONE_NUMBER);
-    assertThat(user.getMfa().getFactorType()).isEqualTo("smsFactor");
-    assertThat(user.getMfa().getFactorId()).isEqualTo("smsFactor " + STRIPPED_PHONE_NUMBER);
+    assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.SMS);
+    assertThat(user.getMfa().getFactorId()).isEqualTo(userId + STRIPPED_PHONE_NUMBER);
   }
 
   @Test
@@ -173,8 +175,8 @@ class DemoOktaAuthenticationTest {
     DemoAuthUser user = _auth.getUser(userId);
 
     assertThat(user.getMfa().getFactorProfile()).isEqualTo(STRIPPED_PHONE_NUMBER);
-    assertThat(user.getMfa().getFactorType()).isEqualTo("callFactor");
-    assertThat(user.getMfa().getFactorId()).isEqualTo("callFactor " + STRIPPED_PHONE_NUMBER);
+    assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.CALL);
+    assertThat(user.getMfa().getFactorId()).isEqualTo(userId + STRIPPED_PHONE_NUMBER);
   }
 
   @Test
@@ -208,8 +210,8 @@ class DemoOktaAuthenticationTest {
     DemoAuthUser user = _auth.getUser(userId);
 
     assertThat(user.getMfa().getFactorProfile()).isEqualTo("me@example.com");
-    assertThat(user.getMfa().getFactorType()).isEqualTo("emailFactor");
-    assertThat(user.getMfa().getFactorId()).isEqualTo("emailFactor me@example.com");
+    assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.EMAIL);
+    assertThat(user.getMfa().getFactorId()).isEqualTo(userId + "me@example.com");
   }
 
   @Test
