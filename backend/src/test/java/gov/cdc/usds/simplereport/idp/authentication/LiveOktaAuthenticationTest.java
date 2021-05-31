@@ -191,7 +191,6 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
   // Negative Tests
   @Test
-  @Order(9)
   void testActivationFails_withInvalidToken() {
     Exception exception =
         assertThrows(
@@ -203,7 +202,6 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
   }
 
   @Test
-  @Order(10)
   void setPasswordFails_withInvalidPassword() {
     Exception exception =
         assertThrows(
@@ -215,7 +213,6 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
   }
 
   @Test
-  @Order(11)
   void setRecoveryQuestionFails_withInvalidQuestion() {
     Exception exception =
         assertThrows(
@@ -227,7 +224,6 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
   }
 
   @Test
-  @Order(12)
   void enrollSmsMfaFails_withInvalidPhoneNumber() {
     Exception exception =
         assertThrows(
@@ -239,7 +235,6 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
   }
 
   @Test
-  @Order(13)
   void enrollVoiceCallMfaFails_withInvalidPhoneNumber() {
     Exception exception =
         assertThrows(
@@ -251,7 +246,6 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
   }
 
   @Test
-  @Order(14)
   void enrollEmailMfaFails_withInvalidEmail() {
     Exception exception =
         assertThrows(
@@ -263,7 +257,6 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
   }
 
   @Test
-  @Order(15)
   void enrollAuthenticatorAppMfaFails_withInvalidAppType() {
     Exception exception =
         assertThrows(
