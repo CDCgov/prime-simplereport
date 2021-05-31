@@ -79,7 +79,7 @@ export const MfaSelect = () => {
               value: "okta",
             },
             {
-              label: "Google authenticator",
+              label: "Google Authenticator",
               value: "google",
             },
             {
