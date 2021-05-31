@@ -64,14 +64,7 @@ class UserAccountCreationControllerTest {
   @Test
   void setPasswordIsOk() throws Exception {
     MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.USER_SET_PASSWORD)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .header("X-Forwarded-For", "1.1.1.1")
-            .header("User-Agent", "Chrome")
-            .content(VALID_PASSWORD_REQUEST);
-
+        createActivationRequest(new MockHttpSession(), VALID_PASSWORD_REQUEST);
     this._mockMvc.perform(builder).andExpect(status().isOk());
   }
 
@@ -92,41 +85,17 @@ class UserAccountCreationControllerTest {
   @Test
   void setPassword_worksAsExpectedWithMultipleSessions() throws Exception {
     MockHttpServletRequestBuilder firstBuilder =
-        post(ResourceLinks.USER_SET_PASSWORD)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .header("X-Forwarded-For", "1.1.1.1")
-            .header("User-Agent", "Chrome")
-            .content(VALID_PASSWORD_REQUEST);
+        createActivationRequest(new MockHttpSession(), VALID_PASSWORD_REQUEST);
 
     String secondValidPasswordRequest =
         "{\"activationToken\":\"anotherValidAuthToken\", \"password\":\"secondSuperStrongPassword!?\"}";
 
     MockHttpServletRequestBuilder secondBuilder =
-        post(ResourceLinks.USER_SET_PASSWORD)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .header("X-Forwarded-For", "1.1.1.1")
-            .header("User-Agent", "Chrome")
-            .content(secondValidPasswordRequest);
+        createActivationRequest(new MockHttpSession(), secondValidPasswordRequest);
 
-    HttpSession firstSession =
-        this._mockMvc
-            .perform(firstBuilder)
-            .andExpect(status().isOk())
-            .andReturn()
-            .getRequest()
-            .getSession(false);
+    HttpSession firstSession = performRequestAndGetSession(firstBuilder);
 
-    HttpSession secondSession =
-        this._mockMvc
-            .perform(secondBuilder)
-            .andExpect(status().isOk())
-            .andReturn()
-            .getRequest()
-            .getSession(false);
+    HttpSession secondSession = performRequestAndGetSession(secondBuilder);
 
     assertThat(firstSession.getId()).isNotEqualTo(secondSession.getId());
     assertThat(firstSession.getAttribute("userId")).isEqualTo("userId " + "validActivationToken");
@@ -137,38 +106,16 @@ class UserAccountCreationControllerTest {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder setPasswordBuilder =
-        post(ResourceLinks.USER_SET_PASSWORD)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .header("X-Forwarded-For", "1.1.1.1")
-            .header("User-Agent", "Chrome")
-            .content(VALID_PASSWORD_REQUEST)
-            .session(session);
+        createActivationRequest(session, VALID_PASSWORD_REQUEST);
 
     MockHttpServletRequestBuilder setRecoveryQuestionBuilder =
-        post(ResourceLinks.USER_SET_RECOVERY_QUESTION)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(VALID_RECOVERY_QUESTION_REQUEST)
-            .session(session);
+        createPostRequest(
+            session, VALID_RECOVERY_QUESTION_REQUEST, ResourceLinks.USER_SET_RECOVERY_QUESTION);
 
-    HttpSession setPasswordResponse =
-        this._mockMvc
-            .perform(setPasswordBuilder)
-            .andExpect(status().isOk())
-            .andReturn()
-            .getRequest()
-            .getSession(false);
+    HttpSession setPasswordResponse = performRequestAndGetSession(setPasswordBuilder);
 
     HttpSession setRecoveryQuestionResponse =
-        this._mockMvc
-            .perform(setRecoveryQuestionBuilder)
-            .andExpect(status().isOk())
-            .andReturn()
-            .getRequest()
-            .getSession(false);
+        performRequestAndGetSession(setRecoveryQuestionBuilder);
 
     // assert that the userId is propagated to the recovery question session
     assertThat(setRecoveryQuestionResponse.getAttribute("userId"))
@@ -181,38 +128,15 @@ class UserAccountCreationControllerTest {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder setPasswordBuilder =
-        post(ResourceLinks.USER_SET_PASSWORD)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .header("X-Forwarded-For", "1.1.1.1")
-            .header("User-Agent", "Chrome")
-            .content(VALID_PASSWORD_REQUEST)
-            .session(session);
+        createActivationRequest(session, VALID_PASSWORD_REQUEST);
 
     MockHttpServletRequestBuilder enrollSmsMfaBuilder =
-        post(ResourceLinks.USER_ENROLL_SMS_MFA)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(VALID_ENROLL_PHONE_MFA_REQUEST)
-            .session(session);
+        createPostRequest(
+            session, VALID_ENROLL_PHONE_MFA_REQUEST, ResourceLinks.USER_ENROLL_SMS_MFA);
 
-    HttpSession setPasswordResponse =
-        this._mockMvc
-            .perform(setPasswordBuilder)
-            .andExpect(status().isOk())
-            .andReturn()
-            .getRequest()
-            .getSession(false);
+    HttpSession setPasswordResponse = performRequestAndGetSession(setPasswordBuilder);
 
-    HttpSession enrollSmsMfaResponse =
-        this._mockMvc
-            .perform(enrollSmsMfaBuilder)
-            .andExpect(status().isOk())
-            .andReturn()
-            .getRequest()
-            .getSession(false);
+    HttpSession enrollSmsMfaResponse = performRequestAndGetSession(enrollSmsMfaBuilder);
 
     assertThat(setPasswordResponse.getAttribute("userId"))
         .isEqualTo(enrollSmsMfaResponse.getAttribute("userId"));
@@ -224,12 +148,8 @@ class UserAccountCreationControllerTest {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder enrollSmsMfaBuilder =
-        post(ResourceLinks.USER_ENROLL_SMS_MFA)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(VALID_ENROLL_PHONE_MFA_REQUEST)
-            .session(session);
+        createPostRequest(
+            session, VALID_ENROLL_PHONE_MFA_REQUEST, ResourceLinks.USER_ENROLL_SMS_MFA);
 
     this._mockMvc.perform(enrollSmsMfaBuilder).andExpect(status().is4xxClientError());
   }
@@ -239,38 +159,15 @@ class UserAccountCreationControllerTest {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder activateUserBuilder =
-        post(ResourceLinks.USER_SET_PASSWORD)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .header("X-Forwarded-For", "1.1.1.1")
-            .header("User-Agent", "Chrome")
-            .content(VALID_PASSWORD_REQUEST)
-            .session(session);
+        createActivationRequest(session, VALID_PASSWORD_REQUEST);
 
     MockHttpServletRequestBuilder enrollVoiceCallMfaBuilder =
-        post(ResourceLinks.USER_ENROLL_VOICE_CALL_MFA)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(VALID_ENROLL_PHONE_MFA_REQUEST)
-            .session(session);
+        createPostRequest(
+            session, VALID_ENROLL_PHONE_MFA_REQUEST, ResourceLinks.USER_ENROLL_VOICE_CALL_MFA);
 
-    HttpSession setPasswordResponse =
-        this._mockMvc
-            .perform(activateUserBuilder)
-            .andExpect(status().isOk())
-            .andReturn()
-            .getRequest()
-            .getSession(false);
+    HttpSession setPasswordResponse = performRequestAndGetSession(activateUserBuilder);
 
-    HttpSession enrollVoiceCallMfaResponse =
-        this._mockMvc
-            .perform(enrollVoiceCallMfaBuilder)
-            .andExpect(status().isOk())
-            .andReturn()
-            .getRequest()
-            .getSession(false);
+    HttpSession enrollVoiceCallMfaResponse = performRequestAndGetSession(enrollVoiceCallMfaBuilder);
 
     assertThat(setPasswordResponse.getAttribute("userId"))
         .isEqualTo(enrollVoiceCallMfaResponse.getAttribute("userId"));
@@ -281,15 +178,11 @@ class UserAccountCreationControllerTest {
   void cannotEnrollVoiceCallMfa_withoutActivatedUser() throws Exception {
     MockHttpSession session = new MockHttpSession();
 
-    MockHttpServletRequestBuilder enrollSmsMfaBuilder =
-        post(ResourceLinks.USER_ENROLL_VOICE_CALL_MFA)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(VALID_ENROLL_PHONE_MFA_REQUEST)
-            .session(session);
+    MockHttpServletRequestBuilder enrollVoiceCallMfaBuilder =
+        createPostRequest(
+            session, VALID_ENROLL_PHONE_MFA_REQUEST, ResourceLinks.USER_ENROLL_VOICE_CALL_MFA);
 
-    this._mockMvc.perform(enrollSmsMfaBuilder).andExpect(status().is4xxClientError());
+    this._mockMvc.perform(enrollVoiceCallMfaBuilder).andExpect(status().is4xxClientError());
   }
 
   @Test
@@ -297,22 +190,11 @@ class UserAccountCreationControllerTest {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder activateUserBuilder =
-        post(ResourceLinks.USER_SET_PASSWORD)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .header("X-Forwarded-For", "1.1.1.1")
-            .header("User-Agent", "Chrome")
-            .content(VALID_PASSWORD_REQUEST)
-            .session(session);
+        createActivationRequest(session, VALID_PASSWORD_REQUEST);
 
     MockHttpServletRequestBuilder enrollVoiceCallMfaBuilder =
-        post(ResourceLinks.USER_ENROLL_VOICE_CALL_MFA)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content("{\"userInput\":\"555\"}")
-            .session(session);
+        createPostRequest(
+            session, "{\"userInput\":\"555\"}", ResourceLinks.USER_ENROLL_VOICE_CALL_MFA);
 
     this._mockMvc.perform(activateUserBuilder).andExpect(status().isOk());
 
@@ -324,38 +206,15 @@ class UserAccountCreationControllerTest {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder activateUserBuilder =
-        post(ResourceLinks.USER_SET_PASSWORD)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .header("X-Forwarded-For", "1.1.1.1")
-            .header("User-Agent", "Chrome")
-            .content(VALID_PASSWORD_REQUEST)
-            .session(session);
+        createActivationRequest(session, VALID_PASSWORD_REQUEST);
 
     MockHttpServletRequestBuilder enrollEmailMfaBuilder =
-        post(ResourceLinks.USER_ENROLL_EMAIL_MFA)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(VALID_ENROLL_EMAIL_MFA_REQUEST)
-            .session(session);
+        createPostRequest(
+            session, VALID_ENROLL_EMAIL_MFA_REQUEST, ResourceLinks.USER_ENROLL_EMAIL_MFA);
 
-    HttpSession setPasswordResponse =
-        this._mockMvc
-            .perform(activateUserBuilder)
-            .andExpect(status().isOk())
-            .andReturn()
-            .getRequest()
-            .getSession(false);
+    HttpSession setPasswordResponse = performRequestAndGetSession(activateUserBuilder);
 
-    HttpSession enrollEmailMfaResponse =
-        this._mockMvc
-            .perform(enrollEmailMfaBuilder)
-            .andExpect(status().isOk())
-            .andReturn()
-            .getRequest()
-            .getSession(false);
+    HttpSession enrollEmailMfaResponse = performRequestAndGetSession(enrollEmailMfaBuilder);
 
     assertThat(setPasswordResponse.getAttribute("userId"))
         .isEqualTo(enrollEmailMfaResponse.getAttribute("userId"));
@@ -367,12 +226,8 @@ class UserAccountCreationControllerTest {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder enrollEmailMfaBuilder =
-        post(ResourceLinks.USER_ENROLL_EMAIL_MFA)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(VALID_ENROLL_EMAIL_MFA_REQUEST)
-            .session(session);
+        createPostRequest(
+            session, VALID_ENROLL_EMAIL_MFA_REQUEST, ResourceLinks.USER_ENROLL_EMAIL_MFA);
 
     this._mockMvc.perform(enrollEmailMfaBuilder).andExpect(status().is4xxClientError());
   }
@@ -382,22 +237,11 @@ class UserAccountCreationControllerTest {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder activateUserBuilder =
-        post(ResourceLinks.USER_SET_PASSWORD)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .header("X-Forwarded-For", "1.1.1.1")
-            .header("User-Agent", "Chrome")
-            .content(VALID_PASSWORD_REQUEST)
-            .session(session);
+        createActivationRequest(session, VALID_PASSWORD_REQUEST);
 
     MockHttpServletRequestBuilder enrollEmailMfaBuilder =
-        post(ResourceLinks.USER_ENROLL_EMAIL_MFA)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content("{\"userInput\":\"bademail.com\"}")
-            .session(session);
+        createPostRequest(
+            session, "{\"userInput\":\"bademail.com\"}", ResourceLinks.USER_ENROLL_EMAIL_MFA);
 
     this._mockMvc.perform(activateUserBuilder).andExpect(status().isOk());
 
@@ -409,30 +253,13 @@ class UserAccountCreationControllerTest {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder activateUserBuilder =
-        post(ResourceLinks.USER_SET_PASSWORD)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .header("X-Forwarded-For", "1.1.1.1")
-            .header("User-Agent", "Chrome")
-            .content(VALID_PASSWORD_REQUEST)
-            .session(session);
+        createActivationRequest(session, VALID_PASSWORD_REQUEST);
 
     MockHttpServletRequestBuilder enrollAuthAppMfaBuilder =
-        get(ResourceLinks.USER_ENROLL_AUTH_APP_MFA)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(VALID_ENROLL_AUTH_APP_MFA_REQUEST)
-            .session(session);
+        createGetRequest(
+            session, VALID_ENROLL_AUTH_APP_MFA_REQUEST, ResourceLinks.USER_ENROLL_AUTH_APP_MFA);
 
-    HttpSession setPasswordResponse =
-        this._mockMvc
-            .perform(activateUserBuilder)
-            .andExpect(status().isOk())
-            .andReturn()
-            .getRequest()
-            .getSession(false);
+    HttpSession setPasswordResponse = performRequestAndGetSession(activateUserBuilder);
 
     MvcResult enrollAuthAppMfaResponse =
         this._mockMvc.perform(enrollAuthAppMfaBuilder).andExpect(status().isOk()).andReturn();
@@ -451,12 +278,8 @@ class UserAccountCreationControllerTest {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder enrollAuthAppMfaBuilder =
-        get(ResourceLinks.USER_ENROLL_AUTH_APP_MFA)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(VALID_ENROLL_AUTH_APP_MFA_REQUEST)
-            .session(session);
+        createGetRequest(
+            session, VALID_ENROLL_AUTH_APP_MFA_REQUEST, ResourceLinks.USER_ENROLL_AUTH_APP_MFA);
 
     this._mockMvc.perform(enrollAuthAppMfaBuilder).andExpect(status().is4xxClientError());
   }
@@ -466,22 +289,11 @@ class UserAccountCreationControllerTest {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder activateUserBuilder =
-        post(ResourceLinks.USER_SET_PASSWORD)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .header("X-Forwarded-For", "1.1.1.1")
-            .header("User-Agent", "Chrome")
-            .content(VALID_PASSWORD_REQUEST)
-            .session(session);
+        createActivationRequest(session, VALID_PASSWORD_REQUEST);
 
     MockHttpServletRequestBuilder enrollAuthAppMfaBuilder =
-        get(ResourceLinks.USER_ENROLL_AUTH_APP_MFA)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content("{\"userInput\":\"lastPass\"}")
-            .session(session);
+        createGetRequest(
+            session, "{\"userInput\":\"lastPass\"}", ResourceLinks.USER_ENROLL_AUTH_APP_MFA);
 
     this._mockMvc.perform(activateUserBuilder).andExpect(status().isOk());
 
@@ -587,5 +399,48 @@ class UserAccountCreationControllerTest {
     this._mockMvc.perform(activateUserBuilder).andExpect(status().isOk());
 
     this._mockMvc.perform(verifyPasscodeBuilder).andExpect(status().is4xxClientError());
+
+  }
+  
+  private MockHttpServletRequestBuilder createActivationRequest(
+      MockHttpSession session, String requestBody) {
+    return post(ResourceLinks.USER_SET_PASSWORD)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .accept(MediaType.APPLICATION_JSON)
+        .characterEncoding("UTF-8")
+        .header("X-Forwarded-For", "1.1.1.1")
+        .header("User-Agent", "Chrome")
+        .content(requestBody)
+        .session(session);
+  }
+
+  private MockHttpServletRequestBuilder createPostRequest(
+      MockHttpSession session, String requestBody, String link) {
+    return post(link)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .accept(MediaType.APPLICATION_JSON)
+        .characterEncoding("UTF-8")
+        .content(requestBody)
+        .session(session);
+  }
+
+  private MockHttpServletRequestBuilder createGetRequest(
+      MockHttpSession session, String requestBody, String link) {
+    return get(link)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .accept(MediaType.APPLICATION_JSON)
+        .characterEncoding("UTF-8")
+        .content(requestBody)
+        .session(session);
+  }
+
+  private HttpSession performRequestAndGetSession(MockHttpServletRequestBuilder builder)
+      throws Exception {
+    return this._mockMvc
+        .perform(builder)
+        .andExpect(status().isOk())
+        .andReturn()
+        .getRequest()
+        .getSession(false);
   }
 }

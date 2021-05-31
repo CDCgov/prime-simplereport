@@ -52,12 +52,14 @@ public class UserAccountCreationController {
   public void activateAccountAndSetPassword(
       @RequestBody UserAccountCreationRequest requestBody, HttpServletRequest request)
       throws InvalidActivationLinkException, OktaAuthenticationFailureException {
-    LOG.info("endpoint hit: initialize-and-set-password");
     String userId =
         _oktaAuth.activateUser(
             requestBody.getActivationToken(),
             request.getHeader("X-Forwarded-For"),
             request.getHeader("User-Agent"));
+    if (userId.isEmpty()) {
+      throw new OktaAuthenticationFailureException("Returned user id is empty.");
+    }
     request.getSession().setAttribute(USER_ID_KEY, userId);
     _oktaAuth.setPassword(userId, requestBody.getPassword().toCharArray());
   }
@@ -72,7 +74,8 @@ public class UserAccountCreationController {
    */
   @PostMapping("/set-recovery-question")
   public void setRecoveryQuestions(
-      @RequestBody SetRecoveryQuestionRequest requestBody, HttpServletRequest request) {
+      @RequestBody SetRecoveryQuestionRequest requestBody, HttpServletRequest request)
+      throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
     _oktaAuth.setRecoveryQuestion(userId, requestBody.getQuestion(), requestBody.getAnswer());
   }
@@ -101,7 +104,8 @@ public class UserAccountCreationController {
    */
   @PostMapping("/enroll-voice-call-mfa")
   public void enrollVoiceCallMfa(
-      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
+      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
+      throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollVoiceCallMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
@@ -115,8 +119,8 @@ public class UserAccountCreationController {
    * @throws OktaAuthenticationFailureException if the provided email address is invalid.
    */
   @PostMapping("/enroll-email-mfa")
-  public void enrollEmailMfa(
-      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
+  public void enrollEmailMfa(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
+      throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollEmailMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);

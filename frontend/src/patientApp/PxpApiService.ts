@@ -37,6 +37,7 @@ export type SelfRegistrationData = Omit<
   UpdatePatientData,
   "facilityId" | "address"
 > & {
+  birthDate: ISODate;
   registrationLink: string;
   address: Omit<UpdatePatientData["address"], "zipCode"> & {
     postalCode: string | null;

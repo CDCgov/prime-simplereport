@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.idp.authentication;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.okta.sdk.resource.user.factor.FactorType;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
@@ -139,8 +140,8 @@ class DemoOktaAuthenticationTest {
     DemoAuthUser user = _auth.getUser(userId);
 
     assertThat(user.getMfa().getFactorProfile()).isEqualTo(STRIPPED_PHONE_NUMBER);
-    assertThat(user.getMfa().getFactorType()).isEqualTo("smsFactor");
-    assertThat(user.getMfa().getFactorId()).isEqualTo("smsFactor " + STRIPPED_PHONE_NUMBER);
+    assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.SMS);
+    assertThat(user.getMfa().getFactorId()).isEqualTo(userId + STRIPPED_PHONE_NUMBER);
   }
 
   @Test
@@ -174,8 +175,8 @@ class DemoOktaAuthenticationTest {
     DemoAuthUser user = _auth.getUser(userId);
 
     assertThat(user.getMfa().getFactorProfile()).isEqualTo(STRIPPED_PHONE_NUMBER);
-    assertThat(user.getMfa().getFactorType()).isEqualTo("callFactor");
-    assertThat(user.getMfa().getFactorId()).isEqualTo("callFactor " + STRIPPED_PHONE_NUMBER);
+    assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.CALL);
+    assertThat(user.getMfa().getFactorId()).isEqualTo(userId + STRIPPED_PHONE_NUMBER);
   }
 
   @Test
@@ -209,8 +210,8 @@ class DemoOktaAuthenticationTest {
     DemoAuthUser user = _auth.getUser(userId);
 
     assertThat(user.getMfa().getFactorProfile()).isEqualTo("me@example.com");
-    assertThat(user.getMfa().getFactorType()).isEqualTo("emailFactor");
-    assertThat(user.getMfa().getFactorId()).isEqualTo("emailFactor me@example.com");
+    assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.EMAIL);
+    assertThat(user.getMfa().getFactorId()).isEqualTo(userId + "me@example.com");
   }
 
   @Test
@@ -246,7 +247,7 @@ class DemoOktaAuthenticationTest {
     assertThat(factorData.getQrCodeLink()).isEqualTo("thisIsAFakeQrCode");
 
     assertThat(user.getMfa().getFactorProfile()).isEqualTo("thisIsAFakeQrCode");
-    assertThat(user.getMfa().getFactorType()).isEqualTo("authApp: google");
+    assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.TOKEN_SOFTWARE_TOTP);
     assertThat(user.getMfa().getFactorId()).isEqualTo(factorData.getFactorId());
   }
 
@@ -256,7 +257,9 @@ class DemoOktaAuthenticationTest {
     _auth.enrollAuthenticatorAppMfa(userId, "okta");
     DemoAuthUser user = _auth.getUser(userId);
 
-    assertThat(user.getMfa().getFactorType()).isEqualTo("authApp: okta");
+    System.out.println(user.getMfa().getFactorId());
+    assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.TOKEN_SOFTWARE_TOTP);
+    assertThat(user.getMfa().getFactorId()).isEqualTo("authApp: okta " + userId);
   }
 
   @Test
