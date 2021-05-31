@@ -20,12 +20,11 @@ export const MfaSecurityKey = () => {
             with a USB cable.
           </li>
           <li>
-            Once connected, tap the button or gold disk if your key has one of
-            them.
+            Once connected, tap the button or gold disk if your key has one.
           </li>
         </ol>
         <div className="display-flex flex-column flex-align-center">
-          <img className="square-5" src={iconLoader} alt="" />
+          <img className="square-5 chromatic-ignore" src={iconLoader} alt="" />
         </div>
         {/* <Button className="margin-top-3" label={"Continue"} type={"submit"} /> */}
       </Card>

@@ -10,8 +10,7 @@ export const MfaAuthenticationApp = () => {
           Enter your authentication code
         </h1>
         <p className="usa-hint margin-bottom-0 line-height-sans-3">
-          Enter a one-time security code from your authenticator application
-          (Google Authenticator or Okta Verify)
+          Enter the security code sent from Google Authenticator or Okta Verify.
         </p>
         <MfaVerifyForm />
       </Card>
