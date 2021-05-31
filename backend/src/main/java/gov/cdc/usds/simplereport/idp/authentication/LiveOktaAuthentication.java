@@ -161,12 +161,10 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public String enrollSmsMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException {
     try {
-      LOG.debug("enrolling sms factor: " + userId + " " + phoneNumber);
       SmsUserFactor smsFactor = _client.instantiate(SmsUserFactor.class);
       smsFactor.getProfile().setPhoneNumber(phoneNumber);
       User user = _client.getUser(userId);
       user.enrollFactor(smsFactor);
-      LOG.debug("enroll sms mfa response: " + _client.getUser(userId).toString());
       return smsFactor.getId();
     } catch (ResourceException e) {
       throw new OktaAuthenticationFailureException("Error setting SMS MFA", e);
@@ -186,12 +184,10 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public String enrollVoiceCallMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException {
     try {
-      LOG.debug("enrolling voice call factor: " + userId + " " + phoneNumber);
       CallUserFactor callFactor = _client.instantiate(CallUserFactor.class);
       callFactor.getProfile().setPhoneNumber(phoneNumber);
       User user = _client.getUser(userId);
       user.enrollFactor(callFactor);
-      LOG.debug("enroll voice call mfa response: " + _client.getUser(userId).toString());
       return callFactor.getId();
     } catch (ResourceException e) {
       throw new OktaAuthenticationFailureException("Error setting voice call MFA", e);
@@ -211,12 +207,10 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public String enrollEmailMfa(String userId, String email)
       throws OktaAuthenticationFailureException {
     try {
-      LOG.debug("enrolling email factor: " + userId + " " + email);
       EmailUserFactor emailFactor = _client.instantiate(EmailUserFactor.class);
       emailFactor.getProfile().setEmail(email);
       User user = _client.getUser(userId);
       user.enrollFactor(emailFactor);
-      LOG.debug("enroll email mfa response: ", _client.getUser(userId).toString());
       return emailFactor.getId();
     } catch (ResourceException e) {
       throw new OktaAuthenticationFailureException("Error setting email MFA", e);
