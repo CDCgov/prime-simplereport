@@ -12,6 +12,6 @@ export const VerifyPhone = () => (
         sent a one-time security code. It will expire in 10 minutes.
       </>
     }
-    type="phone call"
+    type="voice call"
   />
 );
