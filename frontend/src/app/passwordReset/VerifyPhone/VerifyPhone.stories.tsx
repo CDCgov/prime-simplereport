@@ -6,9 +6,12 @@ export default {
   title: "App/Password reset/Verify: Phone call",
   component: VerifyPhone,
   argTypes: {},
+  args: { phoneNumber: "(530) 867-5309" },
 } as Meta;
 
-const Template: Story = (args) => <VerifyPhone {...args} />;
+type Props = React.ComponentProps<typeof VerifyPhone>;
+
+const Template: Story<Props> = (args) => <VerifyPhone {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};
