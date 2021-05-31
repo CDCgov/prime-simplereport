@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.idp.authentication;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.okta.sdk.resource.user.factor.FactorStatus;
 import com.okta.sdk.resource.user.factor.FactorType;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
@@ -291,10 +292,10 @@ class DemoOktaAuthenticationTest {
     String factorId = _auth.enrollSmsMfa(userId, VALID_PHONE_NUMBER);
     DemoAuthUser user = _auth.getUser(userId);
 
-    assertThat(user.getMfa().getStatus()).isEqualTo("PENDING_ACTIVATION");
+    assertThat(user.getMfa().getFactorStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
 
     _auth.verifyActivationPasscode(userId, factorId, "123456");
-    assertThat(user.getMfa().getStatus()).isEqualTo("ACTIVE");
+    assertThat(user.getMfa().getFactorStatus()).isEqualTo(FactorStatus.ACTIVE);
   }
 
   @Test
@@ -303,11 +304,12 @@ class DemoOktaAuthenticationTest {
     FactorAndQrCode mfaResponse = _auth.enrollAuthenticatorAppMfa(userId, "google");
     DemoAuthUser user = _auth.getUser(userId);
 
-    assertThat(user.getMfa().getFactorType()).isEqualTo("authApp: google");
-    assertThat(user.getMfa().getStatus()).isEqualTo("PENDING_ACTIVATION");
+    assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.TOKEN_SOFTWARE_TOTP);
+    assertThat(user.getMfa().getFactorId()).isEqualTo("authApp: google " + userId);
+    assertThat(user.getMfa().getFactorStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
 
     _auth.verifyActivationPasscode(userId, mfaResponse.getFactorId(), "123456");
-    assertThat(user.getMfa().getStatus()).isEqualTo("ACTIVE");
+    assertThat(user.getMfa().getFactorStatus()).isEqualTo(FactorStatus.ACTIVE);
   }
 
   @Test

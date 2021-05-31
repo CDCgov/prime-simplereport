@@ -21,8 +21,6 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   private static final int MINIMUM_PASSWORD_LENGTH = 8;
   private static final int PHONE_NUMBER_LENGTH = 10;
-  private static final String PENDING_ACTIVATION = "PENDING_ACTIVATION";
-  private static final String ACTIVE = "ACTIVE";
 
   private HashMap<String, DemoAuthUser> idToUserMap;
 
@@ -81,7 +79,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
     String factorId = userId + strippedPhoneNumber;
     DemoMfa smsMfa =
-        new DemoMfa(FactorType.SMS, strippedPhoneNumber, factorId, FactorStatus.ENROLLED);
+        new DemoMfa(FactorType.SMS, strippedPhoneNumber, factorId, FactorStatus.PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(smsMfa);
     return factorId;
   }
@@ -92,7 +90,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
     String factorId = userId + strippedPhoneNumber;
     DemoMfa callMfa =
-        new DemoMfa(FactorType.CALL, strippedPhoneNumber, factorId, FactorStatus.ENROLLED);
+        new DemoMfa(FactorType.CALL, strippedPhoneNumber, factorId, FactorStatus.PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(callMfa);
     return factorId;
   }
@@ -104,7 +102,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       throw new OktaAuthenticationFailureException("Email address is invalid.");
     }
     String factorId = userId + email;
-    DemoMfa emailMfa = new DemoMfa(FactorType.EMAIL, email, factorId, FactorStatus.ENROLLED);
+    DemoMfa emailMfa = new DemoMfa(FactorType.EMAIL, email, factorId, FactorStatus.PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(emailMfa);
     return factorId;
   }
@@ -128,7 +126,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     String factorId = factorType + " " + userId;
     DemoMfa appMfa =
         new DemoMfa(
-            FactorType.TOKEN_SOFTWARE_TOTP, "thisIsAFakeQrCode", factorId, FactorStatus.ENROLLED);
+            FactorType.TOKEN_SOFTWARE_TOTP, "thisIsAFakeQrCode", factorId, FactorStatus.PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(appMfa);
     return new FactorAndQrCode(factorId, "thisIsAFakeQrCode");
   }
@@ -144,7 +142,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       throw new OktaAuthenticationFailureException(
           "Activation passcode could not be verifed; MFA activation failed.");
     }
-    mfa.setStatus(ACTIVE);
+    mfa.setFactorStatus(FactorStatus.ACTIVE);
     this.idToUserMap.get(userId).setMfa(mfa);
   }
 
@@ -155,10 +153,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     if (mfa == null || factorId != mfa.getFactorId()) {
       throw new OktaAuthenticationFailureException("Could not retrieve factor.");
     }
-    System.out.println(mfa.getFactorType());
-    if (!(mfa.getFactorType() == "smsFactor"
-        || mfa.getFactorType() == "callFactor"
-        || mfa.getFactorType() == "emailFactor")) {
+    FactorType factorType = mfa.getFactorType();
+    if (!(factorType == FactorType.SMS || factorType == FactorType.CALL || factorType == FactorType.EMAIL)) {
       throw new OktaAuthenticationFailureException(
           "The requested activation factor could not be resent; Okta returned an error.");
     }
