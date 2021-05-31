@@ -21,6 +21,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   private static final int MINIMUM_PASSWORD_LENGTH = 8;
   private static final int PHONE_NUMBER_LENGTH = 10;
+  private static final int PASSCODE_LENGTH = 6;
 
   private HashMap<String, DemoAuthUser> idToUserMap;
 
@@ -143,7 +144,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     if (mfa == null || factorId != mfa.getFactorId()) {
       throw new OktaAuthenticationFailureException("Could not retrieve factor.");
     }
-    if (passcode.length() != 6) {
+    if (passcode.length() != PASSCODE_LENGTH) {
       throw new OktaAuthenticationFailureException(
           "Activation passcode could not be verifed; MFA activation failed.");
     }
@@ -165,6 +166,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       throw new OktaAuthenticationFailureException(
           "The requested activation factor could not be resent; Okta returned an error.");
     }
+    mfa.setFactorStatus(FactorStatus.PENDING_ACTIVATION);
+    this.idToUserMap.get(userId).setMfa(mfa);
   }
 
   public void validateUser(String userId) throws OktaAuthenticationFailureException {

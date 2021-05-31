@@ -347,21 +347,24 @@ class DemoOktaAuthenticationTest {
 
     try {
       _auth.resendActivationPasscode(userId, factorId);
-    } catch (Exception e) {
+    } catch (OktaAuthenticationFailureException e) {
       throw new IllegalStateException("Activation passcode was not resent.", e);
     }
+    assertThat(_auth.getUser(userId).getMfa().getFactorStatus())
+        .isEqualTo(FactorStatus.PENDING_ACTIVATION);
   }
 
   @Test
   void resendActivationPasscode_failsWithInvalidFactor() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     FactorAndQrCode mfaResponse = _auth.enrollAuthenticatorAppMfa(userId, "okta");
+    String factorId = mfaResponse.getFactorId();
 
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
             () -> {
-              _auth.resendActivationPasscode(userId, mfaResponse.getFactorId());
+              _auth.resendActivationPasscode(userId, factorId);
             });
 
     assertThat(exception)

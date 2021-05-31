@@ -320,13 +320,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       throw new OktaAuthenticationFailureException(
           "An exception was thrown while fetching the user's factor.", e);
     }
-    String provider = getFactorResponse.getString("provider");
-    String factorType = getFactorResponse.getString("factorType");
-    JSONObject profile = getFactorResponse.getJSONObject("profile");
-    JSONObject factorInformation = new JSONObject();
-    factorInformation.put("provider", provider);
-    factorInformation.put("factorType", factorType);
-    factorInformation.put("profile", profile);
+
+    JSONObject factorInformation =
+        new JSONObject(getFactorResponse, "provider", "factorType", "profile");
 
     HttpEntity<String> requestBody =
         new HttpEntity<>(factorInformation.toString(), createHeaders());
@@ -340,7 +336,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
                 + response);
       }
     } catch (HttpClientErrorException e) {
-      if (e.getMessage().contains("429")) {
+      if (e.getMessage() != null && e.getMessage().contains("429")) {
         throw new IllegalStateException(
             "An SMS message was recently sent. Please wait 30 seconds before trying again.", e);
       }

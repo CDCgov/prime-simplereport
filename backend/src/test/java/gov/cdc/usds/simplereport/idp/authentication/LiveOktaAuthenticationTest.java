@@ -27,6 +27,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -38,7 +39,7 @@ import org.springframework.web.client.RestTemplate;
  */
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
-public class LiveOktaAuthenticationTest extends BaseFullStackTest {
+class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
   private static final String PHONE_NUMBER = "999-999-9999";
   private static final String EMAIL = "test@example.com";
@@ -224,15 +225,21 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
   @Order(10)
   void resendActivationPasscode() throws Exception {
     String factorId = _auth.enrollSmsMfa(_userId, "4045312484");
+    JSONObject factorBeforerResend = getUserFactor(_userId, factorId);
 
     // fail the test if an exception is thrown
     try {
       // Okta requires users to wait 30 seconds before re-requesting an activation code.
       Thread.sleep(31000);
       _auth.resendActivationPasscode(_userId, factorId);
-    } catch (Exception e) {
+    } catch (OktaAuthenticationFailureException | IllegalStateException e) {
       throw new IllegalStateException("An exception should not be thrown.", e);
     }
+
+    JSONObject factorAfterResend = getUserFactor(_userId, factorId);
+    assertThat(factorBeforerResend.getString("lastUpdated"))
+        .isNotEqualTo(factorAfterResend.getString("lastUpdated"));
+
     deleteUserFactor(_userId, factorId);
   }
 
@@ -250,11 +257,12 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
   @Test
   void setPasswordFails_withInvalidPassword() {
+    char[] password = "short".toCharArray();
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
             () -> {
-              _auth.setPassword(_userId, "short".toCharArray());
+              _auth.setPassword(_userId, password);
             });
     assertThat(exception).hasMessage("Error setting user's password");
   }
@@ -317,11 +325,12 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
   @Test
   void verifyActivationPasscodeFails_withInvalidPasscode() {
     FactorAndQrCode mfaResponse = _auth.enrollAuthenticatorAppMfa(_userId, "okta");
+    String factorId = mfaResponse.getFactorId();
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
             () -> {
-              _auth.verifyActivationPasscode(_userId, mfaResponse.getFactorId(), "1234");
+              _auth.verifyActivationPasscode(_userId, factorId, "1234");
             });
     assertThat(exception)
         .hasMessage("Activation passcode could not be verifed; MFA activation failed.");
@@ -356,7 +365,7 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
     try {
       String response = _restTemplate.postForObject(postUrl, request, String.class);
       return new JSONObject(response);
-    } catch (Exception e) {
+    } catch (RestClientException e) {
       throw new OktaAuthenticationFailureException(
           "An exception was thrown while creating the user: ", e);
     }
@@ -372,7 +381,7 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
       String response = _restTemplate.postForObject(postUrl, _entityWithHeaders, String.class);
       JSONObject responseJson = new JSONObject(response);
       return responseJson.getString("activationToken");
-    } catch (Exception e) {
+    } catch (RestClientException e) {
       throw new OktaAuthenticationFailureException(
           "An exception was thrown while activating the user: ", e);
     }
@@ -391,7 +400,7 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
         throw new IllegalStateException(
             "User was not deactivated successfully; please investigate in Okta.");
       }
-    } catch (Exception e) {
+    } catch (RestClientException e) {
       throw new OktaAuthenticationFailureException(
           "An exception was thrown while deactivating the user: ", e);
     }
@@ -410,7 +419,7 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
         throw new IllegalStateException(
             "User was not deleted successfully; please investigate in Okta.");
       }
-    } catch (Exception e) {
+    } catch (RestClientException e) {
       throw new OktaAuthenticationFailureException(
           "An exception was thrown while deleting the user: ", e);
     }
@@ -426,7 +435,7 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
       ResponseEntity<String> response =
           _restTemplate.exchange(getUrl, HttpMethod.GET, _entityWithHeaders, String.class);
       return new JSONObject(response.getBody());
-    } catch (Exception e) {
+    } catch (RestClientException e) {
       throw new OktaAuthenticationFailureException(
           "An exception was thrown while fetching the user: ", e);
     }
@@ -442,7 +451,7 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
       ResponseEntity<String> response =
           _restTemplate.exchange(getUrl, HttpMethod.GET, _entityWithHeaders, String.class);
       return new JSONObject(response.getBody());
-    } catch (Exception e) {
+    } catch (RestClientException e) {
       throw new OktaAuthenticationFailureException(
           "An exception was thrown while fetching the user's factor: ", e);
     }
@@ -461,7 +470,7 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
         throw new IllegalStateException(
             "Factor was not deleted successfully; please investigate in Okta.");
       }
-    } catch (Exception e) {
+    } catch (RestClientException e) {
       throw new OktaAuthenticationFailureException(
           "An exception was thrown while deleting a user factor: ", e);
     }
@@ -482,7 +491,7 @@ public class LiveOktaAuthenticationTest extends BaseFullStackTest {
     try {
       String response = _restTemplate.postForObject(postUrl, request, String.class);
       return new JSONObject(response);
-    } catch (Exception e) {
+    } catch (RestClientException e) {
       throw new OktaAuthenticationFailureException(
           "An exception was thrown while enrolling the user in Google Authenticator: ", e);
     }
