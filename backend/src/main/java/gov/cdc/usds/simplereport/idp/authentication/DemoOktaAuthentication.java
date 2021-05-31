@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
+import com.okta.sdk.resource.user.factor.FactorStatus;
+import com.okta.sdk.resource.user.factor.FactorType;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
@@ -75,8 +77,9 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       throws OktaAuthenticationFailureException {
     validateUser(userId);
     String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
-    String factorId = "smsFactor " + strippedPhoneNumber;
-    DemoMfa smsMfa = new DemoMfa("smsFactor", strippedPhoneNumber, factorId);
+    String factorId = userId + strippedPhoneNumber;
+    DemoMfa smsMfa =
+        new DemoMfa(FactorType.SMS, strippedPhoneNumber, factorId, FactorStatus.ENROLLED);
     this.idToUserMap.get(userId).setMfa(smsMfa);
     return factorId;
   }
@@ -85,8 +88,9 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       throws OktaAuthenticationFailureException {
     validateUser(userId);
     String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
-    String factorId = "callFactor " + strippedPhoneNumber;
-    DemoMfa callMfa = new DemoMfa("callFactor", strippedPhoneNumber, factorId);
+    String factorId = userId + strippedPhoneNumber;
+    DemoMfa callMfa =
+        new DemoMfa(FactorType.CALL, strippedPhoneNumber, factorId, FactorStatus.ENROLLED);
     this.idToUserMap.get(userId).setMfa(callMfa);
     return factorId;
   }
@@ -97,8 +101,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     if (!email.contains("@")) {
       throw new OktaAuthenticationFailureException("Email address is invalid.");
     }
-    String factorId = "emailFactor " + email;
-    DemoMfa emailMfa = new DemoMfa("emailFactor", email, factorId);
+    String factorId = userId + email;
+    DemoMfa emailMfa = new DemoMfa(FactorType.EMAIL, email, factorId, FactorStatus.ENROLLED);
     this.idToUserMap.get(userId).setMfa(emailMfa);
     return factorId;
   }
@@ -117,8 +121,10 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       default:
         throw new OktaAuthenticationFailureException("App type not recognized.");
     }
-    String factorId = "authApp: " + userId;
-    DemoMfa appMfa = new DemoMfa(factorType, "thisIsAFakeQrCode", factorId);
+    String factorId = factorType + " " + userId;
+    DemoMfa appMfa =
+        new DemoMfa(
+            FactorType.TOKEN_SOFTWARE_TOTP, "thisIsAFakeQrCode", factorId, FactorStatus.ENROLLED);
     this.idToUserMap.get(userId).setMfa(appMfa);
     return new FactorAndQrCode(factorId, "thisIsAFakeQrCode");
   }
@@ -161,8 +167,9 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   @AllArgsConstructor
   class DemoMfa {
 
-    @Getter @Setter private String factorType;
+    @Getter @Setter private FactorType factorType;
     @Getter @Setter private String factorProfile;
     @Getter @Setter private String factorId;
+    @Getter @Setter private FactorStatus factorStatus;
   }
 }

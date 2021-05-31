@@ -174,12 +174,7 @@ const FacilityFormContainer: any = (props: Props) => {
   const appInsights = useAppInsightsContext();
   const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION);
   const [addFacility] = useMutation(ADD_FACILITY_MUTATION);
-  const trackSaveSettings = useTrackEvent(
-    appInsights,
-    "Save Settings",
-    null,
-    false
-  );
+  const trackSaveSettings = useTrackEvent(appInsights, "Save Settings", null);
 
   if (loading) {
     return <p> Loading... </p>;
@@ -193,7 +188,9 @@ const FacilityFormContainer: any = (props: Props) => {
   }
 
   const saveFacility = async (facility: Facility) => {
-    trackSaveSettings(null);
+    if (appInsights) {
+      trackSaveSettings(null);
+    }
     const provider = facility.orderingProvider;
     const saveFacility = props.facilityId ? updateFacility : addFacility;
     await saveFacility({
