@@ -105,12 +105,7 @@ const OrganizationFormContainer: any = (props: Props) => {
   );
   const appInsights = useAppInsightsContext();
   const [createOrganization] = useMutation(CREATE_ORGANIZATION_MUTATION);
-  const trackSaveSettings = useTrackEvent(
-    appInsights,
-    "Save Settings",
-    null,
-    false
-  );
+  const trackSaveSettings = useTrackEvent(appInsights, "Save Settings", null);
 
   if (loading) {
     return <p> Loading... </p>;

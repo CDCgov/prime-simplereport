@@ -7,6 +7,10 @@ import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.okta.sdk.resource.user.factor.FactorStatus;
+import com.okta.sdk.resource.user.factor.FactorType;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -75,8 +79,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       throws OktaAuthenticationFailureException {
     validateUser(userId);
     String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
-    String factorId = "smsFactor " + strippedPhoneNumber;
-    DemoMfa smsMfa = new DemoMfa("smsFactor", strippedPhoneNumber, factorId);
+    String factorId = userId + strippedPhoneNumber;
+    DemoMfa smsMfa = new DemoMfa(FactorType.SMS, strippedPhoneNumber, factorId, FactorStatus.ENROLLED);
     this.idToUserMap.get(userId).setMfa(smsMfa);
     return factorId;
   }
@@ -85,8 +89,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       throws OktaAuthenticationFailureException {
     validateUser(userId);
     String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
-    String factorId = "callFactor " + strippedPhoneNumber;
-    DemoMfa callMfa = new DemoMfa("callFactor", strippedPhoneNumber, factorId);
+    String factorId = userId + strippedPhoneNumber;
+    DemoMfa callMfa = new DemoMfa(FactorType.CALL, strippedPhoneNumber, factorId, FactorStatus.ENROLLED);
     this.idToUserMap.get(userId).setMfa(callMfa);
     return factorId;
   }
@@ -97,8 +101,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     if (!email.contains("@")) {
       throw new OktaAuthenticationFailureException("Email address is invalid.");
     }
-    String factorId = "emailFactor " + email;
-    DemoMfa emailMfa = new DemoMfa("emailFactor", email, factorId);
+    String factorId = userId + email;
+    DemoMfa emailMfa = new DemoMfa(FactorType.EMAIL, email, factorId, FactorStatus.ENROLLED);
     this.idToUserMap.get(userId).setMfa(emailMfa);
     return factorId;
   }
@@ -161,8 +165,9 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   @AllArgsConstructor
   class DemoMfa {
 
-    @Getter @Setter private String factorType;
+    @Getter @Setter private FactorType factorType;
     @Getter @Setter private String factorProfile;
     @Getter @Setter private String factorId;
+    @Getter @Setter private FactorStatus factorStatus;
   }
 }

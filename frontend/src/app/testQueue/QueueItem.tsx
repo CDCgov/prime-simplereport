@@ -168,7 +168,7 @@ if (process.env.NODE_ENV !== "test") {
   Modal.setAppElement("#root");
 }
 
-interface QueueItemProps {
+export interface QueueItemProps {
   internalId: string;
   patient: {
     internalId: string;
@@ -428,9 +428,20 @@ const QueueItem: any = ({
     if (appInsights) {
       trackUpdateAoEResponse({});
     }
+
+    const symptomOnset = answers.symptomOnset
+      ? moment(answers.symptomOnset).format("YYYY-MM-DD")
+      : null;
+
+    const priorTestDate = answers.priorTestDate
+      ? moment(answers.priorTestDate).format("YYYY-MM-DD")
+      : null;
+
     updateAoe({
       variables: {
         ...answers,
+        symptomOnset,
+        priorTestDate,
         patientId: patient.internalId,
       },
     })
