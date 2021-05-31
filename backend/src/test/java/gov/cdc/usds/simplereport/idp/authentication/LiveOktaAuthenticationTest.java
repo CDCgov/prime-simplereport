@@ -42,9 +42,15 @@ import org.springframework.web.client.RestTemplate;
 class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
   private static final String PHONE_NUMBER = "999-999-9999";
+  private static final String FORMATTED_PHONE_NUMBER = "+19999999999";
   private static final String EMAIL = "test@example.com";
   private static final String PENDING_ACTIVATION = "PENDING_ACTIVATION";
   private static final String ACTIVE = "ACTIVE";
+  private static final String STATUS_KEY = "status";
+  private static final String PROFILE_KEY = "profile";
+  private static final String FACTOR_TYPE_KEY = "factorType";
+  private static final String PHONE_NUMBER_KEY = "phoneNumber";
+  private static final String PROVIDER_KEY = "provider";
 
   @Value("${okta.client.org-url}")
   private String _orgUrl;
@@ -90,7 +96,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
     JSONObject response = getUser(userIdResponse);
     assertThat(response.getString("activated")).isNotNull();
-    assertThat(response.getString("status")).isEqualTo("PROVISIONED");
+    assertThat(response.getString(STATUS_KEY)).isEqualTo("PROVISIONED");
   }
 
   @Test
@@ -98,16 +104,17 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   void setPasswordSuccessful() throws Exception {
     // Okta doesn't return the plaintext of the user's password in the response, so instead we check
     // if the passwordChanged field is set.
+    String passwordChangedKey = "passwordChanged";
 
     JSONObject getUserBeforeChangingPassword = getUser(_userId);
-    assertThat(getUserBeforeChangingPassword.isNull("passwordChanged")).isTrue();
+    assertThat(getUserBeforeChangingPassword.isNull(passwordChangedKey)).isTrue();
 
     String password = "fooBAR123";
     _auth.setPassword(_userId, password.toCharArray());
 
     JSONObject getUserAfterChangingPassword = getUser(_userId);
-    assertThat(getUserAfterChangingPassword.getString("status")).isEqualTo(ACTIVE);
-    assertThat(getUserAfterChangingPassword.getString("passwordChanged")).isNotNull();
+    assertThat(getUserAfterChangingPassword.getString(STATUS_KEY)).isEqualTo(ACTIVE);
+    assertThat(getUserAfterChangingPassword.getString(passwordChangedKey)).isNotNull();
   }
 
   @Test
@@ -131,11 +138,10 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     String factorId = _auth.enrollSmsMfa(_userId, PHONE_NUMBER);
 
     JSONObject smsFactor = getUserFactor(_userId, factorId);
-    assertThat(smsFactor.getString("factorType")).isEqualTo("sms");
-    assertThat(smsFactor.getString("status")).isEqualTo(PENDING_ACTIVATION);
-    assertThat(smsFactor.getJSONObject("profile").getString("phoneNumber"))
-        .isEqualTo("+19999999999");
-
+    assertThat(smsFactor.getString(FACTOR_TYPE_KEY)).isEqualTo("sms");
+    assertThat(smsFactor.getString(STATUS_KEY)).isEqualTo(PENDING_ACTIVATION);
+    assertThat(smsFactor.getJSONObject(PROFILE_KEY).getString(PHONE_NUMBER_KEY))
+        .isEqualTo(FORMATTED_PHONE_NUMBER);
     deleteUserFactor(_userId, factorId);
   }
 
@@ -145,10 +151,10 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     String factorId = _auth.enrollVoiceCallMfa(_userId, PHONE_NUMBER);
 
     JSONObject callFactor = getUserFactor(_userId, factorId);
-    assertThat(callFactor.getString("factorType")).isEqualTo("call");
-    assertThat(callFactor.getString("status")).isEqualTo(PENDING_ACTIVATION);
-    assertThat(callFactor.getJSONObject("profile").getString("phoneNumber"))
-        .isEqualTo("+19999999999");
+    assertThat(callFactor.getString(FACTOR_TYPE_KEY)).isEqualTo("call");
+    assertThat(callFactor.getString(STATUS_KEY)).isEqualTo(PENDING_ACTIVATION);
+    assertThat(callFactor.getJSONObject(PROFILE_KEY).getString(PHONE_NUMBER_KEY))
+        .isEqualTo(FORMATTED_PHONE_NUMBER);
 
     deleteUserFactor(_userId, factorId);
   }
@@ -159,9 +165,9 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     String factorId = _auth.enrollEmailMfa(_userId, EMAIL);
 
     JSONObject emailFactor = getUserFactor(_userId, factorId);
-    assertThat(emailFactor.getString("factorType")).isEqualTo("email");
-    assertThat(emailFactor.getString("status")).isEqualTo(PENDING_ACTIVATION);
-    assertThat(emailFactor.getJSONObject("profile").getString("email")).isEqualTo(EMAIL);
+    assertThat(emailFactor.getString(FACTOR_TYPE_KEY)).isEqualTo("email");
+    assertThat(emailFactor.getString(STATUS_KEY)).isEqualTo(PENDING_ACTIVATION);
+    assertThat(emailFactor.getJSONObject(PROFILE_KEY).getString("email")).isEqualTo(EMAIL);
 
     deleteUserFactor(_userId, factorId);
   }
@@ -172,9 +178,9 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     FactorAndQrCode factorAndCode = _auth.enrollAuthenticatorAppMfa(_userId, "google");
 
     JSONObject authFactor = getUserFactor(_userId, factorAndCode.getFactorId());
-    assertThat(authFactor.getString("factorType")).isEqualTo("token:software:totp");
-    assertThat(authFactor.getString("provider")).isEqualTo("GOOGLE");
-    assertThat(authFactor.getString("status")).isEqualTo(PENDING_ACTIVATION);
+    assertThat(authFactor.getString(FACTOR_TYPE_KEY)).isEqualTo("token:software:totp");
+    assertThat(authFactor.getString(PROVIDER_KEY)).isEqualTo("GOOGLE");
+    assertThat(authFactor.getString(STATUS_KEY)).isEqualTo(PENDING_ACTIVATION);
     assertThat(factorAndCode.getQrCodeLink()).isNotNull();
 
     deleteUserFactor(_userId, factorAndCode.getFactorId());
@@ -186,9 +192,9 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     FactorAndQrCode factorAndCode = _auth.enrollAuthenticatorAppMfa(_userId, "okta");
 
     JSONObject authFactor = getUserFactor(_userId, factorAndCode.getFactorId());
-    assertThat(authFactor.getString("factorType")).isEqualTo("token:software:totp");
-    assertThat(authFactor.getString("provider")).isEqualTo("OKTA");
-    assertThat(authFactor.getString("status")).isEqualTo(PENDING_ACTIVATION);
+    assertThat(authFactor.getString(FACTOR_TYPE_KEY)).isEqualTo("token:software:totp");
+    assertThat(authFactor.getString(PROVIDER_KEY)).isEqualTo("OKTA");
+    assertThat(authFactor.getString(STATUS_KEY)).isEqualTo(PENDING_ACTIVATION);
     assertThat(factorAndCode.getQrCodeLink()).isNotNull();
 
     deleteUserFactor(_userId, factorAndCode.getFactorId());
@@ -198,7 +204,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   @Order(9)
   void verifyActivationPasscodeSuccessful() throws Exception {
     JSONObject googleEnroll = enrollGoogleAuthenticator(_userId);
-    assertThat(googleEnroll.getString("status")).isEqualTo(PENDING_ACTIVATION);
+    assertThat(googleEnroll.getString(STATUS_KEY)).isEqualTo(PENDING_ACTIVATION);
 
     CodeGenerator codeGenerator = new DefaultCodeGenerator();
     String sharedSecret =
@@ -216,7 +222,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     _auth.verifyActivationPasscode(_userId, factorId, passcode);
 
     JSONObject factor = getUserFactor(_userId, factorId);
-    assertThat(factor.getString("status")).isEqualTo(ACTIVE);
+    assertThat(factor.getString(STATUS_KEY)).isEqualTo(ACTIVE);
 
     deleteUserFactor(_userId, factorId);
   }

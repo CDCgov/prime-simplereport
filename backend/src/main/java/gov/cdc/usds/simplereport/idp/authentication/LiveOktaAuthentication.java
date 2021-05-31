@@ -42,6 +42,8 @@ import org.springframework.web.client.RestTemplate;
 @Profile("!" + BeanProfiles.NO_OKTA_AUTH)
 @Service
 public class LiveOktaAuthentication implements OktaAuthentication {
+  private static final String _userApiEndpoint = "/api/v1/users/";
+
   private Client _client;
   private String _apiToken;
   private String _orgUrl;
@@ -294,14 +296,14 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * Triggers Okta to resend an activation passcode. Should only be used for SMS, call, and email
    * MFA options.
    *
-   * <p>Note: this is not the same method that is used to send a challenge to the user; this is just
+   * <p>Note: this is not the same method that is used to send a challenge to the user; this is only
    * for when the user is in a kind of activation limbo (they've enrolled but the factor has not
-   * been activated yet) Another note: there isn't a method in the SDK to re-request an activation
-   * passcode, so this is done directly via the API.
+   * been activated yet). There isn't a method in the SDK to re-request an activation passcode, so
+   * this is done directly via the API.
    *
    * <p>https://developer.okta.com/docs/reference/api/factors/#resend-sms-as-part-of-enrollment
    *
-   * @param userId the user id of the user requesting a resend
+   * @param userId the user id of the user requesting a resend.
    * @param factorId the factor id that we need to re-request a code from.
    * @throws OktaAuthenticationFailureException if the user or factor cannot be found.
    * @throws IllegalStateException if the resend request comes too soon (Okta enforces a minimum 30
@@ -310,7 +312,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public void resendActivationPasscode(String userId, String factorId)
       throws OktaAuthenticationFailureException {
     HttpEntity<String> headers = new HttpEntity<>(createHeaders());
-    String getFactorUrl = _orgUrl + "/api/v1/users/" + userId + "/factors/" + factorId;
+    String getFactorUrl = _orgUrl + _userApiEndpoint + userId + "/factors/" + factorId;
     JSONObject getFactorResponse;
     try {
       ResponseEntity<String> response =
@@ -326,7 +328,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
 
     HttpEntity<String> requestBody =
         new HttpEntity<>(factorInformation.toString(), createHeaders());
-    String resendUrl = _orgUrl + "/api/v1/users/" + userId + "/factors/" + factorId + "/resend";
+    String resendUrl = _orgUrl + _userApiEndpoint + userId + "/factors/" + factorId + "/resend";
     try {
       ResponseEntity<String> response =
           _restTemplate.exchange(resendUrl, HttpMethod.POST, requestBody, String.class);

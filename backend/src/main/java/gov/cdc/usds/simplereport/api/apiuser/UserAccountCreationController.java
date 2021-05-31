@@ -168,6 +168,8 @@ public class UserAccountCreationController {
    *     id.
    * @throws OktaAuthenticationFailureException if the user/factor are not found on the request, or
    *     if the resend request fails.
+   * @throws IllegalStateException if the request is made less than 30 seconds after the last
+   *     request for an activation code.
    */
   @PostMapping("/resend-activation-passcode")
   public void resendActivationPasscode(HttpServletRequest request) {
