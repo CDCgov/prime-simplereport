@@ -230,7 +230,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * <p>https://developer.okta.com/docs/reference/api/factors/#response-example-12
    *
    * @param userId the user id of the user making the enrollment request.
-   * @param type the appType of the app being enrolled (for now, one of Okta Verify or Google
+   * @param appType the appType of the app being enrolled (for now, one of Okta Verify or Google
    *     Authenticator.)
    * @throws OktaAuthenticationFailureException if the app type is not recognized, Okta fails to
    *     enroll the MFA option, or the result from Okta does not contain a QR code.
