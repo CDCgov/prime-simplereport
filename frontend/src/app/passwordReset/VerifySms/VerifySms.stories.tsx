@@ -9,7 +9,9 @@ export default {
   args: { phoneNumber: "(530) 867-5309" },
 } as Meta;
 
-const Template: Story = (args) => <VerifySms {...args} />;
+type Props = React.ComponentProps<typeof VerifySms>;
+
+const Template: Story<Props> = (args) => <VerifySms {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};

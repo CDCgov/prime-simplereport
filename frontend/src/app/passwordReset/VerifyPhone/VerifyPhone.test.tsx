@@ -4,7 +4,7 @@ import { VerifyPhone } from "./VerifyPhone";
 
 describe("Verify Email MFA", () => {
   beforeEach(() => {
-    render(<VerifyPhone />);
+    render(<VerifyPhone phoneNumber="(530) 867-5309" />);
   });
 
   it("can enter a security code", () => {

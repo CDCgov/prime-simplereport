@@ -1,15 +1,15 @@
 import { MfaVerify } from "../MfaVerify/MfaVerify";
 
-// interface Props {
-//   phoneNumber: string;
-// }
+interface Props {
+  phoneNumber: string;
+}
 
-export const VerifySms = () => (
+export const VerifySms = (props: Props) => (
   <MfaVerify
     hint={
       <>
-        If you have a phone number connected to your SimpleReport account, we’ve
-        sent a one-time security code. It will expire in 10 minutes.
+        We texted a security code to <b>{props.phoneNumber}</b>. This code will
+        expire in 10 minutes.
       </>
     }
     type="text message (SMS)"

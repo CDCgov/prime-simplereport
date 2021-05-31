@@ -4,7 +4,7 @@ import { VerifySms } from "./VerifySms";
 
 describe("Verify Email MFA", () => {
   beforeEach(() => {
-    render(<VerifySms />);
+    render(<VerifySms phoneNumber="(530) 867-5309" />);
   });
 
   it("can enter a security code", () => {
