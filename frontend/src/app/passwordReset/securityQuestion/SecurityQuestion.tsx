@@ -12,7 +12,7 @@ export const SecurityAnswer = () => {
   const validateAnswer = (): boolean => {
     let error = "";
     if (code === "") {
-      error = "Enter an answer";
+      error = "Enter your answer";
     }
     setAnswerError(error);
     return error === "";

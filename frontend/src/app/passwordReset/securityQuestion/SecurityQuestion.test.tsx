@@ -17,11 +17,11 @@ describe("Verify Email MFA", () => {
       }
     );
     fireEvent.click(screen.getByText("Continue"));
-    expect(screen.queryByText("Enter an answer")).not.toBeInTheDocument();
+    expect(screen.queryByText("Enter your answer")).not.toBeInTheDocument();
   });
 
   it("requires a security code", () => {
     fireEvent.click(screen.getByText("Continue"));
-    expect(screen.getByText("Enter an answer")).toBeInTheDocument();
+    expect(screen.getByText("Enter your answer")).toBeInTheDocument();
   });
 });
