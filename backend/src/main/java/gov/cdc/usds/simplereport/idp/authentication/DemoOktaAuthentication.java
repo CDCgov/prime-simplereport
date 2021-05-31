@@ -90,7 +90,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
     String factorId = userId + strippedPhoneNumber;
     DemoMfa callMfa =
-        new DemoMfa(FactorType.CALL, strippedPhoneNumber, factorId, FactorStatus.PENDING_ACTIVATION);
+        new DemoMfa(
+            FactorType.CALL, strippedPhoneNumber, factorId, FactorStatus.PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(callMfa);
     return factorId;
   }
@@ -102,7 +103,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       throw new OktaAuthenticationFailureException("Email address is invalid.");
     }
     String factorId = userId + email;
-    DemoMfa emailMfa = new DemoMfa(FactorType.EMAIL, email, factorId, FactorStatus.PENDING_ACTIVATION);
+    DemoMfa emailMfa =
+        new DemoMfa(FactorType.EMAIL, email, factorId, FactorStatus.PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(emailMfa);
     return factorId;
   }
@@ -126,7 +128,10 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     String factorId = factorType + " " + userId;
     DemoMfa appMfa =
         new DemoMfa(
-            FactorType.TOKEN_SOFTWARE_TOTP, "thisIsAFakeQrCode", factorId, FactorStatus.PENDING_ACTIVATION);
+            FactorType.TOKEN_SOFTWARE_TOTP,
+            "thisIsAFakeQrCode",
+            factorId,
+            FactorStatus.PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(appMfa);
     return new FactorAndQrCode(factorId, "thisIsAFakeQrCode");
   }
@@ -154,7 +159,9 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       throw new OktaAuthenticationFailureException("Could not retrieve factor.");
     }
     FactorType factorType = mfa.getFactorType();
-    if (!(factorType == FactorType.SMS || factorType == FactorType.CALL || factorType == FactorType.EMAIL)) {
+    if (!(factorType == FactorType.SMS
+        || factorType == FactorType.CALL
+        || factorType == FactorType.EMAIL)) {
       throw new OktaAuthenticationFailureException(
           "The requested activation factor could not be resent; Okta returned an error.");
     }
