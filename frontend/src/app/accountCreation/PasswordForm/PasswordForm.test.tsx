@@ -66,7 +66,7 @@ describe("PasswordForm", () => {
     fireEvent.change(screen.getByLabelText("Password *"), {
       target: { value: "fooBAR" },
     });
-    expect(screen.getByText(strengthLabel("Weak"))).toBeInTheDocument();
+    expect(screen.getByText(strengthLabel("Okay"))).toBeInTheDocument();
   });
 
   it("thinks 'fooB1' is an okay password", () => {

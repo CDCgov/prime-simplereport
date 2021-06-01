@@ -133,7 +133,7 @@ export const PasswordForm = () => {
       strengthColor = "bg-error";
       break;
     case 2:
-      strengthLabel = "Weak";
+      strengthLabel = "Okay";
       strengthColor = "bg-orange";
       break;
     case 3:
