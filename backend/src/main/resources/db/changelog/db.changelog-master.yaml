@@ -2160,3 +2160,13 @@ databaseChangeLog:
       changes:
         sql: |
           GRANT SELECT ON TABLE ${database.defaultSchemaName}.patient_registration_link TO ${noPhiUsername};
+- changeSet:
+    id: drop-person-phone
+      author: adam@skylight.digital
+      comment: Drop person.telephone, which is now off-row in the phone_number table. See also person.primary_phone_internal_id
+      changes:
+        - dropColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: telephone
