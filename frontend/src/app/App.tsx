@@ -6,6 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 
+import { dataLoaded, facilitiesList } from "../config/cache";
+
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import Header from "./commonComponents/Header";
@@ -22,6 +24,7 @@ import WithFacility from "./facilitySelect/WithFacility";
 import { appPermissions } from "./permissions";
 import Settings from "./Settings/Settings";
 import { getAppInsights } from "./TelemetryService";
+
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -56,10 +59,11 @@ const App = () => {
 
   useEffect(() => {
     if (!data) return;
-
+    facilitiesList(data.whoami.organization.testingFacility);
+    dataLoaded(true);
+    // TODO: move all data to Apollo
     dispatch(
       setInitialState({
-        dataLoaded: true,
         organization: {
           name: data.whoami.organization?.name,
         },

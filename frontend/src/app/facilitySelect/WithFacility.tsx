@@ -1,41 +1,67 @@
-import React from "react";
-import { useDispatch, useSelector, connect } from "react-redux";
+/* eslint-disable graphql/template-strings */
+import { useQuery } from "@apollo/client";
+import gql from "graphql-tag";
+import { useCallback, useMemo, FC } from "react";
 import { useHistory } from "react-router-dom";
 
-import { RootState, updateFacility } from "../store";
+import { currentFacility } from "../../config/cache";
 import { getFacilityIdFromUrl } from "../utils/url";
 
 import FacilityPopup from "./FacilityPopup";
 import FacilitySelect from "./FacilitySelect";
 
-const Loading: React.FC<{}> = () => <p>Loading facility information...</p>;
+const Loading: FC<{}> = () => <p>Loading facility information...</p>;
 
 interface Props {}
-
-const WithFacility: React.FC<Props> = ({ children }) => {
-  const dispatch = useDispatch();
+interface FacilityData {
+  facilities: Facility[];
+  dataLoaded: Boolean;
+  facilityInCache: Facility | null;
+}
+export const getOrganizationFacilities = gql`
+  query GetFacilities {
+    facilitiesList @client
+    dataLoaded @client
+  }
+`;
+const WithFacility: FC<Props> = ({ children }) => {
   const history = useHistory();
-  const dataLoaded = useSelector<RootState, boolean>(
-    (state) => state.dataLoaded
-  );
-  const facilities = useSelector<RootState, Facility[]>(
-    (state) => state.facilities
-  );
-  const facilityInStore = useSelector<RootState, Pick<Facility, "id" | "name">>(
-    (state) => state.facility
-  );
-  const facilityFromUrl = facilities.find(
-    (f) => f.id === getFacilityIdFromUrl()
+
+  const { data } = useQuery(getOrganizationFacilities, {
+    fetchPolicy: "cache-only",
+  });
+
+  const {
+    facilities,
+    dataLoaded,
+    facilityInCache,
+  } = useMemo<FacilityData>(() => {
+    return {
+      facilities: data.facilitiesList as Facility[],
+      dataLoaded: data.dataLoaded as Boolean,
+      facilityInCache: currentFacility(),
+    };
+  }, [data]);
+
+  const facilityFromUrl = useMemo(
+    () => facilities.find((f) => f.id === getFacilityIdFromUrl()),
+    [facilities]
   );
 
-  const setFacilityProp = (facilityId: string) => {
-    history.push({ search: `?facility=${facilityId}` });
-  };
+  const setFacilityProp = useCallback(
+    (facilityId: string) => {
+      history.push({ search: `?facility=${facilityId}` });
+    },
+    [history]
+  );
 
-  const setActiveFacility = (facility: Facility) => {
-    dispatch(updateFacility(facility));
-    setFacilityProp(facility.id);
-  };
+  const setActiveFacility = useCallback(
+    (facility: Facility) => {
+      currentFacility(facility);
+      setFacilityProp(facility.id);
+    },
+    [setFacilityProp]
+  );
 
   if (!dataLoaded) {
     return <Loading />;
@@ -54,18 +80,18 @@ const WithFacility: React.FC<Props> = ({ children }) => {
 
   if (
     facilities.length === 1 &&
-    (!facilityFromUrl?.id || !facilityInStore?.id)
+    (!facilityFromUrl?.id || !facilityInCache?.id)
   ) {
     setActiveFacility(facilities[0]);
     return <Loading />;
   }
 
-  if (facilityFromUrl?.id && !facilityInStore?.id) {
+  if (facilityFromUrl?.id && !facilityInCache?.id) {
     setActiveFacility(facilityFromUrl);
     return <Loading />;
   }
 
-  if (facilityFromUrl?.id && facilityInStore?.id) {
+  if (facilityFromUrl?.id && facilityInCache?.id) {
     return <>{children}</>;
   }
 
@@ -77,4 +103,4 @@ const WithFacility: React.FC<Props> = ({ children }) => {
   );
 };
 
-export default connect()(WithFacility);
+export default WithFacility;

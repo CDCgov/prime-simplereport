@@ -1,5 +1,6 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import { useReactiveVar } from "@apollo/client";
+
+import { currentFacility } from "../../config/cache";
 
 import { useDocumentTitle } from "../utils/hooks";
 
@@ -7,10 +8,10 @@ import TestQueue from "./TestQueue";
 
 const TestQueueContainer = () => {
   useDocumentTitle("Conduct test");
-  const activeFacilityId = useSelector(
-    (state) => (state as any).facility.id as string
-  );
-  return !activeFacilityId.length ? (
+  const facility = useReactiveVar<Facility | null>(currentFacility);
+  const activeFacilityId = facility?.id;
+
+  return !activeFacilityId ? (
     <div>"No facility selected"</div>
   ) : (
     <TestQueue activeFacilityId={activeFacilityId} />

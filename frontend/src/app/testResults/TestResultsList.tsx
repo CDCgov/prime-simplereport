@@ -1,4 +1,4 @@
-import { gql, useLazyQuery, useQuery } from "@apollo/client";
+import { gql, useLazyQuery, useQuery, useReactiveVar } from "@apollo/client";
 import React, {
   ChangeEventHandler,
   Dispatch,
@@ -10,11 +10,11 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useSelector } from "react-redux";
 import moment from "moment";
 import classnames from "classnames";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 
+import { currentFacility } from "../../config/cache";
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName, displayFullNameInOrder } from "../utils";
 import {
@@ -446,10 +446,8 @@ type TestResultsListProps = Omit<Props, OmittedProps>;
 
 const TestResultsList = (props: TestResultsListProps) => {
   useDocumentTitle("Results");
-
-  const activeFacilityId = useSelector(
-    (state) => (state as any).facility.id as string
-  );
+  const facility = useReactiveVar<Facility | null>(currentFacility);
+  const activeFacilityId = facility?.id;
 
   const [selectedPatientId, setSelectedPatientId] = useState<string>("");
   const [resultFilter, setResultFilter] = useState<string>("");
@@ -459,7 +457,7 @@ const TestResultsList = (props: TestResultsListProps) => {
 
   const queryVariables: {
     patientId?: string;
-    facilityId: string;
+    facilityId: string | null | undefined;
     result?: string;
     pageNumber: number;
     pageSize: number;
@@ -471,7 +469,7 @@ const TestResultsList = (props: TestResultsListProps) => {
 
   const countQueryVariables: {
     patientId?: string;
-    facilityId: string;
+    facilityId: string | null | undefined;
     result?: string;
   } = { facilityId: activeFacilityId };
 
@@ -495,7 +493,7 @@ const TestResultsList = (props: TestResultsListProps) => {
     fetchPolicy: "no-cache",
   });
 
-  if (activeFacilityId.length < 1) {
+  if (!activeFacilityId) {
     return <div>"No facility selected"</div>;
   }
 
