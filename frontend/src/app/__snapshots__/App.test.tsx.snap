@@ -234,19 +234,28 @@ exports[`App Render main screen 1`] = `
                 >
                   Testing Site
                 </li>
-                <li
-                  className="usa-sidenav__item"
-                >
-                  <button
-                    className="usa-button usa-button--unstyled"
-                    onClick={[Function]}
-                    type="button"
-                  >
-                    Log out
-                  </button>
-                </li>
               </ul>
             </li>
+            <div>
+              <div
+                className="navlink__support"
+              >
+                <a
+                  href="https://simplereport.gov/support"
+                  onClick={[Function]}
+                  target="none"
+                >
+                  Support
+                </a>
+              </div>
+              <button
+                className="usa-button usa-button--unstyled"
+                onClick={[Function]}
+                type="button"
+              >
+                Log out
+              </button>
+            </div>
             <li
               className="usa-nav__primary-item prime-settings-hidden"
             >
@@ -358,6 +367,7 @@ exports[`App Render main screen 1`] = `
             >
               <a
                 aria-current={null}
+                data-testid="user-button"
                 href="/queue#?facility=fec4de56-f4cc-4c61-b3d5-76869ca71296"
                 onClick={[Function]}
               >
@@ -411,7 +421,19 @@ exports[`App Render main screen 1`] = `
                     Testing Site
                   </li>
                   <li
-                    className="usa-sidenav__item"
+                    className="usa-sidenav__item navlink__support"
+                  >
+                    <a
+                      data-testid="support-link"
+                      href="https://simplereport.gov/support"
+                      onClick={[Function]}
+                      target="none"
+                    >
+                      Support
+                    </a>
+                  </li>
+                  <li
+                    className="usa-sidenav__item margin-top-2"
                   >
                     <button
                       className="usa-button usa-button--unstyled"
