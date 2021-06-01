@@ -7,6 +7,7 @@ import Button from "../../commonComponents/Button/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
+import { AccountCreationApi } from "../AccountCreationApiService";
 
 type MfaOptions = "SMS" | "Okta" | "Google" | "FIDO" | "Phone" | "Email" | "";
 
@@ -42,7 +43,11 @@ export const MfaSelect = () => {
       case "Google":
         return <Redirect to="/mfa-google-auth" />;
       case "FIDO":
-        return <Redirect to="/mfa-security-key" />;
+        const state = Promise.resolve(
+          AccountCreationApi.enrollSecurityKeyMfa()
+        );
+        return <Redirect to={{ pathname: "/mfa-security-key", state }} />;
+
       case "Phone":
         return <Redirect to="/mfa-phone" />;
       case "Email":

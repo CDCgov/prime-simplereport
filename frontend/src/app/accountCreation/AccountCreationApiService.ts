@@ -23,7 +23,11 @@ const request = (path: string, body: any): Promise<any> => {
     if (!res.ok) {
       throw res;
     }
-    return "success";
+    try {
+      return res.json();
+    } catch {
+      return "success";
+    }
   });
 };
 
@@ -52,6 +56,14 @@ export class AccountCreationApi {
 
   static enrollEmailMfa(email: string) {
     return request("/enroll-email-mfa", { userInput: email });
+  }
+
+  static enrollSecurityKeyMfa() {
+    return request("/enroll-security-key-mfa", null);
+  }
+
+  static activateSecurityKeyMfa(attestation: string, clientData: string) {
+    return request("/activate-security-key-mfa", { attestation, clientData });
   }
 
   static verifyActivationPasscode(code: string) {
