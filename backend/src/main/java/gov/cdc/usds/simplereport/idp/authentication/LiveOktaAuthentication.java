@@ -42,7 +42,7 @@ import org.springframework.web.client.RestTemplate;
 @Profile("!" + BeanProfiles.NO_OKTA_AUTH)
 @Service
 public class LiveOktaAuthentication implements OktaAuthentication {
-  private static final String _userApiEndpoint = "/api/v1/users/";
+  private static final String USER_API_ENDPOINT = "/api/v1/users/";
 
   private Client _client;
   private String _apiToken;
@@ -312,7 +312,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public void resendActivationPasscode(String userId, String factorId)
       throws OktaAuthenticationFailureException {
     HttpEntity<String> headers = new HttpEntity<>(createHeaders());
-    String getFactorUrl = _orgUrl + _userApiEndpoint + userId + "/factors/" + factorId;
+    String getFactorUrl = _orgUrl + USER_API_ENDPOINT + userId + "/factors/" + factorId;
     JSONObject getFactorResponse;
     try {
       ResponseEntity<String> response =
@@ -328,7 +328,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
 
     HttpEntity<String> requestBody =
         new HttpEntity<>(factorInformation.toString(), createHeaders());
-    String resendUrl = _orgUrl + _userApiEndpoint + userId + "/factors/" + factorId + "/resend";
+    String resendUrl = _orgUrl + USER_API_ENDPOINT + userId + "/factors/" + factorId + "/resend";
     try {
       ResponseEntity<String> response =
           _restTemplate.exchange(resendUrl, HttpMethod.POST, requestBody, String.class);
