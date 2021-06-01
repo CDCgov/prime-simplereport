@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 import { showError } from "../utils";
+import Loading from "../commonComponents/Loading";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
@@ -143,7 +144,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     throw error;
   }
   if (loading) {
-    return <p>Loading patients...</p>;
+    return <Loading message="Loading patients..." />;
   }
 
   const facility = data.organization.testingFacility.find(
