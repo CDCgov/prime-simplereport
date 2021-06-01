@@ -1792,7 +1792,6 @@ databaseChangeLog:
       author: josh@skylight.digital
       comment: Restrict access for the simple_report_no_phi user to certain tables/columns in order to prevent PHI exposure.
       changes:
-        - sql:
           sql: |
             REVOKE ALL PRIVILEGES ON SCHEMA ${database.defaultSchemaName} FROM PUBLIC;
             GRANT USAGE ON SCHEMA ${database.defaultSchemaName} TO ${noPhiUsername};
@@ -2154,3 +2153,10 @@ databaseChangeLog:
                   replaceIfExists: true
                   fullDefinition: false
                   selectQuery: SELECT internal_id, created_at, updated_at, last_seen, is_deleted FROM ${database.defaultSchemaName}.api_user
+  - changeSet:
+      id: add-patient-reg-link-to-metabase
+      author: adam@skylight.digital
+      comment: Adds permission for the no-PHI user to select from the patient registration link table
+      changes:
+        sql: |
+          GRANT SELECT ON TABLE ${database.defaultSchemaName}.patient_registration_link TO ${noPhiUsername};
