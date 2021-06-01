@@ -2164,3 +2164,10 @@ databaseChangeLog:
             columns:
               - column:
                   name: telephone
+  - changeSet:
+      id: add-patient-reg-link-to-metabase
+      author: adam@skylight.digital
+      comment: Adds permission for the no-PHI user to select from the patient registration link table
+      changes:
+        sql: |
+          GRANT SELECT ON TABLE ${database.defaultSchemaName}.patient_registration_link TO ${noPhiUsername};
