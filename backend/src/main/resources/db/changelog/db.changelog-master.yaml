@@ -1792,6 +1792,7 @@ databaseChangeLog:
       author: josh@skylight.digital
       comment: Restrict access for the simple_report_no_phi user to certain tables/columns in order to prevent PHI exposure.
       changes:
+        - sql
           sql: |
             REVOKE ALL PRIVILEGES ON SCHEMA ${database.defaultSchemaName} FROM PUBLIC;
             GRANT USAGE ON SCHEMA ${database.defaultSchemaName} TO ${noPhiUsername};
