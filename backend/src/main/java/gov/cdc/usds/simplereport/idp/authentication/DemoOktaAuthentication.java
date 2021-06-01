@@ -149,7 +149,6 @@ public class DemoOktaAuthentication implements OktaAuthentication {
           "Activation passcode could not be verifed; MFA activation failed.");
     }
     mfa.setFactorStatus(FactorStatus.ACTIVE);
-    this.idToUserMap.get(userId).setMfa(mfa);
   }
 
   public void resendActivationPasscode(String userId, String factorId)
@@ -167,7 +166,6 @@ public class DemoOktaAuthentication implements OktaAuthentication {
           "The requested activation factor could not be resent; Okta returned an error.");
     }
     mfa.setFactorStatus(FactorStatus.PENDING_ACTIVATION);
-    this.idToUserMap.get(userId).setMfa(mfa);
   }
 
   public void validateUser(String userId) throws OktaAuthenticationFailureException {

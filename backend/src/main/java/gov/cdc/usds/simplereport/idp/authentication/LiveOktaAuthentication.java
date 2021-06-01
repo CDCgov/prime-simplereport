@@ -338,7 +338,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
                 + response);
       }
     } catch (HttpClientErrorException e) {
-      if (e.getMessage() != null && e.getMessage().contains("429")) {
+      if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
         throw new IllegalStateException(
             "An SMS message was recently sent. Please wait 30 seconds before trying again.", e);
       }
