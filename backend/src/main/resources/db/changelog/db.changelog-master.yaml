@@ -2154,3 +2154,13 @@ databaseChangeLog:
                   replaceIfExists: true
                   fullDefinition: false
                   selectQuery: SELECT internal_id, created_at, updated_at, last_seen, is_deleted FROM ${database.defaultSchemaName}.api_user
+  - changeSet:
+      id: drop-person-phone
+      author: adam@skylight.digital
+      comment: Drop person.telephone, which is now off-row in the phone_number table. See also person.primary_phone_internal_id
+      changes:
+        - dropColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: telephone
