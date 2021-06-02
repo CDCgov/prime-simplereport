@@ -90,7 +90,7 @@ public class TestEventExport {
 
   private String boolToYesNoUnk(Boolean value) {
     if (value == null) {
-      return "U";
+      return "UNK";
     } else if (value) {
       return "Y";
     } else {
