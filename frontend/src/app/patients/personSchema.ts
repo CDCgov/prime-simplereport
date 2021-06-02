@@ -84,7 +84,16 @@ export function areValidPhoneNumbers(phoneNumbers: any) {
     return phoneNumberIsValid(phoneNumber.number);
   });
 }
-
+const isValidDate = (date: any) => {
+  const [year] = date.split("-");
+  if (parseInt(year) < 1900) {
+    return false;
+  }
+  if (new Date(date) > new Date()) {
+    return false;
+  }
+  return true;
+};
 const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
   lookupId: yup.string().nullable(),
   role: yup.mixed().oneOf([...getValues(ROLE_VALUES), "UNKNOWN", "", null]),
@@ -125,7 +134,7 @@ export const personSchema: yup.SchemaOf<RequiredPersonFields> = yup.object({
   firstName: yup.string().required(),
   middleName: yup.string().nullable(),
   lastName: yup.string().required(),
-  birthDate: yup.date().required().max(new Date()).min(new Date("1/1/1900")),
+  birthDate: yup.string().test(isValidDate).required(),
   facilityId: yup.string().nullable().min(1) as any,
   ...updateFieldSchemata,
 });
@@ -135,7 +144,7 @@ export const selfRegistrationSchema: yup.SchemaOf<SelfRegistationFields> = yup.o
     firstName: yup.string().required(),
     middleName: yup.string().nullable(),
     lastName: yup.string().required(),
-    birthDate: yup.date().required().max(new Date()).min(new Date("1/1/1900")),
+    birthDate: yup.string().test(isValidDate).required(),
     ...updateFieldSchemata,
   }
 );
@@ -150,7 +159,7 @@ export const allPersonErrors: Required<PersonErrors> = {
   role: "Role is incorrectly formatted",
   facilityId: "Facility is required",
   birthDate:
-    "Date of birth must be present, correctly formatted (MM/DD/YYY), and in the past",
+    "Date of birth must be present, correctly formatted (MM/DD/YYYY), and in the past",
   telephone: "Phone number is missing or invalid",
   phoneNumbers: "Phone number is missing or invalid",
   email: "Email is missing or incorrectly formatted",
