@@ -28,6 +28,12 @@ const Admin = () => {
               </div>
               <div>
                 {" "}
+                <Link to="/admin/add-organization-admin">
+                  Add organization admin
+                </Link>
+              </div>
+              <div>
+                {" "}
                 <Link to="/admin/create-device-type">
                   Create new device type
                 </Link>
