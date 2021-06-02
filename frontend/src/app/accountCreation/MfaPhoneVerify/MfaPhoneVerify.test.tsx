@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Switch } from "react-router";
 
 import { MfaComplete } from "../MfaComplete/MfaComplete";
 
-import { MfaEmailVerify } from "./MfaEmailVerify";
+import { MfaPhoneVerify } from "./MfaPhoneVerify";
 
 jest.mock("../AccountCreationApiService", () => ({
   AccountCreationApi: {
@@ -20,19 +20,19 @@ jest.mock("../AccountCreationApiService", () => ({
   },
 }));
 
-describe("Verify Email MFA", () => {
+describe("Verify Phone MFA", () => {
   beforeEach(() => {
     render(
       <MemoryRouter
         initialEntries={[
           {
-            pathname: "/mfa-email/verify",
-            state: { email: "foo@bar.com" },
+            pathname: "/mfa-phone/verify",
+            state: { phoneNumber: "(530) 867-5309" },
           },
         ]}
       >
         <Switch>
-          <Route path="/mfa-email/verify" component={MfaEmailVerify} />
+          <Route path="/mfa-phone/verify" component={MfaPhoneVerify} />
           <Route path="/success" component={MfaComplete} />
         </Switch>
       </MemoryRouter>
@@ -41,7 +41,7 @@ describe("Verify Email MFA", () => {
 
   it("can submit a valid security code", async () => {
     expect(
-      screen.getByText("foo@bar.com", { exact: false })
+      screen.getByText("(530) 867-5309", { exact: false })
     ).toBeInTheDocument();
     fireEvent.change(
       screen.getByLabelText("One-time security code", { exact: false }),
@@ -62,7 +62,7 @@ describe("Verify Email MFA", () => {
 
   it("shows an error for an invalid security code", async () => {
     expect(
-      screen.getByText("foo@bar.com", { exact: false })
+      screen.getByText("(530) 867-5309", { exact: false })
     ).toBeInTheDocument();
     fireEvent.change(
       screen.getByLabelText("One-time security code", { exact: false }),
