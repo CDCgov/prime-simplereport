@@ -11,6 +11,17 @@ concurrency:
   group: prod-deploy
 
 jobs:
+  check-stg-release:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./ops
+    steps:
+      - uses: actions/checkout@v2
+      - name: Check that the current release is in the stg environment
+        env:
+            CURL_TIMEOUT: 5
+        run: make check-stg-release check-stg-readiness
   docker-build:
     runs-on: ubuntu-latest
     defaults:
@@ -26,7 +37,7 @@ jobs:
         run: ./build_and_push.sh
   deploy-backend:
     runs-on: ubuntu-latest
-    needs: docker-build
+    needs: [docker-build, check-stg-release]
     defaults:
       run:
         working-directory: ./ops
@@ -59,6 +70,7 @@ jobs:
         run: make check-${{ env.DEPLOY_ENV }}-readiness
   deploy-frontend:
     runs-on: ubuntu-latest
+    needs: [check-stg-release]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2.1.5
