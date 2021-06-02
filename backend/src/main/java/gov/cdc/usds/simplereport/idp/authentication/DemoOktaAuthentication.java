@@ -4,7 +4,6 @@ import com.okta.sdk.resource.user.factor.FactorStatus;
 import com.okta.sdk.resource.user.factor.FactorType;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
-import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -12,6 +11,7 @@ import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.JSONObject;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -112,7 +112,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   // unlike the real implementation, this returns a factor and passcode directly (instead of a qr
   // code to use for enrollment.)
-  public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
+  public JSONObject enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
     validateUser(userId);
     String factorType = "";
@@ -134,7 +134,10 @@ public class DemoOktaAuthentication implements OktaAuthentication {
             factorId,
             FactorStatus.PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(appMfa);
-    return new FactorAndQrCode(factorId, "thisIsAFakeQrCode");
+    JSONObject response = new JSONObject();
+    response.put("qrcode", "thisIsAFakeQrCode");
+    response.put("factorId", factorId);
+    return response;
   }
 
   public void verifyActivationPasscode(String userId, String factorId, String passcode)
@@ -149,7 +152,6 @@ public class DemoOktaAuthentication implements OktaAuthentication {
           "Activation passcode could not be verifed; MFA activation failed.");
     }
     mfa.setFactorStatus(FactorStatus.ACTIVE);
-    this.idToUserMap.get(userId).setMfa(mfa);
   }
 
   public void resendActivationPasscode(String userId, String factorId)
@@ -167,7 +169,6 @@ public class DemoOktaAuthentication implements OktaAuthentication {
           "The requested activation factor could not be resent; Okta returned an error.");
     }
     mfa.setFactorStatus(FactorStatus.PENDING_ACTIVATION);
-    this.idToUserMap.get(userId).setMfa(mfa);
   }
 
   public void validateUser(String userId) throws OktaAuthenticationFailureException {

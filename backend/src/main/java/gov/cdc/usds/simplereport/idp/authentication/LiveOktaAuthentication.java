@@ -18,7 +18,6 @@ import com.okta.sdk.resource.user.factor.UserFactor;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
-import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
 import org.json.JSONObject;
@@ -38,6 +37,9 @@ import org.springframework.web.client.RestTemplate;
  * Created by emmastephenson on 4/28/21
  *
  * <p>Handles all Okta-related authenticaton.
+ *
+ * <p>NOTE: If you alter this file, please run LiveOktaAuthenticationTest. (It's currently
+ * disabled.)
  */
 @Profile("!" + BeanProfiles.NO_OKTA_AUTH)
 @Service
@@ -237,7 +239,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * @throws OktaAuthenticationFailureException if the app type is not recognized, Okta fails to
    *     enroll the MFA option, or the result from Okta does not contain a QR code.
    */
-  public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
+  public JSONObject enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
     UserFactor factor = _client.instantiate(UserFactor.class);
     factor.setFactorType(FactorType.TOKEN_SOFTWARE_TOTP);
@@ -261,7 +263,10 @@ public class LiveOktaAuthentication implements OktaAuthentication {
               .getJSONObject("_links")
               .getJSONObject("qrcode")
               .getString("href");
-      return new FactorAndQrCode(factor.getId(), qrCode);
+      JSONObject factorResponse = new JSONObject();
+      factorResponse.put("qrcode", qrCode);
+      factorResponse.put("factorId", factor.getId());
+      return factorResponse;
     } catch (NullPointerException | ResourceException | IllegalArgumentException e) {
       throw new OktaAuthenticationFailureException("Authentication app could not be enrolled", e);
     }
@@ -338,7 +343,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
                 + response);
       }
     } catch (HttpClientErrorException e) {
-      if (e.getMessage() != null && e.getMessage().contains("429")) {
+      if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
         throw new IllegalStateException(
             "An SMS message was recently sent. Please wait 30 seconds before trying again.", e);
       }
