@@ -105,7 +105,7 @@ const AddOrganizationAdminFormContainer: any = () => {
         email: admin.email,
       },
     }).then(() => {
-      let alert = (
+      const alert = (
         <Alert
           type="success"
           title="Added Organization Admin"
@@ -123,10 +123,6 @@ const AddOrganizationAdminFormContainer: any = () => {
 
   return (
     <AddOrganizationAdminForm
-      // organization={{
-      //     name: "",
-      //     externalId: "",
-      // }}
       organizationExternalId={""}
       admin={{
         firstName: "",
