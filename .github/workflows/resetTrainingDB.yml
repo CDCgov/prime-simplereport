@@ -2,8 +2,9 @@ name: Deploy Training
 
 on:
   workflow_dispatch:
-  release:
-    types: [released]
+  schedule:
+    # Run this on a daily timer as well in order to reset the training DB
+    - cron: '* 9 * * *'
 
 env:
   DEPLOY_ENV: training
@@ -46,32 +47,19 @@ jobs:
           terraform_version: 0.15.1
       - name: Terraform Init
         run: make init-${{ env.DEPLOY_ENV }}
+      - name: Replace Azure training DB
+        run: |
+          cd ${{ env.DEPLOY_ENV }}/persistent
+          terraform taint module.db.azurerm_postgresql_database.simple_report
+          terraform apply -target="module.db.azurerm_postgresql_database.simple_report" -auto-approve
+          cd -
       - name: Azure deploy Api
-        run: make deploy-${{ env.DEPLOY_ENV }}-api
+        run: |
+          # Grab the currently deployed commit from TF state using the linux_fx_version variable to ensure we don't change the deployed version
+          export DEPLOYED_COMMIT=$(terraform -chdir=training state show module.simple_report_api.azurerm_app_service.service | grep linux_fx_version | cut -d ':' -f 2 | tr -d '"')
+          make deploy-${{ env.DEPLOY_ENV }}-api
       - name: Wait for staging deploy to complete
         timeout-minutes: 10
         run: make wait-for-${{ env.DEPLOY_ENV }}
       - name: Promote staging to production
         run: make promote-${{ env.DEPLOY_ENV }}
-  deploy-frontend:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2.1.5
-        with:
-          node-version: ${{env.NODE_VERSION}}
-      - name: Use cache for node_modules
-        uses: actions/cache@v2
-        with:
-          path: |
-            ./frontend/node_modules
-          key: npm-${{env.NODE_VERSION}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - uses: ./.github/actions/deploy-front-end
-        name: Build and deploy front-end application
-        with:
-          deploy-env: ${{env.DEPLOY_ENV}}
-          smarty-streets-key: ${{ secrets.SMARTY_STREETS_KEY }}
-          is-training-site: true
