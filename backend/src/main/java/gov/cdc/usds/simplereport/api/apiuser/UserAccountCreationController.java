@@ -5,13 +5,13 @@ import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQ
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
-import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
 import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,10 +138,9 @@ public class UserAccountCreationController {
   public String getAuthQrCode(
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
     String userId = getUserId(request.getSession());
-    FactorAndQrCode factorData =
-        _oktaAuth.enrollAuthenticatorAppMfa(userId, requestBody.getUserInput());
-    request.getSession().setAttribute(FACTOR_ID_KEY, factorData.getFactorId());
-    return factorData.getQrCodeLink();
+    JSONObject factorData = _oktaAuth.enrollAuthenticatorAppMfa(userId, requestBody.getUserInput());
+    request.getSession().setAttribute(FACTOR_ID_KEY, factorData.getString("factorId"));
+    return factorData.getString("qrcode");
   }
 
   /**
