@@ -37,6 +37,9 @@ import org.springframework.web.client.RestTemplate;
  * Created by emmastephenson on 4/28/21
  *
  * <p>Handles all Okta-related authenticaton.
+ *
+ * <p>NOTE: If you alter this file, please run LiveOktaAuthenticationTest. (It's currently
+ * disabled.)
  */
 @Profile("!" + BeanProfiles.NO_OKTA_AUTH)
 @Service

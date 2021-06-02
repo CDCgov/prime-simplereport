@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -43,9 +44,12 @@ import org.springframework.beans.factory.annotation.Value;
  * <p>This tests LiveOktaAuthentication by creating a user and sending them through the account
  * creation flow. The user is not associated with an organization, and is deleted at the end of the
  * test. Running this test does add to our Okta quota, so plase run sparingly.
+ *
+ * <p>The test is currently disabled, until the Okta token is enabled in our test runner.
  */
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
+@Disabled
 class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
   private static final String PHONE_NUMBER = "999-999-9999";
