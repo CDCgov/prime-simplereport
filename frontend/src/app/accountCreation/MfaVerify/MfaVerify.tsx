@@ -101,7 +101,7 @@ export const MfaVerify = (props: Props) => {
           />
           <Button
             className="margin-top-3 flex-align-self-end margin-left-1"
-            label={"Verify"}
+            label={"Submit"}
             type={"submit"}
             onClick={handleSubmit}
           />
