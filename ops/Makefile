@@ -1,13 +1,15 @@
 # Makefile for az cli shortcuts for SimpleReport operations
 
 SHELL:=/bin/bash # I gave up on being compatible with ye olde "sh"
+
+# Overrideable arguments
 SOURCE_SLOT?=staging
 TARGET_SLOT?=production
 DEPLOYED_COMMIT?=$(shell git show --abbrev=7 -s --pretty=%h)
 RELEASE_TAG?=$(subst refs/tags/,,$(GITHUB_REF))
-CURL_TIMEOUT=1
+CURL_TIMEOUT?=1
 
-# Internal DRYing
+# Internal DRYing (also overrideable if you are sufficiently desperate)
 API_NAME=simple-report-api-$*
 INFO_ENDPOINT=https://$(API_NAME).azurewebsites.net/actuator/info
 SLOT_INFO_ENDPOINT=https://$(API_NAME)-$(SOURCE_SLOT).azurewebsites.net/actuator/info
@@ -57,6 +59,16 @@ wait-for-%-slot-commit: .valid-env-%
 wait-for-%-commit: .valid-env-%
 	@echo "Starting wait for commit $(DEPLOYED_COMMIT) in $* at `date`"
 	until  [[ "$(DEPLOYED_COMMIT)"  == "`$(CURL) $(INFO_ENDPOINT) | jq -r .git.commit.id`" ]] ; do sleep 5; done;
+	@echo "Finished waiting at `date`"
+
+wait-for-%-release: .valid-env-%
+	@echo "Starting wait for release $(RELEASE_TAG) in $* at `date`"
+	until [[ "$(RELEASE_TAG)"  == "`$(CURL) $(INFO_ENDPOINT) | jq -r .deploy.tag`" ]]; do sleep 5; done
+	@echo "Finished waiting at `date`"
+
+wait-for-%-slot-release: .valid-env-%
+	@echo "Starting wait for release $(RELEASE_TAG) in $* at `date`"
+	until [[ "$(RELEASE_TAG)"  == "`$(CURL) $(SLOT_INFO_ENDPOINT) | jq -r .deploy.tag`" ]]; do sleep 5; done
 	@echo "Finished waiting at `date`"
 
 wait-for-%-slot-readiness: .valid-env-% # could use curl's built-in retry/timeout if we wanted to
