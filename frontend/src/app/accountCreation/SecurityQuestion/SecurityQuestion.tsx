@@ -50,7 +50,7 @@ export const SecurityQuestion = () => {
         );
         setSubmitted(true);
       } catch (error) {
-        setSecurityQuestionError(`API Error: ${error}`);
+        setSecurityQuestionError(`API Error: ${error?.message}`);
       } finally {
         setLoading(false);
       }
@@ -68,13 +68,7 @@ export const SecurityQuestion = () => {
   }
 
   if (submitted) {
-    return (
-      <Redirect
-        to={{
-          pathname: "/mfa-select",
-        }}
-      />
-    );
+    return <Redirect to="/mfa-select" />;
   }
 
   return (

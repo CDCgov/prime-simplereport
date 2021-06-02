@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router";
 import createMockStore from "redux-mock-store";
 
-import { PasswordReset } from "./PasswordReset";
+import { PasswordCreate } from "../../accountCreation/PasswordCreate/PasswordCreate";
 
 const mockStore = createMockStore([]);
 
@@ -19,7 +19,7 @@ jest.mock("../../accountCreation/AccountCreationApiService", () => ({
         if (password === "validPASS123!") {
           res("success");
         } else {
-          rej("utter failure");
+          rej({ message: "utter failure" });
         }
       });
     },
@@ -31,7 +31,7 @@ describe("PasswordCreate", () => {
     render(
       <MemoryRouter initialEntries={["/set-password"]}>
         <Provider store={store}>
-          <Route path="/set-password" component={PasswordReset} />
+          <Route path="/set-password" component={PasswordCreate} />
           <Route path="/set-recovery-question">
             <p>Password set successfully.</p>
           </Route>

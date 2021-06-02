@@ -113,7 +113,7 @@ export const PasswordForm = () => {
         await AccountCreationApi.setPassword(activationToken, password);
         setSubmitted(true);
       } catch (error) {
-        setPasswordError(`API Error: ${error}`);
+        setPasswordError(`API Error: ${error?.message}`);
       } finally {
         setLoading(false);
       }

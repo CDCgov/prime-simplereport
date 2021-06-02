@@ -19,7 +19,7 @@ jest.mock("../AccountCreationApiService", () => ({
         if (password === "validPASS123!") {
           res("success");
         } else {
-          rej("utter failure");
+          rej({ message: "utter failure" });
         }
       });
     },
