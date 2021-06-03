@@ -1,9 +1,11 @@
 package gov.cdc.usds.simplereport.properties;
 
+import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 @ConfigurationProperties(prefix = "simple-report.dynamics")
+@Getter
 public class DynamicsProperties {
   private final boolean enabled;
   private final String clientId;
@@ -23,25 +25,5 @@ public class DynamicsProperties {
     this.clientSecret = clientSecret;
     this.tenantId = tenantId;
     this.resourceUrl = resourceUrl;
-  }
-
-  public boolean getEnabled() {
-    return enabled;
-  }
-
-  public String getClientId() {
-    return clientId;
-  }
-
-  public String getClientSecret() {
-    return clientSecret;
-  }
-
-  public String getTenantId() {
-    return tenantId;
-  }
-
-  public String getResourceUrl() {
-    return resourceUrl;
   }
 }
