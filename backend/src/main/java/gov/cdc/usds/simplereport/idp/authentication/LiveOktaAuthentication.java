@@ -273,6 +273,59 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   }
 
   /**
+   * Using the Okta API, enrolls a security key, returning an activation object that contains
+   * registration information for the frontend.
+   *
+   * <p>https://developer.okta.com/docs/reference/api/factors/#enroll-webauthn-request-example
+   *
+   * @param userId the user id of the user enrolling their security key.
+   * @return a JSON representation of the activation object.
+   * @throws OktaAuthenticationFailureException if the user id is not recognized or the factor
+   *     cannot be enrolled.
+   */
+  public JSONObject enrollSecurityKey(String userId) throws OktaAuthenticationFailureException {
+    JSONObject requestBody = new JSONObject();
+    requestBody.put("factorType", "webauthn");
+    requestBody.put("provider", "FIDO");
+    HttpEntity<String> entity = new HttpEntity<>(requestBody.toString(), createHeaders());
+    String enrollWebAuthnUrl = _orgUrl + USER_API_ENDPOINT + userId + "/factors";
+    try {
+      String postResponse = _restTemplate.postForObject(enrollWebAuthnUrl, entity, String.class);
+      JSONObject responseJson = new JSONObject(postResponse);
+      JSONObject response = new JSONObject();
+      response.put(
+          "activation", responseJson.getJSONObject("_embedded").getJSONObject("activation"));
+      response.put("factorId", responseJson.getString("id"));
+      return response;
+    } catch (RestClientException | NullPointerException | ResourceException e) {
+      throw new OktaAuthenticationFailureException("Security key could not be enrolled", e);
+    }
+  }
+
+  /**
+   * Activates a security key using the provided frontend-generated credentials.
+   *
+   * @param userId the user id of the user activating their security key.
+   * @param factorId the factor id returned from security key enrollment
+   * @param attestation the base64-encoded attestation from the WebAuthn JavaScript call
+   * @param clientData the base64-encoded client data from the WebAuthn JavaScript call
+   */
+  public void activateSecurityKey(
+      String userId, String factorId, String attestation, String clientData)
+      throws OktaAuthenticationFailureException {
+    try {
+      User user = _client.getUser(userId);
+      UserFactor factor = user.getFactor(factorId);
+      ActivateFactorRequest activationRequest = _client.instantiate(ActivateFactorRequest.class);
+      activationRequest.setAttestation(attestation);
+      activationRequest.setClientData(clientData);
+      factor.activate(activationRequest);
+    } catch (NullPointerException | ResourceException e) {
+      throw new OktaAuthenticationFailureException("Security key could not be activated", e);
+    }
+  }
+
+  /**
    * Using the Okta Management SDK, activate MFA enrollment with a user-provided passcode. This
    * method should be used for sms, call, and authentication app MFA options.
    *

@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQ
 
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.ActivateSecurityKeyRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
@@ -135,12 +136,50 @@ public class UserAccountCreationController {
    * @throws OktaAuthenticationFailureException if Okta cannot enroll the user in MFA.
    */
   @GetMapping("/authenticator-qr")
-  public String getAuthQrCode(
-      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
+  public String getAuthQrCode(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
+      throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
     JSONObject factorData = _oktaAuth.enrollAuthenticatorAppMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID_KEY, factorData.getString("factorId"));
     return factorData.getString("qrcode");
+  }
+
+  /**
+   * Enrolls a security key for the user, returning data needed to finish activation.
+   *
+   * @param request contains session information about the user, including their Okta id.
+   * @return activation object with information to finish enrolling the security key, including a
+   *     challenge and user id.
+   * @throws OktaAuthenticationFailureException if the user is not recognized or Okta cannot enroll
+   *     their security key.
+   */
+  @PostMapping("/enroll-security-key-mfa")
+  public String enrollSecurityKeyMfa(HttpServletRequest request)
+      throws OktaAuthenticationFailureException {
+    String userId = getUserId(request.getSession());
+    JSONObject enrollResponse = _oktaAuth.enrollSecurityKey(userId);
+    request.getSession().setAttribute("factorId", enrollResponse.getString("factorId"));
+    return new JSONObject(enrollResponse, "activation").toString();
+  }
+
+  /**
+   * Activates a security key for the user.
+   *
+   * @param requestBody contains attestation and clientData, required to activate the key in Okta.
+   * @param request contains session information about the user, including their Okta id and the
+   *     factor id of the security key.
+   * @throws OktaAuthenticationFailureException if the user is not recognized or Okta cannot
+   *     activate the security key.
+   */
+  @PostMapping("/activate-security-key-mfa")
+  public void activateSecurityKeyMfa(
+      @RequestBody ActivateSecurityKeyRequest requestBody, HttpServletRequest request)
+      throws OktaAuthenticationFailureException {
+    String userId = getUserId(request.getSession());
+    String factorId = getFactorId(request.getSession());
+    System.out.println("activating security key:");
+    _oktaAuth.activateSecurityKey(
+        userId, factorId, requestBody.getAttestation(), requestBody.getClientData());
   }
 
   /**

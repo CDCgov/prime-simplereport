@@ -140,13 +140,51 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     return response;
   }
 
+  public JSONObject enrollSecurityKey(String userId) throws OktaAuthenticationFailureException {
+    validateUser(userId);
+    String factorId = "webAuthnFactorId + " + userId;
+    JSONObject json =
+        new JSONObject(
+            "{ \"factorId\":"
+                + factorId
+                + ", \"activation\": { \"challenge\": \"challengeString\",\"user\": {\"id\":"
+                + userId
+                + "}}}");
+    DemoMfa securityKeyMfa =
+        new DemoMfa(FactorType.WEBAUTHN, "FIDO", factorId, FactorStatus.PENDING_ACTIVATION);
+    this.idToUserMap.get(userId).setMfa(securityKeyMfa);
+    return json;
+  }
+
+  public void activateSecurityKey(
+      String userId, String factorId, String attestation, String clientData)
+      throws OktaAuthenticationFailureException {
+    System.out.println("in demo");
+    validateUser(userId);
+    System.out.println("user validated");
+    System.out.println("factorId: " + factorId);
+    System.out.println("demoMfa:" + this.idToUserMap.get(userId).getMfa());
+    System.out.println("demoMfa factorId: " + this.idToUserMap.get(userId).getMfa().getFactorId());
+    validateFactor(userId, factorId);
+    System.out.println("factor validated");
+    if (attestation == null || attestation.isEmpty()) {
+      throw new OktaAuthenticationFailureException("attestation cannot be empty.");
+    }
+    System.out.println("attestation accepted");
+    if (clientData == null || clientData.isEmpty()) {
+      throw new OktaAuthenticationFailureException("clientData cannot be empty.");
+    }
+    System.out.println("attestation accepted");
+    DemoMfa mfa = this.idToUserMap.get(userId).getMfa();
+    mfa.setFactorStatus(FactorStatus.ACTIVE);
+    System.out.println("done with demo");
+  }
+
   public void verifyActivationPasscode(String userId, String factorId, String passcode)
       throws OktaAuthenticationFailureException {
     validateUser(userId);
+    validateFactor(userId, factorId);
     DemoMfa mfa = this.idToUserMap.get(userId).getMfa();
-    if (mfa == null || factorId != mfa.getFactorId()) {
-      throw new OktaAuthenticationFailureException("Could not retrieve factor.");
-    }
     if (passcode.length() != PASSCODE_LENGTH) {
       throw new OktaAuthenticationFailureException(
           "Activation passcode could not be verifed; MFA activation failed.");
@@ -157,10 +195,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   public void resendActivationPasscode(String userId, String factorId)
       throws OktaAuthenticationFailureException {
     validateUser(userId);
+    validateFactor(userId, factorId);
     DemoMfa mfa = this.idToUserMap.get(userId).getMfa();
-    if (mfa == null || factorId != mfa.getFactorId()) {
-      throw new OktaAuthenticationFailureException("Could not retrieve factor.");
-    }
     FactorType factorType = mfa.getFactorType();
     if (!(factorType == FactorType.SMS
         || factorType == FactorType.CALL
@@ -174,6 +210,17 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   public void validateUser(String userId) throws OktaAuthenticationFailureException {
     if (!this.idToUserMap.containsKey(userId)) {
       throw new OktaAuthenticationFailureException("User id not recognized.");
+    }
+  }
+
+  public void validateFactor(String userId, String factorId)
+      throws OktaAuthenticationFailureException {
+    DemoMfa mfa = this.idToUserMap.get(userId).getMfa();
+    if (mfa == null || factorId.strip() != mfa.getFactorId().strip()) {
+      System.out.println("the factor could not be validated!");
+      System.out.println("factorId: " + factorId);
+      System.out.println("factorId off demo: " + mfa.getFactorId());
+      throw new OktaAuthenticationFailureException("Could not retrieve factor.");
     }
   }
 

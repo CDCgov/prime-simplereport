@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -49,7 +48,7 @@ import org.springframework.beans.factory.annotation.Value;
  */
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
-@Disabled
+// @Disabled
 class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
   private static final String PHONE_NUMBER = "999-999-9999";
@@ -232,6 +231,38 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
   @Test
   @Order(9)
+  void enrollSecurityKeySuccessful() throws Exception {
+    JSONObject activationObject = _auth.enrollSecurityKey(_userId);
+
+    User user = _testClient.getUser(_userId);
+    UserFactor factor = user.getFactor(activationObject.getString("factorId"));
+    assertThat(factor.getFactorType()).isEqualTo(FactorType.WEBAUTHN);
+    assertThat(factor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
+    assertThat(activationObject.getJSONObject("activation").getString("attestation")).isNotNull();
+    assertThat(activationObject.getJSONObject("activation").getString("challenge")).isNotNull();
+
+    user.resetFactors();
+  }
+
+  @Test
+  @Order(10)
+  void activateSecurityKeySuccessful() throws Exception {
+    JSONObject activationObject = _auth.enrollSecurityKey(_userId);
+
+    // in order to test this successfully, we need to somehow get the attestation and clientData
+    // out.
+    // there are JS libraries for this, so I'd hope there's a Java library as well?? need to look
+    // into it further.
+    _auth.activateSecurityKey(
+        _userId,
+        activationObject.getString("factorId"),
+        activationObject.getJSONObject("activation").getString("attestation"),
+        " ");
+    assertThat(3 + 4).isEqualTo(8);
+  }
+
+  @Test
+  @Order(11)
   void verifyActivationPasscodeSuccessful() throws Exception {
     User user = _testClient.getUser(_userId);
 
@@ -261,7 +292,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   }
 
   @Test
-  @Order(10)
+  @Order(12)
   void resendActivationPasscode() throws Exception {
     String factorId = _auth.enrollSmsMfa(_userId, "4045312484");
     UserFactor factorBeforeResend = _testClient.getUser(_userId).getFactor(factorId);

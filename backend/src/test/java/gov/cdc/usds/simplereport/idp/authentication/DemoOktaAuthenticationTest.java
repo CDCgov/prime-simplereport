@@ -258,7 +258,6 @@ class DemoOktaAuthenticationTest {
     _auth.enrollAuthenticatorAppMfa(userId, "okta");
     DemoAuthUser user = _auth.getUser(userId);
 
-    System.out.println(user.getMfa().getFactorId());
     assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.TOKEN_SOFTWARE_TOTP);
     assertThat(user.getMfa().getFactorId()).isEqualTo("authApp: okta " + userId);
   }
@@ -284,6 +283,86 @@ class DemoOktaAuthenticationTest {
               _auth.enrollAuthenticatorAppMfa(userId, "lastPass");
             });
     assertThat(exception.getMessage()).isEqualTo("App type not recognized.");
+  }
+
+  @Test
+  void enrollSecurityKey_successful() throws Exception {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    JSONObject enrollResponse = _auth.enrollSecurityKey(userId);
+    DemoAuthUser user = _auth.getUser(userId);
+
+    assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.WEBAUTHN);
+    assertThat(user.getMfa().getFactorStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
+    assertThat(enrollResponse.has("challenge")).isTrue();
+    assertThat(enrollResponse.has("factorId")).isTrue();
+  }
+
+  @Test
+  void enrollSecurityKey_failsWithoutActivatedUser() throws Exception {
+    Exception exception =
+        assertThrows(
+            OktaAuthenticationFailureException.class,
+            () -> {
+              _auth.enrollSecurityKey("fakeUserId");
+            });
+    assertThat(exception.getMessage()).isEqualTo("User id not recognized.");
+  }
+
+  @Test
+  void activateSecurityKey_successful() throws Exception {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    JSONObject enrollResponse = _auth.enrollSecurityKey(userId);
+    _auth.activateSecurityKey(
+        userId,
+        enrollResponse.getString("factorId"),
+        enrollResponse.getString("challenge"),
+        enrollResponse.getJSONObject("user").getString("id"));
+
+    DemoAuthUser user = _auth.getUser(userId);
+    assertThat(user.getMfa().getFactorStatus()).isEqualTo(FactorStatus.ACTIVE);
+  }
+
+  @Test
+  void activateSecurityKey_failsIfNotEnrolled() {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    Exception exception =
+        assertThrows(
+            OktaAuthenticationFailureException.class,
+            () -> {
+              _auth.activateSecurityKey(userId, "factorId", "attestation", "clientData");
+            });
+    assertThat(exception.getMessage()).isEqualTo("Could not retrieve factor.");
+  }
+
+  @Test
+  void activateSecurityKey_failsWithInvalidAttestation() {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    JSONObject enrollResponse = _auth.enrollSecurityKey(userId);
+    Exception exception =
+        assertThrows(
+            OktaAuthenticationFailureException.class,
+            () -> {
+              _auth.activateSecurityKey(
+                  userId, enrollResponse.getString("factorId"), "", "clientData");
+            });
+    assertThat(exception.getMessage()).isEqualTo("attestation cannot be empty.");
+  }
+
+  @Test
+  void activateSecurityKey_failsWithInvalidClientData() {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    JSONObject enrollResponse = _auth.enrollSecurityKey(userId);
+    Exception exception =
+        assertThrows(
+            OktaAuthenticationFailureException.class,
+            () -> {
+              _auth.activateSecurityKey(
+                  userId,
+                  enrollResponse.getString("factorId"),
+                  enrollResponse.getString("challenge"),
+                  "");
+            });
+    assertThat(exception.getMessage()).isEqualTo("clientData cannot be empty.");
   }
 
   @Test

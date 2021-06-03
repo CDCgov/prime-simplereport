@@ -31,6 +31,12 @@ public interface OktaAuthentication {
   public JSONObject enrollAuthenticatorAppMfa(String userId, String type)
       throws OktaAuthenticationFailureException;
 
+  public JSONObject enrollSecurityKey(String userId) throws OktaAuthenticationFailureException;
+
+  public void activateSecurityKey(
+      String userId, String factorId, String attestation, String clientData)
+      throws OktaAuthenticationFailureException;
+
   public void verifyActivationPasscode(String userId, String factorId, String passcode)
       throws OktaAuthenticationFailureException;
 
