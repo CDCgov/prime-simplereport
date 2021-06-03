@@ -1,17 +1,16 @@
 import React, { useState } from "react";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useReactiveVar } from "@apollo/client";
 import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
-import { RootState } from "../store";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
+import { facilities } from "../../storage/store";
 
 import PersonForm from "./Components/PersonForm";
 
@@ -110,17 +109,17 @@ const AddPatient = () => {
     AddPatientResponse,
     AddPatientParams
   >(ADD_PATIENT);
-  const activeFacilityId: string = useSelector<RootState, string>(
-    (state) => state.facility.id
-  );
-  const personPath = `/patients/?facility=${activeFacilityId}`;
+  const {current} = useReactiveVar(facilities);
+  const activeFacilityId: string | undefined=  current?.id;
+
+  const personPath = `/patients/?facility=${current?.id}`;
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
 
   if (redirect) {
     return <Redirect to={redirect} />;
   }
 
-  if (activeFacilityId.length < 1) {
+  if (!activeFacilityId) {
     return <div>No facility selected</div>;
   }
 

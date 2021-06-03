@@ -183,3 +183,17 @@ interface FacilityData {
 }
 
 type TestCorrectionStatus = "ORIGINAL" | "CORRECTED" | "REMOVED";
+
+interface FacilitiesState {
+  current: Facility | null;
+  list: Facility[];
+}
+
+interface AppConfigState {
+  organization: {
+    name: string;
+  };
+  dataLoaded: Boolean;
+  user: User;
+  activationToken: string | null;
+}

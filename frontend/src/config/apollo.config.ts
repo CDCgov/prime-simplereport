@@ -10,8 +10,7 @@ import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 
 import { showError } from "../app/utils";
 import { getAppInsights } from "../app/TelemetryService";
-
-import cache from './cache';
+import cache from '../storage/cache';
 
 const appInsights: null | ApplicationInsights = getAppInsights();
 

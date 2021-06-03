@@ -1,10 +1,13 @@
 /* eslint-disable graphql/template-strings */
-import { useQuery } from "@apollo/client";
-import gql from "graphql-tag";
+import { useReactiveVar } from "@apollo/client";
 import { useCallback, useMemo, FC } from "react";
 import { useHistory } from "react-router-dom";
 
-import { currentFacility } from "../../config/cache";
+import {
+  appConfig,
+  facilities,
+} from "../../storage/store";
+import { useFacilities } from "../../hooks/useFacilities";
 import { getFacilityIdFromUrl } from "../utils/url";
 
 import FacilityPopup from "./FacilityPopup";
@@ -13,39 +16,16 @@ import FacilitySelect from "./FacilitySelect";
 const Loading: FC<{}> = () => <p>Loading facility information...</p>;
 
 interface Props {}
-interface FacilityData {
-  facilities: Facility[];
-  dataLoaded: Boolean;
-  facilityInCache: Facility | null;
-}
-export const getOrganizationFacilities = gql`
-  query GetFacilities {
-    facilitiesList @client
-    dataLoaded @client
-  }
-`;
+
 const WithFacility: FC<Props> = ({ children }) => {
   const history = useHistory();
-
-  const { data } = useQuery(getOrganizationFacilities, {
-    fetchPolicy: "cache-only",
-  });
-
-  const {
-    facilities,
-    dataLoaded,
-    facilityInCache,
-  } = useMemo<FacilityData>(() => {
-    return {
-      facilities: data.facilitiesList as Facility[],
-      dataLoaded: data.dataLoaded as Boolean,
-      facilityInCache: currentFacility(),
-    };
-  }, [data]);
+  const { setCurrentFacility } = useFacilities(facilities);
+  const { list, current } = useReactiveVar<FacilitiesState>(facilities);
+  const { dataLoaded } = useReactiveVar<AppConfigState>(appConfig);
 
   const facilityFromUrl = useMemo(
-    () => facilities.find((f) => f.id === getFacilityIdFromUrl()),
-    [facilities]
+    () => list.find((f) => f.id === getFacilityIdFromUrl()),
+    [list]
   );
 
   const setFacilityProp = useCallback(
@@ -57,17 +37,17 @@ const WithFacility: FC<Props> = ({ children }) => {
 
   const setActiveFacility = useCallback(
     (facility: Facility) => {
-      currentFacility(facility);
+      setCurrentFacility(facility);
       setFacilityProp(facility.id);
     },
-    [setFacilityProp]
+    [setFacilityProp, setCurrentFacility]
   );
 
   if (!dataLoaded) {
     return <Loading />;
   }
 
-  if (facilities.length === 0) {
+  if (list.length === 0) {
     return (
       <FacilityPopup>
         <p>You do not have access to any facilities at this time.</p>
@@ -78,28 +58,22 @@ const WithFacility: FC<Props> = ({ children }) => {
     );
   }
 
-  if (
-    facilities.length === 1 &&
-    (!facilityFromUrl?.id || !facilityInCache?.id)
-  ) {
-    setActiveFacility(facilities[0]);
+  if (list.length === 1 && (!facilityFromUrl?.id || !current?.id)) {
+    setActiveFacility(list[0]);
     return <Loading />;
   }
 
-  if (facilityFromUrl?.id && !facilityInCache?.id) {
+  if (facilityFromUrl?.id && !current?.id) {
     setActiveFacility(facilityFromUrl);
     return <Loading />;
   }
 
-  if (facilityFromUrl?.id && facilityInCache?.id) {
+  if (facilityFromUrl?.id && current?.id) {
     return <>{children}</>;
   }
 
   return (
-    <FacilitySelect
-      facilities={facilities}
-      setActiveFacility={setActiveFacility}
-    />
+    <FacilitySelect facilities={list} setActiveFacility={setActiveFacility} />
   );
 };
 

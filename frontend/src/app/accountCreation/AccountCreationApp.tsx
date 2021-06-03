@@ -1,14 +1,15 @@
 import { FunctionComponent, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
+import { useReactiveVar } from "@apollo/client";
 import "react-toastify/dist/ReactToastify.css";
 import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import USAGovBanner from "../commonComponents/USAGovBanner";
-import { RootState, setInitialState } from "../store";
 import { getActivationTokenFromUrl } from "../utils/url";
 import PageNotFound from "../commonComponents/PageNotFound";
+import { appConfig } from "../../storage/store";
+import { useAppConfig } from "../../hooks/useAppConfig";
 
 import { SecurityQuestion } from "./SecurityQuestion/SecurityQuestion";
 import { MfaSelect } from "./MfaSelect/MfaSelect";
@@ -26,7 +27,7 @@ import { MfaGoogleAuthVerify } from "./MfaGoogleAuthVerify/MfaGoogleAuthVerify";
 import { PasswordForm } from "./PasswordForm/PasswordForm";
 
 interface WrapperProps {
-  activationToken: string;
+  activationToken: string | null | undefined;
 }
 const AccountCreation404Wrapper: FunctionComponent<WrapperProps> = ({
   activationToken,
@@ -42,18 +43,12 @@ const AccountCreation404Wrapper: FunctionComponent<WrapperProps> = ({
 };
 
 const AccountCreationApp = () => {
-  const dispatch = useDispatch();
-  const activationToken = useSelector<RootState, string>(
-    (state) => state.activationToken
-  );
+  const { activationToken } = useReactiveVar(appConfig);
+  const { setActivationToken } = useAppConfig(appConfig);
 
   useEffect(() => {
-    dispatch(
-      setInitialState({
-        activationToken: getActivationTokenFromUrl(),
-      })
-    );
-  }, [dispatch]);
+    setActivationToken(getActivationTokenFromUrl());
+  }, [setActivationToken]);
 
   return (
     <PrimeErrorBoundary>

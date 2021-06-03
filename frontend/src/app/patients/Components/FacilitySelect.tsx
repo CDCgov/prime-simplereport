@@ -1,8 +1,8 @@
+import { useReactiveVar } from "@apollo/client";
 import React from "react";
-import { useSelector } from "react-redux";
 
+import { facilities } from "../../../storage/store";
 import Select from "../../commonComponents/Select";
-import { RootState } from "../../store";
 
 interface Props {
   facilityId: string | null;
@@ -17,15 +17,13 @@ const ALL_FACILITIES = "~~ALL-FACILITIES~~";
 const NAME = "facilityId";
 
 const FacilitySelect: React.FC<Props> = (props) => {
-  const facilities = useSelector<RootState, Facility[]>(
-    (state) => state.facilities
-  );
+  const { list } = useReactiveVar(facilities);
 
   if (props.hidden) {
     return null;
   }
 
-  const facilityList = facilities.map((f) => ({
+  const facilityList = list.map((f) => ({
     label: f.name,
     value: f.id,
   }));

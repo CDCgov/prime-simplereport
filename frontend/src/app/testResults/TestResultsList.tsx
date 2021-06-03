@@ -14,7 +14,6 @@ import moment from "moment";
 import classnames from "classnames";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 
-import { currentFacility } from "../../config/cache";
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName, displayFullNameInOrder } from "../utils";
 import {
@@ -38,10 +37,13 @@ import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 import { Patient } from "../patients/ManagePatients";
 import SearchResults from "../testQueue/addToQueue/SearchResults";
 import Select from "../commonComponents/Select";
+import { facilities } from "../../storage/store";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
 import TestResultDetailsModal from "./TestResultDetailsModal";
+
+import "./TestResultsList.scss";
 
 type Results = keyof typeof TEST_RESULT_DESCRIPTIONS;
 
@@ -446,8 +448,8 @@ type TestResultsListProps = Omit<Props, OmittedProps>;
 
 const TestResultsList = (props: TestResultsListProps) => {
   useDocumentTitle("Results");
-  const facility = useReactiveVar<Facility | null>(currentFacility);
-  const activeFacilityId = facility?.id;
+  const {current} = useReactiveVar<FacilitiesState>(facilities);
+  const activeFacilityId = current?.id;
 
   const [selectedPatientId, setSelectedPatientId] = useState<string>("");
   const [resultFilter, setResultFilter] = useState<string>("");

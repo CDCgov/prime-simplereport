@@ -1,22 +1,19 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { useReactiveVar } from "@apollo/client";
 
 import { hasPermission, appPermissions } from "../permissions";
-import { RootState } from "../store";
 import { useDocumentTitle } from "../utils/hooks";
-import { currentFacility } from "../../config/cache";
+import { appConfig, facilities } from "../../storage/store";
 
 import ManagePatients from "./ManagePatients";
 
 const ManagePatientsContainer = (props: { page?: number }) => {
   useDocumentTitle("People");
-  const facility = useReactiveVar<Facility | null>(currentFacility);
-  const activeFacilityId = facility?.id;
-  const user = useSelector<RootState, User>((state) => state.user);
-  const isAdmin = useSelector<RootState, boolean>(
-    (state) => state.user.isAdmin
-  );
+  const { current } = useReactiveVar<FacilitiesState>(facilities);
+  const { user } = useReactiveVar<AppConfigState>(appConfig);
+
+  const activeFacilityId = current?.id;
+  const isAdmin = user.isAdmin;
 
   const canEditUser = hasPermission(
     user.permissions,
