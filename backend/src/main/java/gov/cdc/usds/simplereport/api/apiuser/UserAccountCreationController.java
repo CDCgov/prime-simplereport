@@ -135,7 +135,7 @@ public class UserAccountCreationController {
    * @param request contains session information about the user, including their Okta id.
    * @throws OktaAuthenticationFailureException if Okta cannot enroll the user in MFA.
    */
-  @GetMapping("/authenticator-qr")
+  @PostMapping("/authenticator-qr")
   public String getAuthQrCode(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
       throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
