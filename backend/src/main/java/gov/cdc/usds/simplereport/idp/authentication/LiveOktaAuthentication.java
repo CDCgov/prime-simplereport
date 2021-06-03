@@ -21,6 +21,7 @@ import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureExcep
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -51,6 +52,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   private String _orgUrl;
   private RestTemplate _restTemplate;
 
+  @Autowired
   public LiveOktaAuthentication(OktaClientProperties oktaClientProperties) {
     initialize(oktaClientProperties.getOrgUrl(), oktaClientProperties.getToken());
   }
