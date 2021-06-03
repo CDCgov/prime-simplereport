@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
+import com.okta.sdk.resource.user.factor.FactorStatus;
+import com.okta.sdk.resource.user.factor.FactorType;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
@@ -9,6 +11,7 @@ import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.JSONObject;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   private static final int MINIMUM_PASSWORD_LENGTH = 8;
   private static final int PHONE_NUMBER_LENGTH = 10;
+  private static final int PASSCODE_LENGTH = 6;
 
   private HashMap<String, DemoAuthUser> idToUserMap;
 
@@ -74,8 +78,9 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       throws OktaAuthenticationFailureException {
     validateUser(userId);
     String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
-    String factorId = "smsFactor " + strippedPhoneNumber;
-    DemoMfa smsMfa = new DemoMfa("smsFactor", strippedPhoneNumber, factorId);
+    String factorId = userId + strippedPhoneNumber;
+    DemoMfa smsMfa =
+        new DemoMfa(FactorType.SMS, strippedPhoneNumber, factorId, FactorStatus.PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(smsMfa);
     return factorId;
   }
@@ -84,8 +89,10 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       throws OktaAuthenticationFailureException {
     validateUser(userId);
     String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
-    String factorId = "callFactor " + strippedPhoneNumber;
-    DemoMfa callMfa = new DemoMfa("callFactor", strippedPhoneNumber, factorId);
+    String factorId = userId + strippedPhoneNumber;
+    DemoMfa callMfa =
+        new DemoMfa(
+            FactorType.CALL, strippedPhoneNumber, factorId, FactorStatus.PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(callMfa);
     return factorId;
   }
@@ -96,15 +103,124 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     if (!email.contains("@")) {
       throw new OktaAuthenticationFailureException("Email address is invalid.");
     }
-    String factorId = "emailFactor " + email;
-    DemoMfa emailMfa = new DemoMfa("emailFactor", email, factorId);
+    String factorId = userId + email;
+    DemoMfa emailMfa =
+        new DemoMfa(FactorType.EMAIL, email, factorId, FactorStatus.PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(emailMfa);
     return factorId;
+  }
+
+  // unlike the real implementation, this returns a factor and passcode directly (instead of a qr
+  // code to use for enrollment.)
+  public JSONObject enrollAuthenticatorAppMfa(String userId, String appType)
+      throws OktaAuthenticationFailureException {
+    validateUser(userId);
+    String factorType = "";
+    switch (appType.toLowerCase()) {
+      case "google":
+        factorType = "authApp: google";
+        break;
+      case "okta":
+        factorType = "authApp: okta";
+        break;
+      default:
+        throw new OktaAuthenticationFailureException("App type not recognized.");
+    }
+    String factorId = factorType + " " + userId;
+    DemoMfa appMfa =
+        new DemoMfa(
+            FactorType.TOKEN_SOFTWARE_TOTP,
+            "thisIsAFakeQrCode",
+            factorId,
+            FactorStatus.PENDING_ACTIVATION);
+    this.idToUserMap.get(userId).setMfa(appMfa);
+    JSONObject response = new JSONObject();
+    response.put("qrcode", "thisIsAFakeQrCode");
+    response.put("factorId", factorId);
+    return response;
+  }
+
+  public JSONObject enrollSecurityKey(String userId) throws OktaAuthenticationFailureException {
+    validateUser(userId);
+    String factorId = "webAuthnFactorId + " + userId;
+    JSONObject json =
+        new JSONObject(
+            "{ \"factorId\":"
+                + factorId
+                + ", \"activation\": { \"challenge\": \"challengeString\",\"user\": {\"id\":"
+                + userId
+                + "}}}");
+    DemoMfa securityKeyMfa =
+        new DemoMfa(FactorType.WEBAUTHN, "FIDO", factorId, FactorStatus.PENDING_ACTIVATION);
+    this.idToUserMap.get(userId).setMfa(securityKeyMfa);
+    return json;
+  }
+
+  public void activateSecurityKey(
+      String userId, String factorId, String attestation, String clientData)
+      throws OktaAuthenticationFailureException {
+    System.out.println("in demo");
+    validateUser(userId);
+    System.out.println("user validated");
+    System.out.println("factorId: " + factorId);
+    System.out.println("demoMfa:" + this.idToUserMap.get(userId).getMfa());
+    System.out.println("demoMfa factorId: " + this.idToUserMap.get(userId).getMfa().getFactorId());
+    validateFactor(userId, factorId);
+    System.out.println("factor validated");
+    if (attestation == null || attestation.isEmpty()) {
+      throw new OktaAuthenticationFailureException("attestation cannot be empty.");
+    }
+    System.out.println("attestation accepted");
+    if (clientData == null || clientData.isEmpty()) {
+      throw new OktaAuthenticationFailureException("clientData cannot be empty.");
+    }
+    System.out.println("attestation accepted");
+    DemoMfa mfa = this.idToUserMap.get(userId).getMfa();
+    mfa.setFactorStatus(FactorStatus.ACTIVE);
+    System.out.println("done with demo");
+  }
+
+  public void verifyActivationPasscode(String userId, String factorId, String passcode)
+      throws OktaAuthenticationFailureException {
+    validateUser(userId);
+    validateFactor(userId, factorId);
+    DemoMfa mfa = this.idToUserMap.get(userId).getMfa();
+    if (passcode.length() != PASSCODE_LENGTH) {
+      throw new OktaAuthenticationFailureException(
+          "Activation passcode could not be verifed; MFA activation failed.");
+    }
+    mfa.setFactorStatus(FactorStatus.ACTIVE);
+  }
+
+  public void resendActivationPasscode(String userId, String factorId)
+      throws OktaAuthenticationFailureException {
+    validateUser(userId);
+    validateFactor(userId, factorId);
+    DemoMfa mfa = this.idToUserMap.get(userId).getMfa();
+    FactorType factorType = mfa.getFactorType();
+    if (!(factorType == FactorType.SMS
+        || factorType == FactorType.CALL
+        || factorType == FactorType.EMAIL)) {
+      throw new OktaAuthenticationFailureException(
+          "The requested activation factor could not be resent; Okta returned an error.");
+    }
+    mfa.setFactorStatus(FactorStatus.PENDING_ACTIVATION);
   }
 
   public void validateUser(String userId) throws OktaAuthenticationFailureException {
     if (!this.idToUserMap.containsKey(userId)) {
       throw new OktaAuthenticationFailureException("User id not recognized.");
+    }
+  }
+
+  public void validateFactor(String userId, String factorId)
+      throws OktaAuthenticationFailureException {
+    DemoMfa mfa = this.idToUserMap.get(userId).getMfa();
+    if (mfa == null || factorId.strip() != mfa.getFactorId().strip()) {
+      System.out.println("the factor could not be validated!");
+      System.out.println("factorId: " + factorId);
+      System.out.println("factorId off demo: " + mfa.getFactorId());
+      throw new OktaAuthenticationFailureException("Could not retrieve factor.");
     }
   }
 
@@ -140,8 +256,9 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   @AllArgsConstructor
   class DemoMfa {
 
-    @Getter @Setter private String factorType;
+    @Getter @Setter private FactorType factorType;
     @Getter @Setter private String factorProfile;
     @Getter @Setter private String factorId;
+    @Getter @Setter private FactorStatus factorStatus;
   }
 }
