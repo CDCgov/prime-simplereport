@@ -5,10 +5,13 @@ mutation addTestResult($deviceId: String!, $result: String!, $patientId: ID!, $d
       result: $result,
       dateTested: $dateTested
     ) {
-      internalId,
-      result,
-      deviceType {
-        internalId
+      testResult {
+        internalId,
+        result,
+        deviceType {
+          internalId
+        }
       }
+      deliverySuccess
     }
   }
