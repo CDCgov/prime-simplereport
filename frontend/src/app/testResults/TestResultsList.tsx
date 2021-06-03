@@ -340,22 +340,6 @@ export const DetachedTestResultsList: any = ({
                 id="test-results-search-by-patient-input"
                 className="display-flex grid-row grid-gap flex-row flex-align-end position-relative bg-base-lightest padding-x-3 padding-y-2"
               >
-                <SearchInput
-                  onSearchClick={onSearchClick}
-                  onInputChange={onInputChange}
-                  queryString={debounced}
-                  disabled={!allowQuery}
-                  label={"Search by name"}
-                  placeholder={""}
-                />
-                <SearchResults
-                  page="test-results"
-                  patients={patientData?.patients || []}
-                  onPatientSelect={onPatientSelect}
-                  shouldShowSuggestions={showDropdown}
-                  loading={debounced !== queryString}
-                  dropDownRef={dropDownRef}
-                />
                 <Select
                   label="Result"
                   name="result"
@@ -376,6 +360,22 @@ export const DetachedTestResultsList: any = ({
                   ]}
                   defaultSelect
                   onChange={setResultFilter}
+                />
+                <SearchInput
+                  onSearchClick={onSearchClick}
+                  onInputChange={onInputChange}
+                  queryString={debounced}
+                  disabled={!allowQuery}
+                  label={"Search by name"}
+                  placeholder={""}
+                />
+                <SearchResults
+                  page="test-results"
+                  patients={patientData?.patients || []}
+                  onPatientSelect={onPatientSelect}
+                  shouldShowSuggestions={showDropdown}
+                  loading={debounced !== queryString}
+                  dropDownRef={dropDownRef}
                 />
               </div>
             )}
@@ -456,17 +456,22 @@ const TestResultsList = (props: TestResultsListProps) => {
     facilityId: activeFacilityId,
     pageNumber: pageNumber - 1,
     pageSize: entriesPerPage,
-    result: resultFilter,
   };
 
   const countQueryVariables: {
     patientId?: string;
     facilityId: string;
+    result?: string;
   } = { facilityId: activeFacilityId };
 
   if (selectedPatientId) {
     queryVariables.patientId = selectedPatientId;
     countQueryVariables.patientId = selectedPatientId;
+  }
+
+  if (resultFilter) {
+    queryVariables.result = resultFilter;
+    countQueryVariables.result = resultFilter;
   }
 
   const {
