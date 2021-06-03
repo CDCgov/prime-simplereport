@@ -35,23 +35,29 @@ export const MfaSelect = () => {
   const secure = "Secure";
 
   if (submitted) {
-    let state;
     switch (mfaOption) {
       case "SMS":
         return <Redirect to="/mfa-sms" />;
       case "Okta":
-        state = {
-          qrCode: Promise.resolve(AccountCreationApi.enrollTotpMfa("Okta")),
-        };
-        return <Redirect to={{ pathname: "/mfa-okta-verify", state }} />;
+        return AccountCreationApi.enrollTotpMfa("Okta").then((qrCode) => {
+          return (
+            <Redirect
+              to={{ pathname: "/mfa-google-auth", state: { qrCode } }}
+            />
+          );
+        });
       case "Google":
-        state = {
-          qrCode: Promise.resolve(AccountCreationApi.enrollTotpMfa("Google")),
-        };
-        return <Redirect to={{ pathname: "/mfa-google-auth", state }} />;
+        return AccountCreationApi.enrollTotpMfa("Google").then((qrCode) => {
+          return (
+            <Redirect
+              to={{ pathname: "/mfa-google-auth", state: { qrCode } }}
+            />
+          );
+        });
       case "FIDO":
-        state = Promise.resolve(AccountCreationApi.enrollSecurityKeyMfa());
-        return <Redirect to={{ pathname: "/mfa-security-key", state }} />;
+        return AccountCreationApi.enrollSecurityKeyMfa().then((state) => {
+          return <Redirect to={{ pathname: "/mfa-security-key", state }} />;
+        });
 
       case "Phone":
         return <Redirect to="/mfa-phone" />;
