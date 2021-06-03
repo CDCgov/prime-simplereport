@@ -57,9 +57,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     initialize(oktaClientProperties.getOrgUrl(), oktaClientProperties.getToken());
   }
 
-  public LiveOktaAuthentication(String orgUrl, String token) {
-    initialize(orgUrl, token);
-  }
+  // public LiveOktaAuthentication(String orgUrl, String token) {
+  //   initialize(orgUrl, token);
+  // }
 
   private void initialize(String orgUrl, String token) {
     _client =

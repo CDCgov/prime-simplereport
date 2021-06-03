@@ -52,6 +52,7 @@ import org.springframework.beans.factory.annotation.Value;
 @Disabled
 class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
+/*
   private static final String PHONE_NUMBER = "999-999-9999";
   private static final String FORMATTED_PHONE_NUMBER = "+19999999999";
   private static final String EMAIL = "test@example.com";
@@ -417,4 +418,5 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
             });
     assertThat(exception).hasMessage("An exception was thrown while fetching the user's factor.");
   }
+  */
 }
