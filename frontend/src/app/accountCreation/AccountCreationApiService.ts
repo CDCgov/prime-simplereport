@@ -58,6 +58,10 @@ export class AccountCreationApi {
     return request("/enroll-email-mfa", { userInput: email });
   }
 
+  static enrollTotpMfa(app: string) {
+    return request("/authenticator-qr", { userInput: app });
+  }
+
   static enrollSecurityKeyMfa() {
     return request("/enroll-security-key-mfa", null);
   }
