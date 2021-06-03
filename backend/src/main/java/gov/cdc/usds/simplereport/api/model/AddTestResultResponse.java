@@ -15,11 +15,11 @@ public class AddTestResultResponse {
     this.testOrder = testOrder;
   }
 
-  public TestOrder getTestResult() {
-    return testOrder;
+  public ApiTestOrder getTestResult() {
+    return new ApiTestOrder(testOrder);
   }
 
-  public Boolean getDeliveryStatus() {
+  public Boolean getDeliverySuccess() {
     return deliveryStatus;
   }
 }
