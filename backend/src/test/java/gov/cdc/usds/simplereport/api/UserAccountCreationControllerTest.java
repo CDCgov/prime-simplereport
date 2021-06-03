@@ -12,7 +12,6 @@ import gov.cdc.usds.simplereport.config.WebConfiguration;
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
 import javax.servlet.http.HttpSession;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -58,7 +56,8 @@ class UserAccountCreationControllerTest {
 
   private static final String VALID_ACTIVATION_PASSCODE_REQUEST = "{\"userInput\":\"123456\"}";
 
-  private static final String VALID_ACTIVATE_SECURITY_KEY_REQUEST = "{\"attestation\":\"123456\", \"clientData\":\"dataaaaa\"}";
+  private static final String VALID_ACTIVATE_SECURITY_KEY_REQUEST =
+      "{\"attestation\":\"123456\", \"clientData\":\"dataaaaa\"}";
 
   @BeforeEach
   public void setup() throws Exception {
@@ -330,12 +329,12 @@ class UserAccountCreationControllerTest {
 
   @Test
   void enrollSecurityKey_failsWithoutActivatedUser() throws Exception {
-      MockHttpSession session = new MockHttpSession();
+    MockHttpSession session = new MockHttpSession();
 
-      MockHttpServletRequestBuilder enrollSecurityKeyBuilder =
+    MockHttpServletRequestBuilder enrollSecurityKeyBuilder =
         createPostRequest(session, "", ResourceLinks.USER_ENROLL_SECURITY_KEY_MFA);
 
-        this._mockMvc.perform(enrollSecurityKeyBuilder).andExpect(status().is4xxClientError());
+    this._mockMvc.perform(enrollSecurityKeyBuilder).andExpect(status().is4xxClientError());
   }
 
   @Test
@@ -348,12 +347,16 @@ class UserAccountCreationControllerTest {
     MockHttpServletRequestBuilder enrollSecurityKeyBuilder =
         createPostRequest(session, "", ResourceLinks.USER_ENROLL_SECURITY_KEY_MFA);
 
-    MockHttpServletRequestBuilder activateSecurityKeyBuilder = createPostRequest(session, VALID_ACTIVATE_SECURITY_KEY_REQUEST, ResourceLinks.USER_ACTIVATE_SECURITY_KEY_MFA);
+    MockHttpServletRequestBuilder activateSecurityKeyBuilder =
+        createPostRequest(
+            session,
+            VALID_ACTIVATE_SECURITY_KEY_REQUEST,
+            ResourceLinks.USER_ACTIVATE_SECURITY_KEY_MFA);
 
     performRequestAndGetSession(activateUserBuilder);
     performRequestAndGetSession(enrollSecurityKeyBuilder);
 
-   this._mockMvc.perform(activateSecurityKeyBuilder).andExpect(status().isOk());
+    this._mockMvc.perform(activateSecurityKeyBuilder).andExpect(status().isOk());
   }
 
   @Test
