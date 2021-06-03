@@ -39,7 +39,7 @@ const ManageOrganizationContainer: any = () => {
   });
   const [setOrganization] = useMutation(SET_ORGANIZATION);
   const appInsights = useAppInsightsContext();
-  const {updateOrganizationName} = useAppConfig(appConfig);
+  const { updateOrganizationName } = useAppConfig(appConfig);
   const trackSaveSettings = useTrackEvent(
     appInsights,
     "Save Organization",
@@ -74,7 +74,7 @@ const ManageOrganizationContainer: any = () => {
         />
       );
       showNotification(toast, alert);
-      updateOrganizationName(name)
+      updateOrganizationName(name);
     });
   };
 

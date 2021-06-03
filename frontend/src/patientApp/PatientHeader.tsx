@@ -4,7 +4,7 @@ import { appConfig } from "../storage/store";
 import siteLogo from "../img/simplereport-logomark-color.svg";
 
 const PatientHeader = () => {
-const {organization} = useReactiveVar(appConfig);
+  const { organization } = useReactiveVar(appConfig);
 
   return (
     <header className="border-bottom border-base-lighter">

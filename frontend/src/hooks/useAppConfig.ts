@@ -18,9 +18,9 @@ export const useAppConfig = (appConfigVar: ReactiveVar<AppConfigState>) => {
       },
     });
   };
-  const setActivationToken = (activationToken:string | null)=>{
-    appConfigVar({...appConfigVar(), activationToken});
-  }
+  const setActivationToken = (activationToken: string | null) => {
+    appConfigVar({ ...appConfigVar(), activationToken });
+  };
   const setInitialData = (data: AppConfigState) => {
     appConfigVar(data);
   };

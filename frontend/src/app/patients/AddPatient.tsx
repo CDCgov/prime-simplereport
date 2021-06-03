@@ -109,8 +109,8 @@ const AddPatient = () => {
     AddPatientResponse,
     AddPatientParams
   >(ADD_PATIENT);
-  const {current} = useReactiveVar(facilities);
-  const activeFacilityId: string | undefined=  current?.id;
+  const { current } = useReactiveVar(facilities);
+  const activeFacilityId: string | undefined = current?.id;
 
   const personPath = `/patients/?facility=${current?.id}`;
   const [redirect, setRedirect] = useState<string | undefined>(undefined);

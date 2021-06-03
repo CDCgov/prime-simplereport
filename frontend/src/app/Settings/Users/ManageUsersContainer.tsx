@@ -145,7 +145,7 @@ export interface NewUserInvite {
 }
 
 const ManageUsersContainer: any = () => {
-  const {user: loggedInUser} = useReactiveVar(appConfig);
+  const { user: loggedInUser } = useReactiveVar(appConfig);
 
   const [updateUserPrivileges] = useMutation(UPDATE_USER_PRIVILEGES);
   const [deleteUser] = useMutation(DELETE_USER);

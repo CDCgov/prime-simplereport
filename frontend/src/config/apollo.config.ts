@@ -1,16 +1,12 @@
 import { toast } from "react-toastify";
-import {
-  ApolloClient,
-  ApolloLink,
-  concat,
-} from "@apollo/client";
+import { ApolloClient, ApolloLink, concat } from "@apollo/client";
 import { createUploadLink } from "apollo-upload-client";
 import { ErrorResponse, onError } from "@apollo/client/link/error";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 
 import { showError } from "../app/utils";
 import { getAppInsights } from "../app/TelemetryService";
-import cache from '../storage/cache';
+import cache from "../storage/cache";
 
 const appInsights: null | ApplicationInsights = getAppInsights();
 
@@ -64,7 +60,7 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
 const client = new ApolloClient({
   cache,
   link: logoutLink.concat(concat(authMiddleware, httpLink)),
-  connectToDevTools: true
+  connectToDevTools: true,
 });
 
 export default client;

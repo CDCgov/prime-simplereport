@@ -7,7 +7,7 @@ import { formatFullName } from "../utils/user";
 import "./FacilitySelect.scss";
 
 const FacilityPopup: React.FC = ({ children }) => {
-  const {user, organization} = useReactiveVar(appConfig)
+  const { user, organization } = useReactiveVar(appConfig);
 
   return (
     <main className="prime-home" id="facility-select">

@@ -448,7 +448,7 @@ type TestResultsListProps = Omit<Props, OmittedProps>;
 
 const TestResultsList = (props: TestResultsListProps) => {
   useDocumentTitle("Results");
-  const {current} = useReactiveVar<FacilitiesState>(facilities);
+  const { current } = useReactiveVar<FacilitiesState>(facilities);
   const activeFacilityId = current?.id;
 
   const [selectedPatientId, setSelectedPatientId] = useState<string>("");

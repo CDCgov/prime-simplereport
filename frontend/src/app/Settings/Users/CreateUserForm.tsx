@@ -40,7 +40,7 @@ const ROLE_OPTIONS: { value: Role; label: string }[] = [
 ];
 
 const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
-  const {list} = useReactiveVar(facilities);
+  const { list } = useReactiveVar(facilities);
 
   const [newUser, updateNewUser] = useState(initialFormState);
   const onChange = (

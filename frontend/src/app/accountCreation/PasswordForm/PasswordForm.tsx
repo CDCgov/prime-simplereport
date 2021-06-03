@@ -32,7 +32,7 @@ export const PasswordForm = () => {
   const [submitted, setSubmitted] = useState(false);
 
   // Get activation token from store
-  const {activationToken} = useReactiveVar(appConfig);
+  const { activationToken } = useReactiveVar(appConfig);
 
   // An array of functions that test for all of the password requirements
   const requirements = [hasLowerCase, hasUpperCase, hasNumber, isAtLeast8Chars];
@@ -110,7 +110,11 @@ export const PasswordForm = () => {
 
   // Form submit handler
   const handleSubmit = async () => {
-    if (validatePassword() && validatePasswordConfirmation() && activationToken) {
+    if (
+      validatePassword() &&
+      validatePasswordConfirmation() &&
+      activationToken
+    ) {
       setLoading(true);
       try {
         await AccountCreationApi.setPassword(activationToken, password);

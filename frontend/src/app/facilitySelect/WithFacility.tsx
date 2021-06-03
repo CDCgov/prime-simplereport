@@ -3,10 +3,7 @@ import { useReactiveVar } from "@apollo/client";
 import { useCallback, useMemo, FC } from "react";
 import { useHistory } from "react-router-dom";
 
-import {
-  appConfig,
-  facilities,
-} from "../../storage/store";
+import { appConfig, facilities } from "../../storage/store";
 import { useFacilities } from "../../hooks/useFacilities";
 import { getFacilityIdFromUrl } from "../utils/url";
 

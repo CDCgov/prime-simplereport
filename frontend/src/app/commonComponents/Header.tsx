@@ -30,8 +30,8 @@ const Header: React.FC<{}> = () => {
     }
   };
 
-  const {organization, user} = useReactiveVar(appConfig);
-  const {current,list} = useReactiveVar(facilities);
+  const { organization, user } = useReactiveVar(appConfig);
+  const { current, list } = useReactiveVar(facilities);
 
   const [menuVisible, setMenuVisible] = useState(false);
   const {
@@ -365,4 +365,4 @@ const Header: React.FC<{}> = () => {
   );
 };
 
-export default Header
+export default Header;

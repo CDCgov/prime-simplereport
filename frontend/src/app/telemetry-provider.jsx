@@ -26,7 +26,7 @@ class TelemetryProvider extends Component {
       ai.initialize(AppInsightsInstrumentationKey, history);
       this.setState({ initialized: true });
     }
-    if(after){
+    if (after) {
       after();
     }
   }

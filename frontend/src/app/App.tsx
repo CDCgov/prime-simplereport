@@ -61,7 +61,7 @@ const App = () => {
     if (!data) return;
     setInitFacilities(data.whoami.organization.testingFacility);
     setInitialData({
-      user:{
+      user: {
         id: data.whoami.id,
         firstName: data.whoami.firstName,
         middleName: data.whoami.middleName,
@@ -70,14 +70,14 @@ const App = () => {
         email: data.whoami.email,
         roleDescription: data.whoami.roleDescription,
         isAdmin: data.whoami.isAdmin,
-        permissions: data.whoami.permissions
-        },
-        organization: {
-          name: data.whoami.organization?.name,
-        },
-        dataLoaded: true,
-        activationToken: null
-    })
+        permissions: data.whoami.permissions,
+      },
+      organization: {
+        name: data.whoami.organization?.name,
+      },
+      dataLoaded: true,
+      activationToken: null,
+    });
     // eslint-disable-next-line
   }, [data]);
 
