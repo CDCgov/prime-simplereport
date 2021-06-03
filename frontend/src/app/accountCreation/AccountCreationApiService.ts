@@ -23,12 +23,18 @@ const request = (path: string, body: any): Promise<any> => {
     if (!res.ok) {
       throw res;
     }
-    try {
-      return Promise.resolve(res.json());
-    } catch {
-      return "success";
-    }
+    return tryJson(res);
   });
+};
+
+const tryJson = async (res: Response) => {
+  let response;
+  try {
+    response = await res.json();
+  } catch {
+    response = "success";
+  }
+  return response;
 };
 
 export class AccountCreationApi {
