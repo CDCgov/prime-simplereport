@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Redirect } from "react-router";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -7,20 +8,49 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 
+type MfaOptions = "SMS" | "Okta" | "Google" | "FIDO" | "Phone" | "Email" | "";
+
 export const MfaSelect = () => {
-  const [mfaOption, setMfaOption] = useState("");
+  const [mfaOption, setMfaOption] = useState<MfaOptions>("");
   const [mfaOptionError, setMfaOptionError] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   const validateMfaOption = () => {
+    let error = "";
     if (mfaOption === "") {
-      setMfaOptionError("Select an authentication option");
-    } else {
-      setMfaOptionError("");
+      error = "Select an authentication option";
+    }
+    setMfaOptionError(error);
+    return error === "";
+  };
+
+  const handleSubmit = () => {
+    if (validateMfaOption()) {
+      setSubmitted(true);
     }
   };
 
   const lessSecure = "Less secure";
   const secure = "Secure";
+
+  if (submitted) {
+    switch (mfaOption) {
+      case "SMS":
+        return <Redirect to="/mfa-sms" />;
+      case "Okta":
+        return <Redirect to="/mfa-okta-verify" />;
+      case "Google":
+        return <Redirect to="/mfa-google-auth" />;
+      case "FIDO":
+        return <Redirect to="/mfa-security-key" />;
+      case "Phone":
+        return <Redirect to="/mfa-phone" />;
+      case "Email":
+        return <Redirect to="/mfa-email" />;
+      default:
+        return <Redirect to="/" />;
+    }
+  }
 
   return (
     <CardBackground>
@@ -87,7 +117,7 @@ export const MfaSelect = () => {
           className="margin-top-3"
           label={"Continue"}
           type={"submit"}
-          onClick={validateMfaOption}
+          onClick={handleSubmit}
         />
       </Card>
       <p className="margin-top-5">
