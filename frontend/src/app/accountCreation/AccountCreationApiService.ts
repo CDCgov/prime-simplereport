@@ -24,7 +24,7 @@ const request = (path: string, body: any): Promise<any> => {
       throw res;
     }
     try {
-      return res.json();
+      return Promise.resolve(res.json());
     } catch {
       return "success";
     }
