@@ -18,13 +18,16 @@ const getOptions = (
   };
 };
 
-const request = (path: string, body: any): Promise<any> => {
-  return fetch(API_URL + path, getOptions(body)).then((res) => {
-    if (!res.ok) {
-      throw res;
-    }
-    return res.json().catch(() => "success");
-  });
+const request = async (path: string, body: any) => {
+  const res = await fetch(API_URL + path, getOptions(body));
+  if (!res.ok) {
+    throw res;
+  }
+  try {
+    return await res.json();
+  } catch {
+    return "success";
+  }
 };
 
 export class AccountCreationApi {

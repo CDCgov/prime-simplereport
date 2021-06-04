@@ -9,35 +9,32 @@ import iconLoader from "../../../../node_modules/uswds/dist/img/loader.svg";
 import { AccountCreationApi } from "../AccountCreationApiService";
 import { strToBin, binToStr } from "../../utils/text";
 
-interface Props {
-  location: {
-    state: {
-      activation: any;
-    };
-  };
-}
-
-export const MfaSecurityKey = (props: Props) => {
+export const MfaSecurityKey = () => {
   const [attestation, setAttestation] = useState("");
   const [clientData, setClientData] = useState("");
   const [activated, setActivated] = useState(false);
 
   useEffect(() => {
-    const { activation } = props.location.state;
-    const publicKey = Object.assign({}, activation);
-    // Convert activation object's challenge and user id from string to binary
-    publicKey.challenge = strToBin(activation.challenge);
-    publicKey.user.id = strToBin(activation.user.id);
+    const enrollKey = async () => {
+      const { activation } = await AccountCreationApi.enrollSecurityKeyMfa();
+      const publicKey = Object.assign({}, activation);
+      // Convert activation object's challenge and user id from string to binary
+      publicKey.challenge = strToBin(activation.challenge);
+      publicKey.user.id = strToBin(activation.user.id);
 
-    // navigator.credentials is a global object on WebAuthn-supported clients, used to access WebAuthn API
-    navigator.credentials.create({ publicKey }).then(function (newCredential) {
-      // Get attestation and clientData from callback result, convert from binary to string
-      const response = (newCredential as PublicKeyCredential)
-        ?.response as AuthenticatorAttestationResponse;
-      setAttestation(binToStr(response.attestationObject));
-      setClientData(binToStr(response.clientDataJSON));
-    });
-  }, [props]);
+      // navigator.credentials is a global object on WebAuthn-supported clients, used to access WebAuthn API
+      navigator.credentials
+        .create({ publicKey })
+        .then(function (newCredential) {
+          // Get attestation and clientData from callback result, convert from binary to string
+          const response = (newCredential as PublicKeyCredential)
+            ?.response as AuthenticatorAttestationResponse;
+          setAttestation(binToStr(response.attestationObject));
+          setClientData(binToStr(response.clientDataJSON));
+        });
+    };
+    enrollKey();
+  }, []);
 
   useEffect(() => {
     if (attestation && clientData) {

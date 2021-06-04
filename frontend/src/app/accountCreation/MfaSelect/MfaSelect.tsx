@@ -11,7 +11,7 @@ import { AccountCreationApi } from "../AccountCreationApiService";
 
 type MfaOptions = "SMS" | "Okta" | "Google" | "FIDO" | "Phone" | "Email" | "";
 
-export const MfaSelect = async () => {
+export const MfaSelect = () => {
   const [mfaOption, setMfaOption] = useState<MfaOptions>("");
   const [mfaOptionError, setMfaOptionError] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -35,24 +35,15 @@ export const MfaSelect = async () => {
   const secure = "Secure";
 
   if (submitted) {
-    let state;
     switch (mfaOption) {
       case "SMS":
         return <Redirect to="/mfa-sms" />;
       case "Okta":
-        state = {
-          qrCode: await AccountCreationApi.enrollTotpMfa("Okta"),
-        };
-        return <Redirect to={{ pathname: "/mfa-okta-verify", state }} />;
+        return <Redirect to="/mfa-okta-verify" />;
       case "Google":
-        state = {
-          qrCode: await AccountCreationApi.enrollTotpMfa("Google"),
-        };
-        return <Redirect to={{ pathname: "/mfa-google-auth", state }} />;
+        return <Redirect to="/mfa-google-auth" />;
       case "FIDO":
-        state = await AccountCreationApi.enrollSecurityKeyMfa();
-        return <Redirect to={{ pathname: "/mfa-security-key", state }} />;
-
+        return <Redirect to="/mfa-security-key" />;
       case "Phone":
         return <Redirect to="/mfa-phone" />;
       case "Email":

@@ -1,15 +1,11 @@
+import { AccountCreationApi } from "../AccountCreationApiService";
 import { MfaTotp } from "../MfaTotp/MfaTotp";
 
-interface Props {
-  location: {
-    state: {
-      qrCode: any;
-    };
-  };
-}
-
-export const MfaOktaVerify = (props: Props) => {
+export const MfaOktaVerify = () => {
   return (
-    <MfaTotp totpType="Okta Verify" qrCode={props.location.state.qrCode} />
+    <MfaTotp
+      totpType="Okta Verify"
+      enrollFunction={() => AccountCreationApi.enrollTotpMfa("Okta")}
+    />
   );
 };

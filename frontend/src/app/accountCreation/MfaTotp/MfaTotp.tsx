@@ -1,15 +1,25 @@
+import { useEffect, useState } from "react";
+
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button/Button";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
+import iconLoader from "../../../../node_modules/uswds/dist/img/loader.svg";
 
 interface Props {
-  qrCode: string;
+  enrollFunction: Function;
   totpType: string;
 }
 
 export const MfaTotp = (props: Props) => {
+  const [qrCode, setQrCode] = useState("");
+
+  useEffect(() => {
+    const getQrCode = async () => setQrCode(await props.enrollFunction());
+    getQrCode();
+  }, [props]);
+
   return (
     <CardBackground>
       <Card logo bodyKicker="Set up your account">
@@ -26,13 +36,15 @@ export const MfaTotp = (props: Props) => {
           app.
         </p>
         <div className="display-flex flex-column flex-align-center">
-          {props.qrCode ? (
+          {qrCode ? (
+            <img src={qrCode} alt="TOTP QR Code" className="height-card" />
+          ) : (
             <img
-              src={props.qrCode}
-              alt="TOTP QR Code"
-              className="height-card"
+              className="square-5 chromatic-ignore"
+              src={iconLoader}
+              alt=""
             />
-          ) : null}
+          )}
         </div>
         <Button className="margin-top-3" label={"Continue"} type={"submit"} />
       </Card>
