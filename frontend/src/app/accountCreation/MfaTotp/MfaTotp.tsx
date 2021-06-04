@@ -16,7 +16,10 @@ export const MfaTotp = (props: Props) => {
   const [qrCode, setQrCode] = useState("");
 
   useEffect(() => {
-    const getQrCode = async () => setQrCode(await props.enrollFunction());
+    const getQrCode = async () => {
+      const { qrcode } = await props.enrollFunction();
+      setQrCode(qrcode);
+    };
     getQrCode();
   }, [props]);
 
