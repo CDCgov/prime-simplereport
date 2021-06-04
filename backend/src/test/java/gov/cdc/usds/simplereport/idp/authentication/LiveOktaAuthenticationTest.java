@@ -49,10 +49,9 @@ import org.springframework.beans.factory.annotation.Value;
  */
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
-@Disabled
+// @Disabled
 class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
-/*
   private static final String PHONE_NUMBER = "999-999-9999";
   private static final String FORMATTED_PHONE_NUMBER = "+19999999999";
   private static final String EMAIL = "test@example.com";
@@ -240,31 +239,31 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     UserFactor factor = user.getFactor(activationObject.getString("factorId"));
     assertThat(factor.getFactorType()).isEqualTo(FactorType.WEBAUTHN);
     assertThat(factor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
-    assertThat(activationObject.getJSONObject("activation").getString("attestation")).isNotNull();
+    assertThat(activationObject.getJSONObject("activation").getJSONObject("user").getString("id")).isNotNull();
     assertThat(activationObject.getJSONObject("activation").getString("challenge")).isNotNull();
 
     user.resetFactors();
   }
 
+  // @Test
+  // @Order(10)
+  // void activateSecurityKeySuccessful() throws Exception {
+  //   JSONObject activationObject = _auth.enrollSecurityKey(_userId);
+
+  //   // in order to test this successfully, we need to somehow get the attestation and clientData
+  //   // out.
+  //   // there are JS libraries for this, so I'd hope there's a Java library as well?? need to look
+  //   // into it further.
+  //   _auth.activateSecurityKey(
+  //       _userId,
+  //       activationObject.getString("factorId"),
+  //       activationObject.getJSONObject("activation").getString("attestation"),
+  //       " ");
+  //   assertThat(3 + 4).isEqualTo(8);
+  // }
+
   @Test
   @Order(10)
-  void activateSecurityKeySuccessful() throws Exception {
-    JSONObject activationObject = _auth.enrollSecurityKey(_userId);
-
-    // in order to test this successfully, we need to somehow get the attestation and clientData
-    // out.
-    // there are JS libraries for this, so I'd hope there's a Java library as well?? need to look
-    // into it further.
-    _auth.activateSecurityKey(
-        _userId,
-        activationObject.getString("factorId"),
-        activationObject.getJSONObject("activation").getString("attestation"),
-        " ");
-    assertThat(3 + 4).isEqualTo(8);
-  }
-
-  @Test
-  @Order(11)
   void verifyActivationPasscodeSuccessful() throws Exception {
     User user = _testClient.getUser(_userId);
 
@@ -294,7 +293,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   }
 
   @Test
-  @Order(12)
+  @Order(11)
   void resendActivationPasscode() throws Exception {
     String factorId = _auth.enrollSmsMfa(_userId, "4045312484");
     UserFactor factorBeforeResend = _testClient.getUser(_userId).getFactor(factorId);
@@ -394,6 +393,28 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     assertThat(exception).hasMessage("App type not recognized.");
   }
 
+  @Test 
+  void enrollSecurityKeyFails_withInvalidUserId() {
+    Exception exception = 
+      assertThrows(OktaAuthenticationFailureException.class,
+      () -> {
+        _auth.enrollSecurityKey("fakeUserId");
+      });
+      assertThat(exception).hasMessage("Security key could not be enrolled");
+  }
+
+  @Test
+  void activateSecurityKeyFails_withInvalidData() {
+    JSONObject activationObject = _auth.enrollSecurityKey(_userId);
+    Exception exception = 
+    assertThrows(OktaAuthenticationFailureException.class,
+    () -> {
+      _auth.activateSecurityKey(_userId, activationObject.getString("factorId"), activationObject.getJSONObject("activation").getString("challenge"),
+       activationObject.getJSONObject("activation").getJSONObject("user").getString("id"));
+    });
+    assertThat(exception).hasMessage("Security key could not be activated");
+  }
+
   @Test
   void verifyActivationPasscodeFails_withInvalidPasscode() {
     JSONObject mfaResponse = _auth.enrollAuthenticatorAppMfa(_userId, "okta");
@@ -418,5 +439,4 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
             });
     assertThat(exception).hasMessage("An exception was thrown while fetching the user's factor.");
   }
-  */
 }

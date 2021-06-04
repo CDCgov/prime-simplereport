@@ -293,7 +293,7 @@ class DemoOktaAuthenticationTest {
 
     assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.WEBAUTHN);
     assertThat(user.getMfa().getFactorStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
-    assertThat(enrollResponse.has("challenge")).isTrue();
+    assertThat(enrollResponse.getJSONObject("activation").has("challenge")).isTrue();
     assertThat(enrollResponse.has("factorId")).isTrue();
   }
 
@@ -312,11 +312,12 @@ class DemoOktaAuthenticationTest {
   void activateSecurityKey_successful() throws Exception {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     JSONObject enrollResponse = _auth.enrollSecurityKey(userId);
+    String factorId = enrollResponse.getString("factorId");
     _auth.activateSecurityKey(
         userId,
-        enrollResponse.getString("factorId"),
-        enrollResponse.getString("challenge"),
-        enrollResponse.getJSONObject("user").getString("id"));
+        factorId,
+        enrollResponse.getJSONObject("activation").getString("challenge"),
+        enrollResponse.getJSONObject("activation").getJSONObject("user").getString("id"));
 
     DemoAuthUser user = _auth.getUser(userId);
     assertThat(user.getMfa().getFactorStatus()).isEqualTo(FactorStatus.ACTIVE);
@@ -359,7 +360,7 @@ class DemoOktaAuthenticationTest {
               _auth.activateSecurityKey(
                   userId,
                   enrollResponse.getString("factorId"),
-                  enrollResponse.getString("challenge"),
+                  enrollResponse.getJSONObject("activation").getString("challenge"),
                   "");
             });
     assertThat(exception.getMessage()).isEqualTo("clientData cannot be empty.");

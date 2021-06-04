@@ -16,7 +16,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -135,7 +134,7 @@ public class UserAccountCreationController {
    * @param request contains session information about the user, including their Okta id.
    * @throws OktaAuthenticationFailureException if Okta cannot enroll the user in MFA.
    */
-  @GetMapping("/authenticator-qr")
+  @PostMapping("/authenticator-qr")
   public String getAuthQrCode(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
       throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
@@ -175,9 +174,11 @@ public class UserAccountCreationController {
   public void activateSecurityKeyMfa(
       @RequestBody ActivateSecurityKeyRequest requestBody, HttpServletRequest request)
       throws OktaAuthenticationFailureException {
+    LOG.info("controller: activating security key");
+    LOG.info("session information: ", request.getSession());
     String userId = getUserId(request.getSession());
     String factorId = getFactorId(request.getSession());
-    System.out.println("activating security key:");
+    LOG.info("user and factor fetched");
     _oktaAuth.activateSecurityKey(
         userId, factorId, requestBody.getAttestation(), requestBody.getClientData());
   }

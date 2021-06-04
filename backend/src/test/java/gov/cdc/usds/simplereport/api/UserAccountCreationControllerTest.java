@@ -259,7 +259,7 @@ class UserAccountCreationControllerTest {
         createActivationRequest(session, VALID_PASSWORD_REQUEST);
 
     MockHttpServletRequestBuilder enrollAuthAppMfaBuilder =
-        createGetRequest(
+        createPostRequest(
             session, VALID_ENROLL_AUTH_APP_MFA_REQUEST, ResourceLinks.USER_ENROLL_AUTH_APP_MFA);
 
     HttpSession setPasswordResponse = performRequestAndGetSession(activateUserBuilder);
@@ -281,7 +281,7 @@ class UserAccountCreationControllerTest {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder enrollAuthAppMfaBuilder =
-        createGetRequest(
+        createPostRequest(
             session, VALID_ENROLL_AUTH_APP_MFA_REQUEST, ResourceLinks.USER_ENROLL_AUTH_APP_MFA);
 
     this._mockMvc.perform(enrollAuthAppMfaBuilder).andExpect(status().is4xxClientError());
@@ -295,7 +295,7 @@ class UserAccountCreationControllerTest {
         createActivationRequest(session, VALID_PASSWORD_REQUEST);
 
     MockHttpServletRequestBuilder enrollAuthAppMfaBuilder =
-        createGetRequest(
+        createPostRequest(
             session, "{\"userInput\":\"lastPass\"}", ResourceLinks.USER_ENROLL_AUTH_APP_MFA);
 
     this._mockMvc.perform(activateUserBuilder).andExpect(status().isOk());
@@ -360,6 +360,68 @@ class UserAccountCreationControllerTest {
   }
 
   @Test
+  void activateSecurityKey_failsWithoutEnrollment() throws Exception {
+    MockHttpSession session = new MockHttpSession();
+
+    MockHttpServletRequestBuilder activateUserBuilder =
+        createActivationRequest(session, VALID_PASSWORD_REQUEST);
+
+    MockHttpServletRequestBuilder activateSecurityKeyBuilder =
+        createPostRequest(
+            session,
+            VALID_ACTIVATE_SECURITY_KEY_REQUEST,
+            ResourceLinks.USER_ACTIVATE_SECURITY_KEY_MFA);
+
+    performRequestAndGetSession(activateUserBuilder);
+        
+    this._mockMvc.perform(activateSecurityKeyBuilder).andExpect(status().is4xxClientError());
+  }
+
+  @Test
+  void activateSecurityKey_failsWithInvalidAttestation() throws Exception {
+    MockHttpSession session = new MockHttpSession();
+
+    MockHttpServletRequestBuilder activateUserBuilder =
+        createActivationRequest(session, VALID_PASSWORD_REQUEST);
+
+    MockHttpServletRequestBuilder enrollSecurityKeyBuilder =
+        createPostRequest(session, "", ResourceLinks.USER_ENROLL_SECURITY_KEY_MFA);
+
+    MockHttpServletRequestBuilder activateSecurityKeyBuilder =
+        createPostRequest(
+            session,
+            "{\"attestation\":\"\", \"clientData\":\"dataaaaa\"}",
+            ResourceLinks.USER_ACTIVATE_SECURITY_KEY_MFA);
+
+    performRequestAndGetSession(activateUserBuilder);
+    performRequestAndGetSession(enrollSecurityKeyBuilder);
+
+    this._mockMvc.perform(activateSecurityKeyBuilder).andExpect(status().is4xxClientError());
+  }
+
+  @Test
+  void activateSecurityKey_failsWithInvalidClientData() throws Exception {
+    MockHttpSession session = new MockHttpSession();
+
+    MockHttpServletRequestBuilder activateUserBuilder =
+        createActivationRequest(session, VALID_PASSWORD_REQUEST);
+
+    MockHttpServletRequestBuilder enrollSecurityKeyBuilder =
+        createPostRequest(session, "", ResourceLinks.USER_ENROLL_SECURITY_KEY_MFA);
+
+    MockHttpServletRequestBuilder activateSecurityKeyBuilder =
+        createPostRequest(
+            session,
+            "{\"attestation\":\"123456\", \"clientData\":\"\"}",
+            ResourceLinks.USER_ACTIVATE_SECURITY_KEY_MFA);
+
+    performRequestAndGetSession(activateUserBuilder);
+    performRequestAndGetSession(enrollSecurityKeyBuilder);
+
+    this._mockMvc.perform(activateSecurityKeyBuilder).andExpect(status().is4xxClientError());
+  }
+
+  @Test
   void verifyActivationPasscode_isOk() throws Exception {
     MockHttpSession session = new MockHttpSession();
 
@@ -367,7 +429,7 @@ class UserAccountCreationControllerTest {
         createActivationRequest(session, VALID_PASSWORD_REQUEST);
 
     MockHttpServletRequestBuilder enrollAuthAppMfaBuilder =
-        createGetRequest(
+        createPostRequest(
             session, VALID_ENROLL_AUTH_APP_MFA_REQUEST, ResourceLinks.USER_ENROLL_AUTH_APP_MFA);
 
     MockHttpServletRequestBuilder verifyPasscodeBuilder =
@@ -391,7 +453,7 @@ class UserAccountCreationControllerTest {
         createActivationRequest(session, VALID_PASSWORD_REQUEST);
 
     MockHttpServletRequestBuilder enrollAuthAppMfaBuilder =
-        createGetRequest(
+        createPostRequest(
             session, VALID_ENROLL_AUTH_APP_MFA_REQUEST, ResourceLinks.USER_ENROLL_AUTH_APP_MFA);
 
     MockHttpServletRequestBuilder verifyPasscodeBuilder =
@@ -438,16 +500,6 @@ class UserAccountCreationControllerTest {
   private MockHttpServletRequestBuilder createPostRequest(
       MockHttpSession session, String requestBody, String link) {
     return post(link)
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .accept(MediaType.APPLICATION_JSON)
-        .characterEncoding("UTF-8")
-        .content(requestBody)
-        .session(session);
-  }
-
-  private MockHttpServletRequestBuilder createGetRequest(
-      MockHttpSession session, String requestBody, String link) {
-    return get(link)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .accept(MediaType.APPLICATION_JSON)
         .characterEncoding("UTF-8")
