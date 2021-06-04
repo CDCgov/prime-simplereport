@@ -2171,3 +2171,19 @@ databaseChangeLog:
       changes:
         sql: |
           GRANT SELECT ON TABLE ${database.defaultSchemaName}.patient_registration_link TO ${noPhiUsername};
+  - changeSet:
+      id: add-automated-corrections-api_user
+      author: adam@skylight.digital
+      comment: Adds the automated corrections api_user to the database if they do not already exist
+      preConditions:
+        - onSqlOutput: FAIL
+        - onFail: MARK_RAN
+        - sqlCheck:
+            sql: |
+              SELECT case when count(1) = 0 then 0 else 1 end FROM ${database.defaultSchemaName}.api_user
+              WHERE login_email='corrections-noreply@simplereport.gov';
+            expectedResult: 0
+      changes:
+        sql: |
+          INSERT INTO api_user (internal_id, created_at, updated_at, is_deleted, last_seen, login_email, first_name, last_name)
+          VALUES (gen_random_uuid(), now(), now(), false, null, 'corrections-noreply@simplereport.gov', 'SimpleReport', 'Automated Correction');
