@@ -140,7 +140,8 @@ public class OrganizationService {
 
   public Set<Facility> getAccessibleFacilities(
       Organization org, OrganizationRoleClaims roleClaims) {
-    // If there are no facility restrictions, get all facilities in org; otherwise, get specified
+    // If there are no facility restrictions, get all facilities in org; otherwise,
+    // get specified
     // list.
     return roleClaims.grantsAllFacilityAccess()
         ? _facilityRepo.findAllByOrganization(org)
@@ -278,7 +279,7 @@ public class OrganizationService {
   }
 
   @Transactional(readOnly = false)
-  Facility createFacilityNoPermissions(
+  public Facility createFacilityNoPermissions(
       Organization organization,
       String testingFacilityName,
       String cliaNumber,
