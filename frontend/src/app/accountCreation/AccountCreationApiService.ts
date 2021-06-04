@@ -26,11 +26,7 @@ const request = async (path: string, body: any) => {
   try {
     return await res.json();
   } catch {
-    try {
-      return await res.text();
-    } catch {
-      return "success";
-    }
+    return "success";
   }
 };
 
