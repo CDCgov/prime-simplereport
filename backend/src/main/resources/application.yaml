@@ -16,9 +16,17 @@ spring:
         default_schema: public # Using the public schema for now, so we don't have to add a manual step to the deploy process
   liquibase:
     default-schema: ${spring.jpa.properties.hibernate.default_schema}
+    parameters:
+      noPhiUsername: simple_report_no_phi
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
+  session:
+    store-type: jdbc
+    timeout: 15m
+    jdbc:
+        initialize-schema: never
+        table-name: ${spring.jpa.properties.hibernate.default_schema}.spring_session
 graphql:
   servlet:
     mapping: /graphql
@@ -32,8 +40,8 @@ graphql:
       Date:
         scalar-name: DateTime
         format: yyyy-MM-dd'T'HH:MM:ss'Z'
-      LocalDate:
-        format: yyyy-MM-dd
+      localDate:
+        scalarName: MyLocalDate # graphql-datetime injects the LocalDate scalar no matter what. this rename allows us to reuse the LocalDate in FlexibleDateScalar
 okta:
   oauth2:
     issuer: https://hhs-prime.okta.com/oauth2/default
@@ -63,11 +71,25 @@ simple-report:
   sendgrid:
     enabled: false
     from-email: support@simplereport.gov
-    account-request-recipient: 
+    from-display-name: SimpleReport Support (CDC)
+    account-request-recipient:
       - support@simplereport.gov
       - Protect-ServiceDesk@hhs.gov
     waitlist-recipient: 
       - support@simplereport.gov
+    dynamic-templates:
+      # The templates are added and edited at: https://mc.sendgrid.com/dynamic-templates
+      # The keys in this map should match (but don't have to) the names of SendGrid Dynamic Templates that
+      # are in the web app, but *must* have a corresponding entry in the enum `EmailProviderTemplate`.
+      # The values of the map are the GUID value for the Dynamic Template (also found in the SendGrid web
+      # app).  New versions of the template do not change this value.
+      ACCOUNT_REQUEST: d-7b0c7810ce5643f295e169f38b8db015
+  dynamics:
+    enabled: false
+    client-id: ${DYNAMICS_CLIENT_ID:MISSING}
+    client-secret: ${DYNAMICS_CLIENT_SECRET:MISSING}
+    tenant-id: ${DYNAMICS_TENANT_ID:MISSING}
+    resource-url: ${DYNAMICS_RESOURCE_URL:MISSING}
   cors:
     allowed-methods:
       - GET
@@ -78,3 +100,4 @@ twilio:
 logging:
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} [Query: %X{graphql-query}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+    

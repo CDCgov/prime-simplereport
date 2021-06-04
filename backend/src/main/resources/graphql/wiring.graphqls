@@ -36,7 +36,7 @@ directive @Pattern(
 
 # java.util.Date implementation
 scalar DateTime
-# java.time.LocalDate
+# custom scalar gov.cdc.usds.simplereport.api.FlexibleDateScalar
 scalar LocalDate
 scalar Upload
 
@@ -77,6 +77,11 @@ enum TestCorrectionStatus {
 enum TestResultDeliveryPreference {
   SMS
   NONE
+}
+
+enum PhoneType {
+  MOBILE
+  LANDLINE
 }
 
 type NameInfo {

@@ -2,6 +2,10 @@ import * as yup from "yup";
 import { PhoneNumberUtil } from "google-libphonenumber";
 
 import { liveJurisdictions } from "../../../config/constants";
+import {
+  isValidCLIANumber,
+  stateRequiresCLIANumberValidation,
+} from "../../utils/clia";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -30,7 +34,20 @@ const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
 
 export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
   name: yup.string().required(),
-  cliaNumber: yup.string().required(),
+  cliaNumber: yup
+    .string()
+    .required()
+    .test((input, facility) => {
+      if (!stateRequiresCLIANumberValidation(facility.parent.state)) {
+        return true;
+      }
+
+      if (!input) {
+        return false;
+      }
+
+      return isValidCLIANumber(input);
+    }),
   street: yup.string().required(),
   zipCode: yup.string().required(),
   deviceTypes: yup.array().of(yup.string().required()).min(1).required(),
@@ -87,7 +104,7 @@ export const allFacilityErrors: Required<FacilityErrors> = {
   id: "ID is missing",
   email: "Email is incorrectly formatted",
   city: "City is incorrectly formatted",
-  cliaNumber: "CLIA number is missing",
+  cliaNumber: "CLIA number should be 10 characters (##D#######)",
   defaultDevice: "A default device must be selected",
   deviceTypes: "There must be at least one device",
   name: "Facility name is missing",

@@ -26,6 +26,7 @@ interface Props {
   errorMessage?: React.ReactNode;
   validationStatus?: "error" | "success";
   selectClassName?: string;
+  hintText?: string;
 }
 
 type SelectProps = JSX.IntrinsicElements["select"];
@@ -44,6 +45,7 @@ const Dropdown: React.FC<Props & SelectProps> = ({
   validationStatus,
   errorMessage,
   selectClassName,
+  hintText,
   ...inputProps
 }) => {
   return (
@@ -77,8 +79,13 @@ const Dropdown: React.FC<Props & SelectProps> = ({
               {errorMessage}
             </div>
           )}
+          {hintText && <span className="usa-hint">{hintText}</span>}
           <select
-            className={classnames("usa-select", selectClassName)}
+            className={classnames(
+              "usa-select",
+              selectClassName,
+              validationStatus === "error" && "usa-input--error"
+            )}
             name={name}
             id={id}
             aria-required={required || "false"}

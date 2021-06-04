@@ -38,69 +38,73 @@ Array [
   >
     Test questionnaire
   </h2>,
-  <fieldset
-    className="usa-fieldset prime-radios margin-top-205"
-  >
-    <legend
-      className="usa-legend"
-    >
-      How would you like to complete the questionnaire?
-    </legend>
-    <div
-      className="usa-form-group"
-    >
-      <div
-        className="usa-radio"
-      >
-        <input
-          checked={true}
-          className="usa-radio__input"
-          data-required="false"
-          disabled={false}
-          id="2-val-text"
-          name="qr-code"
-          onChange={[Function]}
-          type="radio"
-          value="text"
-        />
-        <label
-          className="usa-radio__label"
-          htmlFor="2-val-text"
-        >
-          Text link to complete on smartphone
-          <span
-            className="radio__label-description--checked usa-radio__label-description text-base"
-          />
-        </label>
-      </div>
-      <div
-        className="usa-radio"
-      >
-        <input
-          checked={false}
-          className="usa-radio__input"
-          data-required="false"
-          disabled={false}
-          id="2-val-verbal"
-          name="qr-code"
-          onChange={[Function]}
-          type="radio"
-          value="verbal"
-        />
-        <label
-          className="usa-radio__label"
-          htmlFor="2-val-verbal"
-        >
-          Complete questionnaire verbally
-        </label>
-      </div>
-    </div>
-  </fieldset>,
   <div
-    className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right"
+    className="usa-form-group"
+  >
+    <fieldset
+      className="usa-fieldset prime-radios margin-top-205"
+    >
+      <legend
+        className="usa-legend"
+      >
+        How would you like to complete the questionnaire?
+      </legend>
+      <div
+        className=""
+      >
+        <div
+          className="usa-radio"
+        >
+          <input
+            checked={true}
+            className="usa-radio__input"
+            data-required="false"
+            disabled={false}
+            id="2-val-text"
+            name="qr-code"
+            onChange={[Function]}
+            type="radio"
+            value="text"
+          />
+          <label
+            className="usa-radio__label"
+            htmlFor="2-val-text"
+          >
+            Text link to complete on smartphone
+            <span
+              className="radio__label-description--checked usa-radio__label-description text-base"
+            />
+          </label>
+        </div>
+        <div
+          className="usa-radio"
+        >
+          <input
+            checked={false}
+            className="usa-radio__input"
+            data-required="false"
+            disabled={false}
+            id="2-val-verbal"
+            name="qr-code"
+            onChange={[Function]}
+            type="radio"
+            value="verbal"
+          />
+          <label
+            className="usa-radio__label"
+            htmlFor="2-val-verbal"
+          >
+            Complete questionnaire verbally
+          </label>
+        </div>
+      </div>
+    </fieldset>
+  </div>,
+  <div
+    className="aoe-modal__submit-container border-top border-base-lighter margin-top-5 text-right"
   >
     <button
-      className="usa-button margin-right-205"
+      className="usa-button margin-right-0"
       onClick={[Function]}
       type="button"
     >
@@ -148,64 +152,68 @@ Array [
   >
     Test questionnaire
   </h2>,
-  <fieldset
-    className="usa-fieldset prime-radios margin-top-205"
+  <div
+    className="usa-form-group"
   >
-    <legend
-      className="usa-legend"
+    <fieldset
+      className="usa-fieldset prime-radios margin-top-205"
     >
-      How would you like to complete the questionnaire?
-    </legend>
-    <div
-      className="usa-form-group"
-    >
-      <div
-        className="usa-radio"
+      <legend
+        className="usa-legend"
       >
-        <input
-          checked={false}
-          className="usa-radio__input"
-          data-required="false"
-          disabled={false}
-          id="3-val-text"
-          name="qr-code"
-          onChange={[Function]}
-          type="radio"
-          value="text"
-        />
-        <label
-          className="usa-radio__label"
-          htmlFor="3-val-text"
+        How would you like to complete the questionnaire?
+      </legend>
+      <div
+        className=""
+      >
+        <div
+          className="usa-radio"
         >
-          Text link to complete on smartphone
-          <span
-            className="radio__label-description--checked usa-radio__label-description text-base"
+          <input
+            checked={false}
+            className="usa-radio__input"
+            data-required="false"
+            disabled={false}
+            id="3-val-text"
+            name="qr-code"
+            onChange={[Function]}
+            type="radio"
+            value="text"
           />
-        </label>
-      </div>
-      <div
-        className="usa-radio"
-      >
-        <input
-          checked={true}
-          className="usa-radio__input"
-          data-required="false"
-          disabled={false}
-          id="3-val-verbal"
-          name="qr-code"
-          onChange={[Function]}
-          type="radio"
-          value="verbal"
-        />
-        <label
-          className="usa-radio__label"
-          htmlFor="3-val-verbal"
+          <label
+            className="usa-radio__label"
+            htmlFor="3-val-text"
+          >
+            Text link to complete on smartphone
+            <span
+              className="radio__label-description--checked usa-radio__label-description text-base"
+            />
+          </label>
+        </div>
+        <div
+          className="usa-radio"
         >
-          Complete questionnaire verbally
-        </label>
+          <input
+            checked={true}
+            className="usa-radio__input"
+            data-required="false"
+            disabled={false}
+            id="3-val-verbal"
+            name="qr-code"
+            onChange={[Function]}
+            type="radio"
+            value="verbal"
+          />
+          <label
+            className="usa-radio__label"
+            htmlFor="3-val-verbal"
+          >
+            Complete questionnaire verbally
+          </label>
+        </div>
       </div>
-    </div>
-  </fieldset>,
+    </fieldset>
+  </div>,
 ]
 `;
 
@@ -247,63 +255,67 @@ Array [
   >
     Test questionnaire
   </h2>,
-  <fieldset
-    className="usa-fieldset prime-radios margin-top-205"
+  <div
+    className="usa-form-group"
   >
-    <legend
-      className="usa-legend"
+    <fieldset
+      className="usa-fieldset prime-radios margin-top-205"
     >
-      How would you like to complete the questionnaire?
-    </legend>
-    <div
-      className="usa-form-group"
-    >
-      <div
-        className="usa-radio"
+      <legend
+        className="usa-legend"
       >
-        <input
-          checked={false}
-          className="usa-radio__input"
-          data-required="false"
-          disabled={false}
-          id="1-val-text"
-          name="qr-code"
-          onChange={[Function]}
-          type="radio"
-          value="text"
-        />
-        <label
-          className="usa-radio__label"
-          htmlFor="1-val-text"
+        How would you like to complete the questionnaire?
+      </legend>
+      <div
+        className=""
+      >
+        <div
+          className="usa-radio"
         >
-          Text link to complete on smartphone
-          <span
-            className="radio__label-description--checked usa-radio__label-description text-base"
+          <input
+            checked={false}
+            className="usa-radio__input"
+            data-required="false"
+            disabled={false}
+            id="1-val-text"
+            name="qr-code"
+            onChange={[Function]}
+            type="radio"
+            value="text"
           />
-        </label>
-      </div>
-      <div
-        className="usa-radio"
-      >
-        <input
-          checked={true}
-          className="usa-radio__input"
-          data-required="false"
-          disabled={false}
-          id="1-val-verbal"
-          name="qr-code"
-          onChange={[Function]}
-          type="radio"
-          value="verbal"
-        />
-        <label
-          className="usa-radio__label"
-          htmlFor="1-val-verbal"
+          <label
+            className="usa-radio__label"
+            htmlFor="1-val-text"
+          >
+            Text link to complete on smartphone
+            <span
+              className="radio__label-description--checked usa-radio__label-description text-base"
+            />
+          </label>
+        </div>
+        <div
+          className="usa-radio"
         >
-          Complete questionnaire verbally
-        </label>
+          <input
+            checked={true}
+            className="usa-radio__input"
+            data-required="false"
+            disabled={false}
+            id="1-val-verbal"
+            name="qr-code"
+            onChange={[Function]}
+            type="radio"
+            value="verbal"
+          />
+          <label
+            className="usa-radio__label"
+            htmlFor="1-val-verbal"
+          >
+            Complete questionnaire verbally
+          </label>
+        </div>
       </div>
-    </div>
-  </fieldset>,
+    </fieldset>
+  </div>,
 ]
 `;

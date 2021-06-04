@@ -86,6 +86,10 @@ public class TestEvent extends BaseTestInfo {
     this.priorCorrectedTestEventId = event.getInternalId();
   }
 
+  public UUID getPatientInternalID() {
+    return getPatient().getInternalId();
+  }
+
   public Person getPatientData() {
     return patientData;
   }

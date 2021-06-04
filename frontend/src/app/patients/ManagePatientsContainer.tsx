@@ -3,10 +3,12 @@ import { useSelector } from "react-redux";
 
 import { hasPermission, appPermissions } from "../permissions";
 import { RootState } from "../store";
+import { useDocumentTitle } from "../utils/hooks";
 
 import ManagePatients from "./ManagePatients";
 
 const ManagePatientsContainer = (props: { page?: number }) => {
+  useDocumentTitle("People");
   const activeFacilityId = useSelector(
     (state) => (state as any).facility.id as string
   );

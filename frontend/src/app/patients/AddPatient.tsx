@@ -8,11 +8,38 @@ import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
-import Button from "../commonComponents/Button";
+import Button from "../commonComponents/Button/Button";
 import { RootState } from "../store";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
+import { useDocumentTitle } from "../utils/hooks";
 
 import PersonForm from "./Components/PersonForm";
+
+export const EMPTY_PERSON: Nullable<PersonFormData> = {
+  facilityId: "",
+  firstName: null,
+  middleName: null,
+  lastName: null,
+  lookupId: null,
+  role: null,
+  race: null,
+  ethnicity: null,
+  gender: null,
+  residentCongregateSetting: undefined,
+  employedInHealthcare: undefined,
+  tribalAffiliation: null,
+  birthDate: null,
+  telephone: null,
+  phoneNumbers: null,
+  county: null,
+  email: null,
+  street: null,
+  streetTwo: null,
+  city: null,
+  state: null,
+  zipCode: null,
+  preferredLanguage: null,
+};
 
 export const ADD_PATIENT = gql`
   mutation AddPatient(
@@ -26,7 +53,8 @@ export const ADD_PATIENT = gql`
     $city: String
     $state: String!
     $zipCode: String!
-    $telephone: String!
+    $telephone: String
+    $phoneNumbers: [PhoneNumberInput!]
     $role: String
     $lookupId: String
     $email: String
@@ -51,6 +79,7 @@ export const ADD_PATIENT = gql`
       state: $state
       zipCode: $zipCode
       telephone: $telephone
+      phoneNumbers: $phoneNumbers
       role: $role
       lookupId: $lookupId
       email: $email
@@ -75,6 +104,8 @@ interface AddPatientResponse {
 }
 
 const AddPatient = () => {
+  useDocumentTitle("Add Patient");
+
   const [addPatient, { loading }] = useMutation<
     AddPatientResponse,
     AddPatientParams
@@ -94,7 +125,16 @@ const AddPatient = () => {
   }
 
   const savePerson = async (person: Nullable<PersonFormData>) => {
-    await addPatient({ variables: { ...person } });
+    await addPatient({
+      variables: {
+        ...person,
+        phoneNumbers: (person.phoneNumbers || []).filter(
+          (phoneNumber: PhoneNumber) => {
+            return phoneNumber && phoneNumber.number && phoneNumber.type;
+          }
+        ),
+      },
+    });
     showNotification(
       toast,
       <Alert
@@ -110,30 +150,7 @@ const AddPatient = () => {
     <main className={"prime-edit-patient prime-home"}>
       <div className={"grid-container margin-bottom-4"}>
         <PersonForm
-          patient={{
-            facilityId: "",
-            firstName: null,
-            middleName: null,
-            lastName: null,
-            lookupId: null,
-            role: null,
-            race: null,
-            ethnicity: null,
-            gender: null,
-            residentCongregateSetting: undefined,
-            employedInHealthcare: undefined,
-            tribalAffiliation: null,
-            birthDate: null,
-            telephone: null,
-            county: null,
-            email: null,
-            street: null,
-            streetTwo: null,
-            city: null,
-            state: null,
-            zipCode: null,
-            preferredLanguage: null,
-          }}
+          patient={EMPTY_PERSON}
           activeFacilityId={activeFacilityId}
           savePerson={savePerson}
           getHeader={(_, onSave, formChanged) => (

@@ -43,8 +43,7 @@ const ManageOrganizationContainer: any = () => {
   const trackSaveSettings = useTrackEvent(
     appInsights,
     "Save Organization",
-    null,
-    false
+    null
   );
 
   if (loading) {
@@ -59,7 +58,9 @@ const ManageOrganizationContainer: any = () => {
   }
 
   const onSave = (name: string) => {
-    trackSaveSettings(null);
+    if (appInsights) {
+      trackSaveSettings(null);
+    }
     setOrganization({
       variables: {
         name,

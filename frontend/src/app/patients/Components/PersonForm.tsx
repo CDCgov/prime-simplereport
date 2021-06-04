@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { Prompt } from "react-router-dom";
 import { toast } from "react-toastify";
+import { SchemaOf } from "yup";
 
 import { languages, stateCodes } from "../../../config/constants";
 import {
@@ -19,15 +20,29 @@ import {
   personSchema,
   PersonErrors,
   personUpdateSchema,
+  selfRegistrationSchema,
+  PersonUpdateFields,
 } from "../personSchema";
 import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
 import Input from "../../commonComponents/Input";
 import Select from "../../commonComponents/Select";
-import { getBestSuggestion } from "../../utils/smartyStreets";
+import {
+  getBestSuggestion,
+  suggestionIsCloseEnough,
+} from "../../utils/smartyStreets";
 import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
 import ComboBox from "../../commonComponents/ComboBox";
 
 import FacilitySelect from "./FacilitySelect";
+import ManagePhoneNumbers from "./ManagePhoneNumbers";
+
+export type ValidateField = (field: keyof PersonErrors) => Promise<void>;
+
+export enum PersonFormView {
+  APP,
+  PXP,
+  SELF_REGISTRATION,
+}
 
 const boolToYesNoUnknown = (
   value: boolean | null | undefined
@@ -71,8 +86,14 @@ interface Props {
     formChanged: boolean
   ) => React.ReactNode;
   getFooter: (onSave: () => void, formChanged: boolean) => React.ReactNode;
-  isPatientView?: boolean;
+  view?: PersonFormView;
 }
+
+const schemata: Record<PersonFormView, SchemaOf<PersonUpdateFields>> = {
+  [PersonFormView.APP]: personSchema,
+  [PersonFormView.PXP]: personUpdateSchema,
+  [PersonFormView.SELF_REGISTRATION]: selfRegistrationSchema,
+};
 
 const PersonForm = (props: Props) => {
   const [formChanged, setFormChanged] = useState(false);
@@ -82,8 +103,8 @@ const PersonForm = (props: Props) => {
   const [addressSuggestion, setAddressSuggestion] = useState<
     AddressWithMetaData | undefined
   >();
-  const { isPatientView = false } = props;
-  const schema = isPatientView ? personUpdateSchema : personSchema;
+  const { view = PersonFormView.APP } = props;
+  const schema = schemata[view];
 
   const clearError = useCallback(
     (field: keyof PersonErrors) => {
@@ -138,9 +159,14 @@ const PersonForm = (props: Props) => {
   };
 
   const validatePatientAddress = async () => {
-    const suggestedAddress = await getBestSuggestion(getAddress(patient));
-    setAddressSuggestion(suggestedAddress);
-    setAddressModalOpen(true);
+    const originalAddress = getAddress(patient);
+    const suggestedAddress = await getBestSuggestion(originalAddress);
+    if (suggestionIsCloseEnough(originalAddress, suggestedAddress)) {
+      onSave(suggestedAddress);
+    } else {
+      setAddressSuggestion(suggestedAddress);
+      setAddressModalOpen(true);
+    }
   };
 
   const validateForm = async () => {
@@ -165,7 +191,7 @@ const PersonForm = (props: Props) => {
           return;
         }
         if (!focusedOnError) {
-          document.getElementsByName(name)[0].focus();
+          document.getElementsByName(name)[0]?.focus();
           focusedOnError = true;
         }
         showError(toast, "Please correct before submitting", error);
@@ -205,10 +231,9 @@ const PersonForm = (props: Props) => {
           "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing."
         }
       />
-      {!isPatientView && (
+      {view === PersonFormView.APP && props.getHeader && (
         <div className="patient__header">
-          {props.getHeader &&
-            props.getHeader(patient, validateForm, formChanged)}
+          {props.getHeader(patient, validateForm, formChanged)}
         </div>
       )}
       <FormGroup title="General information">
@@ -218,21 +243,21 @@ const PersonForm = (props: Props) => {
             {...commonInputProps}
             label="First name"
             field="firstName"
-            required={!isPatientView}
-            disabled={isPatientView}
+            required={view !== PersonFormView.PXP}
+            disabled={view === PersonFormView.PXP}
           />
           <Input
             {...commonInputProps}
             field="middleName"
             label="Middle name"
-            disabled={isPatientView}
+            disabled={view === PersonFormView.PXP}
           />
           <Input
             {...commonInputProps}
             field="lastName"
             label="Last name"
-            required={!isPatientView}
-            disabled={isPatientView}
+            required={view !== PersonFormView.PXP}
+            disabled={view === PersonFormView.PXP}
           />
         </div>
         <div className="usa-form">
@@ -247,17 +272,19 @@ const PersonForm = (props: Props) => {
           {patient.role === "STUDENT" && (
             <Input {...commonInputProps} field="lookupId" label="Student ID" />
           )}
-          <FacilitySelect
-            facilityId={patient.facilityId}
-            onChange={onPersonChange("facilityId")}
-            validateField={() => {
-              validateField("facilityId");
-            }}
-            validationStatus={validationStatus}
-            errors={errors}
-            hidden={props.hideFacilitySelect}
-          />
-          <fieldset className="usa-fieldset">
+          {view !== PersonFormView.SELF_REGISTRATION && (
+            <FacilitySelect
+              facilityId={patient.facilityId}
+              onChange={onPersonChange("facilityId")}
+              validateField={() => {
+                validateField("facilityId");
+              }}
+              validationStatus={validationStatus}
+              errors={errors}
+              hidden={props.hideFacilitySelect}
+            />
+          )}
+          <div className="usa-form-group">
             <label className="usa-label" htmlFor="preferred-language">
               Preferred language
             </label>
@@ -276,7 +303,7 @@ const PersonForm = (props: Props) => {
                 );
               }}
             />
-          </fieldset>
+          </div>
         </div>
         <div className="usa-form">
           <Input
@@ -284,24 +311,17 @@ const PersonForm = (props: Props) => {
             field="birthDate"
             label="Date of birth (mm/dd/yyyy)"
             type="date"
-            required={!isPatientView}
-            disabled={isPatientView}
+            required={view !== PersonFormView.PXP}
+            disabled={view === PersonFormView.PXP}
           />
         </div>
       </FormGroup>
       <FormGroup title="Contact information">
+        <ManagePhoneNumbers
+          phoneNumbers={patient.phoneNumbers || []}
+          updatePhoneNumbers={onPersonChange("phoneNumbers")}
+        />
         <div className="usa-form">
-          <div className="grid-row grid-gap">
-            <div className="mobile-lg:grid-col-6">
-              <Input
-                {...commonInputProps}
-                field="telephone"
-                label="Phone number"
-                type="tel"
-                required
-              />
-            </div>
-          </div>
           <Input
             {...commonInputProps}
             field="email"
@@ -326,7 +346,9 @@ const PersonForm = (props: Props) => {
         </div>
         <div className="usa-form">
           <Input {...commonInputProps} field="city" label="City" />
-          <Input {...commonInputProps} field="county" label="County" />
+          {view !== PersonFormView.SELF_REGISTRATION && (
+            <Input {...commonInputProps} field="county" label="County" />
+          )}
           <div className="grid-row grid-gap">
             <div className="mobile-lg:grid-col-6">
               <Select
@@ -367,8 +389,10 @@ const PersonForm = (props: Props) => {
           selectedRadio={patient.race}
           onChange={onPersonChange("race")}
         />
-        <fieldset className="usa-fieldset">
-          <legend className="usa-legend">Tribal affiliation</legend>
+        <div className="usa-form-group">
+          <label className="usa-legend" htmlFor="tribal-affiliation">
+            Tribal affiliation
+          </label>
           <ComboBox
             id="tribal-affiliation"
             name="tribal-affiliation"
@@ -378,7 +402,7 @@ const PersonForm = (props: Props) => {
             }
             defaultValue={String(patient.tribalAffiliation)}
           />
-        </fieldset>
+        </div>
         <RadioGroup
           legend="Are you Hispanic or Latino?"
           name="ethnicity"
@@ -427,10 +451,15 @@ const PersonForm = (props: Props) => {
       </FormGroup>
       {props.getFooter && props.getFooter(validateForm, formChanged)}
       <AddressConfirmationModal
-        userEnteredAddress={getAddress(patient)}
-        suggestedAddress={addressSuggestion}
+        addressSuggestionConfig={[
+          {
+            key: "person",
+            userEnteredAddress: getAddress(patient),
+            suggestedAddress: addressSuggestion,
+          },
+        ]}
         showModal={addressModalOpen}
-        onConfirm={onSave}
+        onConfirm={(data) => onSave(data.person)}
         onClose={() => setAddressModalOpen(false)}
       />
     </>

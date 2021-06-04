@@ -56,6 +56,26 @@ data "azurerm_key_vault_secret" "metabase_db_uri" {
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
+data "azurerm_key_vault_secret" "postgres_user" {
+  name         = "simple-report-${local.env}-db-username"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "postgres_password" {
+  name         = "simple-report-${local.env}-db-password"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "postgres_nophi_user" {
+  name         = "simple-report-${local.env}-db-username-no-phi"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "postgres_nophi_password" {
+  name         = "simple-report-${local.env}-db-password-no-phi"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
 data "azurerm_key_vault_secret" "datahub_api_key" {
   name         = "datahub-api-key-prod"
   key_vault_id = data.azurerm_key_vault.global.id
@@ -116,6 +136,26 @@ data "azurerm_key_vault_secret" "smarty_auth_id" {
 
 data "azurerm_key_vault_secret" "smarty_auth_token" {
   name         = "smarty-auth-token"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "dynamics_client_id" {
+  name         = "dynamics-client-id-prod"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "dynamics_client_secret" {
+  name         = "dynamics-client-secret-prod"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "dynamics_tenant_id" {
+  name         = "dynamics-tenant-id-prod"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "dynamics_resource_url" {
+  name         = "dynamics-resource-url-prod"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 

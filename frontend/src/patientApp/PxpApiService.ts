@@ -33,13 +33,24 @@ interface UpdatePatientData
   };
 }
 
+export type SelfRegistrationData = Omit<
+  UpdatePatientData,
+  "facilityId" | "address"
+> & {
+  birthDate: ISODate;
+  registrationLink: string;
+  address: Omit<UpdatePatientData["address"], "zipCode"> & {
+    postalCode: string | null;
+  };
+};
+
 export class PxpApi {
   static validateDateOfBirth(
     patientLinkId: string,
     dateOfBirth: string
   ): Promise<any> {
     return fetch(`${API_URL}/link/verify`, {
-      method: "put",
+      method: "POST",
       mode: "cors",
       headers,
       body: JSON.stringify({
@@ -60,7 +71,7 @@ export class PxpApi {
     data: any
   ) {
     return fetch(`${API_URL}/questions`, {
-      method: "put",
+      method: "POST",
       mode: "cors",
       headers,
       body: JSON.stringify({
@@ -77,7 +88,7 @@ export class PxpApi {
     data: UpdatePatientData
   ) {
     return fetch(`${API_URL}/patient`, {
-      method: "put",
+      method: "POST",
       mode: "cors",
       headers,
       body: JSON.stringify({
@@ -87,4 +98,27 @@ export class PxpApi {
       }),
     }).then((res) => res.json());
   }
+
+  static getEntityName = async (registrationLink: string): Promise<string> => {
+    const res = await fetch(
+      `${API_URL}/register/entity-name?patientRegistrationLink=${registrationLink}`,
+      { method: "GET", mode: "cors" }
+    );
+    if (!res.ok) {
+      throw res;
+    }
+    return res.text();
+  };
+
+  static selfRegister = async (person: SelfRegistrationData): Promise<void> => {
+    const res = await fetch(`${API_URL}/register`, {
+      method: "POST",
+      mode: "cors",
+      headers,
+      body: JSON.stringify(person),
+    });
+    if (!res.ok) {
+      throw res;
+    }
+  };
 }

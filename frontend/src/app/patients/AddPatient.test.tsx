@@ -17,6 +17,7 @@ const mockStore = configureStore([]);
 
 jest.mock("../utils/smartyStreets", () => ({
   getBestSuggestion: jest.fn(),
+  suggestionIsCloseEnough: () => false,
 }));
 
 const fillOutForm = (
@@ -114,7 +115,13 @@ describe("AddPatient", () => {
               city: "Boston",
               state: "MA",
               zipCode: "02115",
-              telephone: "617-432-1000",
+              telephone: null,
+              phoneNumbers: [
+                {
+                  type: "MOBILE",
+                  number: "617-432-1000",
+                },
+              ],
               role: null,
               email: null,
               county: "",
@@ -147,7 +154,13 @@ describe("AddPatient", () => {
               city: "Boston",
               state: "MA",
               zipCode: "02115",
-              telephone: "617-432-1000",
+              telephone: null,
+              phoneNumbers: [
+                {
+                  type: "MOBILE",
+                  number: "617-432-1000",
+                },
+              ],
               role: "STUDENT",
               email: null,
               county: "",
@@ -192,13 +205,18 @@ describe("AddPatient", () => {
             "Last Name": "Hamilton",
             Facility: mockFacilityID,
             "Date of birth": "1970-09-22",
-            "Phone number": "617-432-1000",
+            "Primary phone number": "617-432-1000",
             "Street address 1": "25 Shattuck St",
             City: "Boston",
             State: "MA",
             "Zip code": "02115",
           },
           {
+            "Phone type": {
+              label: "Mobile",
+              value: "MOBILE",
+              exact: true,
+            },
             "Are you a resident in a congregate living setting": {
               label: "No",
               value: "No",
@@ -281,13 +299,18 @@ describe("AddPatient", () => {
             "Last Name": "Hamilton",
             Facility: mockFacilityID,
             "Date of birth": "1970-09-22",
-            "Phone number": "617-432-1000",
+            "Primary phone number": "617-432-1000",
             "Street address 1": "25 Shattuck St",
             City: "Boston",
             State: "MA",
             "Zip code": "02115",
           },
           {
+            "Phone type": {
+              label: "Mobile",
+              value: "MOBILE",
+              exact: true,
+            },
             "Are you a resident in a congregate living setting": {
               label: "No",
               value: "No",

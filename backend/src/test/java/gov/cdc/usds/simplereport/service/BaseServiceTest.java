@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
+import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDeniedException;
 
@@ -42,6 +44,7 @@ public abstract class BaseServiceTest<T> {
   @Autowired protected TestDataFactory _dataFactory;
   @Autowired protected T _service;
   @Autowired protected HibernateQueryInterceptor _hibernateQueryInterceptor;
+  @MockBean private CurrentOrganizationRolesContextHolder _currentOrganizationRolesContextHolder;
 
   private static final String SPRING_SECURITY_DENIED = "Access is denied";
 

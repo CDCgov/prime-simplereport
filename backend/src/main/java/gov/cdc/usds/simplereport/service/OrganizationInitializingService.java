@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import com.okta.sdk.resource.ResourceException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
+import gov.cdc.usds.simplereport.config.InitialSetupProperties.ConfigPatientRegistrationLink;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
@@ -13,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
@@ -20,6 +22,7 @@ import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
+import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
@@ -54,6 +57,7 @@ public class OrganizationInitializingService {
   @Autowired private OktaRepository _oktaRepo;
   @Autowired private ApiUserService _userService;
   @Autowired private DemoUserConfiguration _demoUserConfiguration;
+  @Autowired private PatientRegistrationLinkRepository _prlRepository;
 
   public void initAll() {
 
@@ -122,6 +126,11 @@ public class OrganizationInitializingService {
                   }
                 })
             .collect(Collectors.toMap(Organization::getExternalId, Function.identity()));
+    // All existing orgs in the DB which aren't reflected in config properties should
+    // still be reflected in demo Okta environment
+    _orgRepo.findAll().stream()
+        .filter(o -> !orgsByExternalId.containsKey(o.getExternalId()))
+        .forEach(o -> orgsByExternalId.put(o.getExternalId(), o));
     orgsByExternalId.values().forEach(this::initOktaOrg);
 
     Map<String, Facility> facilitiesByName =
@@ -143,6 +152,11 @@ public class OrganizationInitializingService {
         "Creating facilities {} with {} devices configured",
         facilitiesByName.keySet(),
         configuredDs.size());
+    // All existing facilities in the DB which aren't reflected in config properties should
+    // still be reflected in demo Okta environment
+    _facilityRepo.findAll().stream()
+        .filter(f -> !facilities.contains(f))
+        .forEach(f -> facilities.add(f));
     facilities.stream()
         .forEach(
             f -> {
@@ -150,6 +164,22 @@ public class OrganizationInitializingService {
               facilitiesByName.put(facility.getFacilityName(), facility);
               initOktaFacility(facility);
             });
+
+    for (ConfigPatientRegistrationLink p : _props.getPatientRegistrationLinks()) {
+      Optional<Organization> orgLookup = _orgRepo.findByExternalId(p.getOrganizationExternalId());
+      if (!orgLookup.isPresent()) {
+        continue;
+      }
+      Organization org = orgLookup.get();
+      Optional<PatientSelfRegistrationLink> link = _prlRepository.findByOrganization(org);
+      if (!link.isPresent()) {
+        LOG.info("Creating patient registration link {}", p.getLink());
+        PatientSelfRegistrationLink prl =
+            p.makePatientRegistrationLink(
+                orgsByExternalId.get(p.getOrganizationExternalId()), p.getLink());
+        _prlRepository.save(prl);
+      }
+    }
 
     // Abusing the class name "OrganizationInitializingService" a little, but the
     // users are in the org.
@@ -235,7 +265,7 @@ public class OrganizationInitializingService {
       Set<OrganizationRole> roles) {
     try {
       LOG.info("Creating user {} in Okta", user.getUsername());
-      _oktaRepo.createUser(user, org, facilities, roles);
+      _oktaRepo.createUser(user, org, facilities, roles, true);
     } catch (ResourceException e) {
       LOG.info("User {} already exists in Okta", user.getUsername());
     }

@@ -3,7 +3,7 @@ package gov.cdc.usds.simplereport.api.pxp;
 import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
-import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
+import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
@@ -29,11 +29,10 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,15 +55,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class PatientExperienceController {
   private static final Logger LOG = LoggerFactory.getLogger(PatientExperienceController.class);
 
-  @Autowired private PersonService ps;
+  private final PersonService _ps;
+  private final PatientLinkService _pls;
+  private final TestOrderService _tos;
+  private final TestEventService _tes;
+  private final TimeOfConsentService _tocs;
 
-  @Autowired private PatientLinkService pls;
-
-  @Autowired private TestOrderService tos;
-
-  @Autowired private TestEventService tes;
-
-  @Autowired private TimeOfConsentService tocs;
+  public PatientExperienceController(
+      PersonService personService,
+      PatientLinkService patientLinkService,
+      TestOrderService testOrderService,
+      TestEventService testEventService,
+      TimeOfConsentService timeOfConsentService) {
+    this._ps = personService;
+    this._pls = patientLinkService;
+    this._tos = testOrderService;
+    this._tes = testEventService;
+    this._tocs = timeOfConsentService;
+  }
 
   @PostConstruct
   private void init() {
@@ -75,45 +83,53 @@ public class PatientExperienceController {
    * Verify that the patient-provided DOB matches the patient on file for the patient link id. It
    * returns the full patient object if so, otherwise it throws an exception
    */
-  @PutMapping("/link/verify")
+  @PostMapping("/link/verify")
   public PxpVerifyResponse getPatientLinkVerify(
       @RequestBody PxpRequestWrapper<Void> body, HttpServletRequest request) {
     UUID plid = UUID.fromString(body.getPatientLinkId());
-    PatientLink pl = pls.getPatientLink(plid);
+    PatientLink pl = _pls.getPatientLink(plid);
     OrderStatus os = pl.getTestOrder().getOrderStatus();
-    Person p = pls.getPatientFromLink(plid);
-    PatientPreferences pp = ps.getPatientPreferences(p);
-    TestEvent te = tes.getLastTestResultsForPatient(p);
-    tocs.storeTimeOfConsent(pl);
+    Person p = _pls.getPatientFromLink(plid);
+    PatientPreferences pp = _ps.getPatientPreferences(p);
+    TestEvent te = _tes.getLastTestResultsForPatient(p);
+    _tocs.storeTimeOfConsent(pl);
 
     return new PxpVerifyResponse(p, os, te, pp);
   }
 
-  @PutMapping("/patient")
-  public Person updatePatient(
+  @PostMapping("/patient")
+  public PxpVerifyResponse updatePatient(
       @RequestBody PxpRequestWrapper<PersonUpdate> body, HttpServletRequest request) {
     PersonUpdate person = body.getData();
-    return ps.updateMe(
-        StreetAddress.deAndReSerializeForSafety(person.getAddress()),
-        parsePhoneNumber(person.getTelephone()),
-        person.getRole(),
-        parseEmail(person.getEmail()),
-        parseRace(person.getRace()),
-        parseEthnicity(person.getEthnicity()),
-        person.getTribalAffiliation(),
-        parseGender(person.getGender()),
-        person.getResidentCongregateSetting(),
-        person.getEmployedInHealthcare(),
-        person.getPreferredLanguage());
+    Person updated =
+        _ps.updateMe(
+            StreetAddress.deAndReSerializeForSafety(person.getAddress()),
+            parsePhoneNumbers(person.getPhoneNumbers()),
+            person.getRole(),
+            parseEmail(person.getEmail()),
+            parseRace(person.getRace()),
+            parseEthnicity(person.getEthnicity()),
+            person.getTribalAffiliation(),
+            parseGender(person.getGender()),
+            person.getResidentCongregateSetting(),
+            person.getEmployedInHealthcare(),
+            person.getPreferredLanguage());
+
+    UUID plid = UUID.fromString(body.getPatientLinkId());
+    PatientLink pl = _pls.getPatientLink(plid);
+    OrderStatus os = pl.getTestOrder().getOrderStatus();
+    PatientPreferences pp = _ps.getPatientPreferences(updated);
+    TestEvent te = _tes.getLastTestResultsForPatient(updated);
+    return new PxpVerifyResponse(updated, os, te, pp);
   }
 
-  @PutMapping("/questions")
+  @PostMapping("/questions")
   public void patientLinkSubmit(
       @RequestBody PxpRequestWrapper<AoEQuestions> body, HttpServletRequest request) {
     AoEQuestions data = body.getData();
     Map<String, Boolean> symptomsMap = parseSymptoms(data.getSymptoms());
 
-    tos.updateMyTimeOfTestQuestions(
+    _tos.updateMyTimeOfTestQuestions(
         data.getPregnancy(),
         symptomsMap,
         data.isFirstTest(),
@@ -123,7 +139,7 @@ public class PatientExperienceController {
         data.getSymptomOnset(),
         data.getNoSymptoms());
 
-    ps.updateMyTestResultDeliveryPreference(data.getTestResultDelivery());
-    pls.expireMyPatientLink();
+    _ps.updateMyTestResultDeliveryPreference(data.getTestResultDelivery());
+    _pls.expireMyPatientLink();
   }
 }

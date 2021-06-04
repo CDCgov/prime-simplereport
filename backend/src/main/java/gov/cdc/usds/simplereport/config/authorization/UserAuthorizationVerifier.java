@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.config.authorization;
 
+import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
+import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -51,6 +53,7 @@ public class UserAuthorizationVerifier {
   private PatientLinkRepository _patientLinkRepo;
   private OktaRepository _oktaRepo;
   private AuthorizationService _authService;
+  private CurrentAccountRequestContextHolder _contextHolder;
 
   public UserAuthorizationVerifier(
       IdentitySupplier supplier,
@@ -62,7 +65,8 @@ public class UserAuthorizationVerifier {
       TestOrderRepository testOrderRepo,
       PatientLinkRepository patientLinkRepo,
       OktaRepository oktaRepo,
-      AuthorizationService authService) {
+      AuthorizationService authService,
+      CurrentAccountRequestContextHolder contextHolder) {
     super();
     this._supplier = supplier;
     this._orgService = orgService;
@@ -74,6 +78,7 @@ public class UserAuthorizationVerifier {
     this._patientLinkRepo = patientLinkRepo;
     this._oktaRepo = oktaRepo;
     this._authService = authService;
+    this._contextHolder = contextHolder;
   }
 
   public boolean userHasSiteAdminRole() {
@@ -145,15 +150,18 @@ public class UserAuthorizationVerifier {
     }
   }
 
-  public boolean userCanViewTestOrder(UUID testOrderId) {
+  public boolean userCanViewQueueItem(UUID testOrderId) {
     if (testOrderId == null) {
       return true;
     }
-    Optional<TestOrder> testOrder = _testOrderRepo.findById(testOrderId);
-    return testOrder.isPresent() && userCanViewTestOrder(testOrder.get());
+    Optional<TestOrder> testOrder = _testOrderRepo.fetchQueueItemById(testOrderId);
+    if (testOrder.isEmpty()) {
+      throw new NonexistentQueueItemException();
+    }
+    return testOrder.isPresent() && userCanViewQueueItem(testOrder.get());
   }
 
-  public boolean userCanViewTestOrder(TestOrder testOrder) {
+  public boolean userCanViewQueueItem(TestOrder testOrder) {
     if (testOrder == null) {
       return true;
     }
@@ -162,7 +170,7 @@ public class UserAuthorizationVerifier {
         && currentOrgRoles.get().containsFacility(testOrder.getFacility());
   }
 
-  public boolean userCanViewTestOrderOfPatient(UUID patientId) {
+  public boolean userCanViewQueueItemForPatient(UUID patientId) {
     if (patientId == null) {
       return true;
     } else if (!userCanViewPatient(patientId)) {
@@ -174,7 +182,10 @@ public class UserAuthorizationVerifier {
     }
     Organization org = patient.get().getOrganization();
     Optional<TestOrder> order = _testOrderRepo.fetchQueueItem(org, patient.get());
-    return (order.isPresent() && userCanViewTestOrder(order.get()));
+    if (order.isEmpty()) {
+      throw new NonexistentQueueItemException();
+    }
+    return userCanViewQueueItem(order.get());
   }
 
   public boolean userCanAccessFacility(UUID facilityId) {
@@ -276,5 +287,10 @@ public class UserAuthorizationVerifier {
   private ApiUser getUser(UUID id) {
     Optional<ApiUser> found = _userRepo.findByIdIncludeArchived(id);
     return found.orElseThrow(NonexistentUserException::new);
+  }
+
+  public boolean permitAllAccountRequests() {
+    _contextHolder.setIsAccountRequest(true);
+    return true;
   }
 }

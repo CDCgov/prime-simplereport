@@ -6,12 +6,14 @@ export const PATIENT_TERM_PLURAL_CAP = "People";
 // NOTE: Any time SimpleReport goes live in a new state, this file must be updated.
 // Otherwise, organizations will not be able to create facilities in the new state.
 export const liveJurisdictions = [
+  "AL",
   "AZ",
   "CA",
   "CO",
   "FL",
   "GU",
   "LA",
+  "MA",
   "MS",
   "MT",
   "ND",
@@ -21,6 +23,9 @@ export const liveJurisdictions = [
   "TX",
   "VT",
 ];
+
+// States which do not require a valid CLIA number for a facility
+export const noCLIAValidationStates: (keyof typeof states)[] = ["CO"];
 
 export const states = {
   AK: "Alaska",
@@ -176,3 +181,28 @@ export const urls = {
     process.env.REACT_APP_BASE_URL +
     "resources/using-simplereport/manage-facility-info/find-supported-jurisdictions/",
 };
+
+export const securityQuestions = [
+  "What’s the first name of your best friend from high school?",
+  "What was the first name of your favorite childhood friend?",
+  "In what city or town was your first job?",
+  "What’s the last name of your first boss?",
+  "What’s your grandmother’s first name?",
+  "What’s your oldest sibling’s middle name?",
+  "What was the name of the street where you were living when you were 10 years old?",
+  "What was the name of the street where you were living when you were in third grade?",
+  "In what city or town did your parents meet?",
+  "What’s the first name of your eldest cousin on your mother’s side?",
+  "What’s the last name of your best friend?",
+  "What was the make and model of your first car?",
+  "What was the name of the company where you had your first job?",
+  "What’s the first name of your oldest nephew?",
+  "What was the first name of the first person you dated?",
+  "What was the first name of your first boyfriend or girlfriend?",
+];
+
+export const accountCreationSteps = [
+  { label: "Create your password", value: "0", order: 0 },
+  { label: "Select your security question", value: "1", order: 1 },
+  { label: "Set up authentication", value: "2", order: 2 },
+];

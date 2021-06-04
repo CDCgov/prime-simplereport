@@ -1,5 +1,4 @@
----
-name: Infra Checks
+name: Terraform Checks
 
 on:
   workflow_dispatch: # because sometimes you just want to force a branch to have tests run
@@ -14,39 +13,40 @@ defaults:
   run:
     working-directory: ./ops
 
-env:
-  ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
-  ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
-  ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
-
 jobs:
-  validation_and_formatting:
+  check-terraform-formatting:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
-
+        with:
+          terraform_version: 0.15.1
       - name: Terraform fmt
-        run: |
-          terraform fmt -check -recursive
+        run: terraform fmt -check -recursive
 
+  check-terraform-validity:
+    runs-on: ubuntu-latest
+    env:
+      TERRAFORM_DIRS: |
+          dev dev/persistent test test/persistent demo demo/persistent training training/persistent
+          stg stg/persistent pentest pentest/persistent prod prod/persistent
+          global
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 0.15.1
       - name: Terraform Init
         run: |
-          pushd dev; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
-          pushd test; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
-          pushd demo; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
-          pushd stg; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
-          pushd prod; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
-          pushd pentest; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
-          pushd global; echo $PWD && terraform init;
-
+          for d in $TERRAFORM_DIRS
+          do
+            echo "Initializing $d";
+            (cd $d && terraform init -backend=false)
+          done
       - name: Terraform Validate
         run: |
-          pushd dev; pushd persistent; echo $PWD && terraform validate -no-color; popd; echo $PWD && terraform validate -no-color; popd
-          pushd test; pushd persistent; echo $PWD && terraform validate -no-color; popd; echo $PWD && terraform validate -no-color; popd
-          pushd demo; pushd persistent; echo $PWD && terraform validate -no-color; popd; echo $PWD && terraform validate -no-color; popd
-          pushd stg; pushd persistent; echo $PWD && terraform validate -no-color; popd; echo $PWD && terraform validate -no-color; popd
-          pushd prod; pushd persistent; echo $PWD && terraform validate -no-color; popd; echo $PWD && terraform validate -no-color; popd
-          pushd pentest; pushd persistent; echo $PWD && terraform validate -no-color; popd; echo $PWD && terraform validate -no-color; popd
-          pushd global; echo $PWD && terraform validate -no-color;
+          for d in $TERRAFORM_DIRS
+          do
+            echo "Validating $d";
+            (cd $d && terraform validate)
+          done

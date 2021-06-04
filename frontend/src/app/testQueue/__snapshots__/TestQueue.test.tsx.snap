@@ -9,9 +9,11 @@ exports[`TestQueue should render the test queue 1`] = `
       class="grid-container"
     >
       <div
-        class="grid-row position-relative"
+        class="position-relative"
       >
-        <div>
+        <div
+          class="prime-search-container"
+        >
           <form
             class="usa-search usa-search--small prime-search-input display-inline-block"
             role="search"
@@ -131,92 +133,88 @@ exports[`TestQueue should render the test queue 1`] = `
                 </button>
               </div>
               <div
-                class="usa-card__body"
+                class="margin-top-2 margin-left-2 margin-bottom-2"
               >
                 <div
-                  class="grid-row"
+                  class="queue-item__description prime-ul grid-row grid-gap"
                 >
-                  <ul
-                    class="prime-ul"
+                  <li
+                    class="prime-li tablet:grid-col-3"
                   >
-                    <li
-                      class="prime-li"
+                    <strong>
+                      Phone number
+                    </strong>
+                    <p>
+                      1234567890
+                    </p>
+                  </li>
+                  <li
+                    class="prime-li tablet:grid-col-3"
+                  >
+                    <strong>
+                      Date of birth
+                    </strong>
+                    <p>
+                      06/19/1996
+                    </p>
+                  </li>
+                  <li
+                    class="prime-li tablet:grid-col-3"
+                  >
+                    <button
+                      class="usa-button usa-button--unstyled"
+                      type="button"
                     >
-                      <strong>
-                        Phone number
-                      </strong>
-                      <p>
-                        1234567890
-                      </p>
-                    </li>
-                    <li
-                      class="prime-li"
-                    >
-                      <strong>
-                        Date of birth
-                      </strong>
-                      <p>
-                        06/19/1996
-                      </p>
-                    </li>
-                    <li
-                      class="prime-li"
-                    >
-                      <button
-                        class="usa-button usa-button--unstyled"
-                        type="button"
+                      Test questionnaire
+                    </button>
+                    <p>
+                      <span
+                        class="usa-tag"
                       >
-                        Test questionnaire
-                      </button>
-                      <p>
-                        <span
-                          class="usa-tag"
-                        >
-                          PENDING
-                        </span>
-                      </p>
-                    </li>
-                  </ul>
+                        PENDING
+                      </span>
+                    </p>
+                  </li>
                 </div>
                 <div
-                  class="grid-row"
+                  class="queue-item__form prime-ul grid-row"
                 >
-                  <ul
-                    class="prime-ul test-information-ul"
+                  <div
+                    class="prime-li flex-align-self-end tablet:grid-col-3 padding-right-1"
                   >
-                    <li
-                      class="prime-li"
+                    <div
+                      class="usa-form-group prime-dropdown "
                     >
-                      <div
-                        class="usa-form-group prime-dropdown "
+                      <label
+                        class="usa-label"
+                        for="1"
                       >
-                        <label
-                          class="usa-label"
-                          for="1"
+                        Device
+                      </label>
+                      <select
+                        aria-required="false"
+                        class="usa-select"
+                        id="1"
+                        name="testDevice"
+                      >
+                        <option
+                          value="f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554"
                         >
-                          Device
-                        </label>
-                        <select
-                          aria-required="false"
-                          class="usa-select"
-                          id="1"
-                          name="testDevice"
+                          LumiraDX
+                        </option>
+                        <option
+                          value="0f3d7426-3476-4800-97e7-3de8a93b090c"
                         >
-                          <option
-                            value="f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554"
-                          >
-                            LumiraDX
-                          </option>
-                          <option
-                            value="0f3d7426-3476-4800-97e7-3de8a93b090c"
-                          >
-                            Quidel Sofia 2
-                          </option>
-                        </select>
-                      </div>
-                    </li>
-                    <li
-                      class="prime-li"
+                          Quidel Sofia 2
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div
+                    class="prime-li tablet:grid-col tablet:padding-left-1"
+                  >
+                    <div
+                      class="usa-form-group"
                     >
                       <fieldset
                         class="usa-fieldset prime-checkboxes"
@@ -227,7 +225,7 @@ exports[`TestQueue should render the test queue 1`] = `
                           Test date
                         </legend>
                         <div
-                          class="usa-form-group"
+                          class="checkboxes"
                         >
                           <div
                             class="usa-checkbox"
@@ -249,8 +247,8 @@ exports[`TestQueue should render the test queue 1`] = `
                           </div>
                         </div>
                       </fieldset>
-                    </li>
-                  </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -265,73 +263,77 @@ exports[`TestQueue should render the test queue 1`] = `
                 >
                   SARS-CoV-2 results
                 </h4>
-                <fieldset
-                  class="usa-fieldset prime-radios"
+                <div
+                  class="usa-form-group prime-radio__group"
                 >
-                  <legend
-                    class="usa-legend usa-sr-only"
+                  <fieldset
+                    class="usa-fieldset prime-radios"
                   >
-                    Test result
-                  </legend>
-                  <div
-                    class="usa-form-group"
-                  >
-                    <div
-                      class="usa-radio"
+                    <legend
+                      class="usa-legend usa-sr-only"
                     >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="3-val-POSITIVE"
-                        name="covid-test-result-abc"
-                        type="radio"
-                        value="POSITIVE"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="3-val-POSITIVE"
-                      >
-                        Positive (+)
-                      </label>
-                    </div>
+                      Test result
+                    </legend>
                     <div
-                      class="usa-radio"
+                      class=""
                     >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="3-val-NEGATIVE"
-                        name="covid-test-result-abc"
-                        type="radio"
-                        value="NEGATIVE"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="3-val-NEGATIVE"
+                      <div
+                        class="usa-radio"
                       >
-                        Negative (-)
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="3-val-UNDETERMINED"
-                        name="covid-test-result-abc"
-                        type="radio"
-                        value="UNDETERMINED"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="3-val-UNDETERMINED"
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="3-val-POSITIVE"
+                          name="covid-test-result-abc"
+                          type="radio"
+                          value="POSITIVE"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="3-val-POSITIVE"
+                        >
+                          Positive (+)
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
                       >
-                        Inconclusive
-                      </label>
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="3-val-NEGATIVE"
+                          name="covid-test-result-abc"
+                          type="radio"
+                          value="NEGATIVE"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="3-val-NEGATIVE"
+                        >
+                          Negative (-)
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="3-val-UNDETERMINED"
+                          name="covid-test-result-abc"
+                          type="radio"
+                          value="UNDETERMINED"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="3-val-UNDETERMINED"
+                        >
+                          Inconclusive
+                        </label>
+                      </div>
                     </div>
-                  </div>
-                </fieldset>
+                  </fieldset>
+                </div>
                 <div
                   class="prime-test-result-submit"
                 >
@@ -432,92 +434,88 @@ exports[`TestQueue should render the test queue 1`] = `
                 </button>
               </div>
               <div
-                class="usa-card__body"
+                class="margin-top-2 margin-left-2 margin-bottom-2"
               >
                 <div
-                  class="grid-row"
+                  class="queue-item__description prime-ul grid-row grid-gap"
                 >
-                  <ul
-                    class="prime-ul"
+                  <li
+                    class="prime-li tablet:grid-col-3"
                   >
-                    <li
-                      class="prime-li"
+                    <strong>
+                      Phone number
+                    </strong>
+                    <p>
+                      1234567890
+                    </p>
+                  </li>
+                  <li
+                    class="prime-li tablet:grid-col-3"
+                  >
+                    <strong>
+                      Date of birth
+                    </strong>
+                    <p>
+                      02/01/2021
+                    </p>
+                  </li>
+                  <li
+                    class="prime-li tablet:grid-col-3"
+                  >
+                    <button
+                      class="usa-button usa-button--unstyled"
+                      type="button"
                     >
-                      <strong>
-                        Phone number
-                      </strong>
-                      <p>
-                        1234567890
-                      </p>
-                    </li>
-                    <li
-                      class="prime-li"
-                    >
-                      <strong>
-                        Date of birth
-                      </strong>
-                      <p>
-                        02/01/2021
-                      </p>
-                    </li>
-                    <li
-                      class="prime-li"
-                    >
-                      <button
-                        class="usa-button usa-button--unstyled"
-                        type="button"
+                      Test questionnaire
+                    </button>
+                    <p>
+                      <span
+                        class="usa-tag"
                       >
-                        Test questionnaire
-                      </button>
-                      <p>
-                        <span
-                          class="usa-tag"
-                        >
-                          PENDING
-                        </span>
-                      </p>
-                    </li>
-                  </ul>
+                        PENDING
+                      </span>
+                    </p>
+                  </li>
                 </div>
                 <div
-                  class="grid-row"
+                  class="queue-item__form prime-ul grid-row"
                 >
-                  <ul
-                    class="prime-ul test-information-ul"
+                  <div
+                    class="prime-li flex-align-self-end tablet:grid-col-3 padding-right-1"
                   >
-                    <li
-                      class="prime-li"
+                    <div
+                      class="usa-form-group prime-dropdown "
                     >
-                      <div
-                        class="usa-form-group prime-dropdown "
+                      <label
+                        class="usa-label"
+                        for="4"
                       >
-                        <label
-                          class="usa-label"
-                          for="4"
+                        Device
+                      </label>
+                      <select
+                        aria-required="false"
+                        class="usa-select"
+                        id="4"
+                        name="testDevice"
+                      >
+                        <option
+                          value="f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554"
                         >
-                          Device
-                        </label>
-                        <select
-                          aria-required="false"
-                          class="usa-select"
-                          id="4"
-                          name="testDevice"
+                          LumiraDX
+                        </option>
+                        <option
+                          value="0f3d7426-3476-4800-97e7-3de8a93b090c"
                         >
-                          <option
-                            value="f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554"
-                          >
-                            LumiraDX
-                          </option>
-                          <option
-                            value="0f3d7426-3476-4800-97e7-3de8a93b090c"
-                          >
-                            Quidel Sofia 2
-                          </option>
-                        </select>
-                      </div>
-                    </li>
-                    <li
-                      class="prime-li"
+                          Quidel Sofia 2
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div
+                    class="prime-li tablet:grid-col tablet:padding-left-1"
+                  >
+                    <div
+                      class="usa-form-group"
                     >
                       <fieldset
                         class="usa-fieldset prime-checkboxes"
@@ -528,7 +526,7 @@ exports[`TestQueue should render the test queue 1`] = `
                           Test date
                         </legend>
                         <div
-                          class="usa-form-group"
+                          class="checkboxes"
                         >
                           <div
                             class="usa-checkbox"
@@ -550,8 +548,8 @@ exports[`TestQueue should render the test queue 1`] = `
                           </div>
                         </div>
                       </fieldset>
-                    </li>
-                  </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -566,73 +564,77 @@ exports[`TestQueue should render the test queue 1`] = `
                 >
                   SARS-CoV-2 results
                 </h4>
-                <fieldset
-                  class="usa-fieldset prime-radios"
+                <div
+                  class="usa-form-group prime-radio__group"
                 >
-                  <legend
-                    class="usa-legend usa-sr-only"
+                  <fieldset
+                    class="usa-fieldset prime-radios"
                   >
-                    Test result
-                  </legend>
-                  <div
-                    class="usa-form-group"
-                  >
-                    <div
-                      class="usa-radio"
+                    <legend
+                      class="usa-legend usa-sr-only"
                     >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="6-val-POSITIVE"
-                        name="covid-test-result-def"
-                        type="radio"
-                        value="POSITIVE"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="6-val-POSITIVE"
-                      >
-                        Positive (+)
-                      </label>
-                    </div>
+                      Test result
+                    </legend>
                     <div
-                      class="usa-radio"
+                      class=""
                     >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="6-val-NEGATIVE"
-                        name="covid-test-result-def"
-                        type="radio"
-                        value="NEGATIVE"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="6-val-NEGATIVE"
+                      <div
+                        class="usa-radio"
                       >
-                        Negative (-)
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="6-val-UNDETERMINED"
-                        name="covid-test-result-def"
-                        type="radio"
-                        value="UNDETERMINED"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="6-val-UNDETERMINED"
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="6-val-POSITIVE"
+                          name="covid-test-result-def"
+                          type="radio"
+                          value="POSITIVE"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="6-val-POSITIVE"
+                        >
+                          Positive (+)
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
                       >
-                        Inconclusive
-                      </label>
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="6-val-NEGATIVE"
+                          name="covid-test-result-def"
+                          type="radio"
+                          value="NEGATIVE"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="6-val-NEGATIVE"
+                        >
+                          Negative (-)
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="6-val-UNDETERMINED"
+                          name="covid-test-result-def"
+                          type="radio"
+                          value="UNDETERMINED"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="6-val-UNDETERMINED"
+                        >
+                          Inconclusive
+                        </label>
+                      </div>
                     </div>
-                  </div>
-                </fieldset>
+                  </fieldset>
+                </div>
                 <div
                   class="prime-test-result-submit"
                 >
