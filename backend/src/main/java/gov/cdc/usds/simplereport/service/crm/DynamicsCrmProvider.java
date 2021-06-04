@@ -68,6 +68,11 @@ public class DynamicsCrmProvider implements CrmProvider {
               null);
 
       credentials = future.get();
+      if (credentials == null) {
+        LOG.error("Dynamics AuthenticationResult is null");
+        return null;
+      }
+
       return credentials.getAccessToken();
     } catch (MalformedURLException | ExecutionException e) {
       LOG.error("Unable to get credentials: {}", e.toString());
@@ -79,7 +84,7 @@ public class DynamicsCrmProvider implements CrmProvider {
     try {
       SEMAPHORE.acquire();
 
-      if (credentials != null) {
+      if (credentials != null && credentials.getExpiresOnDate() != null) {
         long now = new Date().getTime();
         long expiresAt = credentials.getExpiresOnDate().getTime();
 
