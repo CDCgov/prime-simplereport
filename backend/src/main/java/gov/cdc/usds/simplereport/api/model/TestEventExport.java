@@ -1,13 +1,18 @@
 package gov.cdc.usds.simplereport.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
@@ -16,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * For latest supported values, see:
@@ -27,23 +33,24 @@ import java.util.Optional;
  */
 public class TestEventExport {
   public static final String CSV_API_VERSION = "27Jan2021"; // last time we changed something
-  private TestEvent testEvent;
-  private Person patient;
-  private AskOnEntrySurvey survey;
-  private Provider provider;
-  private Facility facility;
-  private SpecimenType specimenType;
-  private DeviceType device;
+  private final TestEvent testEvent;
+  private final Optional<Person> patient;
+  private final Optional<AskOnEntrySurvey> survey;
+  private final Optional<Provider> provider;
+  private final Optional<Facility> facility;
+  private final Optional<SpecimenType> specimenType;
+  private final Optional<DeviceType> device;
 
   public TestEventExport(TestEvent testEvent) {
-    super();
     this.testEvent = testEvent;
-    this.patient = testEvent.getPatientData();
-    this.survey = testEvent.getSurveyData();
-    this.provider = testEvent.getProviderData();
-    this.facility = testEvent.getFacility();
-    this.specimenType = testEvent.getDeviceSpecimen().getSpecimenType();
-    this.device = testEvent.getDeviceSpecimen().getDeviceType();
+    this.patient = Optional.ofNullable(testEvent.getPatientData());
+    this.survey = Optional.ofNullable(testEvent.getSurveyData());
+    this.provider = Optional.ofNullable(testEvent.getProviderData());
+    this.facility = Optional.ofNullable(testEvent.getFacility());
+    this.specimenType =
+        Optional.ofNullable(testEvent.getDeviceSpecimen()).map(DeviceSpecimenType::getSpecimenType);
+    this.device =
+        Optional.ofNullable(testEvent.getDeviceSpecimen()).map(DeviceSpecimenType::getDeviceType);
   }
 
   private String genderUnknown = "U";
@@ -98,11 +105,19 @@ public class TestEventExport {
     }
   }
 
+  private String boolToYesNoUnk(Optional<Boolean> value) {
+    return boolToYesNoUnk(value.orElse(null));
+  }
+
   private String dateToHealthCareString(LocalDate value) {
     if (value == null) {
       return "";
     }
     return value.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+  }
+
+  private String dateToHealthCareString(Optional<LocalDate> value) {
+    return dateToHealthCareString(value.orElse(null));
   }
 
   private LocalDate convertToLocalDate(Date dateToConvert) {
@@ -111,114 +126,102 @@ public class TestEventExport {
 
   @JsonProperty("Patient_last_name")
   public String getPatientLastName() {
-    return patient.getLastName();
+    return patient.map(Person::getLastName).orElse(null);
   }
 
   @JsonProperty("Patient_first_name")
   public String getPatientFirstName() {
-    return patient.getFirstName();
+    return patient.map(Person::getFirstName).orElse(null);
   }
 
   @JsonProperty("Patient_middle_name")
   public String getPatientMiddleName() {
-    return patient.getMiddleName();
+    return patient.map(Person::getMiddleName).orElse(null);
   }
 
   @JsonProperty("Patient_suffix")
   public String getPatientSuffix() {
-    return patient.getSuffix();
+    return patient.map(Person::getSuffix).orElse(null);
   }
 
   @JsonProperty("Patient_race")
   public String getPatientRace() {
-    if (patient.getRace() == null) {
-      return raceUnknown;
-    }
-    return raceMap.get(patient.getRace());
+    return patient.map(Person::getRace).map(raceMap::get).orElse(raceUnknown);
   }
 
   @JsonProperty("Patient_DOB")
   public String getPatientBirthDate() {
-    return dateToHealthCareString(patient.getBirthDate());
+    return dateToHealthCareString(patient.map(Person::getBirthDate));
   }
 
   @JsonProperty("Patient_gender")
   public String getPatientGender() {
-    if (patient.getGender() == null) {
-      return genderUnknown;
-    }
-    return genderMap.get(patient.getGender());
+    return patient.map(Person::getGender).map(genderMap::get).orElse(genderUnknown);
   }
 
   @JsonProperty("Patient_ethnicity")
   public String getPatientEthnicity() {
-    if (patient.getEthnicity() == null) {
-      return ethnicityUnknown;
-    }
-    return ethnicityMap.get(patient.getEthnicity());
+    return patient.map(Person::getEthnicity).map(ethnicityMap::get).orElse(ethnicityUnknown);
   }
 
   @JsonProperty("Patient_street")
   public String getPatientStreet() {
-    return patient.getStreet();
+    return patient.map(Person::getStreet).orElse(null);
   }
 
   @JsonProperty("Patient_street_2")
   public String getPatientStreetTwo() {
-    return patient.getStreetTwo();
+    return patient.map(Person::getStreetTwo).orElse(null);
   }
 
   @JsonProperty("Patient_city")
   public String getPatientCity() {
-    return patient.getCity();
+    return patient.map(Person::getCity).orElse(null);
   }
 
   @JsonProperty("Patient_county")
   public String getPatientCounty() {
-    return patient.getCounty();
+    return patient.map(Person::getCounty).orElse(null);
   }
 
   @JsonProperty("Patient_state")
   public String getPatientState() {
-    return patient.getState();
+    return patient.map(Person::getState).orElse(null);
   }
 
   @JsonProperty("Patient_zip_code")
   public String getPatientZipCode() {
-    return patient.getZipCode();
+    return patient.map(Person::getZipCode).orElse(null);
   }
 
   @JsonProperty("Patient_phone_number")
   public String getPatientPhoneNumber() {
-    return patient.getTelephone();
+    return patient.map(Person::getTelephone).orElse(null);
   }
 
   @JsonProperty("Patient_email")
   public String getPatientEmail() {
-    return patient.getEmail();
+    return patient.map(Person::getEmail).orElse(null);
   }
 
   @JsonProperty("Patient_ID")
   public String getPatientId() {
-    return patient.getInternalId().toString();
+    return patient.map(Person::getInternalId).map(UUID::toString).orElse(null);
   }
 
   @JsonProperty("Patient_role")
   public String getPatientRole() {
-    if (patient.getRole() == null) {
-      return "";
-    }
-    return patient.getRole().toString();
+    return patient.map(Person::getRole).map(PersonRole::toString).orElse("");
   }
 
   @JsonProperty("Employed_in_healthcare")
   public String getPatientEmployedInHealthcare() {
-    return boolToYesNoUnk(patient.getEmployedInHealthcare());
+    return boolToYesNoUnk(patient.map(Person::getEmployedInHealthcare));
   }
 
   @JsonProperty("Resident_congregate_setting")
   public String getPatientResidentCongregateSetting() {
-    return boolToYesNoUnk(patient.getResidentCongregateSetting());
+    return boolToYesNoUnk(patient.map(Person::getResidentCongregateSetting));
   }
 
   @JsonProperty("Result_ID")
@@ -264,22 +267,22 @@ public class TestEventExport {
 
   @JsonProperty("Ordering_provider_ID")
   public String getOrderingProviderID() {
-    return provider.getProviderId();
+    return provider.map(Provider::getProviderId).orElse(null);
   }
 
   @JsonProperty("First_test")
   public String getFirstTest() {
-    return boolToYesNoUnk(survey.getFirstTest());
+    return boolToYesNoUnk(survey.map(AskOnEntrySurvey::getFirstTest));
   }
 
   @JsonProperty("Symptomatic_for_disease")
   public String getSymptomaticForDisease() {
-    return boolToYesNoUnk(!survey.getNoSymptoms());
+    return boolToYesNoUnk(survey.map(AskOnEntrySurvey::getNoSymptoms).map(b -> !b));
   }
 
   @JsonProperty("Illness_onset_date")
   public String getSymptomOnsetDate() {
-    return dateToHealthCareString(survey.getSymptomOnsetDate());
+    return dateToHealthCareString(survey.map(AskOnEntrySurvey::getSymptomOnsetDate));
   }
 
   @JsonProperty("Testing_lab_name")
@@ -289,7 +292,7 @@ public class TestEventExport {
 
   @JsonProperty("Testing_lab_CLIA")
   public String getTestingLabID() {
-    return facility.getCliaNumber();
+    return facility.map(Facility::getCliaNumber).orElse(null);
   }
 
   @JsonProperty("Testing_lab_state")
@@ -336,82 +339,85 @@ public class TestEventExport {
 
   @JsonProperty("Ordering_facility_city")
   public String getOrderingFacilityCity() {
-    return facility.getAddress().getCity();
+    return facility.map(Facility::getAddress).map(StreetAddress::getCity).orElse(null);
   }
 
   @JsonProperty("Ordering_facility_county")
   public String getOrderingFacilityCounty() {
-    return facility.getAddress().getCounty();
+    return facility.map(Facility::getAddress).map(StreetAddress::getCounty).orElse(null);
   }
 
   @JsonProperty("Ordering_facility_name")
   public String getOrderingFacilityName() {
-    return facility.getFacilityName();
+    return facility.map(Facility::getFacilityName).orElse(null);
   }
 
   @JsonProperty("Organization_name")
   public String getOrganizationName() {
-    return facility.getOrganization().getOrganizationName();
+    return facility
+        .map(Facility::getOrganization)
+        .map(Organization::getOrganizationName)
+        .orElse(null);
   }
 
   @JsonProperty("Ordering_facility_phone_number")
   public String getOrderingFacilityPhoneNumber() {
-    return facility.getTelephone();
+    return facility.map(Facility::getTelephone).orElse(null);
   }
 
   @JsonProperty("Ordering_facility_email")
   public String getOrderingFacilityEmail() {
-    return facility.getEmail();
+    return facility.map(Facility::getEmail).orElse(null);
   }
 
   @JsonProperty("Ordering_facility_state")
   public String getOrderingFacilityState() {
-    return facility.getAddress().getState();
+    return facility.map(Facility::getAddress).map(StreetAddress::getState).orElse(null);
   }
 
   @JsonProperty("Ordering_facility_street")
   public String getOrderingFacilityStreet() {
-    return facility.getAddress().getStreetOne();
+    return facility.map(Facility::getAddress).map(StreetAddress::getStreetOne).orElse(null);
   }
 
   @JsonProperty("Ordering_facility_street_2")
   public String getOrderingFacilityStreetTwo() {
-    return facility.getAddress().getStreetTwo();
+    return facility.map(Facility::getAddress).map(StreetAddress::getStreetTwo).orElse(null);
   }
 
   @JsonProperty("Ordering_facility_zip_code")
   public String getOrderingFacilityZipCode() {
-    return facility.getAddress().getPostalCode();
+    return facility.map(Facility::getAddress).map(StreetAddress::getPostalCode).orElse(null);
   }
 
   @JsonProperty("Ordering_provider_last_name")
   public String getOrderingProviderLastName() {
-    return provider.getNameInfo().getLastName();
+    return provider.map(Provider::getNameInfo).map(PersonName::getLastName).orElse(null);
   }
 
   @JsonProperty("Ordering_provider_first_name")
   public String getOrderingProviderFirstName() {
-    return provider.getNameInfo().getFirstName();
+    return provider.map(Provider::getNameInfo).map(PersonName::getFirstName).orElse(null);
   }
 
   @JsonProperty("Ordering_provider_street")
   public String getOrderingProviderStreet() {
-    return provider.getStreet();
+    return provider.map(Provider::getStreet).orElse(null);
   }
 
   @JsonProperty("Ordering_provider_street_2")
   public String getOrderingProviderStreetTwo() {
-    return provider.getStreetTwo();
+    return provider.map(Provider::getStreetTwo).orElse(null);
   }
 
   @JsonProperty("Ordering_provider_city")
   public String getOrderingProviderCity() {
-    return provider.getCity();
+    return provider.map(Provider::getCity).orElse(null);
   }
 
   @JsonProperty("Ordering_provider_state")
   public String getOrderingProviderState() {
-    return provider.getState();
+    return provider.map(Provider::getState).orElse(null);
   }
 
   @JsonProperty("Ordering_provider_zip_code")
@@ -421,43 +427,43 @@ public class TestEventExport {
 
   @JsonProperty("Ordering_provider_county")
   public String getOrderingProviderCounty() {
-    return provider.getCounty();
+    return provider.map(Provider::getCounty).orElse(null);
   }
 
   @JsonProperty("Ordering_provider_phone_number")
   public String getOrderingProviderPhoneNumber() {
-    return provider.getTelephone();
+    return provider.map(Provider::getTelephone).orElse(null);
   }
 
   @JsonProperty("Ordered_test_code")
   public String getOrderedTestCode() {
-    return device.getLoincCode();
+    return device.map(DeviceType::getLoincCode).orElse(null);
   }
 
   @JsonProperty("Specimen_source_site_code")
   public String getSpecimenSourceSiteCode() {
-    return Optional.ofNullable(specimenType.getCollectionLocationCode())
-        .orElse(DEFAULT_LOCATION_CODE);
+    return specimenType.map(SpecimenType::getCollectionLocationCode).orElse(DEFAULT_LOCATION_CODE);
   }
 
   @JsonProperty("Specimen_type_code")
   public String getSpecimenTypeCode() {
-    return specimenType.getTypeCode();
+    return specimenType.map(SpecimenType::getTypeCode).orElse(null);
   }
 
   @JsonProperty("Instrument_ID")
   public String getInstrumentID() {
-    return device.getInternalId().toString();
+    return device.map(DeviceType::getInternalId).map(UUID::toString).orElse(null);
   }
 
   @JsonProperty("Device_ID")
   public String getDeviceID() {
-    return device.getModel();
+    return device.map(DeviceType::getModel).orElse(null);
   }
 
   @JsonProperty("Test_date")
   public String getTestDate() {
-    return dateToHealthCareString(convertToLocalDate(testEvent.getDateTested()));
+    return dateToHealthCareString(
+        Optional.ofNullable(testEvent.getDateTested()).map(this::convertToLocalDate));
   }
 
   @JsonProperty("Date_result_released")
@@ -468,6 +474,6 @@ public class TestEventExport {
   @JsonProperty("Order_test_date")
   public String getOrderTestDate() {
     // order_test_date = test_date for antigen testing
-    return dateToHealthCareString(convertToLocalDate(testEvent.getDateTested()));
+    return getTestDate();
   }
 }
