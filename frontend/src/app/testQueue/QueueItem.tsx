@@ -81,7 +81,7 @@ interface EditQueueItemResponse {
   };
 }
 
-const SUBMIT_TEST_RESULT = gql`
+export const SUBMIT_TEST_RESULT = gql`
   mutation SubmitTestResult(
     $patientId: ID!
     $deviceId: String!
@@ -94,7 +94,10 @@ const SUBMIT_TEST_RESULT = gql`
       result: $result
       dateTested: $dateTested
     ) {
-      internalId
+      testResult {
+        internalId
+      }
+      deliverySuccess
     }
   }
 `;
@@ -194,6 +197,8 @@ interface QueueItemProps {
   refetchQueue: () => void;
   facilityId: string;
   patientLinkId: string;
+  startPolling: (pollInterval: number) => void;
+  stopPolling: () => void;
 }
 
 interface updateQueueItemProps {
@@ -216,6 +221,8 @@ const QueueItem: any = ({
   facilityId,
   dateTestedProp,
   patientLinkId,
+  startPolling,
+  stopPolling,
 }: QueueItemProps) => {
   const appInsights = useAppInsightsContext();
   const trackRemovePatientFromQueue = useTrackEvent(
@@ -248,6 +255,11 @@ const QueueItem: any = ({
   useEffect(() => {
     setAoeAnswers(askOnEntry);
   }, [askOnEntry]);
+
+  const [
+    isDeliverySuccessModalOpen,
+    updateIsDeliverySuccessModalOpen,
+  ] = useState(false);
 
   const [deviceId, updateDeviceId] = useState(
     selectedDeviceId || defaultDevice.internalId
@@ -303,12 +315,21 @@ const QueueItem: any = ({
     throw mutationError;
   }
 
-  const testResultsSubmitted = () => {
+  const testResultsSubmitted = (response: any) => {
     let { title, body } = {
       ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
         patient
       ),
     };
+
+    if (response?.data?.addTestResult.deliverySuccess === false) {
+      // Prevent parent component from re-rendering while modal is open
+      stopPolling();
+      openDeliverySuccessModal();
+    } else {
+      refetchQueue();
+    }
+
     let alert = <Alert type="success" title={title} body={body} />;
     showNotification(toast, alert);
   };
@@ -328,7 +349,6 @@ const QueueItem: any = ({
         },
       })
         .then(testResultsSubmitted, () => {})
-        .then(refetchQueue)
         .then(() => removeTimer(internalId))
         .catch((error) => {
           updateMutationError(error);
@@ -421,6 +441,14 @@ const QueueItem: any = ({
 
   const closeAoeModal = () => {
     updateIsAoeModalOpen(false);
+  };
+
+  const openDeliverySuccessModal = () => {
+    updateIsDeliverySuccessModalOpen(true);
+  };
+
+  const closeDeliverySuccessModal = () => {
+    updateIsDeliverySuccessModalOpen(false);
   };
 
   const saveAoeCallback = (answers: any) => {
@@ -669,6 +697,45 @@ const QueueItem: any = ({
                   )}
                 </AreYouSure>
               )}
+              <Modal
+                isOpen={isDeliverySuccessModalOpen}
+                style={{
+                  content: {
+                    maxHeight: "90vh",
+                    width: "50%",
+                    position: "initial",
+                  },
+                }}
+                overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
+                contentLabel="Incorrect phone number"
+                ariaHideApp={process.env.NODE_ENV !== "test"}
+              >
+                <p>
+                  <strong>Incorrect phone number</strong>
+                  <br />
+                  <br />
+                  We're unable to send{" "}
+                  <strong>{patientFullNameLastFirst}'s</strong> test results to
+                  them via phone because their phone number is incorrect or
+                  can't receive text messages. (Results were succcessfully sent
+                  to the public health department).
+                  <br />
+                  <br />
+                  Please update <strong>{patient.firstName}'s</strong> phone
+                  number and contact them directly to inform them of their
+                  COVID-19 status.
+                </p>
+                <Button
+                  onClick={() => {
+                    refetchQueue();
+                    startPolling(10000);
+                    closeDeliverySuccessModal();
+                  }}
+                  className="margin-right-0"
+                >
+                  Okay
+                </Button>
+              </Modal>
               <TestResultInputForm
                 queueItemId={internalId}
                 testResultValue={testResultValue}

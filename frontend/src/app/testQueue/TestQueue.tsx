@@ -193,6 +193,8 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 facilityId={activeFacilityId}
                 dateTestedProp={dateTested}
                 patientLinkId={patientLink?.internalId || null}
+                startPolling={startPolling}
+                stopPolling={stopPolling}
               />
             </CSSTransition>
           );

@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import moment from "moment";
 
-import QueueItem, { EDIT_QUEUE_ITEM } from "./QueueItem";
+import QueueItem, { EDIT_QUEUE_ITEM, SUBMIT_TEST_RESULT } from "./QueueItem";
 
 const initialDateString = "2021-02-14";
 const updatedDateString = "2021-03-10";
@@ -69,6 +69,64 @@ describe("QueueItem", () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
     expect(getByTestId("timer")).toHaveTextContent("15:00");
+  });
+
+  it("displays delivery success modal on submit for invalid patient phone number", async () => {
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <QueueItem
+          internalId={testProps.internalId}
+          patient={testProps.patient}
+          askOnEntry={testProps.askOnEntry}
+          selectedDeviceId={testProps.selectedDeviceId}
+          selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+          selectedTestResult={testProps.selectedTestResult}
+          devices={testProps.devices}
+          defaultDevice={testProps.defaultDevice}
+          refetchQueue={testProps.refetchQueue}
+          facilityId={testProps.facilityId}
+          dateTestedProp={testProps.dateTestedProp}
+          patientLinkId={testProps.patientLinkId}
+          startPolling={() => {}}
+          stopPolling={() => {}}
+        ></QueueItem>
+      </MockedProvider>
+    );
+
+    // Select result
+    fireEvent.click(
+      screen.getByLabelText("Inconclusive", {
+        exact: false,
+      }),
+      {
+        target: { value: "UNDETERMINED" },
+      }
+    );
+
+    // Submit
+    await act(async () => {
+      fireEvent.click(
+        screen.getByText("Submit", {
+          exact: false,
+        })
+      );
+    });
+
+    await act(async () => {
+      fireEvent.click(
+        screen.getByText("Submit anyway", {
+          exact: false,
+        })
+      );
+    });
+
+    // Verify modal is displayed
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Incorrect phone number", {
+        exact: false,
+      })
+    ).toBeInTheDocument();
   });
 
   it("updates custom test date/time", async () => {
@@ -252,6 +310,49 @@ const mocks = [
             internalId: internalId,
             testLength: 15,
           },
+        },
+      },
+    },
+  },
+  {
+    request: {
+      query: EDIT_QUEUE_ITEM,
+      variables: {
+        id: internalId,
+        deviceId: internalId,
+        result: "UNDETERMINED",
+      },
+    },
+    result: {
+      data: {
+        editQueueItem: {
+          result: "UNDETERMINED",
+          dateTested: null,
+          deviceType: {
+            internalId: internalId,
+            testLength: 15,
+          },
+        },
+      },
+    },
+  },
+  {
+    request: {
+      query: SUBMIT_TEST_RESULT,
+      variables: {
+        patientId: internalId,
+        deviceId: internalId,
+        dateTested: null,
+        result: "UNDETERMINED",
+      },
+    },
+    result: {
+      data: {
+        addTestResult: {
+          testResult: {
+            internalId: internalId,
+          },
+          deliverySuccess: false,
         },
       },
     },
