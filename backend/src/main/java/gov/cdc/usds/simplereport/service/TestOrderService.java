@@ -47,6 +47,7 @@ public class TestOrderService {
   private PatientLinkService _pls;
   private SmsService _smss;
   private final CurrentPatientContextHolder _patientContext;
+  private final TestEventReportingService _testEventReportingService;
 
   @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")
   private String patientLinkUrl;
@@ -63,7 +64,8 @@ public class TestOrderService {
       PersonService ps,
       PatientLinkService pls,
       SmsService smss,
-      CurrentPatientContextHolder patientContext) {
+      CurrentPatientContextHolder patientContext,
+      TestEventReportingService testEventReportingService) {
     _patientContext = patientContext;
     _os = os;
     _ps = ps;
@@ -73,6 +75,7 @@ public class TestOrderService {
     _terepo = terepo;
     _pls = pls;
     _smss = smss;
+    _testEventReportingService = testEventReportingService;
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
@@ -169,6 +172,8 @@ public class TestOrderService {
 
     order.setTestEventRef(testEvent);
     TestOrder savedOrder = _repo.save(order);
+
+    _testEventReportingService.report(testEvent);
 
     if (TestResultDeliveryPreference.SMS
         == _ps.getPatientPreferences(person).getTestResultDelivery()) {

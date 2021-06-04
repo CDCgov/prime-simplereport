@@ -67,6 +67,8 @@ dependencies {
     // graphql-java-extended-validation schema directives
     compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
 
+    implementation 'com.azure:azure-storage-queue:12.8.+'
+
     // test/check dependencies
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
