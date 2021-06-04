@@ -1,10 +1,11 @@
-import { useReactiveVar } from "@apollo/client";
-
-import { appConfig } from "../storage/store";
 import siteLogo from "../img/simplereport-logomark-color.svg";
+import { useAppConfig } from "../hooks/useAppConfig";
 
 const PatientHeader = () => {
-  const { organization } = useReactiveVar(appConfig);
+  // const { organization } = useReactiveVar(appConfig);
+  const {
+    config: { organization },
+  } = useAppConfig();
 
   return (
     <header className="border-bottom border-base-lighter">

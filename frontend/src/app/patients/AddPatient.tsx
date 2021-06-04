@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { gql, useMutation, useReactiveVar } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
 
@@ -10,7 +10,7 @@ import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
-import { facilities } from "../../storage/store";
+import { useFacilities } from "../../hooks/useFacilities";
 
 import PersonForm from "./Components/PersonForm";
 
@@ -109,7 +109,9 @@ const AddPatient = () => {
     AddPatientResponse,
     AddPatientParams
   >(ADD_PATIENT);
-  const { current } = useReactiveVar(facilities);
+  const {
+    facilities: { current },
+  } = useFacilities();
   const activeFacilityId: string | undefined = current?.id;
 
   const personPath = `/patients/?facility=${current?.id}`;

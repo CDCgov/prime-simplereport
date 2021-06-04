@@ -9,7 +9,6 @@ import {
 import Alert from "../commonComponents/Alert";
 import { showNotification } from "../utils";
 import { useAppConfig } from "../../hooks/useAppConfig";
-import { appConfig } from "../../storage/store";
 
 import ManageOrganization from "./ManageOrganization";
 
@@ -39,7 +38,7 @@ const ManageOrganizationContainer: any = () => {
   });
   const [setOrganization] = useMutation(SET_ORGANIZATION);
   const appInsights = useAppInsightsContext();
-  const { updateOrganizationName } = useAppConfig(appConfig);
+  const { updateOrganizationName } = useAppConfig();
   const trackSaveSettings = useTrackEvent(
     appInsights,
     "Save Organization",

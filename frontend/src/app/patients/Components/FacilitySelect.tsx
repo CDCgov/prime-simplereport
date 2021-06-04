@@ -1,7 +1,6 @@
-import { useReactiveVar } from "@apollo/client";
 import React from "react";
 
-import { facilities } from "../../../storage/store";
+import { useFacilities } from "../../../hooks/useFacilities";
 import Select from "../../commonComponents/Select";
 
 interface Props {
@@ -17,7 +16,9 @@ const ALL_FACILITIES = "~~ALL-FACILITIES~~";
 const NAME = "facilityId";
 
 const FacilitySelect: React.FC<Props> = (props) => {
-  const { list } = useReactiveVar(facilities);
+  const {
+    facilities: { list },
+  } = useFacilities();
 
   if (props.hidden) {
     return null;

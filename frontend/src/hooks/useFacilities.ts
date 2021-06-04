@@ -1,8 +1,12 @@
-import { ReactiveVar } from "@apollo/client";
+import { useReactiveVar } from "@apollo/client";
+
+import { facilities as facilitiesVar } from "../storage/store";
 
 // TODO: Setup list of facilities, current selected facility.
 
-export const useFacilities = (facilitiesVar: ReactiveVar<FacilitiesState>) => {
+export const useFacilities = () => {
+  const facilities = useReactiveVar(facilitiesVar);
+
   const setCurrentFacility = (facility: Facility) => {
     facilitiesVar({ ...facilitiesVar(), current: facility });
   };
@@ -18,6 +22,7 @@ export const useFacilities = (facilitiesVar: ReactiveVar<FacilitiesState>) => {
   };
 
   return {
+    facilities,
     setCurrentFacility,
     setInitFacilities,
   };

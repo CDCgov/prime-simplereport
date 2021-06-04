@@ -1,6 +1,5 @@
 import { FunctionComponent, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
-import { useReactiveVar } from "@apollo/client";
 import "react-toastify/dist/ReactToastify.css";
 import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 
@@ -8,7 +7,6 @@ import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import USAGovBanner from "../commonComponents/USAGovBanner";
 import { getActivationTokenFromUrl } from "../utils/url";
 import PageNotFound from "../commonComponents/PageNotFound";
-import { appConfig } from "../../storage/store";
 import { useAppConfig } from "../../hooks/useAppConfig";
 
 import { SecurityQuestion } from "./SecurityQuestion/SecurityQuestion";
@@ -43,8 +41,10 @@ const AccountCreation404Wrapper: FunctionComponent<WrapperProps> = ({
 };
 
 const AccountCreationApp = () => {
-  const { activationToken } = useReactiveVar(appConfig);
-  const { setActivationToken } = useAppConfig(appConfig);
+  const {
+    setActivationToken,
+    config: { activationToken },
+  } = useAppConfig();
 
   useEffect(() => {
     setActivationToken(getActivationTokenFromUrl());

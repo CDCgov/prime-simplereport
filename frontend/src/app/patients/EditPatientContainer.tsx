@@ -1,7 +1,6 @@
-import { useReactiveVar } from "@apollo/client";
 import React from "react";
 
-import { facilities } from "../../storage/store";
+import { useFacilities } from "../../hooks/useFacilities";
 
 import EditPatient from "./EditPatient";
 
@@ -10,7 +9,10 @@ interface Props {
 }
 
 const EditPatientContainer: React.FC<Props> = ({ patientId }) => {
-  const { current } = useReactiveVar(facilities);
+  const {
+    facilities: { current },
+  } = useFacilities();
+
   const activeFacilityId: string | undefined = current?.id;
 
   if (!activeFacilityId) {

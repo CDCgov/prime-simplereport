@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { useReactiveVar } from "@apollo/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../../commonComponents/Button/Button";
 import TextInput from "../../commonComponents/TextInput";
 import Dropdown from "../../commonComponents/Dropdown";
 import { Role } from "../../permissions";
-import { facilities } from "../../../storage/store";
+import { useFacilities } from "../../../hooks/useFacilities";
 
 import { SettingsUser } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
@@ -40,7 +39,9 @@ const ROLE_OPTIONS: { value: Role; label: string }[] = [
 ];
 
 const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
-  const { list } = useReactiveVar(facilities);
+  const {
+    facilities: { list },
+  } = useFacilities();
 
   const [newUser, updateNewUser] = useState(initialFormState);
   const onChange = (

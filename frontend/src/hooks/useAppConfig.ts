@@ -1,30 +1,34 @@
-import { ReactiveVar } from "@apollo/client";
+import { useReactiveVar } from "@apollo/client";
+
+import { appConfig } from "../storage/store";
 // TODO: configure here generalData load, current user data, organization, locale etc...
 //
 
-export const useAppConfig = (appConfigVar: ReactiveVar<AppConfigState>) => {
+export const useAppConfig = () => {
+  const config = useReactiveVar(appConfig);
   const setUser = (user: User) => {
-    appConfigVar({
-      ...appConfigVar(),
+    appConfig({
+      ...config,
       user,
     });
   };
   const updateOrganizationName = (organizationName: string) => {
-    appConfigVar({
-      ...appConfigVar(),
+    appConfig({
+      ...config,
       organization: {
-        ...appConfigVar().organization,
+        ...config.organization,
         name: organizationName,
       },
     });
   };
   const setActivationToken = (activationToken: string | null) => {
-    appConfigVar({ ...appConfigVar(), activationToken });
+    appConfig({ ...config, activationToken });
   };
   const setInitialData = (data: AppConfigState) => {
-    appConfigVar(data);
+    appConfig(data);
   };
   return {
+    config,
     setUser,
     setInitialData,
     setActivationToken,

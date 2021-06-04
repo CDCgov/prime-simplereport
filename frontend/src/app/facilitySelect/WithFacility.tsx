@@ -1,10 +1,9 @@
 /* eslint-disable graphql/template-strings */
-import { useReactiveVar } from "@apollo/client";
 import { useCallback, useMemo, FC } from "react";
 import { useHistory } from "react-router-dom";
 
-import { appConfig, facilities } from "../../storage/store";
 import { useFacilities } from "../../hooks/useFacilities";
+import { useAppConfig } from "../../hooks/useAppConfig";
 import { getFacilityIdFromUrl } from "../utils/url";
 
 import FacilityPopup from "./FacilityPopup";
@@ -16,9 +15,13 @@ interface Props {}
 
 const WithFacility: FC<Props> = ({ children }) => {
   const history = useHistory();
-  const { setCurrentFacility } = useFacilities(facilities);
-  const { list, current } = useReactiveVar<FacilitiesState>(facilities);
-  const { dataLoaded } = useReactiveVar<AppConfigState>(appConfig);
+  const {
+    setCurrentFacility,
+    facilities: { current, list },
+  } = useFacilities();
+  const {
+    config: { dataLoaded },
+  } = useAppConfig();
 
   const facilityFromUrl = useMemo(
     () => list.find((f) => f.id === getFacilityIdFromUrl()),

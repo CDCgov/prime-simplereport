@@ -5,7 +5,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 
-import { appConfig, facilities } from "../storage/store";
 import { useFacilities } from "../hooks/useFacilities";
 import { useAppConfig } from "../hooks/useAppConfig";
 
@@ -50,8 +49,8 @@ export const WHOAMI_QUERY = gql`
 
 const App = () => {
   const appInsights = getAppInsights();
-  const { setInitFacilities } = useFacilities(facilities);
-  const { setInitialData } = useAppConfig(appConfig);
+  const { setInitFacilities } = useFacilities();
+  const { setInitialData } = useAppConfig();
 
   const { data, loading, error } = useQuery(WHOAMI_QUERY, {
     fetchPolicy: "no-cache",

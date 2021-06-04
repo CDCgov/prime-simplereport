@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useReactiveVar } from "@apollo/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import classNames from "classnames";
 import { v4 as uuidv4 } from "uuid";
@@ -12,7 +11,8 @@ import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import { formatFullName } from "../utils/user";
 import siteLogo from "../../img/simplereport-logo-color.svg";
 import { hasPermission, appPermissions } from "../permissions";
-import { appConfig, facilities } from "../../storage/store";
+import { useAppConfig } from "../../hooks/useAppConfig";
+import { useFacilities } from "../../hooks/useFacilities";
 
 import Button from "./Button/Button";
 import Dropdown from "./Dropdown";
@@ -30,8 +30,12 @@ const Header: React.FC<{}> = () => {
     }
   };
 
-  const { organization, user } = useReactiveVar(appConfig);
-  const { current, list } = useReactiveVar(facilities);
+  const {
+    facilities: { current, list },
+  } = useFacilities();
+  const {
+    config: { organization, user },
+  } = useAppConfig();
 
   const [menuVisible, setMenuVisible] = useState(false);
   const {
