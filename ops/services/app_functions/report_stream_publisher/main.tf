@@ -17,7 +17,7 @@ data "archive_file" "function_artifact" {
   source {
     filename = "SingleTestEventPublisher/function.json"
     content = jsonencode({
-      disabled = ! var.enabled
+      disabled = !var.enabled
       bindings = [
         {
           type       = "queueTrigger"
