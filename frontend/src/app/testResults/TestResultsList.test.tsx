@@ -515,11 +515,10 @@ describe("TestResultsList", () => {
     expect(
       await screen.findByRole("option", { name: "Negative" })
     ).toBeInTheDocument();
-    userEvent.click(screen.getByRole("option", { name: "Negative" }));
+    userEvent.selectOptions(screen.getByLabelText("Result"), ["NEGATIVE"]);
     expect(
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();
-    screen.debug();
     expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
   });
 
