@@ -7,7 +7,6 @@ import Button from "../../commonComponents/Button/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
-import { AccountCreationApi } from "../AccountCreationApiService";
 
 type MfaOptions = "SMS" | "Okta" | "Google" | "FIDO" | "Phone" | "Email" | "";
 
