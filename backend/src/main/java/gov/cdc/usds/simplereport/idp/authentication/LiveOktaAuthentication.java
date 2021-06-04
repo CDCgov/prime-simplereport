@@ -20,6 +20,8 @@ import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -45,6 +47,8 @@ import org.springframework.web.client.RestTemplate;
 @Profile("!" + BeanProfiles.NO_OKTA_AUTH)
 @Service
 public class LiveOktaAuthentication implements OktaAuthentication {
+  private static final Logger LOG = LoggerFactory.getLogger(LiveOktaAuthentication.class);
+
   private static final String USER_API_ENDPOINT = "/api/v1/users/";
 
   private Client _client;
@@ -57,9 +61,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     initialize(oktaClientProperties.getOrgUrl(), oktaClientProperties.getToken());
   }
 
-  // public LiveOktaAuthentication(String orgUrl, String token) {
-  //   initialize(orgUrl, token);
-  // }
+  public LiveOktaAuthentication(String orgUrl, String token) {
+    initialize(orgUrl, token);
+  }
 
   private void initialize(String orgUrl, String token) {
     _client =
@@ -70,6 +74,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     _apiToken = token;
     _orgUrl = orgUrl;
     _restTemplate = new RestTemplate();
+    LOG.info("LiveOktaAuthentication initialization successful");
   }
 
   /**
@@ -218,12 +223,14 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public String enrollEmailMfa(String userId, String email)
       throws OktaAuthenticationFailureException {
     try {
+      LOG.info("enrolling email MFA");
       EmailUserFactor emailFactor = _client.instantiate(EmailUserFactor.class);
       emailFactor.getProfile().setEmail(email);
       User user = _client.getUser(userId);
       user.enrollFactor(emailFactor);
       return emailFactor.getId();
     } catch (ResourceException e) {
+      LOG.info("An exception was thrown while setting email MFA", e);
       throw new OktaAuthenticationFailureException("Error setting email MFA", e);
     }
   }
@@ -243,6 +250,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    */
   public JSONObject enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
+        LOG.info("enrolling auth app");
     UserFactor factor = _client.instantiate(UserFactor.class);
     factor.setFactorType(FactorType.TOKEN_SOFTWARE_TOTP);
     switch (appType.toLowerCase()) {
@@ -270,6 +278,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       factorResponse.put("factorId", factor.getId());
       return factorResponse;
     } catch (NullPointerException | ResourceException | IllegalArgumentException e) {
+      LOG.info("An exception was thrown while fetching auth app qrcode", e);
       throw new OktaAuthenticationFailureException("Authentication app could not be enrolled", e);
     }
   }
@@ -286,6 +295,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    *     cannot be enrolled.
    */
   public JSONObject enrollSecurityKey(String userId) throws OktaAuthenticationFailureException {
+    LOG.info("enrolling security key");
     JSONObject requestBody = new JSONObject();
     requestBody.put("factorType", "webauthn");
     requestBody.put("provider", "FIDO");
@@ -300,6 +310,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       response.put("factorId", responseJson.getString("id"));
       return response;
     } catch (RestClientException | NullPointerException | ResourceException e) {
+      LOG.info("an exception was thrown while enrolling security key", e);
       throw new OktaAuthenticationFailureException("Security key could not be enrolled", e);
     }
   }
@@ -315,7 +326,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public void activateSecurityKey(
       String userId, String factorId, String attestation, String clientData)
       throws OktaAuthenticationFailureException {
+        LOG.info("activating security key");
     try {
+      LOG.info("security key data:" + userId + " " + factorId + " " + attestation + " " + clientData);
       User user = _client.getUser(userId);
       UserFactor factor = user.getFactor(factorId);
       ActivateFactorRequest activationRequest = _client.instantiate(ActivateFactorRequest.class);
@@ -323,9 +336,40 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       activationRequest.setClientData(clientData);
       factor.activate(activationRequest);
     } catch (NullPointerException | ResourceException e) {
+      LOG.info("an exception was thrown while activating the security key", e);
       throw new OktaAuthenticationFailureException("Security key could not be activated", e);
     }
   }
+
+
+  /**
+   * curl -v -X POST \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+-d '{
+  "attestation": "o2NmbXRmcGFja2VkZ2F0dFN0bXSiY2FsZyZjc2lnWEgwRgIhAMvf2+dzXlHZN1um38Y8aFzrKvX0k5dt/hnDu9lahbR4AiEAuwtMg3IoaElWMp00QrP/+3Po/6LwXfmYQVfsnsQ+da1oYXV0aERhdGFYxkgb9OHGifjS2dG03qLRqvXrDIRyfGAuc+GzF1z20/eVRV2wvl6tzgACNbzGCmSLCyXx8FUDAEIBvWNHOcE3QDUkDP/HB1kRbrIOoZ1dR874ZaGbMuvaSVHVWN2kfNiO4D+HlAzUEFaqlNi5FPqKw+mF8f0XwdpEBlClAQIDJiABIVgg0a6oo3W0JdYPu6+eBrbr0WyB3uJLI3ODVgDfQnpgafgiWCB4fFo/5iiVrFhB8pNH2tbBtKewyAHuDkRolcCnVaCcmQ==",
+  "clientData": "eyJjaGFsbGVuZ2UiOiJVSk5wYW9sVWt0dF9vcEZPNXJMYyIsIm9yaWdpbiI6Imh0dHBzOi8vcmFpbi5va3RhMS5jb20iLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0="
+}' "https://${yourOktaDomain}/api/v1/users/00u15s1KDETTQMQYABRL/factors/fwf2rovRxogXJ0nDy0g4/lifecycle/activate"
+
+   */
+  /*
+  public void activateSecurityKey(String userId, String factorId, String attestation, String clientData)
+  throws OktaAuthenticationFailureException {
+    JSONObject requestBody = new JSONObject();
+    requestBody.put("attestation", attestation);
+    requestBody.put("clientData", clientData);
+    HttpEntity<String> entity = new HttpEntity<>(requestBody.toString(), createHeaders());
+    String activateWebAuthnUrl = _orgUrl + USER_API_ENDPOINT + userId + "/factors/" + factorId + "/lifecycle/activate";
+    try {
+      String postResponse = _restTemplate.postForObject(activateWebAuthnUrl, entity, String.class);
+      JSONObject responseJson = new JSONObject(postResponse);
+      System.out.println("responseJSON: " + responseJson);
+    } catch (RestClientException | NullPointerException | ResourceException e) {
+      throw new OktaAuthenticationFailureException("Security key could not be enrolled", e);
+    }
+  }
+  */
 
   /**
    * Using the Okta Management SDK, activate MFA enrollment with a user-provided passcode. This

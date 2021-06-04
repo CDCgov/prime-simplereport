@@ -16,7 +16,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -175,9 +174,11 @@ public class UserAccountCreationController {
   public void activateSecurityKeyMfa(
       @RequestBody ActivateSecurityKeyRequest requestBody, HttpServletRequest request)
       throws OktaAuthenticationFailureException {
+    LOG.info("controller: activating security key");
+    LOG.info("session information: ", request.getSession());
     String userId = getUserId(request.getSession());
     String factorId = getFactorId(request.getSession());
-    System.out.println("activating security key:");
+    LOG.info("user and factor fetched");
     _oktaAuth.activateSecurityKey(
         userId, factorId, requestBody.getAttestation(), requestBody.getClientData());
   }
