@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.config.CorsProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
+import gov.cdc.usds.simplereport.properties.DynamicsProperties;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.properties.SmartyStreetsProperties;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
@@ -17,6 +18,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
@@ -28,8 +30,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
   DemoUserConfiguration.class,
   SmartyStreetsProperties.class,
   SendGridProperties.class,
+  DynamicsProperties.class,
   CorsProperties.class
 })
+@EnableAsync
 @EnableScheduling
 public class SimpleReportApplication {
 
