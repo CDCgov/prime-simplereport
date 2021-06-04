@@ -340,7 +340,7 @@ Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/rele
 3. If applicable describe some of the changes in detail in the description
 3. Check the "This is a pre-release" box.
 4. Click publish release (this will trigger the release to `stg`)
-5. Verify the changes are live in `stg` by ensuring the deployed commit hash matches the commit hash on the release and the deployed release tag matches. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`
+5. Verify the changes are live in `stg` by ensuring the deployed commit hash matches the commit hash on the release and the deployed release tag matches. This is done by going to `/app/static/commit.txt` and `/api/actuator/info`
 6. Return to the release page and select "Edit release"
 7. Un-check the "This is a pre-release" checkbox and save/publish (this will trigger the release to other environments)
 8. Verify that the changes are live in `prod`, `demo` and `training`.
