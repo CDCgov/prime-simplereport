@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -25,6 +26,7 @@ public class InitialSetupProperties {
   private List<? extends DeviceType> deviceTypes;
   private List<String> configuredDeviceTypes;
   private List<ConfigFacility> facilities;
+  private List<ConfigPatientRegistrationLink> patientRegistrationLinks;
 
   public InitialSetupProperties(
       List<Organization> organizations,
@@ -32,13 +34,15 @@ public class InitialSetupProperties {
       Provider provider,
       List<SpecimenType> specimenTypes,
       List<DeviceType> deviceTypes,
-      List<String> configuredDeviceTypes) {
+      List<String> configuredDeviceTypes,
+      List<ConfigPatientRegistrationLink> patientRegistrationLinks) {
     this.organizations = organizations;
     this.provider = provider;
     this.specimenTypes = specimenTypes;
     this.deviceTypes = deviceTypes;
     this.configuredDeviceTypes = configuredDeviceTypes;
     this.facilities = facilities;
+    this.patientRegistrationLinks = patientRegistrationLinks;
   }
 
   public List<ConfigFacility> getFacilities() {
@@ -96,6 +100,10 @@ public class InitialSetupProperties {
         .collect(Collectors.toList());
   }
 
+  public List<ConfigPatientRegistrationLink> getPatientRegistrationLinks() {
+    return patientRegistrationLinks;
+  }
+
   public static final class ConfigFacility {
     private String name;
     private String cliaNumber;
@@ -147,6 +155,30 @@ public class InitialSetupProperties {
 
     public String getEmail() {
       return email;
+    }
+
+    public String getOrganizationExternalId() {
+      return organizationExternalId;
+    }
+  }
+
+  public static final class ConfigPatientRegistrationLink {
+    private String patientRegistrationLink;
+    private String organizationExternalId;
+
+    public ConfigPatientRegistrationLink(
+        String patientRegistrationLink, String organizationExternalId) {
+      super();
+      this.patientRegistrationLink = patientRegistrationLink;
+      this.organizationExternalId = organizationExternalId;
+    }
+
+    public PatientSelfRegistrationLink makePatientRegistrationLink(Organization org, String link) {
+      return new PatientSelfRegistrationLink(org, link);
+    }
+
+    public String getLink() {
+      return patientRegistrationLink;
     }
 
     public String getOrganizationExternalId() {

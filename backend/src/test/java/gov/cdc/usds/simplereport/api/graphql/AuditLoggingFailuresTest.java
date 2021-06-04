@@ -74,7 +74,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
   void init() {
     TestUserIdentities.withStandardUser(
         () -> {
-          Organization org = _orgService.getCurrentOrganization();
+          Organization org = _orgService.getCurrentOrganizationNoCache();
           _base = _orgService.getFacilities(org).get(0);
           _patient = _dataFactory.createFullPerson(org);
           TestOrder order = _dataFactory.createTestOrder(_patient, _base);
@@ -117,7 +117,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     HttpEntity<JsonNode> requestEntity = new HttpEntity<JsonNode>(makeVerifyLinkArgs());
     ResponseEntity<String> resp =
         _restTemplate.exchange(
-            ResourceLinks.VERIFY_LINK, HttpMethod.PUT, requestEntity, String.class);
+            ResourceLinks.VERIFY_LINK, HttpMethod.POST, requestEntity, String.class);
     LOG.info("Response body is {}", resp.getBody());
     verify(_auditRepo).save(_eventCaptor.capture());
     assertThat(_eventCaptor.getValue())
@@ -133,7 +133,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     HttpEntity<JsonNode> requestEntity = new HttpEntity<JsonNode>(makeVerifyLinkArgs());
     ResponseEntity<String> resp =
         _restTemplate.exchange(
-            ResourceLinks.VERIFY_LINK, HttpMethod.PUT, requestEntity, String.class);
+            ResourceLinks.VERIFY_LINK, HttpMethod.POST, requestEntity, String.class);
     assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
     JsonNode responseJson = new ObjectMapper().readTree(resp.getBody());
     assertEquals(400, responseJson.get("status").asInt());

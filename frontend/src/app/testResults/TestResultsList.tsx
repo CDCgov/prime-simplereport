@@ -4,7 +4,10 @@ import React, {
   Dispatch,
   MouseEventHandler,
   SetStateAction,
+  useCallback,
   useEffect,
+  useMemo,
+  useRef,
   useState,
 } from "react";
 import { useSelector } from "react-redux";
@@ -20,10 +23,11 @@ import {
 } from "../commonComponents/QueryWrapper";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import { getUrl } from "../utils/url";
+import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
 import Pagination from "../commonComponents/Pagination";
 import { TEST_RESULT_DESCRIPTIONS } from "../constants";
 import "./TestResultsList.scss";
-import Button from "../commonComponents/Button";
+import Button from "../commonComponents/Button/Button";
 import { useDebounce } from "../testQueue/addToQueue/useDebounce";
 import {
   MIN_SEARCH_CHARACTER_COUNT,
@@ -90,6 +94,8 @@ interface Props {
   data: any;
   trackAction: () => void;
   refetch: () => void;
+  loading: boolean;
+  loadingTotalResults: boolean;
   page: number;
   entriesPerPage: number;
   totalEntries: number;
@@ -195,6 +201,8 @@ export const DetachedTestResultsList: any = ({
   refetch,
   page,
   entriesPerPage,
+  loading,
+  loadingTotalResults,
   totalEntries,
   setSelectedPatientId,
   facilityId,
@@ -203,6 +211,7 @@ export const DetachedTestResultsList: any = ({
   const [markErrorId, setMarkErrorId] = useState(undefined);
   const [detailsModalId, setDetailsModalId] = useState<string>();
   const [showFilters, setShowFilters] = useState(false);
+  const [showSuggestion, setShowSuggestion] = useState(true);
 
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
@@ -223,6 +232,7 @@ export const DetachedTestResultsList: any = ({
   }, [queryString, queryPatients]);
 
   const onInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    setShowSuggestion(true);
     setDebounced(event.target.value);
   };
 
@@ -233,7 +243,19 @@ export const DetachedTestResultsList: any = ({
   const onPatientSelect = (patient: Patient) => {
     setDebounced("");
     setSelectedPatientId(patient.internalId);
+    setShowSuggestion(false);
   };
+
+  const dropDownRef = useRef(null);
+  const showDropdown = useMemo(() => allowQuery && showSuggestion, [
+    allowQuery,
+    showSuggestion,
+  ]);
+  const hideOnOutsideClick = useCallback(() => {
+    setShowSuggestion(false);
+  }, []);
+
+  useOutsideClick(dropDownRef, hideOnOutsideClick);
 
   if (printModalId) {
     return (
@@ -280,10 +302,12 @@ export const DetachedTestResultsList: any = ({
             <div className="usa-card__header">
               <h2>
                 Test Results
-                <span className="sr-showing-results-on-page">
-                  Showing {Math.min(entriesPerPage, totalEntries)} of{" "}
-                  {totalEntries}
-                </span>
+                {!loadingTotalResults && (
+                  <span className="sr-showing-results-on-page">
+                    Showing {Math.min(entriesPerPage, totalEntries)} of{" "}
+                    {totalEntries}
+                  </span>
+                )}
               </h2>
               <div>
                 <Button
@@ -293,7 +317,9 @@ export const DetachedTestResultsList: any = ({
                   onClick={() => {
                     if (showFilters) {
                       setDebounced("");
+                      setSelectedPatientId("");
                     }
+
                     setShowFilters(!showFilters);
                   }}
                 >
@@ -318,8 +344,9 @@ export const DetachedTestResultsList: any = ({
                   page="test-results"
                   patients={patientData?.patients || []}
                   onPatientSelect={onPatientSelect}
-                  shouldShowSuggestions={allowQuery}
+                  shouldShowSuggestions={showDropdown}
                   loading={debounced !== queryString}
+                  dropDownRef={dropDownRef}
                 />
               </div>
             )}
@@ -340,12 +367,16 @@ export const DetachedTestResultsList: any = ({
               </table>
             </div>
             <div className="usa-card__footer">
-              <Pagination
-                baseRoute="/results"
-                currentPage={page}
-                entriesPerPage={entriesPerPage}
-                totalEntries={totalEntries}
-              />
+              {loading ? (
+                <p>Loading...</p>
+              ) : (
+                <Pagination
+                  baseRoute="/results"
+                  currentPage={page}
+                  entriesPerPage={entriesPerPage}
+                  totalEntries={totalEntries}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -365,12 +396,15 @@ type OmittedProps =
   | "pageCount"
   | "entriesPerPage"
   | "totalEntries"
+  | "loadingTotalResults"
   | "facilityId"
   | "setSelectedPatientId";
 
 type TestResultsListProps = Omit<Props, OmittedProps>;
 
 const TestResultsList = (props: TestResultsListProps) => {
+  useDocumentTitle("Results");
+
   const activeFacilityId = useSelector(
     (state) => (state as any).facility.id as string
   );
@@ -403,7 +437,7 @@ const TestResultsList = (props: TestResultsListProps) => {
 
   const {
     data: totalResults,
-    loading,
+    loading: loadingTotalResults,
     error,
     refetch: refetchCount,
   } = useQuery(resultsCountQuery, {
@@ -415,14 +449,11 @@ const TestResultsList = (props: TestResultsListProps) => {
     return <div>"No facility selected"</div>;
   }
 
-  if (loading) {
-    return <p>Loading</p>;
-  }
   if (error) {
     throw error;
   }
 
-  const totalEntries = totalResults.testResultsCount;
+  const totalEntries = totalResults?.testResultsCount || 0;
 
   return (
     <QueryWrapper<Props>
@@ -432,9 +463,11 @@ const TestResultsList = (props: TestResultsListProps) => {
       }}
       onRefetch={refetchCount}
       Component={DetachedTestResultsList}
+      displayLoadingIndicator={false}
       componentProps={{
         ...props,
         page: pageNumber,
+        loadingTotalResults,
         totalEntries,
         entriesPerPage,
         setSelectedPatientId,

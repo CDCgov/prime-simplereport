@@ -63,6 +63,16 @@ type TestDescription {
   loincCode: String!
 }
 
+type PhoneNumber {
+  type: PhoneType,
+  number: String
+}
+
+input PhoneNumberInput {
+  type: String,
+  number: String
+}
+
 # User-management types
 
 # Note: the login username is the user's email
@@ -84,8 +94,14 @@ type User {
 }
 
 type ApiUser {
-  name: NameInfo
+  id: ID
+  name: NameInfo!
   nameInfo: NameInfo @deprecated(reason: "needless connection of type to field name")
+  firstName: String
+  middleName: String
+  lastName: String!
+  suffix: String
+  email: String!
 }
 
 # Patient and test types
@@ -117,6 +133,8 @@ type Patient
   state: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   zipCode: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   telephone: String
+    @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+  phoneNumbers: [PhoneNumber]
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   email: String
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
@@ -213,7 +231,7 @@ type Query {
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
-  users: [User] @requiredPermissions(allOf: ["MANAGE_USERS"])
+  users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
   user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
 }
@@ -317,7 +335,8 @@ type Mutation {
     city: String
     state: String!
     zipCode: String!
-    telephone: String!
+    telephone: String
+    phoneNumbers: [PhoneNumberInput!]
     role: String
     email: String
     county: String
@@ -348,7 +367,8 @@ type Mutation {
         regexp: "[0-9]{5}(-[0-9]{4})?"
         message: "Use ZIP or ZIP+4 format"
       )
-    telephone: String!
+    telephone: String
+    phoneNumbers: [PhoneNumberInput!]
     role: String @Size(min: 0, max: 32)
     email: String @Size(min: 3, max: 254)
     county: String

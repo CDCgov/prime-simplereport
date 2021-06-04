@@ -1,5 +1,7 @@
 type Nullable<T> = { [P in keyof T]: T[P] | null };
 
+type ISODate = `${number}${number}${number}${number}-${number}${number}-${number}${number}`;
+
 interface Address {
   street: string;
   streetTwo: string | null;
@@ -73,6 +75,11 @@ interface DeviceType {
 
 interface DeviceTypes {
   deviceType: [DeviceType];
+}
+
+interface PhoneNumber {
+  type: string;
+  number: string;
 }
 
 interface SettingsData {

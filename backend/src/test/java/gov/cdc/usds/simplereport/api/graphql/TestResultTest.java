@@ -36,7 +36,7 @@ class TestResultTest extends BaseGraphqlTest {
 
   @BeforeEach
   public void init() {
-    _org = _orgService.getCurrentOrganization();
+    _org = _orgService.getCurrentOrganizationNoCache();
     _site = _orgService.getFacilities(_org).get(0);
   }
 

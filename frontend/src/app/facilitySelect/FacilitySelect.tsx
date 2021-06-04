@@ -1,6 +1,6 @@
 import React from "react";
 
-import Button from "../commonComponents/Button";
+import Button from "../commonComponents/Button/Button";
 
 import FacilityPopup from "./FacilityPopup";
 
@@ -18,7 +18,7 @@ const FacilitySelect: React.FC<FacilitySelectProps> = ({
   return (
     <FacilityPopup>
       <p className="select-text">
-        Please select which facility you are working at today
+        Please select the testing facility where you are working today.
       </p>
       {facilities.map((f) => (
         <Button

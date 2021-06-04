@@ -3,15 +3,27 @@ module "simple_report_api" {
   name   = "${local.name}-api"
   env    = local.env
 
-  instance_count = 2
+  instance_count = 3
+  instance_size  = "P2v2"
 
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
+
+  webapp_subnet_id = data.terraform_remote_state.persistent_prod.outputs.subnet_webapp_id
 
   docker_image_uri = "DOCKER|simplereportacr.azurecr.io/api/simple-report-api-build:${var.acr_image_tag}"
   key_vault_id     = data.azurerm_key_vault.global.id
   tenant_id        = data.azurerm_client_config.current.tenant_id
   https_only       = true
+
+  deploy_info = {
+    env           = "prod",
+    time          = var.deploy_timestamp,
+    tag           = var.deploy_tag,
+    workflow_name = var.deploy_workflow,
+    workflow_run  = var.deploy_runnumber,
+    by            = var.deploy_actor
+  }
 
   app_settings = {
     SPRING_PROFILES_ACTIVE                = "azure-prod"
@@ -29,6 +41,10 @@ module "simple_report_api" {
     SIMPLE_REPORT_SENDGRID_API_KEY        = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sendgrid_api_key.id})"
     SMARTY_AUTH_ID                        = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.smarty_auth_id.id})"
     SMARTY_AUTH_TOKEN                     = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.smarty_auth_token.id})"
+    DYNAMICS_CLIENT_ID                    = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.dynamics_client_id.id})"
+    DYNAMICS_CLIENT_SECRET                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.dynamics_client_secret.id})"
+    DYNAMICS_TENANT_ID                    = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.dynamics_tenant_id.id})"
+    DYNAMICS_RESOURCE_URL                 = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.dynamics_resource_url.id})"
     # true by default: can be disabled quickly here
     # SPRING_LIQUIBASE_ENABLED                       = "true"
     # this shadows (and overrides) an identical declaration in application.yaml

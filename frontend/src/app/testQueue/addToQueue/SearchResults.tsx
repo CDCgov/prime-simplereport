@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import moment from "moment";
 
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import AoEModalForm from "../AoEForm/AoEModalForm";
 import { displayFullName } from "../../utils";
 import { Patient } from "../../patients/ManagePatients";
@@ -9,6 +10,7 @@ interface SearchResultsProps {
   patients: Patient[];
   shouldShowSuggestions: boolean;
   loading: boolean;
+  dropDownRef?: React.RefObject<HTMLDivElement>;
 }
 
 interface QueueProps extends SearchResultsProps {
@@ -23,7 +25,7 @@ interface TestResultsProps extends SearchResultsProps {
 }
 
 const SearchResults = (props: QueueProps | TestResultsProps) => {
-  const { patients, shouldShowSuggestions, loading } = props;
+  const { patients, shouldShowSuggestions, loading, dropDownRef } = props;
 
   const [dialogPatient, setDialogPatient] = useState<Patient | null>(null);
   const [canAddToQueue, setCanAddToQueue] = useState(false);
@@ -48,7 +50,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
       return (
         <Button
           variant="unstyled"
-          label="Get test results"
+          label="Filter"
           onClick={() => {
             props.onPatientSelect(patient);
           }}
@@ -70,14 +72,14 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
           <tr>
             <th scope="col">Full name</th>
             <th scope="col">Date of birth</th>
-            <th scope="col">Actions</th>
+            <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
           {patients.map((p) => (
             <tr key={p.internalId}>
               <td>{displayFullName(p.firstName, p.middleName, p.lastName)}</td>
-              <td>{p.birthDate}</td>
+              <td>{moment(p.birthDate).format("MM/DD/YYYY")}</td>
               <td>{actionByPage(p)}</td>
             </tr>
           ))}
@@ -87,8 +89,10 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
   }
 
   const results = (
-    <div className="card-container shadow-3 results-dropdown">
-      <div className="usa-card__body">{resultsContent}</div>
+    <div className="card-container shadow-3 results-dropdown" ref={dropDownRef}>
+      <div className="usa-card__body results-dropdown__body">
+        {resultsContent}
+      </div>
     </div>
   );
 

@@ -9,7 +9,7 @@ import {
   getTestResultDeliveryPreferences,
 } from "../../../patientApp/timeOfTest/constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
-import Button from "../../commonComponents/Button";
+import Button from "../../commonComponents/Button/Button";
 import FormGroup from "../../commonComponents/FormGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { COVID_RESULTS } from "../../constants";
@@ -299,7 +299,7 @@ const AoEForm: React.FC<Props> = ({
         <div
           className={classnames(
             isModal
-              ? "modal__footer--sticky position-fixed flex-align-self-end"
+              ? "modal__footer--sticky position-fixed flex-align-self-end border-top border-base-lighter "
               : "margin-top-3"
           )}
         >

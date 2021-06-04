@@ -6,7 +6,7 @@ plugins {
     id 'jacoco'
     id 'org.sonarqube'  version '3.0'
     id 'com.gorylenko.gradle-git-properties' version '2.2.0'
-    id "com.diffplug.spotless" version "5.10.2"
+    id "com.diffplug.spotless" version "5.12.4"
 }
 
 group = 'gov.cdc.usds'
@@ -38,7 +38,7 @@ dependencies {
     // UI layer dependencies
     implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
     implementation "com.graphql-java-kickstart:graphiql-spring-boot-starter:${kickstartVersion}"
-    implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:3.0.0"
+    implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.0.0"
     implementation 'org.json:json:20201115'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -49,8 +49,14 @@ dependencies {
     runtimeOnly 'com.okta.sdk:okta-sdk-impl:3.0.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.1'
 
+    // SpringSession dependencies
+    runtimeOnly 'org.springframework.session:spring-session-jdbc'
+
     // App insights instrumentation
     implementation 'com.microsoft.azure:applicationinsights-core:2.6.2'
+
+    // Azure authentication library (for Dynamics 365)
+    implementation 'com.microsoft.azure:adal4j:1.6.7'
 
     // Twilio for SMS
     implementation group: "com.twilio.sdk", name: "twilio", version: "8.7.0"
@@ -73,6 +79,11 @@ dependencies {
 
     // dev tools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+
 }
 
 springBoot {
@@ -116,7 +127,7 @@ sonarqube {
         property "sonar.host.url", "https://sonarcloud.io"
         // In order to get both the frontend and backend code to report, we need to set the sonar project to the root directory.
         property "sonar.sources", "backend/src/main/java,frontend/src"
-        property "sonar.exclusions", "frontend/src/**/*.test.*,frontend/src/stories/**/*"
+        property "sonar.exclusions", "frontend/src/**/*.test.*,frontend/src/stories/**/*,frontend/src/**/*.stories.tsx"
         property "sonar.javascript.lcov.reportPaths", "frontend/coverage/lcov.info"
     }
 }

@@ -3,19 +3,32 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import classNames from "classnames";
 import { v4 as uuidv4 } from "uuid";
 import { useSelector, connect } from "react-redux";
+import {
+  useAppInsightsContext,
+  useTrackEvent,
+} from "@microsoft/applicationinsights-react-js";
 
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import { formatFullName } from "../utils/user";
 import siteLogo from "../../img/simplereport-logo-color.svg";
 import { hasPermission, appPermissions } from "../permissions";
 
-import Button from "./Button";
+import Button from "./Button/Button";
 import Dropdown from "./Dropdown";
 import useComponentVisible from "./ComponentVisible";
 import { LinkWithQuery } from "./LinkWithQuery";
 import { TrainingNotification } from "./TrainingNotification";
 
 const Header: React.FC<{}> = () => {
+  const appInsights = useAppInsightsContext();
+  const trackSupport = useTrackEvent(appInsights, "Support", {});
+
+  const handleSupportClick = (e: MouseEvent) => {
+    if (appInsights) {
+      trackSupport(e);
+    }
+  };
+
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );
@@ -188,12 +201,20 @@ const Header: React.FC<{}> = () => {
                   </span>
                 </li>
                 <li className="usa-sidenav__item">{facility.name}</li>
-                <li className="usa-sidenav__item">
-                  <Button variant="unstyled" label="Log out" onClick={logout} />
-                </li>
               </ul>
             </li>
-
+            <div>
+              <div className="navlink__support">
+                <a
+                  href="https://simplereport.gov/support"
+                  target="none"
+                  onClick={() => handleSupportClick}
+                >
+                  Support
+                </a>
+              </div>
+              <Button variant="unstyled" label="Log out" onClick={logout} />
+            </div>
             {canViewSettings ? (
               <li className="usa-nav__primary-item prime-settings-hidden">
                 <LinkWithQuery
@@ -282,6 +303,7 @@ const Header: React.FC<{}> = () => {
                   setStaffDetailsVisible(!staffDetailsVisible);
                 }}
                 activeClassName="active-nav-item"
+                data-testid="user-button"
               >
                 <FontAwesomeIcon
                   icon={"user-circle"}
@@ -308,7 +330,17 @@ const Header: React.FC<{}> = () => {
                     </span>
                   </li>
                   <li className="usa-sidenav__item">{facility.name}</li>
-                  <li className="usa-sidenav__item">
+                  <li className="usa-sidenav__item navlink__support">
+                    <a
+                      href="https://simplereport.gov/support"
+                      target="none"
+                      onClick={() => handleSupportClick}
+                      data-testid="support-link"
+                    >
+                      Support
+                    </a>
+                  </li>
+                  <li className="usa-sidenav__item margin-top-2">
                     <Button
                       variant="unstyled"
                       label=" Log out"

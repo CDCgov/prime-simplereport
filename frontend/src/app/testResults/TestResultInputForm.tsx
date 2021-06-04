@@ -1,7 +1,7 @@
 import React from "react";
 
 import RadioGroup from "../commonComponents/RadioGroup";
-import Button from "../commonComponents/Button";
+import Button from "../commonComponents/Button/Button";
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
 import { TestResult } from "../testQueue/QueueItem";
 
@@ -60,6 +60,7 @@ const TestResultInputForm: React.FC<Props> = ({
           ]}
           name={`covid-test-result-${queueItemId}`}
           selectedRadio={testResultValue}
+          wrapperClassName="prime-radio__group"
         />
         <div className="prime-test-result-submit">
           <Button

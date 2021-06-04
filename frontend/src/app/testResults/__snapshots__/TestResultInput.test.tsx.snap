@@ -9,85 +9,89 @@ exports[`TestResultInputForm should render with a value 1`] = `
   >
     SARS-CoV-2 results
   </h4>
-  <fieldset
-    className="usa-fieldset prime-radios"
+  <div
+    className="usa-form-group prime-radio__group"
   >
-    <legend
-      className="usa-legend usa-sr-only"
+    <fieldset
+      className="usa-fieldset prime-radios"
     >
-      Test result
-    </legend>
-    <div
-      className="usa-form-group"
-    >
-      <div
-        className="usa-radio"
+      <legend
+        className="usa-legend usa-sr-only"
       >
-        <input
-          checked={true}
-          className="usa-radio__input"
-          data-required="false"
-          disabled={false}
-          id="1-val-POSITIVE"
-          name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
-          onChange={[Function]}
-          onClick={[Function]}
-          type="radio"
-          value="POSITIVE"
-        />
-        <label
-          className="usa-radio__label"
-          htmlFor="1-val-POSITIVE"
-        >
-          Positive (+)
-        </label>
-      </div>
+        Test result
+      </legend>
       <div
-        className="usa-radio"
+        className=""
       >
-        <input
-          checked={false}
-          className="usa-radio__input"
-          data-required="false"
-          disabled={false}
-          id="1-val-NEGATIVE"
-          name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
-          onChange={[Function]}
-          onClick={[Function]}
-          type="radio"
-          value="NEGATIVE"
-        />
-        <label
-          className="usa-radio__label"
-          htmlFor="1-val-NEGATIVE"
+        <div
+          className="usa-radio"
         >
-          Negative (-)
-        </label>
-      </div>
-      <div
-        className="usa-radio"
-      >
-        <input
-          checked={false}
-          className="usa-radio__input"
-          data-required="false"
-          disabled={false}
-          id="1-val-UNDETERMINED"
-          name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
-          onChange={[Function]}
-          onClick={[Function]}
-          type="radio"
-          value="UNDETERMINED"
-        />
-        <label
-          className="usa-radio__label"
-          htmlFor="1-val-UNDETERMINED"
+          <input
+            checked={true}
+            className="usa-radio__input"
+            data-required="false"
+            disabled={false}
+            id="1-val-POSITIVE"
+            name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
+            onChange={[Function]}
+            onClick={[Function]}
+            type="radio"
+            value="POSITIVE"
+          />
+          <label
+            className="usa-radio__label"
+            htmlFor="1-val-POSITIVE"
+          >
+            Positive (+)
+          </label>
+        </div>
+        <div
+          className="usa-radio"
         >
-          Inconclusive
-        </label>
+          <input
+            checked={false}
+            className="usa-radio__input"
+            data-required="false"
+            disabled={false}
+            id="1-val-NEGATIVE"
+            name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
+            onChange={[Function]}
+            onClick={[Function]}
+            type="radio"
+            value="NEGATIVE"
+          />
+          <label
+            className="usa-radio__label"
+            htmlFor="1-val-NEGATIVE"
+          >
+            Negative (-)
+          </label>
+        </div>
+        <div
+          className="usa-radio"
+        >
+          <input
+            checked={false}
+            className="usa-radio__input"
+            data-required="false"
+            disabled={false}
+            id="1-val-UNDETERMINED"
+            name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
+            onChange={[Function]}
+            onClick={[Function]}
+            type="radio"
+            value="UNDETERMINED"
+          />
+          <label
+            className="usa-radio__label"
+            htmlFor="1-val-UNDETERMINED"
+          >
+            Inconclusive
+          </label>
+        </div>
       </div>
-    </div>
-  </fieldset>
+    </fieldset>
+  </div>
   <div
     className="prime-test-result-submit"
   >
@@ -112,85 +116,89 @@ exports[`TestResultInputForm should render without a value 1`] = `
   >
     SARS-CoV-2 results
   </h4>
-  <fieldset
-    className="usa-fieldset prime-radios"
+  <div
+    className="usa-form-group prime-radio__group"
   >
-    <legend
-      className="usa-legend usa-sr-only"
+    <fieldset
+      className="usa-fieldset prime-radios"
     >
-      Test result
-    </legend>
-    <div
-      className="usa-form-group"
-    >
-      <div
-        className="usa-radio"
+      <legend
+        className="usa-legend usa-sr-only"
       >
-        <input
-          checked={false}
-          className="usa-radio__input"
-          data-required="false"
-          disabled={false}
-          id="2-val-POSITIVE"
-          name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
-          onChange={[Function]}
-          onClick={[Function]}
-          type="radio"
-          value="POSITIVE"
-        />
-        <label
-          className="usa-radio__label"
-          htmlFor="2-val-POSITIVE"
-        >
-          Positive (+)
-        </label>
-      </div>
+        Test result
+      </legend>
       <div
-        className="usa-radio"
+        className=""
       >
-        <input
-          checked={false}
-          className="usa-radio__input"
-          data-required="false"
-          disabled={false}
-          id="2-val-NEGATIVE"
-          name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
-          onChange={[Function]}
-          onClick={[Function]}
-          type="radio"
-          value="NEGATIVE"
-        />
-        <label
-          className="usa-radio__label"
-          htmlFor="2-val-NEGATIVE"
+        <div
+          className="usa-radio"
         >
-          Negative (-)
-        </label>
-      </div>
-      <div
-        className="usa-radio"
-      >
-        <input
-          checked={false}
-          className="usa-radio__input"
-          data-required="false"
-          disabled={false}
-          id="2-val-UNDETERMINED"
-          name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
-          onChange={[Function]}
-          onClick={[Function]}
-          type="radio"
-          value="UNDETERMINED"
-        />
-        <label
-          className="usa-radio__label"
-          htmlFor="2-val-UNDETERMINED"
+          <input
+            checked={false}
+            className="usa-radio__input"
+            data-required="false"
+            disabled={false}
+            id="2-val-POSITIVE"
+            name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
+            onChange={[Function]}
+            onClick={[Function]}
+            type="radio"
+            value="POSITIVE"
+          />
+          <label
+            className="usa-radio__label"
+            htmlFor="2-val-POSITIVE"
+          >
+            Positive (+)
+          </label>
+        </div>
+        <div
+          className="usa-radio"
         >
-          Inconclusive
-        </label>
+          <input
+            checked={false}
+            className="usa-radio__input"
+            data-required="false"
+            disabled={false}
+            id="2-val-NEGATIVE"
+            name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
+            onChange={[Function]}
+            onClick={[Function]}
+            type="radio"
+            value="NEGATIVE"
+          />
+          <label
+            className="usa-radio__label"
+            htmlFor="2-val-NEGATIVE"
+          >
+            Negative (-)
+          </label>
+        </div>
+        <div
+          className="usa-radio"
+        >
+          <input
+            checked={false}
+            className="usa-radio__input"
+            data-required="false"
+            disabled={false}
+            id="2-val-UNDETERMINED"
+            name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
+            onChange={[Function]}
+            onClick={[Function]}
+            type="radio"
+            value="UNDETERMINED"
+          />
+          <label
+            className="usa-radio__label"
+            htmlFor="2-val-UNDETERMINED"
+          >
+            Inconclusive
+          </label>
+        </div>
       </div>
-    </div>
-  </fieldset>
+    </fieldset>
+  </div>
   <div
     className="prime-test-result-submit"
   >

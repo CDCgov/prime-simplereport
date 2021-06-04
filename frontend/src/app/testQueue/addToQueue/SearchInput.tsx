@@ -42,7 +42,7 @@ const SearchInput = ({
   }, [focusOnMount]);
 
   return (
-    <div className={className}>
+    <div className={classnames("prime-search-container", className)}>
       <form className={classes} role="search">
         <label
           className={label ? "display-block" : "usa-sr-only"}
@@ -65,6 +65,7 @@ const SearchInput = ({
             value={queryString}
             onChange={onInputChange}
             ref={inputRef}
+            onFocus={onInputChange}
           />
           <button
             type="submit"

@@ -125,7 +125,14 @@ public class TestOrderService {
   @Transactional(readOnly = true)
   public TestOrder getTestOrder(UUID id) {
     Organization org = _os.getCurrentOrganization();
-    return _repo.fetchQueueItemById(org, id).orElseThrow(TestOrderService::noSuchOrderFound);
+    return getTestOrder(org, id);
+  }
+
+  @Transactional(readOnly = true)
+  public TestOrder getTestOrder(Organization org, UUID id) {
+    return _repo
+        .fetchQueueItemByOrganizationAndId(org, id)
+        .orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder

@@ -7,8 +7,9 @@ import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName, showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
-import Button from "../commonComponents/Button";
+import Button from "../commonComponents/Button/Button";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
+import { useDocumentTitle } from "../utils/hooks";
 
 import PersonForm from "./Components/PersonForm";
 
@@ -25,6 +26,10 @@ export const GET_PATIENT = gql`
       state
       zipCode
       telephone
+      phoneNumbers {
+        type
+        number
+      }
       role
       lookupId
       email
@@ -56,7 +61,8 @@ const UPDATE_PATIENT = gql`
     $city: String
     $state: String!
     $zipCode: String!
-    $telephone: String!
+    $telephone: String
+    $phoneNumbers: [PhoneNumberInput!]
     $role: String
     $lookupId: String
     $email: String
@@ -82,6 +88,7 @@ const UPDATE_PATIENT = gql`
       state: $state
       zipCode: $zipCode
       telephone: $telephone
+      phoneNumbers: $phoneNumbers
       role: $role
       lookupId: $lookupId
       email: $email
@@ -113,6 +120,7 @@ interface EditPatientResponse {
 }
 
 const EditPatient = (props: Props) => {
+  useDocumentTitle("Edit Patient");
   const { data, loading, error } = useQuery(GET_PATIENT, {
     variables: { id: props.patientId || "" },
     fetchPolicy: "no-cache",
@@ -140,6 +148,19 @@ const EditPatient = (props: Props) => {
       variables: {
         patientId: props.patientId,
         ...person,
+        phoneNumbers: (person.phoneNumbers || [])
+          .filter(function removeEmptyPhoneNumbers(phoneNumber: PhoneNumber) {
+            return phoneNumber && phoneNumber.number && phoneNumber.type;
+          })
+          .map(function removeTypename(phoneNumber: PhoneNumber) {
+            // GraphQL query returns a `__typename` meta field on
+            // `PhoneNumber` objects which must be removed before they
+            // may be used in a mutation
+            return {
+              number: phoneNumber.number,
+              type: phoneNumber.type,
+            };
+          }),
       },
     });
     showNotification(
@@ -165,6 +186,19 @@ const EditPatient = (props: Props) => {
             <PersonForm
               patient={{
                 ...data.patient,
+                phoneNumbers: data.patient.phoneNumbers.sort(function (
+                  x: PhoneNumber,
+                  y: PhoneNumber
+                ) {
+                  // A patient's primary phone number is returned in the
+                  // query as `telephone` and should be the first element
+                  // of the array of phone numbers
+                  return x.number === data.patient.telephone
+                    ? -1
+                    : y.number === data.patient.telephone
+                    ? 1
+                    : 0;
+                }),
                 facilityId:
                   data.patient.facility === null
                     ? null

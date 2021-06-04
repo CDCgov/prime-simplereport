@@ -12,7 +12,7 @@ body,
 .main-wrapper {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  min-height: 100vh;
 }
 
 main {
@@ -37,10 +37,6 @@ main {
   > * {
     margin-right: 2em;
   }
-}
-
-.prime-radios .usa-form-group:not(.prime-radio--horizontal__container) .usa-radio {
-  margin-top: 1em;
 }
 
 .usa-form-group {

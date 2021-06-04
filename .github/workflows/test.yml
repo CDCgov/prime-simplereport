@@ -75,7 +75,7 @@ jobs:
           path: backend/build/reports/tests/test
           retention-days: 7
       - name: Use Node.js ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2.1.5
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache npm local files
@@ -91,6 +91,7 @@ jobs:
         working-directory: ./frontend
         run: yarn test:ci
       - name: Sonar analysis
+        if: ${{ github.actor != 'dependabot[bot]' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -134,7 +135,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2.1.5
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache npm local files

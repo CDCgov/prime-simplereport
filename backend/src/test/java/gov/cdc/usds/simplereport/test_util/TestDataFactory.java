@@ -6,7 +6,9 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
+import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -14,6 +16,8 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
@@ -22,11 +26,14 @@ import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
+import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
+import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
+import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,12 +63,17 @@ public class TestDataFactory {
   @Autowired private TestOrderRepository _testOrderRepo;
   @Autowired private TestEventRepository _testEventRepo;
   @Autowired private PatientAnswersRepository _patientAnswerRepo;
+  @Autowired private PhoneNumberRepository _phoneNumberRepo;
   @Autowired private PatientLinkRepository _patientLinkRepository;
+  @Autowired private PatientRegistrationLinkRepository _patientRegistrationLinkRepository;
   @Autowired private SpecimenTypeRepository _specimenRepo;
   @Autowired private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
+  @Autowired private DemoOktaRepository _oktaRepo;
 
   public Organization createValidOrg(String name, String externalId, boolean identityVerified) {
-    return _orgRepo.save(new Organization(name, externalId, identityVerified));
+    Organization org = _orgRepo.save(new Organization(name, externalId, identityVerified));
+    _oktaRepo.createOrganization(org);
+    return org;
   }
 
   public Organization createValidOrg() {
@@ -95,6 +107,7 @@ public class TestDataFactory {
             dev,
             configuredDevices);
     Facility save = _facilityRepo.save(facility);
+    _oktaRepo.createFacility(save);
     return save;
   }
 
@@ -119,6 +132,10 @@ public class TestDataFactory {
 
   public Person createMinimalPerson(Organization org, Facility fac, PersonName names) {
     Person p = new Person(names, org, fac);
+    _personRepo.save(p);
+    PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, "503-867-5309");
+    _phoneNumberRepo.save(pn);
+    p.setPrimaryPhone(pn);
     return _personRepo.save(p);
   }
 
@@ -139,7 +156,6 @@ public class TestDataFactory {
             null,
             DEFAULT_BDAY,
             getAddress(),
-            telephone,
             PersonRole.RESIDENT,
             null,
             "W",
@@ -148,6 +164,10 @@ public class TestDataFactory {
             "M",
             false,
             false);
+    _personRepo.save(p);
+    PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, telephone);
+    _phoneNumberRepo.save(pn);
+    p.setPrimaryPhone(pn);
     return _personRepo.save(p);
   }
 
@@ -192,6 +212,20 @@ public class TestDataFactory {
   public PatientLink expirePatientLink(PatientLink pl) {
     pl.expire();
     return _patientLinkRepository.save(pl);
+  }
+
+  @Transactional
+  public PatientSelfRegistrationLink createPatientRegistrationLink(Organization org) {
+    String link = UUID.randomUUID().toString();
+    PatientSelfRegistrationLink prl = new PatientSelfRegistrationLink(org, link);
+    return _patientRegistrationLinkRepository.save(prl);
+  }
+
+  @Transactional
+  public PatientSelfRegistrationLink createPatientRegistrationLink(Facility fac) {
+    String link = UUID.randomUUID().toString();
+    PatientSelfRegistrationLink prl = new PatientSelfRegistrationLink(fac, link);
+    return _patientRegistrationLinkRepository.save(prl);
   }
 
   @Transactional
@@ -243,5 +277,13 @@ public class TestDataFactory {
 
   public StreetAddress getAddress() {
     return new StreetAddress("736 Jackson PI NW", null, "Washington", "DC", "20503", "Washington");
+  }
+
+  public static List<PhoneNumber> getListOfOnePhoneNumber() {
+    return List.of(new PhoneNumber(PhoneType.MOBILE, "(503) 867-5309"));
+  }
+
+  public static List<PhoneNumberInput> getListOfOnePhoneNumberInput() {
+    return List.of(new PhoneNumberInput("MOBILE", "(503) 867-5309"));
   }
 }
