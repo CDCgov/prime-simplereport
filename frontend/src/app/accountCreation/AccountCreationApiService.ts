@@ -26,7 +26,7 @@ const request = async (path: string, body: any) => {
   try {
     return await res.json();
   } catch {
-    return "success";
+    return res;
   }
 };
 
