@@ -338,38 +338,40 @@ export const DetachedTestResultsList: any = ({
             {showFilters && (
               <div
                 id="test-results-search-by-patient-input"
-                className="display-flex grid-row grid-gap flex-row flex-align-end position-relative bg-base-lightest padding-x-3 padding-y-2"
+                className="position-relative bg-base-lightest"
               >
-                <Select
-                  label="Result"
-                  name="result"
-                  value={resultFilter}
-                  options={[
-                    {
-                      value: COVID_RESULTS.POSITIVE,
-                      label: TEST_RESULT_DESCRIPTIONS.POSITIVE,
-                    },
-                    {
-                      value: COVID_RESULTS.NEGATIVE,
-                      label: TEST_RESULT_DESCRIPTIONS.NEGATIVE,
-                    },
-                    {
-                      value: COVID_RESULTS.INCONCLUSIVE,
-                      label: TEST_RESULT_DESCRIPTIONS.UNDETERMINED,
-                    },
-                  ]}
-                  defaultSelect
-                  onChange={setResultFilter}
-                />
-                <SearchInput
-                  onSearchClick={onSearchClick}
-                  onInputChange={onInputChange}
-                  queryString={debounced}
-                  disabled={!allowQuery}
-                  label={"Search by name"}
-                  placeholder={""}
-                  className="usa-form-group"
-                />
+                <div className="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2">
+                  <Select
+                    label="Result"
+                    name="result"
+                    value={resultFilter}
+                    options={[
+                      {
+                        value: COVID_RESULTS.POSITIVE,
+                        label: TEST_RESULT_DESCRIPTIONS.POSITIVE,
+                      },
+                      {
+                        value: COVID_RESULTS.NEGATIVE,
+                        label: TEST_RESULT_DESCRIPTIONS.NEGATIVE,
+                      },
+                      {
+                        value: COVID_RESULTS.INCONCLUSIVE,
+                        label: TEST_RESULT_DESCRIPTIONS.UNDETERMINED,
+                      },
+                    ]}
+                    defaultSelect
+                    onChange={setResultFilter}
+                  />
+                  <SearchInput
+                    onSearchClick={onSearchClick}
+                    onInputChange={onInputChange}
+                    queryString={debounced}
+                    disabled={!allowQuery}
+                    label={"Search by name"}
+                    placeholder={""}
+                    className="usa-form-group"
+                  />
+                </div>
                 <SearchResults
                   page="test-results"
                   patients={patientData?.patients || []}
@@ -416,8 +418,16 @@ export const DetachedTestResultsList: any = ({
 };
 
 export const resultsCountQuery = gql`
-  query GetResultsCountByFacility($facilityId: ID, $patientId: ID) {
-    testResultsCount(facilityId: $facilityId, patientId: $patientId)
+  query GetResultsCountByFacility(
+    $facilityId: ID
+    $patientId: ID
+    $result: String
+  ) {
+    testResultsCount(
+      facilityId: $facilityId
+      patientId: $patientId
+      result: $result
+    )
   }
 `;
 
