@@ -9,6 +9,7 @@ import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 import { AccountCreationApi } from "../AccountCreationApiService";
 import Alert from "../../commonComponents/Alert";
+import { LoadingCard } from "../LoadingCard/LoadingCard";
 
 interface Props {
   hint: ReactElement;
@@ -55,13 +56,7 @@ export const MfaVerify = (props: Props) => {
   };
 
   if (loading) {
-    return (
-      <main>
-        <div className="grid-container maxw-tablet">
-          <p className="margin-top-3">Validating code...</p>
-        </div>
-      </main>
-    );
+    return <LoadingCard message="Validating code..." />;
   }
 
   if (submitted) {

@@ -16,6 +16,7 @@ import {
 } from "../../utils/text";
 import { AccountCreationApi } from "../AccountCreationApiService";
 import { RootState } from "../../store";
+import { LoadingCard } from "../LoadingCard/LoadingCard";
 
 export const PasswordForm = () => {
   // State setup
@@ -162,13 +163,7 @@ export const PasswordForm = () => {
   });
 
   if (loading) {
-    return (
-      <main>
-        <div className="grid-container maxw-tablet">
-          <p className="margin-top-3">Validating password...</p>
-        </div>
-      </main>
-    );
+    return <LoadingCard message="Validating password..." />;
   }
 
   if (submitted) {

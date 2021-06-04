@@ -6,6 +6,7 @@ import Button from "../../commonComponents/Button/Button";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 import iconLoader from "../../../../node_modules/uswds/dist/img/loader.svg";
+import { LoadingCard } from "../LoadingCard/LoadingCard";
 
 interface Props {
   enrollFunction: Function;
@@ -22,6 +23,10 @@ export const MfaTotp = (props: Props) => {
     };
     getQrCode();
   }, [props]);
+
+  if (!qrCode) {
+    return <LoadingCard message="Retrieving QR code..." />;
+  }
 
   return (
     <CardBackground>
