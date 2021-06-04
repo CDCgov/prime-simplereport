@@ -368,6 +368,7 @@ export const DetachedTestResultsList: any = ({
                   disabled={!allowQuery}
                   label={"Search by name"}
                   placeholder={""}
+                  className="usa-form-group"
                 />
                 <SearchResults
                   page="test-results"
