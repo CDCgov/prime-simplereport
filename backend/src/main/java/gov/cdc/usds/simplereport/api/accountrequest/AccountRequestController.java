@@ -84,9 +84,9 @@ public class AccountRequestController {
   public void submitWaitlistRequest(@Valid @RequestBody WaitlistRequest body) throws IOException {
     String subject = "New waitlist request";
     if (LOG.isInfoEnabled()) {
-      LOG.info("Waitlist request submitted: {}", _objectMapper.writeValueAsString(body));
+      LOG.info("Waitlist request submitted: {}", objectMapper.writeValueAsString(body));
     }
-    _es.send(_sendGridProperties.getWaitlistRecipient(), subject, body);
+    _es.send(sendGridProperties.getWaitlistRecipient(), subject, body);
   }
 
   /**
@@ -98,7 +98,7 @@ public class AccountRequestController {
   public void submitAccountRequest(@Valid @RequestBody AccountRequest body) throws IOException {
     String subject = "New account request";
     if (LOG.isInfoEnabled()) {
-      LOG.info("Account request submitted: {}", _objectMapper.writeValueAsString(body));
+      LOG.info("Account request submitted: {}", objectMapper.writeValueAsString(body));
     }
 
     Map<String, String> reqVars =
@@ -197,7 +197,7 @@ public class AccountRequestController {
      * rollback mechanisms down the road, this won't be an issue.)
      */
     // send summary email to SR support
-    _es.send(_sendGridProperties.getAccountRequestRecipient(), subject, body);
+    _es.send(sendGridProperties.getAccountRequestRecipient(), subject, body);
     // send next-steps email to requester
     _es.sendWithProviderTemplate(body.getEmail(), EmailProviderTemplate.ACCOUNT_REQUEST);
 
