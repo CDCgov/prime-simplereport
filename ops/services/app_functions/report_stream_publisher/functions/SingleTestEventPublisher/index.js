@@ -109,7 +109,7 @@ function jsonToCsv(message) {
 
 function formatValue(value) {
   if (typeof value === 'string') {
-    return `"${value.replace('"', '""')}"`;
+    return `"${value.replace(/"/g, '""')}"`;
   }
 
   if (typeof value === 'undefined' || value === null) {
