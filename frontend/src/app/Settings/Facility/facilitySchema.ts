@@ -34,20 +34,8 @@ const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
   middleName: yup.string().nullable(),
   lastName: yup.string().test(orderingProviderIsRequired),
   suffix: yup.string().nullable(),
-  NPI: yup.string().test(function (input = ""): boolean {
-    if (this?.options?.context?.orderingProviderIsRequired) {
-      return !isEmptyString(input);
-    }
-
-    return true;
-  }),
-  phone: yup.string().test(function (input = ""): boolean {
-    if (this?.options?.context?.orderingProviderIsRequired) {
-      return !isEmptyString(input);
-    }
-
-    return true;
-  }),
+  NPI: yup.string().test(orderingProviderIsRequired),
+  phone: yup.string().test(orderingProviderIsRequired),
   street: yup.string().nullable(),
   streetTwo: yup.string().nullable(),
   city: yup.string().nullable(),
