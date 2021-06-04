@@ -17,24 +17,22 @@ export type RequiredFacilityFields = PartialBy<
   "id" | "email" | "streetTwo" | "city" | "orderingProvider"
 >;
 
+function orderingProviderIsRequired(
+  this: yup.TestContext<Record<string, any>>,
+  input = ""
+): boolean {
+  if (this?.options?.context?.orderingProviderIsRequired) {
+    return !isEmptyString(input);
+  }
+  return true;
+}
+
 type RequiredProviderFields = Nullable<Partial<Provider>>;
 
 const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
-  firstName: yup.string().test(function (input = ""): boolean {
-    if (this?.options?.context?.orderingProviderIsRequired) {
-      return !isEmptyString(input);
-    }
-
-    return true;
-  }),
+  firstName: yup.string().test(orderingProviderIsRequired),
   middleName: yup.string().nullable(),
-  lastName: yup.string().test(function (input = ""): boolean {
-    if (this?.options?.context?.orderingProviderIsRequired) {
-      return !isEmptyString(input);
-    }
-
-    return true;
-  }),
+  lastName: yup.string().test(orderingProviderIsRequired),
   suffix: yup.string().nullable(),
   NPI: yup.string().test(function (input = ""): boolean {
     if (this?.options?.context?.orderingProviderIsRequired) {
