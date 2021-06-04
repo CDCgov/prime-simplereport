@@ -140,7 +140,8 @@ public class UserAccountCreationController {
     String userId = getUserId(request.getSession());
     JSONObject factorData = _oktaAuth.enrollAuthenticatorAppMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID_KEY, factorData.getString("factorId"));
-    return factorData.getString("qrcode");
+    return new JSONObject(factorData, "qrcode").toString();
+    // return factorData.getString("qrcode");
   }
 
   /**
