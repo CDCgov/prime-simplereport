@@ -23,7 +23,7 @@ import {
 } from "../commonComponents/QueryWrapper";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import { getUrl } from "../utils/url";
-import { useOutsideClick } from "../utils/hooks";
+import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
 import Pagination from "../commonComponents/Pagination";
 import { TEST_RESULT_DESCRIPTIONS } from "../constants";
 import "./TestResultsList.scss";
@@ -403,6 +403,8 @@ type OmittedProps =
 type TestResultsListProps = Omit<Props, OmittedProps>;
 
 const TestResultsList = (props: TestResultsListProps) => {
+  useDocumentTitle("Results");
+
   const activeFacilityId = useSelector(
     (state) => (state as any).facility.id as string
   );

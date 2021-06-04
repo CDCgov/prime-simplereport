@@ -34,7 +34,7 @@ export const SecurityQuestion = () => {
   const validateSecurityAnswer = (): boolean => {
     let error = "";
     if (securityAnswer === "") {
-      error = "Enter a security answer";
+      error = "Enter your answer";
     }
     setSecurityAnswerError(error);
     return error === "";
@@ -50,7 +50,7 @@ export const SecurityQuestion = () => {
         );
         setSubmitted(true);
       } catch (error) {
-        setSecurityQuestionError(`API Error: ${error}`);
+        setSecurityQuestionError(`API Error: ${error?.message}`);
       } finally {
         setLoading(false);
       }
@@ -68,13 +68,7 @@ export const SecurityQuestion = () => {
   }
 
   if (submitted) {
-    return (
-      <Redirect
-        to={{
-          pathname: "/mfa-select",
-        }}
-      />
-    );
+    return <Redirect to="/mfa-select" />;
   }
 
   return (
