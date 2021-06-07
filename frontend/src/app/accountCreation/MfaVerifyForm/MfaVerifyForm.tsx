@@ -4,13 +4,13 @@ import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
 
 interface Props {
-  buttonCode?: boolean;
+  resendCode?: boolean;
 }
 
 export const MfaVerifyForm = (props: Props) => {
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState("");
-  const buttonCode = props.buttonCode;
+  const resendCode = props.resendCode;
 
   const validateCode = () => {
     if (code === "") {
@@ -40,15 +40,17 @@ export const MfaVerifyForm = (props: Props) => {
         type={"submit"}
         onClick={validateCode}
       />
-      <p className="margin-top-4 margin-bottom-0">
-        Didn't get your security code?
-      </p>
-      {buttonCode && (
-        <Button
-          className="usa-button--unstyled margin-top-105"
-          label={"Send another code"}
-          type={"submit"}
-        />
+      {resendCode && (
+        <>
+          <p className="margin-top-4 margin-bottom-0">
+            Didn't get your security code?
+          </p>
+          <Button
+            className="usa-button--unstyled margin-top-105"
+            label={"Send another code"}
+            type={"submit"}
+          />
+        </>
       )}
     </>
   );
