@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -256,7 +255,7 @@ class UserAccountCreationControllerTest {
         createActivationRequest(session, VALID_PASSWORD_REQUEST);
 
     MockHttpServletRequestBuilder enrollAuthAppMfaBuilder =
-        createGetRequest(
+        createPostRequest(
             session, VALID_ENROLL_AUTH_APP_MFA_REQUEST, ResourceLinks.USER_ENROLL_AUTH_APP_MFA);
 
     HttpSession setPasswordResponse = performRequestAndGetSession(activateUserBuilder);
@@ -278,7 +277,7 @@ class UserAccountCreationControllerTest {
     MockHttpSession session = new MockHttpSession();
 
     MockHttpServletRequestBuilder enrollAuthAppMfaBuilder =
-        createGetRequest(
+        createPostRequest(
             session, VALID_ENROLL_AUTH_APP_MFA_REQUEST, ResourceLinks.USER_ENROLL_AUTH_APP_MFA);
 
     this._mockMvc.perform(enrollAuthAppMfaBuilder).andExpect(status().is4xxClientError());
@@ -292,7 +291,7 @@ class UserAccountCreationControllerTest {
         createActivationRequest(session, VALID_PASSWORD_REQUEST);
 
     MockHttpServletRequestBuilder enrollAuthAppMfaBuilder =
-        createGetRequest(
+        createPostRequest(
             session, "{\"userInput\":\"lastPass\"}", ResourceLinks.USER_ENROLL_AUTH_APP_MFA);
 
     this._mockMvc.perform(activateUserBuilder).andExpect(status().isOk());
@@ -308,7 +307,7 @@ class UserAccountCreationControllerTest {
         createActivationRequest(session, VALID_PASSWORD_REQUEST);
 
     MockHttpServletRequestBuilder enrollAuthAppMfaBuilder =
-        createGetRequest(
+        createPostRequest(
             session, VALID_ENROLL_AUTH_APP_MFA_REQUEST, ResourceLinks.USER_ENROLL_AUTH_APP_MFA);
 
     MockHttpServletRequestBuilder verifyPasscodeBuilder =
@@ -332,7 +331,7 @@ class UserAccountCreationControllerTest {
         createActivationRequest(session, VALID_PASSWORD_REQUEST);
 
     MockHttpServletRequestBuilder enrollAuthAppMfaBuilder =
-        createGetRequest(
+        createPostRequest(
             session, VALID_ENROLL_AUTH_APP_MFA_REQUEST, ResourceLinks.USER_ENROLL_AUTH_APP_MFA);
 
     MockHttpServletRequestBuilder verifyPasscodeBuilder =
@@ -379,16 +378,6 @@ class UserAccountCreationControllerTest {
   private MockHttpServletRequestBuilder createPostRequest(
       MockHttpSession session, String requestBody, String link) {
     return post(link)
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .accept(MediaType.APPLICATION_JSON)
-        .characterEncoding("UTF-8")
-        .content(requestBody)
-        .session(session);
-  }
-
-  private MockHttpServletRequestBuilder createGetRequest(
-      MockHttpSession session, String requestBody, String link) {
-    return get(link)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .accept(MediaType.APPLICATION_JSON)
         .characterEncoding("UTF-8")

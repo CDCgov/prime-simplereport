@@ -15,7 +15,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -134,13 +133,13 @@ public class UserAccountCreationController {
    * @param request contains session information about the user, including their Okta id.
    * @throws OktaAuthenticationFailureException if Okta cannot enroll the user in MFA.
    */
-  @GetMapping("/authenticator-qr")
-  public String getAuthQrCode(
-      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
+  @PostMapping("/authenticator-qr")
+  public String getAuthQrCode(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
+      throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
     JSONObject factorData = _oktaAuth.enrollAuthenticatorAppMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID_KEY, factorData.getString("factorId"));
-    return factorData.getString("qrcode");
+    return new JSONObject(factorData, "qrcode").toString();
   }
 
   /**
