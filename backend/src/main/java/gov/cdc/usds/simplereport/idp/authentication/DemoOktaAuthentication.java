@@ -152,13 +152,6 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     resultJson.put("activation", activationContents);
     resultJson.put("factorId", factorId);
 
-    // JSONObject json =
-    //     new JSONObject(
-    //         "{\"factorId\":"
-    //             + factorId
-    //             + ", \"activation\": {\"challenge\":\"challengeString\",\"user\": {\"id\":"
-    //             + userId
-    //             + "}}}");
     DemoMfa securityKeyMfa =
         new DemoMfa(FactorType.WEBAUTHN, "FIDO", factorId, FactorStatus.PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(securityKeyMfa);

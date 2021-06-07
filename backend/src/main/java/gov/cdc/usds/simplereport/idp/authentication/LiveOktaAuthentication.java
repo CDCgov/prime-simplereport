@@ -341,36 +341,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     }
   }
 
-
-  /**
-   * curl -v -X POST \
--H "Accept: application/json" \
--H "Content-Type: application/json" \
--H "Authorization: SSWS ${api_token}" \
--d '{
-  "attestation": "o2NmbXRmcGFja2VkZ2F0dFN0bXSiY2FsZyZjc2lnWEgwRgIhAMvf2+dzXlHZN1um38Y8aFzrKvX0k5dt/hnDu9lahbR4AiEAuwtMg3IoaElWMp00QrP/+3Po/6LwXfmYQVfsnsQ+da1oYXV0aERhdGFYxkgb9OHGifjS2dG03qLRqvXrDIRyfGAuc+GzF1z20/eVRV2wvl6tzgACNbzGCmSLCyXx8FUDAEIBvWNHOcE3QDUkDP/HB1kRbrIOoZ1dR874ZaGbMuvaSVHVWN2kfNiO4D+HlAzUEFaqlNi5FPqKw+mF8f0XwdpEBlClAQIDJiABIVgg0a6oo3W0JdYPu6+eBrbr0WyB3uJLI3ODVgDfQnpgafgiWCB4fFo/5iiVrFhB8pNH2tbBtKewyAHuDkRolcCnVaCcmQ==",
-  "clientData": "eyJjaGFsbGVuZ2UiOiJVSk5wYW9sVWt0dF9vcEZPNXJMYyIsIm9yaWdpbiI6Imh0dHBzOi8vcmFpbi5va3RhMS5jb20iLCJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIn0="
-}' "https://${yourOktaDomain}/api/v1/users/00u15s1KDETTQMQYABRL/factors/fwf2rovRxogXJ0nDy0g4/lifecycle/activate"
-
-   */
-  /*
-  public void activateSecurityKey(String userId, String factorId, String attestation, String clientData)
-  throws OktaAuthenticationFailureException {
-    JSONObject requestBody = new JSONObject();
-    requestBody.put("attestation", attestation);
-    requestBody.put("clientData", clientData);
-    HttpEntity<String> entity = new HttpEntity<>(requestBody.toString(), createHeaders());
-    String activateWebAuthnUrl = _orgUrl + USER_API_ENDPOINT + userId + "/factors/" + factorId + "/lifecycle/activate";
-    try {
-      String postResponse = _restTemplate.postForObject(activateWebAuthnUrl, entity, String.class);
-      JSONObject responseJson = new JSONObject(postResponse);
-      System.out.println("responseJSON: " + responseJson);
-    } catch (RestClientException | NullPointerException | ResourceException e) {
-      throw new OktaAuthenticationFailureException("Security key could not be enrolled", e);
-    }
-  }
-  */
-
   /**
    * Using the Okta Management SDK, activate MFA enrollment with a user-provided passcode. This
    * method should be used for sms, call, and authentication app MFA options.
@@ -384,13 +354,17 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    */
   public void verifyActivationPasscode(String userId, String factorId, String passcode)
       throws OktaAuthenticationFailureException {
+    LOG.info("verifying activation passcode");
     try {
       User user = _client.getUser(userId);
       UserFactor factor = user.getFactor(factorId);
+      LOG.info("verification: got user and factor");
+      LOG.info("factorType: " + factor.getFactorType());
       ActivateFactorRequest activateFactor = _client.instantiate(ActivateFactorRequest.class);
       activateFactor.setPassCode(passcode);
       factor.activate(activateFactor);
     } catch (ResourceException | NullPointerException | IllegalArgumentException e) {
+      LOG.info("passcode could not be verified. The following exception was thrown: ", e);
       throw new OktaAuthenticationFailureException(
           "Activation passcode could not be verifed; MFA activation failed.", e);
     }
