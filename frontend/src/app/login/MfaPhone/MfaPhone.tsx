@@ -15,7 +15,7 @@ export const MfaPhone = (props: Props) => {
           Enter the security code sent to <b>{props.phoneNumber}</b>. This code
           will expire in 5 minutes.
         </p>
-        <MfaVerifyForm buttonCode />
+        <MfaVerifyForm resendCode />
       </Card>
       <p className="margin-top-4">
         <a href="#0">Choose another authentication method</a>
