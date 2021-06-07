@@ -354,8 +354,9 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void addUserToCurrentOrg_enabledUserExists_failure() {
     useOrgAdmin();
+    runBoilerplateAddUserToCurrentOrg(Role.ADMIN);
+
     ObjectNode variables = makeBoilerplateArgs(Role.ADMIN, false);
-    variables.put("email", "allfacilities@example.com");
     runQuery(
         "add-user-to-current-org",
         "addUserToCurrentOrgNovel",

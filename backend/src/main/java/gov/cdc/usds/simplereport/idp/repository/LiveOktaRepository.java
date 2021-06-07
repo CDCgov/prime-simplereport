@@ -250,7 +250,7 @@ public class LiveOktaRepository implements OktaRepository {
     // transitioning from SUSPENDED -> DEPROVISIONED -> ACTIVE will reset the user's password
     // and password reset question.  `.activate(true)` will send an activation email (just like
     // creating a new account).  This cannot be done with `.reactivate()` because `.reactivate()`
-    // requires  the user to be in PROVISIONED state
+    // requires the user to be in PROVISIONED state
     user.deactivate();
     user.activate(true);
   }

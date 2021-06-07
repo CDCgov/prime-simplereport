@@ -188,7 +188,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             () ->
                 _service.createUserInCurrentOrg("captain@pirate.com", personName, Role.USER, true));
 
-    assertEquals("The user already exists, but is not in your organization.", caught.getMessage());
+    assertEquals("A user with this email address already exists.", caught.getMessage());
   }
 
   private void roleCheck(final UserInfo userInfo, final Set<OrganizationRole> expected) {

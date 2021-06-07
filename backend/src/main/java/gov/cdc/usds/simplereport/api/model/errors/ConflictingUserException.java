@@ -11,8 +11,8 @@ public class ConflictingUserException extends RuntimeException implements GraphQ
 
   private static final long serialVersionUID = 1L;
 
-  public ConflictingUserException(String errorMessage) {
-    super(errorMessage);
+  public ConflictingUserException() {
+    super("A user with this email address already exists.");
   }
 
   @Override // should-be-defaulted unused interface method

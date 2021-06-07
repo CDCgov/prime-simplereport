@@ -68,19 +68,18 @@ public class ApiUserService {
       String username, PersonName name, Role role, boolean active) {
     Organization org = _orgService.getCurrentOrganization();
 
-    Optional<ApiUser> found = _apiUserRepo.findByLoginEmailIncludeArchived(username);
+    Optional<ApiUser> found = _apiUserRepo.findByLoginEmailIncludeArchived(username.toLowerCase());
     if (found.isPresent()) {
-      return reprovisionUserHelper(found.get(), name, org, role);
+      return reprovisionUser(found.get(), name, org, role);
     }
 
     return createUserHelper(username, name, org, role, true);
   }
 
-  private UserInfo reprovisionUserHelper(
-      ApiUser apiUser, PersonName name, Organization org, Role role) {
+  private UserInfo reprovisionUser(ApiUser apiUser, PersonName name, Organization org, Role role) {
     if (!apiUser.isDeleted()) {
       // an enabled user with this email address exists (in some org)
-      throw new ConflictingUserException("A user with this email address already exists.");
+      throw new ConflictingUserException();
     }
 
     OrganizationRoleClaims claims =
@@ -88,14 +87,10 @@ public class ApiUserService {
             .getOrganizationRoleClaimsForUser(apiUser.getLoginEmail())
             .orElseThrow(MisconfiguredUserException::new);
     if (!org.getExternalId().equals(claims.getOrganizationExternalId())) {
-      throw new ConflictingUserException(
-          "The user already exists, but is not in your organization.");
+      throw new ConflictingUserException();
     }
 
     // re-provision the user
-    apiUser.setNameInfo(name);
-    apiUser.setIsDeleted(false);
-
     IdentityAttributes userIdentity = new IdentityAttributes(apiUser.getLoginEmail(), name);
     _oktaRepo.reprovisionUser(userIdentity);
 
@@ -104,6 +99,9 @@ public class ApiUserService {
         EnumSet.of(role.toOrganizationRole(), OrganizationRole.getDefault());
     Optional<OrganizationRoleClaims> roleClaims =
         _oktaRepo.updateUserPrivileges(apiUser.getLoginEmail(), org, Set.of(), roles);
+
+    apiUser.setNameInfo(name);
+    apiUser.setIsDeleted(false);
 
     Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
     boolean isAdmin = isAdmin(apiUser);
