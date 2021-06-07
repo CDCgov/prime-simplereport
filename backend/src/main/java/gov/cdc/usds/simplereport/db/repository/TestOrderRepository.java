@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.repository;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +42,6 @@ public interface TestOrderRepository extends AuditedEntityRepository<TestOrder> 
   @EntityGraph(attributePaths = "patient")
   public List<TestOrder> fetchPastResults(Organization org, Facility facility);
 
-  @Query(BASE_ORG_QUERY + " and q.testEventId = :testEventId")
-  TestOrder findByTestEventId(Organization org, UUID testEventId);
+  @Query(BASE_ORG_QUERY + " and q.testEvent = :testEvent")
+  TestOrder findByTestEvent(Organization org, TestEvent testEvent);
 }
