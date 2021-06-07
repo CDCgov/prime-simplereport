@@ -10,11 +10,18 @@ public class AuthorizationProperties {
   private final String roleClaim;
   private final String rolePrefix;
   private final String adminGroupName;
+  private final String environmentName;
 
   public AuthorizationProperties(String roleClaim, String environmentName) {
+    this.environmentName = environmentName;
     this.roleClaim = roleClaim;
     this.rolePrefix = "SR-" + environmentName.toUpperCase() + "-TENANT:";
     this.adminGroupName = "SR-" + environmentName.toUpperCase() + "-ADMINS";
+  }
+
+  // This getter exists to satisfy the config metadata parser for application.yamls
+  public String getEnvironmentName() {
+    return environmentName;
   }
 
   public String getRoleClaim() {

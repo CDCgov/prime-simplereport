@@ -64,7 +64,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     assertEquals(1, queue.size());
     TestEvent event = _dataFactory.doTest(order, TestResult.NEGATIVE);
     flush();
-    TestOrder lookuporder = _repo.findByTestEventId(order.getOrganization(), event.getInternalId());
+    TestOrder lookuporder = _repo.findByTestEvent(order.getOrganization(), event);
     assertNotNull(lookuporder);
     assertEquals(lookuporder.getInternalId(), order.getInternalId());
     assertEquals(0, _repo.fetchQueue(gtown, site).size());
@@ -111,17 +111,15 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     _repo.save(order);
     flush();
 
-    assertNotNull(_repo.findByTestEventId(gtown, ev.getInternalId()));
-    assertEquals(ev.getInternalId(), order.getTestEventId());
+    assertNotNull(_repo.findByTestEvent(gtown, ev));
+    assertEquals(ev, order.getTestEvent());
 
     // LocalDate.now() makes it random.
     String unitTestCorrectionStr = "Correction unit test: " + LocalDate.now().toString();
     order.setReasonForCorrection(unitTestCorrectionStr);
     _repo.save(order);
     flush();
-    assertEquals(
-        unitTestCorrectionStr,
-        _repo.findByTestEventId(gtown, ev.getInternalId()).getReasonForCorrection());
+    assertEquals(unitTestCorrectionStr, _repo.findByTestEvent(gtown, ev).getReasonForCorrection());
   }
 
   @Test
