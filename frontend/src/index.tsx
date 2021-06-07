@@ -1,12 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Provider } from "react-redux";
 import { ApolloProvider } from "@apollo/client";
 import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import Modal from "react-modal";
 
 import App from "./app/App";
-import { store } from "./app/store";
 import AccountCreationApp from "./app/accountCreation/AccountCreationApp";
 import TelemetryProvider from "./app/telemetry-provider";
 import HealthChecks from "./app/HealthChecks";
@@ -40,7 +38,6 @@ if (window.location.hash) {
 export const ReactApp = (
   <ApolloProvider client={client}>
     <React.StrictMode>
-      <Provider store={store}>
         <Router basename={process.env.PUBLIC_URL}>
           <TelemetryProvider
             instrumentationKey={process.env.REACT_APP_APPINSIGHTS_KEY}
@@ -58,7 +55,6 @@ export const ReactApp = (
             </Switch>
           </TelemetryProvider>
         </Router>
-      </Provider>
     </React.StrictMode>
   </ApolloProvider>
 );
