@@ -225,10 +225,18 @@ type Query {
   patient(id: ID!): Patient
   queue(facilityId: ID!): [TestOrder]
     @requiredPermissions(anyOf: ["START_TEST", "UPDATE_TEST", "SUBMIT_TEST"])
-  testResults(facilityId: ID, patientId: ID, pageNumber: Int, pageSize: Int): [TestResult]
-    @requiredPermissions(allOf: ["READ_RESULT_LIST"])
-  testResultsCount(facilityId: ID, patientId: ID): Int
-    @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  testResults(
+    facilityId: ID
+    patientId: ID
+    result: String
+    pageNumber: Int 
+    pageSize: Int
+  ): [TestResult] @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  testResultsCount(
+    facilityId: ID
+    patientId: ID
+    result: String
+  ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
