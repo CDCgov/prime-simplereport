@@ -229,7 +229,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   return (
     <main className="prime-home">
       <div className="grid-container">
-        <div className="grid-row position-relative">
+        <div className="position-relative">
           <AddToQueueSearch
             refetchQueue={refetch}
             facilityId={activeFacilityId}

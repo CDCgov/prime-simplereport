@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router";
 import createMockStore from "redux-mock-store";
+import { useTrackEvent } from "@microsoft/applicationinsights-react-js";
 
 import Header from "../Header";
 
@@ -20,6 +21,11 @@ const store = mockStore({
     { id: "2", name: "Facility 2" },
   ],
 });
+
+jest.mock("@microsoft/applicationinsights-react-js", () => ({
+  useAppInsightsContext: () => {},
+  useTrackEvent: jest.fn(),
+}));
 
 describe("Header.tsx", () => {
   const OLD_ENV = process.env;
@@ -63,5 +69,17 @@ describe("Header.tsx", () => {
     process.env.REACT_APP_IS_TRAINING_SITE = "false";
     expect(screen.queryByText(ALERT_TEXT)).not.toBeInTheDocument();
     expect(screen.queryByText(MODAL_TEXT)).not.toBeInTheDocument();
+  });
+  it("displays the support link correctly", async () => {
+    process.env.REACT_APP_IS_TRAINING_SITE = "false";
+    render(<WrappedHeader />);
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("user-button"));
+    });
+    expect(screen.getByTestId("support-link")).toBeVisible();
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("support-link"));
+    });
+    expect(useTrackEvent).toHaveBeenCalledWith(undefined, "Support", {});
   });
 });

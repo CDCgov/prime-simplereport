@@ -5,6 +5,8 @@ import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.db.model.AuditedEntity_;
+import gov.cdc.usds.simplereport.db.model.BaseTestInfo_;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -12,7 +14,9 @@ import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.TestOrder_;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -29,8 +33,13 @@ import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,12 +60,17 @@ public class TestOrderService {
   private SmsService _smss;
   private final CurrentPatientContextHolder _patientContext;
   private static final Logger LOG = LoggerFactory.getLogger(TestOrderService.class);
+  private final TestEventReportingService _testEventReportingService;
+
+  @PersistenceContext EntityManager _entityManager;
 
   @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")
   private String patientLinkUrl;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
+
+  public static final String MISSING_ARG = "Must provide either facility ID or patient ID";
 
   public TestOrderService(
       OrganizationService os,
@@ -67,7 +81,8 @@ public class TestOrderService {
       PersonService ps,
       PatientLinkService pls,
       SmsService smss,
-      CurrentPatientContextHolder patientContext) {
+      CurrentPatientContextHolder patientContext,
+      TestEventReportingService testEventReportingService) {
     _patientContext = patientContext;
     _os = os;
     _ps = ps;
@@ -77,6 +92,7 @@ public class TestOrderService {
     _terepo = terepo;
     _pls = pls;
     _smss = smss;
+    _testEventReportingService = testEventReportingService;
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
@@ -85,27 +101,53 @@ public class TestOrderService {
     return _repo.fetchQueue(fac.getOrganization(), fac);
   }
 
+  // Specifications filters for queries
+  private Specification<TestEvent> buildTestEventSearchFilter(
+      UUID facilityId, UUID patientId, TestResult result) {
+    return (root, query, cb) -> {
+      Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
+      order.on(cb.equal(root.get(AuditedEntity_.internalId), order.get(TestOrder_.testEvent)));
+      query.orderBy(cb.desc(root.get(AuditedEntity_.createdAt)));
+
+      Predicate p = cb.conjunction();
+      if (facilityId == null && patientId == null) {
+        throw new IllegalGraphqlArgumentException(MISSING_ARG);
+      }
+      if (facilityId != null) {
+        p =
+            cb.and(
+                p,
+                cb.equal(
+                    root.get(BaseTestInfo_.facility).get(AuditedEntity_.internalId), facilityId));
+      }
+      if (patientId != null) {
+        p =
+            cb.and(
+                p,
+                cb.equal(
+                    root.get(BaseTestInfo_.patient).get(AuditedEntity_.internalId), patientId));
+      }
+      if (result != null) {
+        p = cb.and(p, cb.equal(root.get(BaseTestInfo_.result), result));
+      }
+      return p;
+    };
+  }
+
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
-  public List<TestEvent> getTestEventsResults(UUID facilityId, int pageOffset, int pageSize) {
-    Facility fac = _os.getFacilityInCurrentOrg(facilityId); // org access is checked here
-    return _terepo.getTestEventResults(fac.getInternalId(), PageRequest.of(pageOffset, pageSize));
-  }
-
-  public int getTestResultsCount(UUID facilityId) {
-    Facility fac = _os.getFacilityInCurrentOrg(facilityId); // org access is checked here
-    return _terepo.getTestResultsCount(fac.getInternalId());
+  public List<TestEvent> getTestEventsResults(
+      UUID facilityId, UUID patientId, TestResult result, int pageOffset, int pageSize) {
+    return _terepo
+        .findAll(
+            buildTestEventSearchFilter(facilityId, patientId, result),
+            PageRequest.of(pageOffset, pageSize))
+        .toList();
   }
 
   @Transactional(readOnly = true)
-  @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
-  public List<TestEvent> getTestEventsResultsByPatient(
-      UUID patientId, int pageOffset, int pageSize) {
-    return _terepo.getTestEventResultsByPatient(patientId, PageRequest.of(pageOffset, pageSize));
-  }
-
-  public int getTestResultsCountByPatient(UUID patientId) {
-    return _terepo.getTestResultsCountByPatient(patientId);
+  public int getTestResultsCount(UUID facilityId, UUID patientId, TestResult result) {
+    return (int) _terepo.count(buildTestEventSearchFilter(facilityId, patientId, result));
   }
 
   @Transactional(readOnly = true)
@@ -173,6 +215,8 @@ public class TestOrderService {
 
     order.setTestEventRef(testEvent);
     TestOrder savedOrder = _repo.save(order);
+
+    _testEventReportingService.report(testEvent);
 
     if (TestResultDeliveryPreference.SMS
         == _ps.getPatientPreferences(person).getTestResultDelivery()) {
@@ -334,7 +378,7 @@ public class TestOrderService {
 
     // sanity check that two different users can't deleting the same event and
     // delete it twice.
-    if (!testEventId.equals(order.getTestEventId())) {
+    if (order.getTestEvent() == null || !testEventId.equals(order.getTestEvent().getInternalId())) {
       throw new IllegalGraphqlArgumentException("TestEvent: already deleted?");
     }
 

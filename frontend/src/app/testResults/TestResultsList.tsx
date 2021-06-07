@@ -23,9 +23,9 @@ import {
 } from "../commonComponents/QueryWrapper";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import { getUrl } from "../utils/url";
-import { useOutsideClick } from "../utils/hooks";
+import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
 import Pagination from "../commonComponents/Pagination";
-import { TEST_RESULT_DESCRIPTIONS } from "../constants";
+import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
 import "./TestResultsList.scss";
 import Button from "../commonComponents/Button/Button";
 import { useDebounce } from "../testQueue/addToQueue/useDebounce";
@@ -37,6 +37,7 @@ import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 import { Patient } from "../patients/ManagePatients";
 import SearchResults from "../testQueue/addToQueue/SearchResults";
+import Select from "../commonComponents/Select";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
@@ -48,12 +49,14 @@ export const testResultQuery = gql`
   query GetFacilityResults(
     $facilityId: ID
     $patientId: ID
+    $result: String
     $pageNumber: Int
     $pageSize: Int
   ) {
     testResults(
       facilityId: $facilityId
       patientId: $patientId
+      result: $result
       pageNumber: $pageNumber
       pageSize: $pageSize
     ) {
@@ -100,6 +103,8 @@ interface Props {
   entriesPerPage: number;
   totalEntries: number;
   setSelectedPatientId: Dispatch<SetStateAction<string>>;
+  setResultFilter: Dispatch<SetStateAction<string>>;
+  resultFilter: string;
   facilityId: string;
 }
 
@@ -205,6 +210,8 @@ export const DetachedTestResultsList: any = ({
   loadingTotalResults,
   totalEntries,
   setSelectedPatientId,
+  setResultFilter,
+  resultFilter,
   facilityId,
 }: Props) => {
   const [printModalId, setPrintModalId] = useState(undefined);
@@ -318,6 +325,7 @@ export const DetachedTestResultsList: any = ({
                     if (showFilters) {
                       setDebounced("");
                       setSelectedPatientId("");
+                      setResultFilter("");
                     }
 
                     setShowFilters(!showFilters);
@@ -330,16 +338,40 @@ export const DetachedTestResultsList: any = ({
             {showFilters && (
               <div
                 id="test-results-search-by-patient-input"
-                className="display-flex flex-row position-relative bg-base-lightest padding-x-3 padding-y-2"
+                className="position-relative bg-base-lightest"
               >
-                <SearchInput
-                  onSearchClick={onSearchClick}
-                  onInputChange={onInputChange}
-                  queryString={debounced}
-                  disabled={!allowQuery}
-                  label={"Search by name"}
-                  placeholder={""}
-                />
+                <div className="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2">
+                  <Select
+                    label="Result"
+                    name="result"
+                    value={resultFilter}
+                    options={[
+                      {
+                        value: COVID_RESULTS.POSITIVE,
+                        label: TEST_RESULT_DESCRIPTIONS.POSITIVE,
+                      },
+                      {
+                        value: COVID_RESULTS.NEGATIVE,
+                        label: TEST_RESULT_DESCRIPTIONS.NEGATIVE,
+                      },
+                      {
+                        value: COVID_RESULTS.INCONCLUSIVE,
+                        label: TEST_RESULT_DESCRIPTIONS.UNDETERMINED,
+                      },
+                    ]}
+                    defaultSelect
+                    onChange={setResultFilter}
+                  />
+                  <SearchInput
+                    onSearchClick={onSearchClick}
+                    onInputChange={onInputChange}
+                    queryString={debounced}
+                    disabled={!allowQuery}
+                    label={"Search by name"}
+                    placeholder={""}
+                    className="usa-form-group"
+                  />
+                </div>
                 <SearchResults
                   page="test-results"
                   patients={patientData?.patients || []}
@@ -386,8 +418,16 @@ export const DetachedTestResultsList: any = ({
 };
 
 export const resultsCountQuery = gql`
-  query GetResultsCountByFacility($facilityId: ID, $patientId: ID) {
-    testResultsCount(facilityId: $facilityId, patientId: $patientId)
+  query GetResultsCountByFacility(
+    $facilityId: ID
+    $patientId: ID
+    $result: String
+  ) {
+    testResultsCount(
+      facilityId: $facilityId
+      patientId: $patientId
+      result: $result
+    )
   }
 `;
 
@@ -398,16 +438,21 @@ type OmittedProps =
   | "totalEntries"
   | "loadingTotalResults"
   | "facilityId"
-  | "setSelectedPatientId";
+  | "setSelectedPatientId"
+  | "setResultFilter"
+  | "resultFilter";
 
 type TestResultsListProps = Omit<Props, OmittedProps>;
 
 const TestResultsList = (props: TestResultsListProps) => {
+  useDocumentTitle("Results");
+
   const activeFacilityId = useSelector(
     (state) => (state as any).facility.id as string
   );
 
   const [selectedPatientId, setSelectedPatientId] = useState<string>("");
+  const [resultFilter, setResultFilter] = useState<string>("");
 
   const entriesPerPage = 20;
   const pageNumber = props.page || 1;
@@ -415,6 +460,7 @@ const TestResultsList = (props: TestResultsListProps) => {
   const queryVariables: {
     patientId?: string;
     facilityId: string;
+    result?: string;
     pageNumber: number;
     pageSize: number;
   } = {
@@ -426,11 +472,17 @@ const TestResultsList = (props: TestResultsListProps) => {
   const countQueryVariables: {
     patientId?: string;
     facilityId: string;
+    result?: string;
   } = { facilityId: activeFacilityId };
 
   if (selectedPatientId) {
     queryVariables.patientId = selectedPatientId;
     countQueryVariables.patientId = selectedPatientId;
+  }
+
+  if (resultFilter) {
+    queryVariables.result = resultFilter;
+    countQueryVariables.result = resultFilter;
   }
 
   const {
@@ -469,6 +521,8 @@ const TestResultsList = (props: TestResultsListProps) => {
         totalEntries,
         entriesPerPage,
         setSelectedPatientId,
+        setResultFilter,
+        resultFilter,
         facilityId: activeFacilityId,
       }}
     />
