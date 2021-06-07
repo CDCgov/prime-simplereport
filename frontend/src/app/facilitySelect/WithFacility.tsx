@@ -1,5 +1,5 @@
 /* eslint-disable graphql/template-strings */
-import { useCallback, useMemo, FC } from "react";
+import { useCallback, useMemo, FC, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
 import { useFacilities } from "../../hooks/useFacilities";
@@ -43,6 +43,16 @@ const WithFacility: FC<Props> = ({ children }) => {
     [setFacilityProp, setCurrentFacility]
   );
 
+  useEffect(() => {
+    if (facilityFromUrl?.id) {
+      setActiveFacility(facilityFromUrl);
+    }
+    if (list.length === 1 && (!facilityFromUrl?.id || !current?.id)) {
+      setActiveFacility(list[0]);
+    }
+    // eslint-disable-next-line
+  }, [current?.id, facilityFromUrl, list]);
+
   if (!dataLoaded) {
     return <Loading />;
   }
@@ -58,23 +68,18 @@ const WithFacility: FC<Props> = ({ children }) => {
     );
   }
 
-  if (list.length === 1 && (!facilityFromUrl?.id || !current?.id)) {
-    setActiveFacility(list[0]);
-    return <Loading />;
+  if (list.length > 1) {
+    return (
+      <FacilitySelect facilities={list} setActiveFacility={setActiveFacility} />
+    );
   }
 
-  if (facilityFromUrl?.id && !current?.id) {
-    setActiveFacility(facilityFromUrl);
-    return <Loading />;
-  }
-
-  if (facilityFromUrl?.id && current?.id) {
+  if (current?.id) {
     return <>{children}</>;
   }
 
-  return (
-    <FacilitySelect facilities={list} setActiveFacility={setActiveFacility} />
-  );
+  return <Loading />;
+
 };
 
 export default WithFacility;

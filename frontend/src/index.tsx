@@ -15,8 +15,6 @@ import * as serviceWorker from "./serviceWorker";
 
 import "./styles/App.css";
 
-// TODO: remove redux completly
-
 // Define the root element for modals
 if (process.env.NODE_ENV !== "test") {
   Modal.setAppElement("#root");
