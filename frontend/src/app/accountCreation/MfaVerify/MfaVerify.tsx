@@ -9,9 +9,11 @@ import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 import { AccountCreationApi } from "../AccountCreationApiService";
 import Alert from "../../commonComponents/Alert";
+import { LoadingCard } from "../LoadingCard/LoadingCard";
 
 interface Props {
   hint: ReactElement;
+  hideResend?: boolean;
 }
 
 export const MfaVerify = (props: Props) => {
@@ -55,13 +57,7 @@ export const MfaVerify = (props: Props) => {
   };
 
   if (loading) {
-    return (
-      <main>
-        <div className="grid-container maxw-tablet">
-          <p className="margin-top-3">Validating code...</p>
-        </div>
-      </main>
-    );
+    return <LoadingCard message="Validating code..." />;
   }
 
   if (submitted) {
@@ -105,12 +101,14 @@ export const MfaVerify = (props: Props) => {
             onClick={handleSubmit}
           />
         </div>
-        <Button
-          className="usa-button--outline display-block margin-top-3"
-          label={"Send another code"}
-          type={"submit"}
-          onClick={resendCode}
-        />
+        {props.hideResend ? null : (
+          <Button
+            className="usa-button--outline display-block margin-top-3"
+            label={"Send another code"}
+            type={"submit"}
+            onClick={resendCode}
+          />
+        )}
       </Card>
       <p className="margin-top-5">
         <a href="#0">Return to previous step</a>

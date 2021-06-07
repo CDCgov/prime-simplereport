@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Switch } from "react-router";
 
 import { MfaEmail } from "../MfaEmail/MfaEmail";
 import { MfaGoogleAuth } from "../MfaGoogleAuth/MfaGoogleAuth";
-import { MfaOktaVerify } from "../MfaOktaVerify/MfaOktaVerify";
+import { MfaOkta } from "../MfaOkta/MfaOkta";
 import { MfaPhone } from "../MfaPhone/MfaPhone";
 import { MfaSecurityKey } from "../MfaSecurityKey/MfaSecurityKey";
 import { MfaSms } from "../MfaSms/MfaSms";
@@ -39,7 +39,7 @@ describe("MfaSelect routing", () => {
         <Switch>
           <Route path="/mfa-select" component={MfaSelect} />
           <Route path="/mfa-sms" component={MfaSms} />
-          <Route path="/mfa-okta-verify" component={MfaOktaVerify} />
+          <Route path="/mfa-okta" component={MfaOkta} />
           <Route path="/mfa-google-auth" component={MfaGoogleAuth} />
           <Route path="/mfa-security-key" component={MfaSecurityKey} />
           <Route path="/mfa-phone" component={MfaPhone} />

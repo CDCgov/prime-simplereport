@@ -1,11 +1,8 @@
-import { AccountCreationApi } from "../AccountCreationApiService";
-import { MfaTotp } from "../MfaTotp/MfaTotp";
+import { MfaVerify } from "../MfaVerify/MfaVerify";
 
-export const MfaOktaVerify = () => {
-  return (
-    <MfaTotp
-      totpType="Okta Verify"
-      enrollFunction={() => AccountCreationApi.enrollTotpMfa("Okta")}
-    />
-  );
-};
+export const MfaOktaVerify = () => (
+  <MfaVerify
+    hint={<>Enter a code from the Okta Verify app.</>}
+    hideResend={true}
+  />
+);
