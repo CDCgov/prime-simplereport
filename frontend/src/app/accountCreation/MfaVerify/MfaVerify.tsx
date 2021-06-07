@@ -13,6 +13,7 @@ import { LoadingCard } from "../LoadingCard/LoadingCard";
 
 interface Props {
   hint: ReactElement;
+  hideResend?: boolean;
 }
 
 export const MfaVerify = (props: Props) => {
@@ -100,12 +101,14 @@ export const MfaVerify = (props: Props) => {
             onClick={handleSubmit}
           />
         </div>
-        <Button
-          className="usa-button--outline display-block margin-top-3"
-          label={"Send another code"}
-          type={"submit"}
-          onClick={resendCode}
-        />
+        {props.hideResend ? null : (
+          <Button
+            className="usa-button--outline display-block margin-top-3"
+            label={"Send another code"}
+            type={"submit"}
+            onClick={resendCode}
+          />
+        )}
       </Card>
       <p className="margin-top-5">
         <a href="#0">Return to previous step</a>

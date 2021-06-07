@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Redirect } from "react-router";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -23,6 +24,14 @@ export const MfaTotp = (props: Props) => {
     };
     getQrCode();
   }, [props]);
+
+  const handleSubmit = () => {
+    return (
+      <Redirect
+        to={{ pathname: `${window.location.pathname.split("/uac")[1]}/verify` }}
+      />
+    );
+  };
 
   if (!qrCode) {
     return <LoadingCard message="Retrieving QR code..." />;
@@ -54,7 +63,12 @@ export const MfaTotp = (props: Props) => {
             />
           )}
         </div>
-        <Button className="margin-top-3" label={"Continue"} type={"submit"} />
+        <Button
+          className="margin-top-3"
+          label={"Continue"}
+          type={"submit"}
+          onClick={handleSubmit}
+        />
       </Card>
       <p className="margin-top-5">
         <a href="#0">Return to previous step</a>
