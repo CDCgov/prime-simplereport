@@ -101,6 +101,26 @@ data "azurerm_key_vault_secret" "smarty_auth_token" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
+data "azurerm_key_vault_secret" "dynamics_client_id" {
+  name         = "dynamics-client-id-dev"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "dynamics_client_secret" {
+  name         = "dynamics-client-secret-dev"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "dynamics_tenant_id" {
+  name         = "dynamics-tenant-id-dev"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "dynamics_resource_url" {
+  name         = "dynamics-resource-url-dev"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
 # logs
 data "azurerm_log_analytics_workspace" "log_analytics" {
   name                = "simple-report-log-workspace-global"
