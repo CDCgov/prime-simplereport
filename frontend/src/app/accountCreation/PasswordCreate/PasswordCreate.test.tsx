@@ -66,21 +66,21 @@ describe("PasswordCreate", () => {
     fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "fooBAR" },
     });
-    expect(screen.getByText(strengthLabel("Weak"))).toBeInTheDocument();
+    expect(screen.getByText(strengthLabel("Okay"))).toBeInTheDocument();
   });
 
   it("thinks 'fooB1' is an okay password", () => {
     fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "fooB1" },
     });
-    expect(screen.getByText(strengthLabel("Okay"))).toBeInTheDocument();
+    expect(screen.getByText(strengthLabel("Medium"))).toBeInTheDocument();
   });
 
   it("thinks 'fooBAR123!' is a good password", () => {
     fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "fooBAR123!" },
     });
-    expect(screen.getByText(strengthLabel("Good"))).toBeInTheDocument();
+    expect(screen.getByText(strengthLabel("Strong"))).toBeInTheDocument();
   });
 
   it("can type in the password confirmation", () => {
@@ -93,7 +93,7 @@ describe("PasswordCreate", () => {
         target: { value: "fooBAR123!" },
       }
     );
-    expect(screen.getByText(strengthLabel("Good"))).toBeInTheDocument();
+    expect(screen.getByText(strengthLabel("Strong"))).toBeInTheDocument();
   });
 
   it("requires password to be valid", () => {
@@ -125,7 +125,7 @@ describe("PasswordCreate", () => {
         target: { value: "fooBAR123" },
       }
     );
-    expect(screen.getByText(strengthLabel("Good"))).toBeInTheDocument();
+    expect(screen.getByText(strengthLabel("Strong"))).toBeInTheDocument();
     fireEvent.click(screen.getByText("Continue"));
     expect(screen.getByText("Passwords must match")).toBeInTheDocument();
   });
@@ -140,7 +140,7 @@ describe("PasswordCreate", () => {
         target: { value: "validPASS123!" },
       }
     );
-    expect(screen.getByText(strengthLabel("Good"))).toBeInTheDocument();
+    expect(screen.getByText(strengthLabel("Strong"))).toBeInTheDocument();
     await act(async () => {
       await fireEvent.click(screen.getByText("Continue"));
     });
@@ -157,7 +157,7 @@ describe("PasswordCreate", () => {
         target: { value: "INvalidPASS123!" },
       }
     );
-    expect(screen.getByText(strengthLabel("Good"))).toBeInTheDocument();
+    expect(screen.getByText(strengthLabel("Strong"))).toBeInTheDocument();
     await act(async () => {
       await fireEvent.click(screen.getByText("Continue"));
     });

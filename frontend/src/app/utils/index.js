@@ -20,6 +20,10 @@ export const displayFullNameInOrder = (first, middle, last) => {
 export const isLocalHost = () =>
   Boolean(window.location.hostname === "localhost");
 
+export const isEmptyString = (input = "") => {
+  return Boolean(input.trim().length === 0);
+};
+
 export const showNotification = (toast, children) => {
   try {
     // id will de-dup. just use whole message as id

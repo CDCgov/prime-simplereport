@@ -6,6 +6,7 @@ import {
   isValidCLIANumber,
   stateRequiresCLIANumberValidation,
 } from "../../utils/clia";
+import { isEmptyString } from "../../utils";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -16,15 +17,25 @@ export type RequiredFacilityFields = PartialBy<
   "id" | "email" | "streetTwo" | "city" | "orderingProvider"
 >;
 
+function orderingProviderIsRequired(
+  this: yup.TestContext<Record<string, any>>,
+  input = ""
+): boolean {
+  if (this?.options?.context?.orderingProviderIsRequired) {
+    return !isEmptyString(input);
+  }
+  return true;
+}
+
 type RequiredProviderFields = Nullable<Partial<Provider>>;
 
 const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
-  firstName: yup.string().nullable(),
+  firstName: yup.string().test(orderingProviderIsRequired),
   middleName: yup.string().nullable(),
-  lastName: yup.string().nullable(),
+  lastName: yup.string().test(orderingProviderIsRequired),
   suffix: yup.string().nullable(),
-  NPI: yup.string().nullable(),
-  phone: yup.string().nullable(),
+  NPI: yup.string().test(orderingProviderIsRequired),
+  phone: yup.string().test(orderingProviderIsRequired),
   street: yup.string().nullable(),
   streetTwo: yup.string().nullable(),
   city: yup.string().nullable(),
@@ -98,7 +109,7 @@ export type FacilityErrors = Partial<
 >;
 
 const orderingProviderFormatError = (field: string) =>
-  `"Ordering provider ${field} is incorrectly formatted"`;
+  `Ordering provider ${field} is incorrectly formatted`;
 
 export const allFacilityErrors: Required<FacilityErrors> = {
   id: "ID is missing",
