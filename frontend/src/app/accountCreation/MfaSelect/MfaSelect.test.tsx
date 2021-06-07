@@ -10,6 +10,20 @@ import { MfaSms } from "../MfaSms/MfaSms";
 
 import { MfaSelect } from "./MfaSelect";
 
+jest.mock("../AccountCreationApiService", () => ({
+  AccountCreationApi: {
+    enrollTotpMfa: (app: string) => {
+      return new Promise((res, rej) => {
+        if (app === "Google" || app === "Okta") {
+          res("success");
+        } else {
+          rej();
+        }
+      });
+    },
+  },
+}));
+
 describe("MfaSelect", () => {
   beforeEach(() => {
     render(<MfaSelect />);
@@ -63,7 +77,7 @@ describe("MfaSelect routing", () => {
     ).toBeInTheDocument();
   });
 
-  it("can route to the Google Auth page", () => {
+  it("can route to the Google Auth page", async () => {
     const googleRadio = screen.getByLabelText("Google Authenticator", {
       exact: false,
     });
@@ -71,13 +85,13 @@ describe("MfaSelect routing", () => {
     expect(googleRadio).toBeChecked();
     fireEvent.click(continueButton);
     expect(
-      screen.getByText(
+      await screen.findByText(
         "Get your security code via the Google Authenticator application."
       )
     ).toBeInTheDocument();
   });
 
-  it("can route to the Okta Verify page", () => {
+  it("can route to the Okta Verify page", async () => {
     const oktaRadio = screen.getByLabelText("Okta Verify", {
       exact: false,
     });
@@ -85,7 +99,7 @@ describe("MfaSelect routing", () => {
     expect(oktaRadio).toBeChecked();
     fireEvent.click(continueButton);
     expect(
-      screen.getByText(
+      await screen.findByText(
         "Get your security code via the Okta Verify application."
       )
     ).toBeInTheDocument();

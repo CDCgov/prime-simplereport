@@ -20,7 +20,7 @@ jest.mock("../AccountCreationApiService", () => ({
   },
 }));
 
-describe("Verify SMS MFA", () => {
+describe("Verify Okta MFA", () => {
   beforeEach(() => {
     render(
       <MemoryRouter
@@ -40,7 +40,9 @@ describe("Verify SMS MFA", () => {
 
   it("can submit a valid security code", async () => {
     expect(
-      screen.getByText("(530) 867-5309", { exact: false })
+      screen.getByText("Enter a code from the Okta Verify app.", {
+        exact: false,
+      })
     ).toBeInTheDocument();
     fireEvent.change(
       screen.getByLabelText("One-time security code", { exact: false }),
@@ -61,7 +63,9 @@ describe("Verify SMS MFA", () => {
 
   it("shows an error for an invalid security code", async () => {
     expect(
-      screen.getByText("(530) 867-5309", { exact: false })
+      screen.getByText("Enter a code from the Okta Verify app.", {
+        exact: false,
+      })
     ).toBeInTheDocument();
     fireEvent.change(
       screen.getByLabelText("One-time security code", { exact: false }),
