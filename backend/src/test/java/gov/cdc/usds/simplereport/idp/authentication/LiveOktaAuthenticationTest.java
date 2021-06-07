@@ -49,7 +49,7 @@ import org.springframework.beans.factory.annotation.Value;
  */
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
-@Disabled
+// @Disabled
 class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
   private static final String PHONE_NUMBER = "999-999-9999";
