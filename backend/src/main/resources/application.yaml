@@ -68,6 +68,9 @@ simple-report:
     # these are overridden by application-dev, -prod, -test, etc
     role-claim: dev_roles
     environment-name: "DEV"
+  ordering-providers:
+    states-not-required:
+      - ND
   sendgrid:
     enabled: false
     from-email: support@simplereport.gov
@@ -90,6 +93,10 @@ simple-report:
     client-secret: ${DYNAMICS_CLIENT_SECRET:MISSING}
     tenant-id: ${DYNAMICS_TENANT_ID:MISSING}
     resource-url: ${DYNAMICS_RESOURCE_URL:MISSING}
+  azure-reporting-queue:
+    account-name: ${AZURE_REPORTING_QUEUE_ACCOUNT_NAME}
+    sas-token: ${AZURE_REPORTING_QUEUE_SAS_TOKEN}
+    queue-name: ${AZURE_REPORTING_QUEUE_QUEUE_NAME}
   cors:
     allowed-methods:
       - GET
