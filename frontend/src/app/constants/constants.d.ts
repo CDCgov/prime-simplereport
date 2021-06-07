@@ -611,6 +611,18 @@ interface PersonFormData extends Person {
   facilityId: string | null;
 }
 
+interface Patient extends PersonFormData {
+  internalId: string;
+  testResultDelivery: string;
+  lastTest: {
+        dateTested: string;
+        result: string;
+        deviceTypeModel: string;
+      } | undefined;
+  orderStatus?: "COMPLETED" | undefined;
+  facility?: Facility | null | undefined;
+}
+
 type Language =
   | "English"
   | "Spanish"

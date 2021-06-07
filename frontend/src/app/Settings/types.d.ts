@@ -196,4 +196,5 @@ interface AppConfigState {
   dataLoaded: Boolean;
   user: User;
   activationToken: string | null;
+  plid?: string | null | undefined;
 }

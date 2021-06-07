@@ -27,10 +27,14 @@ export const useAppConfig = () => {
   const setInitialData = (data: AppConfigState) => {
     appConfig(data);
   };
+  const updateConfigField = (field: string, value: any) => {
+    appConfig({ ...config, [field]: value });
+  };
   return {
     config,
     setUser,
     setInitialData,
+    updateConfigField,
     setActivationToken,
     updateOrganizationName,
   };

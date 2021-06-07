@@ -2,7 +2,6 @@ import siteLogo from "../img/simplereport-logomark-color.svg";
 import { useAppConfig } from "../hooks/useAppConfig";
 
 const PatientHeader = () => {
-  // const { organization } = useReactiveVar(appConfig);
   const {
     config: { organization },
   } = useAppConfig();

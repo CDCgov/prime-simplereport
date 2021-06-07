@@ -21,7 +21,7 @@ export const appConfig = makeVar<AppConfigState>({
   activationToken: null,
 });
 
-export const patient = makeVar<PersonFormData>({
+export const patient = makeVar<Patient>({
   firstName: "",
   lastName: "",
   middleName: "",
@@ -45,6 +45,9 @@ export const patient = makeVar<PersonFormData>({
   employedInHealthcare: null,
   street: "",
   streetTwo: "",
+  internalId: "",
+  testResultDelivery: "",
+  lastTest: undefined,
 });
 
 const store = {

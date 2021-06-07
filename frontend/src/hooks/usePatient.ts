@@ -2,12 +2,11 @@ import { useReactiveVar } from "@apollo/client";
 
 import { patient as patientVar } from "../storage/store";
 
-// TODO: all realated to patient.
 
 export const usePatient = () => {
   const patient = useReactiveVar(patientVar);
 
-  const setCurrentPatient = (patient: PersonFormData) => {
+  const setCurrentPatient = (patient: Patient) => {
     patientVar(patient);
   };
 
