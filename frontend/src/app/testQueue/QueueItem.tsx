@@ -32,6 +32,7 @@ import {
 } from "./TestTimer";
 import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
+import { AoEAnswers } from "./AoEForm/AoEForm";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
 
@@ -183,7 +184,7 @@ export interface QueueItemProps {
     internalId: string;
     testLength: number;
   }[];
-  askOnEntry: string;
+  askOnEntry: AoEAnswers;
   selectedDeviceId: string;
   selectedDeviceTestLength: number;
   selectedTestResult: TestResult;
@@ -423,7 +424,7 @@ const QueueItem: any = ({
     updateIsAoeModalOpen(false);
   };
 
-  const saveAoeCallback = (answers: any) => {
+  const saveAoeCallback = (answers: AoEAnswers) => {
     setAoeAnswers(answers);
     if (appInsights) {
       trackUpdateAoEResponse({});

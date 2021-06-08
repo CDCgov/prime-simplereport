@@ -13,11 +13,10 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import Button from "../../commonComponents/Button/Button";
 import FormGroup from "../../commonComponents/FormGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
-
 import "./AoEForm.scss";
-
 import { COVID_RESULTS } from "../../constants";
 import { TestResult } from "../QueueItem";
+
 import SymptomInputs from "./SymptomInputs";
 import PriorTestInputs from "./PriorTestInputs";
 
@@ -29,26 +28,33 @@ const findValueForLabel = (
 ) => (list.filter((item) => item.label === label)[0] || {}).value;
 
 // TODO: better name
-export type FormattedDateOne = `${number}${number}${number}${number}-${number}${number}-${number}${number}`;
-export type FormattedDateTwo = `${number}${number}/${number}${number}/${number}${number}${number}${number}`;
+//export type FormattedDateOne = `${number}${number}${number}${number}-${number}${number}-${number}${number}`;
+export type FormattedDateOne = string;
+//export type FormattedDateTwo = `${number}${number}/${number}${number}/${number}${number}${number}${number}`;
+export type FormattedDateTwo = string;
 
-export interface AoEAnswersDelivery {
-    noSymptoms: boolean;
-    symptoms: string;
-    symptomOnset: FormattedDateTwo | undefined;
-    priorTestDate: FormattedDateOne | undefined | null;
-    priorTestResult: TestResult | undefined | null;
-    priorTestType: string | undefined | null;
-    firstTest: boolean;
-    pregnancy: PregnancyCode | undefined;
-    testResultDelivery: string;
-};
+export interface PriorTest {
+  priorTestDate: FormattedDateOne | undefined | null;
+  priorTestResult: TestResult | undefined | null;
+  priorTestType: string | undefined | null;
+  firstTest: boolean;
+}
+export interface AoEAnswersDelivery extends PriorTest {
+  noSymptoms: boolean;
+  symptoms: string;
+  symptomOnset: FormattedDateTwo | undefined;
+  pregnancy: PregnancyCode | undefined;
+  testResultDelivery: string;
+}
 
 type RequiredAndNotNull<T> = {
-  [P in keyof T]: Exclude<T[P], null | undefined>
+  [P in keyof T]: Exclude<T[P], null | undefined>;
 };
 
-export type AoEAnswers = Omit<RequiredAndNotNull<AoEAnswersDelivery>, "testResultDelivery">;
+export type AoEAnswers = Omit<
+  RequiredAndNotNull<AoEAnswersDelivery>,
+  "testResultDelivery"
+>;
 
 interface Props {
   saveButtonText: string;
@@ -109,12 +115,16 @@ const AoEForm: React.FC<Props> = ({
 
   const [noSymptoms, setNoSymptoms] = useState(loadState.noSymptoms || false);
   const [currentSymptoms, setSymptoms] = useState(initialSymptoms);
-  const [onsetDate, setOnsetDate] = useState(loadState.symptomOnset);
+  const [onsetDate, setOnsetDate] = useState<FormattedDateTwo | undefined>(
+    loadState.symptomOnset
+  );
   const [isFirstTest, setIsFirstTest] = useState(loadState.firstTest);
-  const [priorTestDate, setPriorTestDate] = useState(loadState.priorTestDate);
+  const [priorTestDate, setPriorTestDate] = useState<
+    FormattedDateOne | undefined | null
+  >(loadState.priorTestDate);
   const [priorTestType, setPriorTestType] = useState(loadState.priorTestType);
   const [priorTestResult, setPriorTestResult] = useState<
-    string | null | undefined
+    TestResult | null | undefined
   >(
     loadState.priorTestResult === undefined
       ? undefined
@@ -172,7 +182,9 @@ const AoEForm: React.FC<Props> = ({
   // Auto-answer pregnancy question for males
   const pregnancyResponses = getPregnancyResponses();
   if (patient.gender === "male" && !pregnancyResponse) {
-    setPregnancyResponse(findValueForLabel("No", pregnancyResponses));
+    setPregnancyResponse(
+      findValueForLabel("No", pregnancyResponses) as PregnancyCode
+    );
   }
 
   const saveAnswers = (e: React.FormEvent) => {
@@ -184,7 +196,7 @@ const AoEForm: React.FC<Props> = ({
           saveSymptoms[value] = false;
         });
       }
-      const priorTest = isFirstTest
+      const priorTest: PriorTest = isFirstTest
         ? {
             firstTest: true,
             priorTestDate: null,

@@ -11,15 +11,18 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown, { Option } from "../../commonComponents/Dropdown";
 import Optional from "../../commonComponents/Optional";
 import Checkboxes from "../../commonComponents/Checkboxes";
+import { TestResult } from "../QueueItem";
+
+import { FormattedDateOne } from "./AoEForm";
 
 interface Props {
   testTypeConfig: Option[];
   isFirstTest: boolean | undefined;
   setIsFirstTest: (isFirstTest: boolean) => void;
-  priorTestDate: string | undefined | null;
-  setPriorTestDate: (priorTestDate: string | undefined) => void;
-  priorTestResult: string | undefined | null;
-  setPriorTestResult: (priorTestResult: string | undefined | null) => void;
+  priorTestDate: FormattedDateOne | undefined | null;
+  setPriorTestDate: (priorTestDate: FormattedDateOne | undefined) => void;
+  priorTestResult: TestResult | undefined | null;
+  setPriorTestResult: (priorTestResult: TestResult | undefined | null) => void;
   priorTestType: string | undefined;
   setPriorTestType: (priorTestType: string | undefined) => void;
   lastTest:
@@ -118,7 +121,7 @@ const PriorTestInputs: React.FC<Props> = ({
             : priorTestResult || ""
         }
         defaultSelect
-        onChange={(e) => setPriorTestResult(e.target.value)}
+        onChange={(e) => setPriorTestResult(e.target.value as TestResult)}
       />
     </>
   );
@@ -162,7 +165,7 @@ const PriorTestInputs: React.FC<Props> = ({
               // TODO: update when test history has test type
               setPriorTestType("2");
               setPriorTestDate((lastTest.dateTested || "").split("T")[0]);
-              setPriorTestResult(lastTest?.result);
+              setPriorTestResult(lastTest?.result as TestResult);
             } else {
               setPriorTestType(undefined);
               setPriorTestDate(undefined);
