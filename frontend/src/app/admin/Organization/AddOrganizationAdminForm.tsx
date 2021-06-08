@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
@@ -8,6 +8,11 @@ import OrganizationDropDown, {
   useOrganizationDropDownValidation,
   OrganizationOption,
 } from "./OrganizationDropDown";
+
+const sortOrganizationOptions = (organizationOptions: OrganizationOption[]) =>
+  Object.values(organizationOptions).sort((a, b) => {
+    return a.name > b.name ? 1 : -1;
+  });
 
 interface Props {
   organizationExternalId: string;
@@ -36,6 +41,11 @@ const AddOrganizationAdminForm: React.FC<Props> = (props) => {
     updateAdminFormData(data);
     updateFormChanged(true);
   };
+
+  const sortedOrganizationOptions = useMemo(
+    () => sortOrganizationOptions(props.organizationOptions),
+    [props.organizationOptions]
+  );
 
   const { validateAdmin } = useFacilityAdminValidation(admin);
 
@@ -82,7 +92,7 @@ const AddOrganizationAdminForm: React.FC<Props> = (props) => {
           <OrganizationDropDown
             selectedExternalId={organizationExternalId}
             updateSelectedExternalId={updateOrganizationExternalIdDropDown}
-            organizationOptions={props.organizationOptions}
+            organizationOptions={sortedOrganizationOptions}
           />
           <FacilityAdmin admin={admin} updateAdmin={updateAdminForm} />
         </div>
