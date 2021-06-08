@@ -38,7 +38,7 @@ export const MfaSelect = () => {
       case "SMS":
         return <Redirect to="/mfa-sms" />;
       case "Okta":
-        return <Redirect to="/mfa-okta-verify" />;
+        return <Redirect to="/mfa-okta" />;
       case "Google":
         return <Redirect to="/mfa-google-auth" />;
       case "FIDO":

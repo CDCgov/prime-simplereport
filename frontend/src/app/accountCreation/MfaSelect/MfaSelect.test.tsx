@@ -15,7 +15,7 @@ jest.mock("../AccountCreationApiService", () => ({
     enrollTotpMfa: (app: string) => {
       return new Promise((res, rej) => {
         if (app === "Google" || app === "Okta") {
-          res("success");
+          res({ qrcode: "success" });
         } else {
           rej();
         }
