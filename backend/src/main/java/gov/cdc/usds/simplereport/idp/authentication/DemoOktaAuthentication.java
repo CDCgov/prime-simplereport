@@ -97,12 +97,9 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     return factorId;
   }
 
-  public String enrollEmailMfa(String userId, String email)
-      throws OktaAuthenticationFailureException {
+  public String enrollEmailMfa(String userId) throws OktaAuthenticationFailureException {
     validateUser(userId);
-    if (!email.contains("@")) {
-      throw new OktaAuthenticationFailureException("Email address is invalid.");
-    }
+    String email = "test@example.com";
     String factorId = userId + email;
     DemoMfa emailMfa =
         new DemoMfa(FactorType.EMAIL, email, factorId, FactorStatus.PENDING_ACTIVATION);
@@ -110,7 +107,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     return factorId;
   }
 
-  // unlike the real implementation, this returns a factor and passcode directly (instead of a qr
+  // Unlike the real implementation, this returns a factor and passcode directly (instead of a qr
   // code to use for enrollment.)
   public JSONObject enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
@@ -159,19 +156,20 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   }
 
   public void activateSecurityKey(
-    String userId, String factorId, String attestation, String clientData) throws OktaAuthenticationFailureException {
-      validateUser(userId);
-      validateFactor(userId, factorId);
-      if (attestation == null || attestation.isEmpty()) {
-        throw new OktaAuthenticationFailureException("attestation cannot be empty.");
-      }
-      if (clientData == null || clientData.isEmpty()) {
-        throw new OktaAuthenticationFailureException("clientData cannot be empty.");
-      }
-      DemoMfa mfa = this.idToUserMap.get(userId).getMfa();
-      mfa.setFactorStatus(FactorStatus.ACTIVE);
+      String userId, String factorId, String attestation, String clientData)
+      throws OktaAuthenticationFailureException {
+    validateUser(userId);
+    validateFactor(userId, factorId);
+    if (attestation == null || attestation.isEmpty()) {
+      throw new OktaAuthenticationFailureException("attestation cannot be empty.");
     }
-    
+    if (clientData == null || clientData.isEmpty()) {
+      throw new OktaAuthenticationFailureException("clientData cannot be empty.");
+    }
+    DemoMfa mfa = this.idToUserMap.get(userId).getMfa();
+    mfa.setFactorStatus(FactorStatus.ACTIVE);
+  }
+
   public void verifyActivationPasscode(String userId, String factorId, String passcode)
       throws OktaAuthenticationFailureException {
     validateUser(userId);

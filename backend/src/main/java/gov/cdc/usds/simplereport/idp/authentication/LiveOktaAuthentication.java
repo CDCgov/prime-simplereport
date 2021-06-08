@@ -20,9 +20,9 @@ import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
@@ -74,7 +74,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     _apiToken = token;
     _orgUrl = orgUrl;
     _restTemplate = new RestTemplate();
-    LOG.info("LiveOktaAuthentication initialization successful");
+    LOG.info("LiveOktaAuthentication initialization successful.");
   }
 
   /**
@@ -211,26 +211,22 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   }
 
   /**
-   * Using the Okta Management SDK, enroll a user in email MFA. If successful, this enrollment
-   * triggers an activation email to the user with an OTP.
+   * Using the Okta Management SDK, enroll a user in email MFA using their attached profile email.
+   * If successful, this enrollment triggers an activation email to the user with an TOTP.
    *
    * @param userId the user id of the user making the enrollment request.
-   * @param email the user-provided email address to enroll. (note: should we do any validation that
-   *     this email === the enrolled email?)
    * @throws OktaAuthenticationFailureException if the email is invalid or Okta cannot enroll it as
    *     an MFA option.
    */
-  public String enrollEmailMfa(String userId, String email)
-      throws OktaAuthenticationFailureException {
+  public String enrollEmailMfa(String userId) throws OktaAuthenticationFailureException {
     try {
-      LOG.info("enrolling email MFA");
       EmailUserFactor emailFactor = _client.instantiate(EmailUserFactor.class);
-      emailFactor.getProfile().setEmail(email);
       User user = _client.getUser(userId);
+      String userEmail = user.getProfile().getEmail();
+      emailFactor.getProfile().setEmail(userEmail);
       user.enrollFactor(emailFactor);
       return emailFactor.getId();
     } catch (ResourceException e) {
-      LOG.info("An exception was thrown while setting email MFA", e);
       throw new OktaAuthenticationFailureException("Error setting email MFA", e);
     }
   }
@@ -250,7 +246,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    */
   public JSONObject enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
-        LOG.info("enrolling auth app");
     UserFactor factor = _client.instantiate(UserFactor.class);
     factor.setFactorType(FactorType.TOKEN_SOFTWARE_TOTP);
     switch (appType.toLowerCase()) {
@@ -278,7 +273,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       factorResponse.put("factorId", factor.getId());
       return factorResponse;
     } catch (NullPointerException | ResourceException | IllegalArgumentException e) {
-      LOG.info("An exception was thrown while fetching auth app qrcode", e);
       throw new OktaAuthenticationFailureException("Authentication app could not be enrolled", e);
     }
   }
@@ -295,7 +289,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    *     cannot be enrolled.
    */
   public JSONObject enrollSecurityKey(String userId) throws OktaAuthenticationFailureException {
-    LOG.info("enrolling security key");
     JSONObject requestBody = new JSONObject();
     requestBody.put("factorType", "webauthn");
     requestBody.put("provider", "FIDO");
@@ -310,7 +303,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       response.put("factorId", responseJson.getString("id"));
       return response;
     } catch (RestClientException | NullPointerException | ResourceException e) {
-      LOG.info("an exception was thrown while enrolling security key", e);
       throw new OktaAuthenticationFailureException("Security key could not be enrolled", e);
     }
   }
@@ -326,9 +318,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public void activateSecurityKey(
       String userId, String factorId, String attestation, String clientData)
       throws OktaAuthenticationFailureException {
-        LOG.info("activating security key");
     try {
-      LOG.info("security key data:" + userId + " " + factorId + " " + attestation + " " + clientData);
       User user = _client.getUser(userId);
       UserFactor factor = user.getFactor(factorId);
       ActivateFactorRequest activationRequest = _client.instantiate(ActivateFactorRequest.class);
@@ -336,7 +326,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       activationRequest.setClientData(clientData);
       factor.activate(activationRequest);
     } catch (NullPointerException | ResourceException e) {
-      LOG.info("an exception was thrown while activating the security key", e);
       throw new OktaAuthenticationFailureException("Security key could not be activated", e);
     }
   }
@@ -354,18 +343,13 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    */
   public void verifyActivationPasscode(String userId, String factorId, String passcode)
       throws OktaAuthenticationFailureException {
-    LOG.info("verifying activation passcode");
     try {
       User user = _client.getUser(userId);
       UserFactor factor = user.getFactor(factorId);
-      LOG.info("verification: got user and factor");
-      LOG.info("factorType: " + factor.getFactorType());
-      LOG.info("entered passcode: " + passcode);
       ActivateFactorRequest activateFactor = _client.instantiate(ActivateFactorRequest.class);
       activateFactor.setPassCode(passcode.strip());
       factor.activate(activateFactor);
     } catch (ResourceException | NullPointerException | IllegalArgumentException e) {
-      LOG.info("passcode could not be verified. The following exception was thrown: ", e);
       throw new OktaAuthenticationFailureException(
           "Activation passcode could not be verifed; MFA activation failed.", e);
     }

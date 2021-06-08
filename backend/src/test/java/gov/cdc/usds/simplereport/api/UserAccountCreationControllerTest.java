@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -212,8 +211,7 @@ class UserAccountCreationControllerTest {
         createActivationRequest(session, VALID_PASSWORD_REQUEST);
 
     MockHttpServletRequestBuilder enrollEmailMfaBuilder =
-        createPostRequest(
-            session, VALID_ENROLL_EMAIL_MFA_REQUEST, ResourceLinks.USER_ENROLL_EMAIL_MFA);
+        createPostRequest(session, "", ResourceLinks.USER_ENROLL_EMAIL_MFA);
 
     HttpSession setPasswordResponse = performRequestAndGetSession(activateUserBuilder);
 
@@ -231,22 +229,6 @@ class UserAccountCreationControllerTest {
     MockHttpServletRequestBuilder enrollEmailMfaBuilder =
         createPostRequest(
             session, VALID_ENROLL_EMAIL_MFA_REQUEST, ResourceLinks.USER_ENROLL_EMAIL_MFA);
-
-    this._mockMvc.perform(enrollEmailMfaBuilder).andExpect(status().is4xxClientError());
-  }
-
-  @Test
-  void cannotEnrollEmailMfa_withoutValidEmail() throws Exception {
-    MockHttpSession session = new MockHttpSession();
-
-    MockHttpServletRequestBuilder activateUserBuilder =
-        createActivationRequest(session, VALID_PASSWORD_REQUEST);
-
-    MockHttpServletRequestBuilder enrollEmailMfaBuilder =
-        createPostRequest(
-            session, "{\"userInput\":\"bademail.com\"}", ResourceLinks.USER_ENROLL_EMAIL_MFA);
-
-    this._mockMvc.perform(activateUserBuilder).andExpect(status().isOk());
 
     this._mockMvc.perform(enrollEmailMfaBuilder).andExpect(status().is4xxClientError());
   }
@@ -373,7 +355,7 @@ class UserAccountCreationControllerTest {
             ResourceLinks.USER_ACTIVATE_SECURITY_KEY_MFA);
 
     performRequestAndGetSession(activateUserBuilder);
-        
+
     this._mockMvc.perform(activateSecurityKeyBuilder).andExpect(status().is4xxClientError());
   }
 

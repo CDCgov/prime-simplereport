@@ -189,7 +189,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   @Test
   @Order(6)
   void enrollEmailMfaSuccessful() throws Exception {
-    String factorId = _auth.enrollEmailMfa(_userId, EMAIL);
+    String factorId = _auth.enrollEmailMfa(_userId);
 
     User user = _testClient.getUser(_userId);
     EmailUserFactor emailFactor = (EmailUserFactor) user.getFactor(factorId);
@@ -239,12 +239,13 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     UserFactor factor = user.getFactor(activationObject.getString("factorId"));
     assertThat(factor.getFactorType()).isEqualTo(FactorType.WEBAUTHN);
     assertThat(factor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
-    assertThat(activationObject.getJSONObject("activation").getJSONObject("user").getString("id")).isNotNull();
+    assertThat(activationObject.getJSONObject("activation").getJSONObject("user").getString("id"))
+        .isNotNull();
     assertThat(activationObject.getJSONObject("activation").getString("challenge")).isNotNull();
 
     user.resetFactors();
   }
-  
+
   @Test
   @Order(10)
   void verifyActivationPasscodeSuccessful() throws Exception {
@@ -355,17 +356,6 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   }
 
   @Test
-  void enrollEmailMfaFails_withInvalidEmail() {
-    Exception exception =
-        assertThrows(
-            OktaAuthenticationFailureException.class,
-            () -> {
-              _auth.enrollEmailMfa(_userId, "exampleemail");
-            });
-    assertThat(exception).hasMessage("Error setting email MFA");
-  }
-
-  @Test
   void enrollAuthenticatorAppMfaFails_withInvalidAppType() {
     Exception exception =
         assertThrows(
@@ -376,25 +366,33 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     assertThat(exception).hasMessage("App type not recognized.");
   }
 
-  @Test 
+  @Test
   void enrollSecurityKeyFails_withInvalidUserId() {
-    Exception exception = 
-      assertThrows(OktaAuthenticationFailureException.class,
-      () -> {
-        _auth.enrollSecurityKey("fakeUserId");
-      });
-      assertThat(exception).hasMessage("Security key could not be enrolled");
+    Exception exception =
+        assertThrows(
+            OktaAuthenticationFailureException.class,
+            () -> {
+              _auth.enrollSecurityKey("fakeUserId");
+            });
+    assertThat(exception).hasMessage("Security key could not be enrolled");
   }
 
   @Test
   void activateSecurityKeyFails_withInvalidData() {
     JSONObject activationObject = _auth.enrollSecurityKey(_userId);
-    Exception exception = 
-    assertThrows(OktaAuthenticationFailureException.class,
-    () -> {
-      _auth.activateSecurityKey(_userId, activationObject.getString("factorId"), activationObject.getJSONObject("activation").getString("challenge"),
-       activationObject.getJSONObject("activation").getJSONObject("user").getString("id"));
-    });
+    Exception exception =
+        assertThrows(
+            OktaAuthenticationFailureException.class,
+            () -> {
+              _auth.activateSecurityKey(
+                  _userId,
+                  activationObject.getString("factorId"),
+                  activationObject.getJSONObject("activation").getString("challenge"),
+                  activationObject
+                      .getJSONObject("activation")
+                      .getJSONObject("user")
+                      .getString("id"));
+            });
     assertThat(exception).hasMessage("Security key could not be activated");
   }
 

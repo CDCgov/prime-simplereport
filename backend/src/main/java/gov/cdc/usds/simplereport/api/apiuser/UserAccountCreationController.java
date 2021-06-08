@@ -34,8 +34,7 @@ public class UserAccountCreationController {
 
   @PostConstruct
   private void init() {
-    LOG.info(
-        "WIP: User account request creation REST endpoint enabled. Not for use in production at this time.");
+    LOG.info("User account request creation REST endpoint enabled.");
   }
 
   /**
@@ -112,17 +111,15 @@ public class UserAccountCreationController {
   }
 
   /**
-   * Enrolls a user in email MFA.
+   * Enrolls a user in email MFA, using the account email address stored in Okta.
    *
-   * @param requestBody contains the user-provided email address.
    * @param request contains session information about the user, including their Okta id.
    * @throws OktaAuthenticationFailureException if the provided email address is invalid.
    */
   @PostMapping("/enroll-email-mfa")
-  public void enrollEmailMfa(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
-      throws OktaAuthenticationFailureException {
+  public void enrollEmailMfa(HttpServletRequest request) throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
-    String factorId = _oktaAuth.enrollEmailMfa(userId, requestBody.getUserInput());
+    String factorId = _oktaAuth.enrollEmailMfa(userId);
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
 
@@ -174,11 +171,8 @@ public class UserAccountCreationController {
   public void activateSecurityKeyMfa(
       @RequestBody ActivateSecurityKeyRequest requestBody, HttpServletRequest request)
       throws OktaAuthenticationFailureException {
-    LOG.info("controller: activating security key");
-    LOG.info("session information: ", request.getSession());
     String userId = getUserId(request.getSession());
     String factorId = getFactorId(request.getSession());
-    LOG.info("user and factor fetched");
     _oktaAuth.activateSecurityKey(
         userId, factorId, requestBody.getAttestation(), requestBody.getClientData());
   }
@@ -195,13 +189,9 @@ public class UserAccountCreationController {
   @PostMapping("/verify-activation-passcode")
   public void verifyActivationPasscode(
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
-    LOG.info("in verifyActivationPasscode. Request is: " + requestBody);
-    LOG.info("request input is: " + requestBody.getUserInput());
     String userId = getUserId(request.getSession());
     String factorId = getFactorId(request.getSession());
-    LOG.info("verifying activation passcode for user", userId);
     _oktaAuth.verifyActivationPasscode(userId, factorId, requestBody.getUserInput());
-    LOG.info("passcode verification successful");
   }
 
   /**
