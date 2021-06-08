@@ -39,6 +39,13 @@ export const SecurityAnswer = () => {
           type={"submit"}
           onClick={validateAnswer}
         />
+        <p className="usa-hint font-ui-2xs margin-top-3 margin-bottom-0">
+          Can’t remember your answer?
+        </p>
+        <p className="usa-hint font-ui-2xs margin-top-05 margin-bottom-0">
+          Contact your SimpleReport organization administrator for a temporary
+          password.
+        </p>
       </Card>
       <p className="margin-top-4">
         <a href="#0">Return to sign in</a>
