@@ -6,7 +6,7 @@ import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
 import { emailIsValid } from "../../utils/email";
 
-export const SignIn = () => {
+export const LogIn = () => {
   const [emailAddress, setEmailAddress] = useState("");
   const [emailError, setEmailError] = useState("");
   const [dirty, setDirty] = useState(false);
@@ -50,7 +50,7 @@ export const SignIn = () => {
   return (
     <CardBackground>
       <Card logo>
-        <h1 className="font-ui-sm margin-top-3">Sign in</h1>
+        <h1 className="font-ui-sm margin-top-3">Log in</h1>
         <TextInput
           label={"Email address"}
           name={"email"}
@@ -73,7 +73,7 @@ export const SignIn = () => {
         />
         <Button
           className="margin-top-3"
-          label={"Sign in"}
+          label={"Log in"}
           type={"submit"}
           onClick={validateEmailAddress}
         />

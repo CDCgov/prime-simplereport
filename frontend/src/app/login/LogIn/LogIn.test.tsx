@@ -1,10 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 
-import { SignIn } from "./SignIn";
+import { LogIn } from "./LogIn";
 
 describe("MFA Email", () => {
   beforeEach(() => {
-    render(<SignIn />);
+    render(<LogIn />);
   });
 
   it("can enter a valid email", () => {
