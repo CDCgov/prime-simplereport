@@ -115,8 +115,12 @@ public enum DynamicsValueMapping {
     }
   }
 
-  // Build a key and look it up
+  // Build a key and look it up, try to fail with something that will create a record in Dynamics
   private static int getDynamicsCodeFromName(final Prefix prefix, final String inputString) {
+    if (inputString == null || inputString.equals("")) {
+      return DEFAULT_VALUE;
+    }
+
     String keyPart =
         inputString.strip().toUpperCase().replaceAll("\\s+", "_").replaceAll("[^A-Z0-9_]", "");
     return DynamicsValueMapping.valueOf(prefix + "_" + keyPart).value;
