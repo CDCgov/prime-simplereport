@@ -40,7 +40,7 @@ export const SecurityAnswer = () => {
           onClick={validateAnswer}
         />
         <p className="usa-hint font-ui-2xs margin-top-3 margin-bottom-0">
-          Can’t remember your answer?
+          Forgot your answer?
         </p>
         <p className="usa-hint font-ui-2xs margin-top-05 margin-bottom-0">
           Contact your SimpleReport organization administrator for a temporary
