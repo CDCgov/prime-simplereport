@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 
 class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   @Autowired ApiUserRepository _apiUserRepo;
@@ -182,13 +183,13 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
     PersonName personName = new PersonName("First", "Middle", "Last", "Jr");
 
-    ConflictingUserException caught =
+    AccessDeniedException caught =
         assertThrows(
-            ConflictingUserException.class,
+            AccessDeniedException.class,
             () ->
                 _service.createUserInCurrentOrg("captain@pirate.com", personName, Role.USER, true));
 
-    assertEquals("A user with this email address already exists.", caught.getMessage());
+    assertEquals("Unable to add user.", caught.getMessage());
   }
 
   private void roleCheck(final UserInfo userInfo, final Set<OrganizationRole> expected) {

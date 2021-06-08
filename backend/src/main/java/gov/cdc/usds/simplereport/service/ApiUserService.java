@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,7 +88,7 @@ public class ApiUserService {
             .getOrganizationRoleClaimsForUser(apiUser.getLoginEmail())
             .orElseThrow(MisconfiguredUserException::new);
     if (!org.getExternalId().equals(claims.getOrganizationExternalId())) {
-      throw new ConflictingUserException();
+      throw new AccessDeniedException("Unable to add user.");
     }
 
     // re-provision the user
