@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.model.Role;
+import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,7 +68,52 @@ public class ApiUserService {
   public UserInfo createUserInCurrentOrg(
       String username, PersonName name, Role role, boolean active) {
     Organization org = _orgService.getCurrentOrganization();
+
+    Optional<ApiUser> found = _apiUserRepo.findByLoginEmailIncludeArchived(username.toLowerCase());
+    if (found.isPresent()) {
+      return reprovisionUser(found.get(), name, org, role);
+    }
+
     return createUserHelper(username, name, org, role, true);
+  }
+
+  private UserInfo reprovisionUser(ApiUser apiUser, PersonName name, Organization org, Role role) {
+    if (!apiUser.isDeleted()) {
+      // an enabled user with this email address exists (in some org)
+      throw new ConflictingUserException();
+    }
+
+    OrganizationRoleClaims claims =
+        _oktaRepo
+            .getOrganizationRoleClaimsForUser(apiUser.getLoginEmail())
+            .orElseThrow(MisconfiguredUserException::new);
+    if (!org.getExternalId().equals(claims.getOrganizationExternalId())) {
+      throw new AccessDeniedException("Unable to add user.");
+    }
+
+    // re-provision the user
+    IdentityAttributes userIdentity = new IdentityAttributes(apiUser.getLoginEmail(), name);
+    _oktaRepo.reprovisionUser(userIdentity);
+
+    // for now, all re-enabled users have no access to facilities unless they are admins
+    Set<OrganizationRole> roles =
+        EnumSet.of(role.toOrganizationRole(), OrganizationRole.getDefault());
+    Optional<OrganizationRoleClaims> roleClaims =
+        _oktaRepo.updateUserPrivileges(apiUser.getLoginEmail(), org, Set.of(), roles);
+
+    apiUser.setNameInfo(name);
+    apiUser.setIsDeleted(false);
+
+    Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
+    boolean isAdmin = isAdmin(apiUser);
+    UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
+
+    LOG.info(
+        "User with id={} re-provisioned by user with id={}",
+        apiUser.getInternalId(),
+        getCurrentApiUser().getInternalId());
+
+    return user;
   }
 
   private UserInfo createUserHelper(

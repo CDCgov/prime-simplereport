@@ -2,8 +2,11 @@ package gov.cdc.usds.simplereport.idp.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.okta.sdk.client.Client;
@@ -14,10 +17,15 @@ import com.okta.sdk.resource.group.GroupProfile;
 import com.okta.sdk.resource.group.GroupType;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserList;
+import com.okta.sdk.resource.user.UserProfile;
+import com.okta.sdk.resource.user.UserStatus;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import java.util.Optional;
 import java.util.Set;
@@ -95,5 +103,74 @@ class LiveOktaRepositoryTest {
             UUID.fromString("f49e8e27-dd41-4a9e-a29f-15ac74422923")),
         claims.getFacilities());
     assertFalse(claims.grantsAllFacilityAccess());
+  }
+
+  @Test
+  void reprovisionUser_success() {
+    String username = "fraud@fake.com";
+    PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
+
+    UserList userList = mock(UserList.class);
+    User user = mock(User.class);
+    UserProfile userProfile = mock(UserProfile.class);
+
+    when(_client.listUsers(username, null, null, null, null)).thenReturn(userList);
+    when(userList.stream()).thenReturn(Stream.of(user));
+    when(userList.single()).thenReturn(user);
+    when(user.getStatus()).thenReturn(UserStatus.SUSPENDED);
+    when(user.getProfile()).thenReturn(userProfile);
+
+    IdentityAttributes identityAttributes = new IdentityAttributes(username, personName);
+
+    _repo.reprovisionUser(identityAttributes);
+
+    verify(user, times(1)).update();
+    verify(user, times(1)).deactivate();
+    verify(user, times(1)).activate(true);
+  }
+
+  @Test
+  void reprovisionUser_unsupportedUserState_error() {
+    String username = "fraud@fake.com";
+    PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
+
+    UserList userList = mock(UserList.class);
+    User user = mock(User.class);
+
+    when(_client.listUsers(username, null, null, null, null)).thenReturn(userList);
+    when(userList.stream()).thenReturn(Stream.of(user));
+    when(userList.single()).thenReturn(user);
+    when(user.getStatus()).thenReturn(UserStatus.ACTIVE);
+
+    IdentityAttributes identityAttributes = new IdentityAttributes(username, personName);
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> {
+              _repo.reprovisionUser(identityAttributes);
+            });
+    assertEquals("Cannot reprovision user in unsupported state: ACTIVE", caught.getMessage());
+  }
+
+  @Test
+  void reprovisionUser_userNotFound_error() {
+    String username = "fraud@fake.com";
+    PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
+
+    UserList userList = mock(UserList.class);
+
+    when(_client.listUsers(username, null, null, null, null)).thenReturn(userList);
+    when(userList.stream()).thenReturn(Stream.of());
+
+    IdentityAttributes identityAttributes = new IdentityAttributes(username, personName);
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> {
+              _repo.reprovisionUser(identityAttributes);
+            });
+    assertEquals("Cannot reprovision Okta user with unrecognized username", caught.getMessage());
   }
 }
