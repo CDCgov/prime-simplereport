@@ -49,7 +49,7 @@ import org.springframework.beans.factory.annotation.Value;
  */
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
-// @Disabled
+@Disabled
 class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
   private static final String PHONE_NUMBER = "999-999-9999";
@@ -244,24 +244,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
     user.resetFactors();
   }
-
-  // @Test
-  // @Order(10)
-  // void activateSecurityKeySuccessful() throws Exception {
-  //   JSONObject activationObject = _auth.enrollSecurityKey(_userId);
-
-  //   // in order to test this successfully, we need to somehow get the attestation and clientData
-  //   // out.
-  //   // there are JS libraries for this, so I'd hope there's a Java library as well?? need to look
-  //   // into it further.
-  //   _auth.activateSecurityKey(
-  //       _userId,
-  //       activationObject.getString("factorId"),
-  //       activationObject.getJSONObject("activation").getString("attestation"),
-  //       " ");
-  //   assertThat(3 + 4).isEqualTo(8);
-  // }
-
+  
   @Test
   @Order(10)
   void verifyActivationPasscodeSuccessful() throws Exception {

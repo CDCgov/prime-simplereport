@@ -1,0 +1,14 @@
+{
+  "name": "report_stream_publisher",
+  "version": "0.0.1",
+  "description": "",
+  "main": "SingleTestEventPublisher/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "jest": "^26.6.3"
+  }
+}

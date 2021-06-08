@@ -134,15 +134,15 @@ export const PasswordForm = () => {
       strengthColor = "bg-error";
       break;
     case 2:
-      strengthLabel = "Weak";
+      strengthLabel = "Okay";
       strengthColor = "bg-orange";
       break;
     case 3:
-      strengthLabel = "Okay";
+      strengthLabel = "Medium";
       strengthColor = "bg-gold";
       break;
     case 4:
-      strengthLabel = "Good";
+      strengthLabel = "Strong";
       strengthColor = "bg-success";
       break;
     default:
