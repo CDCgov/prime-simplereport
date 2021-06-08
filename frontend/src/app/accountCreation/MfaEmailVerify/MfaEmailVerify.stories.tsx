@@ -7,7 +7,7 @@ export default {
   component: MfaEmailVerify,
   argTypes: {},
   args: {
-    location: { state: { email: "foo@bar.com" } },
+    location: { state: { contact: "foo@bar.com" } },
   },
 } as Meta;
 

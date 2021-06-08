@@ -1,7 +1,7 @@
 import { MfaVerify } from "../MfaVerify/MfaVerify";
 
 interface Props {
-  location: { state: { phoneNumber: string } };
+  location: { state: { contact: string } };
 }
 
 export const MfaPhoneVerify = (props: Props) => (
@@ -9,7 +9,7 @@ export const MfaPhoneVerify = (props: Props) => (
     hint={
       <>
         You should receive a phone call with a security code at{" "}
-        <b>{props.location.state.phoneNumber}</b>. It will expire in 5 minutes.
+        <b>{props.location.state.contact}</b>. It will expire in 5 minutes.
       </>
     }
   />
