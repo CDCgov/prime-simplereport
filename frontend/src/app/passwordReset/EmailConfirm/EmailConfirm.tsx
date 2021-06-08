@@ -6,7 +6,7 @@ import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
 import { emailIsValid } from "../../utils/email";
 
-export const Email = () => {
+export const EmailConfirm = () => {
   const [emailAddress, setEmailAddress] = useState("");
   const [emailError, setEmailError] = useState("");
   const [formIsDirty, setFormIsDirty] = useState(false);
