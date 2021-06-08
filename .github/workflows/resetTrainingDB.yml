@@ -1,4 +1,4 @@
-name: Deploy Training
+name: Reset Training Database
 
 on:
   workflow_dispatch:
@@ -13,22 +13,8 @@ concurrency:
   group: training-deploy
 
 jobs:
-  docker-build:
+  reset-training-database:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./backend
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Login to ACR
-        run: docker login ${{ secrets.ACR_REPO_URL }} -u ${{ secrets.ACR_ADMIN_USERNAME }} -p ${{ secrets.ACR_ADMIN_PASWORD }}
-      - name: Build and push Docker images
-        run: ./build_and_push.sh
-  deploy-backend:
-    runs-on: ubuntu-latest
-    needs: docker-build
     defaults:
       run:
         working-directory: ./ops
@@ -47,19 +33,29 @@ jobs:
           terraform_version: 0.15.1
       - name: Terraform Init
         run: make init-${{ env.DEPLOY_ENV }}
-      - name: Replace Azure training DB
+      - name: Reset Azure training DB
         run: |
-          cd ${{ env.DEPLOY_ENV }}/persistent
-          terraform taint module.db.azurerm_postgresql_database.simple_report
-          terraform apply -target="module.db.azurerm_postgresql_database.simple_report" -auto-approve
-          cd -
-      - name: Azure deploy Api
+          export RUNNER_PUBLIC_IP=$(curl -s ipinfo.io/ip)
+          export SERVER_NAME=simple-report-${{ env.DEPLOY_ENV }}-db
+          export SERVER_FQDN=simple-report-${{ env.DEPLOY_ENV }}-db.postgres.database.azure.com
+          export RG_NAME=prime-simple-report-${{ env.DEPLOY_ENV }}
+          export PGPASSWORD=$(az keyvault secret show --name simple-report-${{ env.DEPLOY_ENV }}-db-password --vault-name simple-report-global | jq .value -r)
+
+          # Open the DB firewall for the runner IP
+          az postgres server update --public enabled --name $SERVER_NAME --resource-group $RG_NAME
+          az postgres server firewall-rule create --name runner-ip --server-name $SERVER_NAME --resource-group $RG_NAME --start-ip-address $RUNNER_PUBLIC_IP --end-ip-address $RUNNER_PUBLIC_IP
+
+          # Drop public schema CASCADE (which also drops all tables), then recreate it.
+          # This also drops extensions, so recreate pgcrypto.
+          psql \
+          --host $SERVER_FQDN \
+          --username simplereport@$SERVER_NAME \
+          --dbname "simple_report" \
+          --command "DROP SCHEMA public CASCADE; CREATE SCHEMA public; CREATE EXTENSION pgcrypto;"
+
+          # Close the firewall
+          az postgres server firewall-rule delete --name runner-ip --server-name $SERVER_NAME --resource-group $RG_NAME --yes
+          az postgres server update --public disabled --name $SERVER_NAME --resource-group $RG_NAME
+      - name: Restart Training App Service
         run: |
-          # Grab the currently deployed commit from TF state using the linux_fx_version variable to ensure we don't change the deployed version
-          export DEPLOYED_COMMIT=$(terraform -chdir=training state show module.simple_report_api.azurerm_app_service.service | grep linux_fx_version | cut -d ':' -f 2 | tr -d '"')
-          make deploy-${{ env.DEPLOY_ENV }}-api
-      - name: Wait for staging deploy to complete
-        timeout-minutes: 10
-        run: make wait-for-${{ env.DEPLOY_ENV }}
-      - name: Promote staging to production
-        run: make promote-${{ env.DEPLOY_ENV }}
+          az webapp restart --resource-group prime-simple-report-${{ env.DEPLOY_ENV }} --name simple-report-api-${{ env.DEPLOY_ENV }}
