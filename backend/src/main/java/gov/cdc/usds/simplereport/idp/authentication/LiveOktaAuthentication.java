@@ -360,8 +360,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       UserFactor factor = user.getFactor(factorId);
       LOG.info("verification: got user and factor");
       LOG.info("factorType: " + factor.getFactorType());
+      LOG.info("entered passcode: " + passcode);
       ActivateFactorRequest activateFactor = _client.instantiate(ActivateFactorRequest.class);
-      activateFactor.setPassCode(passcode);
+      activateFactor.setPassCode(passcode.strip());
       factor.activate(activateFactor);
     } catch (ResourceException | NullPointerException | IllegalArgumentException e) {
       LOG.info("passcode could not be verified. The following exception was thrown: ", e);

@@ -195,9 +195,13 @@ public class UserAccountCreationController {
   @PostMapping("/verify-activation-passcode")
   public void verifyActivationPasscode(
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
+    LOG.info("in verifyActivationPasscode. Request is: " + requestBody);
+    LOG.info("request input is: " + requestBody.getUserInput());
     String userId = getUserId(request.getSession());
     String factorId = getFactorId(request.getSession());
+    LOG.info("verifying activation passcode for user", userId);
     _oktaAuth.verifyActivationPasscode(userId, factorId, requestBody.getUserInput());
+    LOG.info("passcode verification successful");
   }
 
   /**
