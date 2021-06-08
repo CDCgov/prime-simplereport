@@ -32,7 +32,7 @@ init-%: .valid-env-%
 	terraform -chdir=$* init
 
 deploy-%-api: .valid-env-% api.tfvars
-	terraform -chdir=$* apply -auto-approve -var-file=../api.tfvars -target="module.simple_report_api"
+	terraform -chdir=$* apply -auto-approve -var-file=../api.tfvars
 
 promote-%: .be-logged-in .valid-env-%
 	az webapp deployment slot swap -g prime-simple-report-$* -n simple-report-api-$* --slot $(SOURCE_SLOT) --target-slot $(TARGET_SLOT)
