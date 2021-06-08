@@ -7,14 +7,17 @@ import {
   getTestTypes,
   getPregnancyResponses,
   getTestResultDeliveryPreferences,
+  PregnancyCode,
 } from "../../../patientApp/timeOfTest/constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Button from "../../commonComponents/Button/Button";
 import FormGroup from "../../commonComponents/FormGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
-import { COVID_RESULTS } from "../../constants";
 
 import "./AoEForm.scss";
+
+import { COVID_RESULTS } from "../../constants";
+import { TestResult } from "../QueueItem";
 import SymptomInputs from "./SymptomInputs";
 import PriorTestInputs from "./PriorTestInputs";
 
@@ -24,6 +27,28 @@ const findValueForLabel = (
   label: string,
   list: { label: string; value: string }[]
 ) => (list.filter((item) => item.label === label)[0] || {}).value;
+
+// TODO: better name
+export type FormattedDateOne = `${number}${number}${number}${number}-${number}${number}-${number}${number}`;
+export type FormattedDateTwo = `${number}${number}/${number}${number}/${number}${number}${number}${number}`;
+
+export interface AoEAnswersDelivery {
+    noSymptoms: boolean;
+    symptoms: string;
+    symptomOnset: FormattedDateTwo | undefined;
+    priorTestDate: FormattedDateOne | undefined | null;
+    priorTestResult: TestResult | undefined | null;
+    priorTestType: string | undefined | null;
+    firstTest: boolean;
+    pregnancy: PregnancyCode | undefined;
+    testResultDelivery: string;
+};
+
+type RequiredAndNotNull<T> = {
+  [P in keyof T]: Exclude<T[P], null | undefined>
+};
+
+export type AoEAnswers = Omit<RequiredAndNotNull<AoEAnswersDelivery>, "testResultDelivery">;
 
 interface Props {
   saveButtonText: string;
@@ -40,27 +65,8 @@ interface Props {
         result: string;
       }
     | undefined;
-  loadState?: {
-    noSymptoms: boolean;
-    symptoms: string;
-    symptomOnset: string;
-    priorTestDate: string;
-    priorTestResult: string;
-    priorTestType: string;
-    firstTest: boolean;
-    pregnancy: string;
-  };
-  saveCallback: (response: {
-    noSymptoms: boolean;
-    symptoms: string;
-    symptomOnset: string | undefined;
-    priorTestDate: string | undefined | null;
-    priorTestResult: string | undefined | null;
-    priorTestType: string | undefined | null;
-    firstTest: boolean;
-    pregnancy: string | undefined;
-    testResultDelivery: string;
-  }) => void;
+  loadState?: AoEAnswers;
+  saveCallback: (response: AoEAnswersDelivery) => void;
   isModal: boolean;
   noValidation: boolean;
   formRef?: React.Ref<HTMLFormElement>;
