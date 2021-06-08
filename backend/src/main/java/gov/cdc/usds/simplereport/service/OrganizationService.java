@@ -240,20 +240,18 @@ public class OrganizationService {
     // for now, all new organizations have identity_verified = false by default
     Organization org = _repo.save(new Organization(name, externalId, false));
     _oktaRepo.createOrganization(org);
-    Facility facility =
-        createFacilityNoPermissions(
-            org,
-            testingFacilityName,
-            cliaNumber,
-            facilityAddress,
-            phone,
-            email,
-            deviceSpecimenTypes,
-            providerName,
-            providerAddress,
-            providerTelephone,
-            providerNPI);
-    _oktaRepo.createFacility(facility);
+    createFacilityNoPermissions(
+        org,
+        testingFacilityName,
+        cliaNumber,
+        facilityAddress,
+        phone,
+        email,
+        deviceSpecimenTypes,
+        providerName,
+        providerAddress,
+        providerTelephone,
+        providerNPI);
     return org;
   }
 
