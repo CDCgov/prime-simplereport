@@ -27,7 +27,6 @@ export const MfaVerifyForm = (props: Props) => {
         label={"One-time security code"}
         name={"security-code"}
         type={"tel"}
-        required
         value={code}
         errorMessage={codeError}
         validationStatus={codeError ? "error" : undefined}
