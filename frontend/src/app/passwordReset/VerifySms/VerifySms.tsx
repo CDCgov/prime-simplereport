@@ -2,6 +2,7 @@ import { MfaVerify } from "../MfaVerify/MfaVerify";
 
 interface Props {
   phoneNumber: string;
+  resendCode: boolean;
 }
 
 export const VerifySms = (props: Props) => (
@@ -13,5 +14,6 @@ export const VerifySms = (props: Props) => (
       </>
     }
     type="text message (SMS)"
+    resendCode={true}
   />
 );
