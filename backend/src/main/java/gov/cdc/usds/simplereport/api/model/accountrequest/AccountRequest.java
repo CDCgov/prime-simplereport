@@ -39,9 +39,9 @@ public class AccountRequest implements TemplateVariablesProvider {
   @JsonProperty @NotNull private String browsers;
   @JsonProperty private String browsersOther;
   @JsonProperty private String workflow;
-  @JsonProperty @NotNull private String recordsTestResults;
-  @JsonProperty @NotNull private String processTime;
-  @JsonProperty @NotNull private String submittingResultsTime;
+  @JsonProperty private String recordsTestResults;
+  @JsonProperty private String processTime;
+  @JsonProperty private String submittingResultsTime;
   @JsonProperty private String opFirstName;
   @JsonProperty private String opLastName;
   @JsonProperty private String npi;
