@@ -117,7 +117,7 @@ public enum DynamicsValueMapping {
 
   // Build a key and look it up, try to fail with something that will create a record in Dynamics
   private static int getDynamicsCodeFromName(final Prefix prefix, final String inputString) {
-    if (inputString == null || inputString.equals("")) {
+    if (inputString == null || "".equals(inputString)) {
       return DEFAULT_VALUE;
     }
 
