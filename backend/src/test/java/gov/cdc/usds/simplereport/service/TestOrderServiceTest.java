@@ -7,9 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 import com.google.i18n.phonenumbers.NumberParseException;
+import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -497,6 +499,37 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         () ->
             _service.addTestResult(
                 devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void addTestResult_smsDelivery_invalidPhoneNumber() throws NumberParseException {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person p = _dataFactory.createFullPerson(org);
+
+    _personService.updateTestResultDeliveryPreference(
+        p.getInternalId(), TestResultDeliveryPreference.SMS);
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        p,
+        "",
+        Collections.<String, Boolean>emptyMap(),
+        false,
+        LocalDate.of(1865, 12, 25),
+        "",
+        TestResult.POSITIVE,
+        LocalDate.of(1865, 12, 25),
+        false);
+    DeviceType devA = _dataFactory.getGenericDevice();
+
+    doThrow(NumberParseException.class).when(_smsService).sendToPatientLink(any(), any());
+
+    AddTestResultResponse res =
+        _service.addTestResult(
+            devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
+
+    assertEquals(false, res.getDeliverySuccess());
   }
 
   @Test
