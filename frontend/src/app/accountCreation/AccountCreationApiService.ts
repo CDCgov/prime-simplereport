@@ -70,7 +70,7 @@ export class AccountCreationApi {
   }
 
   static verifyActivationPasscode(code: string) {
-    return request("/verify-activation-passcode", { code });
+    return request("/verify-activation-passcode", { userInput: code });
   }
 
   static resendActivationPasscode() {

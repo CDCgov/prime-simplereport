@@ -16,6 +16,7 @@ interface Props {
 
 export const MfaTotp = (props: Props) => {
   const [qrCode, setQrCode] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     const getQrCode = async () => {
@@ -25,16 +26,16 @@ export const MfaTotp = (props: Props) => {
     getQrCode();
   }, [props]);
 
-  const handleSubmit = () => {
+  if (!qrCode) {
+    return <LoadingCard message="Retrieving QR code..." />;
+  }
+
+  if (submitted) {
     return (
       <Redirect
         to={{ pathname: `${window.location.pathname.split("/uac")[1]}/verify` }}
       />
     );
-  };
-
-  if (!qrCode) {
-    return <LoadingCard message="Retrieving QR code..." />;
   }
 
   return (
@@ -67,7 +68,7 @@ export const MfaTotp = (props: Props) => {
           className="margin-top-3"
           label={"Continue"}
           type={"submit"}
-          onClick={handleSubmit}
+          onClick={() => setSubmitted(true)}
         />
       </Card>
       <p className="margin-top-5">
