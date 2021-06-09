@@ -22,6 +22,7 @@ import com.okta.sdk.resource.user.factor.UserFactor;
 import dev.samstevens.totp.code.CodeGenerator;
 import dev.samstevens.totp.code.DefaultCodeGenerator;
 import gov.cdc.usds.simplereport.api.BaseFullStackTest;
+import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import java.time.Instant;
@@ -315,44 +316,44 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     char[] password = "short".toCharArray();
     Exception exception =
         assertThrows(
-            OktaAuthenticationFailureException.class,
+            BadRequestException.class,
             () -> {
               _auth.setPassword(_userId, password);
             });
-    assertThat(exception).hasMessage("Error setting user's password");
+    assertThat(exception).hasMessageContaining("Password requirements were not met");
   }
 
   @Test
   void setRecoveryQuestionFails_withInvalidQuestion() {
     Exception exception =
         assertThrows(
-            OktaAuthenticationFailureException.class,
+            BadRequestException.class,
             () -> {
               _auth.setRecoveryQuestion(_userId, "Who was your third grade teacher?", "aa");
             });
-    assertThat(exception).hasMessage("Error setting recovery questions");
+    assertThat(exception).hasMessageContaining("The security question answer must be at least 4 characters in length");
   }
 
   @Test
   void enrollSmsMfaFails_withInvalidPhoneNumber() {
     Exception exception =
         assertThrows(
-            OktaAuthenticationFailureException.class,
+            BadRequestException.class,
             () -> {
               _auth.enrollSmsMfa(_userId, "999");
             });
-    assertThat(exception).hasMessage("Error setting SMS MFA");
+    assertThat(exception).hasMessageContaining("This phone number is invalid");
   }
 
   @Test
   void enrollVoiceCallMfaFails_withInvalidPhoneNumber() {
     Exception exception =
         assertThrows(
-            OktaAuthenticationFailureException.class,
+            BadRequestException.class,
             () -> {
               _auth.enrollVoiceCallMfa(_userId, "999");
             });
-    assertThat(exception).hasMessage("Error setting voice call MFA");
+    assertThat(exception).hasMessageContaining("This phone number is invalid");
   }
 
   @Test
@@ -402,12 +403,12 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     String factorId = mfaResponse.getString("factorId");
     Exception exception =
         assertThrows(
-            OktaAuthenticationFailureException.class,
+            BadRequestException.class,
             () -> {
               _auth.verifyActivationPasscode(_userId, factorId, "1234");
             });
     assertThat(exception)
-        .hasMessage("Activation passcode could not be verifed; MFA activation failed.");
+        .hasMessageContaining("Your code doesn't match our records. Please try again.");
   }
 
   @Test

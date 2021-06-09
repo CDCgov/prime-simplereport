@@ -16,6 +16,7 @@ import com.okta.sdk.resource.user.factor.FactorType;
 import com.okta.sdk.resource.user.factor.SmsUserFactor;
 import com.okta.sdk.resource.user.factor.UserFactor;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
+import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
@@ -119,8 +120,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    *
    * @param userId the user id of the user making the request.
    * @param password the user-provided password to set.
-   * @throws OktaAuthenticationFailureException if the password doesn't meet Okta requirements or
-   *     the user is not in a RESET_PASSWORD state.
+   * @throws BadRequestException if the password doesn't meet Okta requirements
+   * @throws OktaAuthenticationFailureException if the user is not in a RESET_PASSWORD state.
    */
   public void setPassword(String userId, char[] password)
       throws OktaAuthenticationFailureException {
@@ -133,6 +134,10 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       user.setCredentials(creds);
       user.update();
     } catch (ResourceException e) {
+      if (e.getStatus() == HttpStatus.BAD_REQUEST.value()
+          && e.getMessage().toLowerCase().contains("password requirements")) {
+        throw new BadRequestException(e.getCauses().get(0).getSummary(), e);
+      }
       throw new OktaAuthenticationFailureException("Error setting user's password", e);
     }
   }
@@ -143,8 +148,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * @param userId the user id of the user making the request.
    * @param question the user-selected question to answer.
    * @param answer the user-input answer to the selected question.
-   * @throws OktaAuthenticationFailureException if the recovery question/answer doesn't meet Okta
-   *     requirements.
+   * @throws BadRequestException if the recovery answer doesn't meet Okta requirements.
+   * @throws OktaAuthenticationFailureException if setting the recovery question fails (i.e., because the user isn't in the correct state or cannot be found).
    */
   public void setRecoveryQuestion(String userId, String question, String answer)
       throws OktaAuthenticationFailureException {
@@ -160,6 +165,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       user.setCredentials(creds);
       user.update();
     } catch (ResourceException e) {
+      if (e.getStatus() == HttpStatus.BAD_REQUEST.value() && !e.getCauses().isEmpty()) {
+        throw new BadRequestException(e.getCauses().get(0).getSummary(), e);
+      }
       throw new OktaAuthenticationFailureException("Error setting recovery questions", e);
     }
   }
@@ -171,8 +179,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * @param userId the user id of the user making the request.
    * @param phoneNumber the user-provided phone number to enroll.
    * @return factorId the Okta-generated id for the phone number factor.
-   * @throws OktaAuthenticationFailureException if the phone number is invalid or Okta cannot enroll
-   *     it as an MFA option.
+   * @throws BadRequestException if the phone number is invalid.
+   * @throws OktaAuthenticationFailureException if Okta cannot enroll the user in SMS MFA.
    */
   public String enrollSmsMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException {
@@ -183,6 +191,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       user.enrollFactor(smsFactor);
       return smsFactor.getId();
     } catch (ResourceException e) {
+      if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
+        throw new BadRequestException(e.getError().getMessage(), e);
+      }
       throw new OktaAuthenticationFailureException("Error setting SMS MFA", e);
     }
   }
@@ -194,8 +205,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * @param userId the user id of the user making the enrollment request.
    * @param phoneNumber the user-provided phone number to enroll.
    * @return factorId the Okta-generated id for the voice call factor.
-   * @throws OktaAuthenticationFailureException if the phone number is invalid or Okta cannot enroll
-   *     it as an MFA option.
+   * @throws BadRequestException if the phone number is invalid.
+   * @throws OktaAuthenticationFailureException if Okta cannot enroll the user in SMS MFA.
    */
   public String enrollVoiceCallMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException {
@@ -206,6 +217,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       user.enrollFactor(callFactor);
       return callFactor.getId();
     } catch (ResourceException e) {
+      if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
+        throw new BadRequestException(e.getError().getMessage(), e);
+      }
       throw new OktaAuthenticationFailureException("Error setting voice call MFA", e);
     }
   }
@@ -340,6 +354,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * @param factorId the factor id of the factor being activated.
    * @param passcode the user-provided passcode to use for activation. This will have been sent to
    *     the user via SMS, voice call, etc.
+   * @throws BadRequestException if the provided passcode does not match Okta records.
+   * @throws OktaAuthenticationFailureException if the factor could not be activated (because the user or factor doesn't exist).
    */
   public void verifyActivationPasscode(String userId, String factorId, String passcode)
       throws OktaAuthenticationFailureException {
@@ -350,6 +366,10 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       activateFactor.setPassCode(passcode.strip());
       factor.activate(activateFactor);
     } catch (ResourceException | NullPointerException | IllegalArgumentException e) {
+      if (e instanceof ResourceException) {
+        ResourceException exception = (ResourceException) e;
+        throw new BadRequestException(exception.getCauses().get(0).getSummary(), e);
+      }
       throw new OktaAuthenticationFailureException(
           "Activation passcode could not be verifed; MFA activation failed.", e);
     }
@@ -402,7 +422,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       }
     } catch (HttpClientErrorException e) {
       if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
-        throw new IllegalStateException(
+        throw new BadRequestException(
             "An SMS message was recently sent. Please wait 30 seconds before trying again.", e);
       }
     } catch (RestClientException | ResourceException | NullPointerException e) {

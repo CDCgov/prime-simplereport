@@ -8,6 +8,7 @@ import com.okta.sdk.resource.user.factor.FactorType;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication.DemoAuthUser;
+import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,7 +67,7 @@ class DemoOktaAuthenticationTest {
     char[] password = "short".toCharArray();
     Exception exception =
         assertThrows(
-            OktaAuthenticationFailureException.class,
+            BadRequestException.class,
             () -> {
               _auth.setPassword(userId, password);
             });
@@ -79,7 +80,7 @@ class DemoOktaAuthenticationTest {
     char[] password = "longPasswordWithoutSpecialCharacters".toCharArray();
     Exception exception =
         assertThrows(
-            OktaAuthenticationFailureException.class,
+            BadRequestException.class,
             () -> {
               _auth.setPassword(userId, password);
             });
@@ -115,7 +116,7 @@ class DemoOktaAuthenticationTest {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     Exception exception =
         assertThrows(
-            OktaAuthenticationFailureException.class,
+            BadRequestException.class,
             () -> {
               _auth.setRecoveryQuestion(userId, " ", "Teacher");
             });
@@ -127,7 +128,7 @@ class DemoOktaAuthenticationTest {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     Exception exception =
         assertThrows(
-            OktaAuthenticationFailureException.class,
+            BadRequestException.class,
             () -> {
               _auth.setRecoveryQuestion(userId, "Who was your third grade teacher?", " ");
             });
@@ -162,7 +163,7 @@ class DemoOktaAuthenticationTest {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     Exception exception =
         assertThrows(
-            OktaAuthenticationFailureException.class,
+            BadRequestException.class,
             () -> {
               _auth.enrollSmsMfa(userId, "555");
             });
@@ -197,7 +198,7 @@ class DemoOktaAuthenticationTest {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     Exception exception =
         assertThrows(
-            OktaAuthenticationFailureException.class,
+            BadRequestException.class,
             () -> {
               _auth.enrollVoiceCallMfa(userId, "555");
             });
@@ -400,12 +401,12 @@ class DemoOktaAuthenticationTest {
 
     Exception exception =
         assertThrows(
-            OktaAuthenticationFailureException.class,
+            BadRequestException.class,
             () -> {
               _auth.verifyActivationPasscode(userId, factorId, "1234");
             });
     assertThat(exception)
-        .hasMessage("Activation passcode could not be verifed; MFA activation failed.");
+        .hasMessage("Activation passcode does not match our records.");
   }
 
   @Test

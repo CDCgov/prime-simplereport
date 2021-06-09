@@ -4,6 +4,7 @@ import com.okta.sdk.resource.user.factor.FactorStatus;
 import com.okta.sdk.resource.user.factor.FactorType;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
+import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -44,38 +45,37 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   }
 
   public void setPassword(String userId, char[] password)
-      throws OktaAuthenticationFailureException {
+      throws BadRequestException, OktaAuthenticationFailureException {
     validateUser(userId);
     if (password.length < MINIMUM_PASSWORD_LENGTH) {
-      throw new OktaAuthenticationFailureException("Password is too short.");
+      throw new BadRequestException("Password is too short.");
     }
     Pattern specialCharacters = Pattern.compile("[^a-zA-Z0-9]");
     Matcher matcher = specialCharacters.matcher(String.valueOf(password));
     boolean found = matcher.find();
     if (!found) {
-      throw new OktaAuthenticationFailureException(
+      throw new BadRequestException(
           "Password does not contain any special characters.");
     }
     this.idToUserMap.get(userId).setPassword(String.valueOf(password));
   }
 
   public void setRecoveryQuestion(String userId, String question, String answer)
-      throws OktaAuthenticationFailureException {
+      throws BadRequestException, OktaAuthenticationFailureException {
     validateUser(userId);
     if (question.isBlank()) {
-      throw new OktaAuthenticationFailureException("Recovery question cannot be empty.");
+      throw new BadRequestException("Recovery question cannot be empty.");
     }
     if (answer.isBlank()) {
-      throw new OktaAuthenticationFailureException("Recovery answer cannot be empty.");
+      throw new BadRequestException("Recovery answer cannot be empty.");
     }
-
     DemoAuthUser user = this.idToUserMap.get(userId);
     user.setRecoveryQuestion(question);
     user.setRecoveryAnswer(answer);
   }
 
   public String enrollSmsMfa(String userId, String phoneNumber)
-      throws OktaAuthenticationFailureException {
+      throws BadRequestException, OktaAuthenticationFailureException {
     validateUser(userId);
     String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
     String factorId = userId + strippedPhoneNumber;
@@ -86,7 +86,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   }
 
   public String enrollVoiceCallMfa(String userId, String phoneNumber)
-      throws OktaAuthenticationFailureException {
+      throws BadRequestException, OktaAuthenticationFailureException {
     validateUser(userId);
     String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
     String factorId = userId + strippedPhoneNumber;
@@ -176,8 +176,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     validateFactor(userId, factorId);
     DemoMfa mfa = this.idToUserMap.get(userId).getMfa();
     if (passcode.length() != PASSCODE_LENGTH) {
-      throw new OktaAuthenticationFailureException(
-          "Activation passcode could not be verifed; MFA activation failed.");
+      throw new BadRequestException(
+          "Activation passcode does not match our records.");
     }
     mfa.setFactorStatus(FactorStatus.ACTIVE);
   }
@@ -214,7 +214,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   public String validatePhoneNumber(String phoneNumber) throws OktaAuthenticationFailureException {
     String strippedPhoneNumber = phoneNumber.replaceAll("[^\\d]", "");
     if (strippedPhoneNumber.length() != PHONE_NUMBER_LENGTH) {
-      throw new OktaAuthenticationFailureException("Phone number is invalid.");
+      throw new BadRequestException("Phone number is invalid.");
     }
     return strippedPhoneNumber;
   }
