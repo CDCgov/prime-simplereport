@@ -28,9 +28,9 @@ export const Card: React.FC<CardProps> = ({
         <div className="display-flex flex-column flex-align-center">
           <p className="font-ui-sm text-bold margin-top-3">{bodyKicker}</p>
         </div>
-      ) : (
+      ) : bodyKicker ? (
         <p className="font-ui-sm text-bold margin-top-3">{bodyKicker}</p>
-      )}
+      ) : null}
       {children}
     </div>
   );
