@@ -400,12 +400,18 @@ type Mutation {
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   setPatientIsDeleted(id: ID!, deleted: Boolean!): Patient
     @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
-  addTestResult(
+  addTestResultNew(
     deviceId: String!
     result: String!
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
+  addTestResult(
+    deviceId: String!
+    result: String!
+    patientId: ID!
+    dateTested: DateTime
+  ): TestOrder @requiredPermissions(allOf: ["SUBMIT_TEST"])
   editQueueItem(
     id: ID!
     deviceId: String

@@ -30,9 +30,15 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
     _ps = ps;
   }
 
-  public AddTestResultResponse addTestResult(
+  public AddTestResultResponse addTestResultNew(
       String deviceID, String result, UUID patientID, Date dateTested) throws NumberParseException {
     return _tos.addTestResult(deviceID, TestResult.valueOf(result), patientID, dateTested);
+  }
+
+  public ApiTestOrder addTestResult(String deviceID, String result, UUID patientID, Date dateTested)
+      throws NumberParseException {
+    return _tos.addTestResult(deviceID, TestResult.valueOf(result), patientID, dateTested)
+        .getTestResult();
   }
 
   public ApiTestOrder editQueueItem(UUID id, String deviceId, String result, Date dateTested) {

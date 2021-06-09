@@ -88,7 +88,7 @@ export const SUBMIT_TEST_RESULT = gql`
     $result: String!
     $dateTested: DateTime
   ) {
-    addTestResult(
+    addTestResultNew(
       patientId: $patientId
       deviceId: $deviceId
       result: $result
@@ -322,7 +322,7 @@ const QueueItem: any = ({
       ),
     };
 
-    if (response?.data?.addTestResult.deliverySuccess === false) {
+    if (response?.data?.addTestResultNew.deliverySuccess === false) {
       // Prevent parent component from re-rendering while modal is open
       stopPolling();
       openDeliverySuccessModal();
