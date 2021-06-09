@@ -17,3 +17,4 @@ output "app_hostname" {
 output "app_ip_addr" {
   value = split(",", azurerm_app_service.service.outbound_ip_addresses)
 }
+
