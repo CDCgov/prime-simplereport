@@ -232,7 +232,10 @@ public class TestOrderService {
 
         return new AddTestResultResponse(savedOrder, true);
       } catch (NumberParseException npe) {
-        LOG.info("Failed to parse phone number for patient={}", person.getInternalId());
+        LOG.warn("Failed to parse phone number for patient={}", person.getInternalId());
+        return new AddTestResultResponse(savedOrder, false);
+      } catch (RuntimeException e) {
+        LOG.warn("Failed to send text message to patient={}", person.getInternalId());
         return new AddTestResultResponse(savedOrder, false);
       }
     }

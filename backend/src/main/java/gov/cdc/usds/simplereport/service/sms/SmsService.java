@@ -46,14 +46,9 @@ public class SmsService {
   }
 
   private String sendToPerson(Person p, String text) throws NumberParseException {
-    try {
-      String msgId = sms.send(new PhoneNumber(formatNumber(p.getTelephone())), fromNumber, text);
-      LOG.debug("SMS send initiated {}", msgId);
-      return msgId;
-    } catch (NumberParseException npe) {
-      LOG.error("Failed to parse phone number: \"{}\"", fromNumber);
-      throw npe;
-    }
+    String msgId = sms.send(new PhoneNumber(formatNumber(p.getTelephone())), fromNumber, text);
+    LOG.debug("SMS send initiated {}", msgId);
+    return msgId;
   }
 
   String formatNumber(String number) throws NumberParseException {
