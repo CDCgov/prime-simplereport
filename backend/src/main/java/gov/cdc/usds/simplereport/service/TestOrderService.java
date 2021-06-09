@@ -198,6 +198,7 @@ public class TestOrderService {
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Deprecated // switch to using device specimen ID, using methods that ... don't exist yet!
+  @SuppressWarnings("checkstyle:IllegalCatch")
   public AddTestResultResponse addTestResult(
       String deviceID, TestResult result, UUID patientId, Date dateTested) {
     DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);

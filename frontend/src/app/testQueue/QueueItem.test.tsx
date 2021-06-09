@@ -348,7 +348,7 @@ const mocks = [
     },
     result: {
       data: {
-        addTestResult: {
+        addTestResultNew: {
           testResult: {
             internalId: internalId,
           },
