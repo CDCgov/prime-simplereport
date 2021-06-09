@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router";
 import createMockStore from "redux-mock-store";
 
-import { PasswordForm } from "./PasswordForm";
+import { PasswordCreate } from "../../accountCreation/PasswordCreate/PasswordCreate";
 
 const mockStore = createMockStore([]);
 
@@ -12,7 +12,7 @@ const store = mockStore({
   activationToken: "foo",
 });
 
-jest.mock("../AccountCreationApiService", () => ({
+jest.mock("../../accountCreation/AccountCreationApiService", () => ({
   AccountCreationApi: {
     setPassword: (activationToken: string, password: string) => {
       return new Promise((res, rej) => {
@@ -26,12 +26,12 @@ jest.mock("../AccountCreationApiService", () => ({
   },
 }));
 
-describe("PasswordForm", () => {
+describe("PasswordCreate", () => {
   beforeEach(() => {
     render(
       <MemoryRouter initialEntries={["/set-password"]}>
         <Provider store={store}>
-          <Route path="/set-password" component={PasswordForm} />
+          <Route path="/set-password" component={PasswordCreate} />
           <Route path="/set-recovery-question">
             <p>Password set successfully.</p>
           </Route>
@@ -56,35 +56,35 @@ describe("PasswordForm", () => {
   });
 
   it("thinks 'foo' is a weak password", () => {
-    fireEvent.change(screen.getByLabelText("Password *"), {
+    fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "foo" },
     });
     expect(screen.getByText(strengthLabel("Weak"))).toBeInTheDocument();
   });
 
   it("thinks 'fooBAR' is a weak password", () => {
-    fireEvent.change(screen.getByLabelText("Password *"), {
+    fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "fooBAR" },
     });
     expect(screen.getByText(strengthLabel("Okay"))).toBeInTheDocument();
   });
 
   it("thinks 'fooB1' is an okay password", () => {
-    fireEvent.change(screen.getByLabelText("Password *"), {
+    fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "fooB1" },
     });
     expect(screen.getByText(strengthLabel("Medium"))).toBeInTheDocument();
   });
 
   it("thinks 'fooBAR123!' is a good password", () => {
-    fireEvent.change(screen.getByLabelText("Password *"), {
+    fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "fooBAR123!" },
     });
     expect(screen.getByText(strengthLabel("Strong"))).toBeInTheDocument();
   });
 
   it("can type in the password confirmation", () => {
-    fireEvent.change(screen.getByLabelText("Password *"), {
+    fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "fooBAR123!" },
     });
     fireEvent.change(
@@ -97,7 +97,7 @@ describe("PasswordForm", () => {
   });
 
   it("requires password to be valid", () => {
-    fireEvent.change(screen.getByLabelText("Password *"), {
+    fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "foo" },
     });
     fireEvent.change(
@@ -116,7 +116,7 @@ describe("PasswordForm", () => {
   });
 
   it("requires passwords to match", () => {
-    fireEvent.change(screen.getByLabelText("Password *"), {
+    fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "fooBAR123!" },
     });
     fireEvent.change(
@@ -131,7 +131,7 @@ describe("PasswordForm", () => {
   });
 
   it("succeeds on submit with valid password", async () => {
-    fireEvent.change(screen.getByLabelText("Password *"), {
+    fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "validPASS123!" },
     });
     fireEvent.change(
@@ -148,7 +148,7 @@ describe("PasswordForm", () => {
   });
 
   it("fails on submit with invalid password", async () => {
-    fireEvent.change(screen.getByLabelText("Password *"), {
+    fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "INvalidPASS123!" },
     });
     fireEvent.change(

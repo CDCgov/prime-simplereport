@@ -2,12 +2,8 @@ import { ChangeEvent, useState } from "react";
 import { useSelector } from "react-redux";
 import { Redirect } from "react-router";
 
-import { Card } from "../../commonComponents/Card/Card";
-import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
-import StepIndicator from "../../commonComponents/StepIndicator";
-import { accountCreationSteps } from "../../../config/constants";
 import {
   hasLowerCase,
   hasNumber,
@@ -178,52 +174,41 @@ export const PasswordForm = () => {
   }
 
   return (
-    <CardBackground>
-      <Card logo bodyKicker="Set up your account">
-        <StepIndicator
-          steps={accountCreationSteps}
-          currentStepValue={"0"}
-          noLabels={true}
-        />
-        <TextInput
-          label={"Password"}
-          name={"password"}
-          type={"password"}
-          value={password}
-          hintText="Your password must be at least 8 characters, include an uppercase and lowercase letter, and a number."
-          required
-          errorMessage={passwordError}
-          validationStatus={passwordError ? "error" : undefined}
-          onBlur={validatePassword}
-          onChange={handlePasswordChange}
-        />
-        <div className="display-flex grid-gap margin-top-105">
-          {strengthBars}
-        </div>
-        <p className="font-ui-3xs margin-bottom-0 text-base">
-          Password strength: <span className="text-bold">{strengthLabel}</span>
-        </p>
-        <p className="font-ui-3xs margin-top-05 line-height-sans-3 text-base">
-          {strengthHint}
-        </p>
-        <TextInput
-          label={"Confirm password"}
-          name={"confirm-password"}
-          type={"password"}
-          value={passwordConfirmation}
-          required
-          errorMessage={passwordConfirmationError}
-          validationStatus={passwordConfirmationError ? "error" : undefined}
-          onBlur={validatePasswordConfirmation}
-          onChange={(evt) => setPasswordConfirmation(evt.currentTarget.value)}
-        />
-        <Button
-          className="margin-top-3"
-          label={"Continue"}
-          type={"submit"}
-          onClick={handleSubmit}
-        />
-      </Card>
-    </CardBackground>
+    <>
+      <TextInput
+        label={"Password"}
+        name={"password"}
+        type={"password"}
+        value={password}
+        hintText="Your password must be at least 8 characters, include an uppercase and lowercase letter, and a number."
+        errorMessage={passwordError}
+        validationStatus={passwordError ? "error" : undefined}
+        onBlur={validatePassword}
+        onChange={handlePasswordChange}
+      />
+      <div className="display-flex grid-gap margin-top-105">{strengthBars}</div>
+      <p className="font-ui-3xs margin-bottom-0 text-base">
+        Password strength: <span className="text-bold">{strengthLabel}</span>
+      </p>
+      <p className="font-ui-3xs margin-top-05 line-height-sans-3 text-base">
+        {strengthHint}
+      </p>
+      <TextInput
+        label={"Confirm password"}
+        name={"confirm-password"}
+        type={"password"}
+        value={passwordConfirmation}
+        errorMessage={passwordConfirmationError}
+        validationStatus={passwordConfirmationError ? "error" : undefined}
+        onBlur={validatePasswordConfirmation}
+        onChange={(evt) => setPasswordConfirmation(evt.currentTarget.value)}
+      />
+      <Button
+        className="margin-top-3"
+        label={"Continue"}
+        type={"submit"}
+        onClick={handleSubmit}
+      />
+    </>
   );
 };

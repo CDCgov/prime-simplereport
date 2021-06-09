@@ -63,7 +63,6 @@ export const MfaSelect = () => {
         <RadioGroup
           name="addressSelect"
           legend="Add a second layer of security to protect your account."
-          required
           buttons={[
             {
               value: "SMS",
@@ -120,7 +119,7 @@ export const MfaSelect = () => {
           onClick={handleSubmit}
         />
       </Card>
-      <p className="margin-top-5">
+      <p className="margin-top-4">
         <a href="#0">Return to previous step</a>
       </p>
     </CardBackground>
