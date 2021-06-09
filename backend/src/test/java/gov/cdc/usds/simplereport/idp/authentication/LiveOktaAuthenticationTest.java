@@ -383,18 +383,15 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   @Test
   void activateSecurityKeyFails_withInvalidData() {
     JSONObject activationObject = _auth.enrollSecurityKey(_userId);
+    String factorId = activationObject.getString("factorId");
+    String challenge = activationObject.getJSONObject("activation").getString("challenge");
+    String returnedUserId =
+        activationObject.getJSONObject("activation").getJSONObject("user").getString("id");
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
             () -> {
-              _auth.activateSecurityKey(
-                  _userId,
-                  activationObject.getString("factorId"),
-                  activationObject.getJSONObject("activation").getString("challenge"),
-                  activationObject
-                      .getJSONObject("activation")
-                      .getJSONObject("user")
-                      .getString("id"));
+              _auth.activateSecurityKey(_userId, factorId, challenge, returnedUserId);
             });
     assertThat(exception).hasMessage("Security key could not be activated");
   }
