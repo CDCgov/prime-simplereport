@@ -7,7 +7,6 @@ import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
-// import { MfaVerifyForm } from "../MfaVerifyForm/MfaVerifyForm";
 import { AccountCreationApi } from "../AccountCreationApiService";
 import Alert from "../../commonComponents/Alert";
 

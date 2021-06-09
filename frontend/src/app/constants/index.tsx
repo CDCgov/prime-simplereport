@@ -639,3 +639,20 @@ export const TRIBAL_AFFILIATION_VALUES: {
 }[] = process.env.REACT_APP_TEST_TRIBAL_AFFILIATION_BYPASS
   ? fullTribalAffiliationValueSet.slice(0, 10)
   : fullTribalAffiliationValueSet;
+
+const identityVerificationTypes:{[key: string]: string} = {
+  "sms": "Text message (SMS)",
+  "okta": "Okta Verify",
+  "google": "Google Authenticator",
+  "key": "Security key or biometric authentication",
+  "phone": "Phone call",
+  "email": "Email"
+}
+
+export const AUTH_OR_IDENTITY_METHODS_BUTTONS :{
+  value: string;
+  label: string;
+}[] =  Object.entries(identityVerificationTypes).map((e) => ({
+  label: e[1],
+  value: e[0],
+}))
