@@ -4,7 +4,7 @@ import { DatePicker, Label } from "@trussworks/react-uswds";
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 import Checkboxes from "../../commonComponents/Checkboxes";
 
-import { FormattedDateTwo } from "./AoEForm";
+import { FormattedDate } from "./AoEForm";
 
 interface Symptoms {
   [key: string]: boolean;
@@ -16,7 +16,7 @@ interface Props {
   currentSymptoms: Symptoms;
   setSymptoms: (symptoms: Symptoms) => void;
   onsetDate: string | undefined;
-  setOnsetDate: (onsetDate: FormattedDateTwo) => void;
+  setOnsetDate: (onsetDate: FormattedDate) => void;
   symptomError: string | undefined;
   symptomOnsetError: string | undefined;
   symptomRef: React.RefObject<HTMLInputElement>;
