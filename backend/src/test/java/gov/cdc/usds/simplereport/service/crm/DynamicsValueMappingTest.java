@@ -19,6 +19,16 @@ class DynamicsValueMappingTest {
   }
 
   @Test
+  void convertToCode_emptyInput_success() {
+    assertEquals(810050000, DynamicsValueMapping.convertToCode(Prefix.AD, ""));
+  }
+
+  @Test
+  void convertToCode_nullInput_success() {
+    assertEquals(810050000, DynamicsValueMapping.convertToCode(Prefix.AD, null));
+  }
+
+  @Test
   void convertToValues_multipleOptions_success() {
     assertEquals(
         "810050001,810050002", DynamicsValueMapping.convertToValues(Prefix.B, "Firefox, Chrome"));

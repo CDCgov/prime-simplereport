@@ -1,10 +1,15 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import gov.cdc.usds.simplereport.api.model.Role;
+import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
+import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
@@ -13,9 +18,11 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 
 class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   @Autowired ApiUserRepository _apiUserRepo;
+  @Autowired OktaRepository _oktaRepo;
 
   // The next several retrieval tests expect the demo users as they are defined in the
   // no-security and no-okta-mgmt profiles
@@ -98,6 +105,91 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
     ApiUser apiUser = _apiUserRepo.findByLoginEmail("allfacilities@example.com").get();
     assertSecurityError(() -> _service.getUser(apiUser.getInternalId()));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void createUserInCurrentOrg_orgAdmin_success() {
+    initSampleData();
+
+    UserInfo newUserInfo =
+        _service.createUserInCurrentOrg(
+            "newuser@example.com",
+            new PersonName("First", "Middle", "Last", "Jr"),
+            Role.USER,
+            true);
+
+    assertEquals("newuser@example.com", newUserInfo.getEmail());
+
+    PersonName personName = newUserInfo.getNameInfo();
+    assertEquals("First", personName.getFirstName());
+    assertEquals("Middle", personName.getMiddleName());
+    assertEquals("Last", personName.getLastName());
+    assertEquals("Jr", personName.getSuffix());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void createUserInCurrentOrg_reprovisionDeletedUser_success() {
+    initSampleData();
+
+    // disable a user from this organization
+    ApiUser orgUser = _apiUserRepo.findByLoginEmail("nobody@example.com").get();
+    orgUser.setIsDeleted(true);
+    _apiUserRepo.save(orgUser);
+    _oktaRepo.setUserIsActive(orgUser.getLoginEmail(), false);
+
+    UserInfo reprovisionedUserInfo =
+        _service.createUserInCurrentOrg(
+            "nobody@example.com", new PersonName("First", "Middle", "Last", "Jr"), Role.USER, true);
+
+    // the user will be re-enabled and updated
+    assertEquals("nobody@example.com", reprovisionedUserInfo.getEmail());
+
+    PersonName personName = reprovisionedUserInfo.getNameInfo();
+    assertEquals("First", personName.getFirstName());
+    assertEquals("Middle", personName.getMiddleName());
+    assertEquals("Last", personName.getLastName());
+    assertEquals("Jr", personName.getSuffix());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void createUserInCurrentOrg_enabledUserExists_error() {
+    initSampleData();
+
+    PersonName personName = new PersonName("First", "Middle", "Last", "Jr");
+
+    ConflictingUserException caught =
+        assertThrows(
+            ConflictingUserException.class,
+            () ->
+                _service.createUserInCurrentOrg(
+                    "allfacilities@example.com", personName, Role.USER, true));
+
+    assertEquals("A user with this email address already exists.", caught.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void createUserInCurrentOrg_disabledUserWrongOrg_error() {
+    initSampleData();
+
+    // disable a user from another organization
+    ApiUser wrongOrgUser = _apiUserRepo.findByLoginEmail("captain@pirate.com").get();
+    wrongOrgUser.setIsDeleted(true);
+    _apiUserRepo.save(wrongOrgUser);
+    _oktaRepo.setUserIsActive(wrongOrgUser.getLoginEmail(), false);
+
+    PersonName personName = new PersonName("First", "Middle", "Last", "Jr");
+
+    AccessDeniedException caught =
+        assertThrows(
+            AccessDeniedException.class,
+            () ->
+                _service.createUserInCurrentOrg("captain@pirate.com", personName, Role.USER, true));
+
+    assertEquals("Unable to add user.", caught.getMessage());
   }
 
   private void roleCheck(final UserInfo userInfo, final Set<OrganizationRole> expected) {
