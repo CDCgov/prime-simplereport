@@ -54,7 +54,7 @@ describe("Verify Google Auth MFA", () => {
       }
     );
     await act(async () => {
-      await fireEvent.click(screen.getByText("Verify"));
+      await fireEvent.click(screen.getByText("Submit"));
     });
     expect(
       screen.queryByText("Enter your security code")
@@ -77,7 +77,7 @@ describe("Verify Google Auth MFA", () => {
       }
     );
     await act(async () => {
-      await fireEvent.click(screen.getByText("Verify"));
+      await fireEvent.click(screen.getByText("Submit"));
     });
     expect(
       screen.getByText("API Error:", { exact: false })
@@ -88,7 +88,7 @@ describe("Verify Google Auth MFA", () => {
   });
 
   it("requires a security code to be entered", () => {
-    fireEvent.click(screen.getByText("Verify"));
+    fireEvent.click(screen.getByText("Submit"));
     expect(screen.getByText("Enter your security code")).toBeInTheDocument();
     expect(
       screen.queryByText("You’re ready to start using SimpleReport.")
