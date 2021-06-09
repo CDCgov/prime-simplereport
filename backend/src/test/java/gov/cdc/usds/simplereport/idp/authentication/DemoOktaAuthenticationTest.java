@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.okta.sdk.resource.user.factor.FactorStatus;
 import com.okta.sdk.resource.user.factor.FactorType;
+import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication.DemoAuthUser;
-import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -405,8 +405,7 @@ class DemoOktaAuthenticationTest {
             () -> {
               _auth.verifyActivationPasscode(userId, factorId, "1234");
             });
-    assertThat(exception)
-        .hasMessage("Activation passcode does not match our records.");
+    assertThat(exception).hasMessage("Activation passcode does not match our records.");
   }
 
   @Test

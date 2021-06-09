@@ -331,7 +331,9 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
             () -> {
               _auth.setRecoveryQuestion(_userId, "Who was your third grade teacher?", "aa");
             });
-    assertThat(exception).hasMessageContaining("The security question answer must be at least 4 characters in length");
+    assertThat(exception)
+        .hasMessageContaining(
+            "The security question answer must be at least 4 characters in length");
   }
 
   @Test

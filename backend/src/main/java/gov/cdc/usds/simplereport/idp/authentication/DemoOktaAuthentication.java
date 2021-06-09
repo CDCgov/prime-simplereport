@@ -2,9 +2,9 @@ package gov.cdc.usds.simplereport.idp.authentication;
 
 import com.okta.sdk.resource.user.factor.FactorStatus;
 import com.okta.sdk.resource.user.factor.FactorType;
+import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
-import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -54,8 +54,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     Matcher matcher = specialCharacters.matcher(String.valueOf(password));
     boolean found = matcher.find();
     if (!found) {
-      throw new BadRequestException(
-          "Password does not contain any special characters.");
+      throw new BadRequestException("Password does not contain any special characters.");
     }
     this.idToUserMap.get(userId).setPassword(String.valueOf(password));
   }
@@ -176,8 +175,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     validateFactor(userId, factorId);
     DemoMfa mfa = this.idToUserMap.get(userId).getMfa();
     if (passcode.length() != PASSCODE_LENGTH) {
-      throw new BadRequestException(
-          "Activation passcode does not match our records.");
+      throw new BadRequestException("Activation passcode does not match our records.");
     }
     mfa.setFactorStatus(FactorStatus.ACTIVE);
   }

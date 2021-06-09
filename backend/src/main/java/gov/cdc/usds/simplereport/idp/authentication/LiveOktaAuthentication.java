@@ -149,7 +149,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * @param question the user-selected question to answer.
    * @param answer the user-input answer to the selected question.
    * @throws BadRequestException if the recovery answer doesn't meet Okta requirements.
-   * @throws OktaAuthenticationFailureException if setting the recovery question fails (i.e., because the user isn't in the correct state or cannot be found).
+   * @throws OktaAuthenticationFailureException if setting the recovery question fails (i.e.,
+   *     because the user isn't in the correct state or cannot be found).
    */
   public void setRecoveryQuestion(String userId, String question, String answer)
       throws OktaAuthenticationFailureException {
@@ -355,7 +356,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * @param passcode the user-provided passcode to use for activation. This will have been sent to
    *     the user via SMS, voice call, etc.
    * @throws BadRequestException if the provided passcode does not match Okta records.
-   * @throws OktaAuthenticationFailureException if the factor could not be activated (because the user or factor doesn't exist).
+   * @throws OktaAuthenticationFailureException if the factor could not be activated (because the
+   *     user or factor doesn't exist).
    */
   public void verifyActivationPasscode(String userId, String factorId, String passcode)
       throws OktaAuthenticationFailureException {
