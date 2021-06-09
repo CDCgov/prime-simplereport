@@ -64,6 +64,38 @@ export const MfaVerify = (props: Props) => {
     return <Redirect to="/success" />;
   }
 
+  const input = (
+    <TextInput
+      className="flex-fill"
+      label={"One-time security code"}
+      name={"security-code"}
+      type={"tel"}
+      value={code}
+      errorMessage={codeError}
+      validationStatus={codeError ? "error" : undefined}
+      onBlur={validateCode}
+      onChange={(evt) => setCode(evt.currentTarget.value)}
+    />
+  );
+
+  const inlineSubmitButton = (
+    <Button
+      className="margin-top-3 flex-align-self-end margin-left-1"
+      label={"Submit"}
+      type={"submit"}
+      onClick={handleSubmit}
+    />
+  );
+
+  const submitButton = (
+    <Button
+      className="margin-top-3"
+      label={"Submit"}
+      type={"submit"}
+      onClick={handleSubmit}
+    />
+  );
+
   return (
     <CardBackground>
       <Card logo bodyKicker="Set up your account">
@@ -81,33 +113,25 @@ export const MfaVerify = (props: Props) => {
         ) : null}
         <p className="margin-bottom-0">Verify your security code.</p>
         <p className="usa-hint font-ui-2xs margin-bottom-0">{props.hint}</p>
-        <div className="display-flex">
-          <TextInput
-            className="flex-fill"
-            label={"One-time security code"}
-            name={"security-code"}
-            type={"tel"}
-            required
-            value={code}
-            errorMessage={codeError}
-            validationStatus={codeError ? "error" : undefined}
-            onBlur={validateCode}
-            onChange={(evt) => setCode(evt.currentTarget.value)}
-          />
-          <Button
-            className="margin-top-3 flex-align-self-end margin-left-1"
-            label={"Submit"}
-            type={"submit"}
-            onClick={handleSubmit}
-          />
-        </div>
-        {props.hideResend ? null : (
-          <Button
-            className="usa-button--outline display-block margin-top-3"
-            label={"Send another code"}
-            type={"submit"}
-            onClick={resendCode}
-          />
+        {props.hideResend ? (
+          <div className="display-flex">
+            {input}
+            {inlineSubmitButton}
+          </div>
+        ) : (
+          <>
+            {input}
+            {submitButton}
+            <p className="margin-top-4 margin-bottom-0">
+              Didn't get your security code?
+            </p>
+            <Button
+              className="usa-button--unstyled margin-top-105"
+              label={"Send another code"}
+              type={"submit"}
+              onClick={resendCode}
+            />
+          </>
         )}
       </Card>
       <p className="margin-top-4">
