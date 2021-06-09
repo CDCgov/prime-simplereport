@@ -54,7 +54,7 @@ export const MfaTotp = (props: Props) => {
           app.
         </p>
         <div className="display-flex flex-column flex-align-center">
-          {qrCode ? (
+          {qrCode !== "" ? (
             <img src={qrCode} alt="TOTP QR Code" className="height-card" />
           ) : (
             <img
