@@ -27,7 +27,7 @@ describe("Verify Email MFA", () => {
         initialEntries={[
           {
             pathname: "/mfa-email/verify",
-            state: { email: "foo@bar.com" },
+            state: { contact: "foo@bar.com" },
           },
         ]}
       >
@@ -50,7 +50,7 @@ describe("Verify Email MFA", () => {
       }
     );
     await act(async () => {
-      await fireEvent.click(screen.getByText("Submit"));
+      await fireEvent.click(screen.getByText("Verify"));
     });
     expect(
       screen.queryByText("Enter your security code")
@@ -71,7 +71,7 @@ describe("Verify Email MFA", () => {
       }
     );
     await act(async () => {
-      await fireEvent.click(screen.getByText("Submit"));
+      await fireEvent.click(screen.getByText("Verify"));
     });
     expect(
       screen.getByText("API Error:", { exact: false })
@@ -82,7 +82,7 @@ describe("Verify Email MFA", () => {
   });
 
   it("requires a security code to be entered", () => {
-    fireEvent.click(screen.getByText("Submit"));
+    fireEvent.click(screen.getByText("Verify"));
     expect(screen.getByText("Enter your security code")).toBeInTheDocument();
     expect(
       screen.queryByText("You’re ready to start using SimpleReport.")
