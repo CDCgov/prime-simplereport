@@ -330,12 +330,15 @@ Pentest|[/app/static/commit.txt](https://pentest.simplereport.gov/app/static/com
 ### Deploy With Release
 
 Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/releases/new) page
-![release form](https://user-images.githubusercontent.com/80347105/110684538-43187880-81ab-11eb-9793-7cc923956a8b.png)
 
-1. Select the commit you want to release. This is likely to be the last commit on `main`, but select
+![full-dialog](https://user-images.githubusercontent.com/28784751/121424756-b31bd380-c93f-11eb-987d-38934f0570ae.png)
+
+1. <img align="right" width="517" alt="select-commit" src="https://user-images.githubusercontent.com/28784751/121423065-df365500-c93d-11eb-9b95-a63130d602e6.png">
+   Select the commit you want to release. This is likely to be the last commit on `main`, but select
    the commit explicitly so that you do not accidentally release changes that somebody else is in the
-   process of merging.
-1. Add a version tag. If the release was `v1` then this release should be `v2`
+   process of merging.<br clear="right" />
+2. <img align="right" width="399" alt="new-release-name" src="https://user-images.githubusercontent.com/28784751/121423127-f07f6180-c93d-11eb-9e76-53aa5187a633.png">
+   Add a version tag. If the release was `v1` then this release should be `v2` 
 2. Add a release title summarizing the changes
 3. If applicable describe some of the changes in detail in the description
 3. Check the "This is a pre-release" box.
