@@ -1,5 +1,5 @@
 mutation addTestResult($deviceId: String!, $result: String!, $patientId: ID!, $dateTested: DateTime) {
-    addTestResult(
+    addTestResultNew(
       patientId: $patientId,
       deviceId: $deviceId,
       result: $result,

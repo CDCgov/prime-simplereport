@@ -4,7 +4,7 @@ mutation SubmitTestResult(
   $result: String!
   $dateTested: DateTime
 ) {
-  addTestResult(
+  addTestResultNew(
     patientId: $patientId
     deviceId: $deviceId
     result: $result

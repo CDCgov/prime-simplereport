@@ -325,7 +325,7 @@ const QueueItem: any = ({
     if (response?.data?.addTestResultNew.deliverySuccess === false) {
       // Prevent parent component from re-rendering while modal is open
       stopPolling();
-      openDeliverySuccessModal();
+      updateIsDeliverySuccessModalOpen(true);
     } else {
       refetchQueue();
     }
@@ -441,14 +441,6 @@ const QueueItem: any = ({
 
   const closeAoeModal = () => {
     updateIsAoeModalOpen(false);
-  };
-
-  const openDeliverySuccessModal = () => {
-    updateIsDeliverySuccessModalOpen(true);
-  };
-
-  const closeDeliverySuccessModal = () => {
-    updateIsDeliverySuccessModalOpen(false);
   };
 
   const saveAoeCallback = (answers: any) => {
@@ -740,7 +732,7 @@ const QueueItem: any = ({
                   onClick={() => {
                     refetchQueue();
                     startPolling(10000);
-                    closeDeliverySuccessModal();
+                    updateIsDeliverySuccessModalOpen(false);
                   }}
                   className="margin-right-0"
                 >
