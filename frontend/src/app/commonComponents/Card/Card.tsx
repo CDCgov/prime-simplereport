@@ -12,6 +12,16 @@ export const Card: React.FC<CardProps> = ({
   bodyKicker = false,
   bodyKickerCentered = false,
 }) => {
+  let kicker = null;
+  if (bodyKicker && bodyKickerCentered) {
+    kicker = (
+      <div className="display-flex flex-column flex-align-center">
+        <p className="font-ui-sm text-bold margin-top-3">{bodyKicker}</p>
+      </div>
+    );
+  } else if (bodyKicker) {
+    kicker = <p className="font-ui-sm text-bold margin-top-3">{bodyKicker}</p>;
+  }
   return (
     <div className="card">
       {logo && (
@@ -24,13 +34,7 @@ export const Card: React.FC<CardProps> = ({
           <div className="border-bottom border-base-lighter margin-x-neg-3 margin-top-3"></div>
         </header>
       )}
-      {bodyKicker && bodyKickerCentered ? (
-        <div className="display-flex flex-column flex-align-center">
-          <p className="font-ui-sm text-bold margin-top-3">{bodyKicker}</p>
-        </div>
-      ) : bodyKicker ? (
-        <p className="font-ui-sm text-bold margin-top-3">{bodyKicker}</p>
-      ) : null}
+      {kicker}
       {children}
     </div>
   );
