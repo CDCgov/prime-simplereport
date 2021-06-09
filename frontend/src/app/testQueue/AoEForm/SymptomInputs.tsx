@@ -3,6 +3,7 @@ import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 import Checkboxes from "../../commonComponents/Checkboxes";
+import { formatDate } from "../../utils/date";
 
 import { FormattedDate } from "./AoEForm";
 
@@ -36,6 +37,9 @@ const SymptomInputs: React.FC<Props> = ({
 
   symptomOnsetRef,
 }) => {
+  function setFormattedOnsetDate(input = "") {
+    return setOnsetDate(formatDate(input));
+  }
   return (
     <>
       <div className={symptomError ? "usa-form-group--error" : "usa-fieldset"}>
@@ -91,7 +95,7 @@ const SymptomInputs: React.FC<Props> = ({
             maxDate={new Date().toISOString().split("T")[0]}
             onChange={(date) => {
               if (date) {
-                setOnsetDate(date);
+                setFormattedOnsetDate(date);
               }
             }}
             required={Object.keys(currentSymptoms).some(

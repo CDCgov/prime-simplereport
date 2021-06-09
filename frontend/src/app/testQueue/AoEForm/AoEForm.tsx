@@ -118,6 +118,7 @@ const AoEForm: React.FC<Props> = ({
   const [priorTestDate, setPriorTestDate] = useState<
     FormattedDate | undefined | null
   >(loadState.priorTestDate);
+
   const [priorTestType, setPriorTestType] = useState(loadState.priorTestType);
   const [priorTestResult, setPriorTestResult] = useState<
     TestResult | null | undefined

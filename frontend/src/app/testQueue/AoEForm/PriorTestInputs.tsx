@@ -12,6 +12,7 @@ import Dropdown, { Option } from "../../commonComponents/Dropdown";
 import Optional from "../../commonComponents/Optional";
 import Checkboxes from "../../commonComponents/Checkboxes";
 import { TestResult } from "../QueueItem";
+import { formatDate } from "../../utils/date";
 
 import { FormattedDate } from "./AoEForm";
 
@@ -57,6 +58,11 @@ const PriorTestInputs: React.FC<Props> = ({
   const [lastTestDateKnown, setLastTestDateKnown] = useState(
     !!priorTestDate || priorTestDate === undefined
   );
+
+  function setFormattedPriorTestDate(input = "") {
+    return setPriorTestDate(formatDate(input));
+  }
+
   const previousTestEntry = (
     <>
       <div className="usa-form-group">
@@ -70,7 +76,7 @@ const PriorTestInputs: React.FC<Props> = ({
           minDate="2020-02-01"
           maxDate={new Date().toISOString().split("T")[0]}
           disabled={!lastTestDateKnown}
-          onChange={setPriorTestDate}
+          onChange={setFormattedPriorTestDate}
         />
       </div>
       <Checkboxes
