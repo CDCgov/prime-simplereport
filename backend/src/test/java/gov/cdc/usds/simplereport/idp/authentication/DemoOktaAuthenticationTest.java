@@ -328,12 +328,12 @@ class DemoOktaAuthenticationTest {
   void activateSecurityKey_failsWithInvalidAttestation() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     JSONObject enrollResponse = _auth.enrollSecurityKey(userId);
+    String factorId = enrollResponse.getString("factorId");
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
             () -> {
-              _auth.activateSecurityKey(
-                  userId, enrollResponse.getString("factorId"), "", "clientData");
+              _auth.activateSecurityKey(userId, factorId, "", "clientData");
             });
     assertThat(exception.getMessage()).isEqualTo("attestation cannot be empty.");
   }
@@ -342,15 +342,13 @@ class DemoOktaAuthenticationTest {
   void activateSecurityKey_failsWithInvalidClientData() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     JSONObject enrollResponse = _auth.enrollSecurityKey(userId);
+    String factorId = enrollResponse.getString("factorId");
+    String challenge = enrollResponse.getJSONObject("activation").getString("challenge");
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
             () -> {
-              _auth.activateSecurityKey(
-                  userId,
-                  enrollResponse.getString("factorId"),
-                  enrollResponse.getJSONObject("activation").getString("challenge"),
-                  "");
+              _auth.activateSecurityKey(userId, factorId, challenge, "");
             });
     assertThat(exception.getMessage()).isEqualTo("clientData cannot be empty.");
   }

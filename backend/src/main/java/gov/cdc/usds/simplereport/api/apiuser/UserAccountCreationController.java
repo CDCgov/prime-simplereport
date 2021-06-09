@@ -136,7 +136,7 @@ public class UserAccountCreationController {
       throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
     JSONObject factorData = _oktaAuth.enrollAuthenticatorAppMfa(userId, requestBody.getUserInput());
-    request.getSession().setAttribute(FACTOR_ID_KEY, factorData.getString("factorId"));
+    request.getSession().setAttribute(FACTOR_ID_KEY, factorData.getString(FACTOR_ID_KEY));
     return new JSONObject(factorData, "qrcode").toString();
   }
 
@@ -154,7 +154,7 @@ public class UserAccountCreationController {
       throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
     JSONObject enrollResponse = _oktaAuth.enrollSecurityKey(userId);
-    request.getSession().setAttribute("factorId", enrollResponse.getString("factorId"));
+    request.getSession().setAttribute(FACTOR_ID_KEY, enrollResponse.getString(FACTOR_ID_KEY));
     return new JSONObject(enrollResponse, "activation").toString();
   }
 

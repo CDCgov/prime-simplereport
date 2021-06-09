@@ -51,6 +51,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   private static final Logger LOG = LoggerFactory.getLogger(LiveOktaAuthentication.class);
 
   private static final String USER_API_ENDPOINT = "/api/v1/users/";
+  private static final String ACTIVATION_KEY = "activation";
 
   private Client _client;
   private String _apiToken;
@@ -279,7 +280,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       JSONObject embeddedJson = new JSONObject(factor.getEmbedded());
       String qrCode =
           embeddedJson
-              .getJSONObject("activation")
+              .getJSONObject(ACTIVATION_KEY)
               .getJSONObject("_links")
               .getJSONObject("qrcode")
               .getString("href");
@@ -314,7 +315,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       JSONObject responseJson = new JSONObject(postResponse);
       JSONObject response = new JSONObject();
       response.put(
-          "activation", responseJson.getJSONObject("_embedded").getJSONObject("activation"));
+          ACTIVATION_KEY, responseJson.getJSONObject("_embedded").getJSONObject(ACTIVATION_KEY));
       response.put("factorId", responseJson.getString("id"));
       return response;
     } catch (RestClientException | NullPointerException | ResourceException e) {
@@ -367,11 +368,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       ActivateFactorRequest activateFactor = _client.instantiate(ActivateFactorRequest.class);
       activateFactor.setPassCode(passcode.strip());
       factor.activate(activateFactor);
-    } catch (ResourceException | NullPointerException | IllegalArgumentException e) {
-      if (e instanceof ResourceException) {
-        ResourceException exception = (ResourceException) e;
-        throw new BadRequestException(exception.getCauses().get(0).getSummary(), e);
-      }
+    } catch (ResourceException e) {
+      throw new BadRequestException(e.getCauses().get(0).getSummary(), e);
+    } catch (NullPointerException | IllegalArgumentException e) {
       throw new OktaAuthenticationFailureException(
           "Activation passcode could not be verifed; MFA activation failed.", e);
     }
