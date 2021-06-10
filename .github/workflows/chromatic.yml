@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # Chromatic wants the history
+          fetch-depth: 0 # Chromatic wants the history
       - uses: actions/setup-node@v2
         with:
           node-version: "14"
@@ -24,9 +24,10 @@ jobs:
         uses: chromaui/action@v1
         with:
           workingDir: frontend
+          buildScriptName: build-storybook
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          ignoreLastBuildOnBranch: "**"  # Better comparisons after rebasing
+          ignoreLastBuildOnBranch: "**" # Better comparisons after rebasing
           exitZeroOnChanges: true
           exitOnceUploaded: true
       - name: Publish to Chromatic (auto-accept changes on merge main)
@@ -34,9 +35,10 @@ jobs:
         uses: chromaui/action@v1
         with:
           workingDir: frontend
+          buildScriptName: build-storybook
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           ignoreLastBuildOnBranch: "**"
           exitZeroOnChanges: true
           exitOnceUploaded: true
-          autoAcceptChanges: true  # handle squash-on-merge
+          autoAcceptChanges: true # handle squash-on-merge
