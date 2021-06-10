@@ -1,10 +1,10 @@
 import { MockedProvider } from "@apollo/client/testing";
 import { ToastContainer } from "react-toastify";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-
-import * as utils from "../utils/index";
 import { act } from "react-dom/test-utils";
 import moment from "moment";
+
+import * as utils from "../utils/index";
 
 import QueueItem, { EDIT_QUEUE_ITEM, SUBMIT_TEST_RESULT } from "./QueueItem";
 
@@ -79,7 +79,7 @@ describe("QueueItem", () => {
     beforeEach(() => {
       alertSpy = jest.spyOn(utils, "showNotification");
     });
-  
+
     afterEach(() => {
       alertSpy.mockRestore();
     });
@@ -87,29 +87,29 @@ describe("QueueItem", () => {
     it("displays delivery failure alert on submit for invalid patient phone number", async () => {
       render(
         <>
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <QueueItem
-            internalId={testProps.internalId}
-            patient={testProps.patient}
-            askOnEntry={testProps.askOnEntry}
-            selectedDeviceId={testProps.selectedDeviceId}
-            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-            selectedTestResult={testProps.selectedTestResult}
-            devices={testProps.devices}
-            defaultDevice={testProps.defaultDevice}
-            refetchQueue={testProps.refetchQueue}
-            facilityId={testProps.facilityId}
-            dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
-          ></QueueItem>
-            </MockedProvider>
-            <ToastContainer
-              autoClose={5000}
-              closeButton={false}
-              limit={2}
-              position="bottom-center"
-              hideProgressBar={true}
-            />
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedTestResult={testProps.selectedTestResult}
+              devices={testProps.devices}
+              defaultDevice={testProps.defaultDevice}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              patientLinkId={testProps.patientLinkId}
+            ></QueueItem>
+          </MockedProvider>
+          <ToastContainer
+            autoClose={5000}
+            closeButton={false}
+            limit={2}
+            position="bottom-center"
+            hideProgressBar={true}
+          />
         </>
       );
 
@@ -143,11 +143,14 @@ describe("QueueItem", () => {
       // Verify alert is displayed
       //expect(await screen.getByRole("alert")).toBeInTheDocument();
       expect(
-        await screen.findByText("Unable to text result to Potter, Harry James", {
-          exact: false,
-        })
+        await screen.findByText(
+          "Unable to text result to Potter, Harry James",
+          {
+            exact: false,
+          }
+        )
       ).toBeInTheDocument();
-     
+
       /*
       expect(alertSpy).toBeCalledTimes(2);
       */

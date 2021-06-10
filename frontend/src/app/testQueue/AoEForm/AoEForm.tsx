@@ -6,7 +6,6 @@ import {
   globalSymptomDefinitions,
   getTestTypes,
   getPregnancyResponses,
-  getTestResultDeliveryPreferences,
 } from "../../../patientApp/timeOfTest/constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Button from "../../commonComponents/Button/Button";
@@ -165,19 +164,19 @@ const AoEForm: React.FC<Props> = ({
   };
 
   const getTestResultDeliveryPreferences = (phoneNumber: string) => [
-  {
-    label: (
-    <>
-    Text message
-      <span className="radio__label-description--checked usa-radio__label-description text-base">
-        {phoneNumber}
-      </span>
-    </>
-  ),
-  value: "SMS",
-},
-  { label: "None", value: "NONE" },
-];
+    {
+      label: (
+        <>
+          Text message
+          <span className="radio__label-description--checked usa-radio__label-description text-base">
+            {phoneNumber}
+          </span>
+        </>
+      ),
+      value: "SMS",
+    },
+    { label: "None", value: "NONE" },
+  ];
 
   // Auto-answer pregnancy question for males
   const pregnancyResponses = getPregnancyResponses();
