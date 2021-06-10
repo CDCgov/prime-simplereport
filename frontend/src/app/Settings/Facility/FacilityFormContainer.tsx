@@ -12,7 +12,7 @@ import { showNotification } from "../../utils";
 
 import FacilityForm from "./FacilityForm";
 
-const GET_FACILITY_QUERY = gql`
+export const GET_FACILITY_QUERY = gql`
   query GetFacilities {
     organization {
       internalId
@@ -55,7 +55,7 @@ const GET_FACILITY_QUERY = gql`
   }
 `;
 
-const UPDATE_FACILITY_MUTATION = gql`
+export const UPDATE_FACILITY_MUTATION = gql`
   mutation UpdateFacility(
     $facilityId: ID!
     $testingFacilityName: String!
@@ -189,9 +189,9 @@ const FacilityFormContainer: any = (props: Props) => {
     return <p>Error: facility not found</p>;
   }
 
-  // if(saveSuccess) {
-  //   return <Redirect push to={{ pathname: "/settings/facilities" }} />
-  // }
+  if (saveSuccess) {
+    return <Redirect push to={{ pathname: "/settings/facilities" }} />;
+  }
 
   const saveFacility = async (facility: Facility) => {
     if (appInsights) {
