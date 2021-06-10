@@ -14,14 +14,12 @@ import Checkboxes from "../../commonComponents/Checkboxes";
 import { TestResult } from "../QueueItem";
 import { formatDate } from "../../utils/date";
 
-import { FormattedDate } from "./AoEForm";
-
 interface Props {
   testTypeConfig: Option[];
   isFirstTest: boolean | undefined;
   setIsFirstTest: (isFirstTest: boolean) => void;
-  priorTestDate: FormattedDate | undefined | null;
-  setPriorTestDate: (priorTestDate: FormattedDate | undefined) => void;
+  priorTestDate: ISODate | undefined | null;
+  setPriorTestDate: (priorTestDate: ISODate | undefined) => void;
   priorTestResult: TestResult | undefined | null;
   setPriorTestResult: (priorTestResult: TestResult | undefined | null) => void;
   priorTestType: string | undefined;
@@ -171,7 +169,7 @@ const PriorTestInputs: React.FC<Props> = ({
               // TODO: update when test history has test type
               setPriorTestType("2");
               setPriorTestDate(
-                (lastTest.dateTested || "").split("T")[0] as FormattedDate
+                (lastTest.dateTested || "").split("T")[0] as ISODate
               );
               setPriorTestResult(lastTest?.result as TestResult);
             } else {

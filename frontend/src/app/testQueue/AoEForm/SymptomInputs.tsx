@@ -5,8 +5,6 @@ import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constan
 import Checkboxes from "../../commonComponents/Checkboxes";
 import { formatDate } from "../../utils/date";
 
-import { FormattedDate } from "./AoEForm";
-
 interface Symptoms {
   [key: string]: boolean;
 }
@@ -17,7 +15,7 @@ interface Props {
   currentSymptoms: Symptoms;
   setSymptoms: (symptoms: Symptoms) => void;
   onsetDate: string | undefined;
-  setOnsetDate: (onsetDate: FormattedDate) => void;
+  setOnsetDate: (onsetDate: ISODate) => void;
   symptomError: string | undefined;
   symptomOnsetError: string | undefined;
   symptomRef: React.RefObject<HTMLInputElement>;

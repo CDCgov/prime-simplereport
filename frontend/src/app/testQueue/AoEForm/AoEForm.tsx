@@ -27,10 +27,8 @@ const findValueForLabel = (
   list: { label: string; value: string }[]
 ) => (list.filter((item) => item.label === label)[0] || {}).value;
 
-export type FormattedDate = `${number}${number}${number}${number}-${number}${number}-${number}${number}`;
-
 export interface PriorTest {
-  priorTestDate: FormattedDate | undefined | null;
+  priorTestDate: ISODate | undefined | null;
   priorTestResult: TestResult | undefined | null;
   priorTestType: string | undefined | null;
   firstTest: boolean;
@@ -38,7 +36,7 @@ export interface PriorTest {
 export interface AoEAnswersDelivery extends PriorTest {
   noSymptoms: boolean;
   symptoms: string;
-  symptomOnset: FormattedDate | undefined;
+  symptomOnset: ISODate | undefined;
   pregnancy: PregnancyCode | undefined;
   testResultDelivery: string;
 }
@@ -111,12 +109,12 @@ const AoEForm: React.FC<Props> = ({
 
   const [noSymptoms, setNoSymptoms] = useState(loadState.noSymptoms || false);
   const [currentSymptoms, setSymptoms] = useState(initialSymptoms);
-  const [onsetDate, setOnsetDate] = useState<FormattedDate | undefined>(
+  const [onsetDate, setOnsetDate] = useState<ISODate | undefined>(
     loadState.symptomOnset
   );
   const [isFirstTest, setIsFirstTest] = useState(loadState.firstTest);
   const [priorTestDate, setPriorTestDate] = useState<
-    FormattedDate | undefined | null
+    ISODate | undefined | null
   >(loadState.priorTestDate);
 
   const [priorTestType, setPriorTestType] = useState(loadState.priorTestType);
