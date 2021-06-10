@@ -5,7 +5,7 @@ import { usePatient } from "../../hooks/usePatient";
 
 const PatientLanding = () => {
   const { patient } = usePatient();
-  const fullName = formatFullName(patient);
+  const fullName = patient ? formatFullName(patient) : "";
 
   return (
     <main className="patient-app patient-app--landing padding-bottom-4 bg-base-lightest">

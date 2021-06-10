@@ -31,7 +31,7 @@ const Header: React.FC<{}> = () => {
   };
 
   const {
-    facilities: { current, list },
+    facilities: { selectedFacility, availableFacilities },
   } = useFacilities();
   const {
     config: { organization, user },
@@ -198,7 +198,7 @@ const Header: React.FC<{}> = () => {
                     {user.roleDescription}
                   </span>
                 </li>
-                <li className="usa-sidenav__item">{current?.name}</li>
+                <li className="usa-sidenav__item">{selectedFacility?.name}</li>
               </ul>
             </li>
             <div>
@@ -283,9 +283,9 @@ const Header: React.FC<{}> = () => {
           </ul>
           <div className="prime-facility-select">
             <Dropdown
-              selectedValue={current?.id || ""}
+              selectedValue={selectedFacility?.id || ""}
               onChange={onFacilitySelect}
-              options={list.map(({ name, id }) => ({
+              options={availableFacilities.map(({ name, id }) => ({
                 label: name,
                 value: id,
               }))}
@@ -327,7 +327,9 @@ const Header: React.FC<{}> = () => {
                       {user.roleDescription}
                     </span>
                   </li>
-                  <li className="usa-sidenav__item">{current?.name}</li>
+                  <li className="usa-sidenav__item">
+                    {selectedFacility?.name}
+                  </li>
                   <li className="usa-sidenav__item navlink__support">
                     <a
                       href="https://simplereport.gov/support"

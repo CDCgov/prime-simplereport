@@ -2,7 +2,6 @@ import { useReactiveVar } from "@apollo/client";
 
 import { patient as patientVar } from "../storage/store";
 
-
 export const usePatient = () => {
   const patient = useReactiveVar(patientVar);
 
@@ -11,7 +10,7 @@ export const usePatient = () => {
   };
 
   const updatePatientField = (field: string, value: any) => {
-    patientVar({ ...patientVar(), [field]: value });
+    patientVar({ ...(patientVar() as Patient), [field]: value });
   };
 
   return {

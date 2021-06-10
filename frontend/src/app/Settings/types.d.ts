@@ -185,16 +185,16 @@ interface FacilityData {
 type TestCorrectionStatus = "ORIGINAL" | "CORRECTED" | "REMOVED";
 
 interface FacilitiesState {
-  current: Facility | null;
-  list: Facility[];
+  selectedFacility: Facility | null;
+  availableFacilities: Facility[];
 }
 
 interface AppConfigState {
   organization: {
     name: string;
   };
-  dataLoaded: Boolean;
+  dataLoaded: boolean;
   user: User;
   activationToken: string | null;
-  plid?: string | null | undefined;
+  plid?: string | undefined;
 }

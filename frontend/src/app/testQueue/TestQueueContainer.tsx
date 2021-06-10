@@ -8,8 +8,8 @@ import TestQueue from "./TestQueue";
 
 const TestQueueContainer = () => {
   useDocumentTitle("Conduct test");
-  const { current } = useReactiveVar<FacilitiesState>(facilities);
-  const activeFacilityId = current?.id;
+  const { selectedFacility } = useReactiveVar<FacilitiesState>(facilities);
+  const activeFacilityId = selectedFacility?.id;
 
   return !activeFacilityId ? (
     <div>No facility selected</div>

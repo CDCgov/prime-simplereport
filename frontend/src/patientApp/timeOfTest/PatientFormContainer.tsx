@@ -23,10 +23,10 @@ const PatientFormContainer = () => {
   } = useAppConfig();
   const { patient, setCurrentPatient } = usePatient();
   const {
-    facilities: { current },
+    facilities: { selectedFacility },
   } = useFacilities();
 
-  const facility = current;
+  const facility = selectedFacility;
   const patientInStore = patient as PersonFormData;
 
   useEffect(() => {
@@ -81,7 +81,9 @@ const PatientFormContainer = () => {
     });
     setNextPage(true);
   };
-
+  if (!patient) {
+    return <>Patient is not selected </>;
+  }
   return (
     <PatientTimeOfTestContainer currentPage={"profile"}>
       <main className={"prime-edit-patient prime-home padding-top-0"}>
@@ -90,7 +92,9 @@ const PatientFormContainer = () => {
             patient={{
               ...patient,
               facilityId:
-                patient.facility === null ? null : patient.facility?.id as string,
+                patient?.facility === null
+                  ? null
+                  : (patient?.facility?.id as string),
             }}
             activeFacilityId={facility?.id || ""}
             patientId={patient.internalId}

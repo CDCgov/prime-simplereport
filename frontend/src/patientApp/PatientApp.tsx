@@ -1,4 +1,3 @@
-//@ts-nocheck
 import { FunctionComponent, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -38,7 +37,6 @@ const PatientLinkURL404Wrapper: FunctionComponent<WrapperProps> = ({
 };
 
 const PatientApp = () => {
-
   const {
     updateConfigField,
     config: { plid },
@@ -50,7 +48,7 @@ const PatientApp = () => {
   useEffect(() => {
     updateConfigField("plid", getPatientLinkIdFromUrl());
     // eslint-disable-next-line
-  },[]);
+  }, []);
 
   return (
     <PrimeErrorBoundary>

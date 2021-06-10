@@ -17,14 +17,14 @@ const NAME = "facilityId";
 
 const FacilitySelect: React.FC<Props> = (props) => {
   const {
-    facilities: { list },
+    facilities: { availableFacilities },
   } = useFacilities();
 
   if (props.hidden) {
     return null;
   }
 
-  const facilityList = list.map((f) => ({
+  const facilityList = availableFacilities.map((f) => ({
     label: f.name,
     value: f.id,
   }));

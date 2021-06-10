@@ -25,9 +25,15 @@ const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
   }, []);
 
   const saveCallback = async (data: any) => {
-      try {
-      await PxpApi.submitQuestions(plid as string, patient.birthDate.toString(), data);
-      setNextPage(true);
+    try {
+      if (patient) {
+        await PxpApi.submitQuestions(
+          plid as string,
+          patient.birthDate.toString(),
+          data
+        );
+        setNextPage(true);
+      }
     } catch (e) {
       showError(toast, "There was an error submitting your responses");
       return;
@@ -43,6 +49,10 @@ const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
         }}
       />
     );
+  }
+
+  if (!patient) {
+    return <>Patient is not selected</>;
   }
 
   return (

@@ -36,23 +36,23 @@ if (window.location.hash) {
 export const ReactApp = (
   <ApolloProvider client={client}>
     <React.StrictMode>
-        <Router basename={process.env.PUBLIC_URL}>
-          <TelemetryProvider
-            instrumentationKey={process.env.REACT_APP_APPINSIGHTS_KEY}
-          >
-            <Switch>
-              <Route path="/health" component={HealthChecks} />
-              <Route path="/pxp" component={PatientApp} />
-              <Route path="/uac" component={AccountCreationApp} />
-              <Route
-                path="/register/:registrationLink"
-                component={SelfRegistration}
-              />
-              <Route path="/" component={App} />
-              <Route component={() => <>Page not found</>} />
-            </Switch>
-          </TelemetryProvider>
-        </Router>
+      <Router basename={process.env.PUBLIC_URL}>
+        <TelemetryProvider
+          instrumentationKey={process.env.REACT_APP_APPINSIGHTS_KEY}
+        >
+          <Switch>
+            <Route path="/health" component={HealthChecks} />
+            <Route path="/pxp" component={PatientApp} />
+            <Route path="/uac" component={AccountCreationApp} />
+            <Route
+              path="/register/:registrationLink"
+              component={SelfRegistration}
+            />
+            <Route path="/" component={App} />
+            <Route component={() => <>Page not found</>} />
+          </Switch>
+        </TelemetryProvider>
+      </Router>
     </React.StrictMode>
   </ApolloProvider>
 );

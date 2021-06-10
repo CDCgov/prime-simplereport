@@ -614,11 +614,13 @@ interface PersonFormData extends Person {
 interface Patient extends PersonFormData {
   internalId: string;
   testResultDelivery: string;
-  lastTest: {
+  lastTest:
+    | {
         dateTested: string;
-        result: string;
+        result: TestResult;
         deviceTypeModel: string;
-      } | undefined;
+      }
+    | undefined;
   orderStatus?: "COMPLETED" | undefined;
   facility?: Facility | null | undefined;
 }

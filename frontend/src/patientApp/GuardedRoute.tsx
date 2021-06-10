@@ -3,7 +3,9 @@ import { Route, Redirect } from "react-router-dom";
 import { useAppConfig } from "../hooks/useAppConfig";
 
 const GuardedRoute = ({ component: Component, auth, ...rest }: any) => {
-  const {config : {plid}} = useAppConfig();
+  const {
+    config: { plid },
+  } = useAppConfig();
   return (
     <Route
       {...rest}

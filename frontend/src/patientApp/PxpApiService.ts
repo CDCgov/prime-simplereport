@@ -87,7 +87,7 @@ export class PxpApi {
     dateOfBirth: string,
     data: UpdatePatientData
   ) {
-    console.log(patientLinkId,dateOfBirth,data)
+    console.log(patientLinkId, dateOfBirth, data);
     return fetch(`${API_URL}/patient`, {
       method: "POST",
       mode: "cors",

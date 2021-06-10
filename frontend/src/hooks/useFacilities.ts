@@ -8,16 +8,16 @@ export const useFacilities = () => {
   const facilities = useReactiveVar(facilitiesVar);
 
   const setCurrentFacility = (facility: Facility) => {
-    facilitiesVar({ ...facilitiesVar(), current: facility });
+    facilitiesVar({ ...facilitiesVar(), selectedFacility: facility });
   };
 
   const setInitFacilities = (data: Facility[]) => {
     if (data.length) {
       if (data.length === 1) {
-        facilitiesVar({ current: null, list: data });
+        facilitiesVar({ selectedFacility: null, availableFacilities: data });
         return;
       }
-      facilitiesVar({ current: data[0], list: data });
+      facilitiesVar({ selectedFacility: data[0], availableFacilities: data });
     }
   };
 

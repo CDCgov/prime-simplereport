@@ -9,10 +9,10 @@ import ManagePatients from "./ManagePatients";
 
 const ManagePatientsContainer = (props: { page?: number }) => {
   useDocumentTitle("People");
-  const { current } = useReactiveVar<FacilitiesState>(facilities);
+  const { selectedFacility } = useReactiveVar<FacilitiesState>(facilities);
   const { user } = useReactiveVar<AppConfigState>(appConfig);
 
-  const activeFacilityId = current?.id;
+  const activeFacilityId = selectedFacility?.id;
   const isAdmin = user.isAdmin;
 
   const canEditUser = hasPermission(

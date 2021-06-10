@@ -17,15 +17,15 @@ const WithFacility: FC<Props> = ({ children }) => {
   const history = useHistory();
   const {
     setCurrentFacility,
-    facilities: { current, list },
+    facilities: { selectedFacility, availableFacilities },
   } = useFacilities();
   const {
     config: { dataLoaded },
   } = useAppConfig();
 
   const facilityFromUrl = useMemo(
-    () => list.find((f) => f.id === getFacilityIdFromUrl()),
-    [list]
+    () => availableFacilities.find((f) => f.id === getFacilityIdFromUrl()),
+    [availableFacilities]
   );
 
   const setFacilityProp = useCallback(
@@ -47,17 +47,20 @@ const WithFacility: FC<Props> = ({ children }) => {
     if (facilityFromUrl?.id) {
       setActiveFacility(facilityFromUrl);
     }
-    if (list.length === 1 && (!facilityFromUrl?.id || !current?.id)) {
-      setActiveFacility(list[0]);
+    if (
+      availableFacilities.length === 1 &&
+      (!facilityFromUrl?.id || !selectedFacility?.id)
+    ) {
+      setActiveFacility(availableFacilities[0]);
     }
     // eslint-disable-next-line
-  }, [current?.id, facilityFromUrl, list]);
+  }, [selectedFacility?.id, facilityFromUrl, availableFacilities]);
 
   if (!dataLoaded) {
     return <Loading />;
   }
 
-  if (list.length === 0) {
+  if (availableFacilities.length === 0) {
     return (
       <FacilityPopup>
         <p>You do not have access to any facilities at this time.</p>
@@ -68,18 +71,20 @@ const WithFacility: FC<Props> = ({ children }) => {
     );
   }
 
-  if (list.length > 1) {
+  if (availableFacilities.length > 1) {
     return (
-      <FacilitySelect facilities={list} setActiveFacility={setActiveFacility} />
+      <FacilitySelect
+        facilities={availableFacilities}
+        setActiveFacility={setActiveFacility}
+      />
     );
   }
 
-  if (current?.id) {
+  if (selectedFacility?.id) {
     return <>{children}</>;
   }
 
   return <Loading />;
-
 };
 
 export default WithFacility;

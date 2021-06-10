@@ -40,7 +40,7 @@ const ROLE_OPTIONS: { value: Role; label: string }[] = [
 
 const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
   const {
-    facilities: { list },
+    facilities: { availableFacilities },
   } = useFacilities();
 
   const [newUser, updateNewUser] = useState(initialFormState);
@@ -126,7 +126,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
       <UserFacilitiesSettingsForm
         activeUser={newUser}
         onUpdateUser={updateUser}
-        allFacilities={list}
+        allFacilities={availableFacilities}
         showRequired
       />
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">

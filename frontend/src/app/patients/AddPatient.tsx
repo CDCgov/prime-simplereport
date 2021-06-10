@@ -110,11 +110,11 @@ const AddPatient = () => {
     AddPatientParams
   >(ADD_PATIENT);
   const {
-    facilities: { current },
+    facilities: { selectedFacility },
   } = useFacilities();
-  const activeFacilityId: string | undefined = current?.id;
+  const activeFacilityId: string | undefined = selectedFacility?.id;
 
-  const personPath = `/patients/?facility=${current?.id}`;
+  const personPath = `/patients/?facility=${selectedFacility?.id}`;
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
 
   if (redirect) {
