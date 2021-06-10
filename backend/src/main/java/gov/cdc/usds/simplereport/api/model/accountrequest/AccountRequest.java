@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api.model.accountrequest;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -8,9 +7,12 @@ import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
 import java.util.HashMap;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
+import lombok.Getter;
 
+@Getter
 @JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
 public class AccountRequest implements TemplateVariablesProvider {
+
   private static final String TEMPLATE_NAME = "account-request";
 
   @JsonProperty @NotNull private String firstName;
@@ -18,12 +20,7 @@ public class AccountRequest implements TemplateVariablesProvider {
   @JsonProperty @NotNull private String email;
   @JsonProperty @NotNull private String workPhoneNumber;
   @JsonProperty private String cellPhoneNumber;
-
-  @JsonProperty
-  @JsonAlias("mailing-address1") // remove alias after prime-simplereport-site deployment
-  @NotNull
-  private String streetAddress1;
-
+  @JsonProperty @NotNull private String streetAddress1;
   @JsonProperty private String streetAddress2;
   @JsonProperty @NotNull private String city;
   @JsonProperty @NotNull private String state;
@@ -33,34 +30,23 @@ public class AccountRequest implements TemplateVariablesProvider {
   @JsonProperty private String facilityTypeOther;
   @JsonProperty private String organizationName;
   @JsonProperty @NotNull private String facilityName;
-
-  @JsonProperty @NotNull
-  private String facilityPhoneNumber =
-      ""; // remove default after prime-simplereport-site deployment
-
+  @JsonProperty @NotNull private String facilityPhoneNumber;
   @JsonProperty @NotNull private String cliaNumber;
   @JsonProperty @NotNull private String testingDevices;
   @JsonProperty private String testingDeviceOther;
-
-  @JsonProperty @NotNull
-  private String defaultTestingDevice; // remove default after prime-simplereport-site deployment
-
+  @JsonProperty @NotNull private String defaultTestingDevice;
   @JsonProperty @NotNull private String accessDevices;
   @JsonProperty @NotNull private String browsers;
   @JsonProperty private String browsersOther;
   @JsonProperty private String workflow;
-  @JsonProperty @NotNull private String recordsTestResults;
-  @JsonProperty @NotNull private String processTime;
-  @JsonProperty @NotNull private String submittingResultsTime;
+  @JsonProperty private String recordsTestResults;
+  @JsonProperty private String processTime;
+  @JsonProperty private String submittingResultsTime;
   @JsonProperty private String opFirstName;
   @JsonProperty private String opLastName;
   @JsonProperty private String npi;
   @JsonProperty private String opPhoneNumber;
-
-  @JsonProperty
-  @JsonAlias("op-mailing-address1")
-  private String opStreetAddress1;
-
+  @JsonProperty private String opStreetAddress1;
   @JsonProperty private String opStreetAddress2;
   @JsonProperty private String opCity;
   @JsonProperty private String opState;
@@ -115,9 +101,5 @@ public class AccountRequest implements TemplateVariablesProvider {
     variableMap.put("opCounty", opCounty);
 
     return variableMap;
-  }
-
-  public String getEmail() {
-    return email;
   }
 }
