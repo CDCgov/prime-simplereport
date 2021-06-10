@@ -59,7 +59,7 @@ export const SecurityQuestion = () => {
   };
 
   if (loading) {
-    return <LoadingCard message="Validating security question..." />;
+    return <LoadingCard message="Validating security question ..." />;
   }
 
   if (submitted) {

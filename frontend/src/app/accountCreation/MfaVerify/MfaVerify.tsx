@@ -57,7 +57,7 @@ export const MfaVerify = (props: Props) => {
   };
 
   if (loading) {
-    return <LoadingCard message="Verifying security code..." />;
+    return <LoadingCard message="Verifying security code ..." />;
   }
 
   if (submitted) {

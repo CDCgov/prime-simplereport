@@ -159,7 +159,7 @@ export const PasswordForm = () => {
   });
 
   if (loading) {
-    return <LoadingCard message="Validating password..." />;
+    return <LoadingCard message="Validating password ..." />;
   }
 
   if (submitted) {

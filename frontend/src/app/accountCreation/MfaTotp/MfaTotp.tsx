@@ -27,7 +27,7 @@ export const MfaTotp = (props: Props) => {
   }, [props]);
 
   if (!qrCode) {
-    return <LoadingCard message="Retrieving QR code..." />;
+    return <LoadingCard message="Retrieving QR code ..." />;
   }
 
   if (submitted) {
