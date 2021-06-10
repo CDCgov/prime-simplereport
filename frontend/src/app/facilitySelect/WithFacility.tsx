@@ -71,7 +71,7 @@ const WithFacility: FC<Props> = ({ children }) => {
     );
   }
 
-  if (availableFacilities.length > 1) {
+  if (availableFacilities.length > 1 && !selectedFacility?.id) {
     return (
       <FacilitySelect
         facilities={availableFacilities}

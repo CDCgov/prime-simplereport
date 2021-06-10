@@ -2,8 +2,6 @@ import { useReactiveVar } from "@apollo/client";
 
 import { facilities as facilitiesVar } from "../storage/store";
 
-// TODO: Setup list of facilities, current selected facility.
-
 export const useFacilities = () => {
   const facilities = useReactiveVar(facilitiesVar);
 
@@ -13,7 +11,7 @@ export const useFacilities = () => {
 
   const setInitFacilities = (data: Facility[]) => {
     if (data.length) {
-      if (data.length === 1) {
+      if (data.length > 1) {
         facilitiesVar({ selectedFacility: null, availableFacilities: data });
         return;
       }
