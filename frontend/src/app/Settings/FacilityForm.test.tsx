@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
 import * as clia from "../utils/clia";
+import * as state from "../utils/state";
 
 import { allFacilityErrors } from "./Facility/facilitySchema";
 import FacilityForm from "./Facility/FacilityForm";
@@ -25,15 +26,15 @@ const validFacility: Facility = {
   streetTwo: null,
   city: null,
   orderingProvider: {
-    firstName: null,
-    lastName: null,
-    NPI: null,
+    firstName: "Frank",
+    lastName: "Grimes",
+    NPI: "npi",
     street: null,
     zipCode: null,
     state: null,
     middleName: null,
     suffix: null,
-    phone: null,
+    phone: "phone",
     streetTwo: null,
     city: null,
   },
@@ -294,6 +295,101 @@ describe("FacilityForm", () => {
           target: { value: "invalid-clia-number" },
         });
         fireEvent.blur(cliaInput);
+
+        const saveButton = await screen.getAllByText("Save changes")[0];
+        fireEvent.click(saveButton);
+        await validateAddress(saveFacility);
+        expect(saveFacility).toBeCalledTimes(1);
+      });
+    });
+  });
+
+  describe("Ordering provider validation", () => {
+    describe("when validation is required for state", () => {
+      let spy: jest.SpyInstance;
+
+      beforeEach(() => {
+        spy = jest.spyOn(state, "requiresOrderProvider");
+        spy.mockReturnValue(true);
+      });
+
+      afterEach(() => {
+        spy.mockRestore();
+      });
+
+      it("displays error message and prevents form submission if required order provider fields not populated", async () => {
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={validFacility}
+              deviceOptions={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const npiInput = screen.getByLabelText("NPI", {
+          exact: false,
+        });
+
+        fireEvent.change(npiInput, {
+          target: { value: null },
+        });
+        fireEvent.blur(npiInput);
+
+        const expectedError = allFacilityErrors[
+          "orderingProvider.NPI"
+        ] as string;
+
+        // The mock function was called at least once
+        expect(spy.mock.calls.length).toBeGreaterThan(0);
+        expect(
+          await screen.findByText(expectedError, {
+            exact: false,
+          })
+        ).toBeInTheDocument();
+
+        const saveButton = screen.getAllByText("Save changes")[0];
+        await waitFor(async () => {
+          fireEvent.click(saveButton);
+        });
+        expect(saveFacility).toBeCalledTimes(0);
+      });
+    });
+
+    describe("when validation is not required for state", () => {
+      let spy: jest.SpyInstance;
+
+      beforeEach(() => {
+        spy = jest.spyOn(state, "requiresOrderProvider");
+        spy.mockReturnValue(false);
+      });
+
+      afterEach(() => {
+        spy.mockRestore();
+      });
+
+      it("does not validate ordering provider fields", async () => {
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={validFacility}
+              deviceOptions={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const npiInput = screen.getByLabelText("NPI", {
+          exact: false,
+        });
+        fireEvent.change(npiInput, {
+          target: { value: null },
+        });
+        fireEvent.blur(npiInput);
+
+        // The spy function was called at least once
+        expect(spy.mock.calls.length).toBeGreaterThan(0);
 
         const saveButton = await screen.getAllByText("Save changes")[0];
         fireEvent.click(saveButton);

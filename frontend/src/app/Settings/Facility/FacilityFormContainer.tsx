@@ -1,17 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
 import {
   useAppInsightsContext,
   useTrackEvent,
 } from "@microsoft/applicationinsights-react-js";
+import { Redirect } from "react-router-dom";
 
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 
 import FacilityForm from "./FacilityForm";
 
-const GET_FACILITY_QUERY = gql`
+export const GET_FACILITY_QUERY = gql`
   query GetFacilities {
     organization {
       internalId
@@ -54,7 +55,7 @@ const GET_FACILITY_QUERY = gql`
   }
 `;
 
-const UPDATE_FACILITY_MUTATION = gql`
+export const UPDATE_FACILITY_MUTATION = gql`
   mutation UpdateFacility(
     $facilityId: ID!
     $testingFacilityName: String!
@@ -175,6 +176,7 @@ const FacilityFormContainer: any = (props: Props) => {
   const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION);
   const [addFacility] = useMutation(ADD_FACILITY_MUTATION);
   const trackSaveSettings = useTrackEvent(appInsights, "Save Settings", null);
+  const [saveSuccess, updateSaveSuccess] = useState(false);
 
   if (loading) {
     return <p> Loading... </p>;
@@ -185,6 +187,10 @@ const FacilityFormContainer: any = (props: Props) => {
 
   if (data === undefined) {
     return <p>Error: facility not found</p>;
+  }
+
+  if (saveSuccess) {
+    return <Redirect push to={{ pathname: "/settings/facilities" }} />;
   }
 
   const saveFacility = async (facility: Facility) => {
@@ -228,6 +234,7 @@ const FacilityFormContainer: any = (props: Props) => {
       />
     );
     showNotification(toast, alert);
+    updateSaveSuccess(true);
   };
 
   const getFacilityData = (): Facility => {

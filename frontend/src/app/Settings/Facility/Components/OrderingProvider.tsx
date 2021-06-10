@@ -1,20 +1,34 @@
 import React from "react";
 
 import { stateCodes } from "../../../../config/constants";
+import { requiresOrderProvider } from "../../../utils/state";
+import { ValidateField } from "../FacilityForm";
+import { FacilityErrors } from "../facilitySchema";
 import Dropdown from "../../../commonComponents/Dropdown";
 import TextInput from "../../../commonComponents/TextInput";
 
 interface Props {
-  provider: Provider;
+  facility: Facility;
   updateProvider: (provider: Provider) => void;
+  errors: FacilityErrors;
+  validateField: ValidateField;
 }
 
-const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
+const OrderingProvider: React.FC<Props> = ({
+  facility,
+  updateProvider,
+  errors,
+  validateField,
+}) => {
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     updateProvider({ ...provider, [e.target.name]: e.target.value });
   };
+
+  const { orderingProvider: provider } = facility;
+  const isRequired = requiresOrderProvider(facility.state || "");
+
   return (
     <div className="prime-container card-container">
       <div className="usa-card__header">
@@ -24,8 +38,16 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
         <TextInput
           label="First name"
           name="firstName"
+          required={isRequired}
           value={provider.firstName || ""}
           onChange={onChange}
+          onBlur={() => {
+            validateField("orderingProvider.firstName");
+          }}
+          validationStatus={
+            errors["orderingProvider.firstName"] ? "error" : undefined
+          }
+          errorMessage={errors["orderingProvider.firstName"]}
         />
         <TextInput
           label="Middle name"
@@ -36,8 +58,16 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
         <TextInput
           label="Last name"
           name="lastName"
+          required={isRequired}
           value={provider.lastName || ""}
           onChange={onChange}
+          onBlur={() => {
+            validateField("orderingProvider.lastName");
+          }}
+          validationStatus={
+            errors["orderingProvider.lastName"] ? "error" : undefined
+          }
+          errorMessage={errors["orderingProvider.lastName"]}
         />
         <TextInput
           label="Suffix"
@@ -48,14 +78,30 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
         <TextInput
           label="NPI"
           name="NPI"
+          required={isRequired}
           value={provider.NPI || ""}
           onChange={onChange}
+          onBlur={() => {
+            validateField("orderingProvider.NPI");
+          }}
+          validationStatus={
+            errors["orderingProvider.NPI"] ? "error" : undefined
+          }
+          errorMessage={errors["orderingProvider.NPI"]}
         />
         <TextInput
           label="Phone number"
           name="phone"
+          required={isRequired}
           value={provider.phone || ""}
           onChange={onChange}
+          onBlur={() => {
+            validateField("orderingProvider.phone");
+          }}
+          validationStatus={
+            errors["orderingProvider.phone"] ? "error" : undefined
+          }
+          errorMessage={errors["orderingProvider.phone"]}
         />
         <TextInput
           label="Street address 1"

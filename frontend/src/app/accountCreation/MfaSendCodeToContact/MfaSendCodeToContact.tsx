@@ -113,7 +113,6 @@ export const MfaSendCodeToContact = (props: Props) => {
             props.type === "email address" ? "email-address" : "phone-number"
           }
           type={props.type === "email address" ? "email" : "tel"}
-          required
           value={contact}
           errorMessage={contactError}
           validationStatus={contactError ? "error" : undefined}
