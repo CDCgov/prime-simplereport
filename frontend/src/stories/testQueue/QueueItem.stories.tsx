@@ -67,8 +67,6 @@ const defaultProps: QueueItemProps = {
   refetchQueue: () => {},
   facilityId: "100",
   patientLinkId: "200",
-  startPolling: () => {},
-  stopPolling: () => {},
 };
 
 export const Unstarted = Template.bind({});

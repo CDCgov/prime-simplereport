@@ -1,5 +1,8 @@
 import { MockedProvider } from "@apollo/client/testing";
+import { ToastContainer } from "react-toastify";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+
+import * as utils from "../utils/index";
 import { act } from "react-dom/test-utils";
 import moment from "moment";
 
@@ -71,62 +74,84 @@ describe("QueueItem", () => {
     expect(getByTestId("timer")).toHaveTextContent("15:00");
   });
 
-  it("displays delivery success modal on submit for invalid patient phone number", async () => {
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <QueueItem
-          internalId={testProps.internalId}
-          patient={testProps.patient}
-          askOnEntry={testProps.askOnEntry}
-          selectedDeviceId={testProps.selectedDeviceId}
-          selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-          selectedTestResult={testProps.selectedTestResult}
-          devices={testProps.devices}
-          defaultDevice={testProps.defaultDevice}
-          refetchQueue={testProps.refetchQueue}
-          facilityId={testProps.facilityId}
-          dateTestedProp={testProps.dateTestedProp}
-          patientLinkId={testProps.patientLinkId}
-          startPolling={() => {}}
-          stopPolling={() => {}}
-        ></QueueItem>
-      </MockedProvider>
-    );
-
-    // Select result
-    fireEvent.click(
-      screen.getByLabelText("Inconclusive", {
-        exact: false,
-      }),
-      {
-        target: { value: "UNDETERMINED" },
-      }
-    );
-
-    // Submit
-    await act(async () => {
-      fireEvent.click(
-        screen.getByText("Submit", {
-          exact: false,
-        })
-      );
+  describe("SMS delivery failure", () => {
+    let alertSpy: jest.SpyInstance;
+    beforeEach(() => {
+      alertSpy = jest.spyOn(utils, "showNotification");
+    });
+  
+    afterEach(() => {
+      alertSpy.mockRestore();
     });
 
-    await act(async () => {
+    it("displays delivery failure alert on submit for invalid patient phone number", async () => {
+      render(
+        <>
+        <MockedProvider mocks={mocks} addTypename={false}>
+          <QueueItem
+            internalId={testProps.internalId}
+            patient={testProps.patient}
+            askOnEntry={testProps.askOnEntry}
+            selectedDeviceId={testProps.selectedDeviceId}
+            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedTestResult={testProps.selectedTestResult}
+            devices={testProps.devices}
+            defaultDevice={testProps.defaultDevice}
+            refetchQueue={testProps.refetchQueue}
+            facilityId={testProps.facilityId}
+            dateTestedProp={testProps.dateTestedProp}
+            patientLinkId={testProps.patientLinkId}
+          ></QueueItem>
+            </MockedProvider>
+            <ToastContainer
+              autoClose={5000}
+              closeButton={false}
+              limit={2}
+              position="bottom-center"
+              hideProgressBar={true}
+            />
+        </>
+      );
+
+      // Select result
       fireEvent.click(
-        screen.getByText("Submit anyway", {
+        screen.getByLabelText("Inconclusive", {
+          exact: false,
+        }),
+        {
+          target: { value: "UNDETERMINED" },
+        }
+      );
+
+      // Submit
+      await act(async () => {
+        fireEvent.click(
+          screen.getByText("Submit", {
+            exact: false,
+          })
+        );
+      });
+
+      await act(async () => {
+        fireEvent.click(
+          screen.getByText("Submit anyway", {
+            exact: false,
+          })
+        );
+      });
+
+      // Verify alert is displayed
+      //expect(await screen.getByRole("alert")).toBeInTheDocument();
+      expect(
+        await screen.findByText("Unable to text result to Potter, Harry James", {
           exact: false,
         })
-      );
+      ).toBeInTheDocument();
+     
+      /*
+      expect(alertSpy).toBeCalledTimes(2);
+      */
     });
-
-    // Verify modal is displayed
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(
-      await screen.findByText("Incorrect phone number", {
-        exact: false,
-      })
-    ).toBeInTheDocument();
   });
 
   it("updates custom test date/time", async () => {

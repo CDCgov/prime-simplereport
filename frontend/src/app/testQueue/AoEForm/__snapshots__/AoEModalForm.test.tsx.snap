@@ -95,6 +95,9 @@ Array [
             htmlFor="2-val-verbal"
           >
             Complete questionnaire verbally
+            <span
+              className="radio__label-description--checked usa-radio__label-description text-base"
+            />
           </label>
         </div>
       </div>
@@ -209,6 +212,9 @@ Array [
             htmlFor="3-val-verbal"
           >
             Complete questionnaire verbally
+            <span
+              className="radio__label-description--checked usa-radio__label-description text-base"
+            />
           </label>
         </div>
       </div>
@@ -312,6 +318,9 @@ Array [
             htmlFor="1-val-verbal"
           >
             Complete questionnaire verbally
+            <span
+              className="radio__label-description--checked usa-radio__label-description text-base"
+            />
           </label>
         </div>
       </div>

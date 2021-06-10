@@ -197,8 +197,6 @@ export interface QueueItemProps {
   refetchQueue: () => void;
   facilityId: string;
   patientLinkId: string;
-  startPolling: (pollInterval: number) => void;
-  stopPolling: () => void;
 }
 
 interface updateQueueItemProps {
@@ -221,8 +219,6 @@ const QueueItem: any = ({
   facilityId,
   dateTestedProp,
   patientLinkId,
-  startPolling,
-  stopPolling,
 }: QueueItemProps) => {
   const appInsights = useAppInsightsContext();
   const trackRemovePatientFromQueue = useTrackEvent(
@@ -255,11 +251,6 @@ const QueueItem: any = ({
   useEffect(() => {
     setAoeAnswers(askOnEntry);
   }, [askOnEntry]);
-
-  const [
-    isDeliverySuccessModalOpen,
-    updateIsDeliverySuccessModalOpen,
-  ] = useState(false);
 
   const [deviceId, updateDeviceId] = useState(
     selectedDeviceId || defaultDevice.internalId
@@ -323,11 +314,14 @@ const QueueItem: any = ({
     };
 
     if (response?.data?.addTestResultNew.deliverySuccess === false) {
-      // Prevent parent component from re-rendering while modal is open
-      stopPolling();
-      updateIsDeliverySuccessModalOpen(true);
-    } else {
-      refetchQueue();
+      let deliveryFailureAlert = (
+        <Alert
+          type="error"
+          title={`Unable to text result to ${patientFullNameLastFirst}`}
+          body="The phone number provided may not be valid or may not be able to accept text messages"
+        />
+      );
+      showNotification(toast, deliveryFailureAlert);
     }
 
     let alert = <Alert type="success" title={title} body={body} />;
@@ -349,6 +343,7 @@ const QueueItem: any = ({
         },
       })
         .then(testResultsSubmitted, () => {})
+        .then(refetchQueue)
         .then(() => removeTimer(internalId))
         .catch((error) => {
           updateMutationError(error);
@@ -448,20 +443,9 @@ const QueueItem: any = ({
     if (appInsights) {
       trackUpdateAoEResponse({});
     }
-
-    const symptomOnset = answers.symptomOnset
-      ? moment(answers.symptomOnset).format("YYYY-MM-DD")
-      : null;
-
-    const priorTestDate = answers.priorTestDate
-      ? moment(answers.priorTestDate).format("YYYY-MM-DD")
-      : null;
-
     updateAoe({
       variables: {
         ...answers,
-        symptomOnset,
-        priorTestDate,
         patientId: patient.internalId,
       },
     })
@@ -700,45 +684,6 @@ const QueueItem: any = ({
                   )}
                 </AreYouSure>
               )}
-              <Modal
-                isOpen={isDeliverySuccessModalOpen}
-                style={{
-                  content: {
-                    maxHeight: "90vh",
-                    width: "50%",
-                    position: "initial",
-                  },
-                }}
-                overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
-                contentLabel="Incorrect phone number"
-                ariaHideApp={process.env.NODE_ENV !== "test"}
-              >
-                <p>
-                  <strong>Incorrect phone number</strong>
-                  <br />
-                  <br />
-                  We're unable to send{" "}
-                  <strong>{patientFullNameLastFirst}'s</strong> test results to
-                  them via phone because their phone number is incorrect or
-                  can't receive text messages. (Results were succcessfully sent
-                  to the public health department).
-                  <br />
-                  <br />
-                  Please update <strong>{patient.firstName}'s</strong> phone
-                  number and contact them directly to inform them of their
-                  COVID-19 status.
-                </p>
-                <Button
-                  onClick={() => {
-                    refetchQueue();
-                    startPolling(10000);
-                    updateIsDeliverySuccessModalOpen(false);
-                  }}
-                  className="margin-right-0"
-                >
-                  Okay
-                </Button>
-              </Modal>
               <TestResultInputForm
                 queueItemId={internalId}
                 testResultValue={testResultValue}
