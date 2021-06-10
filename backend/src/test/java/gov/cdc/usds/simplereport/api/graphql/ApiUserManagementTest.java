@@ -33,6 +33,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -217,6 +218,33 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     verify(_oktaRepo)
         .createUser(
             any(IdentityAttributes.class), any(Organization.class), anySet(), anySet(), eq(true));
+  }
+
+  @Test
+  @Disabled("This test would currently fail and will be enabled in PR#1778")
+  void addUser_disabledOrg_success() {
+    TestUserIdentities.withUser(
+        TestUserIdentities.SITE_ADMIN_USER,
+        () -> {
+          Organization org = _dataFactory.createUnverifiedOrg();
+
+          useSuperUser();
+          reset(_oktaRepo);
+
+          ObjectNode variables = makeBoilerplateArgs(Role.ADMIN, true);
+          variables.put("organizationExternalId", org.getExternalId());
+          JsonNode user = runQuery("add-user", "addUserNovel", variables, null).get("addUser");
+          assertEquals("Rhonda", user.get("name").get("firstName").asText());
+
+          // the user should have been set to disabled in okta because the org is not verified
+          verify(_oktaRepo)
+              .createUser(
+                  any(IdentityAttributes.class),
+                  any(Organization.class),
+                  anySet(),
+                  anySet(),
+                  eq(false));
+        });
   }
 
   @Test
