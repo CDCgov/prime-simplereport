@@ -3,18 +3,28 @@ package gov.cdc.usds.simplereport.api.graphql;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
+import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
 class OrganizationFacilityTest extends BaseGraphqlTest {
 
   @Autowired private DeviceTypeService _deviceService;
+
+  @SpyBean private OktaRepository _oktaRepo;
 
   @Test
   void createFacility_orgAdmin_success() {
@@ -30,10 +40,16 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
   @Test
   void createOrganization_siteAdminUser_ok() {
     useSuperUser();
+    reset(_oktaRepo);
+
     ObjectNode orgCreated = runQuery("organization-create", getDeviceArgs());
     assertEquals(
         "New Org, New Org, a Wonderful Town",
         orgCreated.path("createOrganization").path("name").asText());
+
+    verify(_oktaRepo)
+        .createUser(
+            any(IdentityAttributes.class), any(Organization.class), anySet(), anySet(), eq(false));
   }
 
   @Test
