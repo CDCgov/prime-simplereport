@@ -1,16 +1,20 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static com.okta.sdk.cache.Caches.forResource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.cache.CacheManager;
 import com.okta.sdk.cache.Caches;
 import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
 import com.okta.sdk.resource.user.User;
-import com.okta.sdk.resource.user.UserBuilder;
 import com.okta.sdk.resource.user.UserStatus;
 import com.okta.sdk.resource.user.factor.CallUserFactor;
 import com.okta.sdk.resource.user.factor.EmailUserFactor;
@@ -25,12 +29,12 @@ import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -50,7 +54,6 @@ import org.springframework.beans.factory.annotation.Value;
  */
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
-@Disabled
 class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
   private static final String PHONE_NUMBER = "999-999-9999";
@@ -67,6 +70,19 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   private Client _testClient;
   private String _userId;
   private String _activationToken;
+
+  private WireMockServer wireMockServer;
+
+  @BeforeAll
+  public void startMockServer() throws IOException {
+    wireMockServer = new WireMockServer(options().httpsPort(8089));
+    wireMockServer.start();
+  }
+
+  @AfterAll
+  public void stopMockServer() throws IOException {
+    wireMockServer.stop();
+  }
 
   @BeforeAll
   void initializeUser() {
@@ -95,18 +111,18 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
             .setCacheManager(cacheManager)
             .build();
 
-    User user =
-        UserBuilder.instance()
-            .setFirstName("TEST")
-            .setLastName("INTEGRATION")
-            .setEmail(EMAIL)
-            .setLogin(EMAIL)
-            .setMobilePhone(PHONE_NUMBER)
-            .setActive(false)
-            .buildAndCreate(_testClient);
+    // User user =
+    //     UserBuilder.instance()
+    //         .setFirstName("TEST")
+    //         .setLastName("INTEGRATION")
+    //         .setEmail(EMAIL)
+    //         .setLogin(EMAIL)
+    //         .setMobilePhone(PHONE_NUMBER)
+    //         .setActive(false)
+    //         .buildAndCreate(_testClient);
 
-    _userId = user.getId();
-    _activationToken = user.activate(false).getActivationToken();
+    _userId = "00ub0oNGTSWTBKOLGLNR";
+    _activationToken = "foo";
   }
 
   @AfterAll
@@ -120,6 +136,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   @Test
   @Order(1)
   void testActivationSuccessful() throws Exception {
+    stubFor(post("/api/v1/authn").willReturn(aResponse().withBodyFile("okta/activate.json")));
     String userIdResponse =
         _auth.activateUser(
             _activationToken,
@@ -128,9 +145,9 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
     assertThat(userIdResponse).isEqualTo(_userId);
 
-    User user = _testClient.getUser(_userId);
-    assertThat(user.getActivated()).isNotNull();
-    assertThat(user.getStatus()).isEqualTo(UserStatus.PROVISIONED);
+    // User user = _testClient.getUser(_userId);
+    // assertThat(user.getActivated()).isNotNull();
+    // assertThat(user.getStatus()).isEqualTo(UserStatus.PROVISIONED);
   }
 
   @Test

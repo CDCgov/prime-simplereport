@@ -1,0 +1,18 @@
+{
+  "expiresAt": "2017-03-29T21:42:30.000Z",
+  "status": "SUCCESS",
+  "sessionToken": "20111DuMTdPoBlMOqX5R_OAV3ku2bTWxP6wUIRT_jqkU6XTvOsJLmDq",
+  "_embedded": {
+    "user": {
+      "id": "00ub0oNGTSWTBKOLGLNR",
+      "passwordChanged": "2017-03-29T21:37:25.000Z",
+      "profile": {
+        "login": "dade.murphy@example.com",
+        "firstName": "Dade",
+        "lastName": "Murphy",
+        "locale": "en_US",
+        "timeZone": "America/Los_Angeles"
+      }
+    }
+  }
+}

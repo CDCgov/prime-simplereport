@@ -10,6 +10,10 @@ spring:
     properties:
       hibernate:
         default_schema: simple_report
+okta:
+  client:
+    org-url: https://localhost:8089
+    token: abcdefg
 management:
   endpoints:
     web:
