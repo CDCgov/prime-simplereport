@@ -1,0 +1,51 @@
+name: Reset Training Database
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Run this on a daily timer as well in order to reset the training DB
+    - cron: '* 9 * * *'
+
+env:
+  DEPLOY_ENV: training
+  NODE_VERSION: 14
+concurrency:
+  group: training-deploy
+
+jobs:
+  reset-training-database:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./ops
+    steps:
+      - uses: actions/checkout@v2
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Reset Azure training DB
+        run: |
+          export RUNNER_PUBLIC_IP=$(curl -s ipinfo.io/ip)
+          export SERVER_NAME=simple-report-${{ env.DEPLOY_ENV }}-db
+          export SERVER_FQDN=simple-report-${{ env.DEPLOY_ENV }}-db.postgres.database.azure.com
+          export RG_NAME=prime-simple-report-${{ env.DEPLOY_ENV }}
+          export PGPASSWORD=$(az keyvault secret show --name simple-report-${{ env.DEPLOY_ENV }}-db-password --vault-name simple-report-global | jq .value -r)
+
+          # Open the DB firewall for the runner IP
+          az postgres server update --public enabled --name $SERVER_NAME --resource-group $RG_NAME
+          az postgres server firewall-rule create --name runner-ip --server-name $SERVER_NAME --resource-group $RG_NAME --start-ip-address $RUNNER_PUBLIC_IP --end-ip-address $RUNNER_PUBLIC_IP
+
+          # Drop public schema CASCADE (which also drops all tables), then recreate it.
+          # This also drops extensions, so recreate pgcrypto.
+          psql \
+          --host $SERVER_FQDN \
+          --username simplereport@$SERVER_NAME \
+          --dbname "simple_report" \
+          --command "DROP SCHEMA public CASCADE; CREATE SCHEMA public; CREATE EXTENSION pgcrypto;"
+
+          # Close the firewall
+          az postgres server firewall-rule delete --name runner-ip --server-name $SERVER_NAME --resource-group $RG_NAME --yes
+          az postgres server update --public disabled --name $SERVER_NAME --resource-group $RG_NAME
+      - name: Restart Training App Service
+        run: |
+          az webapp restart --resource-group prime-simple-report-${{ env.DEPLOY_ENV }} --name simple-report-api-${{ env.DEPLOY_ENV }}
