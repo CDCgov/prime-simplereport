@@ -3,6 +3,8 @@ package gov.cdc.usds.simplereport.service.sms;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
+import com.twilio.exception.ApiException;
+import com.twilio.exception.TwilioException;
 import com.twilio.type.PhoneNumber;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SmsService {
@@ -38,6 +41,7 @@ public class SmsService {
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestWithPatientLink
+  @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public String sendToPatientLink(UUID patientLinkId, String text) throws NumberParseException {
     PatientLink pl = pls.getRefreshedPatientLink(patientLinkId);
     return sendToPerson(pl.getTestOrder().getPatient(), text);
