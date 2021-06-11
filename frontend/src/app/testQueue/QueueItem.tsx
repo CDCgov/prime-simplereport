@@ -423,7 +423,7 @@ const QueueItem: any = ({
     updateIsAoeModalOpen(false);
   };
 
-  const saveAoeCallback = (answers: any) => {
+  const saveAoeCallback = (answers: any): void => {
     setAoeAnswers(answers);
     if (appInsights) {
       trackUpdateAoEResponse({});
