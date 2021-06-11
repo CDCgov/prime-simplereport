@@ -1,6 +1,8 @@
 package gov.cdc.usds.simplereport.service;
 
 import com.google.i18n.phonenumbers.NumberParseException;
+import com.twilio.exception.ApiException;
+import com.twilio.exception.TwilioException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
@@ -198,7 +200,7 @@ public class TestOrderService {
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Deprecated // switch to using device specimen ID, using methods that ... don't exist yet!
-  @SuppressWarnings("checkstyle:IllegalCatch")
+  @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
       String deviceID, TestResult result, UUID patientId, Date dateTested) {
     DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
@@ -235,7 +237,7 @@ public class TestOrderService {
       } catch (NumberParseException npe) {
         LOG.warn("Failed to parse phone number for patient={}", person.getInternalId());
         return new AddTestResultResponse(savedOrder, false);
-      } catch (RuntimeException e) {
+      } catch (TwilioException e) {
         LOG.warn("Failed to send text message to patient={}", person.getInternalId());
         return new AddTestResultResponse(savedOrder, false);
       }
