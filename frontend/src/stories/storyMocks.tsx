@@ -60,7 +60,7 @@ const mocks = {
     (req, res, ctx) => {
       return res(
         ctx.status(200),
-        ctx.json({ activation: enrollSecurityKeyMock })
+        ctx.json({ activation: { storybook: true } })
       );
     }
   ),
@@ -94,31 +94,3 @@ const client = new ApolloClient({
 export const StoryGraphQLProvider: React.FC = ({ children }) => (
   <ApolloProvider client={client}>{children}</ApolloProvider>
 );
-
-const enrollSecurityKeyMock = {
-  attestation: "direct",
-  authenticatorSelection: {
-    userVerification: "preferred",
-    requireResidentKey: false,
-  },
-  challenge: "cdsZ1V10E0BGE4GcG3IK",
-  excludeCredentials: [],
-  pubKeyCredParams: [
-    {
-      type: "public-key",
-      alg: -7,
-    },
-    {
-      type: "public-key",
-      alg: -257,
-    },
-  ],
-  rp: {
-    name: "Rain-Cloud59",
-  },
-  user: {
-    displayName: "First Last",
-    name: "first.last@gmail.com",
-    id: "00u15s1KDETTQMQYABRL",
-  },
-};

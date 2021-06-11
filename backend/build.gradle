@@ -89,7 +89,10 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
     // TOTP Generator (only used for testing)
-    compile 'dev.samstevens.totp:totp:1.7.1'
+    testCompile 'dev.samstevens.totp:totp:1.7.1'
+
+    // WireMock (only used for testing)
+    testCompile "com.github.tomakehurst:wiremock-jre8:2.28.1"
 
 }
 

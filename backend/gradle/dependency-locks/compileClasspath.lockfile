@@ -4,7 +4,6 @@
 antlr:antlr:2.7.7
 ch.qos.logback:logback-classic:1.2.3
 ch.qos.logback:logback-core:1.2.3
-com.beust:jcommander:1.72
 com.azure:azure-core-http-netty:1.7.1
 com.azure:azure-core:1.12.0
 com.azure:azure-storage-common:12.10.0
@@ -26,8 +25,6 @@ com.google.code.findbugs:jsr305:1.3.9
 com.google.code.gson:gson:2.8.6
 com.google.http-client:google-http-client-jackson2:1.21.0
 com.google.http-client:google-http-client:1.21.0
-com.google.zxing:core:3.4.0
-com.google.zxing:javase:3.4.0
 com.googlecode.libphonenumber:libphonenumber:8.12.15
 com.graphql-java-kickstart:graphiql-spring-boot-starter:11.0.0
 com.graphql-java-kickstart:graphql-java-kickstart:11.0.0
@@ -67,7 +64,6 @@ com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.0.0
 com.zhokhov.graphql:graphql-java-datetime:4.0.0
 commons-codec:commons-codec:1.15
 commons-io:commons-io:2.7
-dev.samstevens.totp:totp:1.7.1
 io.jsonwebtoken:jjwt-api:0.11.2
 io.jsonwebtoken:jjwt-jackson:0.11.2
 io.micrometer:micrometer-core:1.6.2
