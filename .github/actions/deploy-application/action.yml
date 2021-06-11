@@ -1,0 +1,48 @@
+name: Deploy SimpleReport Application
+description: Promote API from secondary slot, and deploy client from tarball
+inputs:
+  deploy-env:
+    description: The environment being deployed (e.g. "prod" or "test")
+    required: true
+  client-tarball:
+    description: The path to the tar file containing the client code to deploy
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Unpack client
+      shell: bash
+      run: |
+        echo "::group::Unpack client"
+        mkdir client-build;
+        tar -C client-build -zxvf ${{inputs.client-tarball}}
+        echo "::endgroup::"
+    - name: Promote API to production and verify that it is ready
+      shell: bash
+      working-directory: ./ops
+      run: |
+        echo "::group::Promote API and verify readiness"
+        make promote-${{ env.DEPLOY_ENV }} check-${{ env.DEPLOY_ENV }}-readiness
+        echo "::endgroup::"
+    - name: Check for production app readiness
+      shell: bash
+      working-directory: ./ops
+      run: make
+    - name: Deploy frontend app
+      shell: bash
+      run: |
+        echo "::group::Deploy frontend app"
+        az storage blob upload-batch -s client-build/ -d '$web' \
+          --account-name simplereport${{ inputs.deploy-env }}app \
+          --destination-path '/app'
+        echo "::endgroup::"
+    - name: Purge CDN
+      shell: bash
+      run: |
+        echo "::group::Purge CDN"
+        az cdn endpoint purge \
+          --resource-group prime-simple-report-${{ inputs.deploy-env }} \
+          --profile-name simple-report-${{ inputs.deploy-env }} \
+          --name simple-report-${{ inputs.deploy-env }} \
+          --content-paths "/app/*" --no-wait
+        echo "::endgroup::"
