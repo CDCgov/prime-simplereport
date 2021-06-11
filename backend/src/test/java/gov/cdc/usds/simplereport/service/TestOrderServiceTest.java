@@ -17,6 +17,8 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.OptionalBoolean;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
@@ -33,6 +35,7 @@ import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -663,10 +666,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     assertThrows(
         AccessDeniedException.class,
-        () -> _service.getTestEventsResults(facility.getInternalId(), null, null, 0, 10));
+        () ->
+            _service.getTestEventsResults(
+                facility.getInternalId(), null, null, null, null, null, null, 0, 10));
 
     TestUserIdentities.setFacilityAuthorities(facility);
-    _service.getTestEventsResults(facility.getInternalId(), null, null, 0, 10);
+    _service.getTestEventsResults(
+        facility.getInternalId(), null, null, null, null, null, null, 0, 10);
   }
 
   @Test
@@ -725,7 +731,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // count queries
     long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
     int firstQueryResults =
-        _service.getTestEventsResults(facility.getInternalId(), null, null, 0, 50).size();
+        _service
+            .getTestEventsResults(
+                facility.getInternalId(), null, null, null, null, null, null, 0, 50)
+            .size();
     long firstPassTotal = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
 
     // add more data
@@ -738,7 +747,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // count queries again and make queries made didn't increase
     startQueryCount = _hibernateQueryInterceptor.getQueryCount();
     int secondQueryResults =
-        _service.getTestEventsResults(facility.getInternalId(), null, null, 0, 50).size();
+        _service
+            .getTestEventsResults(
+                facility.getInternalId(), null, null, null, null, null, null, 0, 50)
+            .size();
     long secondPassTotal = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
     assertEquals(firstPassTotal, secondPassTotal);
   }
@@ -849,7 +861,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(_e.getTestOrder().getInternalId(), _e.getTestOrderId());
 
     List<TestEvent> events_before =
-        _service.getTestEventsResults(facility.getInternalId(), null, null, 0, 50);
+        _service.getTestEventsResults(
+            facility.getInternalId(), null, null, null, null, null, null, 0, 50);
     assertEquals(1, events_before.size());
 
     // verify the original order was updated
@@ -863,7 +876,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // make sure the original item is removed from the result and ONLY the
     // "corrected" removed one is shown
     List<TestEvent> events_after =
-        _service.getTestEventsResults(facility.getInternalId(), null, null, 0, 50);
+        _service.getTestEventsResults(
+            facility.getInternalId(), null, null, null, null, null, null, 0, 50);
     assertEquals(1, events_after.size());
     assertEquals(
         deleteMarkerEvent.getInternalId().toString(),
@@ -875,13 +889,17 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void getTestEventsResults_pagination() {
     List<TestEvent> testEvents = makedata();
     List<TestEvent> results_page0 =
-        _service.getTestEventsResults(_site.getInternalId(), null, null, 0, 5);
+        _service.getTestEventsResults(
+            _site.getInternalId(), null, null, null, null, null, null, 0, 5);
     List<TestEvent> results_page1 =
-        _service.getTestEventsResults(_site.getInternalId(), null, null, 1, 5);
+        _service.getTestEventsResults(
+            _site.getInternalId(), null, null, null, null, null, null, 1, 5);
     List<TestEvent> results_page2 =
-        _service.getTestEventsResults(_site.getInternalId(), null, null, 2, 5);
+        _service.getTestEventsResults(
+            _site.getInternalId(), null, null, null, null, null, null, 2, 5);
     List<TestEvent> results_page3 =
-        _service.getTestEventsResults(_site.getInternalId(), null, null, 3, 5);
+        _service.getTestEventsResults(
+            _site.getInternalId(), null, null, null, null, null, null, 3, 5);
 
     Collections.reverse(testEvents);
 
@@ -896,16 +914,68 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void getTestEventsResults_filtering() {
     List<TestEvent> testEvents = makedata();
     List<TestEvent> positives =
-        _service.getTestEventsResults(_site.getInternalId(), null, TestResult.POSITIVE, 0, 10);
+        _service.getTestEventsResults(
+            _site.getInternalId(), null, TestResult.POSITIVE, null, null, null, null, 0, 10);
     List<TestEvent> negatives =
-        _service.getTestEventsResults(_site.getInternalId(), null, TestResult.NEGATIVE, 0, 10);
+        _service.getTestEventsResults(
+            _site.getInternalId(), null, TestResult.NEGATIVE, null, null, null, null, 0, 10);
     List<TestEvent> inconclusives =
-        _service.getTestEventsResults(_site.getInternalId(), null, TestResult.UNDETERMINED, 0, 10);
+        _service.getTestEventsResults(
+            _site.getInternalId(), null, TestResult.UNDETERMINED, null, null, null, null, 0, 10);
+    List<TestEvent> students =
+        _service.getTestEventsResults(
+            _site.getInternalId(), null, null, PersonRole.STUDENT, null, null, null, 0, 10);
+    List<TestEvent> visitors =
+        _service.getTestEventsResults(
+            _site.getInternalId(), null, null, PersonRole.VISITOR, null, null, null, 0, 10);
+    List<TestEvent> symptomatics =
+        _service.getTestEventsResults(
+            _site.getInternalId(), null, null, null, OptionalBoolean.YES, null, null, 0, 10);
+    List<TestEvent> asymptomatics =
+        _service.getTestEventsResults(
+            _site.getInternalId(), null, null, null, OptionalBoolean.NO, null, null, 0, 10);
+    List<TestEvent> unknownSymptoms =
+        _service.getTestEventsResults(
+            _site.getInternalId(),
+            null,
+            null,
+            null,
+            OptionalBoolean.WOULD_NOT_SPECIFY,
+            null,
+            null,
+            0,
+            10);
+    List<TestEvent> june1to3 =
+        _service.getTestEventsResults(
+            _site.getInternalId(),
+            null,
+            null,
+            null,
+            null,
+            new Date(2021, 6, 1, 0, 0, 0),
+            new Date(2021, 6, 3, 23, 59, 59),
+            0,
+            10);
+    List<TestEvent> priorToJune2Noon =
+        _service.getTestEventsResults(
+            _site.getInternalId(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            new Date(2021, 6, 2, 11, 59, 59),
+            0,
+            10);
     List<TestEvent> positivesAmos =
         _service.getTestEventsResults(
             _site.getInternalId(),
             _dataFactory.getPersonByName(AMOS).getInternalId(),
             TestResult.POSITIVE,
+            null,
+            null,
+            null,
+            null,
             0,
             10);
     List<TestEvent> negativesAmos =
@@ -913,6 +983,21 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             _site.getInternalId(),
             _dataFactory.getPersonByName(AMOS).getInternalId(),
             TestResult.NEGATIVE,
+            null,
+            null,
+            null,
+            null,
+            0,
+            10);
+    List<TestEvent> allFilters =
+        _service.getTestEventsResults(
+            _site.getInternalId(),
+            _dataFactory.getPersonByName(CHARLES).getInternalId(),
+            TestResult.POSITIVE,
+            PersonRole.RESIDENT,
+            OptionalBoolean.WOULD_NOT_SPECIFY,
+            new Date(2021, 6, 1, 0, 0, 0),
+            new Date(2021, 6, 1, 23, 59, 59),
             0,
             10);
 
@@ -934,6 +1019,50 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             .filter(t -> t.getResult() == TestResult.UNDETERMINED)
             .collect(Collectors.toList()));
     assertTestResultsList(
+        students,
+        testEvents.stream()
+            .filter(t -> t.getPatient().getRole() == PersonRole.STUDENT)
+            .collect(Collectors.toList()));
+    assertTestResultsList(
+        visitors,
+        testEvents.stream()
+            .filter(t -> t.getPatient().getRole() == PersonRole.VISITOR)
+            .collect(Collectors.toList()));
+    assertTestResultsList(
+        symptomatics,
+        testEvents.stream()
+            .filter(
+                t ->
+                    t.getSurveyData().getNoSymptoms() == false
+                        && t.getSurveyData().getSymptoms().containsValue(true))
+            .collect(Collectors.toList()));
+    assertTestResultsList(
+        asymptomatics,
+        testEvents.stream()
+            .filter(t -> t.getSurveyData().getNoSymptoms() == true)
+            .collect(Collectors.toList()));
+    assertTestResultsList(
+        unknownSymptoms,
+        testEvents.stream()
+            .filter(
+                t ->
+                    t.getSurveyData().getNoSymptoms() == false
+                        && !t.getSurveyData().getSymptoms().containsValue(true))
+            .collect(Collectors.toList()));
+    assertTestResultsList(
+        june1to3,
+        testEvents.stream()
+            .filter(
+                t ->
+                    !t.getDateTested().before(new Date(2021, 6, 1, 0, 0, 0))
+                        && !t.getDateTested().after(new Date(2021, 6, 3, 23, 59, 59)))
+            .collect(Collectors.toList()));
+    assertTestResultsList(
+        priorToJune2Noon,
+        testEvents.stream()
+            .filter(t -> t.getDateTested().before(new Date(2021, 6, 2, 12, 0, 0)))
+            .collect(Collectors.toList()));
+    assertTestResultsList(
         positivesAmos,
         testEvents.stream()
             .filter(
@@ -949,13 +1078,27 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
                     t.getResult() == TestResult.NEGATIVE
                         && t.getPatient().getNameInfo().equals(AMOS))
             .collect(Collectors.toList()));
+    assertTestResultsList(
+        allFilters,
+        testEvents.stream()
+            .filter(
+                t ->
+                    t.getPatient().getNameInfo().equals(CHARLES)
+                        && t.getResult() == TestResult.POSITIVE
+                        && t.getPatient().getRole() == PersonRole.RESIDENT
+                        && !t.getSurveyData().getNoSymptoms()
+                        && !t.getSurveyData().getSymptoms().containsValue(true)
+                        && !t.getDateTested().before(new Date(2021, 6, 1, 0, 0, 0))
+                        && !t.getDateTested().after(new Date(2021, 6, 1, 23, 59, 59)))
+            .collect(Collectors.toList()));
   }
 
   @Test
   @WithSimpleReportOrgAdminUser
   void getTestResultsCount() {
     makedata();
-    int size = _service.getTestResultsCount(_site.getInternalId(), null, null);
+    int size =
+        _service.getTestResultsCount(_site.getInternalId(), null, null, null, null, null, null);
     assertEquals(11, size);
   }
 
@@ -975,14 +1118,79 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     patientsToResults.put(KACEY, TestResult.UNDETERMINED);
     patientsToResults.put(LEELOO, TestResult.UNDETERMINED);
 
+    Map<PersonName, Date> patientsToDates = new HashMap<>();
+    patientsToDates.put(AMOS, new Date(2021, 6, 1, 0, 0, 0));
+    patientsToDates.put(CHARLES, new Date(2021, 6, 1, 12, 0, 0));
+    patientsToDates.put(DEXTER, new Date(2021, 6, 2, 0, 0, 0));
+    patientsToDates.put(ELIZABETH, new Date(2021, 6, 2, 12, 0, 0));
+    patientsToDates.put(FRANK, new Date(2021, 6, 3, 0, 0, 0));
+    patientsToDates.put(GALE, new Date(2021, 6, 3, 12, 0, 0));
+    patientsToDates.put(HEINRICK, new Date(2021, 6, 4, 0, 0, 0));
+    patientsToDates.put(IAN, new Date(2021, 6, 4, 12, 0, 0));
+    patientsToDates.put(JANNELLE, new Date(2021, 6, 5, 0, 0, 0));
+    patientsToDates.put(KACEY, new Date(2021, 6, 5, 12, 0, 0));
+    patientsToDates.put(LEELOO, new Date(2021, 6, 6, 0, 0, 0));
+
+    Map<PersonName, PersonRole> patientsToRoles = new HashMap<>();
+    patientsToRoles.put(AMOS, PersonRole.RESIDENT);
+    patientsToRoles.put(CHARLES, PersonRole.RESIDENT);
+    patientsToRoles.put(DEXTER, PersonRole.STUDENT);
+    patientsToRoles.put(ELIZABETH, PersonRole.STUDENT);
+    patientsToRoles.put(FRANK, PersonRole.VISITOR);
+    patientsToRoles.put(GALE, PersonRole.VISITOR);
+    patientsToRoles.put(HEINRICK, PersonRole.STAFF);
+    patientsToRoles.put(IAN, PersonRole.STAFF);
+    patientsToRoles.put(JANNELLE, PersonRole.RESIDENT);
+    patientsToRoles.put(KACEY, PersonRole.RESIDENT);
+    patientsToRoles.put(LEELOO, PersonRole.STUDENT);
+
+    Map<PersonName, AskOnEntrySurvey> patientsToSurveys = new HashMap<>();
+    patientsToSurveys.put(
+        AMOS,
+        new AskOnEntrySurvey(null, Map.of("fake", true), false, null, null, null, null, null));
+    patientsToSurveys.put(
+        CHARLES,
+        new AskOnEntrySurvey(null, Collections.emptyMap(), false, null, null, null, null, null));
+    patientsToSurveys.put(
+        DEXTER,
+        new AskOnEntrySurvey(null, Collections.emptyMap(), true, null, null, null, null, null));
+    patientsToSurveys.put(
+        ELIZABETH,
+        new AskOnEntrySurvey(null, Map.of("fake", true), false, null, null, null, null, null));
+    patientsToSurveys.put(
+        FRANK,
+        new AskOnEntrySurvey(null, Collections.emptyMap(), false, null, null, null, null, null));
+    patientsToSurveys.put(
+        GALE,
+        new AskOnEntrySurvey(null, Collections.emptyMap(), true, null, null, null, null, null));
+    patientsToSurveys.put(
+        HEINRICK,
+        new AskOnEntrySurvey(null, Map.of("fake", true), false, null, null, null, null, null));
+    patientsToSurveys.put(
+        IAN,
+        new AskOnEntrySurvey(null, Collections.emptyMap(), false, null, null, null, null, null));
+    patientsToSurveys.put(
+        JANNELLE,
+        new AskOnEntrySurvey(null, Collections.emptyMap(), true, null, null, null, null, null));
+    patientsToSurveys.put(
+        KACEY,
+        new AskOnEntrySurvey(null, Map.of("fake", true), false, null, null, null, null, null));
+    patientsToSurveys.put(
+        LEELOO,
+        new AskOnEntrySurvey(null, Collections.emptyMap(), false, null, null, null, null, null));
+
     List<TestEvent> testEvents =
-        patientsToResults.entrySet().stream()
+        patientsToResults.keySet().stream()
             .map(
-                e -> {
-                  PersonName p = e.getKey();
-                  TestResult r = e.getValue();
-                  Person person = _dataFactory.createMinimalPerson(org, _site, p);
-                  return _dataFactory.createTestEvent(person, _site, r);
+                n -> {
+                  PersonName p = n;
+                  TestResult t = patientsToResults.get(n);
+                  PersonRole r = patientsToRoles.get(n);
+                  AskOnEntrySurvey s = patientsToSurveys.get(n);
+                  Date d = patientsToDates.get(n);
+
+                  Person person = _dataFactory.createMinimalPerson(org, _site, p, r);
+                  return _dataFactory.createTestEvent(person, _site, s, t, d);
                 })
             .collect(Collectors.toList());
     // Make one result in another facility
@@ -999,7 +1207,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     }
     // *then* check if there are extras
     if (expected.size() != found.size()) {
-      fail("Expected" + expected.size() + " items but found " + found.size());
+      fail("Expected " + expected.size() + " items but found " + found.size());
     }
   }
 
@@ -1016,14 +1224,17 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         () -> _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg));
     assertThrows(
         AccessDeniedException.class,
-        () -> _service.getTestEventsResults(facility.getInternalId(), null, null, 0, 10));
+        () ->
+            _service.getTestEventsResults(
+                facility.getInternalId(), null, null, null, null, null, null, 0, 10));
     assertThrows(
         AccessDeniedException.class,
         () -> _service.getTestResult(_e.getInternalId()).getTestOrder());
 
     TestUserIdentities.setFacilityAuthorities(facility);
     _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg);
-    _service.getTestEventsResults(facility.getInternalId(), null, null, 0, 10);
+    _service.getTestEventsResults(
+        facility.getInternalId(), null, null, null, null, null, null, 0, 10);
     _service.getTestResult(_e.getInternalId()).getTestOrder();
   }
 }

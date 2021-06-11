@@ -4,6 +4,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.auxiliary.OptionalBoolean;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
@@ -109,9 +110,12 @@ public class Translators {
     }
   }
 
-  public static PersonRole parsePersonRole(String r) {
+  public static PersonRole parsePersonRole(String r, boolean allowNull) {
     String role = parseString(r);
     if (role == null) {
+      if (allowNull) {
+        return null;
+      }
       return PersonRole.UNKNOWN;
     }
     try {
@@ -246,6 +250,30 @@ public class Translators {
       return null;
     }
     Boolean boolValue = YES_NO.get(stringValue.toLowerCase());
+    if (boolValue == null) {
+      throw IllegalGraphqlArgumentException.invalidInput(v, "value");
+    }
+    return boolValue;
+  }
+
+  private static final Map<String, OptionalBoolean> YES_NO_UNKNOWN =
+      Map.of(
+          "y", OptionalBoolean.YES,
+          "yes", OptionalBoolean.YES,
+          "n", OptionalBoolean.NO,
+          "no", OptionalBoolean.NO,
+          "u", OptionalBoolean.WOULD_NOT_SPECIFY,
+          "unknown", OptionalBoolean.WOULD_NOT_SPECIFY,
+          "true", OptionalBoolean.YES,
+          "false", OptionalBoolean.NO,
+          "unspecified", OptionalBoolean.WOULD_NOT_SPECIFY);
+
+  public static OptionalBoolean parseYesNoUnknown(String v) {
+    String stringValue = parseString(v);
+    if (stringValue == null) {
+      return null;
+    }
+    OptionalBoolean boolValue = YES_NO_UNKNOWN.get(stringValue.toLowerCase());
     if (boolValue == null) {
       throw IllegalGraphqlArgumentException.invalidInput(v, "value");
     }

@@ -12,6 +12,7 @@ type YesNo = "YES" | "NO";
 type Role = "STAFF" | "RESIDENT" | "STUDENT" | "VISITOR" | "";
 type PhoneType = "MOBILE" | "LANDLINE" | "UNKNOWN";
 type YesNoUnknown = YesNo | "UNKNOWN";
+type YesNoUnknownNull = YesNoUnknown | "";
 type TribalAffiliation =
   | "1"
   | "2"

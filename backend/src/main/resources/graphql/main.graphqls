@@ -229,6 +229,10 @@ type Query {
     facilityId: ID
     patientId: ID
     result: String
+    role: String
+    symptomatic: String
+    startDate: LocalDate
+    endDate: LocalDate
     pageNumber: Int 
     pageSize: Int
   ): [TestResult] @requiredPermissions(allOf: ["READ_RESULT_LIST"])
@@ -236,6 +240,10 @@ type Query {
     facilityId: ID
     patientId: ID
     result: String
+    role: String
+    symptomatic: String
+    startDate: LocalDate
+    endDate: LocalDate
   ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
