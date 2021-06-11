@@ -81,7 +81,7 @@
     "watch-css": "yarn compile-scss && sass --load-path=./node_modules/uswds/dist/scss --style=compressed --no-source-map -w src/scss/App.scss:src/styles/App.css",
     "create-storybook-public": "rm -rf ./storybook_public && cp -R ./public ./storybook_public && cp mockServiceWorker.js ./storybook_public",
     "storybook": "yarn create-storybook-public && yarn watch-css & start-storybook -p 6006 -s storybook_public",
-    "build-storybook": "yarn create-storybook-public && yarn compile-scss && build-storybook -s storybook_public"
+    "build-storybook": "REACT_APP_BACKEND_URL=http://localhost:8080 yarn create-storybook-public && yarn compile-scss && build-storybook -s storybook_public"
   },
   "prettier": {
     "singleQuote": false
