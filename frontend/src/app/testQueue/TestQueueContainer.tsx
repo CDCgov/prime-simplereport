@@ -1,8 +1,7 @@
 import { useReactiveVar } from "@apollo/client";
 
-import { facilities } from "../../storage/store";
-
 import { useDocumentTitle } from "../utils/hooks";
+import { facilities } from "../../storage/store";
 
 import TestQueue from "./TestQueue";
 

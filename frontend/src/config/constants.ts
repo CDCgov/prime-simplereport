@@ -260,4 +260,5 @@ export const patientSample: Patient = {
   city: null,
   state: "",
   zipCode: "",
+  lastTest: undefined,
 };

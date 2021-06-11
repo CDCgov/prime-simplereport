@@ -25,7 +25,6 @@ import { getUrl } from "../utils/url";
 import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
 import Pagination from "../commonComponents/Pagination";
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
-import "./TestResultsList.scss";
 import Button from "../commonComponents/Button/Button";
 import { useDebounce } from "../testQueue/addToQueue/useDebounce";
 import {

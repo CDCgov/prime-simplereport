@@ -485,11 +485,9 @@ describe("TestResultsList", () => {
   it("should be able to filter by result value", async () => {
     render(
       <MemoryRouter>
-        <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <TestResultsList page={1} />
           </MockedProvider>
-        </Provider>
       </MemoryRouter>
     );
     expect(

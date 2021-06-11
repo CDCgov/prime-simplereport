@@ -26,7 +26,6 @@ const loggedInUser = {
   isAdmin: true,
 };
 
-
 const users: SettingsUsers[keyof SettingsUsers][] = [
   {
     firstName: "John",

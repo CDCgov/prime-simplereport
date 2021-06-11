@@ -6,7 +6,6 @@ import { appConfig } from "../../../storage/store";
 
 import { PasswordCreate } from "./PasswordCreate";
 
-
 jest.mock("../AccountCreationApiService", () => ({
   AccountCreationApi: {
     setPassword: (activationToken: string, password: string) => {
