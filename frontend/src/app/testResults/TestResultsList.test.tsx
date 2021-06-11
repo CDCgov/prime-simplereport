@@ -4,6 +4,8 @@ import { MemoryRouter } from "react-router";
 import userEvent from "@testing-library/user-event";
 
 import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
+import { facilities } from "../../storage/store";
+import { facilitySample } from "../../config/constants";
 
 import { testResultDetailsQuery } from "./TestResultDetailsModal";
 import TestResultsList, {
@@ -11,8 +13,6 @@ import TestResultsList, {
   resultsCountQuery,
   testResultQuery,
 } from "./TestResultsList";
-import { facilities } from "../../storage/store";
-import { facilitySample } from "../../config/constants";
 
 jest.mock("@microsoft/applicationinsights-react-js", () => ({
   useAppInsightsContext: () => {},
@@ -417,19 +417,16 @@ const mocks = [
 ];
 
 describe("TestResultsList", () => {
-  beforeAll(()=>{
+  beforeAll(() => {
     facilities({
       selectedFacility: {
         ...facilitySample,
         id: "1",
         name: "123",
       },
-      availableFacilities: [
-        { ...facilitySample, id: "1", name: "123" },
-      ],
+      availableFacilities: [{ ...facilitySample, id: "1", name: "123" }],
     });
-
-  })
+  });
   it("should render a list of tests", async () => {
     const { container, getByText } = render(
       <MemoryRouter>
@@ -448,9 +445,9 @@ describe("TestResultsList", () => {
   it("should call appropriate gql endpoints for pagination", async () => {
     render(
       <MemoryRouter>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList page={1} />
-          </MockedProvider>
+        <MockedProvider mocks={mocks}>
+          <TestResultsList page={1} />
+        </MockedProvider>
       </MemoryRouter>
     );
     expect(
@@ -463,9 +460,9 @@ describe("TestResultsList", () => {
   it("should be able to filter by patient", async () => {
     render(
       <MemoryRouter>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList page={1} />
-          </MockedProvider>
+        <MockedProvider mocks={mocks}>
+          <TestResultsList page={1} />
+        </MockedProvider>
       </MemoryRouter>
     );
     expect(
@@ -518,9 +515,9 @@ describe("TestResultsList", () => {
   it("should be able to clear patient filter", async () => {
     render(
       <MemoryRouter>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList page={1} />
-          </MockedProvider>
+        <MockedProvider mocks={mocks}>
+          <TestResultsList page={1} />
+        </MockedProvider>
       </MemoryRouter>
     );
 
@@ -549,9 +546,9 @@ describe("TestResultsList", () => {
   it("opens the test detail view", async () => {
     render(
       <MemoryRouter>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList page={1} />
-          </MockedProvider>
+        <MockedProvider mocks={mocks}>
+          <TestResultsList page={1} />
+        </MockedProvider>
       </MemoryRouter>
     );
     await screen.findByText("Test Results", { exact: false });

@@ -1,7 +1,7 @@
 import React from "react";
 import renderer from "react-test-renderer";
-import { facilitySample } from "../../config/constants";
 
+import { facilitySample } from "../../config/constants";
 import { appConfig, facilities } from "../../storage/store";
 
 import WithFacility from "./WithFacility";

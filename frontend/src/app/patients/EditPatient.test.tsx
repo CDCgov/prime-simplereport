@@ -9,9 +9,10 @@ import { MockedProvider } from "@apollo/client/testing";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router";
 
-import EditPatient, { GET_PATIENT } from "./EditPatient";
 import { facilities } from "../../storage/store";
 import { facilitySample } from "../../config/constants";
+
+import EditPatient, { GET_PATIENT } from "./EditPatient";
 
 jest.mock("../commonComponents/ComboBox", () => () => <></>);
 
@@ -20,17 +21,22 @@ describe("EditPatient", () => {
 
   const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
   const mockPatientID = "555e8a40-0f95-458e-a038-6b500a0fc2ad";
-  facilities({...facilities(), availableFacilities: [{...facilitySample, id: mockFacilityID, name: "123"}]})
+  facilities({
+    ...facilities(),
+    availableFacilities: [
+      { ...facilitySample, id: mockFacilityID, name: "123" },
+    ],
+  });
   describe("Waiting for network response", () => {
     beforeEach(() => {
       render(
         <MemoryRouter>
-            <MockedProvider mocks={[]} addTypename={false}>
-              <EditPatient
-                facilityId={mockFacilityID}
-                patientId={mockPatientID}
-              />
-            </MockedProvider>
+          <MockedProvider mocks={[]} addTypename={false}>
+            <EditPatient
+              facilityId={mockFacilityID}
+              patientId={mockPatientID}
+            />
+          </MockedProvider>
         </MemoryRouter>
       );
     });
@@ -91,12 +97,12 @@ describe("EditPatient", () => {
 
       render(
         <MemoryRouter>
-            <MockedProvider mocks={mocks} addTypename={false}>
-              <EditPatient
-                facilityId={mockFacilityID}
-                patientId={mockPatientID}
-              />
-            </MockedProvider>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <EditPatient
+              facilityId={mockFacilityID}
+              patientId={mockPatientID}
+            />
+          </MockedProvider>
         </MemoryRouter>
       );
 
@@ -167,12 +173,12 @@ describe("EditPatient", () => {
 
       component = render(
         <MemoryRouter>
-            <MockedProvider mocks={mocks} addTypename={false}>
-              <EditPatient
-                facilityId={mockFacilityID}
-                patientId={mockPatientID}
-              />
-            </MockedProvider>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <EditPatient
+              facilityId={mockFacilityID}
+              patientId={mockPatientID}
+            />
+          </MockedProvider>
         </MemoryRouter>
       );
       await act(async () => {
@@ -257,12 +263,12 @@ describe("EditPatient", () => {
 
       render(
         <MemoryRouter>
-            <MockedProvider mocks={mocks} addTypename={false}>
-              <EditPatient
-                facilityId={mockFacilityID}
-                patientId={mockPatientID}
-              />
-            </MockedProvider>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <EditPatient
+              facilityId={mockFacilityID}
+              patientId={mockPatientID}
+            />
+          </MockedProvider>
         </MemoryRouter>
       );
       await act(async () => {

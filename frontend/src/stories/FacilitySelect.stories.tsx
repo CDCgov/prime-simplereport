@@ -10,9 +10,8 @@ export default {
   argTypes: { setActiveFacility: { action: "clicked" } },
 } as Meta;
 
-
 const Template = (): Story<FacilitySelectProps> => (args) => (
-    <FacilitySelect {...args} />
+  <FacilitySelect {...args} />
 );
 
 const createTestFacility = (name: string, id: string): Facility => ({

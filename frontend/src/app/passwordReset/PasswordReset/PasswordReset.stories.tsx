@@ -10,11 +10,9 @@ export default {
   argTypes: {},
 } as Meta;
 
-appConfig({...appConfig(), activationToken:'foo' })
+appConfig({ ...appConfig(), activationToken: "foo" });
 
-const Template: Story = (args) => (
-    <PasswordReset {...args} />
-);
+const Template: Story = (args) => <PasswordReset {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};

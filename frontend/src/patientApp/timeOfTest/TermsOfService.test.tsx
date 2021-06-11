@@ -5,14 +5,13 @@ import { createMemoryHistory } from "history";
 
 import TermsOfService from "./TermsOfService";
 
-
 describe("TermsOfService", () => {
   it("snapshot", () => {
     const component = renderer.create(
       <Router history={createMemoryHistory()}>
-          <MockedProvider mocks={[]} addTypename={false}>
-            <TermsOfService />
-          </MockedProvider>
+        <MockedProvider mocks={[]} addTypename={false}>
+          <TermsOfService />
+        </MockedProvider>
       </Router>
     );
 

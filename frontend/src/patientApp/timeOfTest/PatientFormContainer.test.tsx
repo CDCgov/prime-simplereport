@@ -2,9 +2,10 @@ import renderer from "react-test-renderer";
 import { render, screen, cleanup } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 
-import PatientFormContainer from "./PatientFormContainer";
 import { appConfig, facilities, patient } from "../../storage/store";
 import { facilitySample, patientSample } from "../../config/constants";
+
+import PatientFormContainer from "./PatientFormContainer";
 
 jest.mock("../..//app/commonComponents/ComboBox", () => () => <></>);
 

@@ -3,18 +3,17 @@ import { createMemoryHistory } from "history";
 import { render } from "@testing-library/react";
 
 import { patient } from "../../storage/store";
-
-import TestResult from "./TestResult";
 import { patientSample } from "../../config/constants";
 
-
+import TestResult from "./TestResult";
 
 describe("TestResult", () => {
   it("should show a positive result", () => {
-    patient({...patientSample,
+    patient({
+      ...patientSample,
       firstName: "Bob",
       lastName: "Barker",
-      middleName:'',
+      middleName: "",
       lastTest: {
         deviceTypeModel: "Testing device",
         dateTested: "08/27/2020",
@@ -24,7 +23,7 @@ describe("TestResult", () => {
 
     const { container, getByText } = render(
       <Router history={createMemoryHistory()}>
-          <TestResult />
+        <TestResult />
       </Router>
     );
 
@@ -35,10 +34,11 @@ describe("TestResult", () => {
     expect(container).toMatchSnapshot();
   });
   it("should show a negative result", () => {
-    patient({...patientSample,
+    patient({
+      ...patientSample,
       firstName: "Bob",
       lastName: "Barker",
-      middleName:'',
+      middleName: "",
       lastTest: {
         deviceTypeModel: "Testing device",
         dateTested: "08/27/2020",
@@ -48,7 +48,7 @@ describe("TestResult", () => {
 
     const { container, getByText } = render(
       <Router history={createMemoryHistory()}>
-          <TestResult />
+        <TestResult />
       </Router>
     );
 
@@ -59,11 +59,12 @@ describe("TestResult", () => {
     expect(container).toMatchSnapshot();
   });
   it("should show an inconclusive result", () => {
-    patient({...patientSample,
+    patient({
+      ...patientSample,
 
       firstName: "Bob",
       lastName: "Barker",
-      middleName:'',
+      middleName: "",
       lastTest: {
         deviceTypeModel: "Testing device",
         dateTested: "08/27/2020",
@@ -72,7 +73,7 @@ describe("TestResult", () => {
     });
     const { container, getByText } = render(
       <Router history={createMemoryHistory()}>
-          <TestResult />
+        <TestResult />
       </Router>
     );
 

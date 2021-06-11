@@ -5,7 +5,7 @@ import PatientProfile from "./PatientProfile";
 
 const mockContainer = (patient: any) => (
   <MemoryRouter>
-      <PatientProfile patient={patient} />
+    <PatientProfile patient={patient} />
   </MemoryRouter>
 );
 
@@ -21,7 +21,6 @@ describe("PatientProfile", () => {
     expect(component.toJSON()).toMatchSnapshot();
   });
   it("should redirect to '/' if no patient", () => {
-
     renderer.create(mockContainer(null));
     // eslint-disable-next-line no-restricted-globals
     expect(location.pathname).toEqual("/");

@@ -15,18 +15,17 @@ jest.mock("react-router-dom", () => ({
 
 describe("AoEPatientFormContainer", () => {
   beforeAll(() => {
-    appConfig({...appConfig(),plid:'123'});
-    patient({...patientSample});
+    appConfig({ ...appConfig(), plid: "123" });
+    patient({ ...patientSample });
     jest
       .useFakeTimers("modern")
       .setSystemTime(new Date("2399-01-01").getTime());
   });
   it("snapshot", () => {
-
     const component = renderer.create(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <AoEPatientFormContainer page={""} />
-        </MockedProvider>
+      <MockedProvider mocks={[]} addTypename={false}>
+        <AoEPatientFormContainer page={""} />
+      </MockedProvider>
     );
 
     expect(component.toJSON()).toMatchSnapshot();

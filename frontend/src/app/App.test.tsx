@@ -93,64 +93,21 @@ const facilityQueryMock = {
     },
   },
 };
-const facilityQueryMockWithPatients = {
-  request: {
-    query: queueQuery,
-    fetchPolicy: "no-cache",
-    variables: {
-      facilityId: "fec4de56-f4cc-4c61-b3d5-76869ca71296",
-    },
-  },
-  result: {
-    data: {
-      queue: [],
-      organization: {
-        testingFacility: [
-          {
-            id: "fec4de56-f4cc-4c61-b3d5-76869ca71296",
-            deviceTypes: [
-              {
-                internalId: "d70bb3b8-96bd-40d9-a3ce-b266a7edb91d",
-                name: "Quidel Sofia 2",
-                model: "Sofia 2 SARS Antigen FIA",
-                testLength: 15,
-              },
-              {
-                internalId: "5e44dcef-8cc6-44f4-a200-a5b8169ab60a",
-                name: "LumiraDX",
-                model: "LumiraDx SARS-CoV-2 Ag Test*",
-                testLength: 15,
-              },
-            ],
-            defaultDeviceType: {
-              internalId: "5e44dcef-8cc6-44f4-a200-a5b8169ab60a",
-              name: "LumiraDX",
-              model: "LumiraDx SARS-CoV-2 Ag Test*",
-              testLength: 15,
-            },
-          },
-        ],
-      },
-    },
-  },
-};
 
 const WhoAmIErrorQueryMock = {
-request: {
+  request: {
     query: WHOAMI_QUERY,
     fetchPolicy: "no-cache",
   },
   error: new Error("Server connection error"),
 };
-const renderApp = (
-  queryMocks: MockedResponse[]
-) => {
+const renderApp = (queryMocks: MockedResponse[]) => {
   return TestRenderer.create(
-      <MockedProvider mocks={queryMocks} addTypename={false}>
-        <Router>
-          <Route path="/" component={App} />
-        </Router>
-      </MockedProvider>
+    <MockedProvider mocks={queryMocks} addTypename={false}>
+      <Router>
+        <Route path="/" component={App} />
+      </Router>
+    </MockedProvider>
   );
 };
 
@@ -166,10 +123,7 @@ describe("App", () => {
   });
 
   it("Render loading facility queue", async () => {
-
-    const component = renderApp([
-      WhoAmIQueryMock,
-    ]);
+    const component = renderApp([WhoAmIQueryMock]);
 
     await act(async () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
@@ -179,10 +133,7 @@ describe("App", () => {
   });
 
   it("Render main screen", async () => {
-    const component = renderApp([
-      WhoAmIQueryMock,
-      facilityQueryMock
-    ]);
+    const component = renderApp([WhoAmIQueryMock, facilityQueryMock]);
     await act(async () => {
       await new Promise((resolve) => setTimeout(resolve, 200));
     });

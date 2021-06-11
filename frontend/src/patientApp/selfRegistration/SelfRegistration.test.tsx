@@ -23,7 +23,6 @@ jest.mock("../PxpApiService", () => ({
   },
 }));
 
-
 const originalConsoleError = console.error;
 
 describe("SelfRegistration", () => {
@@ -38,13 +37,13 @@ describe("SelfRegistration", () => {
   it("Renders a 404 page for a bad link", async () => {
     await waitFor(() => {
       render(
-          <MemoryRouter initialEntries={["/register/some-bad-link"]}>
-            <Route
-              exact
-              path="/register/:registrationLink"
-              component={SelfRegistration}
-            />
-          </MemoryRouter>
+        <MemoryRouter initialEntries={["/register/some-bad-link"]}>
+          <Route
+            exact
+            path="/register/:registrationLink"
+            component={SelfRegistration}
+          />
+        </MemoryRouter>
       );
     });
 
@@ -54,13 +53,13 @@ describe("SelfRegistration", () => {
   it("Allows for user to register through link", async () => {
     await waitFor(() => {
       render(
-          <MemoryRouter initialEntries={[`/register/${VALID_LINK}`]}>
-            <Route
-              exact
-              path="/register/:registrationLink"
-              component={SelfRegistration}
-            />
-          </MemoryRouter>
+        <MemoryRouter initialEntries={[`/register/${VALID_LINK}`]}>
+          <Route
+            exact
+            path="/register/:registrationLink"
+            component={SelfRegistration}
+          />
+        </MemoryRouter>
       );
     });
     expect(screen.queryByText("Foo Facility")).toBeInTheDocument();

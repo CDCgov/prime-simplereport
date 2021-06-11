@@ -25,17 +25,17 @@ describe("PasswordCreate", () => {
   beforeEach(() => {
     appConfig({ ...appConfig(), activationToken: "foo" });
     render(
-        <MemoryRouter initialEntries={["/set-password"]}>
-          <Route path="/set-password" component={PasswordCreate} />
-          <Route path="/set-recovery-question">
-            <p>Password set successfully.</p>
-          </Route>
-        </MemoryRouter>
+      <MemoryRouter initialEntries={["/set-password"]}>
+        <Route path="/set-password" component={PasswordCreate} />
+        <Route path="/set-recovery-question">
+          <p>Password set successfully.</p>
+        </Route>
+      </MemoryRouter>
     );
   });
-  afterAll(()=>{
+  afterAll(() => {
     appConfig({ ...appConfig(), activationToken: null });
-  })
+  });
   const strengthLabel = (label: string) => (content: string, element: any) => {
     return (
       element.tagName.toLowerCase() === "span" && content.startsWith(label)

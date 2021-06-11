@@ -234,7 +234,7 @@ export const facilitySample = {
     zipCode: " ",
   },
 };
-export const patientSample:Patient = {
+export const patientSample: Patient = {
   firstName: "Jhon",
   middleName: "Sample",
   lastName: "Doe",
@@ -245,19 +245,19 @@ export const patientSample:Patient = {
   employedInHealthcare: true,
   birthDate: new Date("2020-02-02"),
   lookupId: "",
-  role: 'STAFF',
-  race: 'refused',
+  role: "STAFF",
+  race: "refused",
   ethnicity: "hispanic",
   gender: "female",
   tribalAffiliation: "46",
   telephone: "",
-  phoneNumbers:  null,
+  phoneNumbers: null,
   county: "",
   email: "",
   preferredLanguage: null,
   street: "",
-  streetTwo:  null,
-  city:   null,
+  streetTwo: null,
+  city: null,
   state: "",
   zipCode: "",
-}
+};

@@ -23,7 +23,7 @@ describe("Header.tsx", () => {
 
   const WrappedHeader: React.FC = () => (
     <MemoryRouter>
-        <Header />
+      <Header />
     </MemoryRouter>
   );
 
