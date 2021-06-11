@@ -49,6 +49,16 @@ databaseChangeLog:
       name: migrations_user_email
       value: db-migrations@simplereport.gov
   - changeSet:
+      id: create-pgcrypto-extension
+      author: josh@skylight.digital
+      comment: Make sure we create the pgcrypto extension before beginning migrations.
+      changes:
+        - sql:
+            sql: CREATE EXTENSION IF NOT EXISTS pgcrypto;
+      rollback:
+        - sql:
+            sql: DROP EXTENSION pgcrypto;
+  - changeSet:
       id: define-enum-types
       author: bwarfield@cdc.gov
       comment: Type definitions for our initial tables.
