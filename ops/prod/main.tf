@@ -21,7 +21,8 @@ resource "azurerm_storage_account" "app" {
   min_tls_version           = "TLS1_2"
 
   static_website {
-    index_document = "index.html"
+    index_document     = "index.html"
+    error_404_document = "404.html"
   }
   tags = local.management_tags
 }
