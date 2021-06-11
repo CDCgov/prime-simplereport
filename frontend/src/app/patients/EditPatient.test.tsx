@@ -6,37 +6,31 @@ import {
   within,
 } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
-import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router";
 
 import EditPatient, { GET_PATIENT } from "./EditPatient";
+import { facilities } from "../../storage/store";
+import { facilitySample } from "../../config/constants";
 
 jest.mock("../commonComponents/ComboBox", () => () => <></>);
-const mockStore = configureStore([]);
 
 describe("EditPatient", () => {
   afterEach(cleanup);
 
   const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
   const mockPatientID = "555e8a40-0f95-458e-a038-6b500a0fc2ad";
-  const store = mockStore({
-    facilities: [{ id: mockFacilityID, name: "123" }],
-  });
-
+  facilities({...facilities(), availableFacilities: [{...facilitySample, id: mockFacilityID, name: "123"}]})
   describe("Waiting for network response", () => {
     beforeEach(() => {
       render(
         <MemoryRouter>
-          <Provider store={store}>
             <MockedProvider mocks={[]} addTypename={false}>
               <EditPatient
                 facilityId={mockFacilityID}
                 patientId={mockPatientID}
               />
             </MockedProvider>
-          </Provider>
         </MemoryRouter>
       );
     });
@@ -97,14 +91,12 @@ describe("EditPatient", () => {
 
       render(
         <MemoryRouter>
-          <Provider store={store}>
             <MockedProvider mocks={mocks} addTypename={false}>
               <EditPatient
                 facilityId={mockFacilityID}
                 patientId={mockPatientID}
               />
             </MockedProvider>
-          </Provider>
         </MemoryRouter>
       );
 
@@ -175,14 +167,12 @@ describe("EditPatient", () => {
 
       component = render(
         <MemoryRouter>
-          <Provider store={store}>
             <MockedProvider mocks={mocks} addTypename={false}>
               <EditPatient
                 facilityId={mockFacilityID}
                 patientId={mockPatientID}
               />
             </MockedProvider>
-          </Provider>
         </MemoryRouter>
       );
       await act(async () => {
@@ -267,14 +257,12 @@ describe("EditPatient", () => {
 
       render(
         <MemoryRouter>
-          <Provider store={store}>
             <MockedProvider mocks={mocks} addTypename={false}>
               <EditPatient
                 facilityId={mockFacilityID}
                 patientId={mockPatientID}
               />
             </MockedProvider>
-          </Provider>
         </MemoryRouter>
       );
       await act(async () => {

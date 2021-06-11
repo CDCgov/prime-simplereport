@@ -1,7 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router";
-import createMockStore from "redux-mock-store";
 import faker from "faker";
 
 import { SelfRegistration } from "./SelfRegistration";
@@ -25,8 +23,6 @@ jest.mock("../PxpApiService", () => ({
   },
 }));
 
-const mockStore = createMockStore([]);
-const store = mockStore({});
 
 const originalConsoleError = console.error;
 
@@ -42,7 +38,6 @@ describe("SelfRegistration", () => {
   it("Renders a 404 page for a bad link", async () => {
     await waitFor(() => {
       render(
-        <Provider store={store}>
           <MemoryRouter initialEntries={["/register/some-bad-link"]}>
             <Route
               exact
@@ -50,7 +45,6 @@ describe("SelfRegistration", () => {
               component={SelfRegistration}
             />
           </MemoryRouter>
-        </Provider>
       );
     });
 
@@ -60,7 +54,6 @@ describe("SelfRegistration", () => {
   it("Allows for user to register through link", async () => {
     await waitFor(() => {
       render(
-        <Provider store={store}>
           <MemoryRouter initialEntries={[`/register/${VALID_LINK}`]}>
             <Route
               exact
@@ -68,7 +61,6 @@ describe("SelfRegistration", () => {
               component={SelfRegistration}
             />
           </MemoryRouter>
-        </Provider>
       );
     });
     expect(screen.queryByText("Foo Facility")).toBeInTheDocument();

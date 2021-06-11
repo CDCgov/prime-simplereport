@@ -65,7 +65,9 @@ exports[`TestResult should show a negative result 1`] = `
         </h2>
         <p
           class="margin-top-05"
-        />
+        >
+          Testing device
+        </p>
         <h2
           class="font-heading-sm"
         >
@@ -111,13 +113,13 @@ exports[`TestResult should show a negative result 1`] = `
         </ul>
         <p>
           For more information, please visit the
-           
+
           <a
             href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html"
           >
             Centers for Disease Control and Prevention (CDC) website
           </a>
-           
+
           or contact your local health department.
         </p>
       </div>
@@ -201,13 +203,13 @@ exports[`TestResult should show a positive result 1`] = `
         </h2>
         <p>
           Getting a positive COVID-19 test result can be difficult news, so it’s important to
-           
+
           <a
             href="https://www.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html"
           >
             take steps to cope with stress
           </a>
-           
+
           during this time. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.
         </p>
         <p>
@@ -266,13 +268,13 @@ exports[`TestResult should show a positive result 1`] = `
         </p>
         <p>
           For more information, please visit the
-           
+
           <a
             href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html"
           >
             Centers for Disease Control and Prevention (CDC) website
           </a>
-           
+
           or contact your local health department.
         </p>
       </div>
@@ -346,7 +348,9 @@ exports[`TestResult should show an inconclusive result 1`] = `
         </h2>
         <p
           class="margin-top-05"
-        />
+        >
+          Testing device
+        </p>
         <h2
           class="font-heading-sm"
         >
@@ -360,13 +364,13 @@ exports[`TestResult should show an inconclusive result 1`] = `
         </p>
         <p>
           For more information, please visit the
-           
+
           <a
             href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html"
           >
             Centers for Disease Control and Prevention (CDC) website
           </a>
-           
+
           or contact your local health department.
         </p>
       </div>
