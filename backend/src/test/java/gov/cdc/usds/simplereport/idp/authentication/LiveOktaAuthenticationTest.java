@@ -1,14 +1,9 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static com.okta.sdk.cache.Caches.forResource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.cache.CacheManager;
 import com.okta.sdk.cache.Caches;
@@ -29,7 +24,6 @@ import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
-import java.io.IOException;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
@@ -42,6 +36,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 
 /**
  * WARNING: THIS TEST CREATES A REAL USER IN OKTA!
@@ -54,6 +49,7 @@ import org.springframework.beans.factory.annotation.Value;
  */
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
+@AutoConfigureWireMock(port = 8088)
 class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
   private static final String PHONE_NUMBER = "999-999-9999";
@@ -71,18 +67,16 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   private String _userId;
   private String _activationToken;
 
-  private WireMockServer wireMockServer;
+  // @BeforeAll
+  // public void startMockServer() throws IOException {
+  //   WireMock.startRecording("https://hhs-prime.okta.com");
+  // }
 
-  @BeforeAll
-  public void startMockServer() throws IOException {
-    wireMockServer = new WireMockServer(options().httpsPort(8089));
-    wireMockServer.start();
-  }
-
-  @AfterAll
-  public void stopMockServer() throws IOException {
-    wireMockServer.stop();
-  }
+  // @AfterAll
+  // public void stopMockServer() throws IOException {
+  //   List<StubMapping> recordedMappings = WireMock.stopRecording().getStubMappings();
+  //   System.out.println("wiremock recorded mappings: " + recordedMappings);
+  // }
 
   @BeforeAll
   void initializeUser() {
@@ -121,8 +115,10 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     //         .setActive(false)
     //         .buildAndCreate(_testClient);
 
-    _userId = "00ub0oNGTSWTBKOLGLNR";
-    _activationToken = "foo";
+    //         _userId = user.getId();
+    //         _activationToken = user.activate(false).getActivationToken();
+    _userId = "00ucxvarj3CeuPe9B4h6";
+    _activationToken = "lJ8lRfaK0jXeq0YovfNR";
   }
 
   @AfterAll
@@ -136,7 +132,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   @Test
   @Order(1)
   void testActivationSuccessful() throws Exception {
-    stubFor(post("/api/v1/authn").willReturn(aResponse().withBodyFile("okta/activate.json")));
+    // stubFor(post("/api/v1/authn").willReturn(aResponse().withBodyFile("api_v1_authn-5ebca75e-a1a9-4597-aa9e-27890d6a31ff.json")));
     String userIdResponse =
         _auth.activateUser(
             _activationToken,
@@ -148,6 +144,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     // User user = _testClient.getUser(_userId);
     // assertThat(user.getActivated()).isNotNull();
     // assertThat(user.getStatus()).isEqualTo(UserStatus.PROVISIONED);
+    // assertThat(4).isEqualTo(3+2);
   }
 
   @Test

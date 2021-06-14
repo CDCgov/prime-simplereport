@@ -15,6 +15,7 @@ sourceCompatibility = '11'
 
 ext {
     kickstartVersion = '11.0.0'
+    set('springCloudVersion', "Hoxton.SR6")
 }
 repositories {
     mavenCentral()
@@ -79,6 +80,8 @@ dependencies {
     }
     testImplementation "com.graphql-java-kickstart:graphql-spring-boot-starter-test:${kickstartVersion}"
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
+	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
     testImplementation 'com.yannbriancon:spring-hibernate-query-utils:1.0.3'
 
     // dev tools
@@ -93,7 +96,12 @@ dependencies {
 
     // WireMock (only used for testing)
     testCompile "com.github.tomakehurst:wiremock-jre8:2.28.1"
+}
 
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 springBoot {
