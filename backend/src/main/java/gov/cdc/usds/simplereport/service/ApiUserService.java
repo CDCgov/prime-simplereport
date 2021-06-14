@@ -52,6 +52,8 @@ public class ApiUserService {
 
   @Autowired private OktaRepository _oktaRepo;
 
+  @Autowired private TenantDataAccessService _tenantService;
+
   @Autowired private CurrentPatientContextHolder _patientContextHolder;
 
   @Autowired private CurrentAccountRequestContextHolder _accountRequestContextHolder;
@@ -292,6 +294,7 @@ public class ApiUserService {
           return magicUser;
         });
   }
+
   /** The Account Request User should <em>always</em> exist. */
   private ApiUser getAccountRequestApiUser() {
     Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(ACCOUNT_REQUEST_EMAIL);
@@ -391,5 +394,18 @@ public class ApiUserService {
     OrganizationRoles orgRoles =
         new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
     return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
+  }
+
+  public UserInfo setCurrentUserTenantDataAccess(String organizationExternalID) {
+    ApiUser apiUser = getCurrentApiUser();
+    Organization org = _orgService.getOrganization(organizationExternalID);
+
+    // cannot already have access
+
+    // add record for this access
+
+    _tenantService.setTenantDataAccess(apiUser, org);
+
+    return new UserInfo(apiUser, Optional.empty(), false);
   }
 }
