@@ -220,20 +220,20 @@ const AddToQueueSearchBox = ({
     }
     return callback({ variables })
       .then((res) => {
-        let { type, title, body } = {
+        const { type, title, body } = {
           ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS](
             patient
           ),
         };
-        let alert = <Alert type={type} title={title} body={body} />;
+        const alert = <Alert type={type} title={title} body={body} />;
         showNotification(toast, alert);
         refetchQueue();
         if (createOrUpdate === "create") {
           return res.data.addPatientToQueue;
         }
       })
-      .catch((error) => {
-        updateMutationError(error);
+      .catch((err) => {
+        updateMutationError(err);
       });
   };
 
