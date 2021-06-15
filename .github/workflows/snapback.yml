@@ -1,0 +1,57 @@
+name: Roll back production
+
+on:
+  workflow_dispatch:
+
+env:
+  DEPLOY_ENV: prod
+  STAGING_SLOT_NAME: staging
+  CLIENT_ASSET_LABEL: Compiled Client Application
+
+concurrency:
+  group: prod-deploy
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./ops
+    steps:
+      - uses: actions/checkout@v2
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Add runtime environment variables
+        run: |
+          echo PREVIOUS_RELEASE=$(
+            curl -s https://simple-report-api-prod-${STAGING_SLOT_NAME}.azurewebsites.net/actuator/info |
+            jq -r '.deploy.tag'
+          ) >> $GITHUB_ENV;
+          echo RELEASES_URL=$(jq -r < ${GITHUB_EVENT_PATH} '.repository.releases_url' | sed -e 's/{\/id}//' )\
+           >> $GITHUB_ENV;
+      - name: Retrieve client tarball
+        run: |
+          DOWNLOAD_URL=$(
+            curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$RELEASES_URL/tags/${PREVIOUS_RELEASE}" |
+            jq -r '.assets[] | select(.label == "${CLIENT_ASSET_LABEL}") | .url'
+          )
+          curl -s -H 'Accept: application/octet-stream' -H "Authorization: Bearer $GITHUB_TOKEN" $DOWNLOAD_URL > client.tgz
+          mkdir client-build
+          tar -C client-build -xzf client.tgz
+      - name: Deploy frontend app
+        shell: bash
+        run: |
+          az storage blob upload-batch -s client-build/ -d '$web' \
+            --account-name simplereport${{ env.DEPLOY_ENV }}app \
+            --destination-path '/app'
+      - name: Purge CDN
+        shell: bash
+        run: |
+          az cdn endpoint purge \
+            --resource-group prime-simple-report-${{ env.DEPLOY_ENV }} \
+            --profile-name simple-report-${{ env.DEPLOY_ENV }} \
+            --name simple-report-${{ env.DEPLOY_ENV }} \
+            --content-paths "/app/*" --no-wait
+      - name: Rollback API
+        run: make promote-${DEPLOY_ENV}
