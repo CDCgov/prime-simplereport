@@ -11,7 +11,7 @@ import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constan
 import { getUrl } from "../../utils/url";
 import iconClose from "../../../../node_modules/uswds/dist/img/usa-icons/close.svg";
 
-import AoEForm from "./AoEForm";
+import AoEForm, { LastTest } from "./AoEForm";
 
 // the QR code is separately feature flagged – we need it for the e2e tests currently
 const qrCodeOption = process.env.REACT_APP_QR_CODE_ENABLED
@@ -20,10 +20,7 @@ const qrCodeOption = process.env.REACT_APP_QR_CODE_ENABLED
 
 interface LastTestData {
   patient: {
-    lastTest: {
-      dateTested: string;
-      result: string;
-    };
+    lastTest: LastTest;
   };
 }
 
@@ -179,6 +176,10 @@ const AoEModalForm = (props: AoEModalProps) => {
     throw error;
   }
   const lastTest = data?.patient.lastTest;
+
+  if (lastTest) {
+    lastTest.dateTested = (lastTest.dateTested || "").split("T")[0] as ISODate;
+  }
 
   const continueModal = () => {
     // No need to save form if in "smartphone" or "text" mode

@@ -36,7 +36,7 @@ export interface PriorTest {
 export interface AoEAnswersDelivery extends PriorTest {
   noSymptoms: boolean;
   symptoms: string;
-  symptomOnset: ISODate | undefined;
+  symptomOnset: ISODate | null | undefined;
   pregnancy: PregnancyCode | undefined;
   testResultDelivery: string;
 }
@@ -50,6 +50,10 @@ export type AoEAnswers = Omit<
   "testResultDelivery"
 >;
 
+export type LastTest = {
+  dateTested: ISODate;
+  result: TestResult;
+};
 interface Props {
   saveButtonText: string;
   onClose?: () => void;
@@ -59,12 +63,7 @@ interface Props {
     testResultDelivery: string;
     birthDate: string;
   };
-  lastTest:
-    | {
-        dateTested: string;
-        result: string;
-      }
-    | undefined;
+  lastTest: LastTest | undefined;
   loadState?: AoEAnswers;
   saveCallback: (response: AoEAnswersDelivery) => void;
   isModal: boolean;
@@ -109,7 +108,7 @@ const AoEForm: React.FC<Props> = ({
 
   const [noSymptoms, setNoSymptoms] = useState(loadState.noSymptoms || false);
   const [currentSymptoms, setSymptoms] = useState(initialSymptoms);
-  const [onsetDate, setOnsetDate] = useState<ISODate | undefined>(
+  const [onsetDate, setOnsetDate] = useState<ISODate | null | undefined>(
     loadState.symptomOnset
   );
   const [isFirstTest, setIsFirstTest] = useState(loadState.firstTest);

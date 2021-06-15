@@ -14,8 +14,8 @@ interface Props {
   setNoSymptoms: (noSymptoms: boolean) => void;
   currentSymptoms: Symptoms;
   setSymptoms: (symptoms: Symptoms) => void;
-  onsetDate: string | undefined;
-  setOnsetDate: (onsetDate: ISODate) => void;
+  onsetDate: ISODate | null | undefined;
+  setOnsetDate: (onsetDate: ISODate | null | undefined) => void;
   symptomError: string | undefined;
   symptomOnsetError: string | undefined;
   symptomRef: React.RefObject<HTMLInputElement>;
@@ -88,7 +88,7 @@ const SymptomInputs: React.FC<Props> = ({
             className="maxw-mobile"
             id="symptom_onset"
             name="symptom_onset"
-            defaultValue={onsetDate}
+            defaultValue={onsetDate || undefined}
             minDate="2020-02-01"
             maxDate={new Date().toISOString().split("T")[0]}
             onChange={(date) => {
