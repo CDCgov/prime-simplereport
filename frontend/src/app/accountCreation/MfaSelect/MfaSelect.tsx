@@ -46,7 +46,7 @@ export const MfaSelect = () => {
       case "Phone":
         return <Redirect to="/mfa-phone" />;
       case "Email":
-        return <Redirect to="/mfa-email" />;
+        return <Redirect to="/mfa-email/verify" />;
       default:
         return <Redirect to="/" />;
     }

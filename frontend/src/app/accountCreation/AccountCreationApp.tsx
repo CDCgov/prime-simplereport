@@ -19,7 +19,6 @@ import { MfaOkta } from "./MfaOkta/MfaOkta";
 import { MfaGoogleAuth } from "./MfaGoogleAuth/MfaGoogleAuth";
 import { MfaSecurityKey } from "./MfaSecurityKey/MfaSecurityKey";
 import { MfaSmsVerify } from "./MfaSmsVerify/MfaSmsVerify";
-import { MfaEmail } from "./MfaEmail/MfaEmail";
 import { MfaEmailVerify } from "./MfaEmailVerify/MfaEmailVerify";
 import { MfaPhone } from "./MfaPhone/MfaPhone";
 import { MfaPhoneVerify } from "./MfaPhoneVerify/MfaPhoneVerify";
@@ -84,7 +83,6 @@ const AccountCreationApp = () => {
                 <Route path="/mfa-phone/verify" component={MfaPhoneVerify} />
                 <Route path="/mfa-phone" component={MfaPhone} />
                 <Route path="/mfa-email/verify" component={MfaEmailVerify} />
-                <Route path="/mfa-email" component={MfaEmail} />
                 <Route path="/success" component={MfaComplete} />
               </Switch>
             </Router>
