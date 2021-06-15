@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -25,6 +26,14 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
   @Autowired private DeviceTypeService _deviceService;
 
   @SpyBean private OktaRepository _oktaRepo;
+
+  @BeforeEach
+  void resetOktaRepo() {
+    // Test initialization in BaseGraphqlTest makes calls to OktaRepository, this resets the
+    // state of the SpyBean so we can only examine the calls that are the results of the tests
+    // in this class
+    reset(_oktaRepo);
+  }
 
   @Test
   void createFacility_orgAdmin_success() {
@@ -40,8 +49,6 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
   @Test
   void createOrganization_siteAdminUser_ok() {
     useSuperUser();
-    reset(_oktaRepo);
-
     ObjectNode orgCreated = runQuery("organization-create", getDeviceArgs());
     assertEquals(
         "New Org, New Org, a Wonderful Town",
