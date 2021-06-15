@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration.RequireGlobalAdminUser;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
@@ -396,16 +397,24 @@ public class ApiUserService {
     return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
   }
 
-  public UserInfo setCurrentUserTenantDataAccess(String organizationExternalID) {
+  @RequireGlobalAdminUser
+  public UserInfo setCurrentUserTenantDataAccess(
+      String organizationExternalID, String justification) {
     ApiUser apiUser = getCurrentApiUser();
     Organization org = _orgService.getOrganization(organizationExternalID);
 
-    // cannot already have access
+    Optional<OrganizationRoleClaims> roleClaims =
+        _tenantService.addTenantDataAccess(apiUser, org, justification);
+    Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
 
-    // add record for this access
+    boolean isAdmin = isAdmin(apiUser);
 
-    _tenantService.setTenantDataAccess(apiUser, org);
+    return new UserInfo(apiUser, orgRoles, isAdmin);
+  }
 
-    return new UserInfo(apiUser, Optional.empty(), false);
+  @RequireGlobalAdminUser
+  public Optional<Set<String>> getTenantDataAccessAuthorityNamesForCurrentUser() {
+    ApiUser apiUser = getCurrentApiUser();
+    return _tenantService.getTenantDataAccessAuthorityNames(apiUser);
   }
 }

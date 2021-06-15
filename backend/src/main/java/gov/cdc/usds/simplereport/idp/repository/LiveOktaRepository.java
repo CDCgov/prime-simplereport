@@ -14,6 +14,7 @@ import com.okta.sdk.resource.user.UserBuilder;
 import com.okta.sdk.resource.user.UserList;
 import com.okta.sdk.resource.user.UserStatus;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
+import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
@@ -25,6 +26,7 @@ import gov.cdc.usds.simplereport.config.exceptions.MisconfiguredApplicationExcep
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,12 +62,14 @@ public class LiveOktaRepository implements OktaRepository {
   private Client _client;
   private Application _app;
   private OrganizationExtractor _extractor;
+  private CurrentTenantDataAccessContextHolder _tenantDataContextHolder;
 
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
       Client client,
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
-      OrganizationExtractor organizationExtractor) {
+      OrganizationExtractor organizationExtractor,
+      CurrentTenantDataAccessContextHolder tenantDataContextHolder) {
     _rolePrefix = authorizationProperties.getRolePrefix();
     _client = client;
     try {
@@ -75,6 +79,7 @@ public class LiveOktaRepository implements OktaRepository {
           "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
     }
     _extractor = organizationExtractor;
+    _tenantDataContextHolder = tenantDataContextHolder;
   }
 
   @Autowired
@@ -279,7 +284,8 @@ public class LiveOktaRepository implements OktaRepository {
                         && g.getProfile().getName().startsWith(groupOrgPrefix))
             .collect(Collectors.toMap(g -> g.getProfile().getName(), g -> g));
 
-    if (!currentOrgGroupMapForUser.containsKey(groupOrgDefaultName)) {
+    if (!_tenantDataContextHolder.hasBeenPopulated()
+        && !currentOrgGroupMapForUser.containsKey(groupOrgDefaultName)) {
       // The user is not a member of the default group for this organization.  If they happen
       // to be in any of this organization's groups, remove the user from those groups.
       currentOrgGroupMapForUser.values().forEach(g -> g.removeUser(user.getId()));
@@ -448,6 +454,12 @@ public class LiveOktaRepository implements OktaRepository {
 
   // returns the external ID of the organization the specified user belongs to
   public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
+    // when accessing tenant data, bypass okta and get org from the altered authorities
+    if (_tenantDataContextHolder.hasBeenPopulated()
+        && username.equals(_tenantDataContextHolder.getUsername())) {
+      return getOrganizationRoleClaimsFromTenantDataAccess(
+          _tenantDataContextHolder.getAuthorityNames());
+    }
 
     UserList users = _client.listUsers(username, null, null, null, null);
     if (users.stream().count() == 0) {
@@ -455,6 +467,17 @@ public class LiveOktaRepository implements OktaRepository {
     }
     User user = users.single();
     return getOrganizationRoleClaimsForUser(user);
+  }
+
+  private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromTenantDataAccess(
+      Collection<String> groupNames) {
+    List<OrganizationRoleClaims> claims = _extractor.convertClaims(groupNames);
+
+    if (claims.size() != 1) {
+      LOG.warn("User is in {} Okta organizations, not 1", claims.size());
+      return Optional.empty();
+    }
+    return Optional.of(claims.get(0));
   }
 
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(User user) {

@@ -80,8 +80,10 @@ public class UserMutationResolver implements GraphQLMutationResolver {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public User setCurrentUserTenantDataAccess(String organizationExternalID) {
-    UserInfo user = _us.setCurrentUserTenantDataAccess(organizationExternalID);
+  public User setCurrentUserTenantDataAccess(String organizationExternalID, String justification) {
+    UserInfo user =
+        _us.setCurrentUserTenantDataAccess(
+            organizationExternalID, Translators.parseString(justification));
     return new User(user);
   }
 }

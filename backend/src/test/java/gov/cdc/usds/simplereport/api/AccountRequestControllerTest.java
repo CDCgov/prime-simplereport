@@ -35,6 +35,7 @@ import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
+import gov.cdc.usds.simplereport.service.TenantDataAccessService;
 import gov.cdc.usds.simplereport.service.crm.CrmService;
 import gov.cdc.usds.simplereport.service.email.EmailProvider;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
@@ -83,6 +84,7 @@ class AccountRequestControllerTest {
   @MockBean private AuthorizationService authorizationService;
   @MockBean private IdentitySupplier identitySupplier;
   @MockBean private CurrentPatientContextHolder currentPatientContextHolder;
+  @MockBean private TenantDataAccessService tenantDataAccessService;
 
   @MockBean private OrganizationService orgService;
   @MockBean private DeviceTypeService deviceTypeService;

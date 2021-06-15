@@ -897,6 +897,41 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     runQuery("users-query", "Current user does not have permission to request [/users]");
   }
 
+  @Test
+  void setCurrentUserTenantDataAccess_adminUser_success() {
+    useSuperUser();
+    ObjectNode variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("organizationExternalId", TestUserIdentities.DEFAULT_ORGANIZATION)
+            .put("justification", "This is my justification");
+    JsonNode user =
+        runQuery(
+                "set-current-user-tenant-data-access",
+                "SetCurrentUserTenantDataAccessOp",
+                variables,
+                null)
+            .get("setCurrentUserTenantDataAccess");
+    assertEquals("ruby@example.com", user.get("email").asText());
+  }
+
+  @Test
+  void setCurrentUserTenantDataAccess_orgAdminUser_failure() {
+    useOrgAdmin();
+    ObjectNode variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("organizationExternalId", TestUserIdentities.DEFAULT_ORGANIZATION)
+            .put("justification", "This is my justification");
+    runQuery(
+        "set-current-user-tenant-data-access",
+        "SetCurrentUserTenantDataAccessOp",
+        variables,
+        ACCESS_ERROR);
+
+    //    assertEquals("ruby@example.com", user.get("email").asText());
+  }
+
   private List<ObjectNode> toList(ArrayNode arr) {
     List<ObjectNode> list = new ArrayList<>();
     for (int i = 0; i < arr.size(); i++) {
