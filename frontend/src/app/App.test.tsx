@@ -1,7 +1,10 @@
 import React from "react";
 import TestRenderer, { act } from "react-test-renderer";
+import { cleanup } from "@testing-library/react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
+
+import { appConfig, facilities } from "../storage/store";
 
 import App, { WHOAMI_QUERY } from "./App";
 import { queueQuery } from "./testQueue/TestQueue";
@@ -112,6 +115,7 @@ const renderApp = (queryMocks: MockedResponse[]) => {
 };
 
 describe("App", () => {
+  afterAll(cleanup);
   it("Render first loading screen", async () => {
     const component = renderApp([WhoAmIQueryMock]);
 
@@ -123,10 +127,9 @@ describe("App", () => {
   });
 
   it("Render loading facility queue", async () => {
-    const component = renderApp([WhoAmIQueryMock]);
-
+    const component = renderApp([WhoAmIQueryMock, facilityQueryMock]);
     await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 200));
     });
 
     expect(component).toMatchSnapshot();
@@ -135,7 +138,7 @@ describe("App", () => {
   it("Render main screen", async () => {
     const component = renderApp([WhoAmIQueryMock, facilityQueryMock]);
     await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 0));
     });
     expect(component).toMatchSnapshot();
   });

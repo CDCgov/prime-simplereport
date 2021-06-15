@@ -471,9 +471,74 @@ exports[`App Render loading facility queue 1`] = `
         </nav>
       </div>
     </header>
-    <p>
-      Loading patients...
-    </p>
+    <main
+      className="prime-home"
+    >
+      <div
+        className="grid-container"
+      >
+        <div
+          className="position-relative"
+        >
+          <div
+            className="prime-search-container"
+          >
+            <form
+              className="usa-search usa-search--small prime-search-input display-inline-block"
+              role="search"
+            >
+              <label
+                className="usa-sr-only"
+                htmlFor="search-field-small"
+              >
+                Search
+              </label>
+              <div>
+                <input
+                  autoComplete="off"
+                  className="usa-input"
+                  id="search-field-small"
+                  name="search"
+                  onChange={[Function]}
+                  onFocus={[Function]}
+                  placeholder="Search for a person to start their test"
+                  type="search"
+                  value=""
+                />
+                <button
+                  className="usa-button"
+                  disabled={true}
+                  onClick={[Function]}
+                  type="submit"
+                >
+                  <span
+                    className="usa-sr-only"
+                  >
+                    Search
+                  </span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div
+          className="grid-container prime-center card-container"
+        >
+          <div
+            className="grid-row"
+          >
+            <div
+              className="usa-card__body"
+            >
+              <p>
+                There are no tests running. Search for a person to start their test
+                 
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
     <div
       className="Toastify"
     />
