@@ -62,7 +62,7 @@ export class AccountCreationApi {
     return request("/enroll-email-mfa", { userInput: email });
   }
 
-  static enrollTotpMfa(app: string) {
+  static enrollTotpMfa(app: "Google" | "Okta") {
     return request("/authenticator-qr", { userInput: app });
   }
 

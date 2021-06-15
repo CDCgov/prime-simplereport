@@ -12,7 +12,7 @@ import { MfaSelect } from "./MfaSelect";
 
 jest.mock("../AccountCreationApiService", () => ({
   AccountCreationApi: {
-    enrollTotpMfa: (app: string) => {
+    enrollTotpMfa: (app: "Google" | "Okta") => {
       return new Promise((res, rej) => {
         if (app === "Google" || app === "Okta") {
           res({ qrcode: "success" });
