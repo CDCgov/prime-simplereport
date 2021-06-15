@@ -18,7 +18,9 @@ export const MfaSecurityKey = () => {
   useEffect(() => {
     const enrollKey = async () => {
       const { activation } = await AccountCreationApi.enrollSecurityKeyMfa();
-      if (!activation.challenge) return;
+      if (!activation.challenge) {
+        return;
+      }
       const publicKey = Object.assign({}, activation);
       // Convert activation object's challenge and user id from string to binary
       publicKey.challenge = strToBin(activation.challenge);

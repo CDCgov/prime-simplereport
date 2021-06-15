@@ -1,7 +1,8 @@
 const API_URL = process.env.REACT_APP_BACKEND_URL + "/user-account";
+const JSON_CONTENT = "application/json";
 const headers = {
-  "Content-Type": "application/json",
-  Accept: "application/json",
+  "Content-Type": JSON_CONTENT,
+  Accept: JSON_CONTENT,
 };
 
 const getOptions = (
@@ -24,7 +25,7 @@ const request = async (path: string, body: any) => {
     throw res;
   }
   const contentType = res.headers.get("content-type");
-  if (contentType && contentType.indexOf("application/json") !== -1) {
+  if (contentType && contentType.indexOf(JSON_CONTENT) !== -1) {
     try {
       return await res.json();
     } catch {
