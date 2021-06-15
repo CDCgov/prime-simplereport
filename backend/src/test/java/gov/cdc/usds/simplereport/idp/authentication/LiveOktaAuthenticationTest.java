@@ -240,10 +240,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     String factorId = _auth.enrollSmsMfa(_userId, "4045312484");
     UserFactor factorBeforeResend = _testClient.getUser(_userId).getFactor(factorId);
 
-    // fail the test if an exception is thrown
     try {
-      // Okta requires users to wait 30 seconds before re-requesting an activation code.
-      Thread.sleep(31000);
       _auth.resendActivationPasscode(_userId, factorId);
     } catch (OktaAuthenticationFailureException | IllegalStateException e) {
       throw new IllegalStateException("An exception should not be thrown.", e);
