@@ -23,9 +23,14 @@ const request = async (path: string, body: any) => {
   if (!res.ok) {
     throw res;
   }
-  try {
-    return await res.json();
-  } catch {
+  const contentType = res.headers.get("content-type");
+  if (contentType && contentType.indexOf("application/json") !== -1) {
+    try {
+      return await res.json();
+    } catch {
+      throw new Error("Invalid JSON response during account creation");
+    }
+  } else {
     return "success";
   }
 };
