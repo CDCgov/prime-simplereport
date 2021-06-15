@@ -53,7 +53,7 @@ export const QUERY_PATIENT = gql`
   }
 `;
 
-const ADD_PATIENT_TO_QUEUE = gql`
+export const ADD_PATIENT_TO_QUEUE = gql`
   mutation AddPatientToQueue(
     $facilityId: ID!
     $patientId: ID!
