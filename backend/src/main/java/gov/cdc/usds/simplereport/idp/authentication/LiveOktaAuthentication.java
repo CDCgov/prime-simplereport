@@ -19,6 +19,7 @@ import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
 import org.json.JSONObject;
@@ -231,6 +232,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * If successful, this enrollment triggers an activation email to the user with an TOTP.
    *
    * @param userId the user id of the user making the enrollment request.
+   * @return factorId the Okta-generated id for the email factor.
    * @throws OktaAuthenticationFailureException if the email is invalid or Okta cannot enroll it as
    *     an MFA option.
    */
@@ -257,10 +259,11 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * @param userId the user id of the user making the enrollment request.
    * @param appType the appType of the app being enrolled (for now, one of Okta Verify or Google
    *     Authenticator.)
+   * @return the factor id and qr code.
    * @throws OktaAuthenticationFailureException if the app type is not recognized, Okta fails to
    *     enroll the MFA option, or the result from Okta does not contain a QR code.
    */
-  public JSONObject enrollAuthenticatorAppMfa(String userId, String appType)
+  public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
     UserFactor factor = _client.instantiate(UserFactor.class);
     factor.setFactorType(FactorType.TOKEN_SOFTWARE_TOTP);
@@ -279,15 +282,12 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       user.enrollFactor(factor);
       JSONObject embeddedJson = new JSONObject(factor.getEmbedded());
       String qrCode =
-          embeddedJson
+        embeddedJson
               .getJSONObject(ACTIVATION_KEY)
               .getJSONObject("_links")
               .getJSONObject("qrcode")
               .getString("href");
-      JSONObject factorResponse = new JSONObject();
-      factorResponse.put("qrcode", qrCode);
-      factorResponse.put("factorId", factor.getId());
-      return factorResponse;
+      return new FactorAndQrCode(factor.getId(), qrCode);
     } catch (NullPointerException | ResourceException | IllegalArgumentException e) {
       throw new OktaAuthenticationFailureException("Authentication app could not be enrolled", e);
     }

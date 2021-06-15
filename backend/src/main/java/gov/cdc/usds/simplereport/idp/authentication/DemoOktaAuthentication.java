@@ -2,9 +2,12 @@ package gov.cdc.usds.simplereport.idp.authentication;
 
 import com.okta.sdk.resource.user.factor.FactorStatus;
 import com.okta.sdk.resource.user.factor.FactorType;
+import com.twilio.rest.verify.v2.service.entity.Factor;
+
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -108,7 +111,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   // Unlike the real implementation, this returns a factor and passcode directly (instead of a qr
   // code to use for enrollment.)
-  public JSONObject enrollAuthenticatorAppMfa(String userId, String appType)
+  public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
     validateUser(userId);
     String factorType = "";
@@ -123,17 +126,15 @@ public class DemoOktaAuthentication implements OktaAuthentication {
         throw new OktaAuthenticationFailureException("App type not recognized.");
     }
     String factorId = factorType + " " + userId;
+    String qrCode = "thisIsAFakeQrCode";
     DemoMfa appMfa =
         new DemoMfa(
             FactorType.TOKEN_SOFTWARE_TOTP,
-            "thisIsAFakeQrCode",
+            qrCode,
             factorId,
             FactorStatus.PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(appMfa);
-    JSONObject response = new JSONObject();
-    response.put("qrcode", "thisIsAFakeQrCode");
-    response.put("factorId", factorId);
-    return response;
+    return new FactorAndQrCode(factorId, qrCode);
   }
 
   public JSONObject enrollSecurityKey(String userId) throws OktaAuthenticationFailureException {
