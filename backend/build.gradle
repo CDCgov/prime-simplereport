@@ -91,9 +91,6 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
-    // TOTP Generator (only used for testing)
-    testCompile 'dev.samstevens.totp:totp:1.7.1'
-
     // WireMock (only used for testing)
     testCompile "com.github.tomakehurst:wiremock-jre8:2.28.1"
 }
@@ -111,6 +108,7 @@ springBoot {
 test {
     // people sometimes export this to run local dev more easily: don't let it break the tests
     environment "SPRING_PROFILES_ACTIVE", ""
+    environment "OKTA_TESTING_DISABLEHTTPSCHECK", "true"
     useJUnitPlatform()
     // uncomment this to log to stdout when each test starts, so you can tell what's going on
     // testLogging {

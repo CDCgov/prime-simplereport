@@ -18,13 +18,10 @@ import com.okta.sdk.resource.user.factor.FactorStatus;
 import com.okta.sdk.resource.user.factor.FactorType;
 import com.okta.sdk.resource.user.factor.SmsUserFactor;
 import com.okta.sdk.resource.user.factor.UserFactor;
-import dev.samstevens.totp.code.CodeGenerator;
-import dev.samstevens.totp.code.DefaultCodeGenerator;
 import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
-import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
@@ -41,11 +38,9 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 /**
  * WARNING: THIS TEST CREATES A REAL USER IN OKTA!
  *
- * <p>This tests LiveOktaAuthentication by creating a user and sending them through the account
- * creation flow. The user is not associated with an organization, and is deleted at the end of the
- * test. Running this test does add to our Okta quota, so plase run sparingly.
+ * <p>This tests LiveOktaAuthentication with stubbed responses from the Okta API.
  *
- * <p>The test is currently disabled, until the Okta token is enabled in our test runner.
+ * <p>They are actual responses recorded using WireMock's recording feature.
  */
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
@@ -66,17 +61,6 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   private Client _testClient;
   private String _userId;
   private String _activationToken;
-
-  // @BeforeAll
-  // public void startMockServer() throws IOException {
-  //   WireMock.startRecording("https://hhs-prime.okta.com");
-  // }
-
-  // @AfterAll
-  // public void stopMockServer() throws IOException {
-  //   List<StubMapping> recordedMappings = WireMock.stopRecording().getStubMappings();
-  //   System.out.println("wiremock recorded mappings: " + recordedMappings);
-  // }
 
   @BeforeAll
   void initializeUser() {
@@ -105,18 +89,6 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
             .setCacheManager(cacheManager)
             .build();
 
-    // User user =
-    //     UserBuilder.instance()
-    //         .setFirstName("TEST")
-    //         .setLastName("INTEGRATION")
-    //         .setEmail(EMAIL)
-    //         .setLogin(EMAIL)
-    //         .setMobilePhone(PHONE_NUMBER)
-    //         .setActive(false)
-    //         .buildAndCreate(_testClient);
-
-    //         _userId = user.getId();
-    //         _activationToken = user.activate(false).getActivationToken();
     _userId = "00ucxvarj3CeuPe9B4h6";
     _activationToken = "lJ8lRfaK0jXeq0YovfNR";
   }
@@ -132,7 +104,6 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   @Test
   @Order(1)
   void testActivationSuccessful() throws Exception {
-    // stubFor(post("/api/v1/authn").willReturn(aResponse().withBodyFile("api_v1_authn-5ebca75e-a1a9-4597-aa9e-27890d6a31ff.json")));
     String userIdResponse =
         _auth.activateUser(
             _activationToken,
@@ -140,11 +111,6 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
             "23.235.46.133");
 
     assertThat(userIdResponse).isEqualTo(_userId);
-
-    // User user = _testClient.getUser(_userId);
-    // assertThat(user.getActivated()).isNotNull();
-    // assertThat(user.getStatus()).isEqualTo(UserStatus.PROVISIONED);
-    // assertThat(4).isEqualTo(3+2);
   }
 
   @Test
@@ -183,8 +149,6 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     assertThat(smsFactor.getFactorType()).isEqualTo(FactorType.SMS);
     assertThat(smsFactor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
     assertThat(smsFactor.getProfile().getPhoneNumber()).isEqualTo(FORMATTED_PHONE_NUMBER);
-
-    user.resetFactors();
   }
 
   @Test
@@ -197,8 +161,6 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     assertThat(callFactor.getFactorType()).isEqualTo(FactorType.CALL);
     assertThat(callFactor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
     assertThat(callFactor.getProfile().getPhoneNumber()).isEqualTo(FORMATTED_PHONE_NUMBER);
-
-    user.resetFactors();
   }
 
   @Test
@@ -211,8 +173,6 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     assertThat(emailFactor.getFactorType()).isEqualTo(FactorType.EMAIL);
     assertThat(emailFactor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
     assertThat(emailFactor.getProfile().getEmail()).isEqualTo(EMAIL);
-
-    user.resetFactors();
   }
 
   @Test
@@ -220,14 +180,12 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   void enrollAuthenticatorAppMfaSuccessful_withGoogle() throws Exception {
     // JSONObject factorAndCode = _auth.enrollAuthenticatorAppMfa(_userId, "google");
 
-    // User user = _testClient.getUser(_userId);
-    // UserFactor authFactor = user.getFactor(factorAndCode.getString("factorId"));
-    // assertThat(authFactor.getFactorType()).isEqualTo(FactorType.TOKEN_SOFTWARE_TOTP);
-    // assertThat(authFactor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
-    // assertThat(authFactor.getProvider()).isEqualTo(FactorProvider.GOOGLE);
-    // assertThat(factorAndCode.isNull("qrcode")).isFalse();
-
-    // user.resetFactors();
+    User user = _testClient.getUser(_userId);
+    UserFactor authFactor = user.getFactor(factorAndCode.getString("factorId"));
+    assertThat(authFactor.getFactorType()).isEqualTo(FactorType.TOKEN_SOFTWARE_TOTP);
+    assertThat(authFactor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
+    assertThat(authFactor.getProvider()).isEqualTo(FactorProvider.GOOGLE);
+    assertThat(factorAndCode.isNull("qrcode")).isFalse();
   }
 
   @Test
@@ -235,14 +193,12 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   void enrollAuthenticatorAppMfaSuccessful_withOkta() throws Exception {
     // JSONObject factorAndCode = _auth.enrollAuthenticatorAppMfa(_userId, "okta");
 
-    // User user = _testClient.getUser(_userId);
-    // UserFactor authFactor = user.getFactor(factorAndCode.getString("factorId"));
-    // assertThat(authFactor.getFactorType()).isEqualTo(FactorType.TOKEN_SOFTWARE_TOTP);
-    // assertThat(authFactor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
-    // assertThat(authFactor.getProvider()).isEqualTo(FactorProvider.OKTA);
-    // assertThat(factorAndCode.isNull("qrcode")).isFalse();
-
-    // user.resetFactors();
+    User user = _testClient.getUser(_userId);
+    UserFactor authFactor = user.getFactor(factorAndCode.getString("factorId"));
+    assertThat(authFactor.getFactorType()).isEqualTo(FactorType.TOKEN_SOFTWARE_TOTP);
+    assertThat(authFactor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
+    assertThat(authFactor.getProvider()).isEqualTo(FactorProvider.OKTA);
+    assertThat(factorAndCode.isNull("qrcode")).isFalse();
   }
 
   @Test
@@ -257,8 +213,6 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     assertThat(activationObject.getJSONObject("activation").getJSONObject("user").getString("id"))
         .isNotNull();
     assertThat(activationObject.getJSONObject("activation").getString("challenge")).isNotNull();
-
-    user.resetFactors();
   }
 
   @Test
@@ -273,22 +227,12 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
     assertThat(factor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
 
-    JSONObject embeddedJson = new JSONObject(factor.getEmbedded());
-    String sharedSecret = embeddedJson.getJSONObject("activation").getString("sharedSecret");
-    long timeStep = embeddedJson.getJSONObject("activation").getLong("timeStep");
-
-    CodeGenerator codeGenerator = new DefaultCodeGenerator();
-    long millisSinceEpoch = Instant.now().toEpochMilli();
-    long counter = millisSinceEpoch / 1000 / timeStep;
-    String passcode = codeGenerator.generate(sharedSecret, counter);
-
+    String passcode = "807848";
     String factorId = factor.getId();
     _auth.verifyActivationPasscode(_userId, factorId, passcode);
 
     UserFactor factorAfterActivation = _testClient.getUser(_userId).getFactor(factorId);
     assertThat(factorAfterActivation.getStatus()).isEqualTo(FactorStatus.ACTIVE);
-
-    user.resetFactors();
   }
 
   @Test
@@ -309,8 +253,6 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     User user = _testClient.getUser(_userId);
     assertThat(factorBeforeResend.getLastUpdated())
         .isNotEqualTo(user.getFactor(factorId).getLastUpdated());
-
-    user.resetFactors();
   }
 
   // Negative Tests
