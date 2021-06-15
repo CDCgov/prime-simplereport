@@ -5,6 +5,7 @@ import Button from "../../commonComponents/Button/Button";
 import AoEModalForm from "../AoEForm/AoEModalForm";
 import { displayFullName } from "../../utils";
 import { Patient } from "../../patients/ManagePatients";
+import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 
 interface SearchResultsProps {
   patients: Patient[];
@@ -15,7 +16,11 @@ interface SearchResultsProps {
 
 interface QueueProps extends SearchResultsProps {
   page: "queue";
-  onAddToQueue: (a: Patient, b: any, c: string) => string; //TODO TYPE: answers (b)
+  onAddToQueue: (
+    a: Patient,
+    b: AoEAnswersDelivery,
+    c: string
+  ) => Promise<string | void>;
   patientsInQueue: string[];
 }
 
