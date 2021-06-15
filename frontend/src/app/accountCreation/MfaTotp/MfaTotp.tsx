@@ -10,21 +10,21 @@ import iconLoader from "../../../../node_modules/uswds/dist/img/loader.svg";
 import { LoadingCard } from "../LoadingCard/LoadingCard";
 
 interface Props {
-  enrollFunction: Function;
+  enrollFunction: () => Promise<{ qrcode: string }>;
   totpType: string;
 }
 
-export const MfaTotp = (props: Props) => {
+export const MfaTotp = ({ enrollFunction, totpType }: Props) => {
   const [qrCode, setQrCode] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     const getQrCode = async () => {
-      const { qrcode } = await props.enrollFunction();
+      const { qrcode } = await enrollFunction();
       setQrCode(qrcode);
     };
     getQrCode();
-  }, [props]);
+  }, [enrollFunction]);
 
   if (!qrCode) {
     return <LoadingCard message="Retrieving QR code" />;
@@ -47,22 +47,13 @@ export const MfaTotp = (props: Props) => {
           noLabels={true}
         />
         <p className="margin-bottom-0">
-          Get your security code via the {props.totpType} application.
+          Get your security code via the {totpType} application.
         </p>
         <p className="usa-hint font-ui-2xs">
-          To connect SimpleReport to {props.totpType}, scan this QR code in the
-          app.
+          To connect SimpleReport to {totpType}, scan this QR code in the app.
         </p>
         <div className="display-flex flex-column flex-align-center">
-          {qrCode !== "" ? (
-            <img src={qrCode} alt="TOTP QR Code" className="height-card" />
-          ) : (
-            <img
-              className="square-5 chromatic-ignore"
-              src={iconLoader}
-              alt=""
-            />
-          )}
+          <img src={qrCode} alt="TOTP QR Code" className="height-card" />
         </div>
         <Button
           className="margin-top-3"
