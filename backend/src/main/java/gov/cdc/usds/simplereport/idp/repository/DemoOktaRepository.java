@@ -86,6 +86,22 @@ public class DemoOktaRepository implements OktaRepository {
     return Optional.of(orgRoles);
   }
 
+  public void reprovisionUser(IdentityAttributes userIdentity) {
+    final String username = userIdentity.getUsername();
+    if (!usernameOrgRolesMap.containsKey(username)) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot reprovision Okta user with unrecognized username");
+    }
+    if (!inactiveUsernames.contains(username)) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot reprovision user in unsupported state: (not deleted)");
+    }
+
+    // Only re-enable the user.  If name attributes and credentials were supported here, then
+    // the name should be updated and credentials reset.
+    inactiveUsernames.remove(userIdentity.getUsername());
+  }
+
   public Optional<OrganizationRoleClaims> updateUserPrivileges(
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles) {
     String orgId = org.getExternalId();

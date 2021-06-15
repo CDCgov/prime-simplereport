@@ -1,4 +1,7 @@
-import { states } from "../../config/constants";
+import {
+  states,
+  orderingProviderNotRequiredStates,
+} from "../../config/constants";
 
 interface States {
   [key: string]: string;
@@ -6,4 +9,8 @@ interface States {
 
 export function getStateNameFromCode(stateCode: keyof States): string {
   return (states as States)[stateCode];
+}
+
+export function requiresOrderProvider(state: string) {
+  return !orderingProviderNotRequiredStates.includes(state);
 }

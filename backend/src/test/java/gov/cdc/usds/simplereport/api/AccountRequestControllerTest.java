@@ -16,6 +16,7 @@ import com.sendgrid.helpers.mail.Mail;
 import gov.cdc.usds.simplereport.api.accountrequest.AccountRequestController;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
+import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
 import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -26,6 +27,7 @@ import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
+import gov.cdc.usds.simplereport.service.crm.CrmService;
 import gov.cdc.usds.simplereport.service.email.EmailProvider;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
@@ -71,6 +73,8 @@ class AccountRequestControllerTest {
   @MockBean private ApiUserService apiUserService;
   @MockBean private CurrentAccountRequestContextHolder contextHolder;
 
+  @MockBean private CrmService crmService;
+
   @MockBean private EmailProvider mockSendGrid;
   @SpyBean private EmailService emailService;
 
@@ -79,6 +83,7 @@ class AccountRequestControllerTest {
   @Captor private ArgumentCaptor<String> externalIdCaptor;
   @Captor private ArgumentCaptor<PersonName> nameCaptor;
   @Captor private ArgumentCaptor<StreetAddress> addressCaptor;
+  @Captor private ArgumentCaptor<AccountRequest> accountRequestCaptor;
 
   @Test
   void waitlistIsOk() throws Exception {
@@ -276,6 +281,11 @@ class AccountRequestControllerTest {
     assertThat(addressCaptor.getValue().getState()).isEqualTo("AR");
     assertThat(addressCaptor.getValue().getPostalCode()).isEqualTo("43675");
     assertThat(addressCaptor.getValue().getCounty()).isEqualTo("Asperiores illum in");
+
+    // make sure we passed the data along to our CRM
+    verify(crmService, times(1)).submitAccountRequestData(accountRequestCaptor.capture());
+    assertThat(accountRequestCaptor.getValue().getOrganizationName())
+        .isEqualTo("Day Hayes Trading");
   }
 
   @Test
