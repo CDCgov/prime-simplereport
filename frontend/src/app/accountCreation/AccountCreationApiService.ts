@@ -20,7 +20,6 @@ const getOptions = (
 
 const request = async (path: string, body: any) => {
   const res = await fetch(API_URL + path, getOptions(body));
-  console.log(res);
   if (!res.ok) {
     throw res;
   }

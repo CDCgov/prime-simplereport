@@ -282,7 +282,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       user.enrollFactor(factor);
       JSONObject embeddedJson = new JSONObject(factor.getEmbedded());
       String qrCode =
-        embeddedJson
+          embeddedJson
               .getJSONObject(ACTIVATION_KEY)
               .getJSONObject("_links")
               .getJSONObject("qrcode")

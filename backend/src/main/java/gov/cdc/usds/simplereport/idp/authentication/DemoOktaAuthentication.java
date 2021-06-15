@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.idp.authentication;
 
 import com.okta.sdk.resource.user.factor.FactorStatus;
 import com.okta.sdk.resource.user.factor.FactorType;
-
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
@@ -128,10 +127,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     String qrCode = "thisIsAFakeQrCode";
     DemoMfa appMfa =
         new DemoMfa(
-            FactorType.TOKEN_SOFTWARE_TOTP,
-            qrCode,
-            factorId,
-            FactorStatus.PENDING_ACTIVATION);
+            FactorType.TOKEN_SOFTWARE_TOTP, qrCode, factorId, FactorStatus.PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(appMfa);
     return new FactorAndQrCode(factorId, qrCode);
   }

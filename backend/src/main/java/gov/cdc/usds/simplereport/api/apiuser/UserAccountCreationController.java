@@ -133,10 +133,12 @@ public class UserAccountCreationController {
    * @throws OktaAuthenticationFailureException if Okta cannot enroll the user in MFA.
    */
   @PostMapping("/authenticator-qr")
-  public FactorAndQrCode getAuthQrCode(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
+  public FactorAndQrCode getAuthQrCode(
+      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
       throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
-    FactorAndQrCode factorData = _oktaAuth.enrollAuthenticatorAppMfa(userId, requestBody.getUserInput());
+    FactorAndQrCode factorData =
+        _oktaAuth.enrollAuthenticatorAppMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID_KEY, factorData.getFactorId());
     return factorData;
     // return new JSONObject(factorData, "qrcode").toString();

@@ -22,6 +22,7 @@ import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
@@ -36,9 +37,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 
 /**
- * WARNING: THIS TEST CREATES A REAL USER IN OKTA!
- *
- * <p>This tests LiveOktaAuthentication with stubbed responses from the Okta API.
+ * This tests LiveOktaAuthentication with stubbed responses from the Okta API.
  *
  * <p>They are actual responses recorded using WireMock's recording feature.
  */
@@ -178,27 +177,27 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   @Test
   @Order(7)
   void enrollAuthenticatorAppMfaSuccessful_withGoogle() throws Exception {
-    // JSONObject factorAndCode = _auth.enrollAuthenticatorAppMfa(_userId, "google");
+    FactorAndQrCode factorAndCode = _auth.enrollAuthenticatorAppMfa(_userId, "google");
 
     User user = _testClient.getUser(_userId);
-    UserFactor authFactor = user.getFactor(factorAndCode.getString("factorId"));
+    UserFactor authFactor = user.getFactor(factorAndCode.getFactorId());
     assertThat(authFactor.getFactorType()).isEqualTo(FactorType.TOKEN_SOFTWARE_TOTP);
     assertThat(authFactor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
     assertThat(authFactor.getProvider()).isEqualTo(FactorProvider.GOOGLE);
-    assertThat(factorAndCode.isNull("qrcode")).isFalse();
+    assertThat(factorAndCode.getQrcode()).isNotNull();
   }
 
   @Test
   @Order(8)
   void enrollAuthenticatorAppMfaSuccessful_withOkta() throws Exception {
-    // JSONObject factorAndCode = _auth.enrollAuthenticatorAppMfa(_userId, "okta");
+    FactorAndQrCode factorAndCode = _auth.enrollAuthenticatorAppMfa(_userId, "okta");
 
     User user = _testClient.getUser(_userId);
-    UserFactor authFactor = user.getFactor(factorAndCode.getString("factorId"));
+    UserFactor authFactor = user.getFactor(factorAndCode.getFactorId());
     assertThat(authFactor.getFactorType()).isEqualTo(FactorType.TOKEN_SOFTWARE_TOTP);
     assertThat(authFactor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
     assertThat(authFactor.getProvider()).isEqualTo(FactorProvider.OKTA);
-    assertThat(factorAndCode.isNull("qrcode")).isFalse();
+    assertThat(factorAndCode.getQrcode()).isNotNull();
   }
 
   @Test
@@ -354,16 +353,16 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
   @Test
   void verifyActivationPasscodeFails_withInvalidPasscode() {
-    // JSONObject mfaResponse = _auth.enrollAuthenticatorAppMfa(_userId, "okta");
-    // String factorId = mfaResponse.getString("factorId");
-    // Exception exception =
-    //     assertThrows(
-    //         BadRequestException.class,
-    //         () -> {
-    //           _auth.verifyActivationPasscode(_userId, factorId, "1234");
-    //         });
-    // assertThat(exception)
-    //     .hasMessageContaining("Your code doesn't match our records. Please try again.");
+    FactorAndQrCode mfaResponse = _auth.enrollAuthenticatorAppMfa(_userId, "okta");
+    String factorId = mfaResponse.getFactorId();
+    Exception exception =
+        assertThrows(
+            BadRequestException.class,
+            () -> {
+              _auth.verifyActivationPasscode(_userId, factorId, "1234");
+            });
+    assertThat(exception)
+        .hasMessageContaining("Your code doesn't match our records. Please try again.");
   }
 
   @Test

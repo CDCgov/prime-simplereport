@@ -8,6 +8,7 @@ import com.okta.sdk.resource.user.factor.FactorType;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication.DemoAuthUser;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -230,15 +231,15 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void enrollAuthenticatorAppMfa_successful() throws Exception {
-    // String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    // JSONObject factorData = _auth.enrollAuthenticatorAppMfa(userId, "Google");
-    // DemoAuthUser user = _auth.getUser(userId);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    FactorAndQrCode factorData = _auth.enrollAuthenticatorAppMfa(userId, "Google");
+    DemoAuthUser user = _auth.getUser(userId);
 
-    // assertThat(factorData.getString("qrcode")).isEqualTo("thisIsAFakeQrCode");
+    assertThat(factorData.getQrcode()).isEqualTo("thisIsAFakeQrCode");
 
-    // assertThat(user.getMfa().getFactorProfile()).isEqualTo("thisIsAFakeQrCode");
-    // assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.TOKEN_SOFTWARE_TOTP);
-    // assertThat(user.getMfa().getFactorId()).isEqualTo(factorData.getString("factorId"));
+    assertThat(user.getMfa().getFactorProfile()).isEqualTo("thisIsAFakeQrCode");
+    assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.TOKEN_SOFTWARE_TOTP);
+    assertThat(user.getMfa().getFactorId()).isEqualTo(factorData.getFactorId());
   }
 
   @Test
@@ -367,16 +368,16 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void verifyActivationPasscode_successfulForAuthApp() {
-    // String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    // JSONObject mfaResponse = _auth.enrollAuthenticatorAppMfa(userId, "google");
-    // DemoAuthUser user = _auth.getUser(userId);
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    FactorAndQrCode mfaResponse = _auth.enrollAuthenticatorAppMfa(userId, "google");
+    DemoAuthUser user = _auth.getUser(userId);
 
-    // assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.TOKEN_SOFTWARE_TOTP);
-    // assertThat(user.getMfa().getFactorId()).isEqualTo("authApp: google " + userId);
-    // assertThat(user.getMfa().getFactorStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
+    assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.TOKEN_SOFTWARE_TOTP);
+    assertThat(user.getMfa().getFactorId()).isEqualTo("authApp: google " + userId);
+    assertThat(user.getMfa().getFactorStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
 
-    // _auth.verifyActivationPasscode(userId, mfaResponse.getString("factorId"), "123456");
-    // assertThat(user.getMfa().getFactorStatus()).isEqualTo(FactorStatus.ACTIVE);
+    _auth.verifyActivationPasscode(userId, mfaResponse.getFactorId(), "123456");
+    assertThat(user.getMfa().getFactorStatus()).isEqualTo(FactorStatus.ACTIVE);
   }
 
   @Test
@@ -422,18 +423,18 @@ class DemoOktaAuthenticationTest {
 
   @Test
   void resendActivationPasscode_failsWithInvalidFactor() {
-    // String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    // JSONObject mfaResponse = _auth.enrollAuthenticatorAppMfa(userId, "okta");
-    // String factorId = mfaResponse.getString("factorId");
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    FactorAndQrCode mfaResponse = _auth.enrollAuthenticatorAppMfa(userId, "okta");
+    String factorId = mfaResponse.getFactorId();
 
-    // Exception exception =
-    //     assertThrows(
-    //         OktaAuthenticationFailureException.class,
-    //         () -> {
-    //           _auth.resendActivationPasscode(userId, factorId);
-    //         });
+    Exception exception =
+        assertThrows(
+            OktaAuthenticationFailureException.class,
+            () -> {
+              _auth.resendActivationPasscode(userId, factorId);
+            });
 
-    // assertThat(exception)
-    //     .hasMessage("The requested activation factor could not be resent; Okta returned an error.");
+    assertThat(exception)
+        .hasMessage("The requested activation factor could not be resent; Okta returned an error.");
   }
 }

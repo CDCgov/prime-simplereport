@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class FactorAndQrCode {
-    private String factorId;
+  private String factorId;
 
-    private String qrcode;
+  private String qrcode;
 }
