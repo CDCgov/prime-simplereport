@@ -59,8 +59,8 @@ export class AccountCreationApi {
     return request("/enroll-voice-call-mfa", { userInput: phone });
   }
 
-  static enrollEmailMfa(email: string) {
-    return request("/enroll-email-mfa", { userInput: email });
+  static enrollEmailMfa() {
+    return request("/enroll-email-mfa", null);
   }
 
   static enrollTotpMfa(app: "Google" | "Okta") {
