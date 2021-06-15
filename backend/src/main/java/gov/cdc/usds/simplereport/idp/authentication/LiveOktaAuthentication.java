@@ -41,10 +41,9 @@ import org.springframework.web.client.RestTemplate;
 /**
  * Created by emmastephenson on 4/28/21
  *
- * <p>Handles all Okta-related authenticaton.
+ * <p>Handles all Okta-related user authenticaton.
  *
- * <p>NOTE: If you alter this file, please run LiveOktaAuthenticationTest. (It's currently
- * disabled.)
+ * <p>NOTE: If you alter this file, you may need to re-record the WireMock stubs. See https://github.com/CDCgov/prime-simplereport/issues/1848.
  */
 @Profile("!" + BeanProfiles.NO_OKTA_AUTH)
 @Service
@@ -252,7 +251,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   /**
    * Using the Okta management SDK, enroll a user in an authentication app for MFA. If successful,
    * this method returns the factor id and a qr code. The qr code will be passed to the user for
-   * them to finish setting enrolling in-app.
+   * them to finish enrolling in-app.
    *
    * <p>https://developer.okta.com/docs/reference/api/factors/#response-example-12
    *

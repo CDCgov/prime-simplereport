@@ -107,8 +107,6 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     return factorId;
   }
 
-  // Unlike the real implementation, this returns a factor and passcode directly (instead of a qr
-  // code to use for enrollment.)
   public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
     validateUser(userId);
@@ -166,7 +164,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   }
 
   public void verifyActivationPasscode(String userId, String factorId, String passcode)
-      throws OktaAuthenticationFailureException {
+      throws BadRequestException, OktaAuthenticationFailureException {
     validateUser(userId);
     validateFactor(userId, factorId);
     DemoMfa mfa = this.idToUserMap.get(userId).getMfa();

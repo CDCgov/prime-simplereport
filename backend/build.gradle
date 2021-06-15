@@ -80,9 +80,11 @@ dependencies {
     }
     testImplementation "com.graphql-java-kickstart:graphql-spring-boot-starter-test:${kickstartVersion}"
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'com.yannbriancon:spring-hibernate-query-utils:1.0.3'
+
+    // used to autoconfigure WireMock for testing
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
 	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
-    testImplementation 'com.yannbriancon:spring-hibernate-query-utils:1.0.3'
 
     // dev tools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
