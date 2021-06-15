@@ -125,7 +125,7 @@ const createFieldError = (field: keyof FacilityErrors, facility: Facility) => {
 
 type AddressOptions = "facility" | "provider";
 
-interface Props {
+export interface Props {
   facility: Facility;
   deviceOptions: DeviceType[];
   saveFacility: (facility: Facility) => void;
@@ -288,7 +288,9 @@ const FacilityForm: React.FC<Props> = (props) => {
     <>
       <Prompt
         when={formChanged}
-        message="\nYour changes are not saved yet!\n\nClick OK to delete your answers and leave, or Cancel to return and save your progress."
+        message={
+          "\nYour changes are not saved yet!\n\nClick OK to delete your answers and leave, or Cancel to return and save your progress."
+        }
       />
       <div className="">
         <div className="prime-container card-container">

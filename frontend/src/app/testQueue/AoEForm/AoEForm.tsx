@@ -6,7 +6,6 @@ import {
   globalSymptomDefinitions,
   getTestTypes,
   getPregnancyResponses,
-  getTestResultDeliveryPreferences,
   PregnancyCode,
 } from "../../../patientApp/timeOfTest/constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
@@ -62,6 +61,7 @@ interface Props {
     gender: string;
     testResultDelivery: string;
     birthDate: string;
+    telephone: string;
   };
   lastTest: LastTest | undefined;
   loadState?: AoEAnswers;
@@ -173,6 +173,21 @@ const AoEForm: React.FC<Props> = ({
     }
   };
 
+  const getTestResultDeliveryPreferences = (phoneNumber: string) => [
+    {
+      label: (
+        <>
+          Text message
+          <span className="radio__label-description--checked usa-radio__label-description text-base">
+            {phoneNumber}
+          </span>
+        </>
+      ),
+      value: "SMS",
+    },
+    { label: "None", value: "NONE" },
+  ];
+
   // Auto-answer pregnancy question for males
   const pregnancyResponses = getPregnancyResponses();
   if (patient.gender === "male" && !pregnancyResponse) {
@@ -260,7 +275,7 @@ const AoEForm: React.FC<Props> = ({
               legend="How would you like to receive a copy of your results?"
               name="testResultDelivery"
               onChange={setTestResultDelivery}
-              buttons={getTestResultDeliveryPreferences()}
+              buttons={getTestResultDeliveryPreferences(patient.telephone)}
               selectedRadio={testResultDelivery}
             />
           </FormGroup>

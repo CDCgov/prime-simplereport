@@ -46,7 +46,7 @@ interface AoEModalProps {
   onClose: () => void;
   patient: any;
   loadState?: any;
-  saveCallback: (a: any) => string | void;
+  saveCallback: (a: any) => Promise<string | void> | void;
   patientLinkId?: string;
 }
 
@@ -57,7 +57,7 @@ interface SmsModalProps {
   patientResponse: any;
   sendSmsMutation: any;
   setSmsSuccess: (val: boolean) => void;
-  saveCallback: (a: any) => string | void;
+  saveCallback: (a: any) => Promise<string | void> | void;
   continueModal: () => void;
 }
 

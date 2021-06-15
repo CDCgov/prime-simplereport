@@ -227,7 +227,7 @@ const PersonForm = (props: Props) => {
     <>
       <Prompt
         when={formChanged}
-        message={() =>
+        message={
           "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing."
         }
       />
