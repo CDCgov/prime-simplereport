@@ -1,27 +1,65 @@
-import { any } from "prop-types";
+import { render } from "@testing-library/react";
+import { MemoryRouter, Router } from "react-router-dom";
+import { createMemoryHistory } from "history";
 
-import * as VersionEnforcer from "./VersionEnforcer";
+import VersionEnforcer from "./VersionEnforcer";
+import { VersionService } from "./VersionService";
+
+jest.mock("./VersionService", () => ({
+  VersionService: {
+    getSHA: jest.fn(() => process.env.REACT_APP_CURRENT_COMMIT),
+    reload: jest.fn(),
+  },
+}));
 
 describe("VersionEnforcer", () => {
-  let getCurrentShaMock: jest.Mock;
-  let reloadMock: jest.Mock;
+  it("calls VersionService.getCurrentSHA() on load", () => {
+    // GIVEN
+    // WHEN
+    render(
+      <MemoryRouter>
+        <VersionEnforcer />
+      </MemoryRouter>
+    );
 
-  beforeEach(() => {
-    jest.mock("./VersionService", () => ({
-      VersionService: {
-        getCurrentSHA: (getCurrentShaMock = jest.fn(
-          () => process.env.REACT_APP_CURRENT_COMMIT
-        )),
-        reload: jest.fn(),
-      },
-    }));
+    // THEN
+    expect(VersionService.getSHA).toHaveBeenCalled();
   });
 
-  it("calls VersionService.getCurrentSHA() on route change", () => {
-    fail("todo");
+  it("calls VersionService.getCurrentSHA() on route change", async () => {
+    // GIVEN
+    const history = createMemoryHistory();
+    const route = "/some-route";
+    history.push(route);
+    render(
+      <Router history={history}>
+        <VersionEnforcer />
+      </Router>
+    );
+
+    // WHEN
+    history.push("/some-new-route");
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // THEN
+    expect(VersionService.getSHA).toHaveBeenCalledTimes(2);
   });
 
-  it("calls VersionService.reload() when the SHA has changed", () => {
-    fail("todo");
+  it("calls VersionService.reload() when the SHA has changed", async () => {
+    // GIVEN
+    (VersionService.getSHA as any).mockImplementation(() =>
+      Promise.resolve("12345")
+    );
+
+    // WHEN
+    render(
+      <MemoryRouter>
+        <VersionEnforcer />
+      </MemoryRouter>
+    );
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // THEN
+    expect(VersionService.reload).toHaveBeenCalled();
   });
 });
