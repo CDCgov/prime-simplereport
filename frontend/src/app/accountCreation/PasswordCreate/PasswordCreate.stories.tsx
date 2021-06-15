@@ -2,12 +2,12 @@ import { Story, Meta } from "@storybook/react";
 import { Provider } from "react-redux";
 import createMockStore from "redux-mock-store";
 
-import { PasswordForm } from "./PasswordForm";
+import { PasswordCreate } from "./PasswordCreate";
 
 const mockStore = createMockStore([]);
 export default {
-  title: "App/Account set up/Step 1: Password form",
-  component: PasswordForm,
+  title: "App/Account set up/Step 1: Set password",
+  component: PasswordCreate,
   argTypes: {},
 } as Meta;
 
@@ -17,7 +17,7 @@ const store = mockStore({
 
 const Template: Story = (args) => (
   <Provider store={store}>
-    <PasswordForm {...args} />
+    <PasswordCreate {...args} />
   </Provider>
 );
 

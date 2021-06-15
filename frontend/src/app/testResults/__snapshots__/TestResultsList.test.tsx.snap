@@ -247,7 +247,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     03/17/2021 7:27pm
                   </td>
                   <td>
-                    Negative
+                    Positive
                   </td>
                   <td>
                     Abbott IDNow

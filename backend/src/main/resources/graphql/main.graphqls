@@ -8,7 +8,8 @@ type Organization {
   internalId: ID @deprecated(reason: "alias for 'id'")
   name: String
   externalId: String
-  testingFacility: [Facility] @deprecated(reason: "Use the one that makes sense")
+  testingFacility: [Facility]
+    @deprecated(reason: "Use the one that makes sense")
   facilities: [Facility!]!
   identityVerified: Boolean
 }
@@ -64,12 +65,12 @@ type TestDescription {
 }
 
 type PhoneNumber {
-  type: PhoneType,
+  type: PhoneType
   number: String
 }
 
 input PhoneNumberInput {
-  type: String,
+  type: String
   number: String
 }
 
@@ -96,7 +97,8 @@ type User {
 type ApiUser {
   id: ID
   name: NameInfo!
-  nameInfo: NameInfo @deprecated(reason: "needless connection of type to field name")
+  nameInfo: NameInfo
+    @deprecated(reason: "needless connection of type to field name")
   firstName: String
   middleName: String
   lastName: String!
@@ -146,8 +148,10 @@ type Patient
     @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   lastTest: TestResult
     @requiredPermissions(anyOf: ["READ_RESULT_LIST", "UPDATE_TEST"])
-  testResultDelivery: TestResultDeliveryPreference @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
-  preferredLanguage: String @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+  testResultDelivery: TestResultDeliveryPreference
+    @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+  preferredLanguage: String
+    @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
 }
 # TestResult and TestOrder should have the same properties
 type TestOrder {
@@ -194,6 +198,11 @@ type TestResult {
   patientLink: PatientLink
 }
 
+type AddTestResultResponse {
+  testResult: TestOrder!
+  deliverySuccess: Boolean
+}
+
 type PatientLink {
   internalId: ID
   createdAt: DateTime
@@ -204,8 +213,12 @@ type PatientLink {
 # Queries and mutations for everyday use
 
 type Query {
-  organization: Organization @deprecated(reason: "this information is already loaded from the 'whoami' endpoint")
-  deviceType: [DeviceType] @deprecated(reason: "use the pluralized form to reduce confusion")
+  organization: Organization
+    @deprecated(
+      reason: "this information is already loaded from the 'whoami' endpoint"
+    )
+  deviceType: [DeviceType]
+    @deprecated(reason: "use the pluralized form to reduce confusion")
   deviceTypes: [DeviceType]
   patients(
     facilityId: ID
@@ -225,9 +238,14 @@ type Query {
   patient(id: ID!): Patient
   queue(facilityId: ID!): [TestOrder]
     @requiredPermissions(anyOf: ["START_TEST", "UPDATE_TEST", "SUBMIT_TEST"])
-  testResults(facilityId: ID, patientId: ID, pageNumber: Int, pageSize: Int): [TestResult]
-    @requiredPermissions(allOf: ["READ_RESULT_LIST"])
-  testResultsCount(facilityId: ID, patientId: ID): Int
+  testResults(
+    facilityId: ID
+    patientId: ID
+    result: String
+    pageNumber: Int
+    pageSize: Int
+  ): [TestResult] @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  testResultsCount(facilityId: ID, patientId: ID, result: String): Int
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
@@ -382,6 +400,12 @@ type Mutation {
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   setPatientIsDeleted(id: ID!, deleted: Boolean!): Patient
     @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
+  addTestResultNew(
+    deviceId: String!
+    result: String!
+    patientId: ID!
+    dateTested: DateTime
+  ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
   addTestResult(
     deviceId: String!
     result: String!

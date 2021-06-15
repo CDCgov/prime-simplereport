@@ -25,17 +25,16 @@ module.exports = {
     config.module.rules.push({
       test: /\.scss$/,
       use: [
-
         {
-          loader: 'sass-resources-loader',
+          loader: "sass-resources-loader",
           options: {
             resources: [
-              './node_modules/uswds/dist/scss/packages/_required.scss'
-            ]
+              "./node_modules/uswds/dist/scss/packages/_required.scss",
+            ],
           },
         },
       ],
-    },);
+    });
     return config;
   },
 };

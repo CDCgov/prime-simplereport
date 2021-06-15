@@ -3,6 +3,8 @@ package gov.cdc.usds.simplereport.service.sms;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
+import com.twilio.exception.ApiException;
+import com.twilio.exception.TwilioException;
 import com.twilio.type.PhoneNumber;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -10,12 +12,12 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SmsService {
@@ -39,21 +41,16 @@ public class SmsService {
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestWithPatientLink
-  @Transactional
+  @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public String sendToPatientLink(UUID patientLinkId, String text) throws NumberParseException {
     PatientLink pl = pls.getRefreshedPatientLink(patientLinkId);
     return sendToPerson(pl.getTestOrder().getPatient(), text);
   }
 
   private String sendToPerson(Person p, String text) throws NumberParseException {
-    try {
-      String msgId = sms.send(new PhoneNumber(formatNumber(p.getTelephone())), fromNumber, text);
-      LOG.debug("SMS send initiated {}", msgId);
-      return msgId;
-    } catch (NumberParseException npe) {
-      LOG.error("Failed to parse phone number: \"{}\"", fromNumber);
-      throw npe;
-    }
+    String msgId = sms.send(new PhoneNumber(formatNumber(p.getTelephone())), fromNumber, text);
+    LOG.debug("SMS send initiated {}", msgId);
+    return msgId;
   }
 
   String formatNumber(String number) throws NumberParseException {

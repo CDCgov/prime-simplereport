@@ -6,7 +6,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -32,11 +31,9 @@ public class TestOrder extends BaseTestInfo {
   @Enumerated(EnumType.STRING)
   private OrderStatus orderStatus;
 
-  // strictly speaking, this is no longer OneToOne since corrections could have
-  // more than one,
-  // but this is kept up-to-date with the latest one.
-  @Column(columnDefinition = "uuid")
-  private UUID testEventId; // id used directly without needing to load
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "test_event_id")
+  private TestEvent testEvent;
 
   @ManyToOne
   @JoinFormula(
@@ -96,11 +93,11 @@ public class TestOrder extends BaseTestInfo {
   }
 
   public void setTestEventRef(TestEvent testEvent) {
-    this.testEventId = testEvent.getInternalId();
+    this.testEvent = testEvent;
   }
 
-  public UUID getTestEventId() {
-    return testEventId;
+  public TestEvent getTestEvent() {
+    return testEvent;
   }
 
   public String getPregnancy() {
