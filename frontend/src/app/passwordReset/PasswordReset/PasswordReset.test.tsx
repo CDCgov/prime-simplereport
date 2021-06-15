@@ -1,11 +1,9 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter, Route } from "react-router";
+
 import { appConfig } from "../../../storage/store";
-
 import { PasswordCreate } from "../../accountCreation/PasswordCreate/PasswordCreate";
-
-
 
 jest.mock("../../accountCreation/AccountCreationApiService", () => ({
   AccountCreationApi: {
@@ -22,16 +20,16 @@ jest.mock("../../accountCreation/AccountCreationApiService", () => ({
 }));
 
 describe("PasswordCreate", () => {
-  beforeAll(()=>{
-    appConfig({...appConfig(), activationToken: "foo"})
-  })
+  beforeAll(() => {
+    appConfig({ ...appConfig(), activationToken: "foo" });
+  });
   beforeEach(() => {
     render(
       <MemoryRouter initialEntries={["/set-password"]}>
-          <Route path="/set-password" component={PasswordCreate} />
-          <Route path="/set-recovery-question">
-            <p>Password set successfully.</p>
-          </Route>
+        <Route path="/set-password" component={PasswordCreate} />
+        <Route path="/set-recovery-question">
+          <p>Password set successfully.</p>
+        </Route>
       </MemoryRouter>
     );
   });

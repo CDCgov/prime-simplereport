@@ -4,8 +4,6 @@ import { cleanup } from "@testing-library/react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 
-import { appConfig, facilities } from "../storage/store";
-
 import App, { WHOAMI_QUERY } from "./App";
 import { queueQuery } from "./testQueue/TestQueue";
 
