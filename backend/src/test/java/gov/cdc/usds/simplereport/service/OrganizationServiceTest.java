@@ -17,12 +17,9 @@ import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
-
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -169,10 +166,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @WithSimpleReportOrgAdminUser
   void updateOrganization_not_allowed() {
     AccessDeniedException caught =
-        assertThrows(
-            AccessDeniedException.class,
-            () ->
-                _service.updateOrganization("Foo org"));
+        assertThrows(AccessDeniedException.class, () -> _service.updateOrganization("Foo org"));
     assertEquals("Access is denied", caught.getMessage());
   }
 }
