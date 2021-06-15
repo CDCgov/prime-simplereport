@@ -1,5 +1,6 @@
 plugins {
     id 'org.springframework.boot' version '2.4.1'
+    id 'org.liquibase.gradle' version '2.0.3'
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id 'java'
     id 'checkstyle'
@@ -44,7 +45,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Okta dependencies
-    implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
+    implementation 'com.okta.spring:okta-spring-boot-starter:2.0.1'
     implementation 'com.okta.sdk:okta-sdk-api:3.0.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-impl:3.0.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.1'
@@ -105,6 +106,7 @@ test {
 }
 
 configurations {
+    liquibaseRuntime.extendsFrom runtimeClasspath // inefficient but extremely effective
     compileClasspath {
         resolutionStrategy.activateDependencyLocking()
     }
@@ -122,6 +124,22 @@ jacocoTestReport {
         xml.enabled = true
     }
     dependsOn test // tests are required to run before generating the report
+}
+
+liquibase {
+    activities {
+        main {
+            driver 'org.postgresql.Driver'
+            changeLogFile '/db/changelog/db.changelog-master.yaml'
+            url 'jdbc:postgresql://127.0.0.1/simple_report'
+            username 'postgres'
+            password 'admin_password_for_local_dev_is_not_very_secure'
+            defaultSchemaName 'simple_report'
+            classpath 'src/main/resources'
+            // this shadows application.yaml: should probably be in a shared properties file
+            changeLogParameters noPhiUsername: "simple_report_no_phi"
+        }
+    }
 }
 
 sonarqube {
