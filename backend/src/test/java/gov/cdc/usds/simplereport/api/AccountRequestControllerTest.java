@@ -316,8 +316,7 @@ class AccountRequestControllerTest {
 
     // new user should be disabled in okta
     verify(oktaRepository)
-        .createUser(
-            any(IdentityAttributes.class), any(Organization.class), anySet(), anySet(), eq(false));
+        .createUser(any(IdentityAttributes.class), eq(organization), anySet(), anySet(), eq(false));
   }
 
   @Test

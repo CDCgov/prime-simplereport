@@ -33,6 +33,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -47,6 +48,14 @@ class ApiUserManagementTest extends BaseGraphqlTest {
       List.of("rjj@gmail.com", "rjjones@gmail.com", "jaredholler@msn.com", "janicek90@yahoo.com");
 
   @SpyBean private OktaRepository _oktaRepo;
+
+  @BeforeEach
+  void resetOktaRepo() {
+    // Test initialization in BaseGraphqlTest makes calls to OktaRepository, this resets the
+    // state of the SpyBean so we can only examine the calls that are the results of the tests
+    // in this class
+    reset(_oktaRepo);
+  }
 
   @Test
   void whoami_standardUser_okResponses() {
@@ -187,8 +196,6 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @ValueSource(strings = {"addUserOp", "addUserLegacy"})
   void addUser_superUser_success(String operation) {
     useSuperUser();
-    reset(_oktaRepo);
-
     ObjectNode user = runBoilerplateAddUser(Role.ADMIN, operation);
     assertEquals("Rhonda", user.path("name").get("firstName").asText());
     assertEquals(USERNAMES.get(0), user.get("email").asText());
@@ -209,8 +216,6 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void addUser_newArgStructure_success() {
     useSuperUser();
-    reset(_oktaRepo);
-
     ObjectNode variables = makeBoilerplateArgs(Role.ADMIN, true);
     JsonNode user = runQuery("add-user", "addUserNovel", variables, null).get("addUser");
     assertEquals("Rhonda", user.get("name").get("firstName").asText());
@@ -229,7 +234,6 @@ class ApiUserManagementTest extends BaseGraphqlTest {
           Organization org = _dataFactory.createUnverifiedOrg();
 
           useSuperUser();
-          reset(_oktaRepo);
 
           ObjectNode variables = makeBoilerplateArgs(Role.ADMIN, true);
           variables.put("organizationExternalId", org.getExternalId());
@@ -287,8 +291,6 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @ValueSource(strings = {"addUserToCurrentOrgOp", "addUserToCurrentOrgLegacyOp"})
   void addUserToCurrentOrg_adminUser_success(String operation) {
     useOrgAdmin();
-    reset(_oktaRepo);
-
     ObjectNode user = runBoilerplateAddUserToCurrentOrg(Role.ENTRY_ONLY, operation);
     assertEquals("Rhonda", user.get("firstName").asText());
     assertEquals(USERNAMES.get(0), user.get("email").asText());
@@ -319,8 +321,6 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void addUserToCurrentOrg_newArgStructure_success() {
     useOrgAdmin();
-    reset(_oktaRepo);
-
     ObjectNode variables = makeBoilerplateArgs(Role.ADMIN, true);
     JsonNode user =
         runQuery("add-user-to-current-org", "addUserToCurrentOrgNovel", variables, null)
@@ -371,7 +371,6 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void addUserToCurrentOrg_disabledUser_success() {
     useOrgAdmin();
-    reset(_oktaRepo);
 
     // add a new user
     String addedUserId = runBoilerplateAddUserToCurrentOrg(Role.ENTRY_ONLY).get("id").asText();
