@@ -70,7 +70,7 @@ NoFacilities.args = {
 export const MultipleFacilities = Template();
 MultipleFacilities.args = {
   facilities: [
-    createTestFacility("MSU Lab", "abc"),
+    createTestFacility("MSU", "abc"),
     createTestFacility("West Lake", "def"),
   ],
 };
