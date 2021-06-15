@@ -1,7 +1,8 @@
 const API_URL = process.env.REACT_APP_BACKEND_URL + "/user-account";
+const JSON_CONTENT = "application/json";
 const headers = {
-  "Content-Type": "application/json",
-  Accept: "application/json",
+  "Content-Type": JSON_CONTENT,
+  Accept: JSON_CONTENT,
 };
 
 const getOptions = (
@@ -23,9 +24,14 @@ const request = async (path: string, body: any) => {
   if (!res.ok) {
     throw res;
   }
-  try {
-    return await res.json();
-  } catch {
+  const contentType = res.headers.get("content-type");
+  if (contentType && contentType.indexOf(JSON_CONTENT) !== -1) {
+    try {
+      return await res.json();
+    } catch {
+      throw new Error("Invalid JSON response during account creation");
+    }
+  } else {
     return "success";
   }
 };
@@ -57,7 +63,7 @@ export class AccountCreationApi {
     return request("/enroll-email-mfa", { userInput: email });
   }
 
-  static enrollTotpMfa(app: string) {
+  static enrollTotpMfa(app: "Google" | "Okta") {
     return request("/authenticator-qr", { userInput: app });
   }
 

@@ -73,7 +73,7 @@ export const MfaSendCodeToContact = (props: Props) => {
   }, [formIsDirty, validateContact]);
 
   if (loading) {
-    return <LoadingCard message={`Validating ${props.type} ...`} />;
+    return <LoadingCard message={`Validating ${props.type}`} />;
   }
 
   if (submitted) {
