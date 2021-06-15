@@ -19,7 +19,7 @@ interface Data {
   };
 }
 
-const GET_ORGANIZATION = gql`
+export const GET_ORGANIZATION = gql`
   query GetOrganization {
     organization {
       name
@@ -27,7 +27,7 @@ const GET_ORGANIZATION = gql`
   }
 `;
 
-const SET_ORGANIZATION = gql`
+export const SET_ORGANIZATION = gql`
   mutation SetOrganization($name: String!) {
     updateOrganization(name: $name)
   }
