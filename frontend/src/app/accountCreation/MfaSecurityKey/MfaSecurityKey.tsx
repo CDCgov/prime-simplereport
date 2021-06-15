@@ -13,6 +13,7 @@ export const MfaSecurityKey = () => {
   const [attestation, setAttestation] = useState("");
   const [clientData, setClientData] = useState("");
   const [activated, setActivated] = useState(false);
+  const [unsupported, setUnsupported] = useState(false);
 
   useEffect(() => {
     const enrollKey = async () => {
@@ -24,6 +25,11 @@ export const MfaSecurityKey = () => {
       publicKey.user.id = strToBin(activation.user.id);
 
       // navigator.credentials is a global object on WebAuthn-supported clients, used to access WebAuthn API
+      // if the user's browser doesn't support WebAuthn, display a message telling them to use a different browser
+      if (!navigator?.credentials) {
+        setUnsupported(true);
+        return;
+      }
       navigator.credentials
         .create({ publicKey })
         .then(function (newCredential) {
@@ -47,6 +53,27 @@ export const MfaSecurityKey = () => {
       }
     }
   }, [attestation, clientData]);
+
+  if (unsupported) {
+    return (
+      <CardBackground>
+        <Card logo bodyKicker="Unsupported browser">
+          <p className="margin-bottom-0">
+            To register a security key, please use the latest version of a
+            supported browser:
+          </p>
+          <ol className="usa-list usa-hint font-ui-2xs">
+            <li>Google Chrome</li>
+            <li>Mozilla Firefox</li>
+            <li>Microsoft Edge</li>
+          </ol>
+        </Card>
+        <p className="margin-top-4">
+          <a href="#0">Return to previous step</a>
+        </p>
+      </CardBackground>
+    );
+  }
 
   if (activated) {
     return <Redirect to="/success" />;
