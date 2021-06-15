@@ -11,8 +11,35 @@ import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import { RootState } from "../store";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
+import { useDocumentTitle } from "../utils/hooks";
 
 import PersonForm from "./Components/PersonForm";
+
+export const EMPTY_PERSON: Nullable<PersonFormData> = {
+  facilityId: "",
+  firstName: null,
+  middleName: null,
+  lastName: null,
+  lookupId: null,
+  role: null,
+  race: null,
+  ethnicity: null,
+  gender: null,
+  residentCongregateSetting: undefined,
+  employedInHealthcare: undefined,
+  tribalAffiliation: null,
+  birthDate: null,
+  telephone: null,
+  phoneNumbers: null,
+  county: null,
+  email: null,
+  street: null,
+  streetTwo: null,
+  city: null,
+  state: null,
+  zipCode: null,
+  preferredLanguage: null,
+};
 
 export const ADD_PATIENT = gql`
   mutation AddPatient(
@@ -77,6 +104,8 @@ interface AddPatientResponse {
 }
 
 const AddPatient = () => {
+  useDocumentTitle("Add Patient");
+
   const [addPatient, { loading }] = useMutation<
     AddPatientResponse,
     AddPatientParams
@@ -121,31 +150,7 @@ const AddPatient = () => {
     <main className={"prime-edit-patient prime-home"}>
       <div className={"grid-container margin-bottom-4"}>
         <PersonForm
-          patient={{
-            facilityId: "",
-            firstName: null,
-            middleName: null,
-            lastName: null,
-            lookupId: null,
-            role: null,
-            race: null,
-            ethnicity: null,
-            gender: null,
-            residentCongregateSetting: undefined,
-            employedInHealthcare: undefined,
-            tribalAffiliation: null,
-            birthDate: null,
-            telephone: null,
-            phoneNumbers: null,
-            county: null,
-            email: null,
-            street: null,
-            streetTwo: null,
-            city: null,
-            state: null,
-            zipCode: null,
-            preferredLanguage: null,
-          }}
+          patient={EMPTY_PERSON}
           activeFacilityId={activeFacilityId}
           savePerson={savePerson}
           getHeader={(_, onSave, formChanged) => (

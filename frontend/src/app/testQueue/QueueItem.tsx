@@ -10,12 +10,13 @@ import {
 } from "@microsoft/applicationinsights-react-js";
 import classnames from "classnames";
 import moment from "moment";
+import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import Dropdown from "../commonComponents/Dropdown";
-import TextInput from "../commonComponents/TextInput";
 import LabeledText from "../commonComponents/LabeledText";
+import TextInput from "../commonComponents/TextInput";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import { displayFullName, showNotification } from "../utils";
 import { patientPropType, devicePropType } from "../propTypes";
@@ -80,20 +81,23 @@ interface EditQueueItemResponse {
   };
 }
 
-const SUBMIT_TEST_RESULT = gql`
+export const SUBMIT_TEST_RESULT = gql`
   mutation SubmitTestResult(
     $patientId: ID!
     $deviceId: String!
     $result: String!
     $dateTested: DateTime
   ) {
-    addTestResult(
+    addTestResultNew(
       patientId: $patientId
       deviceId: $deviceId
       result: $result
       dateTested: $dateTested
     ) {
-      internalId
+      testResult {
+        internalId
+      }
+      deliverySuccess
     }
   }
 `;
@@ -167,23 +171,7 @@ if (process.env.NODE_ENV !== "test") {
   Modal.setAppElement("#root");
 }
 
-/*
-  Dates from the backend are coming in as ISO 8601 strings: (eg: "2021-01-11T23:56:53.103Z")
-  The datetime-local text input expects values in the following format *IN LOCAL TIME*: (eg: "2014-01-02T11:42:13.510")
-
-  AFAICT, there is no easy ISO -> datetime-local converter built into vanilla JS dates, so using moment
-
-*/
-const isoDateToDatetimeLocal = (isoDateString: string | undefined) => {
-  if (!isoDateString) {
-    return undefined;
-  }
-  let datetime = moment(isoDateString);
-  let datetimeLocalString = datetime.format(moment.HTML5_FMT.DATETIME_LOCAL);
-  return datetimeLocalString;
-};
-
-interface QueueItemProps {
+export interface QueueItemProps {
   internalId: string;
   patient: {
     internalId: string;
@@ -272,9 +260,9 @@ const QueueItem: any = ({
     selectedDeviceTestLength
   );
 
-  const [useCurrentDateTime, updateUseCurrentDateTime] = useState<string>(
-    dateTestedProp ? "false" : "true"
-  );
+  const [useCurrentDateTime, updateUseCurrentDateTime] = useState<
+    "true" | "false"
+  >(dateTestedProp ? "false" : "true");
   // this is an ISO string
   // always assume the current date unless provided something else
   const [dateTested, updateDateTested] = useState<string | undefined>(
@@ -318,19 +306,33 @@ const QueueItem: any = ({
     throw mutationError;
   }
 
-  const testResultsSubmitted = () => {
+  const testResultsSubmitted = (response: any) => {
     let { title, body } = {
       ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
         patient
       ),
     };
+
+    if (response?.data?.addTestResultNew.deliverySuccess === false) {
+      let deliveryFailureAlert = (
+        <Alert
+          type="error"
+          title={`Unable to text result to ${patientFullNameLastFirst}`}
+          body="The phone number provided may not be valid or may not be able to accept text messages"
+        />
+      );
+      showNotification(toast, deliveryFailureAlert);
+    }
+
     let alert = <Alert type="success" title={title} body={body} />;
     showNotification(toast, alert);
   };
 
   const onTestResultSubmit = (forceSubmit: boolean = false) => {
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
-      trackSubmitTestResult({});
+      if (appInsights) {
+        trackSubmitTestResult({});
+      }
       setConfirmationType("none");
       submitTestResult({
         variables: {
@@ -384,23 +386,21 @@ const QueueItem: any = ({
     updateQueueItem({ deviceId, dateTested, result: testResultValue });
   };
 
-  const onDateTestedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawDateString = e.target.value; // local time
-    const isValidDate = isValidCustomDateTested(rawDateString);
+  const onDateTestedChange = (date: moment.Moment) => {
+    const newDateTested = date.toISOString();
+    const isValidDate = isValidCustomDateTested(newDateTested);
 
     if (isValidDate) {
-      const dateTested = new Date(rawDateString).toISOString(); // local time
-
       /* the custom date input field manages its own state in the DOM, not in the react state
       The reason for this is an invalid custom date would update react. Updating another field in the queue item, like the test result, would attempt to submit the invalid date to the backend
       Instead, we are only going to update react if there is a *valid* date.
       this can be mitigated if the backend can reliably handle null/invalid dates (never needs to be the case, just default to current date)
       or if we change our updateQueuItem function to update only a single value at a time, which is a TODO for later
     */
-      updateDateTested(dateTested);
+      updateDateTested(newDateTested);
       updateQueueItem({
         deviceId,
-        dateTested: dateTested,
+        dateTested: newDateTested,
         result: testResultValue,
       });
     }
@@ -412,7 +412,9 @@ const QueueItem: any = ({
 
   const removeFromQueue = () => {
     setConfirmationType("none");
-    trackRemovePatientFromQueue({});
+    if (appInsights) {
+      trackRemovePatientFromQueue({});
+    }
     removePatientFromQueue({
       variables: {
         patientId: removePatientId,
@@ -438,10 +440,23 @@ const QueueItem: any = ({
 
   const saveAoeCallback = (answers: any) => {
     setAoeAnswers(answers);
-    trackUpdateAoEResponse({});
+    if (appInsights) {
+      trackUpdateAoEResponse({});
+    }
+
+    const symptomOnset = answers.symptomOnset
+      ? moment(answers.symptomOnset).format("YYYY-MM-DD")
+      : null;
+
+    const priorTestDate = answers.priorTestDate
+      ? moment(answers.priorTestDate).format("YYYY-MM-DD")
+      : null;
+
     updateAoe({
       variables: {
         ...answers,
+        symptomOnset,
+        priorTestDate,
         patientId: patient.internalId,
       },
     })
@@ -495,19 +510,52 @@ const QueueItem: any = ({
     </button>
   );
 
+  const selectedDate = dateTested ? moment(dateTested) : moment();
+
   const testDateFields =
     useCurrentDateTime === "false" ? (
-      <li className="prime-li">
-        <TextInput
-          type="datetime-local"
-          label="Test date"
-          name="meeting-time"
-          value={isoDateToDatetimeLocal(dateTested)}
-          min="2020-01-01T00:00"
-          max={moment().add(1, "days").format("YYYY-MM-DDThh:mm")} // TODO: is this a reasonable max?
-          onChange={onDateTestedChange}
-        />
-      </li>
+      <>
+        <div className="prime-li tablet:grid-col-4 tablet:padding-left-1">
+          <div className="usa-form-group">
+            <Label htmlFor="test-date">Test date</Label>
+            <span className="usa-hint">mm/dd/yyyy</span>
+            <DatePicker
+              id="test-date"
+              name="test-date"
+              defaultValue={selectedDate.format(
+                moment.HTML5_FMT.DATETIME_LOCAL
+              )}
+              minDate="2020-01-01T00:00"
+              maxDate={moment().add(1, "days").format("YYYY-MM-DDThh:mm")} // TODO: is this a reasonable max?
+              onChange={(date) => {
+                if (date) {
+                  const newDate = moment(date)
+                    .hour(selectedDate.hours())
+                    .minute(selectedDate.minutes());
+                  onDateTestedChange(newDate);
+                }
+              }}
+            />
+          </div>
+        </div>
+        <div className="prime-li tablet:grid padding-right-1 tablet:padding-left-05">
+          <TextInput
+            label={"Test time"}
+            name={"test-time"}
+            hintText="hh:mm"
+            type="time"
+            step="60"
+            value={selectedDate.format("HH:mm")}
+            onChange={(e) => {
+              const [hours, minutes] = e.target.value.split(":");
+              const newDate = moment(selectedDate)
+                .hours(parseInt(hours))
+                .minutes(parseInt(minutes));
+              onDateTestedChange(newDate);
+            }}
+          />
+        </div>
+      </>
     ) : null;
 
   const timer = useTestTimer(internalId, deviceTestLength);
@@ -534,77 +582,78 @@ const QueueItem: any = ({
                 <h2>{patientFullNameLastFirst}</h2>
                 <TestTimerWidget timer={timer} />
               </div>
-              <div className="usa-card__body">
-                <div className="grid-row">
-                  <ul className="prime-ul">
-                    <li className="prime-li">
-                      <LabeledText
-                        text={patient.telephone}
-                        label="Phone number"
+              <div className="margin-top-2 margin-left-2 margin-bottom-2">
+                <div className="queue-item__description prime-ul grid-row grid-gap">
+                  <li className="prime-li tablet:grid-col-3">
+                    <LabeledText
+                      text={patient.telephone}
+                      label="Phone number"
+                    />
+                  </li>
+                  <li className="prime-li tablet:grid-col-3">
+                    <LabeledText
+                      text={moment(patient.birthDate).format("MM/DD/yyyy")}
+                      label="Date of birth"
+                    />
+                  </li>
+                  <li className="prime-li tablet:grid-col-3">
+                    <Button
+                      variant="unstyled"
+                      label="Test questionnaire"
+                      onClick={openAoeModal}
+                    />
+                    {isAoeModalOpen && (
+                      <AoEModalForm
+                        saveButtonText="Continue"
+                        onClose={closeAoeModal}
+                        patient={patient}
+                        loadState={aoeAnswers}
+                        saveCallback={saveAoeCallback}
+                        patientLinkId={patientLinkId}
                       />
-                    </li>
-                    <li className="prime-li">
-                      <LabeledText
-                        text={moment(patient.birthDate).format("MM/DD/yyyy")}
-                        label="Date of birth"
-                      />
-                    </li>
-                    <li className="prime-li">
-                      <Button
-                        variant="unstyled"
-                        label="Test questionnaire"
-                        onClick={openAoeModal}
-                      />
-                      {isAoeModalOpen && (
-                        <AoEModalForm
-                          saveButtonText="Continue"
-                          onClose={closeAoeModal}
-                          patient={patient}
-                          loadState={aoeAnswers}
-                          saveCallback={saveAoeCallback}
-                          patientLinkId={patientLinkId}
-                        />
-                      )}
-                      <p>
-                        <AskOnEntryTag aoeAnswers={aoeAnswers} />
-                      </p>
-                    </li>
-                  </ul>
+                    )}
+                    <p>
+                      <AskOnEntryTag aoeAnswers={aoeAnswers} />
+                    </p>
+                  </li>
                 </div>
-                <div className="grid-row">
-                  <ul className="prime-ul test-information-ul">
-                    <li className="prime-li">
-                      <Dropdown
-                        options={options}
-                        label="Device"
-                        name="testDevice"
-                        selectedValue={deviceId}
-                        onChange={onDeviceChange}
-                      />
-                    </li>
-                    {testDateFields}
-                    <li className="prime-li">
-                      <Checkboxes
-                        boxes={[
-                          {
-                            value: useCurrentDateTime,
-                            label: "Use current date",
-                            checked: useCurrentDateTime === "true",
-                          },
-                        ]}
-                        className={
-                          useCurrentDateTime === "false"
-                            ? "testdate-checkbox"
-                            : ""
-                        }
-                        legend={
-                          useCurrentDateTime === "true" ? "Test date" : null
-                        }
-                        name="currentDateTime"
-                        onChange={onUseCurrentDateChange}
-                      />
-                    </li>
-                  </ul>
+                <div
+                  className={classnames(
+                    "queue-item__form prime-ul grid-row",
+                    useCurrentDateTime === "false" && "queue-item__form--open"
+                  )}
+                >
+                  <div className="prime-li flex-align-self-end tablet:grid-col-3 padding-right-1">
+                    <Dropdown
+                      options={options}
+                      label="Device"
+                      name="testDevice"
+                      selectedValue={deviceId}
+                      onChange={onDeviceChange}
+                    />
+                  </div>
+                  {testDateFields}
+                  <div className="prime-li tablet:grid-col tablet:padding-left-1">
+                    <Checkboxes
+                      boxes={[
+                        {
+                          value: useCurrentDateTime,
+                          label: "Use current date",
+                          checked: useCurrentDateTime === "true",
+                        },
+                      ]}
+                      className={
+                        useCurrentDateTime === "false"
+                          ? "testdate-checkbox"
+                          : ""
+                      }
+                      legend={
+                        useCurrentDateTime === "true" ? "Test date" : null
+                      }
+                      name="currentDateTime"
+                      onChange={onUseCurrentDateChange}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

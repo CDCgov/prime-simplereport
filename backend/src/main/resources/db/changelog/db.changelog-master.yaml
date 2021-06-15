@@ -49,6 +49,16 @@ databaseChangeLog:
       name: migrations_user_email
       value: db-migrations@simplereport.gov
   - changeSet:
+      id: create-pgcrypto-extension
+      author: josh@skylight.digital
+      comment: Make sure we create the pgcrypto extension before beginning migrations.
+      changes:
+        - sql:
+            sql: CREATE EXTENSION IF NOT EXISTS pgcrypto;
+      rollback:
+        - sql:
+            sql: DROP EXTENSION pgcrypto;
+  - changeSet:
       id: define-enum-types
       author: bwarfield@cdc.gov
       comment: Type definitions for our initial tables.
@@ -1758,6 +1768,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: test_result_delivery
+  - changeSet:
       id: add-no-phi-views
       author: josh@skylight.digital
       comment: Add views for some tables that omit columns containing PHI.
@@ -2083,3 +2094,90 @@ databaseChangeLog:
         - dropUniqueConstraint:
             tableName: organization
             constraintName: uk__facility__name
+  - changeSet:
+      id: add-census-dob-group-function
+      author: josh@skylight.digital
+      comment: Add a function that maps a DOB to a Census DOB age group
+      changes:
+        - createProcedure:
+            dbms: postgresql
+            schemaName: ${database.defaultSchemaName}
+            procedureBody: |-
+              CREATE OR REPLACE FUNCTION get_census_dob_group(date) RETURNS text AS
+              $$
+              DECLARE
+                age_in_years int;
+                age_group_minimum int;
+              BEGIN
+                age_in_years = EXTRACT('year' FROM AGE(NOW(), $1));
+
+                IF age_in_years >= 85 THEN
+                  RETURN '85 years and over';
+                ELSE
+                  age_group_minimum = age_in_years - mod(age_in_years, 5);
+                  RETURN format('%s to %s years', age_group_minimum, age_group_minimum + 4);
+                END IF;
+              END;
+              $$
+              LANGUAGE plpgsql RETURNS NULL ON NULL INPUT;
+            rollback:
+              - dropProcedure:
+                  procedureName: get_census_dob_group
+                  schemaName: ${database.defaultSchemaName}
+  - changeSet:
+      id: add-census-dob-group-column-to-person-view
+      author: josh@skylight.digital
+      comment: Add a column for Census DOB age groups to person_no_phi_view
+      changes:
+        - createView:
+            viewName: person_no_phi_view
+            remarks: A subset of the person table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: SELECT internal_id, created_at, created_by, updated_at, updated_by, is_deleted, organization_id, facility_id, race, gender, ethnicity, county, state, employed_in_healthcare, role, resident_congregate_setting, tribal_affiliation, get_census_dob_group(person.birth_date) AS census_dob_group FROM ${database.defaultSchemaName}.person
+            rollback:
+              - dropView:
+                  viewName: person_no_phi_view
+              - createView:
+                  viewName: person_no_phi_view
+                  remarks: A subset of the person table with columns containing PHI removed.
+                  replaceIfExists: true
+                  fullDefinition: false
+                  selectQuery: SELECT internal_id, created_at, created_by, updated_at, updated_by, is_deleted, organization_id, facility_id, race, gender, ethnicity, county, state, employed_in_healthcare, role, resident_congregate_setting, tribal_affiliation FROM ${database.defaultSchemaName}.person
+  - changeSet:
+      id: add-email-back-to-api-user-view
+      author: josh@skylight.digital
+      comment: Add a column for email address to api_user_no_phi_view
+      changes:
+        - createView:
+            viewName: api_user_no_phi_view
+            remarks: A subset of the api_user table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: SELECT internal_id, created_at, updated_at, last_seen, is_deleted, login_email FROM ${database.defaultSchemaName}.api_user
+            rollback:
+              - dropView:
+                  viewName: api_user_no_phi_view
+              - createView:
+                  viewName: api_user_no_phi_view
+                  remarks: A subset of the api_user table with columns containing PHI removed.
+                  replaceIfExists: true
+                  fullDefinition: false
+                  selectQuery: SELECT internal_id, created_at, updated_at, last_seen, is_deleted FROM ${database.defaultSchemaName}.api_user
+  - changeSet:
+      id: drop-person-phone
+      author: adam@skylight.digital
+      comment: Drop person.telephone, which is now off-row in the phone_number table. See also person.primary_phone_internal_id
+      changes:
+        - dropColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: telephone
+  - changeSet:
+      id: add-patient-reg-link-to-metabase
+      author: adam@skylight.digital
+      comment: Adds permission for the no-PHI user to select from the patient registration link table
+      changes:
+        sql: |
+          GRANT SELECT ON TABLE ${database.defaultSchemaName}.patient_registration_link TO ${noPhiUsername};

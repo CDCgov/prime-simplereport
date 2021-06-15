@@ -5,13 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.TestEvent;
-import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.*;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
@@ -26,6 +22,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
 
   @Autowired private TestOrderRepository _repo;
   @Autowired private PersonRepository _personRepo;
+  @Autowired private PhoneNumberRepository _phoneRepo;
   @Autowired private OrganizationRepository _orgRepo;
   @Autowired private TestEventRepository _events;
   @Autowired private TestDataFactory _dataFactory;
@@ -55,6 +52,11 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
                 "",
                 false,
                 false));
+    PhoneNumber pn = new PhoneNumber(PhoneType.LANDLINE, "5555555555");
+    pn.setPerson(hoya);
+    _phoneRepo.save(pn);
+    hoya.setPrimaryPhone(pn);
+    hoya = _personRepo.save(hoya);
     TestOrder order = _repo.save(new TestOrder(hoya, site));
     List<TestOrder> queue = _repo.fetchQueue(gwu, otherSite);
     assertEquals(0, queue.size());
@@ -62,7 +64,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     assertEquals(1, queue.size());
     TestEvent event = _dataFactory.doTest(order, TestResult.NEGATIVE);
     flush();
-    TestOrder lookuporder = _repo.findByTestEventId(order.getOrganization(), event.getInternalId());
+    TestOrder lookuporder = _repo.findByTestEvent(order.getOrganization(), event);
     assertNotNull(lookuporder);
     assertEquals(lookuporder.getInternalId(), order.getInternalId());
     assertEquals(0, _repo.fetchQueue(gtown, site).size());
@@ -92,6 +94,11 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
                 "",
                 false,
                 false));
+    PhoneNumber pn = new PhoneNumber(PhoneType.LANDLINE, "5555555555");
+    pn.setPerson(hoya);
+    _phoneRepo.save(pn);
+    hoya.setPrimaryPhone(pn);
+    hoya = _personRepo.save(hoya);
     Facility site = _dataFactory.createValidFacility(gtown);
     TestOrder order = _repo.save(new TestOrder(hoya, site));
     assertNotNull(order);
@@ -104,17 +111,15 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     _repo.save(order);
     flush();
 
-    assertNotNull(_repo.findByTestEventId(gtown, ev.getInternalId()));
-    assertEquals(ev.getInternalId(), order.getTestEventId());
+    assertNotNull(_repo.findByTestEvent(gtown, ev));
+    assertEquals(ev, order.getTestEvent());
 
     // LocalDate.now() makes it random.
     String unitTestCorrectionStr = "Correction unit test: " + LocalDate.now().toString();
     order.setReasonForCorrection(unitTestCorrectionStr);
     _repo.save(order);
     flush();
-    assertEquals(
-        unitTestCorrectionStr,
-        _repo.findByTestEventId(gtown, ev.getInternalId()).getReasonForCorrection());
+    assertEquals(unitTestCorrectionStr, _repo.findByTestEvent(gtown, ev).getReasonForCorrection());
   }
 
   @Test

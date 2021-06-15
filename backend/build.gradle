@@ -55,14 +55,23 @@ dependencies {
     // App insights instrumentation
     implementation 'com.microsoft.azure:applicationinsights-core:2.6.2'
 
+    // Azure authentication library (for Dynamics 365)
+    implementation 'com.microsoft.azure:adal4j:1.6.7'
+
     // Twilio for SMS
     implementation group: "com.twilio.sdk", name: "twilio", version: "8.7.0"
 
     // SendGrid for Email
     implementation 'com.sendgrid:sendgrid-java:4.7.2'
 
+    // JPA Hibernate static metamodel generation
+    compile 'org.hibernate:hibernate-jpamodelgen:5.4.27.Final'
+    annotationProcessor'org.hibernate:hibernate-jpamodelgen'
+
     // graphql-java-extended-validation schema directives
     compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
+
+    implementation 'com.azure:azure-storage-queue:12.8.+'
 
     // test/check dependencies
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -74,6 +83,11 @@ dependencies {
 
     // dev tools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+
 }
 
 springBoot {

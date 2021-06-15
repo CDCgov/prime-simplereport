@@ -10,3 +10,5 @@ geckodriver.log
 chromedriver.log
 tests_output/
 storybook-static
+build-storybook.log
+/storybook_public

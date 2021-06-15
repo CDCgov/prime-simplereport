@@ -9,5 +9,7 @@ simple-report:
       - https://simple-report-api-test.azurewebsites.net
       - https://simple-report-test.azureedge.net
       - https://test.simplereport.gov
+  dynamics:
+    enabled: true
 twilio:
   enabled: true

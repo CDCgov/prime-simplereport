@@ -24,6 +24,11 @@ export const liveJurisdictions = [
   "VT",
 ];
 
+// States which do not require a valid CLIA number for a facility
+export const noCLIAValidationStates: (keyof typeof states)[] = ["CO"];
+
+export const orderingProviderNotRequiredStates = ["ND"];
+
 export const states = {
   AK: "Alaska",
   AL: "Alabama",

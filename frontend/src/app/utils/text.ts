@@ -1,6 +1,6 @@
-export function capitalizeText(text = ""): string {
+export function capitalizeText(text: string | null): string {
   // capitalizes first letter
-  let result = text.toLowerCase();
+  let result = (text || "").toLowerCase();
   return result.charAt(0).toUpperCase() + result.slice(1);
 }
 

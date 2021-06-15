@@ -2,6 +2,11 @@ import * as yup from "yup";
 import { PhoneNumberUtil } from "google-libphonenumber";
 
 import { liveJurisdictions } from "../../../config/constants";
+import {
+  isValidCLIANumber,
+  stateRequiresCLIANumberValidation,
+} from "../../utils/clia";
+import { isEmptyString } from "../../utils";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -12,15 +17,25 @@ export type RequiredFacilityFields = PartialBy<
   "id" | "email" | "streetTwo" | "city" | "orderingProvider"
 >;
 
+function orderingProviderIsRequired(
+  this: yup.TestContext<Record<string, any>>,
+  input = ""
+): boolean {
+  if (this?.options?.context?.orderingProviderIsRequired) {
+    return !isEmptyString(input);
+  }
+  return true;
+}
+
 type RequiredProviderFields = Nullable<Partial<Provider>>;
 
 const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
-  firstName: yup.string().nullable(),
+  firstName: yup.string().test(orderingProviderIsRequired),
   middleName: yup.string().nullable(),
-  lastName: yup.string().nullable(),
+  lastName: yup.string().test(orderingProviderIsRequired),
   suffix: yup.string().nullable(),
-  NPI: yup.string().nullable(),
-  phone: yup.string().nullable(),
+  NPI: yup.string().test(orderingProviderIsRequired),
+  phone: yup.string().test(orderingProviderIsRequired),
   street: yup.string().nullable(),
   streetTwo: yup.string().nullable(),
   city: yup.string().nullable(),
@@ -30,7 +45,20 @@ const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
 
 export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
   name: yup.string().required(),
-  cliaNumber: yup.string().required(),
+  cliaNumber: yup
+    .string()
+    .required()
+    .test((input, facility) => {
+      if (!stateRequiresCLIANumberValidation(facility.parent.state)) {
+        return true;
+      }
+
+      if (!input) {
+        return false;
+      }
+
+      return isValidCLIANumber(input);
+    }),
   street: yup.string().required(),
   zipCode: yup.string().required(),
   deviceTypes: yup.array().of(yup.string().required()).min(1).required(),
@@ -81,13 +109,13 @@ export type FacilityErrors = Partial<
 >;
 
 const orderingProviderFormatError = (field: string) =>
-  `"Ordering provider ${field} is incorrectly formatted"`;
+  `Ordering provider ${field} is incorrectly formatted`;
 
 export const allFacilityErrors: Required<FacilityErrors> = {
   id: "ID is missing",
   email: "Email is incorrectly formatted",
   city: "City is incorrectly formatted",
-  cliaNumber: "CLIA number is missing",
+  cliaNumber: "CLIA number should be 10 characters (##D#######)",
   defaultDevice: "A default device must be selected",
   deviceTypes: "There must be at least one device",
   name: "Facility name is missing",

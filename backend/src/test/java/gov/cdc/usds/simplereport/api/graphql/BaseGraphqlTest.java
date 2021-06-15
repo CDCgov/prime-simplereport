@@ -125,6 +125,8 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     _oktaRepo.reset();
     when(_addressValidation.getValidatedAddress(any(), any()))
         .thenReturn(_dataFactory.getAddress());
+    when(_addressValidation.getValidatedAddress(any(), any(), any(), any(), any(), any()))
+        .thenReturn(_dataFactory.getAddress());
     TestUserIdentities.withStandardUser(_initService::initAll);
     useOrgUser();
     _customHeaders = new LinkedMultiValueMap<String, String>();

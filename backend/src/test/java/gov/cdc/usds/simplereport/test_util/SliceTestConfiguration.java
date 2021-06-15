@@ -20,6 +20,7 @@ import gov.cdc.usds.simplereport.service.LoggedInAuthorizationService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
+import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -83,7 +84,8 @@ import org.springframework.security.test.context.support.WithMockUser;
   OrganizationInitializingService.class,
   CurrentPatientContextHolder.class,
   CurrentAccountRequestContextHolder.class,
-  CurrentOrganizationRolesContextHolder.class
+  CurrentOrganizationRolesContextHolder.class,
+  OrderingProviderRequiredValidator.class
 })
 @EnableConfigurationProperties({
   InitialSetupProperties.class,

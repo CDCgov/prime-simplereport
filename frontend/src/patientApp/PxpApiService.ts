@@ -33,6 +33,17 @@ interface UpdatePatientData
   };
 }
 
+export type SelfRegistrationData = Omit<
+  UpdatePatientData,
+  "facilityId" | "address"
+> & {
+  birthDate: ISODate;
+  registrationLink: string;
+  address: Omit<UpdatePatientData["address"], "zipCode"> & {
+    postalCode: string | null;
+  };
+};
+
 export class PxpApi {
   static validateDateOfBirth(
     patientLinkId: string,
@@ -97,5 +108,17 @@ export class PxpApi {
       throw res;
     }
     return res.text();
+  };
+
+  static selfRegister = async (person: SelfRegistrationData): Promise<void> => {
+    const res = await fetch(`${API_URL}/register`, {
+      method: "POST",
+      mode: "cors",
+      headers,
+      body: JSON.stringify(person),
+    });
+    if (!res.ok) {
+      throw res;
+    }
   };
 }

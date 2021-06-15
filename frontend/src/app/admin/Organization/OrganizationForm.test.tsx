@@ -12,7 +12,7 @@ const devices: DeviceType[] = [
 
 const validFacility: Facility = {
   name: "Foo Facility",
-  cliaNumber: "some-number",
+  cliaNumber: "12D4567890",
   phone: "(202) 395-3080",
   street: "736 Jackson Pl NW",
   zipCode: "20503",
@@ -22,15 +22,15 @@ const validFacility: Facility = {
   streetTwo: null,
   city: null,
   orderingProvider: {
-    firstName: null,
-    lastName: null,
-    NPI: null,
+    firstName: "Frank",
+    lastName: "Grimes",
+    NPI: "npi",
     street: null,
     zipCode: null,
     state: null,
     middleName: null,
     suffix: null,
-    phone: null,
+    phone: "phone",
     streetTwo: null,
     city: null,
   },
