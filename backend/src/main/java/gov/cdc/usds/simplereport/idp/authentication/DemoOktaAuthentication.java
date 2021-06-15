@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.idp.authentication;
 
 import com.okta.sdk.resource.user.factor.FactorStatus;
 import com.okta.sdk.resource.user.factor.FactorType;
-import com.twilio.rest.verify.v2.service.entity.Factor;
 
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
