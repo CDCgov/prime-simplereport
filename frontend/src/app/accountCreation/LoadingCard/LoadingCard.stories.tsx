@@ -7,7 +7,7 @@ export default {
   component: LoadingCard,
   argTypes: {},
   args: {
-    message: "Verifying security code ...",
+    message: "Verifying security code",
   },
 } as Meta;
 
