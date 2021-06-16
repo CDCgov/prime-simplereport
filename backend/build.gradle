@@ -16,7 +16,7 @@ sourceCompatibility = '11'
 
 ext {
     kickstartVersion = '11.0.0'
-    set('springCloudVersion', "2020.0.3")
+    set('springCloudVersion', "Hoxton.SR11")
 }
 repositories {
     mavenCentral()
@@ -102,6 +102,11 @@ dependencies {
     runtimeOnly "com.azure:azure-core:1.14.1"
     runtimeOnly "com.azure:azure-storage-common:12.11.0-beta.2"
     runtimeOnly "com.azure:azure-storage-queue:12.9.0-beta.2"
+    runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
+    runtimeOnly "io.zipkin.brave:brave:5.13.2"
+    runtimeOnly "io.zipkin.reporter2:zipkin-reporter-brave:2.16.1"
+    runtimeOnly "io.zipkin.reporter2:zipkin-reporter:2.16.1"
+    runtimeOnly "io.zipkin.zipkin2:zipkin:2.23.0"
 
 }
 
