@@ -258,9 +258,10 @@ public class OrganizationService {
 
   @Transactional(readOnly = false)
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public Organization updateOrganization(String name) {
+  public Organization updateOrganization(String name, String type) {
     Organization org = getCurrentOrganization();
     org.setOrganizationName(name);
+    org.setOrganizationType(type);
     return _repo.save(org);
   }
 

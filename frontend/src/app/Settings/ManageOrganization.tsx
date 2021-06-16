@@ -4,18 +4,41 @@ import TextInput from "../commonComponents/TextInput";
 import Button from "../commonComponents/Button/Button";
 import RequiredMessage from "../commonComponents/RequiredMessage";
 import Alert from "../commonComponents/Alert";
+import Select from "../commonComponents/Select";
+
+import { EditableOrganization } from "./ManageOrganizationContainer";
+
+const organizationTypes: { value: OrganizationType; label: string }[] = [
+  { value: "k12", label: "K-12 School" },
+  { value: "university", label: "College/University" },
+  { value: "correctional_facility", label: "Correctional Facility" },
+  { value: "airport", label: "Airport/Transit Station" },
+  { value: "shelter", label: "Homeless Shelter" },
+  { value: "fqhc", label: "FQHC" },
+  { value: "primary_care", label: "Primary Care / Mental Health Outpatient" },
+  { value: "assisted_living", label: "Assisted Living Facility" },
+  { value: "hospital", label: "Hospital or Clinic" },
+  { value: "urgent_care", label: "Urgent Care" },
+  { value: "nursing_home", label: "Nursing Home" },
+  { value: "treatment_center", label: "Substance Abuse Treatment Center" },
+  { value: "hospice", label: "Hospice" },
+  { value: "pharmacy", label: "Pharmacy" },
+  { value: "other", label: "Other" },
+];
 
 interface Props {
-  name: string;
-  onSave: (name: string) => void;
+  organization: EditableOrganization;
+  onSave: (organization: EditableOrganization) => void;
   canEditOrganizationName: boolean;
 }
 
 const ManageOrganization: React.FC<Props> = (props) => {
-  const [name, setName] = useState(props.name);
+  const [organization, setOrganization] = useState(props.organization);
   const [formChanged, setFormChanged] = useState(false);
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
+  const onChange = <K extends keyof EditableOrganization>(key: K) => (
+    value: EditableOrganization[K]
+  ) => {
+    setOrganization({ ...organization, [key]: value });
     setFormChanged(true);
   };
 
@@ -25,7 +48,7 @@ const ManageOrganization: React.FC<Props> = (props) => {
         <div className="usa-card__header">
           <h2>Manage Organization</h2>
           <Button
-            onClick={() => props.onSave(name)}
+            onClick={() => props.onSave(organization)}
             label="Save settings"
             disabled={!formChanged}
           />
@@ -41,9 +64,17 @@ const ManageOrganization: React.FC<Props> = (props) => {
           <TextInput
             label="Organization name"
             name="name"
-            value={name}
-            onChange={onChange}
+            value={organization.name}
+            onChange={(e) => onChange("name")(e.target.value)}
             disabled={!props.canEditOrganizationName}
+            required
+          />
+          <Select
+            options={organizationTypes}
+            label="Organization type"
+            onChange={onChange("type")}
+            value={organization.type}
+            defaultSelect
             required
           />
         </div>

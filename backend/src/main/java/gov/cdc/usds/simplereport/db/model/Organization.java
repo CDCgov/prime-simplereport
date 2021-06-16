@@ -46,6 +46,10 @@ public class Organization extends EternalAuditedEntity {
     return organizationType;
   }
 
+  public void setOrganizationType(String newType) {
+    organizationType = newType;
+  }
+
   public String getExternalId() {
     return externalId;
   }

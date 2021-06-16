@@ -2,11 +2,11 @@
 simple-report-initialization:
   organizations:
     - org-name: Dis Organization
-      org-type: University
+      org-type: university
       external-id: DIS_ORG
       identity-verified: true
     - org-name: Dat Organization
-      org-type: Urgent Care
+      org-type: urgent_care
       external-id: DAT_ORG
       identity-verified: true
   facilities:

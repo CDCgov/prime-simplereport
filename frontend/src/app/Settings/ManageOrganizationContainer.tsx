@@ -16,20 +16,24 @@ import ManageOrganization from "./ManageOrganization";
 interface Data {
   organization: {
     name: string;
+    type: string;
   };
 }
+
+export type EditableOrganization = Data["organization"];
 
 export const GET_ORGANIZATION = gql`
   query GetOrganization {
     organization {
       name
+      type
     }
   }
 `;
 
 export const SET_ORGANIZATION = gql`
-  mutation SetOrganization($name: String!) {
-    updateOrganization(name: $name)
+  mutation SetOrganization($name: String!, $type: String!) {
+    updateOrganization(name: $name, type: $type)
   }
 `;
 
@@ -60,14 +64,12 @@ const ManageOrganizationContainer: any = () => {
     return <p>Error: setting not found</p>;
   }
 
-  const onSave = (name: string) => {
+  const onSave = ({ name, type }: EditableOrganization) => {
     if (appInsights) {
       trackSaveSettings(null);
     }
     setOrganization({
-      variables: {
-        name,
-      },
+      variables: { name, type },
     }).then(() => {
       let alert = (
         <Alert
@@ -83,7 +85,7 @@ const ManageOrganizationContainer: any = () => {
 
   return (
     <ManageOrganization
-      name={data.organization.name}
+      organization={data.organization}
       onSave={onSave}
       canEditOrganizationName={isSuperUser}
     />
