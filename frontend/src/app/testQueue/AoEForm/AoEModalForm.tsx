@@ -177,9 +177,11 @@ const AoEModalForm = (props: AoEModalProps) => {
   }
   const lastTest = data?.patient.lastTest;
 
+  /*
   if (lastTest) {
     lastTest.dateTested = (lastTest.dateTested || "").split("T")[0] as ISODate;
   }
+  */
 
   const continueModal = () => {
     // No need to save form if in "smartphone" or "text" mode

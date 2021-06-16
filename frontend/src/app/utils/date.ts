@@ -6,10 +6,6 @@ export const daysSince = (date: moment.Moment): String => {
   return `${days} day${days === 1 ? "" : "s"}`;
 };
 
-export const formatDate = (date: string | null | undefined): ISODate | null => {
-  if (!date) {
-    return null;
-  }
-
+export const formatDate = (date: string): ISODate => {
   return moment(date).format("YYYY-MM-DD") as ISODate;
 };
