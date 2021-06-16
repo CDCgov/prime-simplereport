@@ -132,6 +132,7 @@ const ManageOrganization: React.FC<Props> = (props) => {
             required
           />
           <Select
+            name="type"
             options={organizationTypes}
             label="Organization type"
             onChange={onChange("type")}
