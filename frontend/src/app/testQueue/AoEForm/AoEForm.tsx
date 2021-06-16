@@ -35,7 +35,7 @@ export interface PriorTest {
 export interface AoEAnswersDelivery extends PriorTest {
   noSymptoms: boolean;
   symptoms: string;
-  symptomOnset: ISODate | undefined;
+  symptomOnset: ISODate | undefined | null;
   pregnancy: PregnancyCode | undefined;
   testResultDelivery: string;
 }
@@ -108,7 +108,7 @@ const AoEForm: React.FC<Props> = ({
 
   const [noSymptoms, setNoSymptoms] = useState(loadState.noSymptoms || false);
   const [currentSymptoms, setSymptoms] = useState(initialSymptoms);
-  const [onsetDate, setOnsetDate] = useState<ISODate | undefined>(
+  const [onsetDate, setOnsetDate] = useState<ISODate | undefined | null>(
     loadState.symptomOnset
   );
   const [isFirstTest, setIsFirstTest] = useState(loadState.firstTest);
