@@ -24,6 +24,7 @@ import { MfaPhoneVerify } from "./MfaPhoneVerify/MfaPhoneVerify";
 import { MfaOktaVerify } from "./MfaOktaVerify/MfaOktaVerify";
 import { MfaGoogleAuthVerify } from "./MfaGoogleAuthVerify/MfaGoogleAuthVerify";
 import { PasswordCreate } from "./PasswordCreate/PasswordCreate";
+import { PasswordForm } from "./PasswordForm/PasswordForm";
 
 interface WrapperProps {
   activationToken: string;
@@ -63,8 +64,8 @@ const AccountCreationApp = () => {
           <AccountCreation404Wrapper activationToken={activationToken}>
             <Router basename={`${process.env.PUBLIC_URL}/uac`}>
               <Switch>
-                <Route path="/" exact component={PasswordCreate} />
-                <Route path="/set-password" component={PasswordCreate} />
+                <Route path="/" exact component={PasswordForm} />
+                <Route path="/set-password" component={PasswordForm} />
                 <Route
                   path="/set-recovery-question"
                   component={SecurityQuestion}
