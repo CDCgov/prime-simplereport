@@ -4,15 +4,15 @@ export class VersionService {
    * SHA encoded in the current build
    */
   static async getSHA(): Promise<string> {
+    console.info(process.env.NODE_ENV);
     if (process.env.NODE_ENV === "production") {
-      return fetch(`${process.env.PUBLIC_URL}/static/commit.txt`).then(
-        (res) => {
-          if (!res.ok) {
-            throw res;
-          }
-          return res.text();
-        }
-      );
+      console.info(`${process.env.PUBLIC_URL}/static/commit.txt`);
+      const res = await fetch(`${process.env.PUBLIC_URL}/static/commit.txt`);
+      console.info(res);
+      if (!res.ok) {
+        throw res;
+      }
+      return res.text();
     }
     return process.env.REACT_APP_CURRENT_COMMIT || "";
   }
@@ -21,6 +21,6 @@ export class VersionService {
    * reload the window. this method exists to be mocked
    */
   static reload() {
-    window.location.reload();
+    // window.location.reload();
   }
 }

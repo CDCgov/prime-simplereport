@@ -8,9 +8,13 @@ const VersionEnforcer: React.FunctionComponent<RouteComponentProps> = (
 ) => {
   useEffect(() => {
     (async () => {
-      if (
-        process.env.REACT_APP_CURRENT_COMMIT !== (await VersionService.getSHA())
-      ) {
+      const sha = await VersionService.getSHA();
+      console.info(
+        "current commit from env: ",
+        process.env.REACT_APP_CURRENT_COMMIT
+      );
+      console.info("sha from fetch: ", sha);
+      if (process.env.REACT_APP_CURRENT_COMMIT !== sha) {
         VersionService.reload();
       }
     })();
