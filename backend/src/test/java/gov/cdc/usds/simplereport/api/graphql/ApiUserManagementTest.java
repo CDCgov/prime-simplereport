@@ -238,16 +238,12 @@ class ApiUserManagementTest extends BaseGraphqlTest {
           variables.put("organizationExternalId", org.getExternalId());
           JsonNode user = runQuery("add-user", "addUserNovel", variables, null).get("addUser");
           assertEquals("Rhonda", user.get("name").get("firstName").asText());
-
-          // the user should have been set to disabled in okta because the org is not verified
-          verify(_oktaRepo)
-              .createUser(
-                  any(IdentityAttributes.class),
-                  any(Organization.class),
-                  anySet(),
-                  anySet(),
-                  eq(false));
         });
+
+    // the user should have been set to disabled in okta because the org is not verified
+    verify(_oktaRepo)
+        .createUser(
+            any(IdentityAttributes.class), any(Organization.class), anySet(), anySet(), eq(false));
   }
 
   @Test
