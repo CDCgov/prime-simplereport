@@ -27,6 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @ConditionalOnProperty(name = "simple-report.dynamics.enabled", havingValue = "true")
@@ -124,11 +125,16 @@ public class DynamicsCrmProvider implements CrmProvider {
     String requestUrl = _dynamicsProperties.getResourceUrl() + INTAKES_PATH;
 
     RestTemplate restTemplate = new RestTemplate();
-    ResponseEntity<JSONObject> response =
-        restTemplate.exchange(requestUrl, HttpMethod.POST, entity, JSONObject.class);
+    try {
+      ResponseEntity<JSONObject> response =
+          restTemplate.exchange(requestUrl, HttpMethod.POST, entity, JSONObject.class);
 
-    if (response.getStatusCode() != HttpStatus.NO_CONTENT) {
-      LOG.error("Dynamics request failed with code: {} (expected 204)", response.getStatusCode());
+      if (response.getStatusCode() != HttpStatus.NO_CONTENT) {
+        LOG.error("Dynamics request failed with code: {} (expected 204)", response.getStatusCode());
+      }
+    } catch (RestClientException e) {
+      LOG.error("Dynamics request failed, check request body: {}", e.toString());
+      throw e;
     }
   }
 }
