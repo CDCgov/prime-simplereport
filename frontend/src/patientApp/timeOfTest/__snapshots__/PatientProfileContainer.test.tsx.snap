@@ -166,7 +166,7 @@ exports[`PatientProfileContainer snapshot 1`] = `
         Tribal affiliation
       </h3>
       <p>
-        Alabama-Coushatta Tribes of Texas
+        Not provided
       </p>
       <h3
         className="font-heading-sm"
