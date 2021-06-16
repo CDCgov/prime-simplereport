@@ -10,7 +10,6 @@ import { RootState, setInitialState } from "../store";
 import { getActivationTokenFromUrl } from "../utils/url";
 import PageNotFound from "../commonComponents/PageNotFound";
 
-import { PasswordForm } from "./PasswordForm/PasswordForm";
 import { SecurityQuestion } from "./SecurityQuestion/SecurityQuestion";
 import { MfaSelect } from "./MfaSelect/MfaSelect";
 import { MfaSms } from "./MfaSms/MfaSms";
@@ -24,6 +23,7 @@ import { MfaPhone } from "./MfaPhone/MfaPhone";
 import { MfaPhoneVerify } from "./MfaPhoneVerify/MfaPhoneVerify";
 import { MfaOktaVerify } from "./MfaOktaVerify/MfaOktaVerify";
 import { MfaGoogleAuthVerify } from "./MfaGoogleAuthVerify/MfaGoogleAuthVerify";
+import { PasswordCreate } from "./PasswordCreate/PasswordCreate";
 
 interface WrapperProps {
   activationToken: string;
@@ -63,8 +63,8 @@ const AccountCreationApp = () => {
           <AccountCreation404Wrapper activationToken={activationToken}>
             <Router basename={`${process.env.PUBLIC_URL}/uac`}>
               <Switch>
-                <Route path="/" exact component={PasswordForm} />
-                <Route path="/set-password" component={PasswordForm} />
+                <Route path="/" exact component={PasswordCreate} />
+                <Route path="/set-password" component={PasswordCreate} />
                 <Route
                   path="/set-recovery-question"
                   component={SecurityQuestion}
