@@ -60,7 +60,7 @@ const PatientFormContainer = () => {
     } = person;
     const updatedPatientFromApi = await PxpApi.updatePatient(
       plid as string,
-      patientInStore.birthDate.toISOString(),
+      patientInStore.birthDate.toString(),
       {
         ...withoutAddress,
         address: {
