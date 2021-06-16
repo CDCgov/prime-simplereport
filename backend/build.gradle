@@ -118,6 +118,9 @@ springBoot {
 test {
     // people sometimes export this to run local dev more easily: don't let it break the tests
     environment "SPRING_PROFILES_ACTIVE", ""
+    // For some reason, setting this in application-default doesn't work, but it's needed
+    // to prevent the Okta client from throwing an exception when we point it at WireMock,
+    // which doesn't use HTTPS
     environment "OKTA_TESTING_DISABLEHTTPSCHECK", "true"
     useJUnitPlatform()
     // uncomment this to log to stdout when each test starts, so you can tell what's going on
