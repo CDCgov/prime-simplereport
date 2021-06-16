@@ -36,7 +36,7 @@ export const MfaTotp = (props: Props) => {
         </div>
         <Button className="margin-top-3" label={"Continue"} type={"submit"} />
       </Card>
-      <p className="margin-top-5">
+      <p className="margin-top-4">
         <a href="#0">Return to previous step</a>
       </p>
     </CardBackground>

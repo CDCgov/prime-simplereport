@@ -24,6 +24,8 @@ public interface OktaRepository {
 
   public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity);
 
+  public void reprovisionUser(IdentityAttributes userIdentity);
+
   public Optional<OrganizationRoleClaims> updateUserPrivileges(
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles);
 

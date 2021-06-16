@@ -313,6 +313,30 @@ class DemoOktaRepositoryTest {
         IllegalGraphqlArgumentException.class, () -> _repo.getAllUsersForOrganization(ABC));
   }
 
+  @Test
+  void reprovisionUser_success() {
+    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER), true);
+    _repo.setUserIsActive(AMOS.getUsername(), false);
+
+    assertTrue(_repo.inactiveUsernames.contains(AMOS.getUsername()));
+
+    IdentityAttributes identityAttributes =
+        new IdentityAttributes(AMOS.getUsername(), "First", "Middle", "Last", "Jr");
+    _repo.reprovisionUser(identityAttributes);
+
+    assertFalse(_repo.inactiveUsernames.contains(AMOS.getUsername()));
+  }
+
+  @Test
+  void reprovisionUser_error() {
+    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER), true);
+
+    IdentityAttributes identityAttributes =
+        new IdentityAttributes(AMOS.getUsername(), "First", "Middle", "Last", "Jr");
+    assertThrows(
+        IllegalGraphqlArgumentException.class, () -> _repo.reprovisionUser(identityAttributes));
+  }
+
   private static Facility getFacility(UUID uuid, Organization org) {
     Facility facility = mock(Facility.class);
     when(facility.getInternalId()).thenReturn(uuid);
