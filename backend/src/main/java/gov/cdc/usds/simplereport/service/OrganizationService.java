@@ -266,6 +266,14 @@ public class OrganizationService {
   }
 
   @Transactional(readOnly = false)
+  @AuthorizationConfiguration.RequirePermissionEditOrganization
+  public Organization updateOrganization(String type) {
+    Organization org = getCurrentOrganization();
+    org.setOrganizationType(type);
+    return _repo.save(org);
+  }
+
+  @Transactional(readOnly = false)
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public boolean setIdentityVerified(String externalId, boolean verified) {
     Organization org = getOrganization(externalId);

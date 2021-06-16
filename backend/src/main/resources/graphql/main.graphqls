@@ -448,4 +448,6 @@ type Mutation {
   ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkSms(internalId: String!): String
     @requiredPermissions(allOf: ["UPDATE_TEST"])
+  updateOrganization(type: String!): String
+    @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
 }

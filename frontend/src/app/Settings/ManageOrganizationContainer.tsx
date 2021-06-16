@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ComponentProps } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
@@ -31,9 +31,15 @@ export const GET_ORGANIZATION = gql`
   }
 `;
 
+export const ADMIN_SET_ORGANIZATION = gql`
+  mutation AdminSetOrganization($name: String!, $type: String!) {
+    adminUpdateOrganization(name: $name, type: $type)
+  }
+`;
+
 export const SET_ORGANIZATION = gql`
-  mutation SetOrganization($name: String!, $type: String!) {
-    updateOrganization(name: $name, type: $type)
+  mutation SetOrganization($type: String!) {
+    updateOrganization(type: $type)
   }
 `;
 
@@ -45,6 +51,7 @@ const ManageOrganizationContainer: any = () => {
   const isSuperUser = useSelector<RootState, boolean>(
     (state) => state.user.isAdmin
   );
+  const [adminSetOrganization] = useMutation(ADMIN_SET_ORGANIZATION);
   const [setOrganization] = useMutation(SET_ORGANIZATION);
   const appInsights = useAppInsightsContext();
   const trackSaveSettings = useTrackEvent(
@@ -64,23 +71,30 @@ const ManageOrganizationContainer: any = () => {
     return <p>Error: setting not found</p>;
   }
 
-  const onSave = ({ name, type }: EditableOrganization) => {
+  const onSave = async ({ name, type }: EditableOrganization) => {
     if (appInsights) {
       trackSaveSettings(null);
     }
-    setOrganization({
-      variables: { name, type },
-    }).then(() => {
-      let alert = (
-        <Alert
-          type="success"
-          title="Updated Organization"
-          body="The settings for the organization have been updated"
-        />
-      );
-      showNotification(toast, alert);
+    const mutation = isSuperUser
+      ? () => adminSetOrganization({ variables: { name, type } })
+      : () => setOrganization({ variables: { type } });
+
+    const alertProps: ComponentProps<typeof Alert> = {
+      type: "success",
+      title: "Updated Organization",
+      body: "The settings for the organization have been updated",
+    };
+
+    try {
+      await mutation();
       dispatch(updateOrganization({ name }));
-    });
+    } catch (e) {
+      alertProps.type = "error";
+      alertProps.title = "Error Updating Organization";
+      alertProps.body =
+        "There was an eroror updating the organization settings";
+    }
+    showNotification(toast, <Alert {...alertProps} />);
   };
 
   return (

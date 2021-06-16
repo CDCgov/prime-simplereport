@@ -237,8 +237,12 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     return new ApiOrganization(org, facilities);
   }
 
-  public void updateOrganization(String name, String type) {
+  public void adminUpdateOrganization(String name, String type) {
     _os.updateOrganization(name, type);
+  }
+
+  public void updateOrganization(String type) {
+    _os.updateOrganization(type);
   }
 
   public boolean setOrganizationIdentityVerified(String externalId, boolean verified) {
