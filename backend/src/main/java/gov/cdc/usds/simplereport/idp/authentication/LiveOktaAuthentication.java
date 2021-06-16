@@ -197,6 +197,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       LOG.info("enrolled in SMS");
       return smsFactor.getId();
     } catch (ResourceException e) {
+      LOG.info(e.getCode(), e.getCause(), e.getStatus(), e.getMessage());
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
         LOG.info("SMS Bad Request");
         throw new BadRequestException(e.getError().getMessage(), e);
