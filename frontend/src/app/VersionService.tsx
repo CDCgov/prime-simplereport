@@ -4,15 +4,12 @@ export class VersionService {
    * SHA encoded in the current build
    */
   static async getSHA(): Promise<string> {
-    console.info(process.env.NODE_ENV);
     if (process.env.NODE_ENV === "production") {
-      console.info(`${process.env.PUBLIC_URL}/static/commit.txt`);
-      const res = await fetch(`${process.env.PUBLIC_URL}/static/commit.txt`);
-      console.info(res);
-      if (!res.ok) {
-        throw res;
+      const result = await fetch(`${process.env.PUBLIC_URL}/static/commit.txt`);
+      if (!result.ok) {
+        throw result;
       }
-      return res.text();
+      return (await result.text()).trim();
     }
     return process.env.REACT_APP_CURRENT_COMMIT || "";
   }
@@ -21,6 +18,7 @@ export class VersionService {
    * reload the window. this method exists to be mocked
    */
   static reload() {
-    // window.location.reload();
+    console.info("SHA mismatch. Reloading!");
+    window.location.reload();
   }
 }
