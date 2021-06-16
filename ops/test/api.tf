@@ -39,6 +39,7 @@ module "simple_report_api" {
     DYNAMICS_CLIENT_SECRET                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.dynamics_client_secret.id})"
     DYNAMICS_TENANT_ID                    = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.dynamics_tenant_id.id})"
     DYNAMICS_RESOURCE_URL                 = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.dynamics_resource_url.id})"
+    CURL_TIMEOUT                          = "4"
     # true by default, can be disabled quickly here
     # SPRING_LIQUIBASE_ENABLED                       = "true"
     # this shadows/overrides an identical declaration in application.yaml

@@ -47,8 +47,8 @@ describe("VersionEnforcer", () => {
 
   it("calls VersionService.reload() when the SHA has changed", async () => {
     // GIVEN
-    (VersionService.getSHA as any).mockImplementation(() =>
-      Promise.resolve("12345")
+    (VersionService.getSHA as any).mockImplementation(
+      () => Promise.resolve("SHAs are not watermelons") // clearly different from whatever is in the build
     );
 
     // WHEN
