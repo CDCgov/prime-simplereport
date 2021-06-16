@@ -1,10 +1,4 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  cleanup,
-  within,
-} from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter, Route } from "react-router";
@@ -56,7 +50,6 @@ const fillOutForm = (
 };
 
 describe("AddPatient", () => {
-  afterEach(cleanup);
   describe("No facility selected", () => {
     beforeEach(() => {
       render(
@@ -85,7 +78,7 @@ describe("AddPatient", () => {
 
   describe("Facility selected", () => {
     const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
-    beforeEach(() => {
+    beforeAll(() => {
       facilities({
         selectedFacility: {
           ...facilitySample,
@@ -96,7 +89,8 @@ describe("AddPatient", () => {
           { ...facilitySample, id: mockFacilityID, name: "123" },
         ],
       });
-
+    });
+    beforeEach(() => {
       const mocks = [
         {
           request: {
@@ -187,6 +181,9 @@ describe("AddPatient", () => {
       );
     });
     it("shows the form title", async () => {
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      });
       expect(
         await screen.queryAllByText("Add New Person", { exact: false })[0]
       ).toBeInTheDocument();
@@ -239,6 +236,9 @@ describe("AddPatient", () => {
       });
       describe("Submitting Address Verification", () => {
         beforeEach(async () => {
+          await act(async () => {
+            await new Promise((resolve) => setTimeout(resolve, 500));
+          });
           const modal = screen.getByRole("dialog", {
             exact: false,
           });

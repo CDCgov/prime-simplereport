@@ -141,6 +141,11 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     htmlFor="1-val-SMS"
                   >
                     Text message
+                    <span
+                      className="radio__label-description--checked usa-radio__label-description text-base"
+                    >
+                      
+                    </span>
                   </label>
                 </div>
                 <div
