@@ -16,7 +16,7 @@ import ManageOrganization from "./ManageOrganization";
 interface Data {
   organization: {
     name: string;
-    type: string;
+    type: OrganizationType;
   };
 }
 
