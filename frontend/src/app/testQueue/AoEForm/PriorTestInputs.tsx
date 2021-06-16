@@ -21,7 +21,7 @@ interface Props {
   isFirstTest: boolean | undefined;
   setIsFirstTest: (isFirstTest: boolean) => void;
   priorTestDate: ISODate | undefined | null;
-  setPriorTestDate: (priorTestDate: ISODate | undefined) => void;
+  setPriorTestDate: (priorTestDate: ISODate | undefined | null) => void;
   priorTestResult: TestResult | undefined | null;
   setPriorTestResult: (priorTestResult: TestResult | undefined | null) => void;
   priorTestType: string | undefined;
@@ -165,10 +165,8 @@ const PriorTestInputs: React.FC<Props> = ({
               // Fill in last test info using this data
               // TODO: update when test history has test type
               setPriorTestType("2");
-              setPriorTestDate(
-                (lastTest.dateTested || "").split("T")[0] as ISODate
-              );
-              setPriorTestResult(lastTest?.result as TestResult);
+              setPriorTestDate(lastTest.dateTested);
+              setPriorTestResult(lastTest?.result);
             } else {
               setPriorTestType(undefined);
               setPriorTestDate(undefined);
