@@ -35,6 +35,7 @@ public class AccountRequestDynamicsData {
         DynamicsValueMapping.convertToCode(Prefix.TST, accountRequest.getFacilityType()));
     variableMap.put("bah_othertestingsite_text", accountRequest.getFacilityTypeOther());
     variableMap.put("bah_organizationname_text", accountRequest.getOrganizationName());
+    variableMap.put("bah_organizationtype_text", accountRequest.getOrganizationType());
     variableMap.put("bah_testingsitename_text", accountRequest.getFacilityName());
     variableMap.put("bah_clianumber_num", accountRequest.getCliaNumber());
     variableMap.put(

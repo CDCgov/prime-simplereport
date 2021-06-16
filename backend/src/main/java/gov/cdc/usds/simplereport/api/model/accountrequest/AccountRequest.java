@@ -29,6 +29,7 @@ public class AccountRequest implements TemplateVariablesProvider {
   @JsonProperty @NotNull private String facilityType;
   @JsonProperty private String facilityTypeOther;
   @JsonProperty private String organizationName;
+  @JsonProperty private String organizationType;
   @JsonProperty @NotNull private String facilityName;
   @JsonProperty @NotNull private String facilityPhoneNumber;
   @JsonProperty @NotNull private String cliaNumber;
@@ -76,6 +77,7 @@ public class AccountRequest implements TemplateVariablesProvider {
     variableMap.put("facilityType", facilityType);
     variableMap.put("facilityTypeOther", facilityTypeOther);
     variableMap.put("organizationName", organizationName);
+    variableMap.put("organizationType", organizationType);
     variableMap.put("facilityName", facilityName);
     variableMap.put("facilityPhoneNumber", facilityPhoneNumber);
     variableMap.put("cliaNumber", cliaNumber);
