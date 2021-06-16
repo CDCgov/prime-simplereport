@@ -23,7 +23,6 @@ import { MfaPhone } from "./MfaPhone/MfaPhone";
 import { MfaPhoneVerify } from "./MfaPhoneVerify/MfaPhoneVerify";
 import { MfaOktaVerify } from "./MfaOktaVerify/MfaOktaVerify";
 import { MfaGoogleAuthVerify } from "./MfaGoogleAuthVerify/MfaGoogleAuthVerify";
-import { PasswordCreate } from "./PasswordCreate/PasswordCreate";
 import { PasswordForm } from "./PasswordForm/PasswordForm";
 
 interface WrapperProps {
