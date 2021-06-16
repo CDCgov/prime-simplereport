@@ -220,7 +220,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     Organization org =
         _os.createOrganization(
             name,
-            type,
+            Translators.parseOrganizationType(type),
             externalId,
             testingFacilityName,
             cliaNumber,
@@ -238,11 +238,13 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   }
 
   public void adminUpdateOrganization(String name, String type) {
-    _os.updateOrganization(name, type);
+    String parsedType = Translators.parseOrganizationType(type);
+    _os.updateOrganization(name, parsedType);
   }
 
   public void updateOrganization(String type) {
-    _os.updateOrganization(type);
+    String parsedType = Translators.parseOrganizationType(type);
+    _os.updateOrganization(parsedType);
   }
 
   public boolean setOrganizationIdentityVerified(String externalId, boolean verified) {

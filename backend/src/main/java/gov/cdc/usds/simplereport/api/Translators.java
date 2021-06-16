@@ -307,4 +307,36 @@ public class Translators {
     }
     return name;
   }
+
+  private static final Set<String> ORGANIZATION_TYPES =
+      Set.of(
+   "k12"
+ ,"university"
+ ,"correctional_facility"
+ ,"airport"
+ ,"shelter"
+ ,"fqhc"
+ ,"primary_care"
+ ,"assisted_living"
+ ,"hospital"
+ ,"urgent_care"
+ ,"nursing_home"
+ ,"treatment_center"
+ ,"hospice"
+ ,"pharmacy"
+ ,"other"
+
+
+          );
+
+  public static String parseOrganizationType(String t) {
+    String type = parseString(t);
+    if (type == null) {
+      return null;
+    }
+    if (ORGANIZATION_TYPES.contains(type)) {
+      return type;
+    }
+    throw IllegalGraphqlArgumentException.invalidInput(t, "organization type");
+  }
 }
