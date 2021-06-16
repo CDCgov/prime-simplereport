@@ -43,7 +43,8 @@ import org.springframework.web.client.RestTemplate;
  *
  * <p>Handles all Okta-related user authenticaton.
  *
- * <p>NOTE: If you alter this file, you may need to re-record the WireMock stubs. See https://github.com/CDCgov/prime-simplereport/issues/1848.
+ * <p>NOTE: If you alter this file, you may need to re-record the WireMock stubs. See
+ * https://github.com/CDCgov/prime-simplereport/issues/1848.
  */
 @Profile("!" + BeanProfiles.NO_OKTA_AUTH)
 @Service
