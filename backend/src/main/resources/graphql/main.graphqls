@@ -7,6 +7,7 @@ type Organization {
   id: ID
   internalId: ID @deprecated(reason: "alias for 'id'")
   name: String
+  type: String
   externalId: String
   testingFacility: [Facility]
     @deprecated(reason: "Use the one that makes sense")

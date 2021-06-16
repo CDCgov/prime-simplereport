@@ -160,6 +160,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public ApiOrganization createOrganization(
       String name,
+      String type,
       String externalId,
       String testingFacilityName,
       String cliaNumber,
@@ -219,6 +220,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     Organization org =
         _os.createOrganization(
             name,
+            type,
             externalId,
             testingFacilityName,
             cliaNumber,

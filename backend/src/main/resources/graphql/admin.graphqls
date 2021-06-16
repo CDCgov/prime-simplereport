@@ -32,6 +32,7 @@ extend type Mutation {
   ): User
   createOrganization(
     name: String!
+    type: String!
     externalId: String!
     testingFacilityName: String!
     cliaNumber: String

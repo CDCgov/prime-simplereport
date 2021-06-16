@@ -11,6 +11,9 @@ public class Organization extends EternalAuditedEntity {
   @Column(nullable = false, unique = true)
   private String organizationName;
 
+  @Column(nullable = false)
+  private String organizationType;
+
   @Column(name = "organization_external_id", nullable = false, unique = true)
   @NaturalId
   private String externalId;
@@ -23,9 +26,10 @@ public class Organization extends EternalAuditedEntity {
   }
 
   @ConstructorBinding
-  public Organization(String orgName, String externalId, boolean identityVerified) {
+  public Organization(String orgName, String orgType, String externalId, boolean identityVerified) {
     this();
     this.organizationName = orgName;
+    this.organizationType = orgType;
     this.externalId = externalId;
     this.identityVerified = identityVerified;
   }
@@ -36,6 +40,10 @@ public class Organization extends EternalAuditedEntity {
 
   public void setOrganizationName(String newName) {
     organizationName = newName;
+  }
+
+  public String getOrganizationType() {
+    return organizationType;
   }
 
   public String getExternalId() {

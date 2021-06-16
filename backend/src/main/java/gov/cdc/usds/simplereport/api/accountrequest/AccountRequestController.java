@@ -177,6 +177,7 @@ public class AccountRequestController {
 
     _os.createOrganization(
         reqVars.get("organizationName"),
+        reqVars.get("organizationType"),
         orgExternalId,
         reqVars.get("facilityName"),
         reqVars.get("cliaNumber"),
