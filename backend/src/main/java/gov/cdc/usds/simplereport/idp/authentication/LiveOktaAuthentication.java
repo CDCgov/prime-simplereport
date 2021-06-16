@@ -188,21 +188,15 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public String enrollSmsMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException {
     try {
-      LOG.info("in enroll SMS Mfa");
       SmsUserFactor smsFactor = _client.instantiate(SmsUserFactor.class);
       smsFactor.getProfile().setPhoneNumber(phoneNumber);
       User user = _client.getUser(userId);
-      LOG.info("user gotten from Okta");
       user.enrollFactor(smsFactor);
-      LOG.info("enrolled in SMS");
       return smsFactor.getId();
     } catch (ResourceException e) {
-      LOG.info(e.getCode(), e.getCause(), e.getStatus(), e.getMessage());
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
-        LOG.info("SMS Bad Request");
         throw new BadRequestException(e.getError().getMessage(), e);
       }
-      LOG.info("error setting SMS MFA");
       throw new OktaAuthenticationFailureException("Error setting SMS MFA", e);
     }
   }
