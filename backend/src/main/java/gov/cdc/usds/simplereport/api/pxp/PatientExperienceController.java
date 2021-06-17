@@ -91,7 +91,7 @@ public class PatientExperienceController {
     OrderStatus os = pl.getTestOrder().getOrderStatus();
     Person p = _pls.getPatientFromLink(plid);
     PatientPreferences pp = _ps.getPatientPreferences(p);
-    TestEvent te = _tes.getLastTestResultsForPatient(p);
+    TestEvent te = pl.getTestOrder().getTestEvent();
     _tocs.storeTimeOfConsent(pl);
 
     return new PxpVerifyResponse(p, os, te, pp);
