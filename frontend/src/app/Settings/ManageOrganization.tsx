@@ -35,7 +35,11 @@ const ManageOrganization: React.FC<Props> = (props) => {
           {!props.canEditOrganizationName && (
             <Alert type="info">
               The organization name is used for reporting to public health
-              departments. Please contact support if you need to change it.
+              departments. Please contact{" "}
+              <a href="mailto:support@simplereport.gov">
+                support@simplereport.gov
+              </a>{" "}
+              if you need to change it.
             </Alert>
           )}
           {props.canEditOrganizationName ? (
