@@ -136,7 +136,7 @@ describe("App", () => {
   it("Render main screen", async () => {
     const component = renderApp([WhoAmIQueryMock, facilityQueryMock]);
     await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 200));
     });
     expect(component).toMatchSnapshot();
   });
