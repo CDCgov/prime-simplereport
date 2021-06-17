@@ -90,11 +90,8 @@ public class UserAccountCreationController {
   @PostMapping("/enroll-sms-mfa")
   public void enrollSmsMfa(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
       throws OktaAuthenticationFailureException {
-    LOG.info("UserAccountCreationController: enrollSMSMFa");
     String userId = getUserId(request.getSession());
-    LOG.info("retrieved user id");
     String factorId = _oktaAuth.enrollSmsMfa(userId, requestBody.getUserInput());
-    LOG.info("enrolled SMS MFA successful");
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
 
@@ -161,6 +158,8 @@ public class UserAccountCreationController {
     String userId = getUserId(request.getSession());
     JSONObject enrollResponse = _oktaAuth.enrollSecurityKey(userId);
     request.getSession().setAttribute(FACTOR_ID_KEY, enrollResponse.getString(FACTOR_ID_KEY));
+    // TODO(emmastephenson): send a different object type, so that this serializes to JSON instead
+    // of text on the frontend.
     return new JSONObject(enrollResponse, "activation").toString();
   }
 
