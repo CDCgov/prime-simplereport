@@ -78,6 +78,7 @@ class AccountRequestControllerTest {
   @Qualifier("simpleReportTemplateEngine")
   SpringTemplateEngine _templateEngine;
 
+  // Mocked dependencies of ApiUserService
   @MockBean private ApiUserRepository apiUserRepository;
   @MockBean private AuthorizationService authorizationService;
   @MockBean private IdentitySupplier identitySupplier;
