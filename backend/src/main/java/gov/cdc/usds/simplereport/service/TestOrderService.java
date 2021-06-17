@@ -1,6 +1,9 @@
 package gov.cdc.usds.simplereport.service;
 
 import com.google.i18n.phonenumbers.NumberParseException;
+import com.twilio.exception.ApiException;
+import com.twilio.exception.TwilioException;
+import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -37,6 +40,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -59,6 +64,7 @@ public class TestOrderService {
   private PatientLinkService _pls;
   private SmsService _smss;
   private final CurrentPatientContextHolder _patientContext;
+  private static final Logger LOG = LoggerFactory.getLogger(TestOrderService.class);
   private final TestEventReportingService _testEventReportingService;
 
   @PersistenceContext EntityManager _entityManager;
@@ -253,7 +259,8 @@ public class TestOrderService {
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListForPatient
   public List<TestEvent> getTestResults(Person patient) {
-    // NOTE: this may change. do we really want to limit visible test results to only
+    // NOTE: this may change. do we really want to limit visible test results to
+    // only
     // tests performed at accessible facilities?
     return _terepo.findAllByPatientAndFacilities(patient, _os.getAccessibleFacilities());
   }
@@ -290,9 +297,9 @@ public class TestOrderService {
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Deprecated // switch to using device specimen ID, using methods that ... don't exist yet!
-  public TestOrder addTestResult(
-      String deviceID, TestResult result, UUID patientId, Date dateTested)
-      throws NumberParseException {
+  @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
+  public AddTestResultResponse addTestResult(
+      String deviceID, TestResult result, UUID patientId, Date dateTested) {
     DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
@@ -313,15 +320,27 @@ public class TestOrderService {
 
     if (TestResultDeliveryPreference.SMS
         == _ps.getPatientPreferences(person).getTestResultDelivery()) {
-      // After adding test result, create a new patient link and text it to the patient
+      // After adding test result, create a new patient link and text it to the
+      // patient
       PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
       UUID internalId = patientLink.getInternalId();
-      _smss.sendToPatientLink(
-          internalId, "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
       savedOrder.setPatientLink(patientLink);
+      try {
+        _smss.sendToPatientLink(
+            internalId,
+            "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
+
+        return new AddTestResultResponse(savedOrder, true);
+      } catch (NumberParseException npe) {
+        LOG.warn("Failed to parse phone number for patient={}", person.getInternalId());
+        return new AddTestResultResponse(savedOrder, false);
+      } catch (TwilioException e) {
+        LOG.warn("Failed to send text message to patient={}", person.getInternalId());
+        return new AddTestResultResponse(savedOrder, false);
+      }
     }
 
-    return savedOrder;
+    return new AddTestResultResponse(savedOrder);
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility

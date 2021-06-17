@@ -22,12 +22,6 @@ const Admin = () => {
               </div>
               <div>
                 {" "}
-                <Link to="/admin/create-organization">
-                  Create new organization
-                </Link>
-              </div>
-              <div>
-                {" "}
                 <Link to="/admin/create-device-type">
                   Create new device type
                 </Link>

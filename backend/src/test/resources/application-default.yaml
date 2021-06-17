@@ -10,6 +10,10 @@ spring:
     properties:
       hibernate:
         default_schema: simple_report
+okta:
+  client:
+    org-url: http://localhost:8088
+    token: foo
 management:
   endpoints:
     web:
@@ -30,6 +34,7 @@ logging:
     # Other possibilities:
     # com.okta: DEBUG
     # org.springframework.security: DEBUG
+    org.springframework.web.client.RestTemplate: DEBUG
 simple-report:
   authorization:
     environment-name: "UNITTEST"
