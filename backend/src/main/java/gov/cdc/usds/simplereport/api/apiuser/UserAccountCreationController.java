@@ -158,7 +158,7 @@ public class UserAccountCreationController {
     String userId = getUserId(request.getSession());
     JSONObject enrollResponse = _oktaAuth.enrollSecurityKey(userId);
     request.getSession().setAttribute(FACTOR_ID_KEY, enrollResponse.getString(FACTOR_ID_KEY));
-    // TODO(emmastephenson): send a different object type, so that this serializes to JSON instead
+    // emmastephenson: send a different object type, so that this serializes to JSON instead
     // of text on the frontend.
     return new JSONObject(enrollResponse, "activation").toString();
   }
