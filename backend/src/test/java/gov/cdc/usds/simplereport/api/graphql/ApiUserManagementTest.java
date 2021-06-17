@@ -4,6 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -11,6 +16,9 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
+import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,9 +33,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
 class ApiUserManagementTest extends BaseGraphqlTest {
 
@@ -35,6 +45,16 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
   private static final List<String> USERNAMES =
       List.of("rjj@gmail.com", "rjjones@gmail.com", "jaredholler@msn.com", "janicek90@yahoo.com");
+
+  @SpyBean private OktaRepository _oktaRepo;
+
+  @BeforeEach
+  void resetOktaRepo() {
+    // Test initialization in BaseGraphqlTest makes calls to OktaRepository, this resets the
+    // state of the SpyBean so we can only examine the calls that are the results of the tests
+    // in this class
+    reset(_oktaRepo);
+  }
 
   @Test
   void whoami_standardUser_okResponses() {
@@ -186,6 +206,10 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(user));
 
     assertUserCanAccessAllFacilities(user);
+
+    verify(_oktaRepo)
+        .createUser(
+            any(IdentityAttributes.class), any(Organization.class), anySet(), anySet(), eq(true));
   }
 
   @Test
@@ -194,6 +218,32 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     ObjectNode variables = makeBoilerplateArgs(Role.ADMIN, true);
     JsonNode user = runQuery("add-user", "addUserNovel", variables, null).get("addUser");
     assertEquals("Rhonda", user.get("name").get("firstName").asText());
+
+    verify(_oktaRepo)
+        .createUser(
+            any(IdentityAttributes.class), any(Organization.class), anySet(), anySet(), eq(true));
+  }
+
+  @Test
+  @org.junit.jupiter.api.Disabled("This test would currently fail and will be enabled in PR#1778")
+  void addUser_disabledOrg_success() {
+    TestUserIdentities.withUser(
+        TestUserIdentities.SITE_ADMIN_USER,
+        () -> {
+          Organization org = _dataFactory.createUnverifiedOrg();
+
+          useSuperUser();
+
+          ObjectNode variables = makeBoilerplateArgs(Role.ADMIN, true);
+          variables.put("organizationExternalId", org.getExternalId());
+          JsonNode user = runQuery("add-user", "addUserNovel", variables, null).get("addUser");
+          assertEquals("Rhonda", user.get("name").get("firstName").asText());
+        });
+
+    // the user should have been set to disabled in okta because the org is not verified
+    verify(_oktaRepo)
+        .createUser(
+            any(IdentityAttributes.class), any(Organization.class), anySet(), anySet(), eq(false));
   }
 
   @Test
@@ -257,6 +307,10 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         EnumSet.allOf(UserPermission.class),
         List.of());
     assertUserCanAccessExactFacilities(user, Set.of());
+
+    verify(_oktaRepo)
+        .createUser(
+            any(IdentityAttributes.class), any(Organization.class), anySet(), anySet(), eq(true));
   }
 
   @Test
@@ -267,6 +321,10 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         runQuery("add-user-to-current-org", "addUserToCurrentOrgNovel", variables, null)
             .get("addUserToCurrentOrg");
     assertEquals("Rhonda", user.get("firstName").asText());
+
+    verify(_oktaRepo)
+        .createUser(
+            any(IdentityAttributes.class), any(Organization.class), anySet(), anySet(), eq(true));
   }
 
   @Test
@@ -349,6 +407,10 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.SUBMIT_TEST,
             UserPermission.UPDATE_TEST),
         extractPermissionsFromUser(enabledUser));
+
+    verify(_oktaRepo)
+        .createUser(
+            any(IdentityAttributes.class), any(Organization.class), anySet(), anySet(), eq(true));
   }
 
   @Test
