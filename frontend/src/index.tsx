@@ -10,7 +10,7 @@ import TelemetryProvider from "./app/telemetry-provider";
 import HealthChecks from "./app/HealthChecks";
 import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration";
 import PatientApp from "./patientApp/PatientApp";
-import client from "./config/apollo.config";
+import client from "./config/client";
 import * as serviceWorker from "./serviceWorker";
 
 import "./styles/App.css";

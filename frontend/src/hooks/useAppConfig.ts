@@ -1,8 +1,6 @@
 import { useReactiveVar } from "@apollo/client";
 
 import { appConfig } from "../storage/store";
-// TODO: configure here generalData load, current user data, organization, locale etc...
-//
 
 export const useAppConfig = () => {
   const config = useReactiveVar(appConfig);

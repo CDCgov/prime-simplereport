@@ -9,7 +9,7 @@ import { getFacilityIdFromUrl } from "../utils/url";
 import FacilityPopup from "./FacilityPopup";
 import FacilitySelect from "./FacilitySelect";
 
-const Loading: FC<{}> = () => <p>Loading facility information...</p>;
+const Loading: FC = () => <p>Loading facility information...</p>;
 
 interface Props {}
 
