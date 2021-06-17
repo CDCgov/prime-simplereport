@@ -1,7 +1,6 @@
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
 
-import OrganizationFormContainer from "./Organization/OrganizationFormContainer";
 import AddOrganizationAdminFormContainer from "./Organization/AddOrganizationAdminFormContainer";
 import DeviceTypeFormContainer from "./DeviceType/DeviceTypeFormContainer";
 import Admin from "./Admin";
@@ -28,10 +27,6 @@ const AdminRoutes: React.FC<Props> = ({ match, isAdmin }) => {
       <Route
         path={`${match.url}/pending-organizations`}
         render={() => <PendingOrganizationsList />}
-      />
-      <Route
-        path={`${match.url}/create-organization`}
-        render={() => <OrganizationFormContainer />}
       />
       <Route
         path={`${match.url}/add-organization-admin`}
