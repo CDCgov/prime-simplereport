@@ -1,0 +1,15 @@
+{
+  "request" : {
+    "url" : "/api/v1/users/fakeUserId/factors",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"provider\":\"FIDO\",\"factorType\":\"webauthn\"}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 404,
+    "body" : "{\"errorCode\":\"E0000007\",\"errorSummary\":\"Not found: Resource not found: fakeUserId (User)\",\"errorLink\":\"E0000007\",\"errorId\":\"oaeG23djG7CQ_msCRbWvUzrtg\",\"errorCauses\":[]}"
+  }
+}

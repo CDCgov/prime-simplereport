@@ -27,7 +27,7 @@ describe("Verify SMS MFA", () => {
         initialEntries={[
           {
             pathname: "/mfa-sms/verify",
-            state: { phoneNumber: "(530) 867-5309" },
+            state: { contact: "(530) 867-5309" },
           },
         ]}
       >

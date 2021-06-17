@@ -21,11 +21,17 @@ import {
 } from "../constants";
 import { showNotification } from "../../utils";
 import { useOutsideClick } from "../../utils/hooks";
+import { Patient } from "../../patients/ManagePatients";
+import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 
 import SearchResults from "./SearchResults";
 import SearchInput from "./SearchInput";
 import { useDebounce } from "./useDebounce";
 
+interface AoEAnswersForPatient extends AoEAnswersDelivery {
+  patientId: string;
+  facilityId?: string;
+}
 export const QUERY_PATIENT = gql`
   query GetPatientsByFacility($facilityId: ID!, $namePrefixMatch: String) {
     patients(
@@ -47,7 +53,7 @@ export const QUERY_PATIENT = gql`
   }
 `;
 
-const ADD_PATIENT_TO_QUEUE = gql`
+export const ADD_PATIENT_TO_QUEUE = gql`
   mutation AddPatientToQueue(
     $facilityId: ID!
     $patientId: ID!
@@ -105,11 +111,22 @@ const UPDATE_AOE = gql`
   }
 `;
 
-const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
+interface Props {
+  refetchQueue: () => void;
+  facilityId: string;
+  patientsInQueue: string[];
+}
+
+const AddToQueueSearchBox = ({
+  refetchQueue,
+  facilityId,
+  patientsInQueue,
+}: Props) => {
   const appInsights = useAppInsightsContext();
   const trackAddPatientToQueue = useTrackEvent(
     appInsights,
-    "Add Patient to Queue"
+    "Add Patient to Queue",
+    {}
   );
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
@@ -153,17 +170,17 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
     throw mutationError;
   }
 
-  const onInputChange = (event) => {
+  const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShowSuggestion(true);
     setDebounced(event.target.value);
   };
 
-  const onSearchClick = (event) => {
+  const onSearchClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
 
   const onAddToQueue = (
-    patient,
+    patient: Patient,
     {
       noSymptoms,
       symptoms,
@@ -174,16 +191,16 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
       priorTestDate,
       priorTestType,
       testResultDelivery,
-    },
+    }: AoEAnswersDelivery,
     createOrUpdate = "create"
-  ) => {
+  ): Promise<string | void> => {
     setDebounced("");
     setShowSuggestion(false);
     if (appInsights) {
-      trackAddPatientToQueue();
+      trackAddPatientToQueue({});
     }
     let callback;
-    const variables = {
+    const variables: AoEAnswersForPatient = {
       patientId: patient.internalId,
       noSymptoms,
       symptoms,
@@ -203,20 +220,20 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
     }
     return callback({ variables })
       .then((res) => {
-        let { type, title, body } = {
+        const { type, title, body } = {
           ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS](
             patient
           ),
         };
-        let alert = <Alert type={type} title={title} body={body} />;
+        const alert = <Alert type={type} title={title} body={body} />;
         showNotification(toast, alert);
         refetchQueue();
         if (createOrUpdate === "create") {
           return res.data.addPatientToQueue;
         }
       })
-      .catch((error) => {
-        updateMutationError(error);
+      .catch((err) => {
+        updateMutationError(err);
       });
   };
 
