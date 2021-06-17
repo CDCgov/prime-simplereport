@@ -19,7 +19,7 @@ export default {
       {
         label: "Apple",
         value: "apple",
-        checked: true,
+        checked: false,
       },
       {
         label: "Orange",
@@ -38,11 +38,17 @@ export default {
 type Props = React.ComponentProps<typeof Checkboxes>;
 
 const Template: Story<Props> = (args) => {
-  const [fruit, setFruit] = useState("");
+  const [fruits, setFruits] = useState({});
 
   return (
     <div className="grid-container margin-top-2">
-      <Checkboxes {...args} onChange={() => setFruit(fruit)} />
+      <Checkboxes
+        {...args}
+        onChange={(e) =>
+          setFruits({ ...fruits, [e.target.value]: e.target.checked })
+        }
+        checkedValues={fruits}
+      />
     </div>
   );
 };
