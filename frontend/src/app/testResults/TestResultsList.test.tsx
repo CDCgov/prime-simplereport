@@ -521,6 +521,36 @@ describe("TestResultsList", () => {
     ).toBeInTheDocument();
     expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
   });
+  it("should be able to filter by role", async () => {
+    //PICK UP HERE
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks}>
+            <TestResultsList page={1} />
+          </MockedProvider>
+        </Provider>
+      </MemoryRouter>
+    );
+    expect(
+      await screen.findByText("Test Results", { exact: false })
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText("Cragell, Barb Whitaker")
+    ).toBeInTheDocument();
+    expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
+    userEvent.click(screen.getByText("Filter"));
+    expect(await screen.findByText("- Select -")).toBeInTheDocument();
+    userEvent.click(screen.getByText("- Select -"));
+    expect(
+      await screen.findByRole("option", { name: "Negative" })
+    ).toBeInTheDocument();
+    userEvent.selectOptions(screen.getByLabelText("Result"), ["NEGATIVE"]);
+    expect(
+      await screen.findByText("Cragell, Barb Whitaker")
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
+  });
 
   it("should be able to clear patient filter", async () => {
     render(

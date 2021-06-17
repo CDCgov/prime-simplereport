@@ -231,8 +231,8 @@ type Query {
     result: String
     role: String
     symptomatic: String
-    startDate: LocalDate
-    endDate: LocalDate
+    startDate: DateTime
+    endDate: DateTime
     pageNumber: Int 
     pageSize: Int
   ): [TestResult] @requiredPermissions(allOf: ["READ_RESULT_LIST"])
@@ -242,8 +242,8 @@ type Query {
     result: String
     role: String
     symptomatic: String
-    startDate: LocalDate
-    endDate: LocalDate
+    startDate: DateTime
+    endDate: DateTime
   ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])

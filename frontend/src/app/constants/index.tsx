@@ -1,5 +1,8 @@
 import { TestResult } from "../testQueue/QueueItem";
 
+export const DATE_FORMAT_MM_DD_YYYY =
+  "^([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})|([0-9]{8})$";
+
 export const COVID_RESULTS: { [key: string]: TestResult } = {
   POSITIVE: "POSITIVE",
   NEGATIVE: "NEGATIVE",

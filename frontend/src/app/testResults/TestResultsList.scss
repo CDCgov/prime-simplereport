@@ -21,8 +21,23 @@
     text-decoration: line-through;
   }
 
-  .usa-form-group {
-    margin-top: 0;
+  .grid-row.grid-gap {
+    .usa-form-group {
+      padding-right: 0;
+      margin-top: 0;
+    }
+  }
+
+  .usa-date-picker__external-input {
+    max-width: 9rem;
+  }
+
+  .usa-date-picker__button {
+    max-width: 2.5em;
+  }
+
+  .usa-error-message {
+    max-width: 11rem;
   }
 
   .prime-search-container {
