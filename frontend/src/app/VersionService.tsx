@@ -18,7 +18,7 @@ export class VersionService {
    * reload the window. this method exists to be mocked
    */
   static reload() {
-    console.info("SHA mismatch. Reloading!");
+    console.warn("SHA mismatch. Reloading!");
     window.location.reload();
   }
 }
