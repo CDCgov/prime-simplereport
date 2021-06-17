@@ -25,6 +25,7 @@ export const MfaComplete = () => {
           className="margin-top-3"
           label={"Get started"}
           type={"submit"}
+          onClick={() => (window.location.pathname = "/")}
         />
       </Card>
     </CardBackground>

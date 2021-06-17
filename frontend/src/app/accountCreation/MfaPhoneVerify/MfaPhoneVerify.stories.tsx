@@ -7,7 +7,7 @@ export default {
   component: MfaPhoneVerify,
   argTypes: {},
   args: {
-    location: { state: { phoneNumber: "(530) 867-5309" } },
+    location: { state: { contact: "(530) 867-5309" } },
   },
 } as Meta;
 
