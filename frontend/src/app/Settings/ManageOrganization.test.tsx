@@ -27,11 +27,12 @@ describe("ManageOrganization", () => {
         </MockedProvider>
       </Provider>
     );
-    const orgNameInput = await screen.findByLabelText("Organization name", {
-      exact: false,
-    });
-    const saveButton = screen.getByText("Save settings");
-    expect(orgNameInput).toBeDisabled();
+    const saveButton = await screen.findByText("Save settings");
+    expect(
+      screen.queryByLabelText("Organization name", {
+        exact: false,
+      })
+    ).not.toBeInTheDocument();
     expect(saveButton).toBeDisabled();
   });
 

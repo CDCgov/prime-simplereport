@@ -3,11 +3,7 @@ function enterInformation() {
   this.expect
     .section("@enterInformation")
     .to.contain.text("Manage Organization");
-  this.section.enterInformation.assert.attributeEquals(
-    "@name",
-    "disabled",
-    "true"
-  );
+  this.section.enterInformation.expect.element("@name").to.be.not.present;
 }
 
 module.exports = {

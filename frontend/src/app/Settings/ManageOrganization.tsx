@@ -38,14 +38,20 @@ const ManageOrganization: React.FC<Props> = (props) => {
               departments. Please contact support if you need to change it.
             </Alert>
           )}
-          <TextInput
-            label="Organization name"
-            name="name"
-            value={name}
-            onChange={onChange}
-            disabled={!props.canEditOrganizationName}
-            required
-          />
+          {props.canEditOrganizationName ? (
+            <TextInput
+              label="Organization name"
+              name="name"
+              value={name}
+              onChange={onChange}
+              required
+            />
+          ) : (
+            <div className="usa-form-group">
+              <span>Organization name</span>
+              <p>{name}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
