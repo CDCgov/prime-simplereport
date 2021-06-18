@@ -1,3 +1,4 @@
+server.error.include-message: always
 spring:
   config:
     use-legacy-processing: true
