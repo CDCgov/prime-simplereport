@@ -1,0 +1,15 @@
+{
+  "request" : {
+    "url" : "/api/v1/authn",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"token\":\"invalidActivationToken\"}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 401,
+    "body" : "{\"errorCode\":\"E0000004\",\"errorSummary\":\"Authentication failed\",\"errorLink\":\"E0000004\",\"errorId\":\"oaezl3frLnKQHSre5exOkIwtg\",\"errorCauses\":[]}"
+  }
+}

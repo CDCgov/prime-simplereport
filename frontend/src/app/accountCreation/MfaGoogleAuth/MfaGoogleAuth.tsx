@@ -1,9 +1,11 @@
+import { AccountCreationApi } from "../AccountCreationApiService";
 import { MfaTotp } from "../MfaTotp/MfaTotp";
 
-interface Props {
-  qrCode: string;
-}
-
-export const MfaGoogleAuth = (props: Props) => {
-  return <MfaTotp totpType="Google Authenticator" qrCode={props.qrCode} />;
+export const MfaGoogleAuth = () => {
+  return (
+    <MfaTotp
+      totpType="Google Authenticator"
+      enrollFunction={() => AccountCreationApi.enrollTotpMfa("Google")}
+    />
+  );
 };

@@ -1,0 +1,15 @@
+{
+  "request" : {
+    "url" : "/api/v1/users/00ucxvarj3CeuPe9B4h6/factors",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"profile\":{\"phoneNumber\":\"999\"},\"factorType\":\"call\"}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 400,
+    "body" : "{\"errorCode\":\"E0000098\",\"errorSummary\":\"This phone number is invalid.\",\"errorLink\":\"E0000098\",\"errorId\":\"oae7fn-kmoKTM2dEZMi8QrKjw\",\"errorCauses\":[]}"
+  }
+}
