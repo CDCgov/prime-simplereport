@@ -1,5 +1,6 @@
 plugins {
     id 'org.springframework.boot' version '2.4.1'
+    id 'org.liquibase.gradle' version '2.0.3'
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id 'java'
     id 'checkstyle'
@@ -15,6 +16,7 @@ sourceCompatibility = '11'
 
 ext {
     kickstartVersion = '11.0.0'
+    set('springCloudVersion', "Hoxton.SR11")
 }
 repositories {
     mavenCentral()
@@ -81,6 +83,10 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'com.yannbriancon:spring-hibernate-query-utils:1.0.3'
 
+    // used to autoconfigure WireMock for testing
+    testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
+    testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
+
     // dev tools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
@@ -88,6 +94,26 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
+    // WireMock (only used for testing)
+    testCompile "com.github.tomakehurst:wiremock-jre8:2.28.1"
+
+    // Forcing these version resolutions over the BOM of spring-cloud-dependencies below
+    runtimeOnly "com.azure:azure-core-http-netty:1.9.0"
+    runtimeOnly "com.azure:azure-core:1.14.1"
+    runtimeOnly "com.azure:azure-storage-common:12.11.0-beta.2"
+    runtimeOnly "com.azure:azure-storage-queue:12.9.0-beta.2"
+    runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
+    runtimeOnly "io.zipkin.brave:brave:5.13.2"
+    runtimeOnly "io.zipkin.reporter2:zipkin-reporter-brave:2.16.1"
+    runtimeOnly "io.zipkin.reporter2:zipkin-reporter:2.16.1"
+    runtimeOnly "io.zipkin.zipkin2:zipkin:2.23.0"
+
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 springBoot {
@@ -97,6 +123,10 @@ springBoot {
 test {
     // people sometimes export this to run local dev more easily: don't let it break the tests
     environment "SPRING_PROFILES_ACTIVE", ""
+    // For some reason, setting this in application-default doesn't work, but it's needed
+    // to prevent the Okta client from throwing an exception when we point it at WireMock,
+    // which doesn't use HTTPS
+    environment "OKTA_TESTING_DISABLEHTTPSCHECK", "true"
     useJUnitPlatform()
     // uncomment this to log to stdout when each test starts, so you can tell what's going on
     // testLogging {
@@ -105,6 +135,7 @@ test {
 }
 
 configurations {
+    liquibaseRuntime.extendsFrom runtimeClasspath // inefficient but extremely effective
     compileClasspath {
         resolutionStrategy.activateDependencyLocking()
     }
@@ -122,6 +153,22 @@ jacocoTestReport {
         xml.enabled = true
     }
     dependsOn test // tests are required to run before generating the report
+}
+
+liquibase {
+    activities {
+        main {
+            driver 'org.postgresql.Driver'
+            changeLogFile '/db/changelog/db.changelog-master.yaml'
+            url 'jdbc:postgresql://127.0.0.1/simple_report'
+            username 'postgres'
+            password 'admin_password_for_local_dev_is_not_very_secure'
+            defaultSchemaName 'simple_report'
+            classpath 'src/main/resources'
+            // this shadows application.yaml: should probably be in a shared properties file
+            changeLogParameters noPhiUsername: "simple_report_no_phi"
+        }
+    }
 }
 
 sonarqube {

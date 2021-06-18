@@ -10,6 +10,7 @@ import { accountCreationSteps } from "../../../config/constants";
 import { phoneNumberIsValid } from "../../patients/personSchema";
 import { emailIsValid } from "../../utils/email";
 import { capitalizeText } from "../../utils/text";
+import { LoadingCard } from "../LoadingCard/LoadingCard";
 
 interface Props {
   type: "phone number" | "email address";
@@ -72,13 +73,7 @@ export const MfaSendCodeToContact = (props: Props) => {
   }, [formIsDirty, validateContact]);
 
   if (loading) {
-    return (
-      <main>
-        <div className="grid-container maxw-tablet">
-          <p className="margin-top-3">Validating {props.type}...</p>
-        </div>
-      </main>
-    );
+    return <LoadingCard message={`Validating ${props.type}`} />;
   }
 
   if (submitted) {

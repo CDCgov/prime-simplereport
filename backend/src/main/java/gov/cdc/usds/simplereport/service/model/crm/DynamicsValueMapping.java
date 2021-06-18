@@ -86,6 +86,12 @@ public enum DynamicsValueMapping {
    * @return comma-separated value string
    */
   public static String convertToValues(final Prefix prefix, final String inputString) {
+    if (inputString == null || inputString.isEmpty()) {
+      // most of the dynamics fields require a value, but we don't require them on our form anymore
+      // so default to populating empty fields with a valid option
+      return String.valueOf(DEFAULT_VALUE);
+    }
+
     final Set<Integer> typeSet = new HashSet<>();
     for (String v : inputString.split(",")) {
       try {
@@ -117,7 +123,7 @@ public enum DynamicsValueMapping {
 
   // Build a key and look it up, try to fail with something that will create a record in Dynamics
   private static int getDynamicsCodeFromName(final Prefix prefix, final String inputString) {
-    if (inputString == null || "".equals(inputString)) {
+    if (inputString == null || inputString.isEmpty()) {
       return DEFAULT_VALUE;
     }
 

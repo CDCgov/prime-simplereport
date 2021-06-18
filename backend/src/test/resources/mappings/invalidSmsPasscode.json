@@ -1,0 +1,15 @@
+{
+  "request" : {
+    "url" : "/api/v1/users/00ucxvarj3CeuPe9B4h6/factors/ostcxvt6y92pz3Vnn4h6/lifecycle/activate",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"passCode\":\"1234\"}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 403,
+    "body" : "{\"errorCode\":\"E0000068\",\"errorSummary\":\"Invalid Passcode/Answer\",\"errorLink\":\"E0000068\",\"errorId\":\"oaejWsh9aSbSyak0zfIivgHLA\",\"errorCauses\":[{\"errorSummary\":\"Your code doesn't match our records. Please try again.\"}]}"
+  }
+}

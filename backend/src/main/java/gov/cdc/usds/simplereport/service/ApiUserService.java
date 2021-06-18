@@ -59,9 +59,9 @@ public class ApiUserService {
   private static final Logger LOG = LoggerFactory.getLogger(ApiUserService.class);
 
   public UserInfo createUser(
-      String username, PersonName name, String organizationExternalId, Role role, boolean active) {
+      String username, PersonName name, String organizationExternalId, Role role) {
     Organization org = _orgService.getOrganization(organizationExternalId);
-    return createUserHelper(username, name, org, role, active);
+    return createUserHelper(username, name, org, role);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
@@ -74,7 +74,7 @@ public class ApiUserService {
       return reprovisionUser(found.get(), name, org, role);
     }
 
-    return createUserHelper(username, name, org, role, true);
+    return createUserHelper(username, name, org, role);
   }
 
   private UserInfo reprovisionUser(ApiUser apiUser, PersonName name, Organization org, Role role) {
@@ -116,10 +116,10 @@ public class ApiUserService {
     return user;
   }
 
-  private UserInfo createUserHelper(
-      String username, PersonName name, Organization org, Role role, boolean active) {
+  private UserInfo createUserHelper(String username, PersonName name, Organization org, Role role) {
     IdentityAttributes userIdentity = new IdentityAttributes(username, name);
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
+    boolean active = org.getIdentityVerified();
     // for now, all new users have no access to any facilities by default unless they are admins
     Set<OrganizationRole> roles =
         EnumSet.of(role.toOrganizationRole(), OrganizationRole.getDefault());
