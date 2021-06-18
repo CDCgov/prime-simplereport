@@ -1,5 +1,3 @@
-import { rest } from "lodash";
-
 const API_URL = process.env.REACT_APP_BACKEND_URL + "/user-account";
 const JSON_CONTENT = "application/json";
 const headers = {
