@@ -1,4 +1,12 @@
-import { graphql, GraphQLHandler, GraphQLRequest } from "msw";
+import {
+  DefaultRequestBody,
+  graphql,
+  GraphQLHandler,
+  GraphQLRequest,
+  MockedRequest,
+  rest,
+  RestHandler,
+} from "msw";
 import {
   ApolloClient,
   HttpLink,
@@ -47,11 +55,32 @@ const mocks = {
     "RemovePatientFromQueue",
     (req, res, ctx) => res(ctx.data({}))
   ),
+  enrollSecurityKeyMfa: rest.post(
+    "http://localhost:8080/user-account/enroll-security-key-mfa",
+    (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({ activation: { storybook: true } })
+      );
+    }
+  ),
+  enrollTotpMfa: rest.post(
+    "http://localhost:8080/user-account/authenticator-qr",
+    (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({ qrcode: "https://i.redd.it/tvfnlka65zi51.jpg" })
+      );
+    }
+  ),
 };
 
 export const getMocks = (
   ...names: (keyof typeof mocks)[]
-): GraphQLHandler<GraphQLRequest<any>>[] => names.map((name) => mocks[name]);
+): (
+  | GraphQLHandler<GraphQLRequest<any>>
+  | RestHandler<MockedRequest<DefaultRequestBody>>
+)[] => names.map((name) => mocks[name]);
 
 const cache = new InMemoryCache();
 const link = new HttpLink({

@@ -6,12 +6,14 @@ import {
   globalSymptomDefinitions,
   getTestTypes,
   getPregnancyResponses,
+  PregnancyCode,
 } from "../../../patientApp/timeOfTest/constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Button from "../../commonComponents/Button/Button";
 import FormGroup from "../../commonComponents/FormGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { COVID_RESULTS } from "../../constants";
+import { TestResult } from "../QueueItem";
 
 import "./AoEForm.scss";
 import SymptomInputs from "./SymptomInputs";
@@ -23,7 +25,28 @@ const findValueForLabel = (
   label: string,
   list: { label: string; value: string }[]
 ) => (list.filter((item) => item.label === label)[0] || {}).value;
+export interface PriorTest {
+  priorTestDate: ISODate | undefined | null;
+  priorTestResult: TestResult | undefined | null;
+  priorTestType: string | undefined | null;
+  firstTest: boolean;
+}
+export interface AoEAnswersDelivery extends PriorTest {
+  noSymptoms: boolean;
+  symptoms: string;
+  symptomOnset: ISODate | undefined;
+  pregnancy: PregnancyCode | undefined;
+  testResultDelivery: string;
+}
 
+type RequiredAndNotNull<T> = {
+  [P in keyof T]: Exclude<T[P], null | undefined>;
+};
+
+export type AoEAnswers = Omit<
+  RequiredAndNotNull<AoEAnswersDelivery>,
+  "testResultDelivery"
+>;
 interface Props {
   saveButtonText: string;
   onClose?: () => void;
@@ -60,7 +83,7 @@ interface Props {
     firstTest: boolean;
     pregnancy: string | undefined;
     testResultDelivery: string;
-  }) => void;
+  }) => Promise<string | void> | void;
   isModal: boolean;
   noValidation: boolean;
   formRef?: React.Ref<HTMLFormElement>;
