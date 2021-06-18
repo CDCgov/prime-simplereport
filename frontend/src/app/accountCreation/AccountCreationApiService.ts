@@ -27,7 +27,6 @@ const request = async (path: string, body: any) => {
   if (!res.ok) {
     console.log("there's been an error!", res)
     console.log("text: " + res.text());
-    console.log("status: " + res.status);
     throw res;
   }
   const contentType = res.headers.get("content-type");
