@@ -4,17 +4,19 @@ import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQ
 
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.ActivateSecurityKeyRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
 import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,14 +29,13 @@ public class UserAccountCreationController {
   private static final Logger LOG = LoggerFactory.getLogger(UserAccountCreationController.class);
 
   private static final String USER_ID_KEY = "userId";
-  private static final String FACTOR_ID = "factorId";
+  private static final String FACTOR_ID_KEY = "factorId";
 
   @Autowired private OktaAuthentication _oktaAuth;
 
   @PostConstruct
   private void init() {
-    LOG.info(
-        "WIP: User account request creation REST endpoint enabled. Not for use in production at this time.");
+    LOG.info("User account request creation REST endpoint enabled.");
   }
 
   /**
@@ -91,7 +92,7 @@ public class UserAccountCreationController {
       throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollSmsMfa(userId, requestBody.getUserInput());
-    request.getSession().setAttribute(FACTOR_ID, factorId);
+    request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
 
   /**
@@ -107,22 +108,20 @@ public class UserAccountCreationController {
       throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollVoiceCallMfa(userId, requestBody.getUserInput());
-    request.getSession().setAttribute(FACTOR_ID, factorId);
+    request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
 
   /**
-   * Enrolls a user in email MFA.
+   * Enrolls a user in email MFA, using the account email address stored in Okta.
    *
-   * @param requestBody contains the user-provided email address.
    * @param request contains session information about the user, including their Okta id.
    * @throws OktaAuthenticationFailureException if the provided email address is invalid.
    */
   @PostMapping("/enroll-email-mfa")
-  public void enrollEmailMfa(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
-      throws OktaAuthenticationFailureException {
+  public void enrollEmailMfa(HttpServletRequest request) throws OktaAuthenticationFailureException {
     String userId = getUserId(request.getSession());
-    String factorId = _oktaAuth.enrollEmailMfa(userId, requestBody.getUserInput());
-    request.getSession().setAttribute(FACTOR_ID, factorId);
+    String factorId = _oktaAuth.enrollEmailMfa(userId);
+    request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
 
   /**
@@ -133,9 +132,54 @@ public class UserAccountCreationController {
    * @param request contains session information about the user, including their Okta id.
    * @throws OktaAuthenticationFailureException if Okta cannot enroll the user in MFA.
    */
-  @GetMapping("/authenticator-qr")
-  public void getAuthQrCode(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
-    // WIP: doesn't interact with Okta yet.
+  @PostMapping("/authenticator-qr")
+  public FactorAndQrCode getAuthQrCode(
+      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
+      throws OktaAuthenticationFailureException {
+    String userId = getUserId(request.getSession());
+    FactorAndQrCode factorData =
+        _oktaAuth.enrollAuthenticatorAppMfa(userId, requestBody.getUserInput());
+    request.getSession().setAttribute(FACTOR_ID_KEY, factorData.getFactorId());
+    return factorData;
+  }
+
+  /**
+   * Enrolls a security key for the user, returning data needed to finish activation.
+   *
+   * @param request contains session information about the user, including their Okta id.
+   * @return activation object with information to finish enrolling the security key, including a
+   *     challenge and user id.
+   * @throws OktaAuthenticationFailureException if the user is not recognized or Okta cannot enroll
+   *     their security key.
+   */
+  @PostMapping("/enroll-security-key-mfa")
+  public String enrollSecurityKeyMfa(HttpServletRequest request)
+      throws OktaAuthenticationFailureException {
+    String userId = getUserId(request.getSession());
+    JSONObject enrollResponse = _oktaAuth.enrollSecurityKey(userId);
+    request.getSession().setAttribute(FACTOR_ID_KEY, enrollResponse.getString(FACTOR_ID_KEY));
+    // emmastephenson: send a different object type, so that this serializes to JSON instead
+    // of text on the frontend.
+    return new JSONObject(enrollResponse, "activation").toString();
+  }
+
+  /**
+   * Activates a security key for the user.
+   *
+   * @param requestBody contains attestation and clientData, required to activate the key in Okta.
+   * @param request contains session information about the user, including their Okta id and the
+   *     factor id of the security key.
+   * @throws OktaAuthenticationFailureException if the user is not recognized or Okta cannot
+   *     activate the security key.
+   */
+  @PostMapping("/activate-security-key-mfa")
+  public void activateSecurityKeyMfa(
+      @RequestBody ActivateSecurityKeyRequest requestBody, HttpServletRequest request)
+      throws OktaAuthenticationFailureException {
+    String userId = getUserId(request.getSession());
+    String factorId = getFactorId(request.getSession());
+    _oktaAuth.activateSecurityKey(
+        userId, factorId, requestBody.getAttestation(), requestBody.getClientData());
   }
 
   /**
@@ -150,17 +194,26 @@ public class UserAccountCreationController {
   @PostMapping("/verify-activation-passcode")
   public void verifyActivationPasscode(
       @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
-    // WIP: doesn't interact with Okta yet.
+    String userId = getUserId(request.getSession());
+    String factorId = getFactorId(request.getSession());
+    _oktaAuth.verifyActivationPasscode(userId, factorId, requestBody.getUserInput());
   }
 
   /**
    * Resends the activation passcode sent to a user (required for MFA enrollment).
    *
-   * @param request contains session information about the user, including their Okta id.
+   * @param request contains session information about the user, including their Okta id and factor
+   *     id.
+   * @throws OktaAuthenticationFailureException if the user/factor are not found on the request, or
+   *     if the resend request fails.
+   * @throws IllegalStateException if the request is made less than 30 seconds after the last
+   *     request for an activation code.
    */
   @PostMapping("/resend-activation-passcode")
   public void resendActivationPasscode(HttpServletRequest request) {
-    // WIP: doesn't interact with Okta yet.
+    String userId = getUserId(request.getSession());
+    String factorId = getFactorId(request.getSession());
+    _oktaAuth.resendActivationPasscode(userId, factorId);
   }
 
   private String getUserId(HttpSession session) throws OktaAuthenticationFailureException {
@@ -170,6 +223,16 @@ public class UserAccountCreationController {
     } else {
       throw new OktaAuthenticationFailureException(
           "User id not found; user could not be authenticated.");
+    }
+  }
+
+  private String getFactorId(HttpSession session) throws OktaAuthenticationFailureException {
+    Object factorId = session.getAttribute(FACTOR_ID_KEY);
+    if (factorId != null) {
+      return factorId.toString();
+    } else {
+      throw new OktaAuthenticationFailureException(
+          "Factor id not found; requested operation could not be performed.");
     }
   }
 }
