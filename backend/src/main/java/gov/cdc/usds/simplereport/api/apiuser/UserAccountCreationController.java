@@ -75,9 +75,9 @@ public class UserAccountCreationController {
    */
   @PostMapping("/set-recovery-question")
   public void setRecoveryQuestions(
-      @RequestBody SetRecoveryQuestionRequest requestBody, HttpServletRequest request)
+      @RequestBody SetRecoveryQuestionRequest requestBody, @SessionAttribute String userId)
       throws OktaAuthenticationFailureException {
-    String userId = getUserId(request.getSession());
+    // String userId = getUserId(request.getSession());
     _oktaAuth.setRecoveryQuestion(userId, requestBody.getQuestion(), requestBody.getAnswer());
   }
 
@@ -89,9 +89,9 @@ public class UserAccountCreationController {
    * @throws OktaAuthenticationFailureException if the provided phone number is invalid.
    */
   @PostMapping("/enroll-sms-mfa")
-  public void enrollSmsMfa(@RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
+  public void enrollSmsMfa(@RequestBody EnrollMfaRequest requestBody, @SessionAttribute String userId, HttpServletRequest request)
       throws OktaAuthenticationFailureException {
-    String userId = getUserId(request.getSession());
+    // String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollSmsMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
@@ -105,9 +105,9 @@ public class UserAccountCreationController {
    */
   @PostMapping("/enroll-voice-call-mfa")
   public void enrollVoiceCallMfa(
-      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
+      @RequestBody EnrollMfaRequest requestBody, @SessionAttribute String userId, HttpServletRequest request)
       throws OktaAuthenticationFailureException {
-    String userId = getUserId(request.getSession());
+    // String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollVoiceCallMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
@@ -120,7 +120,6 @@ public class UserAccountCreationController {
    */
   @PostMapping("/enroll-email-mfa")
   public void enrollEmailMfa(@SessionAttribute String userId, HttpServletRequest request) throws OktaAuthenticationFailureException {
-    // String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollEmailMfa(userId);
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
@@ -135,9 +134,9 @@ public class UserAccountCreationController {
    */
   @PostMapping("/authenticator-qr")
   public FactorAndQrCode getAuthQrCode(
-      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request)
+      @RequestBody EnrollMfaRequest requestBody, @SessionAttribute String userId, HttpServletRequest request)
       throws OktaAuthenticationFailureException {
-    String userId = getUserId(request.getSession());
+    // String userId = getUserId(request.getSession());
     FactorAndQrCode factorData =
         _oktaAuth.enrollAuthenticatorAppMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID_KEY, factorData.getFactorId());
@@ -154,9 +153,9 @@ public class UserAccountCreationController {
    *     their security key.
    */
   @PostMapping("/enroll-security-key-mfa")
-  public String enrollSecurityKeyMfa(HttpServletRequest request)
+  public String enrollSecurityKeyMfa(@SessionAttribute String userId, HttpServletRequest request)
       throws OktaAuthenticationFailureException {
-    String userId = getUserId(request.getSession());
+    // String userId = getUserId(request.getSession());
     JSONObject enrollResponse = _oktaAuth.enrollSecurityKey(userId);
     request.getSession().setAttribute(FACTOR_ID_KEY, enrollResponse.getString(FACTOR_ID_KEY));
     // emmastephenson: send a different object type, so that this serializes to JSON instead
@@ -175,10 +174,10 @@ public class UserAccountCreationController {
    */
   @PostMapping("/activate-security-key-mfa")
   public void activateSecurityKeyMfa(
-      @RequestBody ActivateSecurityKeyRequest requestBody, HttpServletRequest request)
+      @RequestBody ActivateSecurityKeyRequest requestBody, @SessionAttribute String userId, @SessionAttribute String factorId)
       throws OktaAuthenticationFailureException {
-    String userId = getUserId(request.getSession());
-    String factorId = getFactorId(request.getSession());
+    // String userId = getUserId(request.getSession());
+    // String factorId = getFactorId(request.getSession());
     _oktaAuth.activateSecurityKey(
         userId, factorId, requestBody.getAttestation(), requestBody.getClientData());
   }
@@ -194,9 +193,9 @@ public class UserAccountCreationController {
    */
   @PostMapping("/verify-activation-passcode")
   public void verifyActivationPasscode(
-      @RequestBody EnrollMfaRequest requestBody, HttpServletRequest request) {
-    String userId = getUserId(request.getSession());
-    String factorId = getFactorId(request.getSession());
+      @RequestBody EnrollMfaRequest requestBody, @SessionAttribute String userId, @SessionAttribute String factorId) {
+    // String userId = getUserId(request.getSession());
+    // String factorId = getFactorId(request.getSession());
     _oktaAuth.verifyActivationPasscode(userId, factorId, requestBody.getUserInput());
   }
 
@@ -211,9 +210,9 @@ public class UserAccountCreationController {
    *     request for an activation code.
    */
   @PostMapping("/resend-activation-passcode")
-  public void resendActivationPasscode(HttpServletRequest request) {
-    String userId = getUserId(request.getSession());
-    String factorId = getFactorId(request.getSession());
+  public void resendActivationPasscode(@SessionAttribute String userId, @SessionAttribute String factorId) {
+    // String userId = getUserId(request.getSession());
+    // String factorId = getFactorId(request.getSession());
     _oktaAuth.resendActivationPasscode(userId, factorId);
   }
 
