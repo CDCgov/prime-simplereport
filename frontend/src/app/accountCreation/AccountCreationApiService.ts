@@ -1,3 +1,5 @@
+import { rest } from "lodash";
+
 const API_URL = process.env.REACT_APP_BACKEND_URL + "/user-account";
 const JSON_CONTENT = "application/json";
 const headers = {
@@ -24,6 +26,8 @@ const request = async (path: string, body: any) => {
   console.log("response: " + res);
   if (!res.ok) {
     console.log("there's been an error!", res)
+    console.log("text: " + res.text());
+    console.log("status: " + res.status);
     throw res;
   }
   const contentType = res.headers.get("content-type");
