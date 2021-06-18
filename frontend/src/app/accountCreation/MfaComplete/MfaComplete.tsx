@@ -19,11 +19,11 @@ export const MfaComplete = () => {
         </div>
         <h1 className="font-ui-lg margin-top-3">Account set up complete</h1>
         <p className="margin-bottom-0">
-          You’re ready to start using SimpleReport.
+         To start using SimpleReport, log in to your account.
         </p>
         <Button
           className="margin-top-3"
-          label={"Get started"}
+          label={"Continue to SimpleReport"}
           type={"submit"}
           onClick={() => (window.location.pathname = "/")}
         />

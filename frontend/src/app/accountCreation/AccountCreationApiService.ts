@@ -21,7 +21,9 @@ const getOptions = (
 
 const request = async (path: string, body: any) => {
   const res = await fetch(API_URL + path, getOptions(body));
+  console.log("response: " + res);
   if (!res.ok) {
+    console.log("there's been an error!", res)
     throw res;
   }
   const contentType = res.headers.get("content-type");
