@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 /** Controller used for user account creation. */
 @RestController
@@ -118,8 +119,8 @@ public class UserAccountCreationController {
    * @throws OktaAuthenticationFailureException if the provided email address is invalid.
    */
   @PostMapping("/enroll-email-mfa")
-  public void enrollEmailMfa(HttpServletRequest request) throws OktaAuthenticationFailureException {
-    String userId = getUserId(request.getSession());
+  public void enrollEmailMfa(@SessionAttribute String userId, HttpServletRequest request) throws OktaAuthenticationFailureException {
+    // String userId = getUserId(request.getSession());
     String factorId = _oktaAuth.enrollEmailMfa(userId);
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
