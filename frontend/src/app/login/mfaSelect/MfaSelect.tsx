@@ -4,6 +4,7 @@ import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
+import { AUTH_OR_IDENTITY_METHODS_BUTTONS } from "../../constants";
 
 export const MfaSelect = () => {
   const [mfaOption, setMfaOption] = useState("");
@@ -21,39 +22,14 @@ export const MfaSelect = () => {
     <CardBackground>
       <Card logo>
         <RadioGroup
-          legend="Select authentication method"
-          buttons={[
-            {
-              label: "Text message (SMS)",
-              value: "sms",
-            },
-            {
-              label: "Okta Verify",
-              value: "okta",
-            },
-            {
-              label: "Google authenticator",
-              value: "google",
-            },
-            {
-              label: "Security key or biometric authentication",
-              value: "key",
-            },
-            {
-              label: "Phone call",
-              value: "phone",
-            },
-            {
-              label: "Email",
-              value: "email",
-            },
-          ]}
+          legend="Select your authentication method"
+          buttons={AUTH_OR_IDENTITY_METHODS_BUTTONS}
           selectedRadio={mfaOption}
           errorMessage={mfaOptionError}
           validationStatus={mfaOptionError ? "error" : undefined}
           onBlur={validateMfaOption}
           onChange={setMfaOption}
-        ></RadioGroup>
+        />
         <Button
           className="margin-top-3"
           label={"Sign in"}

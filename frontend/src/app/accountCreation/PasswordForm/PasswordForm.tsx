@@ -2,12 +2,8 @@ import { ChangeEvent, useState } from "react";
 import { useSelector } from "react-redux";
 import { Redirect } from "react-router";
 
-import { Card } from "../../commonComponents/Card/Card";
-import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
-import StepIndicator from "../../commonComponents/StepIndicator";
-import { accountCreationSteps } from "../../../config/constants";
 import {
   hasLowerCase,
   hasNumber,
@@ -16,6 +12,11 @@ import {
 } from "../../utils/text";
 import { AccountCreationApi } from "../AccountCreationApiService";
 import { RootState } from "../../store";
+import { LoadingCard } from "../LoadingCard/LoadingCard";
+import { Card } from "../../commonComponents/Card/Card";
+import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
+import StepIndicator from "../../commonComponents/StepIndicator";
+import { accountCreationSteps } from "../../../config/constants";
 
 export const PasswordForm = () => {
   // State setup
@@ -117,7 +118,7 @@ export const PasswordForm = () => {
         await AccountCreationApi.setPassword(activationToken, password);
         setSubmitted(true);
       } catch (error) {
-        setPasswordError(`API Error: ${error}`);
+        setPasswordError(`API Error: ${error?.message}`);
       } finally {
         setLoading(false);
       }
@@ -133,15 +134,15 @@ export const PasswordForm = () => {
       strengthColor = "bg-error";
       break;
     case 2:
-      strengthLabel = "Weak";
+      strengthLabel = "Okay";
       strengthColor = "bg-orange";
       break;
     case 3:
-      strengthLabel = "Okay";
+      strengthLabel = "Medium";
       strengthColor = "bg-gold";
       break;
     case 4:
-      strengthLabel = "Good";
+      strengthLabel = "Strong";
       strengthColor = "bg-success";
       break;
     default:
@@ -162,13 +163,7 @@ export const PasswordForm = () => {
   });
 
   if (loading) {
-    return (
-      <main>
-        <div className="grid-container maxw-tablet">
-          <p className="margin-top-3">Validating password...</p>
-        </div>
-      </main>
-    );
+    return <LoadingCard message="Validating password" />;
   }
 
   if (submitted) {
@@ -196,7 +191,6 @@ export const PasswordForm = () => {
           type={"password"}
           value={password}
           hintText="Your password must be at least 8 characters, include an uppercase and lowercase letter, and a number."
-          required
           errorMessage={passwordError}
           validationStatus={passwordError ? "error" : undefined}
           onBlur={validatePassword}
@@ -216,7 +210,6 @@ export const PasswordForm = () => {
           name={"confirm-password"}
           type={"password"}
           value={passwordConfirmation}
-          required
           errorMessage={passwordConfirmationError}
           validationStatus={passwordConfirmationError ? "error" : undefined}
           onBlur={validatePasswordConfirmation}

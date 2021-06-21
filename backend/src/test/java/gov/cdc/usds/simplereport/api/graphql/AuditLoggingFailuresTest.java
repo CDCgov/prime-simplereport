@@ -93,7 +93,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     runQuery("submit-test", args, "ewww");
     verify(_auditRepo).save(_eventCaptor.capture());
     ApiAuditEvent event = _eventCaptor.getValue();
-    assertEquals(List.of("addTestResult"), event.getGraphqlErrorPaths());
+    assertEquals(List.of("addTestResultNew"), event.getGraphqlErrorPaths());
   }
 
   @Test

@@ -81,20 +81,23 @@ interface EditQueueItemResponse {
   };
 }
 
-const SUBMIT_TEST_RESULT = gql`
+export const SUBMIT_TEST_RESULT = gql`
   mutation SubmitTestResult(
     $patientId: ID!
     $deviceId: String!
     $result: String!
     $dateTested: DateTime
   ) {
-    addTestResult(
+    addTestResultNew(
       patientId: $patientId
       deviceId: $deviceId
       result: $result
       dateTested: $dateTested
     ) {
-      internalId
+      testResult {
+        internalId
+      }
+      deliverySuccess
     }
   }
 `;
@@ -168,7 +171,7 @@ if (process.env.NODE_ENV !== "test") {
   Modal.setAppElement("#root");
 }
 
-interface QueueItemProps {
+export interface QueueItemProps {
   internalId: string;
   patient: {
     internalId: string;
@@ -303,19 +306,33 @@ const QueueItem: any = ({
     throw mutationError;
   }
 
-  const testResultsSubmitted = () => {
+  const testResultsSubmitted = (response: any) => {
     let { title, body } = {
       ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
         patient
       ),
     };
+
+    if (response?.data?.addTestResultNew.deliverySuccess === false) {
+      let deliveryFailureAlert = (
+        <Alert
+          type="error"
+          title={`Unable to text result to ${patientFullNameLastFirst}`}
+          body="The phone number provided may not be valid or may not be able to accept text messages"
+        />
+      );
+      showNotification(toast, deliveryFailureAlert);
+    }
+
     let alert = <Alert type="success" title={title} body={body} />;
     showNotification(toast, alert);
   };
 
   const onTestResultSubmit = (forceSubmit: boolean = false) => {
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
-      trackSubmitTestResult({});
+      if (appInsights) {
+        trackSubmitTestResult({});
+      }
       setConfirmationType("none");
       submitTestResult({
         variables: {
@@ -395,7 +412,9 @@ const QueueItem: any = ({
 
   const removeFromQueue = () => {
     setConfirmationType("none");
-    trackRemovePatientFromQueue({});
+    if (appInsights) {
+      trackRemovePatientFromQueue({});
+    }
     removePatientFromQueue({
       variables: {
         patientId: removePatientId,
@@ -419,12 +438,25 @@ const QueueItem: any = ({
     updateIsAoeModalOpen(false);
   };
 
-  const saveAoeCallback = (answers: any) => {
+  const saveAoeCallback = (answers: any): void => {
     setAoeAnswers(answers);
-    trackUpdateAoEResponse({});
+    if (appInsights) {
+      trackUpdateAoEResponse({});
+    }
+
+    const symptomOnset = answers.symptomOnset
+      ? moment(answers.symptomOnset).format("YYYY-MM-DD")
+      : null;
+
+    const priorTestDate = answers.priorTestDate
+      ? moment(answers.priorTestDate).format("YYYY-MM-DD")
+      : null;
+
     updateAoe({
       variables: {
         ...answers,
+        symptomOnset,
+        priorTestDate,
         patientId: patient.internalId,
       },
     })

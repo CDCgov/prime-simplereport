@@ -53,4 +53,8 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
   public PersonName getNameInfo() {
     return nameInfo;
   }
+
+  public void setNameInfo(PersonName name) {
+    nameInfo = name;
+  }
 }

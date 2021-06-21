@@ -1,5 +1,5 @@
 spring:
-  profiles.include: no-security,no-okta-mgmt
+  profiles.include: no-security,no-okta-mgmt, no-okta-auth
   datasource:
     url: jdbc:postgresql://localhost:${test-db-port:5444}/simple_report
     hikari.minimum-idle: 2 # when a context isn't being used, it should not leave lots of connections lying around
@@ -10,6 +10,10 @@ spring:
     properties:
       hibernate:
         default_schema: simple_report
+okta:
+  client:
+    org-url: http://localhost:8088
+    token: foo
 management:
   endpoints:
     web:
@@ -30,6 +34,7 @@ logging:
     # Other possibilities:
     # com.okta: DEBUG
     # org.springframework.security: DEBUG
+    org.springframework.web.client.RestTemplate: DEBUG
 simple-report:
   authorization:
     environment-name: "UNITTEST"

@@ -1,0 +1,10 @@
+mutation addTestResult($deviceId: String!, $result: String!, $patientId: ID!, $dateTested: DateTime) {
+    addTestResult(
+      patientId: $patientId,
+      deviceId: $deviceId,
+      result: $result,
+      dateTested: $dateTested
+    ) {
+      internalId
+    }
+  }

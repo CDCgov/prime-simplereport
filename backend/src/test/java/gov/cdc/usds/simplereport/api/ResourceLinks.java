@@ -14,4 +14,15 @@ public final class ResourceLinks {
   public static final String USER_ACCOUNT_REQUEST = "/user-account";
   public static final String USER_SET_PASSWORD = "/user-account/initialize-and-set-password";
   public static final String USER_SET_RECOVERY_QUESTION = "/user-account/set-recovery-question";
+  public static final String USER_ENROLL_SMS_MFA = "/user-account/enroll-sms-mfa";
+  public static final String USER_ENROLL_VOICE_CALL_MFA = "/user-account/enroll-voice-call-mfa";
+  public static final String USER_ENROLL_EMAIL_MFA = "/user-account/enroll-email-mfa";
+  public static final String USER_ENROLL_AUTH_APP_MFA = "/user-account/authenticator-qr";
+  public static final String USER_ENROLL_SECURITY_KEY_MFA = "/user-account/enroll-security-key-mfa";
+  public static final String USER_ACTIVATE_SECURITY_KEY_MFA =
+      "/user-account/activate-security-key-mfa";
+  public static final String USER_VERIFY_ACTIVATION_PASSCODE =
+      "/user-account/verify-activation-passcode";
+  public static final String USER_RESEND_ACTIVATION_PASSCODE =
+      "/user-account/resend-activation-passcode";
 }
