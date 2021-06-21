@@ -43,7 +43,7 @@ public class PatientSelfRegistration extends PersonUpdate {
         address,
         telephone,
         phoneNumbers,
-        parsePersonRole(role),
+        parsePersonRole(role, false),
         email,
         race,
         ethnicity,
