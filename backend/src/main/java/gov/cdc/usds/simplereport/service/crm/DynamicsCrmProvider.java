@@ -27,6 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @ConditionalOnProperty(name = "simple-report.dynamics.enabled", havingValue = "true")
@@ -68,6 +69,11 @@ public class DynamicsCrmProvider implements CrmProvider {
               null);
 
       credentials = future.get();
+      if (credentials == null) {
+        LOG.error("Dynamics AuthenticationResult is null");
+        return null;
+      }
+
       return credentials.getAccessToken();
     } catch (MalformedURLException | ExecutionException e) {
       LOG.error("Unable to get credentials: {}", e.toString());
@@ -79,7 +85,7 @@ public class DynamicsCrmProvider implements CrmProvider {
     try {
       SEMAPHORE.acquire();
 
-      if (credentials != null) {
+      if (credentials != null && credentials.getExpiresOnDate() != null) {
         long now = new Date().getTime();
         long expiresAt = credentials.getExpiresOnDate().getTime();
 
@@ -119,11 +125,16 @@ public class DynamicsCrmProvider implements CrmProvider {
     String requestUrl = _dynamicsProperties.getResourceUrl() + INTAKES_PATH;
 
     RestTemplate restTemplate = new RestTemplate();
-    ResponseEntity<JSONObject> response =
-        restTemplate.exchange(requestUrl, HttpMethod.POST, entity, JSONObject.class);
+    try {
+      ResponseEntity<JSONObject> response =
+          restTemplate.exchange(requestUrl, HttpMethod.POST, entity, JSONObject.class);
 
-    if (response.getStatusCode() != HttpStatus.NO_CONTENT) {
-      LOG.error("Dynamics request failed with code: {} (expected 204)", response.getStatusCode());
+      if (response.getStatusCode() != HttpStatus.NO_CONTENT) {
+        LOG.error("Dynamics request failed with code: {} (expected 204)", response.getStatusCode());
+      }
+    } catch (RestClientException e) {
+      LOG.error("Dynamics request failed, check request body: {}", e.toString());
+      throw e;
     }
   }
 }

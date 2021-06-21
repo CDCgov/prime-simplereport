@@ -1,16 +1,21 @@
+import { useEffect } from "react";
+
+import { AccountCreationApi } from "../AccountCreationApiService";
 import { MfaVerify } from "../MfaVerify/MfaVerify";
 
-interface Props {
-  location: { state: { email: string } };
-}
+export const MfaEmailVerify = () => {
+  useEffect(() => {
+    AccountCreationApi.enrollEmailMfa();
+  }, []);
 
-export const MfaEmailVerify = (props: Props) => (
-  <MfaVerify
-    hint={
-      <>
-        We’ve sent an email to <b>{props.location.state.email}</b>. It will
-        expire in 5 minutes.
-      </>
-    }
-  />
-);
+  return (
+    <MfaVerify
+      hint={
+        <>
+          We’ve sent you an email with a one-time security code. It will expire
+          in 5 minutes.
+        </>
+      }
+    />
+  );
+};

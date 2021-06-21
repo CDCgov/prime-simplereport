@@ -1,9 +1,8 @@
-import { MfaTotp } from "../MfaTotp/MfaTotp";
+import { MfaVerify } from "../MfaVerify/MfaVerify";
 
-interface Props {
-  qrCode: string;
-}
-
-export const MfaOktaVerify = (props: Props) => {
-  return <MfaTotp totpType="Okta Verify" qrCode={props.qrCode} />;
-};
+export const MfaOktaVerify = () => (
+  <MfaVerify
+    hint={<>Enter a code from the Okta Verify app.</>}
+    hideResend={true}
+  />
+);
