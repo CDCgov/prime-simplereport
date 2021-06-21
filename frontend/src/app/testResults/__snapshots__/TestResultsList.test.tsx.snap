@@ -107,7 +107,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <th
                     scope="row"
                   >
-                    Cragell, Barb Whitaker
+                    Gerard, Sam G
                     <span
                       class="display-block text-base font-ui-2xs"
                     >
@@ -116,19 +116,19 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     </span>
                   </th>
                   <td>
-                    03/17/2021 7:27pm
+                    03/19/2021 7:27pm
                   </td>
                   <td>
-                    Negative
+                    Positive
                   </td>
                   <td>
                     Abbott IDNow
                   </td>
                   <td>
-                    No
+                    Yes
                   </td>
                   <td>
-                    Arthur A Admin
+                    Ethan Entry
                   </td>
                   <td>
                     <button
@@ -235,7 +235,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <th
                     scope="row"
                   >
-                    Gerard, Sam G
+                    Cragell, Barb Whitaker
                     <span
                       class="display-block text-base font-ui-2xs"
                     >
@@ -244,19 +244,19 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     </span>
                   </th>
                   <td>
-                    03/19/2021 7:27pm
+                    03/17/2021 7:27pm
                   </td>
                   <td>
-                    Positive
+                    Negative
                   </td>
                   <td>
                     Abbott IDNow
                   </td>
                   <td>
-                    Yes
+                    No
                   </td>
                   <td>
-                    Ethan Entry
+                    Arthur A Admin
                   </td>
                   <td>
                     <button
