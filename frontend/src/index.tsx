@@ -14,7 +14,6 @@ import { onError } from "@apollo/client/link/error";
 import { toast } from "react-toastify";
 import Modal from "react-modal";
 
-import "./i18n";
 import App from "./app/App";
 import PatientApp from "./patientApp/PatientApp";
 import AccountCreationApp from "./app/accountCreation/AccountCreationApp";

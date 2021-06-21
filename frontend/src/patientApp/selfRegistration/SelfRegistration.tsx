@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -26,8 +25,6 @@ export const SelfRegistration = () => {
   const [step, setStep] = useState(RegistrationStep.TERMS);
   const [entityName, setEntityName] = useState("");
   const [personName, setPersonName] = useState("");
-
-  const { t } = useTranslation();
 
   const savePerson = async (person: Nullable<PersonFormData>) => {
     const {
@@ -76,8 +73,8 @@ export const SelfRegistration = () => {
           <div className="grid-container maxw-tablet">
             <h1 className="margin-top-0 margin-bottom-1">
               {step === RegistrationStep.FINISHED
-                ? t("Registration complete")
-                : t("Register for your test")}
+                ? "Registration complete"
+                : "Register for your test"}
             </h1>
             <h2 className="margin-y-0 text-normal">{entityName}</h2>
           </div>
