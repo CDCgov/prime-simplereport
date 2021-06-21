@@ -611,6 +611,68 @@ const mocks = [
   },
   {
     request: {
+      query: resultsCountQuery,
+      variables: {
+        facilityId: "1",
+        startDate: "2021-03-18T00:00:00.000Z",
+      },
+    },
+    result: {
+      data: {
+        testResultsCount: testResultsByStartDate.length,
+      },
+    },
+  },
+  {
+    request: {
+      query: testResultQuery,
+      variables: {
+        facilityId: "1",
+        startDate: "2021-03-18T00:00:00.000Z",
+        pageNumber: 0,
+        pageSize: 20,
+      },
+    },
+    result: {
+      data: {
+        testResults: testResultsByStartDate,
+      },
+    },
+  },
+  {
+    request: {
+      query: resultsCountQuery,
+      variables: {
+        facilityId: "1",
+        startDate: "2021-03-18T00:00:00.000Z",
+        endDate: "2021-03-18T23:59:59.999Z",
+      },
+    },
+    result: {
+      data: {
+        testResultsCount: testResultsByStartDateAndEndDate.length,
+      },
+    },
+  },
+  {
+    request: {
+      query: testResultQuery,
+      variables: {
+        facilityId: "1",
+        startDate: "2021-03-18T00:00:00.000Z",
+        endDate: "2021-03-18T23:59:59.999Z",
+        pageNumber: 0,
+        pageSize: 20,
+      },
+    },
+    result: {
+      data: {
+        testResults: testResultsByStartDateAndEndDate,
+      },
+    },
+  },
+  {
+    request: {
       query: QUERY_PATIENT,
       variables: {
         facilityId: "1",
@@ -788,17 +850,23 @@ describe("TestResultsList", () => {
     userEvent.click(screen.getByText("Filter"));
     expect(await screen.findByText("Date range (start)")).toBeInTheDocument();
     expect(await screen.findByText("Date range (end)")).toBeInTheDocument();
-    userEvent.type(screen.getByTestId("start-date"), "03/18/2021");
+    userEvent.type(
+      screen.getAllByTestId("date-picker-external-input")[0],
+      "03/18/2021"
+    );
     userEvent.tab();
     expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
     expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
     expect(
       screen.queryByText("Cragell, Barb Whitaker")
     ).not.toBeInTheDocument();
-    userEvent.type(screen.getByTestId("end-date"), "03/18/2021");
+    userEvent.type(
+      screen.getAllByTestId("date-picker-external-input")[1],
+      "03/18/2021"
+    );
     userEvent.tab();
     expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-    expect(await screen.findByText("Gerard, Sam G")).not.toBeInTheDocument();
+    expect(await screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
     expect(
       screen.queryByText("Cragell, Barb Whitaker")
     ).not.toBeInTheDocument();
