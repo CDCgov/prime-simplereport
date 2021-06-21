@@ -27,7 +27,7 @@ describe("Verify Phone MFA", () => {
         initialEntries={[
           {
             pathname: "/mfa-phone/verify",
-            state: { phoneNumber: "(530) 867-5309" },
+            state: { contact: "(530) 867-5309" },
           },
         ]}
       >

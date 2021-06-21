@@ -62,8 +62,7 @@ jobs:
           db-setup/create-db.sh
       - name: Run Java Tests
         env:
-          OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
-          OKTA_OAUTH2_CLIENT_ID: ${{ secrets.OKTA_OAUTH2_CLIENT_ID }}
+          OKTA_TESTING_DISABLEHTTPS: true
           TWILIO_ACCOUNT_SID: ${{secrets.TWILIO_TEST_ACCOUNT_SID }}
           TWILIO_AUTH_TOKEN: ${{secrets.TWILIO_TEST_AUTH_TOKEN }}
         run: ./gradlew jacocoTestReport -PtestDbPort=5432

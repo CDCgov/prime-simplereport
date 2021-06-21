@@ -1,14 +1,29 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter, Route, Switch } from "react-router";
 
-import { MfaEmail } from "../MfaEmail/MfaEmail";
+import { MfaEmailVerify } from "../MfaEmailVerify/MfaEmailVerify";
 import { MfaGoogleAuth } from "../MfaGoogleAuth/MfaGoogleAuth";
-import { MfaOktaVerify } from "../MfaOktaVerify/MfaOktaVerify";
+import { MfaOkta } from "../MfaOkta/MfaOkta";
 import { MfaPhone } from "../MfaPhone/MfaPhone";
 import { MfaSecurityKey } from "../MfaSecurityKey/MfaSecurityKey";
 import { MfaSms } from "../MfaSms/MfaSms";
 
 import { MfaSelect } from "./MfaSelect";
+
+jest.mock("../AccountCreationApiService", () => ({
+  AccountCreationApi: {
+    enrollEmailMfa: () => {},
+    enrollTotpMfa: (app: "Google" | "Okta") => {
+      return new Promise((res, rej) => {
+        if (app === "Google" || app === "Okta") {
+          res({ qrcode: "success" });
+        } else {
+          rej();
+        }
+      });
+    },
+  },
+}));
 
 describe("MfaSelect", () => {
   beforeEach(() => {
@@ -39,11 +54,11 @@ describe("MfaSelect routing", () => {
         <Switch>
           <Route path="/mfa-select" component={MfaSelect} />
           <Route path="/mfa-sms" component={MfaSms} />
-          <Route path="/mfa-okta-verify" component={MfaOktaVerify} />
+          <Route path="/mfa-okta" component={MfaOkta} />
           <Route path="/mfa-google-auth" component={MfaGoogleAuth} />
           <Route path="/mfa-security-key" component={MfaSecurityKey} />
           <Route path="/mfa-phone" component={MfaPhone} />
-          <Route path="/mfa-email" component={MfaEmail} />
+          <Route path="/mfa-email/verify" component={MfaEmailVerify} />
         </Switch>
       </MemoryRouter>
     );
@@ -63,7 +78,7 @@ describe("MfaSelect routing", () => {
     ).toBeInTheDocument();
   });
 
-  it("can route to the Google Auth page", () => {
+  it("can route to the Google Auth page", async () => {
     const googleRadio = screen.getByLabelText("Google Authenticator", {
       exact: false,
     });
@@ -71,13 +86,13 @@ describe("MfaSelect routing", () => {
     expect(googleRadio).toBeChecked();
     fireEvent.click(continueButton);
     expect(
-      screen.getByText(
+      await screen.findByText(
         "Get your security code via the Google Authenticator application."
       )
     ).toBeInTheDocument();
   });
 
-  it("can route to the Okta Verify page", () => {
+  it("can route to the Okta Verify page", async () => {
     const oktaRadio = screen.getByLabelText("Okta Verify", {
       exact: false,
     });
@@ -85,7 +100,7 @@ describe("MfaSelect routing", () => {
     expect(oktaRadio).toBeChecked();
     fireEvent.click(continueButton);
     expect(
-      screen.getByText(
+      await screen.findByText(
         "Get your security code via the Okta Verify application."
       )
     ).toBeInTheDocument();
@@ -116,7 +131,10 @@ describe("MfaSelect routing", () => {
     expect(emailRadio).toBeChecked();
     fireEvent.click(continueButton);
     expect(
-      screen.getByText("Get your security code via email.")
+      screen.getByText(
+        "We’ve sent you an email with a one-time security code.",
+        { exact: false }
+      )
     ).toBeInTheDocument();
   });
 
