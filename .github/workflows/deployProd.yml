@@ -94,11 +94,11 @@ jobs:
         if: success()
         run: |
           DOWNLOAD_URL=$(
-            curl -s -X POST --header 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
-              --data-binary @client.tgz
-              --header "Accept: application/vnd.github.v3+json"
-              --header "Content-type:  application/gzip"
-              "$UPLOAD_URL?name=simple-report-client-application.tgz&label=Compiled%20Client%20Application"
+            curl -s -X POST --header 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+              --data-binary @client.tgz \
+              --header "Accept: application/vnd.github.v3+json" \
+              --header "Content-type:  application/gzip" \
+              "$UPLOAD_URL?name=simple-report-client-application.tgz&label=Compiled%20Client%20Application" \
             | jq .url
           )
           if [[ -n "$DOWNLOAD_URL" ]]; then
