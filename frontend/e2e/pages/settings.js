@@ -3,7 +3,7 @@ function enterInformation(browser) {
   this.expect
     .section("@enterInformation")
     .to.contain.text("Manage Organization");
-  this.section.enterInformation.assert.element("@name").not.to.be.present;
+  this.section.enterInformation.expect.element("@name").not.to.be.present;
   this.section.enterInformation.click("@emptySelection");
   this.section.enterInformation.click("@save");
   this.expect
