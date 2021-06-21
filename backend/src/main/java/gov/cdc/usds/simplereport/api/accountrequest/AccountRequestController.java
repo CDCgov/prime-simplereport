@@ -201,7 +201,7 @@ public class AccountRequestController {
     // send next-steps email to requester
     _es.sendWithProviderTemplate(body.getEmail(), EmailProviderTemplate.ACCOUNT_REQUEST);
 
-    _aus.createUser(reqVars.get("email"), adminName, orgExternalId, Role.ADMIN, false);
+    _aus.createUser(reqVars.get("email"), adminName, orgExternalId, Role.ADMIN);
 
     _crm.submitAccountRequestData(body);
   }
