@@ -25,7 +25,7 @@ resource "azurerm_application_insights_web_test" "uptime" {
   resource_group_name     = var.rg_name
   application_insights_id = var.app_insights_id
   retry_enabled           = true
-  frequency               = 60
+  frequency               = 300
   timeout                 = 30
   geo_locations           = local.geo_locations
   kind                    = "ping"
