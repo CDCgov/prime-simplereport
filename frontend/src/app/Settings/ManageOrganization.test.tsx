@@ -24,11 +24,11 @@ describe("ManageOrganization", () => {
         </MockedProvider>
       </Provider>
     );
-    const orgNameInput = await screen.findByLabelText("Organization name", {
+    const saveButton = await screen.findByText("Save settings");
+    const orgNameInput = screen.queryByLabelText("Organization name", {
       exact: false,
     });
-    const saveButton = screen.getByText("Save settings");
-    expect(orgNameInput).toBeDisabled();
+    expect(orgNameInput).not.toBeInTheDocument();
     expect(saveButton).toBeDisabled();
   });
   it("allows org name and type change for super admins", async () => {

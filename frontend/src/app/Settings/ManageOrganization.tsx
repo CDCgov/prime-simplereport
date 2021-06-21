@@ -115,22 +115,28 @@ const ManageOrganization: React.FC<Props> = (props) => {
           {!props.canEditOrganizationName && (
             <Alert type="info">
               The organization name is used for reporting to public health
-              departments. Please contact support if you need to change it.
+              departments. Please contact{" "}
+              <a href="mailto:support@simplereport.gov">
+                support@simplereport.gov
+              </a>{" "}
+              if you need to change it.
             </Alert>
           )}
-          <TextInput
-            label="Organization name"
-            name="name"
-            value={organization.name}
-            onChange={(e) => onChange("name")(e.target.value)}
-            disabled={!props.canEditOrganizationName}
-            onBlur={() => {
-              validateField("name");
-            }}
-            errorMessage={errors["name"]}
-            validationStatus={errors["name"] ? "error" : "success"}
-            required
-          />
+
+          {props.canEditOrganizationName ? (
+            <TextInput
+              label="Organization name"
+              name="name"
+              value={organization.name}
+              onChange={(e) => onChange("name")(e.target.value)}
+              required
+            />
+          ) : (
+            <div className="usa-form-group">
+              <span>Organization name</span>
+              <p>{organization.name}</p>
+            </div>
+          )}
           <Select
             name="type"
             options={organizationTypes}

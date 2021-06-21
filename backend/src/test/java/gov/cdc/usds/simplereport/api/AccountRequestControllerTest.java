@@ -3,6 +3,8 @@ package gov.cdc.usds.simplereport.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -17,14 +19,20 @@ import gov.cdc.usds.simplereport.api.accountrequest.AccountRequestController;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
+import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
+import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
+import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.crm.CrmService;
@@ -32,7 +40,10 @@ import gov.cdc.usds.simplereport.service.email.EmailProvider;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
+import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -67,13 +78,20 @@ class AccountRequestControllerTest {
   @Qualifier("simpleReportTemplateEngine")
   SpringTemplateEngine _templateEngine;
 
+  // Mocked dependencies of ApiUserService
+  @MockBean private ApiUserRepository apiUserRepository;
+  @MockBean private AuthorizationService authorizationService;
+  @MockBean private IdentitySupplier identitySupplier;
+  @MockBean private CurrentPatientContextHolder currentPatientContextHolder;
+
   @MockBean private OrganizationService orgService;
   @MockBean private DeviceTypeService deviceTypeService;
   @MockBean private AddressValidationService addressValidationService;
-  @MockBean private ApiUserService apiUserService;
+  @SpyBean private ApiUserService apiUserService;
   @MockBean private CurrentAccountRequestContextHolder contextHolder;
 
   @MockBean private CrmService crmService;
+  @MockBean private OktaRepository oktaRepository;
 
   @MockBean private EmailProvider mockSendGrid;
   @SpyBean private EmailService emailService;
@@ -138,6 +156,9 @@ class AccountRequestControllerTest {
     String requestBody =
         "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"email\":\"kyvuzoxy@mailinator.com\",\"work-phone-number\":\"+1 (969) 768-2863\",\"cell-phone-number\":\"+1 (319) 682-3114\",\"street-address1\":\"707 White Milton Extension\",\"street-address2\":\"Apt 3\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"organization-name\":\"Day Hayes Trading\",\"organization-type\":\"university\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-street-address2\":\"UNAVAILABLE\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"facility-type\":\"Urgent care center\",\"facility-type-other\":\"My special facility\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Abbott IDNow, BD Veritor, Cue, LumiraDX\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}";
 
+    Organization organization = mock(Organization.class);
+    ApiUser apiUser = mock(ApiUser.class);
+    ApiUser acctRequestApiUser = mock(ApiUser.class);
     DeviceType device1 = mock(DeviceType.class);
     DeviceType device2 = mock(DeviceType.class);
     DeviceType device3 = mock(DeviceType.class);
@@ -146,6 +167,13 @@ class AccountRequestControllerTest {
     UUID deviceUuid2 = UUID.randomUUID();
     UUID deviceUuid3 = UUID.randomUUID();
     UUID deviceUuid4 = UUID.randomUUID();
+    UUID acctRequestApiUserUuid = UUID.randomUUID();
+    when(orgService.getOrganization(any())).thenReturn(organization);
+    when(apiUserRepository.save(any())).thenReturn(apiUser);
+    when(apiUserRepository.findByLoginEmail("account-request-noreply@simplereport.gov"))
+        .thenReturn(Optional.of(acctRequestApiUser));
+    when(acctRequestApiUser.getInternalId()).thenReturn(acctRequestApiUserUuid);
+    when(contextHolder.isAccountRequest()).thenReturn(true);
     when(device1.getName()).thenReturn("Abbott IDNow");
     when(device1.getModel()).thenReturn("ID Now");
     when(device1.getInternalId()).thenReturn(deviceUuid1);
@@ -246,8 +274,7 @@ class AccountRequestControllerTest {
             eq("kyvuzoxy@mailinator.com"),
             nameCaptor.capture(),
             externalIdCaptor.capture(),
-            eq(Role.ADMIN),
-            eq(false));
+            eq(Role.ADMIN));
 
     assertThat(nameCaptor.getValue().getFirstName()).isEqualTo("Mary");
     assertNull(nameCaptor.getValue().getMiddleName());
@@ -287,6 +314,10 @@ class AccountRequestControllerTest {
     verify(crmService, times(1)).submitAccountRequestData(accountRequestCaptor.capture());
     assertThat(accountRequestCaptor.getValue().getOrganizationName())
         .isEqualTo("Day Hayes Trading");
+
+    // new user should be disabled in okta
+    verify(oktaRepository)
+        .createUser(any(IdentityAttributes.class), eq(organization), anySet(), anySet(), eq(false));
   }
 
   @Test
