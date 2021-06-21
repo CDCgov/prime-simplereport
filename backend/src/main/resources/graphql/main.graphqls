@@ -313,8 +313,6 @@ type Mutation {
     deviceTypes: [String]!
     defaultDevice: String!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
-  updateOrganization(name: String!): String
-    @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   addUserToCurrentOrg(
     name: NameInput
     firstName: String
