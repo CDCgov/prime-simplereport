@@ -22,7 +22,6 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
       UUID patientId,
       String result,
       String role,
-      String symptomatic,
       Date startDate,
       Date endDate,
       int pageNumber,
@@ -39,7 +38,6 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
         patientId,
         Translators.parseTestResult(result),
         Translators.parsePersonRole(role, true),
-        Translators.parseYesNoUnknown(symptomatic),
         startDate,
         endDate,
         pageNumber,
@@ -47,19 +45,12 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
   }
 
   public int testResultsCount(
-      UUID facilityId,
-      UUID patientId,
-      String result,
-      String role,
-      String symptomatic,
-      Date startDate,
-      Date endDate) {
+      UUID facilityId, UUID patientId, String result, String role, Date startDate, Date endDate) {
     return tos.getTestResultsCount(
         facilityId,
         patientId,
         Translators.parseTestResult(result),
         Translators.parsePersonRole(role, true),
-        Translators.parseYesNoUnknown(symptomatic),
         startDate,
         endDate);
   }

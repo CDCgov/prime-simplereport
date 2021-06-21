@@ -21,7 +21,6 @@ import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder_;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.auxiliary.OptionalBoolean;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -112,7 +111,6 @@ public class TestOrderService {
       UUID patientId,
       TestResult result,
       PersonRole role,
-      OptionalBoolean symptomatic,
       Date startDate,
       Date endDate) {
     return (root, query, cb) -> {
@@ -143,47 +141,6 @@ public class TestOrderService {
       }
       if (role != null) {
         p = cb.and(p, cb.equal(root.get(BaseTestInfo_.patient).get(Person_.role), role));
-      }
-      if (symptomatic != null) {
-        String noSymptomsStr =
-            symptomatic == OptionalBoolean.YES
-                ? "false"
-                : symptomatic == OptionalBoolean.NO
-                    ? "true"
-                    : symptomatic == OptionalBoolean.WOULD_NOT_SPECIFY ? "false" : "false";
-        p =
-            cb.and(
-                p,
-                cb.equal(
-                    cb.function(
-                        "jsonb_extract_path_text",
-                        Boolean.class,
-                        root.get(TestEvent_.surveyData),
-                        cb.literal("noSymptoms")),
-                    noSymptomsStr));
-        if (symptomatic == OptionalBoolean.YES) {
-          p =
-              cb.and(
-                  p,
-                  cb.like(
-                      cb.function(
-                          "jsonb_extract_path_text",
-                          String.class,
-                          root.get(TestEvent_.surveyData),
-                          cb.literal("symptoms")),
-                      "%true%"));
-        } else if (symptomatic == OptionalBoolean.WOULD_NOT_SPECIFY) {
-          p =
-              cb.and(
-                  p,
-                  cb.notLike(
-                      cb.function(
-                          "jsonb_extract_path_text",
-                          String.class,
-                          root.get(TestEvent_.surveyData),
-                          cb.literal("symptoms")),
-                      "%true%"));
-        }
       }
       if (startDate != null) {
         p =
@@ -221,15 +178,13 @@ public class TestOrderService {
       UUID patientId,
       TestResult result,
       PersonRole role,
-      OptionalBoolean symptomatic,
       Date startDate,
       Date endDate,
       int pageOffset,
       int pageSize) {
     return _terepo
         .findAll(
-            buildTestEventSearchFilter(
-                facilityId, patientId, result, role, symptomatic, startDate, endDate),
+            buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate),
             PageRequest.of(pageOffset, pageSize))
         .toList();
   }
@@ -240,13 +195,11 @@ public class TestOrderService {
       UUID patientId,
       TestResult result,
       PersonRole role,
-      OptionalBoolean symptomatic,
       Date startDate,
       Date endDate) {
     return (int)
         _terepo.count(
-            buildTestEventSearchFilter(
-                facilityId, patientId, result, role, symptomatic, startDate, endDate));
+            buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate));
   }
 
   @Transactional(readOnly = true)

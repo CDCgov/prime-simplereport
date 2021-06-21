@@ -58,7 +58,6 @@ export const testResultQuery = gql`
     $patientId: ID
     $result: String
     $role: String
-    $symptomatic: String
     $startDate: DateTime
     $endDate: DateTime
     $pageNumber: Int
@@ -69,7 +68,6 @@ export const testResultQuery = gql`
       patientId: $patientId
       result: $result
       role: $role
-      symptomatic: $symptomatic
       startDate: $startDate
       endDate: $endDate
       pageNumber: $pageNumber
@@ -122,8 +120,6 @@ interface Props {
   resultFilter: string;
   setRoleFilter: Dispatch<SetStateAction<string>>;
   roleFilter: string;
-  setSymptomaticFilter: Dispatch<SetStateAction<string>>;
-  symptomaticFilter: string;
   setStartDateFilter: Dispatch<SetStateAction<string>>;
   startDateFilter: string;
   setEndDateFilter: Dispatch<SetStateAction<string>>;
@@ -237,8 +233,6 @@ export const DetachedTestResultsList: any = ({
   resultFilter,
   setRoleFilter,
   roleFilter,
-  setSymptomaticFilter,
-  symptomaticFilter,
   setStartDateFilter,
   startDateFilter,
   setEndDateFilter,
@@ -332,7 +326,7 @@ export const DetachedTestResultsList: any = ({
     var validStart = false;
     if (startDateEntry) {
       if (!startDateEntry.match(DATE_FORMAT_MM_DD_YYYY)) {
-        setStartDateError("Date must be in format MM/DD/YYYY");
+        setStartDateError("Date must be in format MM/DD/YYYY or MM-DD-YYYY");
         setStartDateFilter("");
       } else {
         validStart = true;
@@ -343,7 +337,7 @@ export const DetachedTestResultsList: any = ({
     }
     if (endDateEntry) {
       if (!endDateEntry.match(DATE_FORMAT_MM_DD_YYYY)) {
-        setEndDateError("Date must be in format MM/DD/YYYY");
+        setEndDateError("Date must be in format MM/DD/YYYY or MM-DD-YYYY");
       } else {
         const endDate = moment(endDateEntry).endOf("day");
         if (validStart && endDate.isBefore(moment(startDateFilter))) {
@@ -391,7 +385,6 @@ export const DetachedTestResultsList: any = ({
                       setSelectedPatientId("");
                       setResultFilter("");
                       setRoleFilter("");
-                      setSymptomaticFilter("");
                       setStartDateFilter("");
                       setEndDateFilter("");
                     }
@@ -409,6 +402,25 @@ export const DetachedTestResultsList: any = ({
                 className="position-relative bg-base-lightest"
               >
                 <div className="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2">
+                  <div className="person-search">
+                    <SearchInput
+                      onSearchClick={onSearchClick}
+                      onInputChange={onInputChange}
+                      queryString={debounced}
+                      disabled={!allowQuery}
+                      label={"Search by name"}
+                      placeholder={""}
+                      className="usa-form-group"
+                    />
+                    <SearchResults
+                      page="test-results"
+                      patients={patientData?.patients || []}
+                      onPatientSelect={onPatientSelect}
+                      shouldShowSuggestions={showDropdown}
+                      loading={debounced !== queryString}
+                      dropDownRef={dropDownRef}
+                    />
+                  </div>
                   <div className="usa-form-group date-filter-group">
                     <Label htmlFor="meeting-time">Date range (start)</Label>
                     {startDateError && (
@@ -418,8 +430,9 @@ export const DetachedTestResultsList: any = ({
                       </span>
                     )}
                     <DatePicker
-                      id="test-date"
-                      name="test-date"
+                      id="start-date"
+                      name="start-date"
+                      data-testid="start-date"
                       value={startDateEntry}
                       minDate="2000-01-01T00:00"
                       maxDate={moment().format("YYYY-MM-DDThh:mm")}
@@ -436,8 +449,9 @@ export const DetachedTestResultsList: any = ({
                       </span>
                     )}
                     <DatePicker
-                      id="test-date"
-                      name="test-date"
+                      id="end-date"
+                      name="end-date"
+                      data-testid="end-date"
                       value={endDateEntry}
                       minDate={startDateFilter || "2000-01-01T00:00"}
                       maxDate={moment().format("YYYY-MM-DDThh:mm")}
@@ -466,14 +480,6 @@ export const DetachedTestResultsList: any = ({
                     defaultSelect
                     onChange={setResultFilter}
                   />
-                  {/* <Select
-                    label="Symptoms?"
-                    name="symptomatic"
-                    value={symptomaticFilter}
-                    options={YES_NO_UNKNOWN_VALUES}
-                    defaultSelect
-                    onChange={setSymptomaticFilter}
-                  /> */}
                   <Select
                     label="Role"
                     name="role"
@@ -482,24 +488,7 @@ export const DetachedTestResultsList: any = ({
                     defaultSelect
                     onChange={setRoleFilter}
                   />
-                  <SearchInput
-                    onSearchClick={onSearchClick}
-                    onInputChange={onInputChange}
-                    queryString={debounced}
-                    disabled={!allowQuery}
-                    label={"Search by name"}
-                    placeholder={""}
-                    className="usa-form-group"
-                  />
                 </div>
-                <SearchResults
-                  page="test-results"
-                  patients={patientData?.patients || []}
-                  onPatientSelect={onPatientSelect}
-                  shouldShowSuggestions={showDropdown}
-                  loading={debounced !== queryString}
-                  dropDownRef={dropDownRef}
-                />
               </div>
             )}
             <div className="usa-card__body">
@@ -543,7 +532,6 @@ export const resultsCountQuery = gql`
     $patientId: ID
     $result: String
     $role: String
-    $symptomatic: String
     $startDate: DateTime
     $endDate: DateTime
   ) {
@@ -552,7 +540,6 @@ export const resultsCountQuery = gql`
       patientId: $patientId
       result: $result
       role: $role
-      symptomatic: $symptomatic
       startDate: $startDate
       endDate: $endDate
     )
@@ -571,8 +558,6 @@ type OmittedProps =
   | "resultFilter"
   | "setRoleFilter"
   | "roleFilter"
-  | "setSymptomaticFilter"
-  | "symptomaticFilter"
   | "setStartDateFilter"
   | "startDateFilter"
   | "setEndDateFilter"
@@ -590,7 +575,6 @@ const TestResultsList = (props: TestResultsListProps) => {
   const [selectedPatientId, setSelectedPatientId] = useState<string>("");
   const [resultFilter, setResultFilter] = useState<string>("");
   const [roleFilter, setRoleFilter] = useState<string>("");
-  const [symptomaticFilter, setSymptomaticFilter] = useState<string>("");
   const [startDateFilter, setStartDateFilter] = useState<string>("");
   const [endDateFilter, setEndDateFilter] = useState<string>("");
 
@@ -602,7 +586,6 @@ const TestResultsList = (props: TestResultsListProps) => {
     facilityId: string;
     result?: string;
     role?: string;
-    symptomatic?: string;
     startDate?: string;
     endDate?: string;
     pageNumber: number;
@@ -618,7 +601,6 @@ const TestResultsList = (props: TestResultsListProps) => {
     facilityId: string;
     result?: string;
     role?: string;
-    symptomatic?: string;
     startDate?: string;
     endDate?: string;
   } = { facilityId: activeFacilityId };
@@ -636,11 +618,6 @@ const TestResultsList = (props: TestResultsListProps) => {
   if (roleFilter) {
     queryVariables.role = roleFilter;
     countQueryVariables.role = roleFilter;
-  }
-
-  if (symptomaticFilter) {
-    queryVariables.symptomatic = symptomaticFilter;
-    countQueryVariables.symptomatic = symptomaticFilter;
   }
 
   if (startDateFilter) {
@@ -693,8 +670,6 @@ const TestResultsList = (props: TestResultsListProps) => {
         resultFilter,
         setRoleFilter,
         roleFilter,
-        setSymptomaticFilter,
-        symptomaticFilter,
         setStartDateFilter,
         startDateFilter,
         setEndDateFilter,

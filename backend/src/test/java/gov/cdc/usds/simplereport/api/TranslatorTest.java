@@ -11,7 +11,6 @@ import static gov.cdc.usds.simplereport.api.Translators.parseTestResult;
 import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
 import static gov.cdc.usds.simplereport.api.Translators.parseYesNo;
-import static gov.cdc.usds.simplereport.api.Translators.parseYesNoUnknown;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
-import gov.cdc.usds.simplereport.db.model.auxiliary.OptionalBoolean;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
@@ -275,21 +273,6 @@ class TranslatorTest {
         () -> {
           parseYesNo("positive");
         });
-  }
-
-  @Test
-  void testNullParseYesNoUnknown() {
-    assertNull(parseYesNoUnknown(null));
-  }
-
-  @Test
-  void testValidParseYesNoUnknown() {
-    assertEquals(OptionalBoolean.YES, parseYesNoUnknown("y"));
-    assertEquals(OptionalBoolean.YES, parseYesNoUnknown("yEs"));
-    assertEquals(OptionalBoolean.NO, parseYesNoUnknown("n"));
-    assertEquals(OptionalBoolean.NO, parseYesNoUnknown("nO"));
-    assertEquals(OptionalBoolean.WOULD_NOT_SPECIFY, parseYesNoUnknown("u"));
-    assertEquals(OptionalBoolean.WOULD_NOT_SPECIFY, parseYesNoUnknown("uNKnoWn"));
   }
 
   @Test
