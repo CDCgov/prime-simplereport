@@ -32,7 +32,7 @@ import java.util.UUID;
  * practice.
  */
 public class TestEventExport {
-  public static final String CSV_API_VERSION = "27Jan2021"; // last time we changed something
+  public static final String CSV_API_VERSION = "21Jun2021"; // last time we changed something
   private final TestEvent testEvent;
   private final Optional<Person> patient;
   private final Optional<AskOnEntrySurvey> survey;

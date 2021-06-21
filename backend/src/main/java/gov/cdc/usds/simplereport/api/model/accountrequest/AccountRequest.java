@@ -26,8 +26,6 @@ public class AccountRequest implements TemplateVariablesProvider {
   @JsonProperty @NotNull private String state;
   @JsonProperty @NotNull private String zip;
   @JsonProperty @NotNull private String county;
-  @JsonProperty @NotNull private String facilityType;
-  @JsonProperty private String facilityTypeOther;
   @JsonProperty private String organizationName;
   @JsonProperty private String organizationType;
   @JsonProperty @NotNull private String facilityName;
@@ -74,8 +72,6 @@ public class AccountRequest implements TemplateVariablesProvider {
     variableMap.put("state", state);
     variableMap.put("zip", zip);
     variableMap.put("county", county);
-    variableMap.put("facilityType", facilityType);
-    variableMap.put("facilityTypeOther", facilityTypeOther);
     variableMap.put("organizationName", organizationName);
     variableMap.put("organizationType", organizationType);
     variableMap.put("facilityName", facilityName);
