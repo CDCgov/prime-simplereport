@@ -64,6 +64,8 @@ jobs:
   build-frontend:
     runs-on: ubuntu-latest
     needs: [verify-stg-is-released]
+    outputs:
+      download-url: ${{steps.upload.outputs.url}}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2.1.5
@@ -78,6 +80,8 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Add upload URL to environment
+        run: echo UPLOAD_URL=$(jq -r .release.upload_url < ${GITHUB_EVENT_PATH}| sed -e 's/{?name,label}//') >> $GITHUB_ENV
       - uses: ./.github/actions/build-frontend
         name: Build front-end application
         with:
@@ -86,12 +90,24 @@ jobs:
           base-domain-name: simplereport.gov
           client-tarball: ./client.tgz
       - name: Save compiled frontend application
-        uses: actions/upload-artifact@v2
+        id: upload
         if: success()
-        with:
-          name: frontend-tarball
-          path: client.tgz
-          retention-days: 1
+        run: |
+          DOWNLOAD_URL=$(
+            curl -s -X POST --header 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
+              --data-binary @client.tgz
+              --header "Accept: application/vnd.github.v3+json"
+              --header "Content-type:  application/gzip"
+              "$UPLOAD_URL?name=simple-report-client-application.tgz&label=Compiled%20Client%20Application"
+            | jq .url
+          )
+          if [[ -n "$DOWNLOAD_URL" ]]; then
+            echo Uploaded file to $DOWNLOAD_URL
+            echo "::set-output name=url::$DOWNLOAD_URL"
+          else
+            echo "Upload unsuccessful (probably you already uploaded it?)"
+            exit 1
+          fi
   deploy:
     runs-on: ubuntu-latest
     environment:
@@ -103,10 +119,13 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Retrieve frontend build
-        uses: actions/download-artifact@v2
-        with:
-          name: frontend-tarball
+      - name: Retrieve frontend build from release
+        run: |
+          curl -L -v \
+           --header 'Accept: application/octet-stream' \
+           --header 'Authorization: Bearer ${{secrets.GITHUB_TOKEN}}' \
+           ${{needs.build-frontend.outputs.download-url}} \
+           -o client.tgz
       - name: Promote and deploy
         uses: ./.github/actions/deploy-application
         with:
