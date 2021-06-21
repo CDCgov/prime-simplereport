@@ -28,7 +28,6 @@ import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
 import Pagination from "../commonComponents/Pagination";
 import {
   COVID_RESULTS,
-  YES_NO_UNKNOWN_VALUES,
   ROLE_VALUES,
   TEST_RESULT_DESCRIPTIONS,
   DATE_FORMAT_MM_DD_YYYY,
