@@ -132,7 +132,7 @@ public class UserAccountCreationController {
       @SessionAttribute String userId,
       HttpServletRequest request)
       throws OktaAuthenticationFailureException {
-    String factorId = _oktaAuth.enrollSmsMfa(userId, requestBody.getUserInput());
+    String factorId = _oktaAuth.enrollSmsMfa(userId, userInput);
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
 
