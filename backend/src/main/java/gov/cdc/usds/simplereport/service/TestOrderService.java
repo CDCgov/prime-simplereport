@@ -15,11 +15,13 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder_;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
@@ -105,7 +107,12 @@ public class TestOrderService {
 
   // Specifications filters for queries
   private Specification<TestEvent> buildTestEventSearchFilter(
-      UUID facilityId, UUID patientId, TestResult result) {
+      UUID facilityId,
+      UUID patientId,
+      TestResult result,
+      PersonRole role,
+      Date startDate,
+      Date endDate) {
     return (root, query, cb) -> {
       Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
       order.on(cb.equal(root.get(AuditedEntity_.internalId), order.get(TestOrder_.testEvent)));
@@ -132,6 +139,34 @@ public class TestOrderService {
       if (result != null) {
         p = cb.and(p, cb.equal(root.get(BaseTestInfo_.result), result));
       }
+      if (role != null) {
+        p = cb.and(p, cb.equal(root.get(BaseTestInfo_.patient).get(Person_.role), role));
+      }
+      if (startDate != null) {
+        p =
+            cb.and(
+                p,
+                cb.or(
+                    cb.and(
+                        cb.isNotNull(root.get(BaseTestInfo_.dateTestedBackdate)),
+                        cb.greaterThanOrEqualTo(
+                            root.get(BaseTestInfo_.dateTestedBackdate), startDate)),
+                    cb.and(
+                        cb.isNull(root.get(BaseTestInfo_.dateTestedBackdate)),
+                        cb.greaterThanOrEqualTo(root.get(AuditedEntity_.createdAt), startDate))));
+      }
+      if (endDate != null) {
+        p =
+            cb.and(
+                p,
+                cb.or(
+                    cb.and(
+                        cb.isNotNull(root.get(BaseTestInfo_.dateTestedBackdate)),
+                        cb.lessThanOrEqualTo(root.get(BaseTestInfo_.dateTestedBackdate), endDate)),
+                    cb.and(
+                        cb.isNull(root.get(BaseTestInfo_.dateTestedBackdate)),
+                        cb.lessThanOrEqualTo(root.get(AuditedEntity_.createdAt), endDate))));
+      }
       return p;
     };
   }
@@ -139,17 +174,32 @@ public class TestOrderService {
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
   public List<TestEvent> getTestEventsResults(
-      UUID facilityId, UUID patientId, TestResult result, int pageOffset, int pageSize) {
+      UUID facilityId,
+      UUID patientId,
+      TestResult result,
+      PersonRole role,
+      Date startDate,
+      Date endDate,
+      int pageOffset,
+      int pageSize) {
     return _terepo
         .findAll(
-            buildTestEventSearchFilter(facilityId, patientId, result),
+            buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate),
             PageRequest.of(pageOffset, pageSize))
         .toList();
   }
 
   @Transactional(readOnly = true)
-  public int getTestResultsCount(UUID facilityId, UUID patientId, TestResult result) {
-    return (int) _terepo.count(buildTestEventSearchFilter(facilityId, patientId, result));
+  public int getTestResultsCount(
+      UUID facilityId,
+      UUID patientId,
+      TestResult result,
+      PersonRole role,
+      Date startDate,
+      Date endDate) {
+    return (int)
+        _terepo.count(
+            buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate));
   }
 
   @Transactional(readOnly = true)
