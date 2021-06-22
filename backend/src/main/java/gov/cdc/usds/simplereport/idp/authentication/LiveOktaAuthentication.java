@@ -102,26 +102,26 @@ public class LiveOktaAuthentication implements OktaAuthentication {
           FactorStatus factorStatus = factor.getStatus();
           if (factorStatus == FactorStatus.PENDING_ACTIVATION
               || factorStatus == FactorStatus.ENROLLED) {
-              FactorType factorType = factor.getFactorType();
-              switch (factorType) {
-                case SMS:
-                  return UserAccountStatus.SMS_PENDING_ACTIVATION;
-                case CALL:
-                  return UserAccountStatus.CALL_PENDING_ACTIVATION;
-                case EMAIL:
-                  return UserAccountStatus.EMAIL_PENDING_ACTIVATION;
-                case WEBAUTHN:
-                  return UserAccountStatus.FIDO_PENDING_ACTIVATION;
-                case TOKEN_SOFTWARE_TOTP:
-                  FactorProvider provider = factor.getProvider();
-                  if (provider == FactorProvider.GOOGLE ) {
-                    return UserAccountStatus.GOOGLE_PENDING_ACTIVATION;
-                  } else {
-                    return UserAccountStatus.OKTA_PENDING_ACTIVATION;
-                  }
-                default:
-                  return UserAccountStatus.UNKNOWN;
-              }
+            FactorType factorType = factor.getFactorType();
+            switch (factorType) {
+              case SMS:
+                return UserAccountStatus.SMS_PENDING_ACTIVATION;
+              case CALL:
+                return UserAccountStatus.CALL_PENDING_ACTIVATION;
+              case EMAIL:
+                return UserAccountStatus.EMAIL_PENDING_ACTIVATION;
+              case WEBAUTHN:
+                return UserAccountStatus.FIDO_PENDING_ACTIVATION;
+              case TOKEN_SOFTWARE_TOTP:
+                FactorProvider provider = factor.getProvider();
+                if (provider == FactorProvider.GOOGLE) {
+                  return UserAccountStatus.GOOGLE_PENDING_ACTIVATION;
+                } else {
+                  return UserAccountStatus.OKTA_PENDING_ACTIVATION;
+                }
+              default:
+                return UserAccountStatus.UNKNOWN;
+            }
           }
         }
         return UserAccountStatus.ACTIVE;

@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureExcep
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.ActivateSecurityKeyRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.RequestConstants;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
@@ -17,6 +18,8 @@ import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +30,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import javax.validation.constraints.NotNull;
 
 /** Controller used for user account creation. */
 @RestController
@@ -126,11 +127,14 @@ public class UserAccountCreationController {
    */
   @PostMapping("/enroll-sms-mfa")
   public void enrollSmsMfa(
-    @RequestBody EnrollMfaRequest requestBody,
+      @RequestBody @NotNull @Size(max = RequestConstants.STANDARD_REQUEST_STRING_LIMIT)
+          String userInput,
       @SessionAttribute String userId,
       HttpServletRequest request)
       throws OktaAuthenticationFailureException {
-    String factorId = _oktaAuth.enrollSmsMfa(userId, requestBody.getUserInput());
+    LOG.info("in enroll sms mfa");
+    LOG.info("userInput: " + userInput);
+    String factorId = _oktaAuth.enrollSmsMfa(userId, userInput);
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
 
