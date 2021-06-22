@@ -8,10 +8,12 @@ import com.okta.sdk.resource.user.PasswordCredential;
 import com.okta.sdk.resource.user.RecoveryQuestionCredential;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserCredentials;
+import com.okta.sdk.resource.user.UserStatus;
 import com.okta.sdk.resource.user.factor.ActivateFactorRequest;
 import com.okta.sdk.resource.user.factor.CallUserFactor;
 import com.okta.sdk.resource.user.factor.EmailUserFactor;
 import com.okta.sdk.resource.user.factor.FactorProvider;
+import com.okta.sdk.resource.user.factor.FactorStatus;
 import com.okta.sdk.resource.user.factor.FactorType;
 import com.okta.sdk.resource.user.factor.SmsUserFactor;
 import com.okta.sdk.resource.user.factor.UserFactor;
@@ -20,6 +22,7 @@ import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
 import org.json.JSONObject;
@@ -73,6 +76,40 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     _apiToken = token;
     _orgUrl = orgUrl;
     _restTemplate = new RestTemplate();
+  }
+
+  public UserAccountStatus getUserStatus(String activationToken, String userId, String factorId) {
+    try {
+      if (activationToken != null && userId == null) {
+        return UserAccountStatus.PENDING_ACTIVATION;
+      }
+      if (userId != null) {
+        User user = _client.getUser(userId);
+        UserStatus status = user.getStatus();
+        if (status == UserStatus.PROVISIONED || status == UserStatus.STAGED) {
+          return UserAccountStatus.PENDING_ACTIVATION;
+        }
+        if (user.getPasswordChanged() == null) {
+          return UserAccountStatus.PASSWORD_RESET;
+        }
+        if (user.getCredentials().getRecoveryQuestion() == null) {
+          return UserAccountStatus.SET_SECURITY_QUESTIONS;
+        }
+        if (factorId == null) {
+          return UserAccountStatus.MFA_SELECT;
+        } else {
+          UserFactor factor = user.getFactor(factorId);
+          FactorStatus factorStatus = factor.getStatus();
+          if (factorStatus == FactorStatus.PENDING_ACTIVATION
+              || factorStatus == FactorStatus.ENROLLED) {
+            return UserAccountStatus.MFA_PENDING_ACTIVATION;
+          }
+        }
+      }
+    } catch (NullPointerException | ResourceException e) {
+      return UserAccountStatus.UNKNOWN;
+    }
+    return UserAccountStatus.UNKNOWN;
   }
 
   /**

@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.idp.authentication;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
 import org.json.JSONObject;
 
 /**
@@ -11,6 +12,8 @@ import org.json.JSONObject;
  * <p>Handles all Okta-related authenticaton.
  */
 public interface OktaAuthentication {
+
+  public UserAccountStatus getUserStatus(String activationToken, String userId, String factorId);
 
   public String activateUser(String activationToken, String crossForwardedHeader, String userAgent)
       throws InvalidActivationLinkException;

@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -29,6 +30,11 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   public DemoOktaAuthentication() {
     this.idToUserMap = new HashMap<>();
+  }
+
+  public UserAccountStatus getUserStatus(String activationToken, String userId, String factorId) {
+    // todo(emmastephenson): implement this logic
+    return UserAccountStatus.ACTIVE;
   }
 
   public String activateUser(String activationToken, String crossForwardedHeader, String userAgent)
