@@ -2,7 +2,12 @@ import { FunctionComponent, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
-import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
+import {
+  Route,
+  Switch,
+  BrowserRouter as Router,
+  RouteComponentProps,
+} from "react-router-dom";
 
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import USAGovBanner from "../commonComponents/USAGovBanner";
@@ -41,7 +46,7 @@ const AccountCreation404Wrapper: FunctionComponent<WrapperProps> = ({
   return <>{children}</>;
 };
 
-const AccountCreationApp = () => {
+const AccountCreationApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
   const dispatch = useDispatch();
   const activationToken = useSelector<RootState, string>(
     (state) => state.activationToken
@@ -61,7 +66,7 @@ const AccountCreationApp = () => {
         <div id="main-wrapper">
           <USAGovBanner />
           <AccountCreation404Wrapper activationToken={activationToken}>
-            <Router basename={`${process.env.PUBLIC_URL}/uac`}>
+            <Router basename={match.url}>
               <Switch>
                 <Route path="/" exact component={PasswordForm} />
                 <Route path="/set-password" component={PasswordForm} />

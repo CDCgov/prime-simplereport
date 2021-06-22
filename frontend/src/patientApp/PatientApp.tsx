@@ -2,7 +2,12 @@ import { FunctionComponent, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, connect, useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
-import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
+import {
+  Route,
+  Switch,
+  BrowserRouter as Router,
+  RouteComponentProps,
+} from "react-router-dom";
 
 import PrimeErrorBoundary from "../app/PrimeErrorBoundary";
 import USAGovBanner from "../app/commonComponents/USAGovBanner";
@@ -36,7 +41,7 @@ const PatientLinkURL404Wrapper: FunctionComponent<WrapperProps> = ({
   return <>{children}</>;
 };
 
-const PatientApp = () => {
+const PatientApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
   const dispatch = useDispatch();
   const plid = useSelector((state: any) => state.plid);
   const patient = useSelector((state: any) => state.patient);
@@ -57,7 +62,7 @@ const PatientApp = () => {
           <USAGovBanner />
           <PatientHeader />
           <PatientLinkURL404Wrapper plid={plid}>
-            <Router basename={`${process.env.PUBLIC_URL}/pxp`}>
+            <Router basename={match.url}>
               <Switch>
                 <Route path="/" exact component={TermsOfService} />
                 <Route path="/terms-of-service" component={TermsOfService} />
