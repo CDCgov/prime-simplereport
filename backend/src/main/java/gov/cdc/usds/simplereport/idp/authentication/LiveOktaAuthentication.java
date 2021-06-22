@@ -80,7 +80,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
 
   public UserAccountStatus getUserStatus(String activationToken, String userId, String factorId) {
     try {
-      if (activationToken != null && userId == null) {
+      if (activationToken != null && !activationToken.isEmpty() && userId == null) {
         return UserAccountStatus.PENDING_ACTIVATION;
       }
       if (userId != null) {

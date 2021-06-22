@@ -48,7 +48,7 @@ public class UserAccountCreationController {
 
   @GetMapping("/user-status")
   public UserAccountStatus getUserStatus(
-      @Nullable String activationToken,
+      @RequestBody @Nullable String activationToken,
       @Nullable @SessionAttribute String userId,
       @Nullable @SessionAttribute String factorId) {
     return _oktaAuth.getUserStatus(activationToken, userId, factorId);
@@ -126,15 +126,11 @@ public class UserAccountCreationController {
    */
   @PostMapping("/enroll-sms-mfa")
   public void enrollSmsMfa(
-    @JsonProperty
-    @NotNull
-    String userInput,
+    @RequestBody EnrollMfaRequest requestBody,
       @SessionAttribute String userId,
       HttpServletRequest request)
       throws OktaAuthenticationFailureException {
-        LOG.info("in enroll sms mfa");
-        LOG.info("userInput: ", userInput);
-    String factorId = _oktaAuth.enrollSmsMfa(userId, userInput);
+    String factorId = _oktaAuth.enrollSmsMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
 
