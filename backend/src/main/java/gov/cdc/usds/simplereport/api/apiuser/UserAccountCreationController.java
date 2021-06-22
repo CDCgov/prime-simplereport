@@ -8,7 +8,6 @@ import com.smartystreets.api.exceptions.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.ActivateSecurityKeyRequest;
-import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.RequestConstants;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
@@ -147,11 +146,12 @@ public class UserAccountCreationController {
    */
   @PostMapping("/enroll-voice-call-mfa")
   public void enrollVoiceCallMfa(
-      @RequestBody EnrollMfaRequest requestBody,
+      @RequestBody @NotNull @Size(max = RequestConstants.STANDARD_REQUEST_STRING_LIMIT)
+          String userInput,
       @SessionAttribute String userId,
       HttpServletRequest request)
       throws OktaAuthenticationFailureException {
-    String factorId = _oktaAuth.enrollVoiceCallMfa(userId, requestBody.getUserInput());
+    String factorId = _oktaAuth.enrollVoiceCallMfa(userId, userInput);
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
 
@@ -178,12 +178,12 @@ public class UserAccountCreationController {
    */
   @PostMapping("/authenticator-qr")
   public FactorAndQrCode getAuthQrCode(
-      @RequestBody EnrollMfaRequest requestBody,
+      @RequestBody @NotNull @Size(max = RequestConstants.STANDARD_REQUEST_STRING_LIMIT)
+          String userInput,
       @SessionAttribute String userId,
       HttpServletRequest request)
       throws OktaAuthenticationFailureException {
-    FactorAndQrCode factorData =
-        _oktaAuth.enrollAuthenticatorAppMfa(userId, requestBody.getUserInput());
+    FactorAndQrCode factorData = _oktaAuth.enrollAuthenticatorAppMfa(userId, userInput);
     request.getSession().setAttribute(FACTOR_ID_KEY, factorData.getFactorId());
     return factorData;
   }
@@ -239,10 +239,11 @@ public class UserAccountCreationController {
    */
   @PostMapping("/verify-activation-passcode")
   public void verifyActivationPasscode(
-      @RequestBody EnrollMfaRequest requestBody,
+      @RequestBody @NotNull @Size(max = RequestConstants.STANDARD_REQUEST_STRING_LIMIT)
+          String userInput,
       @SessionAttribute String userId,
       @SessionAttribute String factorId) {
-    _oktaAuth.verifyActivationPasscode(userId, factorId, requestBody.getUserInput());
+    _oktaAuth.verifyActivationPasscode(userId, factorId, userInput);
   }
 
   /**
