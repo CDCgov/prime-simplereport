@@ -2250,3 +2250,18 @@ databaseChangeLog:
               FROM ${database.defaultSchemaName}.person
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+  - changeSet:
+      id: add-organization-type
+      author: nicholas.a.scialli@omb.eop.gov
+      comment: Add type of organization.
+      changes:
+        - addColumn:
+            tableName: organization
+            columns:
+              - column:
+                  name: organization_type
+                  afterColumn: organization_name
+                  type: *string
+                  remarks: The type of organization
+                  constraints:
+                    nullable: true
