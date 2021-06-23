@@ -1,3 +1,5 @@
+import { UserAccountStatus } from "./UserAccountStatus";
+
 const API_URL = process.env.REACT_APP_BACKEND_URL + "/user-account";
 const JSON_CONTENT = "application/json";
 const headers = {
@@ -5,22 +7,25 @@ const headers = {
   Accept: JSON_CONTENT,
 };
 
+type RequestMethod = "GET" | "POST";
+
 const getOptions = (
+  method: RequestMethod,
   body: any
 ): {
-  method: string;
+  method: RequestMethod;
   headers: HeadersInit;
   body: string | undefined;
 } => {
   return {
-    method: "POST",
+    method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
   };
 };
 
-const request = async (path: string, body: any) => {
-  const res = await fetch(API_URL + path, getOptions(body));
+const request = async (method: RequestMethod, path: string, body: any) => {
+  const res = await fetch(API_URL + path, getOptions(method, body));
   console.log("response: " + res);
   if (!res.ok) {
     throw res;
@@ -38,49 +43,58 @@ const request = async (path: string, body: any) => {
 };
 
 export class AccountCreationApi {
+  static getUserStatus(
+    activationToken: string | null = null
+  ): Promise<UserAccountStatus> {
+    return request("GET", "/user-status", { activationToken });
+  }
+
   static setPassword(activationToken: string, password: string): Promise<any> {
-    return request("/initialize-and-set-password", {
+    return request("POST", "/initialize-and-set-password", {
       activationToken,
       password,
     });
   }
 
   static setRecoveryQuestion(question: string, answer: string) {
-    return request("/set-recovery-question", {
+    return request("POST", "/set-recovery-question", {
       question,
       answer,
     });
   }
 
   static enrollSmsMfa(phone: string) {
-    return request("/enroll-sms-mfa", { userInput: phone });
+    return request("POST", "/enroll-sms-mfa", { userInput: phone });
   }
 
   static enrollVoiceCallMfa(phone: string) {
-    return request("/enroll-voice-call-mfa", { userInput: phone });
+    return request("POST", "/enroll-voice-call-mfa", { userInput: phone });
   }
 
   static enrollEmailMfa() {
-    return request("/enroll-email-mfa", null);
+    return request("POST", "/enroll-email-mfa", null);
   }
 
   static enrollTotpMfa(app: "Google" | "Okta") {
-    return request("/authenticator-qr", { userInput: app });
+    return request("POST", "/authenticator-qr", { userInput: app });
   }
 
   static enrollSecurityKeyMfa() {
-    return request("/enroll-security-key-mfa", null);
+    return request("POST", "/enroll-security-key-mfa", null);
   }
 
   static activateSecurityKeyMfa(attestation: string, clientData: string) {
-    return request("/activate-security-key-mfa", { attestation, clientData });
+    return request("POST", "/activate-security-key-mfa", {
+      attestation,
+      clientData,
+    });
   }
 
   static verifyActivationPasscode(code: string) {
-    return request("/verify-activation-passcode", { userInput: code });
+    return request("POST", "/verify-activation-passcode", { userInput: code });
   }
 
   static resendActivationPasscode() {
-    return request("/resend-activation-passcode", null);
+    return request("POST", "/resend-activation-passcode", null);
   }
 }
