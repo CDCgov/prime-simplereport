@@ -38,6 +38,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by emmastephenson on 4/28/21
@@ -50,6 +52,8 @@ import org.springframework.web.client.RestTemplate;
 @Profile("!" + BeanProfiles.NO_OKTA_AUTH)
 @Service
 public class LiveOktaAuthentication implements OktaAuthentication {
+  private static final Logger LOG = LoggerFactory.getLogger(LiveOktaAuthentication.class);
+
   private static final String USER_API_ENDPOINT = "/api/v1/users/";
   private static final String ACTIVATION_KEY = "activation";
 
@@ -149,6 +153,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    */
   public String activateUser(String activationToken, String crossForwardedHeader, String userAgent)
       throws InvalidActivationLinkException {
+    LOG.info("in activateUser (LiveOktaAuthentication)");
     JSONObject requestBody = new JSONObject();
     requestBody.put("token", activationToken);
     String authorizationToken = "SSWS " + _apiToken;
@@ -161,7 +166,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     HttpEntity<String> entity = new HttpEntity<>(requestBody.toString(), headers);
     String postUrl = _orgUrl + "/api/v1/authn";
     try {
+      LOG.info("about to make the activation request");
       String response = _restTemplate.postForObject(postUrl, entity, String.class);
+      LOG.info("response: " + response);
       JSONObject responseJson = new JSONObject(response);
       return responseJson.getJSONObject("_embedded").getJSONObject("user").getString("id");
     } catch (RestClientException | NullPointerException e) {
