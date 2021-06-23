@@ -63,6 +63,7 @@ public class UserAccountCreationController {
       @RequestParam @Nullable String activationToken,
       @Nullable @SessionAttribute String userId,
       @Nullable @SessionAttribute String factorId) {
+    LOG.info("endpoint hit: /user-status" + activationToken);
     return _oktaAuth.getUserStatus(activationToken, userId, factorId);
   }
 
@@ -97,6 +98,8 @@ public class UserAccountCreationController {
   public void activateAccount(
       @RequestBody ActivateAccountRequest requestBody, HttpServletRequest request)
       throws InvalidActivationLinkException {
+    LOG.info("endpoint hit: /initialize");
+    LOG.info("requestBody: " + requestBody.getActivationToken());
     String userId =
         _oktaAuth.activateUser(
             requestBody.getActivationToken(),

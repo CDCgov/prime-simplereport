@@ -10,7 +10,7 @@ import { accountCreationSteps } from "../../../config/constants";
 import { phoneNumberIsValid } from "../../patients/personSchema";
 import { emailIsValid } from "../../utils/email";
 import { capitalizeText } from "../../utils/text";
-import { LoadingCard } from "../LoadingCard/LoadingCard";
+import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 interface Props {
   type: "phone number" | "email address";
