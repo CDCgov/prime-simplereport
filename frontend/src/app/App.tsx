@@ -22,7 +22,7 @@ import WithFacility from "./facilitySelect/WithFacility";
 import { appPermissions } from "./permissions";
 import Settings from "./Settings/Settings";
 import { getAppInsights } from "./TelemetryService";
-import ErrorPage from "./commonComponents/ErrorPage";
+import AuthErrorPage from "./commonComponents/AuthErrorPage";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -87,13 +87,12 @@ const App = () => {
   }
 
   if (error) {
-    console.log(error.networkError?.message,"THE ERROR MESSAGE")
     if (appInsights instanceof ApplicationInsights) {
       appInsights.trackException({ error });
     }
 
     if (error.networkError?.message === "UNAUTHORIZED") {
-      return <ErrorPage></ErrorPage>
+      return <AuthErrorPage></AuthErrorPage>
     }
     return <p>Server connection error...</p>;
   }
