@@ -242,11 +242,20 @@ type Query {
     facilityId: ID
     patientId: ID
     result: String
-    pageNumber: Int
+    role: String
+    startDate: DateTime
+    endDate: DateTime
+    pageNumber: Int 
     pageSize: Int
   ): [TestResult] @requiredPermissions(allOf: ["READ_RESULT_LIST"])
-  testResultsCount(facilityId: ID, patientId: ID, result: String): Int
-    @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  testResultsCount(
+    facilityId: ID
+    patientId: ID
+    result: String
+    role: String
+    startDate: DateTime
+    endDate: DateTime
+  ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
@@ -313,8 +322,6 @@ type Mutation {
     deviceTypes: [String]!
     defaultDevice: String!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
-  updateOrganization(name: String!): String
-    @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   addUserToCurrentOrg(
     name: NameInput
     firstName: String

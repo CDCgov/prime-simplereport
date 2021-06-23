@@ -1,11 +1,14 @@
 import { FunctionComponent, useEffect } from "react";
-import { ToastContainer } from "react-toastify";
 import { useDispatch, connect, useSelector } from "react-redux";
-import "react-toastify/dist/ReactToastify.css";
-import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
+import {
+  Route,
+  Switch,
+  BrowserRouter as Router,
+  RouteComponentProps,
+} from "react-router-dom";
 
 import PrimeErrorBoundary from "../app/PrimeErrorBoundary";
-import USAGovBanner from "../app/commonComponents/USAGovBanner";
+import Page from "../app/commonComponents/Page/Page";
 import { setInitialState } from "../app/store";
 import { getPatientLinkIdFromUrl } from "../app/utils/url";
 import PageNotFound from "../app/commonComponents/PageNotFound";
@@ -36,7 +39,7 @@ const PatientLinkURL404Wrapper: FunctionComponent<WrapperProps> = ({
   return <>{children}</>;
 };
 
-const PatientApp = () => {
+const PatientApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
   const dispatch = useDispatch();
   const plid = useSelector((state: any) => state.plid);
   const patient = useSelector((state: any) => state.patient);
@@ -52,53 +55,43 @@ const PatientApp = () => {
 
   return (
     <PrimeErrorBoundary>
-      <div className="App">
-        <div id="main-wrapper">
-          <USAGovBanner />
-          <PatientHeader />
-          <PatientLinkURL404Wrapper plid={plid}>
-            <Router basename={`${process.env.PUBLIC_URL}/pxp`}>
-              <Switch>
-                <Route path="/" exact component={TermsOfService} />
-                <Route path="/terms-of-service" component={TermsOfService} />
-                <Route path="/birth-date-confirmation" component={DOB} />
-                <GuardedRoute
-                  auth={auth}
-                  path="/patient-info-confirm"
-                  component={PatientProfileContainer}
-                />
-                <GuardedRoute
-                  auth={auth}
-                  path="/patient-info-edit"
-                  component={PatientFormContainer}
-                />
-                <GuardedRoute
-                  auth={auth}
-                  path="/patient-info-symptoms"
-                  component={AoEPatientFormContainer}
-                />
-                <GuardedRoute
-                  auth={auth}
-                  path="/success"
-                  component={PatientLanding}
-                />
-                <GuardedRoute
-                  auth={auth}
-                  path="/test-result"
-                  component={TestResult}
-                />
-              </Switch>
-            </Router>
-            <ToastContainer
-              autoClose={5000}
-              closeButton={false}
-              limit={2}
-              position="bottom-center"
-              hideProgressBar={true}
-            />
-          </PatientLinkURL404Wrapper>
-        </div>
-      </div>
+      <Page>
+        <PatientHeader />
+        <PatientLinkURL404Wrapper plid={plid}>
+          <Router basename={match.url}>
+            <Switch>
+              <Route path="/" exact component={TermsOfService} />
+              <Route path="/terms-of-service" component={TermsOfService} />
+              <Route path="/birth-date-confirmation" component={DOB} />
+              <GuardedRoute
+                auth={auth}
+                path="/patient-info-confirm"
+                component={PatientProfileContainer}
+              />
+              <GuardedRoute
+                auth={auth}
+                path="/patient-info-edit"
+                component={PatientFormContainer}
+              />
+              <GuardedRoute
+                auth={auth}
+                path="/patient-info-symptoms"
+                component={AoEPatientFormContainer}
+              />
+              <GuardedRoute
+                auth={auth}
+                path="/success"
+                component={PatientLanding}
+              />
+              <GuardedRoute
+                auth={auth}
+                path="/test-result"
+                component={TestResult}
+              />
+            </Switch>
+          </Router>
+        </PatientLinkURL404Wrapper>
+      </Page>
     </PrimeErrorBoundary>
   );
 };

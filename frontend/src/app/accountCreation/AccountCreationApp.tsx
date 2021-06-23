@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import "react-toastify/dist/ReactToastify.css";
-import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
+import {
+  Route,
+  Switch,
+  BrowserRouter as Router,
+  RouteComponentProps,
+} from "react-router-dom";
 
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
-import USAGovBanner from "../commonComponents/USAGovBanner";
+import Page from "../commonComponents/Page/Page";
 import { RootState, setInitialState } from "../store";
 import { getActivationTokenFromUrl } from "../utils/url";
 
@@ -27,7 +30,7 @@ import { AccountCreationApi } from "./AccountCreationApiService";
 import { routeFromStatus, UserAccountStatus } from "./UserAccountStatus";
 import { LoadingCard } from "./LoadingCard/LoadingCard";
 
-const AccountCreationApp = () => {
+const AccountCreationApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
   const dispatch = useDispatch();
   const [initialLoad, setInitialLoad] = useState(true);
   const userAccountStatus = useSelector<RootState, UserAccountStatus>(
@@ -59,43 +62,30 @@ const AccountCreationApp = () => {
 
   return (
     <PrimeErrorBoundary>
-      <div className="App">
-        <div id="main-wrapper">
-          <USAGovBanner />
-          <Router basename={`${process.env.PUBLIC_URL}/uac`}>
-            <Switch>
-              <Route path="/" exact component={PasswordForm} />
-              <Route path="/set-password" component={PasswordForm} />
-              <Route
-                path="/set-recovery-question"
-                component={SecurityQuestion}
-              />
-              <Route path="/mfa-select" component={MfaSelect} />
-              <Route path="/mfa-sms/verify" component={MfaSmsVerify} />
-              <Route path="/mfa-sms" component={MfaSms} />
-              <Route path="/mfa-okta/verify" component={MfaOktaVerify} />
-              <Route path="/mfa-okta" component={MfaOkta} />
-              <Route
-                path="/mfa-google-auth/verify"
-                component={MfaGoogleAuthVerify}
-              />
-              <Route path="/mfa-google-auth" component={MfaGoogleAuth} />
-              <Route path="/mfa-security-key" component={MfaSecurityKey} />
-              <Route path="/mfa-phone/verify" component={MfaPhoneVerify} />
-              <Route path="/mfa-phone" component={MfaPhone} />
-              <Route path="/mfa-email/verify" component={MfaEmailVerify} />
-              <Route path="/success" component={MfaComplete} />
-            </Switch>
-          </Router>
-          <ToastContainer
-            autoClose={5000}
-            closeButton={false}
-            limit={2}
-            position="bottom-center"
-            hideProgressBar={true}
-          />
-        </div>
-      </div>
+      <Page>
+        <Router basename={match.url}>
+          <Switch>
+            <Route path="/" exact component={PasswordForm} />
+            <Route path="/set-password" component={PasswordForm} />
+            <Route path="/set-recovery-question" component={SecurityQuestion} />
+            <Route path="/mfa-select" component={MfaSelect} />
+            <Route path="/mfa-sms/verify" component={MfaSmsVerify} />
+            <Route path="/mfa-sms" component={MfaSms} />
+            <Route path="/mfa-okta/verify" component={MfaOktaVerify} />
+            <Route path="/mfa-okta" component={MfaOkta} />
+            <Route
+              path="/mfa-google-auth/verify"
+              component={MfaGoogleAuthVerify}
+            />
+            <Route path="/mfa-google-auth" component={MfaGoogleAuth} />
+            <Route path="/mfa-security-key" component={MfaSecurityKey} />
+            <Route path="/mfa-phone/verify" component={MfaPhoneVerify} />
+            <Route path="/mfa-phone" component={MfaPhone} />
+            <Route path="/mfa-email/verify" component={MfaEmailVerify} />
+            <Route path="/success" component={MfaComplete} />
+          </Switch>
+        </Router>
+      </Page>
     </PrimeErrorBoundary>
   );
 };
