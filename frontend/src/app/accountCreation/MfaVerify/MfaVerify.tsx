@@ -61,7 +61,7 @@ export const MfaVerify = (props: Props) => {
   }
 
   if (submitted) {
-    return <Redirect to="/success" />;
+    return <Redirect push to="/success" />;
   }
 
   const input = (

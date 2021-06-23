@@ -78,7 +78,7 @@ export const MfaSecurityKey = () => {
   }
 
   if (activated) {
-    return <Redirect to="/success" />;
+    return <Redirect push to="/success" />;
   }
 
   return (

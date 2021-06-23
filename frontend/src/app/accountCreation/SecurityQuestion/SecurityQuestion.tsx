@@ -63,7 +63,7 @@ export const SecurityQuestion = () => {
   }
 
   if (submitted) {
-    return <Redirect to="/mfa-select" />;
+    return <Redirect push to="/mfa-select" />;
   }
 
   return (

@@ -32,6 +32,7 @@ export const MfaTotp = ({ enrollFunction, totpType }: Props) => {
   if (submitted) {
     return (
       <Redirect
+        push
         to={{ pathname: `${window.location.pathname.split("/uac")[1]}/verify` }}
       />
     );

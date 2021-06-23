@@ -167,14 +167,7 @@ export const PasswordForm = () => {
   }
 
   if (submitted) {
-    return (
-      <Redirect
-        to={{
-          pathname: "/set-recovery-question",
-          search: `?activationToken=${activationToken}`,
-        }}
-      />
-    );
+    return <Redirect push to="/set-recovery-question" />;
   }
 
   return (

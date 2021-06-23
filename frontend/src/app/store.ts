@@ -2,10 +2,13 @@ import { createStore } from "redux";
 
 import { COVID_RESULTS } from "../app/constants";
 
+import { UserAccountStatus } from "./accountCreation/UserAccountStatus";
+
 const SET_INITIAL_STATE = "SET_INITIAL_STATE";
 const UPDATE_ORGANIZATION = "UPDATE_ORGANIZATION";
 const UPDATE_FACILITY = "UPDATE_FACILITY";
 const SET_PATIENT = "SET_PATIENT";
+const SET_USER_ACCOUNT_STATUS = "SET_USER_ACCOUNT_STATUS";
 
 // this should be the default value for a brand new org
 // TODO: get the fields from a schema or something; hard-coded fields are hard to maintain
@@ -46,6 +49,7 @@ const initialState = {
     },
   },
   activationToken: "",
+  userAccountStatus: UserAccountStatus.LOADING,
 };
 
 const reducers = (state = initialState, action: any) => {
@@ -75,6 +79,13 @@ const reducers = (state = initialState, action: any) => {
       return {
         ...state,
         patient: {
+          ...action.payload,
+        },
+      };
+    case SET_USER_ACCOUNT_STATUS:
+      return {
+        ...state,
+        status: {
           ...action.payload,
         },
       };
@@ -108,6 +119,13 @@ export const setPatient = (patient: any) => {
   return {
     type: SET_PATIENT,
     payload: patient,
+  };
+};
+
+export const setUserAccountStatus = (status: UserAccountStatus) => {
+  return {
+    type: SET_USER_ACCOUNT_STATUS,
+    payload: status,
   };
 };
 

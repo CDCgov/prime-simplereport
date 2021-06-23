@@ -1,8 +1,13 @@
-import { FunctionComponent, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
-import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
+import {
+  Route,
+  Switch,
+  BrowserRouter as Router,
+  Redirect,
+} from "react-router-dom";
 
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import USAGovBanner from "../commonComponents/USAGovBanner";
@@ -24,76 +29,77 @@ import { MfaPhoneVerify } from "./MfaPhoneVerify/MfaPhoneVerify";
 import { MfaOktaVerify } from "./MfaOktaVerify/MfaOktaVerify";
 import { MfaGoogleAuthVerify } from "./MfaGoogleAuthVerify/MfaGoogleAuthVerify";
 import { PasswordForm } from "./PasswordForm/PasswordForm";
-
-interface WrapperProps {
-  activationToken: string;
-}
-const AccountCreation404Wrapper: FunctionComponent<WrapperProps> = ({
-  activationToken,
-  children,
-}) => {
-  if (activationToken === undefined) {
-    return <>Loading...</>;
-  }
-  if (activationToken === null) {
-    return <PageNotFound />;
-  }
-  return <>{children}</>;
-};
+import { AccountCreationApi } from "./AccountCreationApiService";
+import { routeFromStatus, UserAccountStatus } from "./UserAccountStatus";
+import { LoadingCard } from "./LoadingCard/LoadingCard";
 
 const AccountCreationApp = () => {
   const dispatch = useDispatch();
-  const activationToken = useSelector<RootState, string>(
-    (state) => state.activationToken
+  const [initialLoad, setInitialLoad] = useState(true);
+  const userAccountStatus = useSelector<RootState, UserAccountStatus>(
+    (state) => state.userAccountStatus
   );
 
   useEffect(() => {
-    dispatch(
-      setInitialState({
-        activationToken: getActivationTokenFromUrl(),
-      })
-    );
+    const getStatus = async (activationToken: string | null) => {
+      const userAccountStatus = await AccountCreationApi.getUserStatus(
+        activationToken
+      );
+      dispatch(
+        setInitialState({
+          activationToken,
+          userAccountStatus,
+        })
+      );
+    };
+    const activationToken = getActivationTokenFromUrl();
+    getStatus(activationToken);
   }, [dispatch]);
+
+  if (userAccountStatus === UserAccountStatus.LOADING) {
+    return <LoadingCard />;
+  } else if (initialLoad) {
+    setInitialLoad(false);
+    return routeFromStatus(userAccountStatus);
+  }
 
   return (
     <PrimeErrorBoundary>
       <div className="App">
         <div id="main-wrapper">
           <USAGovBanner />
-          <AccountCreation404Wrapper activationToken={activationToken}>
-            <Router basename={`${process.env.PUBLIC_URL}/uac`}>
-              <Switch>
-                <Route path="/" exact component={PasswordForm} />
-                <Route path="/set-password" component={PasswordForm} />
-                <Route
-                  path="/set-recovery-question"
-                  component={SecurityQuestion}
-                />
-                <Route path="/mfa-select" component={MfaSelect} />
-                <Route path="/mfa-sms/verify" component={MfaSmsVerify} />
-                <Route path="/mfa-sms" component={MfaSms} />
-                <Route path="/mfa-okta/verify" component={MfaOktaVerify} />
-                <Route path="/mfa-okta" component={MfaOkta} />
-                <Route
-                  path="/mfa-google-auth/verify"
-                  component={MfaGoogleAuthVerify}
-                />
-                <Route path="/mfa-google-auth" component={MfaGoogleAuth} />
-                <Route path="/mfa-security-key" component={MfaSecurityKey} />
-                <Route path="/mfa-phone/verify" component={MfaPhoneVerify} />
-                <Route path="/mfa-phone" component={MfaPhone} />
-                <Route path="/mfa-email/verify" component={MfaEmailVerify} />
-                <Route path="/success" component={MfaComplete} />
-              </Switch>
-            </Router>
-            <ToastContainer
-              autoClose={5000}
-              closeButton={false}
-              limit={2}
-              position="bottom-center"
-              hideProgressBar={true}
-            />
-          </AccountCreation404Wrapper>
+          <Router basename={`${process.env.PUBLIC_URL}/uac`}>
+            <Switch>
+              <Route path="/" exact component={PasswordForm} />
+              <Route path="/set-password" component={PasswordForm} />
+              <Route
+                path="/set-recovery-question"
+                component={SecurityQuestion}
+              />
+              <Route path="/mfa-select" component={MfaSelect} />
+              <Route path="/mfa-sms/verify" component={MfaSmsVerify} />
+              <Route path="/mfa-sms" component={MfaSms} />
+              <Route path="/mfa-okta/verify" component={MfaOktaVerify} />
+              <Route path="/mfa-okta" component={MfaOkta} />
+              <Route
+                path="/mfa-google-auth/verify"
+                component={MfaGoogleAuthVerify}
+              />
+              <Route path="/mfa-google-auth" component={MfaGoogleAuth} />
+              <Route path="/mfa-security-key" component={MfaSecurityKey} />
+              <Route path="/mfa-phone/verify" component={MfaPhoneVerify} />
+              <Route path="/mfa-phone" component={MfaPhone} />
+              <Route path="/mfa-email/verify" component={MfaEmailVerify} />
+              <Route path="/success" component={MfaComplete} />
+            </Switch>
+          </Router>
+          <ToastContainer
+            autoClose={5000}
+            closeButton={false}
+            limit={2}
+            position="bottom-center"
+            hideProgressBar={true}
+          />
         </div>
       </div>
     </PrimeErrorBoundary>
