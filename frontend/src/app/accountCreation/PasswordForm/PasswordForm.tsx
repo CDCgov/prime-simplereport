@@ -115,7 +115,7 @@ export const PasswordForm = () => {
     if (validatePassword() && validatePasswordConfirmation()) {
       setLoading(true);
       try {
-        await AccountCreationApi.setPassword(activationToken, password);
+        await AccountCreationApi.setPassword(password);
         setSubmitted(true);
       } catch (error) {
         setPasswordError(`API Error: ${error?.message}`);

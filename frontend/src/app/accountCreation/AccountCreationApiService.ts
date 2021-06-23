@@ -49,9 +49,14 @@ export class AccountCreationApi {
     return request("GET", "/user-status", { activationToken });
   }
 
-  static setPassword(activationToken: string, password: string): Promise<any> {
-    return request("POST", "/initialize-and-set-password", {
+  static initialize(activationToken: string) {
+    return request("POST", "/initialize", {
       activationToken,
+    });
+  }
+
+  static setPassword(password: string) {
+    return request("POST", "/set-password", {
       password,
     });
   }
