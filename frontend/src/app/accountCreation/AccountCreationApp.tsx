@@ -11,6 +11,7 @@ import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import Page from "../commonComponents/Page/Page";
 import { RootState, setInitialState } from "../store";
 import { getActivationTokenFromUrl } from "../utils/url";
+import { LoadingCard } from "../commonComponents/LoadingCard/LoadingCard";
 
 import { SecurityQuestion } from "./SecurityQuestion/SecurityQuestion";
 import { MfaSelect } from "./MfaSelect/MfaSelect";
@@ -28,7 +29,6 @@ import { MfaGoogleAuthVerify } from "./MfaGoogleAuthVerify/MfaGoogleAuthVerify";
 import { PasswordForm } from "./PasswordForm/PasswordForm";
 import { AccountCreationApi } from "./AccountCreationApiService";
 import { routeFromStatus, UserAccountStatus } from "./UserAccountStatus";
-import { LoadingCard } from "./LoadingCard/LoadingCard";
 
 const AccountCreationApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
   // State for whether this is the initial load of the app

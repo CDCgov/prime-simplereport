@@ -10,7 +10,7 @@ import {
   isAtLeast8Chars,
 } from "../../utils/text";
 import { AccountCreationApi } from "../AccountCreationApiService";
-import { LoadingCard } from "../LoadingCard/LoadingCard";
+import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import StepIndicator from "../../commonComponents/StepIndicator";
