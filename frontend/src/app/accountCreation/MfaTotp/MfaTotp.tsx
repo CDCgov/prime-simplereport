@@ -6,7 +6,7 @@ import { CardBackground } from "../../commonComponents/CardBackground/CardBackgr
 import Button from "../../commonComponents/Button/Button";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
-import { LoadingCard } from "../LoadingCard/LoadingCard";
+import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 interface Props {
   enrollFunction: () => Promise<{ qrcode: string }>;
