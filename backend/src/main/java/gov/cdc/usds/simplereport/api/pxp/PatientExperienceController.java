@@ -60,18 +60,21 @@ public class PatientExperienceController {
   private final TestOrderService _tos;
   private final TestEventService _tes;
   private final TimeOfConsentService _tocs;
+  private final CurrentPatientContextHolder _contextHolder;
 
   public PatientExperienceController(
       PersonService personService,
       PatientLinkService patientLinkService,
       TestOrderService testOrderService,
       TestEventService testEventService,
-      TimeOfConsentService timeOfConsentService) {
+      TimeOfConsentService timeOfConsentService,
+      CurrentPatientContextHolder contextHolder) {
     this._ps = personService;
     this._pls = patientLinkService;
     this._tos = testOrderService;
     this._tes = testEventService;
     this._tocs = timeOfConsentService;
+    this._contextHolder = contextHolder;
   }
 
   @PostConstruct
@@ -86,12 +89,14 @@ public class PatientExperienceController {
   @PostMapping("/link/verify")
   public PxpVerifyResponse getPatientLinkVerify(
       @RequestBody PxpRequestWrapper<Void> body, HttpServletRequest request) {
-    UUID plid = UUID.fromString(body.getPatientLinkId());
-    PatientLink pl = _pls.getPatientLink(plid);
-    OrderStatus os = pl.getTestOrder().getOrderStatus();
-    Person p = _pls.getPatientFromLink(plid);
+    PatientLink pl = _contextHolder.getPatientLink();
+    OrderStatus os = _contextHolder.getLinkedOrder().getOrderStatus();
+    Person p = _contextHolder.getPatient();
     PatientPreferences pp = _ps.getPatientPreferences(p);
-    TestEvent te = _tes.getLastTestResultsForPatient(p);
+    TestEvent te =
+        os == OrderStatus.COMPLETED
+            ? _contextHolder.getLinkedOrder().getTestEvent()
+            : _tes.getLastTestResultsForPatient(p);
     _tocs.storeTimeOfConsent(pl);
 
     return new PxpVerifyResponse(p, os, te, pp);

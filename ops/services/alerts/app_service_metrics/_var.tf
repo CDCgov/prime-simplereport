@@ -20,6 +20,12 @@ variable "rg_name" {
   type        = string
 }
 
+variable "rg_location" {
+  description = "Location of resource group to deploy into"
+  type        = string
+  default     = "eastus"
+}
+
 variable "tags" {
   default = {}
 }
