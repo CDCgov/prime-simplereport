@@ -24,8 +24,14 @@ const getOptions = (
   };
 };
 
-const request = async (method: RequestMethod, path: string, body: any) => {
-  const res = await fetch(API_URL + path, getOptions(method, body));
+const request = async (
+  method: RequestMethod,
+  path: string,
+  body: any,
+  query: string | null = null
+) => {
+  const url = API_URL + path + query;
+  const res = await fetch(url, getOptions(method, body));
   console.log("response: " + res);
   if (!res.ok) {
     throw res;
@@ -46,7 +52,8 @@ export class AccountCreationApi {
   static getUserStatus(
     activationToken: string | null = null
   ): Promise<UserAccountStatus> {
-    return request("GET", "/user-status", { activationToken });
+    const query = activationToken ? `?activationToken=${activationToken}` : "";
+    return request("GET", "/user-status", null, query);
   }
 
   static initialize(activationToken: string) {

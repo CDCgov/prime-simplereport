@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
@@ -59,7 +60,7 @@ public class UserAccountCreationController {
    */
   @GetMapping("/user-status")
   public UserAccountStatus getUserStatus(
-      @RequestBody @Nullable String activationToken,
+      @RequestParam @Nullable String activationToken,
       @Nullable @SessionAttribute String userId,
       @Nullable @SessionAttribute String factorId) {
     return _oktaAuth.getUserStatus(activationToken, userId, factorId);
@@ -116,7 +117,8 @@ public class UserAccountCreationController {
    * @throws BadRequestException if the password doesn't meet requirements
    */
   @PostMapping("/set-password")
-  public void setPassword(@RequestBody SetPasswordRequest requestBody, @SessionAttribute String userId)
+  public void setPassword(
+      @RequestBody SetPasswordRequest requestBody, @SessionAttribute String userId)
       throws OktaAuthenticationFailureException, BadRequestException {
     _oktaAuth.setPassword(userId, requestBody.getPassword().toCharArray());
   }
