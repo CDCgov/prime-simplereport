@@ -404,6 +404,26 @@ class UserAccountCreationControllerTest {
   }
 
   @Test
+  void activateSecurityKey_failsWithInvalidRequest() throws Exception {
+    MockHttpSession session = new MockHttpSession();
+
+    MockHttpServletRequestBuilder activateUserBuilder =
+        createActivationRequest(session, VALID_PASSWORD_REQUEST);
+
+    MockHttpServletRequestBuilder enrollSecurityKeyBuilder =
+        createPostRequest(session, "", ResourceLinks.USER_ENROLL_SECURITY_KEY_MFA);
+
+    MockHttpServletRequestBuilder activateSecurityKeyBuilder =
+        createPostRequest(
+            session, "{\"attestation\":\"123456\"}", ResourceLinks.USER_ACTIVATE_SECURITY_KEY_MFA);
+
+    performRequestAndGetSession(activateUserBuilder);
+    performRequestAndGetSession(enrollSecurityKeyBuilder);
+
+    this._mockMvc.perform(activateSecurityKeyBuilder).andExpect(status().is4xxClientError());
+  }
+
+  @Test
   void verifyActivationPasscode_isOk() throws Exception {
     MockHttpSession session = new MockHttpSession();
 

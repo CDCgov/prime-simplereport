@@ -115,8 +115,11 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
+    System.out.println("in demoOktaAuthentication");
     validateUser(userId);
+    System.out.println("user has been validated");
     String factorType = "";
+    System.out.println("appType: " + appType.toLowerCase());
     switch (appType.toLowerCase()) {
       case "google":
         factorType = "authApp: google";
@@ -127,6 +130,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       default:
         throw new OktaAuthenticationFailureException("App type not recognized.");
     }
+    System.out.println("factor type determined: " + factorType);
     String factorId = factorType + " " + userId;
     String qrCode = "thisIsAFakeQrCode";
     DemoMfa appMfa =
@@ -196,6 +200,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   }
 
   public void validateUser(String userId) throws OktaAuthenticationFailureException {
+    System.out.println("map: " + this.idToUserMap.keySet());
+    System.out.println("provided user id: " + userId);
     if (!this.idToUserMap.containsKey(userId)) {
       throw new OktaAuthenticationFailureException("User id not recognized.");
     }

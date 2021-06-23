@@ -8,8 +8,8 @@ import com.smartystreets.api.exceptions.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.ActivateSecurityKeyRequest;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
-import gov.cdc.usds.simplereport.api.model.useraccountcreation.RequestConstants;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
@@ -17,8 +17,8 @@ import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +46,15 @@ public class UserAccountCreationController {
     LOG.info("User account request creation REST endpoint enabled.");
   }
 
+  /**
+   * Fetches a user status's status within the account creation process. Does not exactly match the
+   * Okta account status options, since we also want to know about states such as MFA enrollment.
+   *
+   * @param activationToken optional, the activationToken provided to a user
+   * @param userId optional, the Okta user id on a given session
+   * @param factorId optional, the Okta factor id on a given session
+   * @return UserAccountStatus
+   */
   @GetMapping("/user-status")
   public UserAccountStatus getUserStatus(
       @RequestBody @Nullable String activationToken,
@@ -65,16 +74,10 @@ public class UserAccountCreationController {
    * @throws BadRequestException if the password doesn't meet requirements.
    */
   @PostMapping("/initialize-and-set-password")
-  public UserAccountStatus activateAccountAndSetPassword(
+  public void activateAccountAndSetPassword(
       @RequestBody UserAccountCreationRequest requestBody, HttpServletRequest request)
       throws InvalidActivationLinkException, OktaAuthenticationFailureException,
           BadRequestException {
-    // If there's already a user session on the page, we can't reuse the activation token.
-    // We assume the user hit the back button and it's a no-op.
-    if (request.getSession().getAttribute(USER_ID_KEY) != null) {
-      // no-op
-      return UserAccountStatus.SET_SECURITY_QUESTIONS;
-    }
     String userId =
         _oktaAuth.activateUser(
             requestBody.getActivationToken(),
@@ -85,7 +88,6 @@ public class UserAccountCreationController {
     }
     request.getSession().setAttribute(USER_ID_KEY, userId);
     _oktaAuth.setPassword(userId, requestBody.getPassword().toCharArray());
-    return UserAccountStatus.SET_SECURITY_QUESTIONS;
   }
 
   /**
@@ -126,14 +128,11 @@ public class UserAccountCreationController {
    */
   @PostMapping("/enroll-sms-mfa")
   public void enrollSmsMfa(
-      @RequestBody @NotNull @Size(max = RequestConstants.STANDARD_REQUEST_STRING_LIMIT)
-          String userInput,
+      @RequestBody EnrollMfaRequest requestBody,
       @SessionAttribute String userId,
       HttpServletRequest request)
       throws OktaAuthenticationFailureException {
-    LOG.info("in enroll sms mfa");
-    LOG.info("userInput: " + userInput);
-    String factorId = _oktaAuth.enrollSmsMfa(userId, userInput);
+    String factorId = _oktaAuth.enrollSmsMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
 
@@ -146,12 +145,11 @@ public class UserAccountCreationController {
    */
   @PostMapping("/enroll-voice-call-mfa")
   public void enrollVoiceCallMfa(
-      @RequestBody @NotNull @Size(max = RequestConstants.STANDARD_REQUEST_STRING_LIMIT)
-          String userInput,
+      @RequestBody EnrollMfaRequest requestBody,
       @SessionAttribute String userId,
       HttpServletRequest request)
       throws OktaAuthenticationFailureException {
-    String factorId = _oktaAuth.enrollVoiceCallMfa(userId, userInput);
+    String factorId = _oktaAuth.enrollVoiceCallMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
 
@@ -178,12 +176,12 @@ public class UserAccountCreationController {
    */
   @PostMapping("/authenticator-qr")
   public FactorAndQrCode getAuthQrCode(
-      @RequestBody @NotNull @Size(max = RequestConstants.STANDARD_REQUEST_STRING_LIMIT)
-          String userInput,
+      @RequestBody EnrollMfaRequest requestBody,
       @SessionAttribute String userId,
       HttpServletRequest request)
       throws OktaAuthenticationFailureException {
-    FactorAndQrCode factorData = _oktaAuth.enrollAuthenticatorAppMfa(userId, userInput);
+    FactorAndQrCode factorData =
+        _oktaAuth.enrollAuthenticatorAppMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID_KEY, factorData.getFactorId());
     return factorData;
   }
@@ -220,7 +218,7 @@ public class UserAccountCreationController {
    */
   @PostMapping("/activate-security-key-mfa")
   public void activateSecurityKeyMfa(
-      @RequestBody ActivateSecurityKeyRequest requestBody,
+      @RequestBody @Valid ActivateSecurityKeyRequest requestBody,
       @SessionAttribute String userId,
       @SessionAttribute String factorId)
       throws OktaAuthenticationFailureException {
@@ -239,11 +237,15 @@ public class UserAccountCreationController {
    */
   @PostMapping("/verify-activation-passcode")
   public void verifyActivationPasscode(
-      @RequestBody @NotNull @Size(max = RequestConstants.STANDARD_REQUEST_STRING_LIMIT)
-          String userInput,
+      @RequestBody EnrollMfaRequest requestBody,
       @SessionAttribute String userId,
-      @SessionAttribute String factorId) {
-    _oktaAuth.verifyActivationPasscode(userId, factorId, userInput);
+      @SessionAttribute String factorId,
+      HttpServletRequest request) {
+    _oktaAuth.verifyActivationPasscode(userId, factorId, requestBody.getUserInput());
+    HttpSession session = request.getSession();
+    session.removeAttribute(FACTOR_ID_KEY);
+    session.removeAttribute(USER_ID_KEY);
+    session.invalidate();
   }
 
   /**
