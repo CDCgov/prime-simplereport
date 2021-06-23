@@ -28,7 +28,7 @@ const request = async (
   method: RequestMethod,
   path: string,
   body: any,
-  query: string | null = null
+  query: string = ""
 ) => {
   const url = API_URL + path + query;
   const res = await fetch(url, getOptions(method, body));
