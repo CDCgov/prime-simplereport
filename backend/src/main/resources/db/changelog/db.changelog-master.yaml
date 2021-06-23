@@ -2263,5 +2263,3 @@ databaseChangeLog:
                   afterColumn: organization_name
                   type: *string
                   remarks: The type of organization
-                  constraints:
-                    nullable: true
