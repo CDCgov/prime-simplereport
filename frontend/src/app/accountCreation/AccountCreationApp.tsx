@@ -31,12 +31,17 @@ import { routeFromStatus, UserAccountStatus } from "./UserAccountStatus";
 import { LoadingCard } from "./LoadingCard/LoadingCard";
 
 const AccountCreationApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
-  const dispatch = useDispatch();
+  // State for whether this is the initial load of the app
+  // If it is, we will redirect to the correct route based on the user's status
   const [initialLoad, setInitialLoad] = useState(true);
+
+  const dispatch = useDispatch();
   const userAccountStatus = useSelector<RootState, UserAccountStatus>(
     (state) => state.userAccountStatus
   );
 
+  // On initial load, ask backend what the user's status is, and
+  // activate the user if they haven't been yet
   useEffect(() => {
     const getStatus = async (activationToken: string | null) => {
       const userAccountStatus = await AccountCreationApi.getUserStatus(
@@ -48,9 +53,20 @@ const AccountCreationApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
           userAccountStatus,
         })
       );
+      return userAccountStatus;
+    };
+    const activateUser = async (
+      statusPromise: Promise<UserAccountStatus>,
+      activationToken: string | null
+    ) => {
+      const status = await statusPromise;
+      if (status === UserAccountStatus.PENDING_ACTIVATION && activationToken) {
+        await AccountCreationApi.initialize(activationToken);
+      }
     };
     const activationToken = getActivationTokenFromUrl();
-    getStatus(activationToken);
+    const statusPromise = getStatus(activationToken);
+    activateUser(statusPromise, activationToken);
   }, [dispatch]);
 
   if (userAccountStatus === UserAccountStatus.LOADING) {
