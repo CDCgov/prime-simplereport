@@ -27,6 +27,7 @@ import TelemetryProvider from "./app/telemetry-provider";
 import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration";
 
 import "./styles/App.css";
+import ErrorPage from "./app/commonComponents/ErrorPage";
 
 // Define the root element for modals
 if (process.env.NODE_ENV !== "test") {
@@ -52,6 +53,11 @@ const httpLink = createUploadLink({
   uri: `${process.env.REACT_APP_BACKEND_URL}/graphql`,
 });
 
+const renderError = () => {
+  <ErrorPage></ErrorPage>
+
+}
+
 const authMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext({
     headers: {
@@ -65,9 +71,10 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
   if (networkError && process.env.REACT_APP_BASE_URL) {
     if ("statusCode" in networkError && networkError.statusCode === 401) {
-      console.warn("[UNATHORIZED_ACCESS] !!");
-      console.warn("redirect-to:", process.env.REACT_APP_BASE_URL);
-      window.location.replace(process.env.REACT_APP_BASE_URL);
+      console.log(" I AM HERE")
+     networkError.message = "UNAUTHORIZED"
+      // window.location.replace(process.env.REACT_APP_BASE_URL);
+
     } else {
       if (appInsights instanceof ApplicationInsights) {
         appInsights.trackException({ error: networkError });
