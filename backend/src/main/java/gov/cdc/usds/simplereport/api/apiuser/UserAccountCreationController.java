@@ -7,9 +7,11 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.smartystreets.api.exceptions.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.ActivateAccountRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.ActivateSecurityKeyRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetPasswordRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
@@ -92,7 +94,7 @@ public class UserAccountCreationController {
 
   @PostMapping("/initialize")
   public void activateAccount(
-      @RequestBody UserAccountCreationRequest requestBody, HttpServletRequest request)
+      @RequestBody ActivateAccountRequest requestBody, HttpServletRequest request)
       throws InvalidActivationLinkException {
     String userId =
         _oktaAuth.activateUser(
@@ -114,9 +116,9 @@ public class UserAccountCreationController {
    * @throws BadRequestException if the password doesn't meet requirements
    */
   @PostMapping("/set-password")
-  public void setPassword(@RequestBody String password, @SessionAttribute String userId)
+  public void setPassword(@RequestBody SetPasswordRequest requestBody, @SessionAttribute String userId)
       throws OktaAuthenticationFailureException, BadRequestException {
-    _oktaAuth.setPassword(userId, password.toCharArray());
+    _oktaAuth.setPassword(userId, requestBody.getPassword().toCharArray());
   }
 
   /**
