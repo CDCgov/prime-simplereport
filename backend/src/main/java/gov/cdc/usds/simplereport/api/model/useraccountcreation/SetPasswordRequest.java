@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class SetPasswordRequest {
-    @Size(max = RequestConstants.LARGE_REQUEST_STRING_LIMIT)
-    @NotNull
-    private String password;    
+  @Size(max = RequestConstants.LARGE_REQUEST_STRING_LIMIT)
+  @NotNull
+  private String password;
 }

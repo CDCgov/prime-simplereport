@@ -59,17 +59,26 @@ const AccountCreationApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
       statusPromise: Promise<UserAccountStatus>,
       activationToken: string | null
     ) => {
+      console.log("Starting activateUser...");
       const status = await statusPromise;
+      console.log("Got status: ", status);
+      console.log("Activation token: ", activationToken);
       if (status === UserAccountStatus.PENDING_ACTIVATION && activationToken) {
+        console.log("Making initialize request...");
         await AccountCreationApi.initialize(activationToken);
       }
     };
     const activationToken = getActivationTokenFromUrl();
+    console.log("Getting status...");
     const statusPromise = getStatus(activationToken);
+    console.log("Got status...");
     activateUser(statusPromise, activationToken);
   }, [dispatch]);
 
-  if (userAccountStatus === UserAccountStatus.LOADING) {
+  if (
+    userAccountStatus === UserAccountStatus.LOADING ||
+    userAccountStatus === UserAccountStatus.PENDING_ACTIVATION
+  ) {
     return <LoadingCard />;
   } else if (initialLoad) {
     setInitialLoad(false);
