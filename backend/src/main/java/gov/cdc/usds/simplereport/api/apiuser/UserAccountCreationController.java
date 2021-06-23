@@ -90,6 +90,21 @@ public class UserAccountCreationController {
     _oktaAuth.setPassword(userId, requestBody.getPassword().toCharArray());
   }
 
+  @PostMapping("/initialize")
+  public void activateAccount(
+      @RequestBody UserAccountCreationRequest requestBody, HttpServletRequest request)
+      throws InvalidActivationLinkException {
+    String userId =
+        _oktaAuth.activateUser(
+            requestBody.getActivationToken(),
+            request.getHeader("X-Forwarded-For"),
+            request.getHeader("User-Agent"));
+    if (userId.isEmpty()) {
+      throw new OktaAuthenticationFailureException("Returned user id is empty.");
+    }
+    request.getSession().setAttribute(USER_ID_KEY, userId);
+  }
+
   /**
    * Set's a user's password, assuming they've already been activated using the activation token.
    *
