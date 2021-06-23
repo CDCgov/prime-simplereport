@@ -54,7 +54,7 @@ const PriorTestInputs: React.FC<Props> = ({
     !!priorTestDate || priorTestDate === undefined
   );
 
-  function setFormattedPriorTestDate(input = "") {
+  function setFormattedPriorTestDate(input: string | null | undefined) {
     return setPriorTestDate(formatDate(input));
   }
 

@@ -30,7 +30,6 @@ describe("date utils", () => {
     });
   });
 
-  /*
   describe("formatDate", () => {
     test("returns null on empty string", () => {
       expect(formatDate("")).toEqual(null);
@@ -48,5 +47,4 @@ describe("date utils", () => {
       expect(formatDate("01/01/70")).toEqual("1970-01-01");
     });
   });
-  */
 });
