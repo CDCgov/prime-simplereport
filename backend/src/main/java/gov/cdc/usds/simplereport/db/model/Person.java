@@ -137,6 +137,13 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.role = PersonRole.STAFF;
   }
 
+  public Person(PersonName names, Organization org, Facility fac, PersonRole role) {
+    super(org);
+    this.facility = fac;
+    this.nameInfo = names;
+    this.role = role;
+  }
+
   public void updatePatient(
       String lookupId,
       String firstName,

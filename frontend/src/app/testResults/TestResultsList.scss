@@ -21,33 +21,52 @@
     text-decoration: line-through;
   }
 
-  .usa-form-group {
-    margin-top: 0;
-  }
-
-  .prime-search-container {
-    margin-bottom: 0;
-
-    .prime-search-input {
-      margin-bottom: 0;
-
-      .usa-input {
-        margin-top: 0.5rem;
-        margin-bottom: 0;
-        height: 2.5rem;
-      }
-
-      .usa-button {
-        margin-top: 0.5rem;
-        height: 2.5rem;
-      }
+  .grid-row.grid-gap {
+    .usa-form-group {
+      padding-right: 0;
+      margin-top: 0;
     }
   }
 
-  .results-dropdown {
-    position: relative;
-    top: 0;
-    max-width: 30rem;
+  .usa-date-picker__external-input {
+    max-width: 9rem;
+  }
+
+  .usa-date-picker__button {
+    max-width: 2.5em;
+  }
+
+  .usa-error-message {
+    max-width: 11rem;
+  }
+
+  .person-search {
+    .prime-search-container {
+      margin-bottom: 0;
+      min-width: 10rem;
+      max-width: 13rem;
+
+      .prime-search-input {
+        margin-bottom: 0;
+
+        .usa-input {
+          margin-top: 0.5rem;
+          margin-bottom: 0;
+          height: 2.5rem;
+        }
+
+        .usa-button {
+          margin-top: 0.5rem;
+          height: 2.5rem;
+        }
+      }
+    }
+
+    .results-dropdown {
+      position: absolute;
+      top: 5.5rem;
+      max-width: 30rem;
+    }
   }
 }
 
