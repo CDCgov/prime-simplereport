@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Redirect } from "react-router";
+import { Link } from "react-router-dom";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -104,7 +105,7 @@ export const SecurityQuestion = () => {
         />
       </Card>
       <p className="margin-top-4">
-        <a href="#0">Return to previous step</a>
+        <Link to="/set-password">Return to previous step</Link>
       </p>
     </CardBackground>
   );

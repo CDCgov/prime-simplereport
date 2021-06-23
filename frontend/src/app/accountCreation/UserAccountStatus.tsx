@@ -1,12 +1,8 @@
 // This needs to be kept in sync with UserAccountStatus on the backend.
 
-import { useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router";
 
 import PageNotFound from "../commonComponents/PageNotFound";
-import { RootState, setUserAccountStatus } from "../store";
-
-import { AccountCreationApi } from "./AccountCreationApiService";
 
 export enum UserAccountStatus {
   ACTIVE,

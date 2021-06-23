@@ -2,18 +2,12 @@ import React, { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  Route,
-  Switch,
-  BrowserRouter as Router,
-  Redirect,
-} from "react-router-dom";
+import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import USAGovBanner from "../commonComponents/USAGovBanner";
 import { RootState, setInitialState } from "../store";
 import { getActivationTokenFromUrl } from "../utils/url";
-import PageNotFound from "../commonComponents/PageNotFound";
 
 import { SecurityQuestion } from "./SecurityQuestion/SecurityQuestion";
 import { MfaSelect } from "./MfaSelect/MfaSelect";
