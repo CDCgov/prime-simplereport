@@ -2263,3 +2263,38 @@ databaseChangeLog:
                   afterColumn: organization_name
                   type: *string
                   remarks: The type of organization
+  - changeSet:
+      id: add-text-message-sent-table
+      author: nicholas.a.scialli@omb.eop.gov
+      comment: Add table to track sent text messages
+      changes:
+        - createTable:
+            tableName: text_message_sent
+            remarks: A table to store the Patient Link and Twilio text message id
+            columns:
+              - column:
+                  name: internal_id
+                  type: *idtype
+                  remarks: The internal database identifier for this entity
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: patient_link_internal_id
+                  type: *idtype
+                  remarks: A foreign key to a patient link
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__internal_id__patient_link
+                    references: patient_link
+              - column:
+                  name: twilio_message_id
+                  type: *string
+                  remarks: The Twilio text message ID
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
