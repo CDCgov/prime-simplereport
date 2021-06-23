@@ -34,6 +34,9 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   public UserAccountStatus getUserStatus(String activationToken, String userId, String factorId) {
     // todo(emmastephenson): implement this logic
+    if (activationToken != null && !activationToken.isEmpty() && userId == null) {
+      return UserAccountStatus.PENDING_ACTIVATION;
+    }
     return UserAccountStatus.ACTIVE;
   }
 
