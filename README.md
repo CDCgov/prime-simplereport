@@ -351,20 +351,12 @@ Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/rele
 ### Revert to a Previous Release
 
 1. Find the version tag for the release you want to revert to.
-2. Checkout that version and create a new branch
-    ```bash
-    $ git checkout ${version_tag}
-    ```
-3. Create and publish new branch at that tag
-     ```bash
-    $ git checkout -b revert-to-${version_tag} && git push -u
-    ```
-4. Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/releases/new) page
-5. Add a version tag: `revert-to-${version_tag}`.
-    - If a version has already been reverted to in the past and needs to be again add an counter to the tag: `revert-to-${version_tag}-${X}`
-6. Add a release title `Revert to ${version_tag}`
-7. Add a description briefly explaining why the revert is needed
-8. Click publish release
+2. Select that release from the list on the [release page](https://github.com/CDCgov/prime-simplereport/releases) (or navigate directly to `https://github.com/CDCgov/prime-simplereport/releases/tag/{TAG}`)
+3. Click "Edit Release"
+4. Check the "This is a pre-release" box
+5. Click "Update release"
+6. Verify that the original changes have been re-released successfully on `stg`
+7. Edit the release again, de-select the "This is a pre-release" box, and click "Update release."
 9. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done by going to `/app/static/commit.txt` and `/api/actuator/info`
 
 
