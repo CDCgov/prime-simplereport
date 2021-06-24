@@ -118,8 +118,8 @@ resource "azurerm_monitor_metric_alert" "http_2xx_failed_requests" {
 
     dimension {
       name     = "request/resultCode"
-      operator = "Include"
-      values   = ["200", "201", "202", "203", "204", "205", "206"]
+      operator = "StartsWith"
+      values   = ["2"]
     }
   }
 
