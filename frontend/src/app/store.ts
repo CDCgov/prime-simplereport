@@ -85,9 +85,7 @@ const reducers = (state = initialState, action: any) => {
     case SET_USER_ACCOUNT_STATUS:
       return {
         ...state,
-        status: {
-          ...action.payload,
-        },
+        userAccountStatus: action.payload,
       };
     default:
       return state;
@@ -122,10 +120,10 @@ export const setPatient = (patient: any) => {
   };
 };
 
-export const setUserAccountStatus = (status: UserAccountStatus) => {
+export const setUserAccountStatus = (userAccountStatus: UserAccountStatus) => {
   return {
     type: SET_USER_ACCOUNT_STATUS,
-    payload: status,
+    payload: userAccountStatus,
   };
 };
 
