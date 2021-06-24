@@ -53,11 +53,6 @@ const httpLink = createUploadLink({
   uri: `${process.env.REACT_APP_BACKEND_URL}/graphql`,
 });
 
-const renderError = () => {
-  <ErrorPage></ErrorPage>
-
-}
-
 const authMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext({
     headers: {
