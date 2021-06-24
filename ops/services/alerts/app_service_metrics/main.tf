@@ -161,7 +161,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "http_4xx_errors" {
   time_window         = 5
   enabled             = contains(var.disabled_alerts, "http_4xx_errors") ? false : true
 
-  data_source_id = var.app_service_id
+  data_source_id = var.app_insights_id
 
   query = <<-QUERY
 requests
