@@ -151,34 +151,29 @@ resource "azurerm_monitor_metric_alert" "http_5xx_errors" {
   }
 }
 
-resource "azurerm_monitor_metric_alert" "http_4xx_errors" {
+resource "azurerm_monitor_scheduled_query_rules_alert" "http_4xx_errors" {
   name                = "${var.env}-api-4xx-errors"
   description         = "${local.env_title} HTTP Server 4xx Errors (excluding 401s) >= 10"
+  location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
-  scopes              = [var.app_insights_id]
-  frequency           = "PT1M"
-  window_size         = "PT5M"
   severity            = var.severity
+  frequency           = 5
+  time_window         = 5
   enabled             = contains(var.disabled_alerts, "http_4xx_errors") ? false : true
 
-  criteria {
-    aggregation      = "Count"
-    metric_name      = "requests/count"
-    metric_namespace = "Microsoft.Insights/Components"
-    operator         = "GreaterThanOrEqual"
-    threshold        = 10
+  data_source_id = var.app_service_id
 
-    dimension {
-      name     = "request/resultCode"
-      operator = "Include"
-      values   = ["400", "403", "404", "410", "429"]
-    }
+  query = <<-QUERY
+requests
+| where toint(resultCode) >= 400 and toint(resultCode) != 401 and timestamp > ago(5m)
+  QUERY
+
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 9
   }
 
-  dynamic "action" {
-    for_each = var.action_group_ids
-    content {
-      action_group_id = action.value
-    }
+  action {
+    action_group = var.action_group_ids
   }
 }
