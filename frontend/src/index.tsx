@@ -27,7 +27,6 @@ import TelemetryProvider from "./app/telemetry-provider";
 import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration";
 
 import "./styles/App.css";
-import ErrorPage from "./app/commonComponents/ErrorPage";
 
 // Define the root element for modals
 if (process.env.NODE_ENV !== "test") {
