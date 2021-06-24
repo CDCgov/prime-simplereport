@@ -7,7 +7,7 @@ module "metric_alerts" {
   rg_name                        = data.azurerm_resource_group.rg.name
   tags                           = local.management_tags
   disabled_alerts                = ["cpu_util", "mem_util"]
-  http_response_time_aggregation = "Average"
+  http_response_time_aggregation = "Minimum"
 
   action_group_ids = [
     data.terraform_remote_state.global.outputs.pagerduty_demo_action_id
