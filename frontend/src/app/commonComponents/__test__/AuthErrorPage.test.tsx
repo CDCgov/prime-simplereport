@@ -3,12 +3,10 @@ import { MemoryRouter } from "react-router-dom";
 
 import AuthErrorPage from "../AuthErrorPage";
 
-describe("ErrorPage", () => {
+describe("AuthErrorPage", () => {
   it("displays the correct error message", () => {
-    const { container, getByText } = render(
-      <MemoryRouter>
+    const { container, getByText } = render (
         <AuthErrorPage />
-      </MemoryRouter>
     );
     expect(
       getByText("You don't have the appropriate permissions to view this page")
