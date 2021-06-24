@@ -1,11 +1,6 @@
 import { FunctionComponent, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Route,
-  Switch,
-  BrowserRouter as Router,
-  RouteComponentProps,
-} from "react-router-dom";
+import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import Page from "../commonComponents/Page/Page";
@@ -44,7 +39,7 @@ const AccountCreation404Wrapper: FunctionComponent<WrapperProps> = ({
   return <>{children}</>;
 };
 
-const AccountCreationApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
+const AccountCreationApp = () => {
   const dispatch = useDispatch();
   const activationToken = useSelector<RootState, string>(
     (state) => state.activationToken
@@ -62,7 +57,7 @@ const AccountCreationApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
     <PrimeErrorBoundary>
       <Page>
         <AccountCreation404Wrapper activationToken={activationToken}>
-          <Router basename={match.url}>
+          <Router basename={`${process.env.PUBLIC_URL}/uac`}>
             <Switch>
               <Route path="/" exact component={PasswordForm} />
               <Route path="/set-password" component={PasswordForm} />
