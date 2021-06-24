@@ -1,6 +1,11 @@
 import { FunctionComponent, useEffect } from "react";
 import { useDispatch, connect, useSelector } from "react-redux";
-import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
+import {
+  Route,
+  Switch,
+  BrowserRouter as Router,
+  RouteComponentProps,
+} from "react-router-dom";
 
 import PrimeErrorBoundary from "../app/PrimeErrorBoundary";
 import Page from "../app/commonComponents/Page/Page";
@@ -34,7 +39,7 @@ const PatientLinkURL404Wrapper: FunctionComponent<WrapperProps> = ({
   return <>{children}</>;
 };
 
-const PatientApp = () => {
+const PatientApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
   const dispatch = useDispatch();
   const plid = useSelector((state: any) => state.plid);
   const patient = useSelector((state: any) => state.patient);
@@ -53,7 +58,7 @@ const PatientApp = () => {
       <Page>
         <PatientHeader />
         <PatientLinkURL404Wrapper plid={plid}>
-          <Router basename={`${process.env.PUBLIC_URL}/pxp`}>
+          <Router basename={match.url}>
             <Switch>
               <Route path="/" exact component={TermsOfService} />
               <Route path="/terms-of-service" component={TermsOfService} />
