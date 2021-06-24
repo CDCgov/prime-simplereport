@@ -70,9 +70,6 @@ export const MfaSecurityKey = () => {
             <li>Microsoft Edge</li>
           </ol>
         </Card>
-        <p className="margin-top-4">
-          <a href="#0">Return to previous step</a>
-        </p>
       </CardBackground>
     );
   }
@@ -104,9 +101,6 @@ export const MfaSecurityKey = () => {
         </div>
         {/* <Button className="margin-top-3" label={"Continue"} type={"submit"} /> */}
       </Card>
-      <p className="margin-top-4">
-        <a href="#0">Return to previous step</a>
-      </p>
     </CardBackground>
   );
 };

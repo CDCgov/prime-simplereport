@@ -104,9 +104,6 @@ export const SecurityQuestion = () => {
           onClick={handleSubmit}
         />
       </Card>
-      <p className="margin-top-4">
-        <Link to="/set-password">Return to previous step</Link>
-      </p>
     </CardBackground>
   );
 };

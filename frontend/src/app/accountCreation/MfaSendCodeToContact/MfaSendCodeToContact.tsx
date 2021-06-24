@@ -122,9 +122,6 @@ export const MfaSendCodeToContact = (props: Props) => {
           onClick={handleSubmit}
         />
       </Card>
-      <p className="margin-top-5">
-        <a href="#0">Return to previous step</a>
-      </p>
     </CardBackground>
   );
 };
