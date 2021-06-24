@@ -66,10 +66,11 @@ const AccountCreationApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
         dispatch(setUserAccountStatus(userAccountStatus));
       }
       // Set correct path based on status
-      const path = routeFromStatus(userAccountStatus);
-      const route = `/uac${path}`;
-      if (route !== history.location.pathname) {
-        history.push(route);
+      const newPath = routeFromStatus(userAccountStatus);
+      const mount = history.location.pathname.split("/uac")[0];
+      const currentPath = history.location.pathname.split("/uac")[1];
+      if (newPath !== currentPath) {
+        history.push(`${mount}/uac${newPath}`);
         history.go(0);
       }
     };
