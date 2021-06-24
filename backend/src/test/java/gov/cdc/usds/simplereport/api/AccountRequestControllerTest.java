@@ -274,8 +274,7 @@ class AccountRequestControllerTest {
             eq("kyvuzoxy@mailinator.com"),
             nameCaptor.capture(),
             externalIdCaptor.capture(),
-            eq(Role.ADMIN),
-            eq(false));
+            eq(Role.ADMIN));
 
     assertThat(nameCaptor.getValue().getFirstName()).isEqualTo("Mary");
     assertNull(nameCaptor.getValue().getMiddleName());

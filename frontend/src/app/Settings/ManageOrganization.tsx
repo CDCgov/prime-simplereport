@@ -3,10 +3,12 @@ import React, { useState } from "react";
 import TextInput from "../commonComponents/TextInput";
 import Button from "../commonComponents/Button/Button";
 import RequiredMessage from "../commonComponents/RequiredMessage";
+import Alert from "../commonComponents/Alert";
 
 interface Props {
   name: string;
   onSave: (name: string) => void;
+  canEditOrganizationName: boolean;
 }
 
 const ManageOrganization: React.FC<Props> = (props) => {
@@ -30,13 +32,30 @@ const ManageOrganization: React.FC<Props> = (props) => {
         </div>
         <div className="usa-card__body">
           <RequiredMessage />
-          <TextInput
-            label="Organization name"
-            name="name"
-            value={name}
-            onChange={onChange}
-            required
-          />
+          {!props.canEditOrganizationName && (
+            <Alert type="info">
+              The organization name is used for reporting to public health
+              departments. Please contact{" "}
+              <a href="mailto:support@simplereport.gov">
+                support@simplereport.gov
+              </a>{" "}
+              if you need to change it.
+            </Alert>
+          )}
+          {props.canEditOrganizationName ? (
+            <TextInput
+              label="Organization name"
+              name="name"
+              value={name}
+              onChange={onChange}
+              required
+            />
+          ) : (
+            <div className="usa-form-group">
+              <span>Organization name</span>
+              <p>{name}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
