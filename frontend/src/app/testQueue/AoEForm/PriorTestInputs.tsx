@@ -165,7 +165,7 @@ const PriorTestInputs: React.FC<Props> = ({
               // Fill in last test info using this data
               // TODO: update when test history has test type
               setPriorTestType("2");
-              setPriorTestDate(lastTest.dateTested);
+              setPriorTestDate(formatDate(lastTest.dateTested));
               setPriorTestResult(lastTest?.result);
             } else {
               setPriorTestType(undefined);
