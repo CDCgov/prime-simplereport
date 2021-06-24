@@ -27,7 +27,7 @@ export const SecurityQuestion = () => {
   const validateSecurityQuestion = (): boolean => {
     let error = "";
     if (securityQuestion === "") {
-      error = "Enter a security question";
+      error = "Select a security question";
     }
     setSecurityQuestionError(error);
     return error === "";
@@ -37,6 +37,9 @@ export const SecurityQuestion = () => {
     let error = "";
     if (securityAnswer === "") {
       error = "Enter your answer";
+    }
+    if (securityAnswer.length < 4) {
+      error = "Answer must be at least 4 characters";
     }
     setSecurityAnswerError(error);
     return error === "";
