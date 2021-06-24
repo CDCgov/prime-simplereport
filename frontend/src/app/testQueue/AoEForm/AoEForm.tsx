@@ -50,7 +50,7 @@ export type AoEAnswers = Omit<
 >;
 
 export type LastTest = {
-  dateTested: ISODate;
+  dateTested: string;
   result: TestResult;
 };
 interface Props {
