@@ -5,9 +5,7 @@ import AuthErrorPage from "../AuthErrorPage";
 
 describe("AuthErrorPage", () => {
   it("displays the correct error message", () => {
-    const { container, getByText } = render (
-        <AuthErrorPage />
-    );
+    const { container, getByText } = render(<AuthErrorPage />);
     expect(
       getByText("You don't have the appropriate permissions to view this page")
     ).toBeInTheDocument();
