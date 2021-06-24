@@ -1,5 +1,5 @@
-import { Card } from "../../commonComponents/Card/Card";
-import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
+import { Card } from "../Card/Card";
+import { CardBackground } from "../CardBackground/CardBackground";
 import iconLoader from "../../../../node_modules/uswds/dist/img/loader.svg";
 
 interface Props {
