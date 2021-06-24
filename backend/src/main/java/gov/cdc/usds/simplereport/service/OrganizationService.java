@@ -256,7 +256,7 @@ public class OrganizationService {
   }
 
   @Transactional(readOnly = false)
-  @AuthorizationConfiguration.RequirePermissionEditOrganization
+  @AuthorizationConfiguration.RequireGlobalAdminUser
   public Organization updateOrganization(String name) {
     Organization org = getCurrentOrganization();
     org.setOrganizationName(name);

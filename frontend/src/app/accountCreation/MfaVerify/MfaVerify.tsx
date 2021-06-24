@@ -9,7 +9,7 @@ import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 import { AccountCreationApi } from "../AccountCreationApiService";
 import Alert from "../../commonComponents/Alert";
-import { LoadingCard } from "../LoadingCard/LoadingCard";
+import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 interface Props {
   hint: ReactElement;
