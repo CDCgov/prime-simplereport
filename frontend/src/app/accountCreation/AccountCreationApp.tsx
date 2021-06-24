@@ -3,7 +3,6 @@ import {
   Route,
   Switch,
   BrowserRouter as Router,
-  RouteComponentProps,
   useHistory,
 } from "react-router-dom";
 
@@ -30,7 +29,7 @@ import { PasswordForm } from "./PasswordForm/PasswordForm";
 import { AccountCreationApi } from "./AccountCreationApiService";
 import { routeFromStatus, UserAccountStatus } from "./UserAccountStatus";
 
-const AccountCreationApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
+const AccountCreationApp = () => {
   // Initialize to loading state on app load
   const [userAccountStatus, setUserAccountStatus] = useState(
     UserAccountStatus.LOADING
@@ -75,7 +74,7 @@ const AccountCreationApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
   return (
     <PrimeErrorBoundary>
       <Page>
-        <Router basename={match.url}>
+        <Router basename={`${process.env.PUBLIC_URL}/uac`}>
           <Switch>
             <Route path="/" exact component={PasswordForm} />
             <Route path="/set-password" component={PasswordForm} />
