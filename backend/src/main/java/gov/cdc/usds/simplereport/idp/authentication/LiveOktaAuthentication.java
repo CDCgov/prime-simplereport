@@ -90,10 +90,12 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       if (userId != null) {
         User user = _client.getUser(userId);
         UserStatus status = user.getStatus();
-        if (status == UserStatus.PROVISIONED || status == UserStatus.STAGED) {
-          return UserAccountStatus.PENDING_ACTIVATION;
-        }
-        if (user.getPasswordChanged() == null) {
+        LOG.info("user status: " + status);
+        // if (status == UserStatus.PROVISIONED || status == UserStatus.STAGED) {
+        //   return UserAccountStatus.PENDING_ACTIVATION;
+        // }
+        LOG.info(user.getCredentials().getPassword().getValue().toString()) ;
+        if (user.getCredentials().getPassword().getValue() != null) {
           return UserAccountStatus.PASSWORD_RESET;
         }
         if (user.getCredentials().getRecoveryQuestion() == null) {
