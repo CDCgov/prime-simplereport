@@ -1,9 +1,5 @@
 // This needs to be kept in sync with UserAccountStatus on the backend.
 
-import { Redirect } from "react-router";
-
-import PageNotFound from "../commonComponents/PageNotFound";
-
 export enum UserAccountStatus {
   ACTIVE = "ACTIVE",
   PENDING_ACTIVATION = "PENDING_ACTIVATION",
@@ -23,28 +19,28 @@ export enum UserAccountStatus {
 export const routeFromStatus = (userAccountStatus: UserAccountStatus) => {
   switch (userAccountStatus) {
     case UserAccountStatus.PENDING_ACTIVATION:
-      return <Redirect to="/" />;
+      return "/";
     case UserAccountStatus.PASSWORD_RESET:
-      return <Redirect to="/" />;
+      return "/";
     case UserAccountStatus.SET_SECURITY_QUESTIONS:
-      return <Redirect to="/set-recovery-question" />;
+      return "/set-recovery-question";
     case UserAccountStatus.MFA_SELECT:
-      return <Redirect to="/mfa-select" />;
+      return "/mfa-select";
     case UserAccountStatus.SMS_PENDING_ACTIVATION:
-      return <Redirect to="/mfa-sms/verify" />;
+      return "/mfa-sms/verify";
     case UserAccountStatus.CALL_PENDING_ACTIVATION:
-      return <Redirect to="/mfa-phone/verify" />;
+      return "/mfa-phone/verify";
     case UserAccountStatus.EMAIL_PENDING_ACTIVATION:
-      return <Redirect to="/mfa-email/verify" />;
+      return "/mfa-email/verify";
     case UserAccountStatus.GOOGLE_PENDING_ACTIVATION:
-      return <Redirect to="/mfa-google-auth/verify" />;
+      return "/mfa-google-auth/verify";
     case UserAccountStatus.OKTA_PENDING_ACTIVATION:
-      return <Redirect to="/mfa-okta/verify" />;
+      return "/mfa-okta/verify";
     case UserAccountStatus.FIDO_PENDING_ACTIVATION:
-      return <Redirect to="/mfa-security-key" />;
+      return "/mfa-security-key";
     case UserAccountStatus.ACTIVE:
-      return <Redirect to="/success" />;
+      return "/success";
     default:
-      return <PageNotFound />;
+      return "/not-found";
   }
 };

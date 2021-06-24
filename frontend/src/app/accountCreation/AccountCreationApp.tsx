@@ -1,17 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Route,
   Switch,
   BrowserRouter as Router,
   RouteComponentProps,
+  useHistory,
 } from "react-router-dom";
 
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import Page from "../commonComponents/Page/Page";
-import { RootState, setInitialState } from "../store";
+import { RootState, setInitialState, setUserAccountStatus } from "../store";
 import { getActivationTokenFromUrl } from "../utils/url";
 import { LoadingCard } from "../commonComponents/LoadingCard/LoadingCard";
+import PageNotFound from "../commonComponents/PageNotFound";
 
 import { SecurityQuestion } from "./SecurityQuestion/SecurityQuestion";
 import { MfaSelect } from "./MfaSelect/MfaSelect";
@@ -31,58 +33,55 @@ import { AccountCreationApi } from "./AccountCreationApiService";
 import { routeFromStatus, UserAccountStatus } from "./UserAccountStatus";
 
 const AccountCreationApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
-  // State for whether this is the initial load of the app
-  // If it is, we will redirect to the correct route based on the user's status
-  const [initialLoad, setInitialLoad] = useState(true);
-
+  const history = useHistory();
   const dispatch = useDispatch();
   const userAccountStatus = useSelector<RootState, UserAccountStatus>(
     (state) => state.userAccountStatus
   );
 
-  // On initial load, ask backend what the user's status is, and
-  // activate the user if they haven't been yet
+  // Runs once on app load
   useEffect(() => {
-    const getStatus = async (activationToken: string | null) => {
-      const userAccountStatus = await AccountCreationApi.getUserStatus(
+    const getStatusAndActivate = async (
+      activationToken: string | null = null
+    ) => {
+      // Ask backend what the user's current account creation status is
+      let userAccountStatus = await AccountCreationApi.getUserStatus(
         activationToken
       );
+      // Set it on the redux store
       dispatch(
         setInitialState({
           activationToken,
           userAccountStatus,
         })
       );
-      return userAccountStatus;
-    };
-    const activateUser = async (
-      statusPromise: Promise<UserAccountStatus>,
-      activationToken: string | null
-    ) => {
-      console.log("Starting activateUser...");
-      const status = await statusPromise;
-      console.log("Got status: ", status);
-      console.log("Activation token: ", activationToken);
-      if (status === UserAccountStatus.PENDING_ACTIVATION && activationToken) {
-        console.log("Making initialize request...");
+      // If the user hasn't been activated yet w/ the activation token, do so
+      if (
+        userAccountStatus === UserAccountStatus.PENDING_ACTIVATION &&
+        activationToken
+      ) {
         await AccountCreationApi.initialize(activationToken);
+        // Re-retrieve the status since it will have changed after activation
+        userAccountStatus = await AccountCreationApi.getUserStatus();
+        dispatch(setUserAccountStatus(userAccountStatus));
+      }
+      // Set correct path based on status
+      const path = routeFromStatus(userAccountStatus);
+      const route = `/uac${path}`;
+      if (route !== history.location.pathname) {
+        history.push(route);
+        history.go(0);
       }
     };
     const activationToken = getActivationTokenFromUrl();
-    console.log("Getting status...");
-    const statusPromise = getStatus(activationToken);
-    console.log("Got status...");
-    activateUser(statusPromise, activationToken);
-  }, [dispatch]);
+    getStatusAndActivate(activationToken);
+  }, [dispatch, history]);
 
   if (
     userAccountStatus === UserAccountStatus.LOADING ||
     userAccountStatus === UserAccountStatus.PENDING_ACTIVATION
   ) {
     return <LoadingCard />;
-  } else if (initialLoad) {
-    setInitialLoad(false);
-    return routeFromStatus(userAccountStatus);
   }
 
   return (
@@ -108,6 +107,7 @@ const AccountCreationApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
             <Route path="/mfa-phone" component={MfaPhone} />
             <Route path="/mfa-email/verify" component={MfaEmailVerify} />
             <Route path="/success" component={MfaComplete} />
+            <Route path="/not-found" component={PageNotFound} />
           </Switch>
         </Router>
       </Page>
