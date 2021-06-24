@@ -2264,6 +2264,57 @@ databaseChangeLog:
                   type: *string
                   remarks: The type of organization
   - changeSet:
+      id: add-tenant-data-access-table
+      author: brett.m.maden@omb.eop.gov
+      comment: Add table to track tenant data access by site admins
+      changes:
+        - createTable:
+            tableName: tenant_data_access
+            remarks: Access requests for site admins who access tenant data
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+              - column: *soft_delete_column
+              - column:
+                  name: api_user_internal_id
+                  type: *idtype
+                  remarks: A foreign key to a site admin api user who will access tenant data
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__internal_id__api_user
+                    references: api_user
+              - column:
+                  name: organization_internal_id
+                  type: *idtype
+                  remarks: A foreign key to an organization will be accessed
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__internal_id__organization
+                    references: organization
+              - column:
+                  name: permissions_data
+                  type: jsonb
+                  remarks: For now, contains the authorities to be used to access tenant datat as strings
+                  constraints:
+                    nullable: false
+              - column:
+                  name: justification
+                  type: *string
+                  remarks: The reason tenant data access was used
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expires_at
+                  type: DATETIME
+                  remarks: Time that user's access to this organization's data will expire if not canceled before
+                  constraints:
+                    nullable: false
+        - sql: |
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.tenant_data_access TO ${noPhiUsername};
+  - changeSet:
       id: add-text-message-sent-table
       author: nicholas.a.scialli@omb.eop.gov
       comment: Add table to track sent text messages

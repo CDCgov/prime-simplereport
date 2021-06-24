@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.db.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import gov.cdc.usds.simplereport.db.model.DataHubUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.DataHubUploadStatus;
@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@SuppressWarnings("checkstyle:MagicNumber")
 class DataHubUploadEntityRespositoryTest extends BaseRepositoryTest {
 
   @Autowired private DataHubUploadRespository _repoDH;
