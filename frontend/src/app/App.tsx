@@ -90,7 +90,7 @@ const App = () => {
     }
 
     if (error.networkError?.message === "UNAUTHORIZED") {
-      return <AuthErrorPage></AuthErrorPage>
+      return <AuthErrorPage></AuthErrorPage>;
     }
     return <p>Server connection error...</p>;
   }

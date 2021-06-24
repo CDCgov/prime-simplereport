@@ -69,7 +69,7 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
   }
   if (networkError && process.env.REACT_APP_BASE_URL) {
     if ("statusCode" in networkError && networkError.statusCode === 401) {
-      networkError.message = "UNAUTHORIZED"
+      networkError.message = "UNAUTHORIZED";
       console.warn("[UNATHORIZED_ACCESS] !!");
     } else {
       showError(
