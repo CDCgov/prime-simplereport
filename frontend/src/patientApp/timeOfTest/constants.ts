@@ -23,9 +23,11 @@ export type Symptoms = typeof symptomsMap;
 export type SymptomCode = keyof Symptoms;
 export type SymptomName = Symptoms[SymptomCode];
 
+export const pregnancyNoCode = "60001007";
+
 export const pregnancyMap = {
   "77386006": "Yes",
-  "60001007": "No",
+  [pregnancyNoCode]: "No",
   "261665006": "Prefer not to answer",
 } as const;
 
@@ -72,7 +74,11 @@ type PregnancyResponses = {
   value: PregnancyCode;
 }[];
 
-const pregancyOrder: PregnancyCode[] = ["77386006", "60001007", "261665006"];
+const pregancyOrder: PregnancyCode[] = [
+  "77386006",
+  pregnancyNoCode,
+  "261665006",
+];
 
 export const getPregnancyResponses = (): PregnancyResponses =>
   pregancyOrder.map((value) => ({ value, label: pregnancyMap[value] }));
