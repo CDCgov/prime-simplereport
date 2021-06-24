@@ -12,7 +12,7 @@ import {
   securityQuestions,
 } from "../../../config/constants";
 import { AccountCreationApi } from "../AccountCreationApiService";
-import { LoadingCard } from "../LoadingCard/LoadingCard";
+import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 export const SecurityQuestion = () => {
   // State setup
