@@ -34,6 +34,7 @@ const request = async (
   const res = await fetch(url, getOptions(method, body));
   console.log("response: " + res);
   if (!res.ok) {
+    console.log(res.json);
     throw res;
   }
   const contentType = res.headers.get("content-type");
