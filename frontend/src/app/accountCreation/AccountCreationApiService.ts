@@ -1,7 +1,8 @@
 const API_URL = process.env.REACT_APP_BACKEND_URL + "/user-account";
+const JSON_CONTENT = "application/json";
 const headers = {
-  "Content-Type": "application/json",
-  Accept: "application/json",
+  "Content-Type": JSON_CONTENT,
+  Accept: JSON_CONTENT,
 };
 
 const getOptions = (
@@ -18,13 +19,21 @@ const getOptions = (
   };
 };
 
-const request = (path: string, body: any): Promise<any> => {
-  return fetch(API_URL + path, getOptions(body)).then((res) => {
-    if (!res.ok) {
-      throw res;
+const request = async (path: string, body: any) => {
+  const res = await fetch(API_URL + path, getOptions(body));
+  if (!res.ok) {
+    throw res;
+  }
+  const contentType = res.headers.get("content-type");
+  if (contentType && contentType.indexOf(JSON_CONTENT) !== -1) {
+    try {
+      return await res.json();
+    } catch {
+      throw new Error("Invalid JSON response during account creation");
     }
+  } else {
     return "success";
-  });
+  }
 };
 
 export class AccountCreationApi {
@@ -50,12 +59,24 @@ export class AccountCreationApi {
     return request("/enroll-voice-call-mfa", { userInput: phone });
   }
 
-  static enrollEmailMfa(email: string) {
-    return request("/enroll-email-mfa", { userInput: email });
+  static enrollEmailMfa() {
+    return request("/enroll-email-mfa", null);
+  }
+
+  static enrollTotpMfa(app: "Google" | "Okta") {
+    return request("/authenticator-qr", { userInput: app });
+  }
+
+  static enrollSecurityKeyMfa() {
+    return request("/enroll-security-key-mfa", null);
+  }
+
+  static activateSecurityKeyMfa(attestation: string, clientData: string) {
+    return request("/activate-security-key-mfa", { attestation, clientData });
   }
 
   static verifyActivationPasscode(code: string) {
-    return request("/verify-activation-passcode", { code });
+    return request("/verify-activation-passcode", { userInput: code });
   }
 
   static resendActivationPasscode() {

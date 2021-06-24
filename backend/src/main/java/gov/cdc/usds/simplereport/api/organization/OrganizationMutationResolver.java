@@ -230,7 +230,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             providerAddress,
             Translators.parsePhoneNumber(orderingProviderTelephone),
             orderingProviderNPI);
-    _aus.createUser(adminEmail, adminName, externalId, Role.ADMIN, false);
+    _aus.createUser(adminEmail, adminName, externalId, Role.ADMIN);
     List<Facility> facilities = _os.getFacilities(org);
     return new ApiOrganization(org, facilities);
   }

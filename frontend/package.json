@@ -29,12 +29,14 @@
     "classnames": "^2.2.6",
     "google-libphonenumber": "^3.2.18",
     "graphql": "^15.4.0",
+    "i18next": "^20.3.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-html-id": "^0.1.5",
+    "react-i18next": "^11.8.15",
     "react-modal": "^3.13.1",
     "react-papaparse": "^3.14.0",
     "react-qr-code": "^1.0.5",
@@ -79,9 +81,9 @@
     "eject": "craco eject",
     "compile-scss": "sass --load-path=./node_modules/uswds/dist/scss --style=compressed --no-source-map src/scss/App.scss:src/styles/App.css",
     "watch-css": "yarn compile-scss && sass --load-path=./node_modules/uswds/dist/scss --style=compressed --no-source-map -w src/scss/App.scss:src/styles/App.css",
-    "create-storybook-public": "rm -rf ./strybook_public && cp -R ./public ./storybook_public && cp mockServiceWorker.js ./storybook_public",
+    "create-storybook-public": "rm -rf ./storybook_public && cp -R ./public ./storybook_public && cp mockServiceWorker.js ./storybook_public",
     "storybook": "yarn create-storybook-public && yarn watch-css & start-storybook -p 6006 -s storybook_public",
-    "build-storybook": "yarn create-storybook-public && yarn compile-scss && build-storybook -s storybook_public"
+    "build-storybook": "yarn create-storybook-public && yarn compile-scss && REACT_APP_BACKEND_URL=http://localhost:8080 build-storybook -s storybook_public"
   },
   "prettier": {
     "singleQuote": false

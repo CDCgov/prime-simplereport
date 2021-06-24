@@ -1,10 +1,15 @@
 import { Story, Meta } from "@storybook/react";
 
+import { getMocks } from "../../../stories/storyMocks";
+
 import { MfaSecurityKey } from "./MfaSecurityKey";
 
 export default {
   title: "App/Account set up/Step 3a: Security key",
   component: MfaSecurityKey,
+  parameters: {
+    msw: getMocks("enrollSecurityKeyMfa"),
+  },
   argTypes: {},
 } as Meta;
 

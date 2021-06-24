@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 
 class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
@@ -158,5 +160,13 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
         unverifiedOrgs.stream().map(Organization::getExternalId).collect(Collectors.toSet());
     assertFalse(unverifiedOrgIds.contains(verifiedOrg.getExternalId()));
     assertTrue(unverifiedOrgIds.contains(unverifiedOrg.getExternalId()));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void updateOrganization_not_allowed() {
+    AccessDeniedException caught =
+        assertThrows(AccessDeniedException.class, () -> _service.updateOrganization("Foo org"));
+    assertEquals("Access is denied", caught.getMessage());
   }
 }

@@ -109,9 +109,12 @@ public class Translators {
     }
   }
 
-  public static PersonRole parsePersonRole(String r) {
+  public static PersonRole parsePersonRole(String r, boolean allowNull) {
     String role = parseString(r);
     if (role == null) {
+      if (allowNull) {
+        return null;
+      }
       return PersonRole.UNKNOWN;
     }
     try {

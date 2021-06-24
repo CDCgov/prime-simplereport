@@ -12,6 +12,7 @@ import {
   securityQuestions,
 } from "../../../config/constants";
 import { AccountCreationApi } from "../AccountCreationApiService";
+import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 export const SecurityQuestion = () => {
   // State setup
@@ -58,13 +59,7 @@ export const SecurityQuestion = () => {
   };
 
   if (loading) {
-    return (
-      <main>
-        <div className="grid-container maxw-tablet">
-          <p className="margin-top-3">Validating security question...</p>
-        </div>
-      </main>
-    );
+    return <LoadingCard message="Validating security question" />;
   }
 
   if (submitted) {

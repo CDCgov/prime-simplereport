@@ -85,6 +85,28 @@ class TestResultTest extends BaseGraphqlTest {
   }
 
   @Test
+  void submitTestResultBackwardsCompatible() throws Exception {
+    Person p = _dataFactory.createFullPerson(_org);
+    DeviceType d = _dataFactory.getGenericDevice();
+    _dataFactory.createTestOrder(p, _site);
+    String dateTested = "2020-12-31T14:30:30.001Z";
+
+    ObjectNode variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("deviceId", d.getInternalId().toString())
+            .put("patientId", p.getInternalId().toString())
+            .put("result", TestResult.NEGATIVE.toString())
+            .put("dateTested", dateTested);
+    submitTestResultBackwardsCompatible(variables, Optional.empty());
+
+    ArrayNode testResults = fetchTestResults(getFacilityScopedArguments());
+
+    assertTrue(testResults.has(0), "Has at least one submitted test result=");
+    assertEquals(testResults.get(0).get("dateTested").asText(), dateTested);
+  }
+
+  @Test
   void testResultOperations_standardUser_successDependsOnFacilityAccess() throws Exception {
     Person p1 = _dataFactory.createFullPerson(_org);
     Person p2 = _dataFactory.createMinimalPerson(_org, _site);
@@ -164,6 +186,12 @@ class TestResultTest extends BaseGraphqlTest {
 
   private ObjectNode submitTestResult(ObjectNode variables, Optional<String> expectedError) {
     return runQuery("add-test-result-mutation", variables, expectedError.orElse(null));
+  }
+
+  private ObjectNode submitTestResultBackwardsCompatible(
+      ObjectNode variables, Optional<String> expectedError) {
+    return runQuery(
+        "add-test-result-mutation-backwards-compatible", variables, expectedError.orElse(null));
   }
 
   private ArrayNode fetchTestResults(ObjectNode variables) {

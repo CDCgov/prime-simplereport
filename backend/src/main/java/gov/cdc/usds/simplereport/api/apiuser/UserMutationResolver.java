@@ -34,7 +34,7 @@ public class UserMutationResolver implements GraphQLMutationResolver {
       String organizationExternalID,
       Role role) {
     name = Translators.consolidateNameArguments(name, firstName, middleName, lastName, suffix);
-    UserInfo user = _us.createUser(email, name, organizationExternalID, role, true);
+    UserInfo user = _us.createUser(email, name, organizationExternalID, role);
     return new User(user);
   }
 
