@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import {
   Route,
   Switch,
@@ -10,7 +9,6 @@ import {
 
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import Page from "../commonComponents/Page/Page";
-import { RootState, setInitialState, setUserAccountStatus } from "../store";
 import { getActivationTokenFromUrl } from "../utils/url";
 import { LoadingCard } from "../commonComponents/LoadingCard/LoadingCard";
 import PageNotFound from "../commonComponents/PageNotFound";
@@ -33,11 +31,12 @@ import { AccountCreationApi } from "./AccountCreationApiService";
 import { routeFromStatus, UserAccountStatus } from "./UserAccountStatus";
 
 const AccountCreationApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
-  const history = useHistory();
-  const dispatch = useDispatch();
-  const userAccountStatus = useSelector<RootState, UserAccountStatus>(
-    (state) => state.userAccountStatus
+  // Initialize to loading state on app load
+  const [userAccountStatus, setUserAccountStatus] = useState(
+    UserAccountStatus.LOADING
   );
+  // Used to reroute based on user's status
+  const history = useHistory();
 
   // Runs once on app load
   useEffect(() => {
@@ -45,43 +44,31 @@ const AccountCreationApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
       activationToken: string | null = null
     ) => {
       // Ask backend what the user's current account creation status is
-      let userAccountStatus = await AccountCreationApi.getUserStatus(
-        activationToken
-      );
-      // Set it on the redux store
-      dispatch(
-        setInitialState({
-          activationToken,
-          userAccountStatus,
-        })
-      );
+      let status = await AccountCreationApi.getUserStatus(activationToken);
       // If the user hasn't been activated yet w/ the activation token, do so
-      if (
-        userAccountStatus === UserAccountStatus.PENDING_ACTIVATION &&
-        activationToken
-      ) {
+      if (status === UserAccountStatus.PENDING_ACTIVATION && activationToken) {
         await AccountCreationApi.initialize(activationToken);
         // Re-retrieve the status since it will have changed after activation
-        userAccountStatus = await AccountCreationApi.getUserStatus();
-        dispatch(setUserAccountStatus(userAccountStatus));
+        status = await AccountCreationApi.getUserStatus();
       }
-      // Set correct path based on status
-      const newPath = routeFromStatus(userAccountStatus);
+      // Get correct path based on status
+      const newPath = routeFromStatus(status);
+      // Check what current path is
       const mount = history.location.pathname.split("/uac")[0];
       const currentPath = history.location.pathname.split("/uac")[1];
+      // If new path is different, reroute
       if (newPath !== currentPath) {
         history.push(`${mount}/uac${newPath}`);
-        history.go(0);
       }
+      // Set the userAccountStatus state, triggering a rerender w/ the Router
+      setUserAccountStatus(status);
     };
     const activationToken = getActivationTokenFromUrl();
     getStatusAndActivate(activationToken);
-  }, [dispatch, history]);
+  }, [history, userAccountStatus]);
 
-  if (
-    userAccountStatus === UserAccountStatus.LOADING ||
-    userAccountStatus === UserAccountStatus.PENDING_ACTIVATION
-  ) {
+  // Show loading card while useEffect func is running
+  if (userAccountStatus === UserAccountStatus.LOADING) {
     return <LoadingCard />;
   }
 

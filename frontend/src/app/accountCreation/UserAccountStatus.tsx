@@ -18,10 +18,11 @@ export enum UserAccountStatus {
 
 export const routeFromStatus = (userAccountStatus: UserAccountStatus) => {
   switch (userAccountStatus) {
+    case UserAccountStatus.LOADING:
     case UserAccountStatus.PENDING_ACTIVATION:
       return "/";
     case UserAccountStatus.PASSWORD_RESET:
-      return "/";
+      return "/set-password";
     case UserAccountStatus.SET_SECURITY_QUESTIONS:
       return "/set-recovery-question";
     case UserAccountStatus.MFA_SELECT:
