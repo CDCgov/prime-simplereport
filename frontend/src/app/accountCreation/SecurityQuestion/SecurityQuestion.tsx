@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Redirect } from "react-router";
-import { Link } from "react-router-dom";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
