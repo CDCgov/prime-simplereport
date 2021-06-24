@@ -225,7 +225,6 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   }
 
   @Test
-  @org.junit.jupiter.api.Disabled("This test would currently fail and will be enabled in PR#1778")
   void addUser_disabledOrg_success() {
     TestUserIdentities.withUser(
         TestUserIdentities.SITE_ADMIN_USER,

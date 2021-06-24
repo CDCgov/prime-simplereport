@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch, connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
 import {
@@ -9,7 +9,7 @@ import {
 
 import Alert from "../commonComponents/Alert";
 import { showNotification } from "../utils";
-import { updateOrganization } from "../store";
+import { RootState, updateOrganization } from "../store";
 
 import ManageOrganization from "./ManageOrganization";
 
@@ -19,7 +19,7 @@ interface Data {
   };
 }
 
-const GET_ORGANIZATION = gql`
+export const GET_ORGANIZATION = gql`
   query GetOrganization {
     organization {
       name
@@ -27,7 +27,7 @@ const GET_ORGANIZATION = gql`
   }
 `;
 
-const SET_ORGANIZATION = gql`
+export const SET_ORGANIZATION = gql`
   mutation SetOrganization($name: String!) {
     updateOrganization(name: $name)
   }
@@ -38,6 +38,9 @@ const ManageOrganizationContainer: any = () => {
     fetchPolicy: "no-cache",
   });
   const dispatch = useDispatch();
+  const isSuperUser = useSelector<RootState, boolean>(
+    (state) => state.user.isAdmin
+  );
   const [setOrganization] = useMutation(SET_ORGANIZATION);
   const appInsights = useAppInsightsContext();
   const trackSaveSettings = useTrackEvent(
@@ -65,7 +68,7 @@ const ManageOrganizationContainer: any = () => {
       variables: {
         name,
       },
-    }).then((d) => {
+    }).then(() => {
       let alert = (
         <Alert
           type="success"
@@ -78,7 +81,13 @@ const ManageOrganizationContainer: any = () => {
     });
   };
 
-  return <ManageOrganization name={data.organization.name} onSave={onSave} />;
+  return (
+    <ManageOrganization
+      name={data.organization.name}
+      onSave={onSave}
+      canEditOrganizationName={isSuperUser}
+    />
+  );
 };
 
-export default connect()(ManageOrganizationContainer);
+export default ManageOrganizationContainer;
