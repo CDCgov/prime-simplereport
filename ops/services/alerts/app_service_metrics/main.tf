@@ -8,7 +8,7 @@ resource "azurerm_monitor_metric_alert" "cpu_util" {
   resource_group_name = var.rg_name
   scopes              = [var.app_service_plan_id]
   frequency           = "PT1M"
-  window_size         = "PT5M"
+  window_size         = "PT${var.cpu_window_size}M"
   enabled             = contains(var.disabled_alerts, "cpu_util") ? false : true
 
   criteria {
@@ -64,7 +64,7 @@ resource "azurerm_monitor_metric_alert" "http_response_time" {
   enabled             = contains(var.disabled_alerts, "http_response_time") ? false : true
 
   criteria {
-    aggregation      = "Average"
+    aggregation      = var.http_response_time_aggregation
     metric_name      = "HttpResponseTime"
     metric_namespace = "Microsoft.Web/sites"
     operator         = "GreaterThanOrEqual"
@@ -165,7 +165,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "http_4xx_errors" {
 
   query = <<-QUERY
 requests
-| where toint(resultCode) >= 400 and toint(resultCode) != 401 and timestamp > ago(5m)
+| where toint(resultCode) >= 400 and toint(resultCode) < 500 and toint(resultCode) != 401 and timestamp > ago(5m)
   QUERY
 
   trigger {
