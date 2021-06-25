@@ -18,11 +18,13 @@ export const initAnswers = (questionSet: Question[]): Nullable<Answers> =>
     return answers;
   }, {} as Nullable<Answers>);
 
-export const buildSchema = (questionSet: Question[]) => {
+export const buildSchema = (questionSet: Question[]): yup.SchemaOf<Answers> =>
   yup.object(
     questionSet.reduce((answers, _question, index) => {
-      answers[getAnswerKey(index)] = yup.string().required();
+      answers[getAnswerKey(index)] = yup
+        .string()
+        .nullable()
+        .required("This field is required");
       return answers;
-    }, {})
+    }, {} as { [key: string]: any })
   );
-};
