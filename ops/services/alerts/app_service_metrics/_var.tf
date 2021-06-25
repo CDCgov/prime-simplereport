@@ -20,15 +20,29 @@ variable "rg_name" {
   type        = string
 }
 
+variable "rg_location" {
+  description = "Location of resource group to deploy into"
+  type        = string
+  default     = "eastus"
+}
+
 variable "tags" {
   default = {}
 }
 
-# Thresholds
+# Monitoring settings
 variable "mem_threshold" {
   default = 70
 }
 
 variable "cpu_threshold" {
   default = 70
+}
+
+variable "cpu_window_size" {
+  default = 5
+}
+
+variable "http_response_time_aggregation" {
+  default = "Minimum"
 }

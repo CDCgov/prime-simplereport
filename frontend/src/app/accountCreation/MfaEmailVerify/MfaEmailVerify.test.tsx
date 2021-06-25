@@ -8,6 +8,7 @@ import { MfaEmailVerify } from "./MfaEmailVerify";
 
 jest.mock("../AccountCreationApiService", () => ({
   AccountCreationApi: {
+    enrollEmailMfa: () => {},
     verifyActivationPasscode: (code: string) => {
       return new Promise((res, rej) => {
         if (code === "123456") {
@@ -23,14 +24,7 @@ jest.mock("../AccountCreationApiService", () => ({
 describe("Verify Email MFA", () => {
   beforeEach(() => {
     render(
-      <MemoryRouter
-        initialEntries={[
-          {
-            pathname: "/mfa-email/verify",
-            state: { email: "foo@bar.com" },
-          },
-        ]}
-      >
+      <MemoryRouter initialEntries={["/mfa-email/verify"]}>
         <Switch>
           <Route path="/mfa-email/verify" component={MfaEmailVerify} />
           <Route path="/success" component={MfaComplete} />
@@ -41,7 +35,10 @@ describe("Verify Email MFA", () => {
 
   it("can submit a valid security code", async () => {
     expect(
-      screen.getByText("foo@bar.com", { exact: false })
+      screen.getByText(
+        "We’ve sent you an email with a one-time security code.",
+        { exact: false }
+      )
     ).toBeInTheDocument();
     fireEvent.change(
       screen.getByLabelText("One-time security code", { exact: false }),
@@ -50,7 +47,7 @@ describe("Verify Email MFA", () => {
       }
     );
     await act(async () => {
-      await fireEvent.click(screen.getByText("Verify"));
+      await fireEvent.click(screen.getByText("Submit"));
     });
     expect(
       screen.queryByText("Enter your security code")
@@ -62,7 +59,10 @@ describe("Verify Email MFA", () => {
 
   it("shows an error for an invalid security code", async () => {
     expect(
-      screen.getByText("foo@bar.com", { exact: false })
+      screen.getByText(
+        "We’ve sent you an email with a one-time security code.",
+        { exact: false }
+      )
     ).toBeInTheDocument();
     fireEvent.change(
       screen.getByLabelText("One-time security code", { exact: false }),
@@ -71,7 +71,7 @@ describe("Verify Email MFA", () => {
       }
     );
     await act(async () => {
-      await fireEvent.click(screen.getByText("Verify"));
+      await fireEvent.click(screen.getByText("Submit"));
     });
     expect(
       screen.getByText("API Error:", { exact: false })
@@ -82,7 +82,7 @@ describe("Verify Email MFA", () => {
   });
 
   it("requires a security code to be entered", () => {
-    fireEvent.click(screen.getByText("Verify"));
+    fireEvent.click(screen.getByText("Submit"));
     expect(screen.getByText("Enter your security code")).toBeInTheDocument();
     expect(
       screen.queryByText("You’re ready to start using SimpleReport.")

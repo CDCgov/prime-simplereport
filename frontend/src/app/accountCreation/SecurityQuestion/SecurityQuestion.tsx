@@ -12,6 +12,7 @@ import {
   securityQuestions,
 } from "../../../config/constants";
 import { AccountCreationApi } from "../AccountCreationApiService";
+import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 export const SecurityQuestion = () => {
   // State setup
@@ -58,13 +59,7 @@ export const SecurityQuestion = () => {
   };
 
   if (loading) {
-    return (
-      <main>
-        <div className="grid-container maxw-tablet">
-          <p className="margin-top-3">Validating security question...</p>
-        </div>
-      </main>
-    );
+    return <LoadingCard message="Validating security question" />;
   }
 
   if (submitted) {
@@ -83,7 +78,6 @@ export const SecurityQuestion = () => {
           label="Security question"
           name="security-question"
           hintText="If you forget your password, we’ll ask you this question to verify your identity."
-          required
           selectedValue={securityQuestion}
           options={securityQuestions.map((c) => ({ label: c, value: c }))}
           defaultSelect
@@ -97,7 +91,6 @@ export const SecurityQuestion = () => {
           label={"Answer"}
           name={"answer"}
           value={securityAnswer}
-          required
           errorMessage={securityAnswerError}
           validationStatus={securityAnswerError ? "error" : undefined}
           onBlur={validateSecurityAnswer}
@@ -110,7 +103,7 @@ export const SecurityQuestion = () => {
           onClick={handleSubmit}
         />
       </Card>
-      <p className="margin-top-5">
+      <p className="margin-top-4">
         <a href="#0">Return to previous step</a>
       </p>
     </CardBackground>

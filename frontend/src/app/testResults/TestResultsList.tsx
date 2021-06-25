@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import moment from "moment";
 import classnames from "classnames";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
+import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName, displayFullNameInOrder } from "../utils";
@@ -23,9 +24,14 @@ import {
 } from "../commonComponents/QueryWrapper";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import { getUrl } from "../utils/url";
-import { useOutsideClick } from "../utils/hooks";
+import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
 import Pagination from "../commonComponents/Pagination";
-import { TEST_RESULT_DESCRIPTIONS } from "../constants";
+import {
+  COVID_RESULTS,
+  ROLE_VALUES,
+  TEST_RESULT_DESCRIPTIONS,
+  DATE_FORMAT_MM_DD_YYYY,
+} from "../constants";
 import "./TestResultsList.scss";
 import Button from "../commonComponents/Button/Button";
 import { useDebounce } from "../testQueue/addToQueue/useDebounce";
@@ -37,6 +43,7 @@ import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 import { Patient } from "../patients/ManagePatients";
 import SearchResults from "../testQueue/addToQueue/SearchResults";
+import Select from "../commonComponents/Select";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
@@ -48,12 +55,20 @@ export const testResultQuery = gql`
   query GetFacilityResults(
     $facilityId: ID
     $patientId: ID
+    $result: String
+    $role: String
+    $startDate: DateTime
+    $endDate: DateTime
     $pageNumber: Int
     $pageSize: Int
   ) {
     testResults(
       facilityId: $facilityId
       patientId: $patientId
+      result: $result
+      role: $role
+      startDate: $startDate
+      endDate: $endDate
       pageNumber: $pageNumber
       pageSize: $pageSize
     ) {
@@ -100,6 +115,14 @@ interface Props {
   entriesPerPage: number;
   totalEntries: number;
   setSelectedPatientId: Dispatch<SetStateAction<string>>;
+  setResultFilter: Dispatch<SetStateAction<string>>;
+  resultFilter: string;
+  setRoleFilter: Dispatch<SetStateAction<string>>;
+  roleFilter: string;
+  setStartDateFilter: Dispatch<SetStateAction<string>>;
+  startDateFilter: string;
+  setEndDateFilter: Dispatch<SetStateAction<string>>;
+  endDateFilter: string;
   facilityId: string;
 }
 
@@ -205,6 +228,14 @@ export const DetachedTestResultsList: any = ({
   loadingTotalResults,
   totalEntries,
   setSelectedPatientId,
+  setResultFilter,
+  resultFilter,
+  setRoleFilter,
+  roleFilter,
+  setStartDateFilter,
+  startDateFilter,
+  setEndDateFilter,
+  endDateFilter,
   facilityId,
 }: Props) => {
   const [printModalId, setPrintModalId] = useState(undefined);
@@ -212,6 +243,10 @@ export const DetachedTestResultsList: any = ({
   const [detailsModalId, setDetailsModalId] = useState<string>();
   const [showFilters, setShowFilters] = useState(false);
   const [showSuggestion, setShowSuggestion] = useState(true);
+  const [startDateEntry, setStartDateEntry] = useState<string>();
+  const [endDateEntry, setEndDateEntry] = useState<string>();
+  const [startDateError, setStartDateError] = useState<string | undefined>();
+  const [endDateError, setEndDateError] = useState<string | undefined>();
 
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
@@ -286,6 +321,35 @@ export const DetachedTestResultsList: any = ({
     setDetailsModalId
   );
 
+  function processDates() {
+    var validStart = false;
+    if (startDateEntry) {
+      if (!startDateEntry.match(DATE_FORMAT_MM_DD_YYYY)) {
+        setStartDateError("Date must be in format MM/DD/YYYY or MM-DD-YYYY");
+        setStartDateFilter("");
+      } else {
+        validStart = true;
+        const startDate = moment(startDateEntry).startOf("day");
+        setStartDateError(undefined);
+        setStartDateFilter(startDate.toISOString());
+      }
+    }
+    if (endDateEntry) {
+      if (!endDateEntry.match(DATE_FORMAT_MM_DD_YYYY)) {
+        setEndDateError("Date must be in format MM/DD/YYYY or MM-DD-YYYY");
+      } else {
+        const endDate = moment(endDateEntry).endOf("day");
+        if (validStart && endDate.isBefore(moment(startDateFilter))) {
+          setEndDateError("End date cannot be before start date");
+          setEndDateFilter("");
+        } else {
+          setEndDateError(undefined);
+          setEndDateFilter(endDate.toISOString());
+        }
+      }
+    }
+  }
+
   return (
     <main className="prime-home">
       {detailsModalId && (
@@ -318,6 +382,10 @@ export const DetachedTestResultsList: any = ({
                     if (showFilters) {
                       setDebounced("");
                       setSelectedPatientId("");
+                      setResultFilter("");
+                      setRoleFilter("");
+                      setStartDateFilter("");
+                      setEndDateFilter("");
                     }
 
                     setShowFilters(!showFilters);
@@ -330,24 +398,96 @@ export const DetachedTestResultsList: any = ({
             {showFilters && (
               <div
                 id="test-results-search-by-patient-input"
-                className="display-flex flex-row position-relative bg-base-lightest padding-x-3 padding-y-2"
+                className="position-relative bg-base-lightest"
               >
-                <SearchInput
-                  onSearchClick={onSearchClick}
-                  onInputChange={onInputChange}
-                  queryString={debounced}
-                  disabled={!allowQuery}
-                  label={"Search by name"}
-                  placeholder={""}
-                />
-                <SearchResults
-                  page="test-results"
-                  patients={patientData?.patients || []}
-                  onPatientSelect={onPatientSelect}
-                  shouldShowSuggestions={showDropdown}
-                  loading={debounced !== queryString}
-                  dropDownRef={dropDownRef}
-                />
+                <div className="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2">
+                  <div className="person-search">
+                    <SearchInput
+                      onSearchClick={onSearchClick}
+                      onInputChange={onInputChange}
+                      queryString={debounced}
+                      disabled={!allowQuery}
+                      label={"Search by name"}
+                      placeholder={""}
+                      className="usa-form-group"
+                    />
+                    <SearchResults
+                      page="test-results"
+                      patients={patientData?.patients || []}
+                      onPatientSelect={onPatientSelect}
+                      shouldShowSuggestions={showDropdown}
+                      loading={debounced !== queryString}
+                      dropDownRef={dropDownRef}
+                    />
+                  </div>
+                  <div className="usa-form-group date-filter-group">
+                    <Label htmlFor="meeting-time">Date range (start)</Label>
+                    {startDateError && (
+                      <span className="usa-error-message" role="alert">
+                        <span className="usa-sr-only">Error: </span>
+                        {startDateError}
+                      </span>
+                    )}
+                    <DatePicker
+                      id="start-date"
+                      name="start-date"
+                      data-testid="start-date"
+                      value={startDateEntry}
+                      minDate="2000-01-01T00:00"
+                      maxDate={moment().format("YYYY-MM-DDThh:mm")}
+                      onChange={(v) => setStartDateEntry(v || "")}
+                      onBlur={processDates}
+                    />
+                  </div>
+                  <div className="usa-form-group date-filter-group">
+                    <Label htmlFor="meeting-time">Date range (end)</Label>
+                    {endDateError && (
+                      <span className="usa-error-message" role="alert">
+                        <span className="usa-sr-only">Error: </span>
+                        {endDateError}
+                      </span>
+                    )}
+                    <DatePicker
+                      id="end-date"
+                      name="end-date"
+                      data-testid="end-date"
+                      value={endDateEntry}
+                      minDate={startDateFilter || "2000-01-01T00:00"}
+                      maxDate={moment().format("YYYY-MM-DDThh:mm")}
+                      onChange={(v) => setEndDateEntry(v || "")}
+                      onBlur={processDates}
+                    />
+                  </div>
+                  <Select
+                    label="Result"
+                    name="result"
+                    value={resultFilter}
+                    options={[
+                      {
+                        value: COVID_RESULTS.POSITIVE,
+                        label: TEST_RESULT_DESCRIPTIONS.POSITIVE,
+                      },
+                      {
+                        value: COVID_RESULTS.NEGATIVE,
+                        label: TEST_RESULT_DESCRIPTIONS.NEGATIVE,
+                      },
+                      {
+                        value: COVID_RESULTS.INCONCLUSIVE,
+                        label: TEST_RESULT_DESCRIPTIONS.UNDETERMINED,
+                      },
+                    ]}
+                    defaultSelect
+                    onChange={setResultFilter}
+                  />
+                  <Select
+                    label="Role"
+                    name="role"
+                    value={roleFilter}
+                    options={ROLE_VALUES}
+                    defaultSelect
+                    onChange={setRoleFilter}
+                  />
+                </div>
               </div>
             )}
             <div className="usa-card__body">
@@ -386,8 +526,22 @@ export const DetachedTestResultsList: any = ({
 };
 
 export const resultsCountQuery = gql`
-  query GetResultsCountByFacility($facilityId: ID, $patientId: ID) {
-    testResultsCount(facilityId: $facilityId, patientId: $patientId)
+  query GetResultsCountByFacility(
+    $facilityId: ID
+    $patientId: ID
+    $result: String
+    $role: String
+    $startDate: DateTime
+    $endDate: DateTime
+  ) {
+    testResultsCount(
+      facilityId: $facilityId
+      patientId: $patientId
+      result: $result
+      role: $role
+      startDate: $startDate
+      endDate: $endDate
+    )
   }
 `;
 
@@ -398,16 +552,30 @@ type OmittedProps =
   | "totalEntries"
   | "loadingTotalResults"
   | "facilityId"
-  | "setSelectedPatientId";
+  | "setSelectedPatientId"
+  | "setResultFilter"
+  | "resultFilter"
+  | "setRoleFilter"
+  | "roleFilter"
+  | "setStartDateFilter"
+  | "startDateFilter"
+  | "setEndDateFilter"
+  | "endDateFilter";
 
 type TestResultsListProps = Omit<Props, OmittedProps>;
 
 const TestResultsList = (props: TestResultsListProps) => {
+  useDocumentTitle("Results");
+
   const activeFacilityId = useSelector(
     (state) => (state as any).facility.id as string
   );
 
   const [selectedPatientId, setSelectedPatientId] = useState<string>("");
+  const [resultFilter, setResultFilter] = useState<string>("");
+  const [roleFilter, setRoleFilter] = useState<string>("");
+  const [startDateFilter, setStartDateFilter] = useState<string>("");
+  const [endDateFilter, setEndDateFilter] = useState<string>("");
 
   const entriesPerPage = 20;
   const pageNumber = props.page || 1;
@@ -415,6 +583,10 @@ const TestResultsList = (props: TestResultsListProps) => {
   const queryVariables: {
     patientId?: string;
     facilityId: string;
+    result?: string;
+    role?: string;
+    startDate?: string;
+    endDate?: string;
     pageNumber: number;
     pageSize: number;
   } = {
@@ -426,11 +598,35 @@ const TestResultsList = (props: TestResultsListProps) => {
   const countQueryVariables: {
     patientId?: string;
     facilityId: string;
+    result?: string;
+    role?: string;
+    startDate?: string;
+    endDate?: string;
   } = { facilityId: activeFacilityId };
 
   if (selectedPatientId) {
     queryVariables.patientId = selectedPatientId;
     countQueryVariables.patientId = selectedPatientId;
+  }
+
+  if (resultFilter) {
+    queryVariables.result = resultFilter;
+    countQueryVariables.result = resultFilter;
+  }
+
+  if (roleFilter) {
+    queryVariables.role = roleFilter;
+    countQueryVariables.role = roleFilter;
+  }
+
+  if (startDateFilter) {
+    queryVariables.startDate = startDateFilter;
+    countQueryVariables.startDate = startDateFilter;
+  }
+
+  if (endDateFilter) {
+    queryVariables.endDate = endDateFilter;
+    countQueryVariables.endDate = endDateFilter;
   }
 
   const {
@@ -469,6 +665,14 @@ const TestResultsList = (props: TestResultsListProps) => {
         totalEntries,
         entriesPerPage,
         setSelectedPatientId,
+        setResultFilter,
+        resultFilter,
+        setRoleFilter,
+        roleFilter,
+        setStartDateFilter,
+        startDateFilter,
+        setEndDateFilter,
+        endDateFilter,
         facilityId: activeFacilityId,
       }}
     />

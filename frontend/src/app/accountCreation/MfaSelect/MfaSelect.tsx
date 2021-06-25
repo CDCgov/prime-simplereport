@@ -38,7 +38,7 @@ export const MfaSelect = () => {
       case "SMS":
         return <Redirect to="/mfa-sms" />;
       case "Okta":
-        return <Redirect to="/mfa-okta-verify" />;
+        return <Redirect to="/mfa-okta" />;
       case "Google":
         return <Redirect to="/mfa-google-auth" />;
       case "FIDO":
@@ -46,7 +46,7 @@ export const MfaSelect = () => {
       case "Phone":
         return <Redirect to="/mfa-phone" />;
       case "Email":
-        return <Redirect to="/mfa-email" />;
+        return <Redirect to="/mfa-email/verify" />;
       default:
         return <Redirect to="/" />;
     }
@@ -63,7 +63,6 @@ export const MfaSelect = () => {
         <RadioGroup
           name="addressSelect"
           legend="Add a second layer of security to protect your account."
-          required
           buttons={[
             {
               value: "SMS",
@@ -120,7 +119,7 @@ export const MfaSelect = () => {
           onClick={handleSubmit}
         />
       </Card>
-      <p className="margin-top-5">
+      <p className="margin-top-4">
         <a href="#0">Return to previous step</a>
       </p>
     </CardBackground>

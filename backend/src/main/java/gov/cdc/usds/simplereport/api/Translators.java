@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -108,9 +109,12 @@ public class Translators {
     }
   }
 
-  public static PersonRole parsePersonRole(String r) {
+  public static PersonRole parsePersonRole(String r, boolean allowNull) {
     String role = parseString(r);
     if (role == null) {
+      if (allowNull) {
+        return null;
+      }
       return PersonRole.UNKNOWN;
     }
     try {
@@ -218,6 +222,22 @@ public class Translators {
     }
     throw new IllegalGraphqlArgumentException(
         "\"" + g + "\" must be one of [" + String.join(", ", GENDERS) + "].");
+  }
+
+  public static TestResult parseTestResult(String r) {
+    String result = parseString(r);
+    if (result == null) {
+      return null;
+    }
+    try {
+      result = result.toUpperCase();
+      if ("INCONCLUSIVE".equals(result)) {
+        result = TestResult.UNDETERMINED.name();
+      }
+      return TestResult.valueOf(result);
+    } catch (IllegalArgumentException e) {
+      throw IllegalGraphqlArgumentException.invalidInput(r, "test result");
+    }
   }
 
   private static final Map<String, Boolean> YES_NO =

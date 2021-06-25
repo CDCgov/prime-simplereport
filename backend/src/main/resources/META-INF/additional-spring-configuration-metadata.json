@@ -49,6 +49,11 @@
       "name": "simple-report.sendgrid",
       "type": "gov.cdc.usds.simplereport.properties.SendGridProperties",
       "description": "Properties for configuring SendGrid"
+    },
+    {
+      "name": "simple-report.ordering-providers",
+      "type": "gov.cdc.usds.simplereport.properties.OrderingProviderProperties",
+      "description": "Properties for configuring state requirements for facility Ordering Providers"
     }
   ]
 }

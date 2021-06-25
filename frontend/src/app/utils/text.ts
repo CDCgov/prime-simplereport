@@ -42,3 +42,38 @@ export function toLowerStripWhitespace(s: string | null): string {
   }
   return s.toLocaleLowerCase().replace(/\s/g, "");
 }
+
+// From Okta: https://github.com/okta/okta-signin-widget/blob/master/src/util/CryptoUtil.js
+
+/**
+ * Converts any url safe characters in a base64 string to regular base64 characters
+ * @param str base64 string that might contain url safe characters
+ * @returns base64 formatted string
+ */
+export function base64UrlSafeToBase64(str: string) {
+  return str
+    .replace(new RegExp("_", "g"), "/")
+    .replace(new RegExp("-", "g"), "+");
+}
+
+/**
+ * Converts an ArrayBuffer object that contains binary data to base64 encoded string
+ * @param bin ArrayBuffer object
+ * @returns base64 encoded string
+ */
+export function binToStr(bin: ArrayBuffer) {
+  return btoa(
+    new Uint8Array(bin).reduce((s, byte) => s + String.fromCharCode(byte), "")
+  );
+}
+
+/**
+ * Converts base64 string to binary data view
+ * @param str in base64 or base64UrlSafe format
+ * @returns converted Uint8Array view of binary data
+ */
+export function strToBin(str: string) {
+  return Uint8Array.from(atob(base64UrlSafeToBase64(str)), (c) =>
+    c.charCodeAt(0)
+  );
+}

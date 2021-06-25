@@ -1,10 +1,86 @@
+import { useEffect, useState } from "react";
+import { Redirect } from "react-router";
+
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 import iconLoader from "../../../../node_modules/uswds/dist/img/loader.svg";
+import { AccountCreationApi } from "../AccountCreationApiService";
+import { strToBin, binToStr } from "../../utils/text";
 
 export const MfaSecurityKey = () => {
+  const [attestation, setAttestation] = useState("");
+  const [clientData, setClientData] = useState("");
+  const [activated, setActivated] = useState(false);
+  const [unsupported, setUnsupported] = useState(false);
+
+  useEffect(() => {
+    const enrollKey = async () => {
+      const { activation } = await AccountCreationApi.enrollSecurityKeyMfa();
+      if (!activation.challenge) {
+        return;
+      }
+      const publicKey = Object.assign({}, activation);
+      // Convert activation object's challenge and user id from string to binary
+      publicKey.challenge = strToBin(activation.challenge);
+      publicKey.user.id = strToBin(activation.user.id);
+
+      // navigator.credentials is a global object on WebAuthn-supported clients, used to access WebAuthn API
+      // if the user's browser doesn't support WebAuthn, display a message telling them to use a different browser
+      if (!navigator?.credentials) {
+        setUnsupported(true);
+        return;
+      }
+      navigator.credentials
+        .create({ publicKey })
+        .then(function (newCredential) {
+          // Get attestation and clientData from callback result, convert from binary to string
+          const response = (newCredential as PublicKeyCredential)
+            ?.response as AuthenticatorAttestationResponse;
+          setAttestation(binToStr(response.attestationObject));
+          setClientData(binToStr(response.clientDataJSON));
+        });
+    };
+    enrollKey();
+  }, []);
+
+  useEffect(() => {
+    if (attestation && clientData) {
+      try {
+        AccountCreationApi.activateSecurityKeyMfa(attestation, clientData);
+        setActivated(true);
+      } catch (error) {
+        console.error("Error trying to activate security key: ", error);
+      }
+    }
+  }, [attestation, clientData]);
+
+  if (unsupported) {
+    return (
+      <CardBackground>
+        <Card logo bodyKicker="Unsupported browser">
+          <p className="margin-bottom-0">
+            To register a security key, please use the latest version of a
+            supported browser:
+          </p>
+          <ol className="usa-list usa-hint font-ui-2xs">
+            <li>Google Chrome</li>
+            <li>Mozilla Firefox</li>
+            <li>Microsoft Edge</li>
+          </ol>
+        </Card>
+        <p className="margin-top-4">
+          <a href="#0">Return to previous step</a>
+        </p>
+      </CardBackground>
+    );
+  }
+
+  if (activated) {
+    return <Redirect to="/success" />;
+  }
+
   return (
     <CardBackground>
       <Card logo bodyKicker="Set up your account">
@@ -28,7 +104,7 @@ export const MfaSecurityKey = () => {
         </div>
         {/* <Button className="margin-top-3" label={"Continue"} type={"submit"} /> */}
       </Card>
-      <p className="margin-top-5">
+      <p className="margin-top-4">
         <a href="#0">Return to previous step</a>
       </p>
     </CardBackground>

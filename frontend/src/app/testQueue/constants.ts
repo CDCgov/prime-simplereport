@@ -1,3 +1,4 @@
+import { AlertContent } from "../commonComponents/Alert";
 import { displayFullName } from "../utils";
 
 export const QUEUE_NOTIFICATION_TYPES = {
@@ -6,7 +7,9 @@ export const QUEUE_NOTIFICATION_TYPES = {
 };
 
 export const ALERT_CONTENT = {
-  [QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS]: (patient: any) => {
+  [QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS]: (
+    patient: any
+  ): AlertContent => {
     return {
       type: "success",
       title: `${displayFullName(
@@ -17,7 +20,9 @@ export const ALERT_CONTENT = {
       body: "Newly added patients go to the bottom of the queue",
     };
   },
-  [QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS]: (patient: any) => {
+  [QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS]: (
+    patient: any
+  ): AlertContent => {
     return {
       type: "success",
       title: `Result was saved and reported for ${displayFullName(

@@ -1,0 +1,15 @@
+{
+  "request" : {
+    "url" : "/api/v1/authn",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"token\":\"lJ8lRfaK0jXeq0YovfNR\"}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"stateToken\":\"00Sy_lb6Em7nUScXrRY71Tz0-PdbRZKZGypwz-lEoZ\",\"expiresAt\":\"2021-06-14T23:14:18.000Z\",\"status\":\"PASSWORD_RESET\",\"recoveryType\":\"ACCOUNT_ACTIVATION\",\"_embedded\":{\"user\":{\"id\":\"00ucxvarj3CeuPe9B4h6\",\"profile\":{\"login\":\"test@example.com\",\"firstName\":\"TEST\",\"lastName\":\"INTEGRATION\",\"locale\":\"en\",\"timeZone\":\"America/Los_Angeles\"}},\"policy\":{\"complexity\":{\"minLength\":8,\"minLowerCase\":1,\"minUpperCase\":1,\"minNumber\":1,\"minSymbol\":0,\"excludeUsername\":true},\"age\":{\"minAgeMinutes\":0,\"historyCount\":6}}},\"_links\":{\"next\":{\"name\":\"resetPassword\",\"href\":\"https://hhs-prime.okta.com/api/v1/authn/credentials/reset_password\",\"hints\":{\"allow\":[\"POST\"]}},\"cancel\":{\"href\":\"https://hhs-prime.okta.com/api/v1/authn/cancel\",\"hints\":{\"allow\":[\"POST\"]}}}}"
+  }
+}

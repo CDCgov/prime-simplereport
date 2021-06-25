@@ -330,31 +330,33 @@ Pentest|[/app/static/commit.txt](https://pentest.simplereport.gov/app/static/com
 ### Deploy With Release
 
 Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/releases/new) page
-![release form](https://user-images.githubusercontent.com/80347105/110684538-43187880-81ab-11eb-9793-7cc923956a8b.png)
 
-1. Add a version tag. If the release was `v1` then this release should be `v2`
+![full-dialog](https://user-images.githubusercontent.com/28784751/121424756-b31bd380-c93f-11eb-987d-38934f0570ae.png)
+
+1. <img align="right" width="517" alt="select-commit" src="https://user-images.githubusercontent.com/28784751/121423065-df365500-c93d-11eb-9b95-a63130d602e6.png">
+   Select the commit you want to release. This is likely to be the last commit on `main`, but select
+   the commit explicitly so that you do not accidentally release changes that somebody else is in the
+   process of merging.<br clear="right" />
+2. <img align="right" width="399" alt="new-release-name" src="https://user-images.githubusercontent.com/28784751/121423127-f07f6180-c93d-11eb-9e76-53aa5187a633.png">
+   Add a version tag. If the release was `v1` then this release should be `v2` 
 2. Add a release title summarizing the changes
 3. If applicable describe some of the changes in detail in the description
-4. Click publish release
-5. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`
+3. Check the "This is a pre-release" box.
+4. Click publish release (this will trigger the release to `stg`)
+5. Verify the changes are live in `stg` by ensuring the deployed commit hash matches the commit hash on the release and the deployed release tag matches. This is done by going to `/app/static/commit.txt` and `/api/actuator/info`
+6. Return to the release page and select "Edit release"
+7. Un-check the "This is a pre-release" checkbox and click "Update release" (this will trigger the release to other environments)
+8. Verify that the changes are live in `prod`, `demo` and `training`.
 
 ### Revert to a Previous Release
 
 1. Find the version tag for the release you want to revert to.
-2. Checkout that version and create a new branch
-    ```bash
-    $ git checkout ${version_tag}
-    ```
-3. Create and publish new branch at that tag
-     ```bash
-    $ git checkout -b revert-to-${version_tag} && git push -u
-    ```
-4. Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/releases/new) page
-5. Add a version tag: `revert-to-${version_tag}`.
-    - If a version has already been reverted to in the past and needs to be again add an counter to the tag: `revert-to-${version_tag}-${X}`
-6. Add a release title `Revert to ${version_tag}`
-7. Add a description briefly explaining why the revert is needed
-8. Click publish release
+2. Select that release from the list on the [release page](https://github.com/CDCgov/prime-simplereport/releases) (or navigate directly to `https://github.com/CDCgov/prime-simplereport/releases/tag/{TAG}`)
+3. Click "Edit Release"
+4. Check the "This is a pre-release" box
+5. Click "Update release"
+6. Verify that the original changes have been re-released successfully on `stg`
+7. Edit the release again, de-select the "This is a pre-release" box, and click "Update release."
 9. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done by going to `/app/static/commit.txt` and `/api/actuator/info`
 
 

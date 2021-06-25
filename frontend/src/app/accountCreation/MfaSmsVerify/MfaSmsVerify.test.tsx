@@ -27,7 +27,7 @@ describe("Verify SMS MFA", () => {
         initialEntries={[
           {
             pathname: "/mfa-sms/verify",
-            state: { phoneNumber: "(530) 867-5309" },
+            state: { contact: "(530) 867-5309" },
           },
         ]}
       >
@@ -50,7 +50,7 @@ describe("Verify SMS MFA", () => {
       }
     );
     await act(async () => {
-      await fireEvent.click(screen.getByText("Verify"));
+      await fireEvent.click(screen.getByText("Submit"));
     });
     expect(
       screen.queryByText("Enter your security code")
@@ -71,7 +71,7 @@ describe("Verify SMS MFA", () => {
       }
     );
     await act(async () => {
-      await fireEvent.click(screen.getByText("Verify"));
+      await fireEvent.click(screen.getByText("Submit"));
     });
     expect(
       screen.getByText("API Error:", { exact: false })
@@ -82,7 +82,7 @@ describe("Verify SMS MFA", () => {
   });
 
   it("requires a security code to be entered", () => {
-    fireEvent.click(screen.getByText("Verify"));
+    fireEvent.click(screen.getByText("Submit"));
     expect(screen.getByText("Enter your security code")).toBeInTheDocument();
     expect(
       screen.queryByText("You’re ready to start using SimpleReport.")

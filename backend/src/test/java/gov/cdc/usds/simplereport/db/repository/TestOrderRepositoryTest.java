@@ -5,7 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import gov.cdc.usds.simplereport.db.model.*;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -17,13 +22,11 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@SuppressWarnings("checkstyle:MagicNumber")
 class TestOrderRepositoryTest extends BaseRepositoryTest {
 
   @Autowired private TestOrderRepository _repo;
   @Autowired private PersonRepository _personRepo;
   @Autowired private PhoneNumberRepository _phoneRepo;
-  @Autowired private OrganizationRepository _orgRepo;
   @Autowired private TestEventRepository _events;
   @Autowired private TestDataFactory _dataFactory;
 
@@ -64,7 +67,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     assertEquals(1, queue.size());
     TestEvent event = _dataFactory.doTest(order, TestResult.NEGATIVE);
     flush();
-    TestOrder lookuporder = _repo.findByTestEventId(order.getOrganization(), event.getInternalId());
+    TestOrder lookuporder = _repo.findByTestEvent(order.getOrganization(), event);
     assertNotNull(lookuporder);
     assertEquals(lookuporder.getInternalId(), order.getInternalId());
     assertEquals(0, _repo.fetchQueue(gtown, site).size());
@@ -73,7 +76,6 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void testLifeCycle() {
-    DeviceType device = _dataFactory.getGenericDevice();
     Organization gtown = _dataFactory.createValidOrg("Georgetown", "gt", true);
     Person hoya =
         _personRepo.save(
@@ -111,17 +113,15 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     _repo.save(order);
     flush();
 
-    assertNotNull(_repo.findByTestEventId(gtown, ev.getInternalId()));
-    assertEquals(ev.getInternalId(), order.getTestEventId());
+    assertNotNull(_repo.findByTestEvent(gtown, ev));
+    assertEquals(ev, order.getTestEvent());
 
     // LocalDate.now() makes it random.
     String unitTestCorrectionStr = "Correction unit test: " + LocalDate.now().toString();
     order.setReasonForCorrection(unitTestCorrectionStr);
     _repo.save(order);
     flush();
-    assertEquals(
-        unitTestCorrectionStr,
-        _repo.findByTestEventId(gtown, ev.getInternalId()).getReasonForCorrection());
+    assertEquals(unitTestCorrectionStr, _repo.findByTestEvent(gtown, ev).getReasonForCorrection());
   }
 
   @Test

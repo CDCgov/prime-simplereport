@@ -49,6 +49,16 @@ databaseChangeLog:
       name: migrations_user_email
       value: db-migrations@simplereport.gov
   - changeSet:
+      id: create-pgcrypto-extension
+      author: josh@skylight.digital
+      comment: Make sure we create the pgcrypto extension before beginning migrations.
+      changes:
+        - sql:
+            sql: CREATE EXTENSION IF NOT EXISTS pgcrypto;
+      rollback:
+        - sql:
+            sql: DROP EXTENSION pgcrypto;
+  - changeSet:
       id: define-enum-types
       author: bwarfield@cdc.gov
       comment: Type definitions for our initial tables.
@@ -2171,3 +2181,136 @@ databaseChangeLog:
       changes:
         sql: |
           GRANT SELECT ON TABLE ${database.defaultSchemaName}.patient_registration_link TO ${noPhiUsername};
+  - changeSet:
+      id: add-patient-preferences-to-person-view
+      author: nathan@skylight.digital
+      comment: Add person patient preferences to person_no_phi_view
+      changes:
+        - dropView:
+            viewName: person_no_phi_view
+        - createView:
+            viewName: person_no_phi_view
+            remarks: A subset of the person table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: |
+              SELECT
+                p.internal_id,
+                p.created_at,
+                p.created_by,
+                p.updated_at,
+                p.updated_by,
+                p.is_deleted,
+                p.organization_id,
+                p.facility_id,
+                p.race,
+                p.gender,
+                p.ethnicity,
+                p.county,
+                p.state,
+                p.employed_in_healthcare,
+                p.role,
+                p.resident_congregate_setting,
+                p.tribal_affiliation,
+                get_census_dob_group(p.birth_date) AS census_dob_group,
+                pp.preferred_language,
+                pp.test_result_delivery
+              FROM ${database.defaultSchemaName}.person p
+              JOIN patient_preferences pp on pp.internal_id=p.internal_id
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+      rollback:
+        - dropView:
+            viewName: person_no_phi_view
+        - createView:
+            viewName: person_no_phi_view
+            remarks: A subset of the person table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: |
+              SELECT
+                internal_id,
+                created_at,
+                created_by,
+                updated_at,
+                updated_by,
+                is_deleted,
+                organization_id,
+                facility_id,
+                race,
+                gender,
+                ethnicity,
+                county,
+                state,
+                employed_in_healthcare,
+                role,
+                resident_congregate_setting,
+                tribal_affiliation,
+                get_census_dob_group(person.birth_date) AS census_dob_group
+              FROM ${database.defaultSchemaName}.person
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+  - changeSet:
+      id: add-organization-type
+      author: nicholas.a.scialli@omb.eop.gov
+      comment: Add type of organization.
+      changes:
+        - addColumn:
+            tableName: organization
+            columns:
+              - column:
+                  name: organization_type
+                  afterColumn: organization_name
+                  type: *string
+                  remarks: The type of organization
+  - changeSet:
+      id: add-tenant-data-access-table
+      author: brett.m.maden@omb.eop.gov
+      comment: Add table to track tenant data access by site admins
+      changes:
+        - createTable:
+            tableName: tenant_data_access
+            remarks: Access requests for site admins who access tenant data
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+              - column: *soft_delete_column
+              - column:
+                  name: api_user_internal_id
+                  type: *idtype
+                  remarks: A foreign key to a site admin api user who will access tenant data
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__internal_id__api_user
+                    references: api_user
+              - column:
+                  name: organization_internal_id
+                  type: *idtype
+                  remarks: A foreign key to an organization will be accessed
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__internal_id__organization
+                    references: organization
+              - column:
+                  name: permissions_data
+                  type: jsonb
+                  remarks: For now, contains the authorities to be used to access tenant datat as strings
+                  constraints:
+                    nullable: false
+              - column:
+                  name: justification
+                  type: *string
+                  remarks: The reason tenant data access was used
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expires_at
+                  type: DATETIME
+                  remarks: Time that user's access to this organization's data will expire if not canceled before
+                  constraints:
+                    nullable: false
+        - sql: |
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.tenant_data_access TO ${noPhiUsername};

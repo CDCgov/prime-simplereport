@@ -19,8 +19,14 @@ import classnames from "classnames";
  * @param {string} role  ARIA role type
  */
 
+export type AlertType = "info" | "success" | "warning" | "error";
+export interface AlertContent {
+  type: AlertType;
+  title: string;
+  body: string;
+}
 interface Props {
-  type: "info" | "success" | "warning" | "error";
+  type: AlertType;
   role?: "alert" | "alertdialog" | "region";
   title?: React.ReactNode;
   body?: React.ReactNode;

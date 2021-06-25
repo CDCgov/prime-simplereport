@@ -75,4 +75,8 @@ module.exports = {
       .acceptTos()
       .enterInformation(getDobFormat(browser));
   },
+  "6. Update organization settings": (browser) => {
+    console.info("Updating organization settings");
+    browser.page.settings().navigate().enterInformation();
+  },
 };
