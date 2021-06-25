@@ -1,9 +1,8 @@
 package gov.cdc.usds.simplereport.config;
 
-import java.util.UUID;
-
 import com.twilio.type.PhoneNumber;
 import gov.cdc.usds.simplereport.service.sms.SmsProviderWrapper;
+import java.util.UUID;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
