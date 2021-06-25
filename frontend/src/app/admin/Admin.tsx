@@ -32,6 +32,10 @@ const Admin = () => {
                   Create new device type
                 </Link>
               </div>
+              <div>
+                {" "}
+                <Link to="/admin/tenant-data-access">Access Tenant Data</Link>
+              </div>
             </div>
           </div>
         </div>
