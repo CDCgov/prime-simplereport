@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.config;
 
+import java.util.UUID;
+
 import com.twilio.type.PhoneNumber;
 import gov.cdc.usds.simplereport.service.sms.SmsProviderWrapper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -16,8 +18,10 @@ public class TwilioDisabledConfiguration {
 
 @Component
 class DisabledSmsWrapper implements SmsProviderWrapper {
+  private static String DISABLED_MESSAGE_PREFIX = "twilio-is-disabled";
+
   @Override
   public String send(PhoneNumber to, PhoneNumber from, String message) {
-    return null;
+    return String.format("%s-%s", DISABLED_MESSAGE_PREFIX, UUID.randomUUID().toString());
   }
 }
