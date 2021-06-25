@@ -7,7 +7,6 @@ import {
   getTestTypes,
   getPregnancyResponses,
   PregnancyCode,
-  pregnancyNoCode,
 } from "../../../patientApp/timeOfTest/constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Button from "../../commonComponents/Button/Button";
@@ -19,6 +18,13 @@ import { TestResult } from "../QueueItem";
 
 import SymptomInputs from "./SymptomInputs";
 import PriorTestInputs from "./PriorTestInputs";
+
+// Get the value associate with a button label
+// TODO: move to utility?
+const findValueForLabel = (
+  label: string,
+  list: { label: string; value: string }[]
+) => (list.filter((item) => item.label === label)[0] || {}).value;
 
 export interface PriorTest {
   priorTestDate: ISODate | undefined | null;
@@ -190,7 +196,9 @@ const AoEForm: React.FC<Props> = ({
   // Auto-answer pregnancy question for males
   const pregnancyResponses = getPregnancyResponses();
   if (patient.gender === "male" && !pregnancyResponse) {
-    setPregnancyResponse(pregnancyNoCode);
+    setPregnancyResponse(
+      findValueForLabel("No", pregnancyResponses) as PregnancyCode
+    );
   }
 
   const saveAnswers = (e: React.FormEvent) => {
