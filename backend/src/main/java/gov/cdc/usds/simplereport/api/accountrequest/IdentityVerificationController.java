@@ -27,5 +27,10 @@ public class IdentityVerificationController {
   }
 
   @PostMapping("/submit-answers")
-  public void submitAnswers(HttpServletRequest request) {}
+  public String submitAnswers(HttpServletRequest request) {
+    // example request body: {"answers":["1","2","3","4","5"]}
+    // where "1" represents the user selecting "2002" for "Please select the model year of the
+    // vehicle you purchased or leased prior to January 2011"
+    return "{\"passed\":true,\"email\":\"usds@example.com\"}";
+  }
 }

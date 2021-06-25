@@ -28,3 +28,9 @@ export const buildSchema = (questionSet: Question[]): yup.SchemaOf<Answers> =>
       return answers;
     }, {} as { [key: string]: any })
   );
+
+// Note: the order of the answers must be preserved
+export const answersToArray = (answers: Answers): string[] =>
+  Object.keys(answers).map((_, index) => {
+    return answers[getAnswerKey(index)];
+  });
