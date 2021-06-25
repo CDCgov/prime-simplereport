@@ -62,7 +62,7 @@ resource "azurerm_monitor_metric_alert" "uptime" {
   application_insights_web_test_location_availability_criteria {
     web_test_id           = azurerm_application_insights_web_test.uptime[each.key].id
     component_id          = var.app_insights_id
-    failed_location_count = 1
+    failed_location_count = 3
   }
 
   dynamic "action" {
