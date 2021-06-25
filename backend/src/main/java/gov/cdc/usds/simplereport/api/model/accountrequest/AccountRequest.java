@@ -26,6 +26,8 @@ public class AccountRequest implements TemplateVariablesProvider {
   @JsonProperty @NotNull private String state;
   @JsonProperty @NotNull private String zip;
   @JsonProperty @NotNull private String county;
+  @JsonProperty @NotNull private String facilityType;
+  @JsonProperty private String facilityTypeOther;
   @JsonProperty private String organizationName;
   @JsonProperty private String organizationType;
   @JsonProperty @NotNull private String facilityName;

@@ -11,7 +11,7 @@ public class Organization extends EternalAuditedEntity {
   @Column(nullable = false, unique = true)
   private String organizationName;
 
-  @Column(nullable = false)
+  @Column
   private String organizationType;
 
   @Column(name = "organization_external_id", nullable = false, unique = true)

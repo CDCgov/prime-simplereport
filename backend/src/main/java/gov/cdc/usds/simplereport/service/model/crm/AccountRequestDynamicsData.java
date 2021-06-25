@@ -30,8 +30,9 @@ public class AccountRequestDynamicsData {
     // variableMap.put("bah_state_text", accountRequest.getState()); // need mapping to dynamics
     variableMap.put("bah_zipcode_text", accountRequest.getZip());
     variableMap.put("bah_county_text", accountRequest.getCounty());
+    variableMap.put("bah_testingsitetype_code", DynamicsValueMapping.convertToCode(Prefix.TST, "other"));
     variableMap.put("bah_organizationname_text", accountRequest.getOrganizationName());
-    variableMap.put("bah_organizationtype_text", accountRequest.getOrganizationType());
+    variableMap.put("bah_othertestingsite_text", accountRequest.getOrganizationType());
     variableMap.put("bah_testingsitename_text", accountRequest.getFacilityName());
     variableMap.put("bah_clianumber_num", accountRequest.getCliaNumber());
     variableMap.put(
