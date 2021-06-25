@@ -7,6 +7,7 @@ type Organization {
   id: ID
   internalId: ID @deprecated(reason: "alias for 'id'")
   name: String
+  type: String
   externalId: String
   testingFacility: [Facility]
     @deprecated(reason: "Use the one that makes sense")
@@ -456,4 +457,6 @@ type Mutation {
   ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkSms(internalId: String!): String
     @requiredPermissions(allOf: ["UPDATE_TEST"])
+  updateOrganization(type: String!): String
+    @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
 }

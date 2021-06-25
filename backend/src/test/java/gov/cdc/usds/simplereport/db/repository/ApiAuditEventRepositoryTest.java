@@ -32,7 +32,7 @@ class ApiAuditEventRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void getLatestEvent_twoEvents_correctEventFound() {
-    Organization org = _orgRepo.save(new Organization("RepoTestOrg", "123456", true));
+    Organization org = _orgRepo.save(new Organization("RepoTestOrg", "university", "123456", true));
     ApiUser user =
         _userRepo.save(new ApiUser("joe@example.com", new PersonName("Joe", null, "Bloggs", null)));
     _repo.save(new ApiAuditEvent("AAAA", REQUEST, API_REQ, List.of(), user, List.of(), false, org));
