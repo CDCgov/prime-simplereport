@@ -5,7 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import gov.cdc.usds.simplereport.db.model.*;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -17,20 +22,18 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@SuppressWarnings("checkstyle:MagicNumber")
 class TestOrderRepositoryTest extends BaseRepositoryTest {
 
   @Autowired private TestOrderRepository _repo;
   @Autowired private PersonRepository _personRepo;
   @Autowired private PhoneNumberRepository _phoneRepo;
-  @Autowired private OrganizationRepository _orgRepo;
   @Autowired private TestEventRepository _events;
   @Autowired private TestDataFactory _dataFactory;
 
   @Test
   void runChanges() {
-    Organization gwu = _dataFactory.createValidOrg("George Washington", "gwu", true);
-    Organization gtown = _dataFactory.createValidOrg("Georgetown", "gt", true);
+    Organization gwu = _dataFactory.createValidOrg("George Washington", "university", "gwu", true);
+    Organization gtown = _dataFactory.createValidOrg("Georgetown", "university", "gt", true);
     Facility site = _dataFactory.createValidFacility(gtown);
     Facility otherSite = _dataFactory.createValidFacility(gwu);
     Person hoya =
@@ -73,8 +76,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void testLifeCycle() {
-    DeviceType device = _dataFactory.getGenericDevice();
-    Organization gtown = _dataFactory.createValidOrg("Georgetown", "gt", true);
+    Organization gtown = _dataFactory.createValidOrg("Georgetown", "university", "gt", true);
     Person hoya =
         _personRepo.save(
             new Person(
