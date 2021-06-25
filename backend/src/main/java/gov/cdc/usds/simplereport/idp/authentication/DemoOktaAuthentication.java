@@ -15,12 +15,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Profile(BeanProfiles.NO_OKTA_AUTH)
 @Service
 public class DemoOktaAuthentication implements OktaAuthentication {
+  private static final Logger LOG = LoggerFactory.getLogger(DemoOktaAuthentication.class);
 
   private static final int MINIMUM_PASSWORD_LENGTH = 8;
   private static final int PHONE_NUMBER_LENGTH = 10;
@@ -118,11 +121,11 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
-    System.out.println("in demoOktaAuthentication");
+    LOG.info("in demoOktaAuthentication");
     validateUser(userId);
-    System.out.println("user has been validated");
+    LOG.info("user has been validated");
     String factorType = "";
-    System.out.println("appType: " + appType.toLowerCase());
+    LOG.info("appType: " + appType.toLowerCase());
     switch (appType.toLowerCase()) {
       case "google":
         factorType = "authApp: google";
@@ -133,7 +136,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       default:
         throw new OktaAuthenticationFailureException("App type not recognized.");
     }
-    System.out.println("factor type determined: " + factorType);
+    LOG.info("factor type determined: " + factorType);
     String factorId = factorType + " " + userId;
     String qrCode = "thisIsAFakeQrCode";
     DemoMfa appMfa =
@@ -203,8 +206,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   }
 
   public void validateUser(String userId) throws OktaAuthenticationFailureException {
-    System.out.println("map: " + this.idToUserMap.keySet());
-    System.out.println("provided user id: " + userId);
+    LOG.info("map: " + this.idToUserMap.keySet());
+    LOG.info("provided user id: " + userId);
     if (!this.idToUserMap.containsKey(userId)) {
       throw new OktaAuthenticationFailureException("User id not recognized.");
     }

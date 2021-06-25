@@ -97,8 +97,6 @@ public class UserAccountCreationController {
   public void activateAccount(
       @RequestBody ActivateAccountRequest requestBody, HttpServletRequest request)
       throws InvalidActivationLinkException {
-    LOG.info("endpoint hit: /initialize");
-    LOG.info("requestBody: " + requestBody.getActivationToken());
     String userId =
         _oktaAuth.activateUser(
             requestBody.getActivationToken(),
@@ -221,11 +219,9 @@ public class UserAccountCreationController {
       throws OktaAuthenticationFailureException {
     JSONObject enrollResponse = _oktaAuth.enrollSecurityKey(userId);
     request.getSession().setAttribute(FACTOR_ID_KEY, enrollResponse.getString(FACTOR_ID_KEY));
-    JsonNode node =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("activation", enrollResponse.getJSONObject("activation").toString());
-    return node;
+    return JsonNodeFactory.instance
+        .objectNode()
+        .put("activation", enrollResponse.getJSONObject("activation").toString());
   }
 
   /**

@@ -62,8 +62,8 @@ const AccountCreationApp = () => {
       // Set the userAccountStatus state, triggering a rerender w/ the Router
       setUserAccountStatus(status);
     };
-    const activationToken = getActivationTokenFromUrl();
-    getStatusAndActivate(activationToken);
+    const token = getActivationTokenFromUrl();
+    getStatusAndActivate(token);
   }, [history, userAccountStatus]);
 
   // Show loading card while useEffect func is running

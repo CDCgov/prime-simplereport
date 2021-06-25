@@ -52,7 +52,7 @@ class FetchClient {
     path: string,
     body: JsonObject | null = null,
     method: RequestMethod = "POST",
-    query: string = ""
+    query = ""
   ) => {
     const res = await fetch(
       this.getURL(path, query),
