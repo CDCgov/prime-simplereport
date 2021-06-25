@@ -191,7 +191,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
 
   /** Using the Okta Management SDK, set's a user's recovery questions. */
   public void setRecoveryQuestion(String userId, String question, String answer)
-      throws OktaAuthenticationFailureException {
+      throws OktaAuthenticationFailureException, BadRequestException {
     try {
       User user = _client.getUser(userId);
       UserCredentials creds = user.getCredentials();
@@ -216,7 +216,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * triggers a text to the user's phone with an activation passcode.
    */
   public String enrollSmsMfa(String userId, String phoneNumber)
-      throws OktaAuthenticationFailureException {
+      throws OktaAuthenticationFailureException, BadRequestException {
     try {
       SmsUserFactor smsFactor = _client.instantiate(SmsUserFactor.class);
       smsFactor.getProfile().setPhoneNumber(phoneNumber);
@@ -236,7 +236,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * triggers a phone call to the user with an activation passcode.
    */
   public String enrollVoiceCallMfa(String userId, String phoneNumber)
-      throws OktaAuthenticationFailureException {
+      throws OktaAuthenticationFailureException, BadRequestException {
     try {
       CallUserFactor callFactor = _client.instantiate(CallUserFactor.class);
       callFactor.getProfile().setPhoneNumber(phoneNumber);

@@ -139,7 +139,7 @@ public class UserAccountCreationController {
   @PostMapping("/set-recovery-question")
   public void setRecoveryQuestions(
       @RequestBody SetRecoveryQuestionRequest requestBody, @SessionAttribute String userId)
-      throws OktaAuthenticationFailureException {
+      throws OktaAuthenticationFailureException, BadRequestException {
     _oktaAuth.setRecoveryQuestion(userId, requestBody.getQuestion(), requestBody.getAnswer());
   }
 
@@ -155,7 +155,7 @@ public class UserAccountCreationController {
       @RequestBody EnrollMfaRequest requestBody,
       @SessionAttribute String userId,
       HttpServletRequest request)
-      throws OktaAuthenticationFailureException {
+      throws OktaAuthenticationFailureException, BadRequestException {
     String factorId = _oktaAuth.enrollSmsMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
@@ -172,7 +172,7 @@ public class UserAccountCreationController {
       @RequestBody EnrollMfaRequest requestBody,
       @SessionAttribute String userId,
       HttpServletRequest request)
-      throws OktaAuthenticationFailureException {
+      throws OktaAuthenticationFailureException, BadRequestException {
     String factorId = _oktaAuth.enrollVoiceCallMfa(userId, requestBody.getUserInput());
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
