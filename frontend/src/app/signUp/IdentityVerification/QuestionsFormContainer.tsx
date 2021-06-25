@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 
-import SignUpApi from "../SignUpApiService";
+import SignUpApi from "../SignUpApi";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 import QuestionsForm from "./QuestionsForm";
 import Success from "./Success";
 import NextSteps from "./NextSteps";
 
-const QuestionsFromContainer = () => {
+const QuestionsFormContainer = () => {
   const [loading, setLoading] = useState(true);
   const [identificationVerified, setIdentificationVerified] = useState<
     boolean | undefined
@@ -16,11 +16,11 @@ const QuestionsFromContainer = () => {
   const [email, setEmail] = useState<string>("");
 
   const getQuestionSet = async () => {
-    const { questionSet } = await SignUpApi.getQuestions();
-    if (!questionSet) {
+    const response = await SignUpApi.getQuestions();
+    if (!response.questionSet) {
       return;
     }
-    setQuestionSet(questionSet);
+    setQuestionSet(response.questionSet);
     setLoading(false);
   };
 
@@ -31,7 +31,7 @@ const QuestionsFromContainer = () => {
   const onSubmit = async (answers: Answers) => {
     setLoading(false);
     const response = await SignUpApi.submitAnswers(answers);
-    setIdentificationVerified(response.passed);
+    setIdentificationVerified(!response.passed);
     setEmail(response.email);
   };
 
@@ -57,4 +57,4 @@ const QuestionsFromContainer = () => {
   }
 };
 
-export default QuestionsFromContainer;
+export default QuestionsFormContainer;
