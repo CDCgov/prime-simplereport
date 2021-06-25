@@ -63,9 +63,6 @@ public class UserAccountCreationController {
       @RequestParam @Nullable String activationToken,
       @Nullable @SessionAttribute String userId,
       @Nullable @SessionAttribute String factorId) {
-    LOG.info("endpoint hit: /user-status" + activationToken);
-    LOG.info("user id from session: " + userId);
-    LOG.info("factor id from session: " + factorId);
     return _oktaAuth.getUserStatus(activationToken, userId, factorId);
   }
 
