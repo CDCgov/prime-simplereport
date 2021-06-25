@@ -12,10 +12,10 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import Button from "../../commonComponents/Button/Button";
 import FormGroup from "../../commonComponents/FormGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
+import "./AoEForm.scss";
 import { COVID_RESULTS } from "../../constants";
 import { TestResult } from "../QueueItem";
 
-import "./AoEForm.scss";
 import SymptomInputs from "./SymptomInputs";
 import PriorTestInputs from "./PriorTestInputs";
 
@@ -25,6 +25,7 @@ const findValueForLabel = (
   label: string,
   list: { label: string; value: string }[]
 ) => (list.filter((item) => item.label === label)[0] || {}).value;
+
 export interface PriorTest {
   priorTestDate: ISODate | undefined | null;
   priorTestResult: TestResult | undefined | null;
@@ -34,7 +35,7 @@ export interface PriorTest {
 export interface AoEAnswersDelivery extends PriorTest {
   noSymptoms: boolean;
   symptoms: string;
-  symptomOnset: ISODate | undefined;
+  symptomOnset: ISODate | null | undefined;
   pregnancy: PregnancyCode | undefined;
   testResultDelivery: string;
 }
@@ -47,6 +48,11 @@ export type AoEAnswers = Omit<
   RequiredAndNotNull<AoEAnswersDelivery>,
   "testResultDelivery"
 >;
+
+export type LastTest = {
+  dateTested: string;
+  result: TestResult;
+};
 interface Props {
   saveButtonText: string;
   onClose?: () => void;
@@ -57,33 +63,9 @@ interface Props {
     birthDate: string;
     telephone: string;
   };
-  lastTest:
-    | {
-        dateTested: string;
-        result: string;
-      }
-    | undefined;
-  loadState?: {
-    noSymptoms: boolean;
-    symptoms: string;
-    symptomOnset: string;
-    priorTestDate: string;
-    priorTestResult: string;
-    priorTestType: string;
-    firstTest: boolean;
-    pregnancy: string;
-  };
-  saveCallback: (response: {
-    noSymptoms: boolean;
-    symptoms: string;
-    symptomOnset: string | undefined;
-    priorTestDate: string | undefined | null;
-    priorTestResult: string | undefined | null;
-    priorTestType: string | undefined | null;
-    firstTest: boolean;
-    pregnancy: string | undefined;
-    testResultDelivery: string;
-  }) => Promise<string | void> | void;
+  lastTest: LastTest | undefined;
+  loadState?: AoEAnswers;
+  saveCallback: (response: AoEAnswersDelivery) => void;
   isModal: boolean;
   noValidation: boolean;
   formRef?: React.Ref<HTMLFormElement>;
@@ -126,12 +108,17 @@ const AoEForm: React.FC<Props> = ({
 
   const [noSymptoms, setNoSymptoms] = useState(loadState.noSymptoms || false);
   const [currentSymptoms, setSymptoms] = useState(initialSymptoms);
-  const [onsetDate, setOnsetDate] = useState(loadState.symptomOnset);
+  const [onsetDate, setOnsetDate] = useState<ISODate | undefined | null>(
+    loadState.symptomOnset
+  );
   const [isFirstTest, setIsFirstTest] = useState(loadState.firstTest);
-  const [priorTestDate, setPriorTestDate] = useState(loadState.priorTestDate);
+  const [priorTestDate, setPriorTestDate] = useState<
+    ISODate | undefined | null
+  >(loadState.priorTestDate);
+
   const [priorTestType, setPriorTestType] = useState(loadState.priorTestType);
   const [priorTestResult, setPriorTestResult] = useState<
-    string | null | undefined
+    TestResult | null | undefined
   >(
     loadState.priorTestResult === undefined
       ? undefined
@@ -145,6 +132,11 @@ const AoEForm: React.FC<Props> = ({
   );
 
   const patientIsOver18 = moment().diff(patient.birthDate, "years") >= 18;
+
+  // Null is OK and preferred over an empty string
+  if (lastTest?.dateTested) {
+    lastTest.dateTested = lastTest.dateTested.split("T")[0] as ISODate;
+  }
 
   // form validation
   const [symptomError, setSymptomError] = useState<string | undefined>();
@@ -204,7 +196,9 @@ const AoEForm: React.FC<Props> = ({
   // Auto-answer pregnancy question for males
   const pregnancyResponses = getPregnancyResponses();
   if (patient.gender === "male" && !pregnancyResponse) {
-    setPregnancyResponse(findValueForLabel("No", pregnancyResponses));
+    setPregnancyResponse(
+      findValueForLabel("No", pregnancyResponses) as PregnancyCode
+    );
   }
 
   const saveAnswers = (e: React.FormEvent) => {
@@ -216,7 +210,7 @@ const AoEForm: React.FC<Props> = ({
           saveSymptoms[value] = false;
         });
       }
-      const priorTest = isFirstTest
+      const priorTest: PriorTest = isFirstTest
         ? {
             firstTest: true,
             priorTestDate: null,

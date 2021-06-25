@@ -15,7 +15,7 @@ class OrganizationRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void createAndFindSomething() {
-    Organization saved = _repo.save(new Organization("My House", "12345", true));
+    Organization saved = _repo.save(new Organization("My House", "other", "12345", true));
     assertNotNull(saved);
     assertNotNull(saved.getInternalId());
     Optional<Organization> sameOrg = _repo.findByExternalId("12345");

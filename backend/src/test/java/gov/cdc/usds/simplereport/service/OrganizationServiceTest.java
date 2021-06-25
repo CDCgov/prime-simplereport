@@ -48,6 +48,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     Organization org =
         _service.createOrganization(
             "Tim's org",
+            "k12",
             "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
             "Facility 1",
             "12345",
@@ -87,6 +88,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     Organization org =
         _service.createOrganization(
             "Tim's org",
+            "university",
             "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
             "Facility 1",
             "12345",
@@ -120,6 +122,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
         () -> {
           _service.createOrganization(
               "Adam's org",
+              "urgent_care",
               "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
               "Facility 1",
               "12345",
@@ -164,9 +167,10 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void updateOrganization_not_allowed() {
+  void adminUpdateOrganization_not_allowed() {
     AccessDeniedException caught =
-        assertThrows(AccessDeniedException.class, () -> _service.updateOrganization("Foo org"));
+        assertThrows(
+            AccessDeniedException.class, () -> _service.updateOrganization("Foo org", "k12"));
     assertEquals("Access is denied", caught.getMessage());
   }
 }

@@ -32,6 +32,7 @@ extend type Mutation {
   ): User
   createOrganization(
     name: String!
+    type: String!
     externalId: String!
     testingFacilityName: String!
     cliaNumber: String
@@ -82,5 +83,5 @@ extend type Mutation {
   ): String
   updateRegistrationLink(link: String!, newLink: String!): String
   setRegistrationLinkIsDeleted(link: String, deleted: Boolean!): String
-  updateOrganization(name: String!): String
+  adminUpdateOrganization(name: String!, type: String!): String
 }
