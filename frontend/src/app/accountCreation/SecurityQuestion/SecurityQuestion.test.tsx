@@ -49,7 +49,7 @@ describe("SecurityQuestion", () => {
       target: { value: "New York" },
     });
     fireEvent.click(screen.getByText("Continue"));
-    expect(screen.getByText("Enter a security question")).toBeInTheDocument();
+    expect(screen.getByText("Select a security question")).toBeInTheDocument();
   });
 
   it("requires a security answer", () => {
@@ -58,7 +58,9 @@ describe("SecurityQuestion", () => {
       ["In what city or town was your first job?"]
     );
     fireEvent.click(screen.getByText("Continue"));
-    expect(screen.getByText("Enter your answer")).toBeInTheDocument();
+    expect(
+      screen.getByText("Answer must be at least 4 characters")
+    ).toBeInTheDocument();
   });
 
   it("succeeds on submit w/ valid responses", async () => {

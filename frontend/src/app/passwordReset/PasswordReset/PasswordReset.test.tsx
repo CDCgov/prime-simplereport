@@ -14,7 +14,7 @@ const store = mockStore({
 
 jest.mock("../../accountCreation/AccountCreationApiService", () => ({
   AccountCreationApi: {
-    setPassword: (activationToken: string, password: string) => {
+    setPassword: (password: string) => {
       return new Promise((res, rej) => {
         if (password === "validPASS123!") {
           res("success");

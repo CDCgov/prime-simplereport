@@ -10,13 +10,13 @@ describe("AccountCreationApi", () => {
   describe("setPassword", () => {
     beforeEach(async () => {
       (fetch as FetchMock).mockResponseOnce(JSON.stringify({}));
-      await AccountCreationApi.setPassword("DUMMY_AUTH_CODE", "DROWSSAP");
+      await AccountCreationApi.setPassword("DROWSSAP");
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/initialize-and-set-password",
+        "http://localhost:8080/api/user-account/set-password",
         {
-          body: '{"activationToken":"DUMMY_AUTH_CODE","password":"DROWSSAP"}',
+          body: '{"password":"DROWSSAP"}',
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
@@ -36,7 +36,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/set-recovery-question",
+        "http://localhost:8080/api/user-account/set-recovery-question",
         {
           body: '{"question":"Favorite Cat?","answer":"Savannah cat"}',
           headers: {
@@ -55,7 +55,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/enroll-sms-mfa",
+        "http://localhost:8080/api/user-account/enroll-sms-mfa",
         {
           body: '{"userInput":"1-800-273-8255"}',
           headers: {
@@ -74,7 +74,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/enroll-voice-call-mfa",
+        "http://localhost:8080/api/user-account/enroll-voice-call-mfa",
         {
           body: '{"userInput":"867-5309"}',
           headers: {
@@ -93,7 +93,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/enroll-email-mfa",
+        "http://localhost:8080/api/user-account/enroll-email-mfa",
         {
           headers: {
             Accept: "application/json",
@@ -111,7 +111,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/authenticator-qr",
+        "http://localhost:8080/api/user-account/authenticator-qr",
         {
           body: '{"userInput":"Google"}',
           headers: {
@@ -130,7 +130,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/enroll-security-key-mfa",
+        "http://localhost:8080/api/user-account/enroll-security-key-mfa",
         {
           headers: {
             Accept: "application/json",
@@ -148,7 +148,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/activate-security-key-mfa",
+        "http://localhost:8080/api/user-account/activate-security-key-mfa",
         {
           body: '{"attestation":"ABC","clientData":"123"}',
           headers: {
@@ -167,7 +167,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/verify-activation-passcode",
+        "http://localhost:8080/api/user-account/verify-activation-passcode",
         {
           body: '{"userInput":"789345"}',
           headers: {
@@ -186,7 +186,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/resend-activation-passcode",
+        "http://localhost:8080/api/user-account/resend-activation-passcode",
         {
           headers: {
             Accept: "application/json",
