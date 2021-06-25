@@ -160,6 +160,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public ApiOrganization createOrganization(
       String name,
+      String type,
       String externalId,
       String testingFacilityName,
       String cliaNumber,
@@ -219,6 +220,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     Organization org =
         _os.createOrganization(
             name,
+            Translators.parseOrganizationType(type),
             externalId,
             testingFacilityName,
             cliaNumber,
@@ -235,8 +237,14 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     return new ApiOrganization(org, facilities);
   }
 
-  public void updateOrganization(String name) {
-    _os.updateOrganization(name);
+  public void adminUpdateOrganization(String name, String type) {
+    String parsedType = Translators.parseOrganizationType(type);
+    _os.updateOrganization(name, parsedType);
+  }
+
+  public void updateOrganization(String type) {
+    String parsedType = Translators.parseOrganizationType(type);
+    _os.updateOrganization(parsedType);
   }
 
   public boolean setOrganizationIdentityVerified(String externalId, boolean verified) {
