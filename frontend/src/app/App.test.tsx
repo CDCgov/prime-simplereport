@@ -3,8 +3,8 @@ import TestRenderer, { act } from "react-test-renderer";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import createMockStore, { MockStoreEnhanced } from "redux-mock-store";
-import { MockedProvider, MockedResponse} from "@apollo/client/testing";
-import { ApolloError} from "@apollo/client";
+import { MockedProvider, MockedResponse } from "@apollo/client/testing";
+import { ApolloError } from "@apollo/client";
 
 import App, { WHOAMI_QUERY } from "./App";
 import { queueQuery } from "./testQueue/TestQueue";
@@ -151,12 +151,10 @@ const WhoAmIErrorQueryMock = {
   error: new Error("Server connection error"),
 };
 
- const apolloError = new ApolloError({
-   networkError: new Error("UNAUTHORIZED"),
-   errorMessage: "UNAUTHORIZED",
- });
-
-
+const apolloError = new ApolloError({
+  networkError: new Error("UNAUTHORIZED"),
+  errorMessage: "UNAUTHORIZED",
+});
 
 const WhoAmIAuthErrorQueryMock = {
   request: {
@@ -236,4 +234,3 @@ describe("App", () => {
     expect(component).toMatchSnapshot();
   });
 });
-
