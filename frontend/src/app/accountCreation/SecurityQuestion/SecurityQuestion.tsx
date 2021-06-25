@@ -40,6 +40,9 @@ export const SecurityQuestion = () => {
     if (securityAnswer.length < 4) {
       error = "Answer must be at least 4 characters";
     }
+    if (securityAnswer.length > 1000) {
+      error = "Answer must be less than 1000 characters";
+    }
     setSecurityAnswerError(error);
     return error === "";
   };

@@ -125,7 +125,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
                   return UserAccountStatus.OKTA_PENDING_ACTIVATION;
                 }
               default:
-                return UserAccountStatus.UNKNOWN;
+                return UserAccountStatus.ACTIVE;
             }
           }
         }
