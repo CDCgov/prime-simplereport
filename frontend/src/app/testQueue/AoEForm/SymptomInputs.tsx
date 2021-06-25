@@ -3,6 +3,7 @@ import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 import Checkboxes from "../../commonComponents/Checkboxes";
+import { formatDate } from "../../utils/date";
 
 interface Symptoms {
   [key: string]: boolean;
@@ -13,8 +14,8 @@ interface Props {
   setNoSymptoms: (noSymptoms: boolean) => void;
   currentSymptoms: Symptoms;
   setSymptoms: (symptoms: Symptoms) => void;
-  onsetDate: string | undefined;
-  setOnsetDate: (onsetDate: string) => void;
+  onsetDate: ISODate | undefined | null;
+  setOnsetDate: (onsetDate: ISODate | undefined | null) => void;
   symptomError: string | undefined;
   symptomOnsetError: string | undefined;
   symptomRef: React.RefObject<HTMLInputElement>;
@@ -34,6 +35,9 @@ const SymptomInputs: React.FC<Props> = ({
 
   symptomOnsetRef,
 }) => {
+  function setFormattedOnsetDate(input: string | null | undefined) {
+    return setOnsetDate(formatDate(input));
+  }
   return (
     <>
       <div className={symptomError ? "usa-form-group--error" : "usa-fieldset"}>
@@ -84,12 +88,12 @@ const SymptomInputs: React.FC<Props> = ({
             className="maxw-mobile"
             id="symptom_onset"
             name="symptom_onset"
-            defaultValue={onsetDate}
+            defaultValue={onsetDate || undefined}
             minDate="2020-02-01"
             maxDate={new Date().toISOString().split("T")[0]}
             onChange={(date) => {
               if (date) {
-                setOnsetDate(date);
+                setFormattedOnsetDate(date);
               }
             }}
             required={Object.keys(currentSymptoms).some(
