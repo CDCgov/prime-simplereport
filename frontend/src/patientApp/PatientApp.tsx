@@ -1,11 +1,6 @@
 import { FunctionComponent, useEffect } from "react";
 import { useDispatch, connect, useSelector } from "react-redux";
-import {
-  Route,
-  Switch,
-  BrowserRouter as Router,
-  RouteComponentProps,
-} from "react-router-dom";
+import { Route, Switch, RouteComponentProps } from "react-router-dom";
 
 import PrimeErrorBoundary from "../app/PrimeErrorBoundary";
 import Page from "../app/commonComponents/Page/Page";
@@ -39,7 +34,7 @@ const PatientLinkURL404Wrapper: FunctionComponent<WrapperProps> = ({
   return <>{children}</>;
 };
 
-const PatientApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
+const PatientApp: React.FC<RouteComponentProps> = ({ match }) => {
   const dispatch = useDispatch();
   const plid = useSelector((state: any) => state.plid);
   const patient = useSelector((state: any) => state.patient);
@@ -58,38 +53,42 @@ const PatientApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
       <Page>
         <PatientHeader />
         <PatientLinkURL404Wrapper plid={plid}>
-          <Router basename={match.url}>
-            <Switch>
-              <Route path="/" exact component={TermsOfService} />
-              <Route path="/terms-of-service" component={TermsOfService} />
-              <Route path="/birth-date-confirmation" component={DOB} />
-              <GuardedRoute
-                auth={auth}
-                path="/patient-info-confirm"
-                component={PatientProfileContainer}
-              />
-              <GuardedRoute
-                auth={auth}
-                path="/patient-info-edit"
-                component={PatientFormContainer}
-              />
-              <GuardedRoute
-                auth={auth}
-                path="/patient-info-symptoms"
-                component={AoEPatientFormContainer}
-              />
-              <GuardedRoute
-                auth={auth}
-                path="/success"
-                component={PatientLanding}
-              />
-              <GuardedRoute
-                auth={auth}
-                path="/test-result"
-                component={TestResult}
-              />
-            </Switch>
-          </Router>
+          <Switch>
+            <Route path={`${match.path}`} exact component={TermsOfService} />
+            <Route
+              path={`${match.path}/terms-of-service`}
+              component={TermsOfService}
+            />
+            <Route
+              path={`${match.path}/birth-date-confirmation`}
+              component={DOB}
+            />
+            <GuardedRoute
+              auth={auth}
+              path={`${match.path}/patient-info-confirm`}
+              component={PatientProfileContainer}
+            />
+            <GuardedRoute
+              auth={auth}
+              path={`${match.path}/patient-info-edit`}
+              component={PatientFormContainer}
+            />
+            <GuardedRoute
+              auth={auth}
+              path={`${match.path}/patient-info-symptoms`}
+              component={AoEPatientFormContainer}
+            />
+            <GuardedRoute
+              auth={auth}
+              path={`${match.path}/success`}
+              component={PatientLanding}
+            />
+            <GuardedRoute
+              auth={auth}
+              path={`${match.path}/test-result`}
+              component={TestResult}
+            />
+          </Switch>
         </PatientLinkURL404Wrapper>
       </Page>
     </PrimeErrorBoundary>

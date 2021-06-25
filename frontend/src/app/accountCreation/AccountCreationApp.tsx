@@ -1,11 +1,6 @@
 import { FunctionComponent, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Route,
-  Switch,
-  BrowserRouter as Router,
-  RouteComponentProps,
-} from "react-router-dom";
+import { Route, Switch, RouteComponentProps } from "react-router-dom";
 
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import Page from "../commonComponents/Page/Page";
@@ -44,7 +39,7 @@ const AccountCreation404Wrapper: FunctionComponent<WrapperProps> = ({
   return <>{children}</>;
 };
 
-const AccountCreationApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
+const AccountCreationApp: React.FC<RouteComponentProps> = ({ match }) => {
   const dispatch = useDispatch();
   const activationToken = useSelector<RootState, string>(
     (state) => state.activationToken
@@ -62,31 +57,50 @@ const AccountCreationApp: React.FC<RouteComponentProps<{}>> = ({ match }) => {
     <PrimeErrorBoundary>
       <Page>
         <AccountCreation404Wrapper activationToken={activationToken}>
-          <Router basename={match.url}>
-            <Switch>
-              <Route path="/" exact component={PasswordForm} />
-              <Route path="/set-password" component={PasswordForm} />
-              <Route
-                path="/set-recovery-question"
-                component={SecurityQuestion}
-              />
-              <Route path="/mfa-select" component={MfaSelect} />
-              <Route path="/mfa-sms/verify" component={MfaSmsVerify} />
-              <Route path="/mfa-sms" component={MfaSms} />
-              <Route path="/mfa-okta/verify" component={MfaOktaVerify} />
-              <Route path="/mfa-okta" component={MfaOkta} />
-              <Route
-                path="/mfa-google-auth/verify"
-                component={MfaGoogleAuthVerify}
-              />
-              <Route path="/mfa-google-auth" component={MfaGoogleAuth} />
-              <Route path="/mfa-security-key" component={MfaSecurityKey} />
-              <Route path="/mfa-phone/verify" component={MfaPhoneVerify} />
-              <Route path="/mfa-phone" component={MfaPhone} />
-              <Route path="/mfa-email/verify" component={MfaEmailVerify} />
-              <Route path="/success" component={MfaComplete} />
-            </Switch>
-          </Router>
+          <Switch>
+            <Route path={match.path} exact component={PasswordForm} />
+            <Route
+              path={`${match.path}/set-password`}
+              component={PasswordForm}
+            />
+            <Route
+              path={`${match.path}/set-recovery-question`}
+              component={SecurityQuestion}
+            />
+            <Route path={`${match.path}/mfa-select`} component={MfaSelect} />
+            <Route
+              path={`${match.path}/mfa-sms/verify`}
+              component={MfaSmsVerify}
+            />
+            <Route path={`${match.path}/mfa-sms`} component={MfaSms} />
+            <Route
+              path={`${match.path}/mfa-okta/verify`}
+              component={MfaOktaVerify}
+            />
+            <Route path={`${match.path}/mfa-okta`} component={MfaOkta} />
+            <Route
+              path={`${match.path}/mfa-google-auth/verify`}
+              component={MfaGoogleAuthVerify}
+            />
+            <Route
+              path={`${match.path}/mfa-google-auth`}
+              component={MfaGoogleAuth}
+            />
+            <Route
+              path={`${match.path}/mfa-security-key`}
+              component={MfaSecurityKey}
+            />
+            <Route
+              path={`${match.path}/mfa-phone/verify`}
+              component={MfaPhoneVerify}
+            />
+            <Route path={`${match.path}/mfa-phone`} component={MfaPhone} />
+            <Route
+              path={`${match.path}/mfa-email/verify`}
+              component={MfaEmailVerify}
+            />
+            <Route path={`${match.path}/success`} component={MfaComplete} />
+          </Switch>
         </AccountCreation404Wrapper>
       </Page>
     </PrimeErrorBoundary>
