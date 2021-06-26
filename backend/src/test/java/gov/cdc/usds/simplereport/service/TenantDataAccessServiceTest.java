@@ -15,7 +15,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class TenantDataAccessServiceTest extends BaseServiceTest<TenantDataAccessService> {
+class TenantDataAccessServiceTest extends BaseServiceTest<TenantDataAccessService> {
 
   @Autowired private ApiUserService _userService;
   @Autowired private AuthorizationProperties _authProperties;

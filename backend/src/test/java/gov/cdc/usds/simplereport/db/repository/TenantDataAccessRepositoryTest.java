@@ -20,7 +20,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class TenantDataAccessRepositoryTest extends BaseRepositoryTest {
+class TenantDataAccessRepositoryTest extends BaseRepositoryTest {
 
   @Autowired ApiUserRepository _apiUserRepo;
   @Autowired OrganizationRepository _orgRepo;

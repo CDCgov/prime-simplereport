@@ -90,7 +90,7 @@ const TenantDataAccessFormContainer: any = () => {
       setSubmitted(true);
 
       // reload the page, in the future, this should just update state where appropriate
-      window.location.reload(false);
+      window.location.reload();
     });
   };
 

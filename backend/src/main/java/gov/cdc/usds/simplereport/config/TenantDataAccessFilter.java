@@ -13,8 +13,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
@@ -28,8 +26,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Profile("!" + BeanProfiles.NO_SECURITY)
 public class TenantDataAccessFilter implements Filter {
-
-  private static Logger LOG = LoggerFactory.getLogger(TenantDataAccessFilter.class);
 
   @Autowired AuthorizationService _authService;
   @Autowired ApiUserService _apiUserService;
