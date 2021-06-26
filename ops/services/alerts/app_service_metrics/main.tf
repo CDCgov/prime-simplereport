@@ -107,7 +107,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "http_2xx_failed_requests
 
   query = <<-QUERY
 requests
-| where toint(resultCode) between (200 .. 299) and success == false and timestamp > ago(5m)
+| where toint(resultCode) between (200 .. 299) and success == false and timestamp >= ago(5m)
   QUERY
 
   trigger {
@@ -160,7 +160,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "http_4xx_errors" {
 
   query = <<-QUERY
 requests
-| where toint(resultCode) >= 400 and toint(resultCode) < 500 and toint(resultCode) != 401 and timestamp > ago(5m)
+| where toint(resultCode) >= 400 and toint(resultCode) < 500 and toint(resultCode) != 401 and timestamp >= ago(5m)
   QUERY
 
   trigger {
