@@ -32,7 +32,8 @@ public class TenantDataAccessRepositoryTest extends BaseRepositoryTest {
     ApiUser apiUser =
         _apiUserRepo.save(
             new ApiUser("test@example.com", new PersonName("First", "Middle", "Last", "Suffix")));
-    Organization org = _orgRepo.save(new Organization("Sample Org", "Sample-Org", true));
+    Organization org =
+        _orgRepo.save(new Organization("Sample Org", "Sample Org Type", "Sample-Org", true));
 
     Set<String> authorities = new HashSet<>();
     authorities.add(
