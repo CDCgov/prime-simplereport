@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
@@ -905,14 +906,50 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             .objectNode()
             .put("organizationExternalId", TestUserIdentities.DEFAULT_ORGANIZATION)
             .put("justification", "This is my justification");
-    JsonNode user =
-        runQuery(
-                "set-current-user-tenant-data-access",
-                "SetCurrentUserTenantDataAccessOp",
-                variables,
-                null)
-            .get("setCurrentUserTenantDataAccess");
+    ObjectNode user =
+        (ObjectNode)
+            runQuery(
+                    "set-current-user-tenant-data-access",
+                    "SetCurrentUserTenantDataAccessOp",
+                    variables,
+                    null)
+                .get("setCurrentUserTenantDataAccess");
     assertEquals("ruby@example.com", user.get("email").asText());
+    assertEquals(Role.ADMIN, Role.valueOf(user.get("role").asText()));
+    assertEquals(
+        EnumSet.of(
+            UserPermission.READ_PATIENT_LIST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.READ_RESULT_LIST,
+            UserPermission.EDIT_PATIENT,
+            UserPermission.ARCHIVE_PATIENT,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST,
+            UserPermission.EDIT_FACILITY,
+            UserPermission.EDIT_ORGANIZATION,
+            UserPermission.MANAGE_USERS,
+            UserPermission.ACCESS_ALL_FACILITIES,
+            UserPermission.READ_ARCHIVED_PATIENT_LIST),
+        extractPermissionsFromUser(user));
+  }
+
+  @Test
+  void setCurrentUserTenantDataAccess_adminUserRemoveAccess_success() {
+    useSuperUser();
+    ObjectNode variables = JsonNodeFactory.instance.objectNode();
+    ObjectNode user =
+        (ObjectNode)
+            runQuery(
+                    "set-current-user-tenant-data-access",
+                    "SetCurrentUserTenantDataAccessOp",
+                    variables,
+                    null)
+                .get("setCurrentUserTenantDataAccess");
+    assertEquals("ruby@example.com", user.get("email").asText());
+    assertEquals(NullNode.instance, user.get("organization"));
+    assertEquals(NullNode.instance, user.get("role"));
+    assertEquals(new HashSet<UserPermission>(), extractPermissionsFromUser(user));
   }
 
   @Test
@@ -928,8 +965,6 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         "SetCurrentUserTenantDataAccessOp",
         variables,
         ACCESS_ERROR);
-
-    //    assertEquals("ruby@example.com", user.get("email").asText());
   }
 
   private List<ObjectNode> toList(ArrayNode arr) {

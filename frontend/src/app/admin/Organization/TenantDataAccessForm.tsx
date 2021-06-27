@@ -19,8 +19,8 @@ interface Props {
   justification: string;
   organizationOptions: OrganizationOption[];
   saveTenantDataAccess: (
-    organizationExternalId: string,
-    justification: string
+    organizationExternalId?: string,
+    justification?: string
   ) => void;
 }
 
@@ -66,6 +66,10 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
     props.saveTenantDataAccess(organizationExternalId, justification);
   };
 
+  const submitCancellationRequest = async () => {
+    props.saveTenantDataAccess();
+  };
+
   return (
     <main className="prime-home">
       <div className="grid-container">
@@ -73,7 +77,7 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h2 className="font-heading-lg">Add Organization Admin</h2>
+                <h2 className="font-heading-lg">Access Tenant Data</h2>
                 <RequiredMessage />
               </div>
               <div
@@ -106,6 +110,30 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
                 onChange={onJustificationChange}
                 required
               />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="grid-container">
+        <div className="grid-row">
+          <div className="prime-container card-container">
+            <div className="usa-card__header">
+              <div>
+                <h2 className="font-heading-lg">Cancel Tenant Data Access</h2>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Button
+                  type="button"
+                  onClick={submitCancellationRequest}
+                  label="Cancel Access"
+                />
+              </div>
             </div>
           </div>
         </div>

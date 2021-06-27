@@ -24,8 +24,8 @@ const GET_ORGANIZATIONS_QUERY = gql`
 
 const SET_TENANT_DATA_ACCESS = gql`
   mutation SetCurrentUserTenantDataAccessOp(
-    $organizationExternalId: String!
-    $justification: String!
+    $organizationExternalId: String
+    $justification: String
   ) {
     setCurrentUserTenantDataAccess(
       organizationExternalId: $organizationExternalId
@@ -67,8 +67,8 @@ const TenantDataAccessFormContainer: any = () => {
   }
 
   const saveTenantDataAccess = (
-    organizationExternalId: string,
-    justification: string
+    organizationExternalId?: string,
+    justification?: string
   ) => {
     if (appInsights) {
       trackSaveSettings(null);

@@ -83,7 +83,8 @@ public class UserMutationResolver implements GraphQLMutationResolver {
   public User setCurrentUserTenantDataAccess(String organizationExternalID, String justification) {
     UserInfo user =
         _us.setCurrentUserTenantDataAccess(
-            organizationExternalID, Translators.parseString(justification));
+            Translators.parseString(organizationExternalID),
+            Translators.parseString(justification));
     return new User(user);
   }
 }

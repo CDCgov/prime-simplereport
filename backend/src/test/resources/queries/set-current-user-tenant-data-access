@@ -1,6 +1,6 @@
 mutation SetCurrentUserTenantDataAccessOp(
-    $organizationExternalId: String!,
-    $justification: String!) {
+    $organizationExternalId: String,
+    $justification: String) {
   setCurrentUserTenantDataAccess(
     organizationExternalId: $organizationExternalId,
     justification: $justification
