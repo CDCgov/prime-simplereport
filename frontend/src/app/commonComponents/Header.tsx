@@ -12,6 +12,7 @@ import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import { formatFullName } from "../utils/user";
 import siteLogo from "../../img/simplereport-logo-color.svg";
 import { hasPermission, appPermissions } from "../permissions";
+import { RootState } from "../store";
 
 import Button from "./Button/Button";
 import Dropdown from "./Dropdown";
@@ -29,6 +30,9 @@ const Header: React.FC<{}> = () => {
     }
   };
 
+  const isAdmin = useSelector<RootState, boolean>(
+    (state) => state.user.isAdmin
+  );
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );
@@ -73,6 +77,8 @@ const Header: React.FC<{}> = () => {
     appPermissions.tests.canView
   );
 
+  const siteLogoLinkPath = isAdmin ? "/admin" : "/queue";
+
   const logout = () => {
     // Fetch the id_token from local storage
     const id_token = localStorage.getItem("id_token");
@@ -98,7 +104,7 @@ const Header: React.FC<{}> = () => {
       <div className="usa-nav-container">
         <div className="usa-navbar">
           <div className="usa-logo" id="basic-logo">
-            <LinkWithQuery to={`/queue`} title="Home" aria-label="Home">
+            <LinkWithQuery to={siteLogoLinkPath} title="Home" aria-label="Home">
               <img
                 className="width-card desktop:width-full"
                 src={siteLogo}
@@ -283,16 +289,18 @@ const Header: React.FC<{}> = () => {
               </li>
             ) : null}
           </ul>
-          <div className="prime-facility-select">
-            <Dropdown
-              selectedValue={facility.id}
-              onChange={onFacilitySelect}
-              options={facilities.map(({ name, id }) => ({
-                label: name,
-                value: id,
-              }))}
-            />
-          </div>
+          {facilities && facilities.length > 0 ? (
+            <div className="prime-facility-select">
+              <Dropdown
+                selectedValue={facility.id}
+                onChange={onFacilitySelect}
+                options={facilities.map(({ name, id }) => ({
+                  label: name,
+                  value: id,
+                }))}
+              />
+            </div>
+          ) : null}
           <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item nav__primary-item-icon">
               <LinkWithQuery
