@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
@@ -25,7 +25,7 @@ interface Props {
 }
 
 const TenantDataAccessForm: React.FC<Props> = (props) => {
-  const [formChanged, updateFormChanged] = useState<boolean>(false);
+  const [formIsValid, updateFormIsValid] = useState<boolean>(false);
 
   const [justification, setJustification] = useState<string>(
     props.justification
@@ -34,7 +34,7 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setJustification(e.target.value);
-    updateFormChanged(true);
+    // checkFormValidity();
   };
 
   const [
@@ -44,7 +44,7 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
 
   const updateOrganizationExternalIdDropDown = (externalId: string) => {
     updateOrganizationExternalId(externalId);
-    updateFormChanged(true);
+    // checkFormValidity();
   };
 
   const sortedOrganizationOptions = useMemo(
@@ -56,13 +56,17 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
     organizationExternalId
   );
 
-  const validateAndSaveOrganizationAdmin = async () => {
-    if (validateOrganizationDropDown() === "error") {
-      return;
-    }
+  useEffect(() => {
     if (!justification || justification.length === 0) {
-      return;
+      updateFormIsValid(false);
+    } else if (validateOrganizationDropDown() === "error") {
+      updateFormIsValid(false);
+    } else {
+      updateFormIsValid(true);
     }
+  }, [validateOrganizationDropDown, organizationExternalId, justification]);
+
+  const submitTenantDataAccessRequest = async () => {
     props.saveTenantDataAccess(organizationExternalId, justification);
   };
 
@@ -89,9 +93,9 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
               >
                 <Button
                   type="button"
-                  onClick={validateAndSaveOrganizationAdmin}
+                  onClick={submitTenantDataAccessRequest}
                   label="Save Changes"
-                  disabled={!formChanged}
+                  disabled={!formIsValid}
                 />
               </div>
             </div>
