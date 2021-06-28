@@ -47,9 +47,7 @@ public class DataHubUploaderServiceTest extends BaseServiceTest<DataHubUploaderS
         .enable(CsvGenerator.Feature.STRICT_CHECK_FOR_QUOTING)
         .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
         .enable(CsvGenerator.Feature.ALWAYS_QUOTE_EMPTY_STRINGS);
-    // You would think `withNullValue` and `ALWAYS_QUOTE_EMPTY_STRINGS` would be enough, but it's
-    // not.
-    // we have to return `""` withNullValue to keep `,,,` out of the the csv
+
     CsvSchema schema = mapper.schemaFor(TestEventExport.class).withHeader().withNullValue("\"\"");
 
     // The data factory generates unique GUIDs for model instances shared by each test event,
