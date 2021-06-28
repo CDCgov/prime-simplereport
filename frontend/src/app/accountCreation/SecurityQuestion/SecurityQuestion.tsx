@@ -57,7 +57,10 @@ export const SecurityQuestion = () => {
         );
         setSubmitted(true);
       } catch (error) {
-        setSecurityQuestionError(`API Error: ${error?.message}`);
+        setSecurityQuestionError(
+          error?.message ||
+            "Unable to setup security questions, please try again later"
+        );
       } finally {
         setLoading(false);
       }

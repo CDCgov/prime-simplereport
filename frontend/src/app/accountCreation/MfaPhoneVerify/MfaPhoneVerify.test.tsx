@@ -13,7 +13,7 @@ jest.mock("../AccountCreationApiService", () => ({
         if (code === "123456") {
           res("success");
         } else {
-          rej();
+          rej({ message: "incorrect code" });
         }
       });
     },
@@ -73,9 +73,7 @@ describe("Verify Phone MFA", () => {
     await act(async () => {
       await fireEvent.click(screen.getByText("Submit"));
     });
-    expect(
-      screen.getByText("API Error:", { exact: false })
-    ).toBeInTheDocument();
+    expect(screen.getByText("incorrect code")).toBeInTheDocument();
     expect(
       screen.queryByText("To start using SimpleReport, log in to your account.")
     ).not.toBeInTheDocument();

@@ -161,6 +161,6 @@ describe("PasswordCreate", () => {
     await act(async () => {
       await fireEvent.click(screen.getByText("Continue"));
     });
-    expect(screen.getByText("API Error: utter failure")).toBeInTheDocument();
+    expect(screen.getByText("utter failure")).toBeInTheDocument();
   });
 });

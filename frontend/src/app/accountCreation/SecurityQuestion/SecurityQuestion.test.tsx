@@ -90,8 +90,6 @@ describe("SecurityQuestion", () => {
     await act(async () => {
       await fireEvent.click(screen.getByText("Continue"));
     });
-    expect(
-      screen.getByText("API Error: catastrophic failure")
-    ).toBeInTheDocument();
+    expect(screen.getByText("catastrophic failure")).toBeInTheDocument();
   });
 });

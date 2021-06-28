@@ -59,7 +59,9 @@ export const MfaSendCodeToContact = (props: Props) => {
         await props.serviceEnroll(contact);
         setSubmitted(true);
       } catch (error) {
-        setContactError(`API Error: ${error?.message}`);
+        setContactError(
+          error?.message || "Unable to setup device, please try again later"
+        );
       } finally {
         setLoading(false);
       }
