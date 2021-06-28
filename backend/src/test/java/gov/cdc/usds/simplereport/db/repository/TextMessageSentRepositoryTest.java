@@ -17,7 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class TextMessageSentRepositoryTest extends BaseRepositoryTest {
+class TextMessageSentRepositoryTest extends BaseRepositoryTest {
   @Autowired private TextMessageSentRepository _repo;
   @Autowired private TestDataFactory _dataFactory;
 
@@ -53,11 +53,12 @@ public class TextMessageSentRepositoryTest extends BaseRepositoryTest {
   @Test
   void sameMessageIdTwice_fails() {
     _repo.save(new TextMessageSent(_pl1, "some-id"));
+    TextMessageSent msg = new TextMessageSent(_pl2, "some-id");
+    _repo.save(msg);
     PersistenceException caught =
         assertThrows(
             PersistenceException.class,
             () -> {
-              _repo.save(new TextMessageSent(_pl2, "some-id"));
               flush();
             });
 
