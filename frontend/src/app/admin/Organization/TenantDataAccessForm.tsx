@@ -34,7 +34,6 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setJustification(e.target.value);
-    // checkFormValidity();
   };
 
   const [
@@ -44,7 +43,6 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
 
   const updateOrganizationExternalIdDropDown = (externalId: string) => {
     updateOrganizationExternalId(externalId);
-    // checkFormValidity();
   };
 
   const sortedOrganizationOptions = useMemo(
