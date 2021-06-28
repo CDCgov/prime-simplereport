@@ -169,10 +169,10 @@ public class TestDataFactory {
             getAddress(),
             PersonRole.RESIDENT,
             null,
-            "W",
+            "white",
+            "not_hispanic",
             null,
-            null,
-            "M",
+            "male",
             false,
             false);
     _personRepo.save(p);
