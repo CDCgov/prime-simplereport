@@ -24,7 +24,7 @@ class FetchClient {
   basePath: string;
 
   constructor(basePath: string) {
-    this.basePath = "/api" + basePath;
+    this.basePath = basePath;
   }
 
   getURL = (path: string, query: string) => {
