@@ -3,8 +3,7 @@ package gov.cdc.usds.simplereport.service.sms;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.twilio.type.PhoneNumber;
@@ -13,6 +12,8 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.TextMessageSent;
+import gov.cdc.usds.simplereport.db.repository.TextMessageSentRepository;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
@@ -22,6 +23,7 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.util.Date;
+import java.util.stream.StreamSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -40,6 +42,8 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
   @Autowired PatientLinkService _patientLinkService;
 
   @Autowired OrganizationService _organizationService;
+
+  @Autowired TextMessageSentRepository _tmsRepo;
 
   Organization _org;
   Facility _site;
@@ -72,12 +76,20 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     createTestOrderAndPatientLink(_person);
 
     // WHEN
+    when(mockTwilio.send(toNumber.capture(), fromNumber.capture(), message.capture()))
+        .thenReturn("some-twilio-id-1");
     _smsService.sendToPatientLink(_patientLink.getInternalId(), "yup here we are, testing stuff");
 
     // THEN
-    verify(mockTwilio, times(1)).send(toNumber.capture(), fromNumber.capture(), message.capture());
     assertEquals(
         toNumber.getValue(), new PhoneNumber(_smsService.formatNumber(_person.getTelephone())));
+    Iterable<TextMessageSent> messageSent = _tmsRepo.findAll();
+    TextMessageSent[] messages =
+        StreamSupport.stream(messageSent.spliterator(), false)
+            .filter(m -> m.getTwilioMessageId().equals("some-twilio-id-1"))
+            .toArray(TextMessageSent[]::new);
+    assertEquals(1, messages.length);
+    assertEquals(_patientLink.getInternalId(), messages[0].getPatientLink().getInternalId());
   }
 
   @Test
@@ -99,6 +111,8 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     TestUserIdentities.setFacilityAuthorities(_site);
 
     // WHEN + THEN (confirm there is no exception thrown)
+    when(mockTwilio.send(toNumber.capture(), fromNumber.capture(), message.capture()))
+        .thenReturn("some-twilio-id-2");
     _smsService.sendToPatientLink(_patientLink.getInternalId(), "yup here we are, testing stuff");
   }
 
@@ -127,6 +141,8 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     Date previousExpiry = _patientLink.getExpiresAt();
 
     // WHEN
+    when(mockTwilio.send(toNumber.capture(), fromNumber.capture(), message.capture()))
+        .thenReturn("some-twilio-id-3");
     _smsService.sendToPatientLink(_patientLink.getInternalId(), "ding, it's a text");
     PatientLink updatedPatientLink =
         _patientLinkService.getPatientLink(_patientLink.getInternalId());

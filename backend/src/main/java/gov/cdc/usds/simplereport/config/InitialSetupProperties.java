@@ -58,7 +58,10 @@ public class InitialSetupProperties {
         .map(
             o ->
                 new Organization(
-                    o.getOrganizationName(), o.getExternalId(), o.getIdentityVerified()))
+                    o.getOrganizationName(),
+                    o.getOrganizationType(),
+                    o.getExternalId(),
+                    o.getIdentityVerified()))
         .collect(Collectors.toList());
   }
 

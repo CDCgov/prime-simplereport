@@ -230,7 +230,7 @@ Array [
       id="4"
       name="prior_test_result"
       onChange={[Function]}
-      value=""
+      value="UNKNOWN"
     >
       <option
         value=""
