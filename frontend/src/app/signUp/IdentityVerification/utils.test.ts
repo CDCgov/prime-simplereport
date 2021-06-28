@@ -1,4 +1,4 @@
-import { getAnswerKey, toOptions, initAnswers } from "./utils";
+import { getAnswerKey, toOptions, initAnswers, answersToArray } from "./utils";
 
 describe("utils", () => {
   describe("getAnswerKey", () => {
@@ -43,6 +43,23 @@ describe("utils", () => {
     });
     it("sets the third answer to null", () => {
       expect(answers.outWalletAnswer3).toBeNull();
+    });
+  });
+  describe("answersToArray", () => {
+    const answers: Answers = {
+      outWalletAnswer3: "5",
+      outWalletAnswer1: "2",
+      outWalletAnswer2: "3",
+    };
+    const answersArray = answersToArray(answers);
+    it("correctly sets the first value", () => {
+      expect(answersArray[0]).toBe(answers.outWalletAnswer1);
+    });
+    it("correctly sets the second value", () => {
+      expect(answersArray[1]).toBe(answers.outWalletAnswer2);
+    });
+    it("correctly sets the third value", () => {
+      expect(answersArray[2]).toBe(answers.outWalletAnswer3);
     });
   });
 });

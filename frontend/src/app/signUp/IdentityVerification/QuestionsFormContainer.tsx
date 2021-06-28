@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import SignUpApi from "../SignUpApi";
+import { SignUpApi } from "../SignUpApi";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 import QuestionsForm from "./QuestionsForm";

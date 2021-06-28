@@ -32,7 +32,13 @@ export const exampleQuestionSet = [
     questionText:
       "Please select the number of bedrooms in your home from the following choices. If the number of bedrooms in your home is not one of the choices please select 'NONE OF THE ABOVE'.",
     questionSelect: {
-      questionChoice: ["2", "3", "4", "5", "NONE OF THE ABOVE/DOES NOT APPLY"],
+      questionChoice: [
+        "TWO",
+        "THREE",
+        "FOUR",
+        "FIVE",
+        "NONE OF THE ABOVE/DOES NOT APPLY",
+      ],
     },
   },
   {

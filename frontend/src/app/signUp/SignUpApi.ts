@@ -4,7 +4,7 @@ import { answersToArray } from "./IdentityVerification/utils";
 
 const api = new FetchClient("/identity-verification");
 
-class SignUpApi {
+export class SignUpApi {
   static getQuestions(): Promise<{ questionSet: Question[] }> {
     return api.request("/get-questions", {});
   }
@@ -14,5 +14,3 @@ class SignUpApi {
     return api.request("/submit-answers", { answers: answersToArray(answers) });
   }
 }
-
-export default SignUpApi;
