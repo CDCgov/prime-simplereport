@@ -14,7 +14,7 @@ const sortOrganizationOptions = (organizationOptions: OrganizationOption[]) =>
     return a.name > b.name ? 1 : -1;
   });
 
-interface Props {
+export interface Props {
   organizationExternalId: string;
   justification: string;
   organizationOptions: OrganizationOption[];

@@ -13,7 +13,7 @@ import { showNotification } from "../../utils";
 import { OrganizationOptions } from "./OrganizationDropDown";
 import TenantDataAccessForm from "./TenantDataAccessForm";
 
-const GET_ORGANIZATIONS_QUERY = gql`
+export const GET_ORGANIZATIONS_QUERY = gql`
   query GetOrganizations {
     organizations {
       externalId
@@ -22,7 +22,7 @@ const GET_ORGANIZATIONS_QUERY = gql`
   }
 `;
 
-const SET_TENANT_DATA_ACCESS = gql`
+export const SET_TENANT_DATA_ACCESS = gql`
   mutation SetCurrentUserTenantDataAccessOp(
     $organizationExternalId: String
     $justification: String
