@@ -84,7 +84,10 @@ export function areValidPhoneNumbers(phoneNumbers: any) {
     return phoneNumberIsValid(phoneNumber.number);
   });
 }
-const isValidDate = (date: any) => {
+const isValidBirthdate = (date: string | undefined) => {
+  if (date === undefined) {
+    return false;
+  }
   const [year] = date.split("-");
   if (parseInt(year) < 1900) {
     return false;
@@ -134,7 +137,7 @@ export const personSchema: yup.SchemaOf<RequiredPersonFields> = yup.object({
   firstName: yup.string().required(),
   middleName: yup.string().nullable(),
   lastName: yup.string().required(),
-  birthDate: yup.string().test(isValidDate).required(),
+  birthDate: yup.string().test(isValidBirthdate).required(),
   facilityId: yup.string().nullable().min(1) as any,
   ...updateFieldSchemata,
 });
@@ -144,7 +147,7 @@ export const selfRegistrationSchema: yup.SchemaOf<SelfRegistationFields> = yup.o
     firstName: yup.string().required(),
     middleName: yup.string().nullable(),
     lastName: yup.string().required(),
-    birthDate: yup.string().test(isValidDate).required(),
+    birthDate: yup.string().test(isValidBirthdate).required(),
     ...updateFieldSchemata,
   }
 );
