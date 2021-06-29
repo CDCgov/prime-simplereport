@@ -25,4 +25,7 @@ public final class ResourceLinks {
       "/user-account/verify-activation-passcode";
   public static final String USER_RESEND_ACTIVATION_PASSCODE =
       "/user-account/resend-activation-passcode";
+  public static final String ID_VERIFICATION_GET_QUESTIONS = "/identity-verification/get-questions";
+  public static final String ID_VERIFICATION_SUBMIT_ANSWERS =
+      "/identity-verification/submit-answers";
 }

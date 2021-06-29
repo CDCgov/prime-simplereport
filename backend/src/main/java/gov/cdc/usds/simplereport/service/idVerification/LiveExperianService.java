@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-public class LiveExperianService {
+public class LiveExperianService implements ExperianService {
 
   private final ExperianProperties _experianProperties;
   private RestTemplate _restTemplate;
