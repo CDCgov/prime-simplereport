@@ -1,41 +1,47 @@
 package gov.cdc.usds.simplereport.service.idVerification;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import gov.cdc.usds.simplereport.properties.ExperianProperties;
-
+import java.util.UUID;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 public class LiveExperianService {
 
-    private final ExperianProperties _experianProperties;
-    
-    @Autowired
-    public LiveExperianService(final ExperianProperties experianProperties) {
-        _experianProperties = experianProperties;
+  private final ExperianProperties _experianProperties;
+  private RestTemplate _restTemplate;
+
+  @Autowired
+  public LiveExperianService(final ExperianProperties experianProperties) {
+    _experianProperties = experianProperties;
+    _restTemplate = new RestTemplate();
+  }
+
+  public String fetchToken() {
+    String guid = UUID.randomUUID().toString();
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.add("X-Correlation-Id", guid);
+    headers.add("X-User-Domain", _experianProperties.getDomain());
+
+    JSONObject requestBody = new JSONObject();
+    requestBody.put(
+        "username", _experianProperties.getUsername() + "@" + _experianProperties.getDomain());
+    requestBody.put("password", _experianProperties.getPassword());
+    requestBody.put("client_id", _experianProperties.getClientId());
+    requestBody.put("client_secret", _experianProperties.getClientSecret());
+    HttpEntity<String> entity = new HttpEntity<>(requestBody.toString(), headers);
+    try {
+      JSONObject response =
+          _restTemplate.postForObject(
+              _experianProperties.getTokenEndpoint(), entity, JSONObject.class);
+      return response.getString("access_token");
+    } catch (RestClientException | NullPointerException e) {
+      throw new IllegalArgumentException("The activation token could not be retrieved: ", e);
     }
-
-    public String fetchToken() {
-        
-    }
-
-    // required variables:
-    // apigee token endpoint (this is the url we're sending the request to)
-    // GUID (it seems like this is just a UUID that we generate)
-    // domain: the domain linked to the customer instance
-    // email address used for customer's user account
-    // password: password for the user account
-    // client id: identifier used for regional endpoint
-    // client secret: secret for the client id
-
-    /**
-     * curl -X POST \
-https://<APIGEE_TOKEN_REGIONAL_ENDPOINT> \
--H 'Content-Type: application/json' \
--H 'X-Correlation-Id: <GUID>' \
--H 'X-User-Domain: <DOMAIN>' \
--d '{"username": "<USER@DOMAIN>",
-"password": "<PASSWORD>",
-"client_id": "<CLIENT_ID>",
-"client_secret" : "<CLIENT_SECRET>"}'
-     */
+  }
 }
