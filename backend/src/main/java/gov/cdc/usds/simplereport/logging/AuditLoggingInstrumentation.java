@@ -8,7 +8,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.service.AuditService;
 import graphql.ExecutionResult;
-import graphql.GraphQLError;
 import graphql.execution.instrumentation.InstrumentationContext;
 import graphql.execution.instrumentation.InstrumentationState;
 import graphql.execution.instrumentation.SimpleInstrumentation;
@@ -80,7 +79,7 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
       LOG.trace("End of execution, audit entry being saved.");
       List<String> errorPaths =
           result.getErrors().stream()
-              .map(GraphQLError::getPath)
+              .map(e -> e.getPath() == null ? Collections.emptyList() : e.getPath())
               .flatMap(List::stream)
               .map(Object::toString)
               .collect(Collectors.toList());
