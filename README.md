@@ -16,6 +16,7 @@ https://simplereport.gov/
       - [Organization roles](#organization-roles)
       - [Site roles](#site-roles)
     - [Restart & Clean](#restart--clean)
+    - [Rollbacks](#rollbacks)
     - [API Testing](#api-testing)
     - [Tests](#tests)
     - [E2E Tests](#e2e-tests)
@@ -114,7 +115,7 @@ Then run this to start the app:
 ./start.sh
 ```
 
-This will also start up both servers in "watch" mode. When using `start.sh`, any environment variables put
+This will also start up both servers in "watch" mode.  When using `start.sh`, any environment variables put
 in `.env` in the root directory will be available to the app. Press CTRL-C to exit and cleanup the servers cleanly.
 
 ### Updating user role
@@ -261,6 +262,7 @@ simple-report:
       - http://localhost:3000
 ```
 
+
 ### SchemaSpy
 
 http://schemaspy.org/
@@ -322,11 +324,11 @@ To view the Storybook locally:
 - Visit http://localhost:6006
 
 [Chromatic](https://www.chromatic.com/) is a web-based tool for Storybook that helps speed UI
-component development. It provides regression testing and review. It also allows for publication
+component development.  It provides regression testing and review.  It also allows for publication
 of the Storybook.
 
 Changes to the Storybook are sent to Chromatic when changes to the frontend source are push to a
-any branch. The changes are automatically accepted on merge to `main`.
+any branch.  The changes are automatically accepted on merge to `main`.
 
 View the [SimpleReport Storybook](https://main--60a556a7c807cc0039ec6786.chromatic.com/)
 
@@ -334,15 +336,15 @@ View the [SimpleReport Storybook](https://main--60a556a7c807cc0039ec6786.chromat
 
 ### Cloud Environments
 
-| **Type** |                                   **Frontend**                                    |                                  **API**                                  |                         **Deployment**                          |
-| :------: | :-------------------------------------------------------------------------------: | :-----------------------------------------------------------------------: | :-------------------------------------------------------------: |
-|   Prod   |     [/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)      |     [/api/actuator/info](https://simplereport.gov/api/actuator/info)      |                 [Release](#deploy-with-release)                 |
-|   Demo   |   [/app/static/commit.txt](https://demo.simplereport.gov/app/static/commit.txt)   |   [/api/actuator/info](https://demo.simplereport.gov/api/actuator/info)   | [Release](#deploy-with-release) & [Action](#deploy-with-action) |
-| Training | [/app/static/commit.txt](https://training.simplereport.gov/app/static/commit.txt) | [/api/actuator/info](https://training.simplereport.gov/api/actuator/info) | [Release](#deploy-with-release) & [Action](#deploy-with-action) |
-| Staging  |   [/app/static/commit.txt](https://stg.simplereport.gov/app/static/commit.txt)    |   [/api/actuator/info](https://stg.simplereport.gov/api/actuator/info)    |           [Action](#deploy-with-action) & Daily cron            |
-|   Dev    |   [/app/static/commit.txt](https://dev.simplereport.gov/app/static/commit.txt)    |   [/api/actuator/info](https://dev.simplereport.gov/api/actuator/info)    |                         Push to `main`                          |
-|   Test   |   [/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)   |   [/api/actuator/info](https://test.simplereport.gov/api/actuator/info)   |                  [Action](#deploy-with-action)                  |
-| Pentest  | [/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)  | [/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)  | [Release](#deploy-with-release) & [Action](#deploy-with-action) |
+**Type**|**Frontend**|**API**|**Deployment**
+:-----:|:-----:|:-----:|:-----:
+Prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|[Release](#deploy-with-release)
+Demo|[/app/static/commit.txt](https://demo.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://demo.simplereport.gov/api/actuator/info)|[Release](#deploy-with-release) & [Action](#deploy-with-action)
+Training|[/app/static/commit.txt](https://training.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://training.simplereport.gov/api/actuator/info)|[Release](#deploy-with-release) & [Action](#deploy-with-action)
+Staging|[/app/static/commit.txt](https://stg.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://stg.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action) & Daily cron
+Dev|[/app/static/commit.txt](https://dev.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://dev.simplereport.gov/api/actuator/info)|Push to `main`
+Test|[/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://test.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action)
+Pentest|[/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)|[Release](#deploy-with-release) & [Action](#deploy-with-action)
 
 ### Deploy With Release
 
@@ -355,15 +357,15 @@ Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/rele
    the commit explicitly so that you do not accidentally release changes that somebody else is in the
    process of merging.<br clear="right" />
 2. <img align="right" width="399" alt="new-release-name" src="https://user-images.githubusercontent.com/28784751/121423127-f07f6180-c93d-11eb-9e76-53aa5187a633.png">
-   Add a version tag. If the release was `v1` then this release should be `v2`
-3. Add a release title summarizing the changes
-4. If applicable describe some of the changes in detail in the description
-5. Check the "This is a pre-release" box.
-6. Click publish release (this will trigger the release to `stg`)
-7. Verify the changes are live in `stg` by ensuring the deployed commit hash matches the commit hash on the release and the deployed release tag matches. This is done by going to `/app/static/commit.txt` and `/api/actuator/info`
-8. Return to the release page and select "Edit release"
-9. Un-check the "This is a pre-release" checkbox and click "Update release" (this will trigger the release to other environments)
-10. Verify that the changes are live in `prod`, `demo` and `training`.
+   Add a version tag. If the release was `v1` then this release should be `v2` 
+2. Add a release title summarizing the changes
+3. If applicable describe some of the changes in detail in the description
+3. Check the "This is a pre-release" box.
+4. Click publish release (this will trigger the release to `stg`)
+5. Verify the changes are live in `stg` by ensuring the deployed commit hash matches the commit hash on the release and the deployed release tag matches. This is done by going to `/app/static/commit.txt` and `/api/actuator/info`
+6. Return to the release page and select "Edit release"
+7. Un-check the "This is a pre-release" checkbox and click "Update release" (this will trigger the release to other environments)
+8. Verify that the changes are live in `prod`, `demo` and `training`.
 
 ### Revert to a Previous Release
 
@@ -374,15 +376,16 @@ Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/rele
 5. Click "Update release"
 6. Verify that the original changes have been re-released successfully on `stg`
 7. Edit the release again, de-select the "This is a pre-release" box, and click "Update release."
-8. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done by going to `/app/static/commit.txt` and `/api/actuator/info`
+9. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done by going to `/app/static/commit.txt` and `/api/actuator/info`
+
 
 ### Deploy With Action
 
 Navigate to the [Github Actions Tab](https://github.com/CDCgov/prime-simplereport/actions)
 ![Screen Shot 2021-02-24 at 11 07 13 AM](https://user-images.githubusercontent.com/53869143/109029807-36673100-7691-11eb-81d1-a474517c1eb6.png)
-
 1. Select the environment you want to deploy to from the workflows list on the left. In this case we are selecting the `test` environment
 2. Click the "Run workflow" button
 3. Select the branch you want to deploy. In this case we are deploying the latest commit on `main`
 4. Click the green "Run workflow" button.
 5. After the workflow is completed you can verify the changes are live by Checking the deployed commit hash. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`
+
