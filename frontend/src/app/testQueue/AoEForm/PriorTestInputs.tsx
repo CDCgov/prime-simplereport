@@ -11,23 +11,22 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown, { Option } from "../../commonComponents/Dropdown";
 import Optional from "../../commonComponents/Optional";
 import Checkboxes from "../../commonComponents/Checkboxes";
+import { TestResult } from "../QueueItem";
+import { formatDate } from "../../utils/date";
+
+import { LastTest } from "./AoEForm";
 
 interface Props {
   testTypeConfig: Option[];
   isFirstTest: boolean | undefined;
   setIsFirstTest: (isFirstTest: boolean) => void;
-  priorTestDate: string | undefined | null;
-  setPriorTestDate: (priorTestDate: string | undefined) => void;
-  priorTestResult: string | undefined | null;
-  setPriorTestResult: (priorTestResult: string | undefined | null) => void;
+  priorTestDate: ISODate | undefined | null;
+  setPriorTestDate: (priorTestDate: ISODate | undefined | null) => void;
+  priorTestResult: TestResult | undefined | null;
+  setPriorTestResult: (priorTestResult: TestResult | undefined | null) => void;
   priorTestType: string | undefined;
   setPriorTestType: (priorTestType: string | undefined) => void;
-  lastTest:
-    | {
-        dateTested: string;
-        result: string;
-      }
-    | undefined;
+  lastTest: LastTest | undefined;
 }
 
 const PriorTestInputs: React.FC<Props> = ({
@@ -54,6 +53,11 @@ const PriorTestInputs: React.FC<Props> = ({
   const [lastTestDateKnown, setLastTestDateKnown] = useState(
     !!priorTestDate || priorTestDate === undefined
   );
+
+  function setFormattedPriorTestDate(input: string | null | undefined) {
+    return setPriorTestDate(formatDate(input));
+  }
+
   const previousTestEntry = (
     <>
       <div className="usa-form-group">
@@ -67,7 +71,7 @@ const PriorTestInputs: React.FC<Props> = ({
           minDate="2020-02-01"
           maxDate={new Date().toISOString().split("T")[0]}
           disabled={!lastTestDateKnown}
-          onChange={setPriorTestDate}
+          onChange={setFormattedPriorTestDate}
         />
       </div>
       <Checkboxes
@@ -118,7 +122,7 @@ const PriorTestInputs: React.FC<Props> = ({
             : priorTestResult || ""
         }
         defaultSelect
-        onChange={(e) => setPriorTestResult(e.target.value)}
+        onChange={(e) => setPriorTestResult(e.target.value as TestResult)}
       />
     </>
   );
@@ -161,7 +165,7 @@ const PriorTestInputs: React.FC<Props> = ({
               // Fill in last test info using this data
               // TODO: update when test history has test type
               setPriorTestType("2");
-              setPriorTestDate((lastTest.dateTested || "").split("T")[0]);
+              setPriorTestDate(formatDate(lastTest.dateTested));
               setPriorTestResult(lastTest?.result);
             } else {
               setPriorTestType(undefined);

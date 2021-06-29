@@ -44,5 +44,5 @@ variable "cpu_window_size" {
 }
 
 variable "http_response_time_aggregation" {
-  default = "Minimum"
+  default = "Average"
 }

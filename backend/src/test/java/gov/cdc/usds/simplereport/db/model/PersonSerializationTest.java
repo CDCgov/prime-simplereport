@@ -48,7 +48,7 @@ class PersonSerializationTest {
 
   @Test
   void serialize_withoutFacility_valuesStored() throws IOException {
-    Organization fakeOrg = new Organization("ABC", "123", true);
+    Organization fakeOrg = new Organization("ABC", "university", "123", true);
     Person p = makeSerializablePerson(fakeOrg);
     JsonContent<Person> serialized = _tester.write(p);
     assertThat(serialized).extractingJsonPathStringValue("firstName").isEqualTo("John");
@@ -70,7 +70,7 @@ class PersonSerializationTest {
 
   @Test
   void serialize_withFacility_noOrgOrFacility() throws IOException {
-    Organization fakeOrg = new Organization("ABC", "123", true);
+    Organization fakeOrg = new Organization("ABC", "university", "123", true);
     Person p = makeSerializablePerson(fakeOrg);
     Provider mccoy = new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222");
     DeviceSpecimenType ds =
