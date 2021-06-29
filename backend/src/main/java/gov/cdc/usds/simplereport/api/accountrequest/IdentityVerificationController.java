@@ -35,4 +35,8 @@ public class IdentityVerificationController {
      */
     return "{\"passed\":true,\"email\":\"usds@example.com\"}";
   }
+
+  private String fetchExperianToken() {
+    return "";
+  }
 }
