@@ -7,6 +7,7 @@ import { showError } from "../utils";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
+import { AoEAnswers } from "./AoEForm/AoEForm";
 
 const pollInterval = 10_000;
 
@@ -97,16 +98,9 @@ interface Props {
   activeFacilityId: string;
 }
 
-interface QueueItemData {
+interface QueueItemData extends AoEAnswers {
   internalId: string;
-  pregnancy: string;
   dateAdded: string;
-  symptoms: string;
-  noSymptoms: string;
-  firstTest: string;
-  priorTestDate: string;
-  priorTestType: string;
-  priorTestResult: string;
   deviceType: {
     internalId: string;
     testLength: number;
@@ -115,7 +109,6 @@ interface QueueItemData {
     internalId: string;
   };
   result: string;
-  symptomOnset: string;
   dateTested: string;
   patientLink: {
     internalId: string;

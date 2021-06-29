@@ -77,6 +77,6 @@ module.exports = {
   },
   "6. Update organization settings": (browser) => {
     console.info("Updating organization settings");
-    browser.page.settings().navigate().enterInformation();
+    browser.page.settings().navigate().enterInformation(browser);
   },
 };

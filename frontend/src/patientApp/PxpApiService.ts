@@ -1,8 +1,6 @@
-const API_URL = process.env.REACT_APP_BACKEND_URL + "/pxp";
-const headers = {
-  "Content-Type": "application/json",
-  Accept: "application/json",
-};
+import FetchClient from "../app/utils/api";
+
+const api = new FetchClient("/pxp", { mode: "cors" });
 
 // due to @JsonIgnores on Person to avoid duplicate recording, we have to
 // inline the address so that it can be deserialized outside the context
@@ -49,19 +47,9 @@ export class PxpApi {
     patientLinkId: string,
     dateOfBirth: string
   ): Promise<any> {
-    return fetch(`${API_URL}/link/verify`, {
-      method: "POST",
-      mode: "cors",
-      headers,
-      body: JSON.stringify({
-        patientLinkId,
-        dateOfBirth,
-      }),
-    }).then((res) => {
-      if (!res.ok) {
-        throw res;
-      }
-      return res.json();
+    return api.request("/link/verify", {
+      patientLinkId,
+      dateOfBirth,
     });
   }
 
@@ -70,15 +58,10 @@ export class PxpApi {
     dateOfBirth: string,
     data: any
   ) {
-    return fetch(`${API_URL}/questions`, {
-      method: "POST",
-      mode: "cors",
-      headers,
-      body: JSON.stringify({
-        patientLinkId,
-        dateOfBirth,
-        data,
-      }),
+    return api.request("/questions", {
+      patientLinkId,
+      dateOfBirth,
+      data,
     });
   }
 
@@ -87,38 +70,20 @@ export class PxpApi {
     dateOfBirth: string,
     data: UpdatePatientData
   ) {
-    return fetch(`${API_URL}/patient`, {
-      method: "POST",
-      mode: "cors",
-      headers,
-      body: JSON.stringify({
-        patientLinkId,
-        dateOfBirth,
-        data,
-      }),
-    }).then((res) => res.json());
+    return api.request("/patient", {
+      patientLinkId,
+      dateOfBirth,
+      data,
+    });
   }
 
   static getEntityName = async (registrationLink: string): Promise<string> => {
-    const res = await fetch(
-      `${API_URL}/register/entity-name?patientRegistrationLink=${registrationLink}`,
-      { method: "GET", mode: "cors" }
+    return api.getRequest(
+      `/register/entity-name?patientRegistrationLink=${registrationLink}`
     );
-    if (!res.ok) {
-      throw res;
-    }
-    return res.text();
   };
 
   static selfRegister = async (person: SelfRegistrationData): Promise<void> => {
-    const res = await fetch(`${API_URL}/register`, {
-      method: "POST",
-      mode: "cors",
-      headers,
-      body: JSON.stringify(person),
-    });
-    if (!res.ok) {
-      throw res;
-    }
+    return api.request("/register", person);
   };
 }
