@@ -79,7 +79,7 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
       LOG.trace("End of execution, audit entry being saved.");
       List<String> errorPaths =
           result.getErrors().stream()
-              .map(e -> e.getPath() == null ? Collections.emptyList() : e.getPath())
+              .map(e -> e.getPath() == null ? new ArrayList<Object>() : e.getPath())
               .flatMap(List::stream)
               .map(Object::toString)
               .collect(Collectors.toList());
