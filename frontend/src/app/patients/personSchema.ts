@@ -1,5 +1,6 @@
 import * as yup from "yup";
 import { PhoneNumberUtil } from "google-libphonenumber";
+import moment from "moment";
 
 import {
   RACE_VALUES,
@@ -88,11 +89,14 @@ const isValidBirthdate = (date: string | undefined) => {
   if (date === undefined) {
     return false;
   }
-  const [year] = date.split("-");
-  if (parseInt(year) < 1900) {
+  const parsedDate = moment(date);
+  if (!parsedDate.isValid()) {
     return false;
   }
-  if (new Date(date) > new Date()) {
+  if (parsedDate.year() < 1900) {
+    return false;
+  }
+  if (parsedDate.isAfter(moment())) {
     return false;
   }
   return true;
