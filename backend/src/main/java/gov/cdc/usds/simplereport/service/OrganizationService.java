@@ -226,6 +226,7 @@ public class OrganizationService {
   @Transactional(readOnly = false)
   public Organization createOrganization(
       String name,
+      String type,
       String externalId,
       String testingFacilityName,
       String cliaNumber,
@@ -238,7 +239,7 @@ public class OrganizationService {
       String providerTelephone,
       String providerNPI) {
     // for now, all new organizations have identity_verified = false by default
-    Organization org = _repo.save(new Organization(name, externalId, false));
+    Organization org = _repo.save(new Organization(name, type, externalId, false));
     _oktaRepo.createOrganization(org);
     createFacilityNoPermissions(
         org,
@@ -257,9 +258,18 @@ public class OrganizationService {
 
   @Transactional(readOnly = false)
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public Organization updateOrganization(String name) {
+  public Organization updateOrganization(String name, String type) {
     Organization org = getCurrentOrganization();
     org.setOrganizationName(name);
+    org.setOrganizationType(type);
+    return _repo.save(org);
+  }
+
+  @Transactional(readOnly = false)
+  @AuthorizationConfiguration.RequirePermissionEditOrganization
+  public Organization updateOrganization(String type) {
+    Organization org = getCurrentOrganization();
+    org.setOrganizationType(type);
     return _repo.save(org);
   }
 
