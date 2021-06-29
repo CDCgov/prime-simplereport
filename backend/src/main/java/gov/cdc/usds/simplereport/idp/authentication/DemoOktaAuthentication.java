@@ -15,16 +15,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Profile(BeanProfiles.NO_OKTA_AUTH)
 @Service
 public class DemoOktaAuthentication implements OktaAuthentication {
-  private static final Logger LOG = LoggerFactory.getLogger(DemoOktaAuthentication.class);
-
   private static final int MINIMUM_PASSWORD_LENGTH = 8;
   private static final int PHONE_NUMBER_LENGTH = 10;
   private static final int PASSCODE_LENGTH = 6;
@@ -36,9 +32,43 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   }
 
   public UserAccountStatus getUserStatus(String activationToken, String userId, String factorId) {
-    // todo(emmastephenson): implement this logic
     if (activationToken != null && !activationToken.isEmpty() && userId == null) {
       return UserAccountStatus.PENDING_ACTIVATION;
+    }
+    if (!this.idToUserMap.containsKey(userId)) {
+      return UserAccountStatus.UNKNOWN;
+    }
+    DemoAuthUser user = this.idToUserMap.get(userId);
+    if (user.getPassword() == null || user.getPassword().isEmpty()) {
+      return UserAccountStatus.PASSWORD_RESET;
+    }
+    if (user.getRecoveryAnswer() == null || user.getRecoveryAnswer().isEmpty()) {
+      return UserAccountStatus.SET_SECURITY_QUESTIONS;
+    }
+    if (user.getMfa() == null) {
+      return UserAccountStatus.MFA_SELECT;
+    }
+    DemoMfa factor = user.getMfa();
+    if (factor.getFactorStatus() != FactorStatus.ACTIVE) {
+      switch (factor.getFactorType()) {
+        case SMS:
+          return UserAccountStatus.SMS_PENDING_ACTIVATION;
+        case CALL:
+          return UserAccountStatus.CALL_PENDING_ACTIVATION;
+        case EMAIL:
+          return UserAccountStatus.EMAIL_PENDING_ACTIVATION;
+        case WEBAUTHN:
+          return UserAccountStatus.FIDO_PENDING_ACTIVATION;
+        case TOKEN_SOFTWARE_TOTP:
+          String mfaId = factor.getFactorId();
+          if (mfaId.contains("google")) {
+            return UserAccountStatus.GOOGLE_PENDING_ACTIVATION;
+          } else {
+            return UserAccountStatus.OKTA_PENDING_ACTIVATION;
+          }
+        default:
+          return UserAccountStatus.ACTIVE;
+      }
     }
     return UserAccountStatus.ACTIVE;
   }
@@ -121,11 +151,8 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
-    LOG.info("in demoOktaAuthentication");
     validateUser(userId);
-    LOG.info("user has been validated");
     String factorType = "";
-    LOG.info("appType: " + appType.toLowerCase());
     switch (appType.toLowerCase()) {
       case "google":
         factorType = "authApp: google";
@@ -136,7 +163,6 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       default:
         throw new OktaAuthenticationFailureException("App type not recognized.");
     }
-    LOG.info("factor type determined: " + factorType);
     String factorId = factorType + " " + userId;
     String qrCode = "thisIsAFakeQrCode";
     DemoMfa appMfa =
@@ -206,8 +232,6 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   }
 
   public void validateUser(String userId) throws OktaAuthenticationFailureException {
-    LOG.info("map: " + this.idToUserMap.keySet());
-    LOG.info("provided user id: " + userId);
     if (!this.idToUserMap.containsKey(userId)) {
       throw new OktaAuthenticationFailureException("User id not recognized.");
     }

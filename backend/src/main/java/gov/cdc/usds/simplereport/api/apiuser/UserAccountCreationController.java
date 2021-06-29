@@ -19,7 +19,6 @@ import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -33,7 +32,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
-/** Controller used for user account creation. */
+/**
+ * Controller used for user account creation.
+ *
+ * <p>There's an implicit flow in this controller. The expectation is that the user is first
+ * activated, then their password is set, then recovery questions, and finally they are enrolled in
+ * and activate an MFA option. A sample endpoint flow is as follows: /initialize, /set-password,
+ * /set-recovery-questions, /enroll-sms-mfa, /verify-activation-passcode.
+ *
+ * <p>Okta has an internal state machine that keeps track of the user's status, and will reject
+ * requests if they're not the next step in the state. For example, attempting to enroll a user in
+ * MFA before they've set their password will generate an Okta error, because the user is still in a
+ * RESET_PASSWORD state.
+ */
 @RestController
 @RequestMapping(USER_ACCOUNT_REQUEST)
 public class UserAccountCreationController {
@@ -111,7 +122,7 @@ public class UserAccountCreationController {
   /**
    * Set's a user's password, assuming they've already been activated using the activation token.
    *
-   * @param password the user-entered password
+   * @param requestBody contains the user-entered password
    * @param userId their Okta ID
    * @throws OktaAuthenticationFailureException if the user id isn't recognized in Okta
    * @throws BadRequestException if the password doesn't meet requirements
@@ -127,7 +138,7 @@ public class UserAccountCreationController {
    * Sets a recovery question and answer for a user.
    *
    * @param requestBody contains the selected question and user-provided answer
-   * @param request contains session information about the user, including their id
+   * @param userId the user's Okta id
    * @throws OktaAuthenticationFailureException if the recovery question or answer don't meet Okta
    *     standards (answers must be at least 4 chars long)
    */
@@ -142,7 +153,8 @@ public class UserAccountCreationController {
    * Enrolls a user in SMS MFA.
    *
    * @param requestBody contains the user-provided phone number.
-   * @param request contains session information about the user, including their Okta id.
+   * @param userId the user's Okta id
+   * @param request contains user's session information. Used to set factor id.
    * @throws OktaAuthenticationFailureException if the provided phone number is invalid.
    */
   @PostMapping("/enroll-sms-mfa")
@@ -159,7 +171,8 @@ public class UserAccountCreationController {
    * Enrolls a user in voice call MFA.
    *
    * @param requestBody contains the user-provided phone number.
-   * @param request contains session information about the user, including their Okta id.
+   * @param userId the user's Okta id
+   * @param request contains user's session information. Used to set factor id.
    * @throws OktaAuthenticationFailureException if the provided phone number is invalid.
    */
   @PostMapping("/enroll-voice-call-mfa")
@@ -175,7 +188,8 @@ public class UserAccountCreationController {
   /**
    * Enrolls a user in email MFA, using the account email address stored in Okta.
    *
-   * @param request contains session information about the user, including their Okta id.
+   * @param userId the user's Okta id
+   * @param request contains user's session information. Used to set factor id.
    * @throws OktaAuthenticationFailureException if the provided email address is invalid.
    */
   @PostMapping("/enroll-email-mfa")
@@ -190,7 +204,8 @@ public class UserAccountCreationController {
    *
    * @param requestBody contains the user-selected authentication app to use (for now, one of Google
    *     Authenticator or Okta Verify.)
-   * @param request contains session information about the user, including their Okta id.
+   * @param userId the user's Okta id
+   * @param request contains user's session information. Used to set factor id.
    * @throws OktaAuthenticationFailureException if Okta cannot enroll the user in MFA.
    */
   @PostMapping("/authenticator-qr")
@@ -208,7 +223,8 @@ public class UserAccountCreationController {
   /**
    * Enrolls a security key for the user, returning data needed to finish activation.
    *
-   * @param request contains session information about the user, including their Okta id.
+   * @param userId the user's Okta id
+   * @param request contains user's session information. Used to set factor id.
    * @return activation object with information to finish enrolling the security key, including a
    *     challenge and user id.
    * @throws OktaAuthenticationFailureException if the user is not recognized or Okta cannot enroll
@@ -228,8 +244,8 @@ public class UserAccountCreationController {
    * Activates a security key for the user.
    *
    * @param requestBody contains attestation and clientData, required to activate the key in Okta.
-   * @param request contains session information about the user, including their Okta id and the
-   *     factor id of the security key.
+   * @param userId the user's Okta id
+   * @param factorId the factor id of the enrolled security key
    * @throws OktaAuthenticationFailureException if the user is not recognized or Okta cannot
    *     activate the security key.
    */
@@ -248,7 +264,9 @@ public class UserAccountCreationController {
    * call, and authentication app MFA options.
    *
    * @param requestBody contains the user-input passcode to be verified.
-   * @param request contains session information about the user, including their Okta id.
+   * @param userId the user's Okta id
+   * @param factorId the Okta-provided factor id of the enrolled MFA option
+   * @param request contains session information for the user.
    * @throws OktaAuthenticationFailureException if the provided passcode does not match the passcode
    *     sent by Okta.
    */
@@ -259,17 +277,13 @@ public class UserAccountCreationController {
       @SessionAttribute String factorId,
       HttpServletRequest request) {
     _oktaAuth.verifyActivationPasscode(userId, factorId, requestBody.getUserInput());
-    HttpSession session = request.getSession();
-    session.removeAttribute(FACTOR_ID_KEY);
-    session.removeAttribute(USER_ID_KEY);
-    session.invalidate();
   }
 
   /**
    * Resends the activation passcode sent to a user (required for MFA enrollment).
    *
-   * @param request contains session information about the user, including their Okta id and factor
-   *     id.
+   * @param userId the user's Okta id.
+   * @param factorId the Okta-provided factor id of the enrolled MFA option.
    * @throws OktaAuthenticationFailureException if the user/factor are not found on the request, or
    *     if the resend request fails.
    * @throws IllegalStateException if the request is made less than 30 seconds after the last

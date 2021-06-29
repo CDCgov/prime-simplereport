@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,6 +42,9 @@ class UserAccountCreationControllerTest {
 
   @Autowired private DemoOktaAuthentication _oktaAuth;
 
+  private static final String VALID_ACTIVATION_REQUEST =
+      "{\"activationToken\":\"validActivationToken\"}";
+
   private static final String VALID_PASSWORD_REQUEST =
       "{\"activationToken\":\"validActivationToken\", \"password\":\"superStrongPassword!\"}";
 
@@ -75,7 +79,7 @@ class UserAccountCreationControllerTest {
     String passwordRequestNoActivation = "{\"password\":\"superStrongPassword!\"}";
 
     MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.USER_SET_PASSWORD)
+        post(ResourceLinks.USER_ACTIVATE_AND_SET_PASSWORD)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -487,9 +491,66 @@ class UserAccountCreationControllerTest {
     this._mockMvc.perform(verifyPasscodeBuilder).andExpect(status().is4xxClientError());
   }
 
+  @Test
+  void getUserAccountStatus_resetPasswordStateSuccessful() throws Exception {
+    MockHttpSession session = new MockHttpSession();
+
+    MockHttpServletRequestBuilder activateUserBuilder =
+        createPostRequest(
+            session, VALID_ACTIVATION_REQUEST, ResourceLinks.USER_ACTIVATE_ACCOUNT_REQUEST);
+
+    MockHttpServletRequestBuilder getUserStatusBuilder =
+        createGetRequest(session, "", ResourceLinks.USER_GET_STATUS);
+
+    this._mockMvc.perform(activateUserBuilder).andExpect(status().isOk());
+
+    MvcResult getUserStatusResponse =
+        this._mockMvc.perform(getUserStatusBuilder).andExpect(status().isOk()).andReturn();
+
+    assertThat(getUserStatusResponse.getResponse().getContentAsString()).contains("PASSWORD_RESET");
+  }
+
+  @Test
+  void getUserAccountStatus_activeStateSuccessful() throws Exception {
+    MockHttpSession session = new MockHttpSession();
+
+    // Activate the user and set their password
+    MockHttpServletRequestBuilder activateUserBuilder =
+        createActivationRequest(session, VALID_PASSWORD_REQUEST);
+    this._mockMvc.perform(activateUserBuilder).andExpect(status().isOk());
+
+    // Set the user's recovery questions
+    MockHttpServletRequestBuilder setRecoveryQuestionBuilder =
+        createPostRequest(
+            session, VALID_RECOVERY_QUESTION_REQUEST, ResourceLinks.USER_SET_RECOVERY_QUESTION);
+    this._mockMvc.perform(setRecoveryQuestionBuilder).andExpect(status().isOk());
+
+    // Enroll the user in SMS MFA
+    MockHttpServletRequestBuilder enrollSmsMfaBuilder =
+        createPostRequest(
+            session, VALID_ENROLL_PHONE_MFA_REQUEST, ResourceLinks.USER_ENROLL_SMS_MFA);
+    this._mockMvc.perform(enrollSmsMfaBuilder).andExpect(status().isOk());
+
+    // Activate SMS MFA
+    MockHttpServletRequestBuilder activateSmsMfaBuilder =
+        createPostRequest(
+            session,
+            VALID_ACTIVATION_PASSCODE_REQUEST,
+            ResourceLinks.USER_VERIFY_ACTIVATION_PASSCODE);
+    this._mockMvc.perform(activateSmsMfaBuilder).andExpect(status().isOk());
+
+    // Get user status
+    MockHttpServletRequestBuilder getUserStatusBuilder =
+        createGetRequest(session, "", ResourceLinks.USER_GET_STATUS);
+    MvcResult getUserStatusResponse =
+        this._mockMvc.perform(getUserStatusBuilder).andExpect(status().isOk()).andReturn();
+
+    assertThat(getUserStatusResponse.getResponse().getContentAsString()).contains("ACTIVE");
+  }
+
   private MockHttpServletRequestBuilder createActivationRequest(
       MockHttpSession session, String requestBody) {
-    return post(ResourceLinks.USER_SET_PASSWORD)
+    return post(ResourceLinks.USER_ACTIVATE_AND_SET_PASSWORD)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .accept(MediaType.APPLICATION_JSON)
         .characterEncoding("UTF-8")
@@ -502,6 +563,16 @@ class UserAccountCreationControllerTest {
   private MockHttpServletRequestBuilder createPostRequest(
       MockHttpSession session, String requestBody, String link) {
     return post(link)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .accept(MediaType.APPLICATION_JSON)
+        .characterEncoding("UTF-8")
+        .content(requestBody)
+        .session(session);
+  }
+
+  private MockHttpServletRequestBuilder createGetRequest(
+      MockHttpSession session, String requestBody, String link) {
+    return get(link)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .accept(MediaType.APPLICATION_JSON)
         .characterEncoding("UTF-8")
