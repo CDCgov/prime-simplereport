@@ -15,6 +15,9 @@ interface Props {}
 const WithFacility: React.FC<Props> = ({ children }) => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const isAdmin = useSelector<RootState, boolean>(
+    (state) => state.user.isAdmin
+  );
   const dataLoaded = useSelector<RootState, boolean>(
     (state) => state.dataLoaded
   );
@@ -39,6 +42,11 @@ const WithFacility: React.FC<Props> = ({ children }) => {
 
   if (!dataLoaded) {
     return <Loading />;
+  }
+
+  if (isAdmin && facilities.length === 0) {
+    // site admin without an organization
+    return <>{children}</>;
   }
 
   if (facilities.length === 0) {

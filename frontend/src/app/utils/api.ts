@@ -22,9 +22,11 @@ function joinAbsoluteUrlPath(...args: string[]) {
 }
 class FetchClient {
   basePath: string;
+  defaultOptions: RequestInit | undefined;
 
-  constructor(basePath: string) {
+  constructor(basePath: string, defaultOptions?: RequestInit) {
     this.basePath = basePath;
+    this.defaultOptions = defaultOptions;
   }
 
   getURL = (path: string, query: string) => {
@@ -71,6 +73,17 @@ class FetchClient {
     } else {
       return "success";
     }
+  };
+
+  getRequest = async (path: string) => {
+    const res = await fetch(this.getURL(path), {
+      ...this.defaultOptions,
+      method: "GET",
+    });
+    if (!res.ok) {
+      throw res;
+    }
+    return res.text();
   };
 }
 
