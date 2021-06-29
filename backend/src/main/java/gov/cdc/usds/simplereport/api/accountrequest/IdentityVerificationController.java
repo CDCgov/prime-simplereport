@@ -18,7 +18,7 @@ public class IdentityVerificationController {
 
   @PostConstruct
   private void init() {
-    LOG.info("Identity verification REST endpoint enabled.");
+    LOG.info("WIP: Identity verification REST endpoint enabled.");
   }
 
   @PostMapping("/get-questions")
@@ -34,5 +34,9 @@ public class IdentityVerificationController {
      * prior to January 2011"
      */
     return "{\"passed\":true,\"email\":\"usds@example.com\"}";
+  }
+
+  private String fetchExperianToken() {
+    return "";
   }
 }
