@@ -9,6 +9,8 @@ import com.twilio.type.PhoneNumber;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.TextMessageSent;
+import gov.cdc.usds.simplereport.db.repository.TextMessageSentRepository;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
@@ -30,6 +32,8 @@ public class SmsService {
 
   @Autowired SmsProviderWrapper sms;
 
+  @Autowired TextMessageSentRepository tmsRepo;
+
   private PhoneNumber fromNumber;
 
   private final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
@@ -44,7 +48,9 @@ public class SmsService {
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public String sendToPatientLink(UUID patientLinkId, String text) throws NumberParseException {
     PatientLink pl = pls.getRefreshedPatientLink(patientLinkId);
-    return sendToPerson(pl.getTestOrder().getPatient(), text);
+    String messageId = sendToPerson(pl.getTestOrder().getPatient(), text);
+    tmsRepo.save(new TextMessageSent(pl, messageId));
+    return messageId;
   }
 
   private String sendToPerson(Person p, String text) throws NumberParseException {
