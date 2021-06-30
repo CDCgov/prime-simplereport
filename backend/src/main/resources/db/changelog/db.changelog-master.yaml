@@ -2371,3 +2371,5 @@ databaseChangeLog:
             replaceIfExists: true
             fullDefinition: false
             selectQuery: SELECT internal_id, created_at, created_by, updated_at, updated_by, is_deleted, provider_id FROM ${database.defaultSchemaName}.provider
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.provider_no_phi_view TO ${noPhiUsername};
