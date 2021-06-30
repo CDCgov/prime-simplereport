@@ -2351,3 +2351,23 @@ databaseChangeLog:
               - column: *updated_by_column
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.text_message_sent TO ${noPhiUsername};
+  - changeSet:
+      id: add-columns-to-provider-view
+      author: josh@skylight.digital
+      comment: Add additional columns to provider_no_phi_view.
+      changes:
+        - createView:
+            viewName: provider_no_phi_view
+            remarks: A subset of the provider table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: SELECT internal_id, created_at, created_by, updated_at, updated_by, is_deleted, provider_id, first_name, last_name, telephone, street, city, county, state, postal_code FROM ${database.defaultSchemaName}.provider;
+      rollback:
+        - dropView:
+            viewName: provider_no_phi_view
+        - createView:
+            viewName: provider_no_phi_view
+            remarks: A subset of the provider table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: SELECT internal_id, created_at, created_by, updated_at, updated_by, is_deleted, provider_id FROM ${database.defaultSchemaName}.provider
