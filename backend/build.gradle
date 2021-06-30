@@ -1,6 +1,6 @@
 plugins {
     id 'org.springframework.boot' version '2.4.1'
-    id 'org.liquibase.gradle' version '2.0.3'
+    id 'org.liquibase.gradle' version '2.0.4'
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id 'java'
     id 'checkstyle'
@@ -104,7 +104,7 @@ dependencies {
     runtimeOnly "com.azure:azure-storage-queue:12.9.0-beta.2"
     runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
     runtimeOnly "io.zipkin.brave:brave:5.13.2"
-    runtimeOnly "io.zipkin.reporter2:zipkin-reporter-brave:2.16.1"
+    runtimeOnly "io.zipkin.reporter2:zipkin-reporter-brave:2.16.3"
     runtimeOnly "io.zipkin.reporter2:zipkin-reporter:2.16.1"
     runtimeOnly "io.zipkin.zipkin2:zipkin:2.23.0"
 
