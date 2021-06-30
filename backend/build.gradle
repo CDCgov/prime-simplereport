@@ -55,7 +55,7 @@ dependencies {
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
 
     // App insights instrumentation
-    implementation 'com.microsoft.azure:applicationinsights-core:2.6.2'
+    implementation 'com.microsoft.azure:applicationinsights-core:2.6.3'
 
     // Azure authentication library (for Dynamics 365)
     implementation 'com.microsoft.azure:adal4j:1.6.7'
