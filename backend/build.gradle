@@ -46,7 +46,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Okta dependencies
-    implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
+    implementation 'com.okta.spring:okta-spring-boot-starter:2.1.0'
     implementation 'com.okta.sdk:okta-sdk-api:3.0.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-impl:3.0.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.1'
