@@ -1,4 +1,7 @@
-import { ApplicationInsights } from "@microsoft/applicationinsights-web";
+import {
+  ApplicationInsights,
+  SeverityLevel,
+} from "@microsoft/applicationinsights-web";
 import { ReactPlugin } from "@microsoft/applicationinsights-react-js";
 import { useHistory } from "react-router";
 
@@ -32,6 +35,7 @@ const createTelemetryService = () => {
     });
 
     appInsights.loadAppInsights();
+    decorateConsole();
   };
 
   return { reactPlugin, appInsights, initialize };
@@ -39,3 +43,43 @@ const createTelemetryService = () => {
 
 export const ai = createTelemetryService();
 export const getAppInsights = () => appInsights;
+
+const oldConsole = { ...console };
+
+function decorateConsole() {
+  /* eslint-disable-next-line */
+  console = {
+    ...oldConsole,
+    ...consoleMethodsWithTelemetry,
+  };
+}
+
+const logSeverityMap: Partial<Record<keyof Console, SeverityLevel>> = {
+  log: SeverityLevel.Information,
+  warn: SeverityLevel.Warning,
+  error: SeverityLevel.Error,
+  info: SeverityLevel.Information,
+};
+
+function consoleMethodsWithTelemetry() {
+  return Object.entries(logSeverityMap).reduce((acc, el) => {
+    const [method, severityLevel] = el as [
+      keyof typeof logSeverityMap,
+      SeverityLevel
+    ];
+
+    acc[method] = (...data: any[]) => {
+      oldConsole[method](data);
+      appInsights?.trackTrace(
+        {
+          message:
+            typeof data[0] === "string" ? data[0] : JSON.stringify(data[0]),
+          severityLevel,
+        },
+        { data }
+      );
+    };
+
+    return acc;
+  }, {} as Partial<Console>);
+}
