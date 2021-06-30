@@ -105,7 +105,7 @@ io.projectreactor.netty:reactor-netty:1.0.2
 io.projectreactor:reactor-core:3.4.1
 io.zipkin.brave:brave-instrumentation-http:5.13.2
 io.zipkin.brave:brave:5.13.2
-io.zipkin.reporter2:zipkin-reporter-brave:2.16.1
+io.zipkin.reporter2:zipkin-reporter-brave:2.16.3
 io.zipkin.reporter2:zipkin-reporter:2.16.1
 io.zipkin.zipkin2:zipkin:2.23.0
 jakarta.activation:jakarta.activation-api:1.2.2
