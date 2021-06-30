@@ -21,7 +21,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class DataHubUploaderServiceTest extends BaseServiceTest<DataHubUploaderService> {
+class DataHubUploaderServiceTest extends BaseServiceTest<DataHubUploaderService> {
   @Autowired private TestDataFactory _dataFactory;
 
   @Test
