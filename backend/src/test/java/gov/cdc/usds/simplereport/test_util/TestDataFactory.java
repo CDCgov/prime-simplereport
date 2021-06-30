@@ -76,18 +76,19 @@ public class TestDataFactory {
   @Autowired private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
   @Autowired private DemoOktaRepository _oktaRepo;
 
-  public Organization createValidOrg(String name, String externalId, boolean identityVerified) {
-    Organization org = _orgRepo.save(new Organization(name, externalId, identityVerified));
+  public Organization createValidOrg(
+      String name, String type, String externalId, boolean identityVerified) {
+    Organization org = _orgRepo.save(new Organization(name, type, externalId, identityVerified));
     _oktaRepo.createOrganization(org);
     return org;
   }
 
   public Organization createValidOrg() {
-    return createValidOrg("The Mall", DEFAULT_ORG_ID, true);
+    return createValidOrg("The Mall", "k12", DEFAULT_ORG_ID, true);
   }
 
   public Organization createUnverifiedOrg() {
-    return createValidOrg("The Plaza", ALT_ORG_ID, false);
+    return createValidOrg("The Plaza", "k12", ALT_ORG_ID, false);
   }
 
   public Facility createValidFacility(Organization org) {
@@ -169,10 +170,10 @@ public class TestDataFactory {
             getAddress(),
             PersonRole.RESIDENT,
             null,
-            "W",
+            "white",
+            "not_hispanic",
             null,
-            null,
-            "M",
+            "male",
             false,
             false);
     _personRepo.save(p);

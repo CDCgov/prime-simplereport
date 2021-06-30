@@ -16,6 +16,7 @@ https://simplereport.gov/
       - [Organization roles](#organization-roles)
       - [Site roles](#site-roles)
     - [Restart & Clean](#restart--clean)
+    - [Rollbacks](#rollbacks)
     - [API Testing](#api-testing)
     - [Tests](#tests)
     - [E2E Tests](#e2e-tests)
@@ -176,6 +177,24 @@ Restarting the SQL way:
 
 1. run `db-setup/nuke-db.sh`
 2. restart the spring app `gradle bootRun --args='--spring.profiles.active=dev'`
+
+### Rollbacks
+
+The application uses the Liquibase plugin for Gradle to perform certain database management tasks.
+
+To roll the database back to its state at a prior date:
+
+```
+$ ./gradlew liquibaseRollbackToDate -PliquibaseCommandValue=${date}
+```
+
+To roll back a certain _number_ of migrations:
+
+```
+$ ./gradlew liquibaseRollbackCount -PliquibaseCommandValue=${n}
+```
+
+If you are required to roll back a non-local database, you may generate the required SQL to execute elsewhere. Use `liquibaseRollbackToDateSQL` or `liquibaseRollbackCountSQL` in the manner described above to write the rollback SQL to stdout.
 
 ### API Testing
 
@@ -369,3 +388,4 @@ Navigate to the [Github Actions Tab](https://github.com/CDCgov/prime-simplerepor
 3. Select the branch you want to deploy. In this case we are deploying the latest commit on `main`
 4. Click the green "Run workflow" button.
 5. After the workflow is completed you can verify the changes are live by Checking the deployed commit hash. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`
+

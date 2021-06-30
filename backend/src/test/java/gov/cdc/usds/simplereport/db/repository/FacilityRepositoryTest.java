@@ -38,7 +38,7 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
         _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));
     configuredDevices.add(billbogies);
     configuredDevices.add(_deviceSpecimens.save(new DeviceSpecimenType(percy, spec)));
-    Organization org = _orgs.save(new Organization("My Office", "650Mass", true));
+    Organization org = _orgs.save(new Organization("My Office", "other", "650Mass", true));
     Facility saved =
         _repo.save(
             new Facility(

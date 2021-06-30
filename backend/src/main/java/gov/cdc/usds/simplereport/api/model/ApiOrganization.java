@@ -21,6 +21,10 @@ public class ApiOrganization extends WrappedEntity<Organization> {
     return wrapped.getOrganizationName();
   }
 
+  public String getType() {
+    return wrapped.getOrganizationType();
+  }
+
   public String getExternalId() {
     return wrapped.getExternalId();
   }

@@ -46,7 +46,7 @@ com.graphql-java:graphql-java-extended-validation:16.0.0
 com.graphql-java:graphql-java:16.1
 com.graphql-java:java-dataloader:2.2.3
 com.microsoft.azure:adal4j:1.6.7
-com.microsoft.azure:applicationinsights-core:2.6.2
+com.microsoft.azure:applicationinsights-core:2.6.3
 com.nimbusds:content-type:2.1
 com.nimbusds:lang-tag:1.4.4
 com.nimbusds:nimbus-jose-jwt:9.1.3
