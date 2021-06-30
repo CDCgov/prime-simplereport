@@ -7,7 +7,7 @@ plugins {
     id 'jacoco'
     id 'org.sonarqube'  version '3.0'
     id 'com.gorylenko.gradle-git-properties' version '2.2.0'
-    id "com.diffplug.spotless" version "5.12.4"
+    id "com.diffplug.spotless" version "5.14.0"
 }
 
 group = 'gov.cdc.usds'
