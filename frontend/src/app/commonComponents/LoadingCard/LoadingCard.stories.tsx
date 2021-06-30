@@ -3,7 +3,7 @@ import { Story, Meta } from "@storybook/react";
 import { LoadingCard } from "./LoadingCard";
 
 export default {
-  title: "App/Account set up/Loading card",
+  title: "Components/Loading card",
   component: LoadingCard,
   argTypes: {},
   args: {

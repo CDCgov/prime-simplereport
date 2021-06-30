@@ -1,4 +1,10 @@
-import { phoneNumberIsValid, areValidPhoneNumbers } from "./personSchema";
+import moment from "moment";
+
+import {
+  phoneNumberIsValid,
+  areValidPhoneNumbers,
+  isValidBirthdate,
+} from "./personSchema";
 
 describe("phoneNumberIsValid", () => {
   it("returns false on null input", () => {
@@ -15,7 +21,7 @@ describe("phoneNumberIsValid", () => {
 });
 
 describe("areValidPhoneNumbers", () => {
-  let phoneNumbers;
+  let phoneNumbers: any[];
 
   beforeEach(() => {
     phoneNumbers = [];
@@ -63,5 +69,30 @@ describe("areValidPhoneNumbers", () => {
 
       expect(areValidPhoneNumbers(phoneNumbers)).toBe(false);
     });
+  });
+});
+
+describe("isValidBirthdate", () => {
+  it("returns false for undefined", () => {
+    expect(isValidBirthdate(undefined)).toBeFalsy();
+  });
+
+  it("returns false for invalid dates", () => {
+    expect(isValidBirthdate("abcdefg")).toBeFalsy();
+  });
+
+  it("returns false for dates in the future", () => {
+    expect(isValidBirthdate(moment().add(1, "days").format("L"))).toBeFalsy();
+  });
+
+  it("returns false for dates farrr in the past", () => {
+    expect(isValidBirthdate(moment("08/02/1776").format("L"))).toBeFalsy();
+  });
+
+  it("returns true for valid birthdates", () => {
+    expect(isValidBirthdate("1/2/1923")).toBeTruthy();
+    expect(isValidBirthdate("01/02/1923")).toBeTruthy();
+    expect(isValidBirthdate("1-2-1923")).toBeTruthy();
+    expect(isValidBirthdate("01-02-1923")).toBeTruthy();
   });
 });
