@@ -27,7 +27,8 @@ class FetchClient {
     this.defaultOptions = defaultOptions;
   }
 
-  getURL = (path: string, query: string) => {
+  // getURL = (path: string, query: string) => {
+    getURL = (path: string) => {
     if (!process.env.REACT_APP_BACKEND_URL) {
       throw Error("process.env.REACT_APP_BACKEND_URL is falsy");
     }
@@ -35,8 +36,7 @@ class FetchClient {
       joinAbsoluteUrlPath(
         process.env.REACT_APP_BACKEND_URL,
         this.basePath,
-        path,
-        query
+        path
       )
     ).href;
   };
@@ -59,7 +59,7 @@ class FetchClient {
     query = ""
   ) => {
     const res = await fetch(
-      this.getURL(path, query),
+      this.getURL(path + query),
       this.getOptions(method, body)
     );
     if (!res.ok) {
