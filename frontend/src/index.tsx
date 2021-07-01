@@ -18,6 +18,7 @@ import Modal from "react-modal";
 import App from "./app/App";
 import PatientApp from "./patientApp/PatientApp";
 import AccountCreationApp from "./app/accountCreation/AccountCreationApp";
+import SignUpApp from "./app/signUp/SignUpApp";
 import HealthChecks from "./app/HealthChecks";
 import * as serviceWorker from "./serviceWorker";
 import { store } from "./app/store";
@@ -115,6 +116,7 @@ export const ReactApp = (
               <Route path="/health" component={HealthChecks} />
               <Route path="/pxp" component={PatientApp} />
               <Route path="/uac" component={AccountCreationApp} />
+              <Route path="/sign-up" component={SignUpApp} />
               <Route
                 path="/register/:registrationLink"
                 component={SelfRegistration}
