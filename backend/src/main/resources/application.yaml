@@ -96,12 +96,12 @@ simple-report:
     tenant-id: ${DYNAMICS_TENANT_ID:MISSING}
     resource-url: ${DYNAMICS_RESOURCE_URL:MISSING}
   experian:
-    token-endpoint: "fakeTokenEndpoint"
-    domain: "fakeDomain"
-    username: "fakeUserName"
-    password: "fakePassword"
-    client-id: "fakeClientId"
-    client-secret: "fakeClientSecret"
+    token-endpoint: ${EXPERIAN_TOKEN_ENDPOINT}
+    domain: ${EXPERIAN_DOMAIN}
+    username: ${EXPERIAN_USERNAME}
+    password: ${EXPERIAN_PASSWORD}
+    client-id: ${EXPERIAN_CLIENT_ID}
+    client-secret: ${EXPERIAN_CLIENT_SECRET}
   azure-reporting-queue:
     account-name: ${AZURE_REPORTING_QUEUE_ACCOUNT_NAME}
     sas-token: ${AZURE_REPORTING_QUEUE_SAS_TOKEN}

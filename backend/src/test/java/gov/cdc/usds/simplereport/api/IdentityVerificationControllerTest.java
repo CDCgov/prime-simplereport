@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,7 +37,7 @@ public class IdentityVerificationControllerTest {
   @Autowired private DemoExperianService _experianService;
 
   private static final String VALID_GET_QUESTIONS_REQUEST =
-      "{\"firstName\":\"Jane\", \"lastName\":\"Doe\", \"dateOfBirth\":\"12121980\", \"email\":\"jane@example.com\", \"phoneNumber\":\"410-867-5309\", \"streetAddress1\":\"1600 Pennsylvania Ave\", \"city\":\"Washington\", \"state\":\"DC\", \"zip\":\"20500\"}";
+      "{\"firstName\":\"Jane\", \"lastName\":\"Doe\", \"dateOfBirth\":\"1980-08-12\", \"email\":\"jane@example.com\", \"phoneNumber\":\"410-867-5309\", \"streetAddress1\":\"1600 Pennsylvania Ave\", \"city\":\"Washington\", \"state\":\"DC\", \"zip\":\"20500\"}";
 
   @BeforeEach
   public void setup() throws Exception {
@@ -53,5 +54,6 @@ public class IdentityVerificationControllerTest {
             .content(VALID_GET_QUESTIONS_REQUEST);
 
     this._mockMvc.perform(builder).andExpect(status().isOk());
+    assertThat(4).isEqualTo(3 - 2);
   }
 }
