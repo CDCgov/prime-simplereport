@@ -27,8 +27,7 @@ class FetchClient {
     this.defaultOptions = defaultOptions;
   }
 
-  // getURL = (path: string, query: string) => {
-    getURL = (path: string) => {
+  getURL = (path: string) => {
     if (!process.env.REACT_APP_BACKEND_URL) {
       throw Error("process.env.REACT_APP_BACKEND_URL is falsy");
     }
@@ -46,6 +45,7 @@ class FetchClient {
     body: JsonObject | null
   ): RequestInit => {
     return {
+      ...this.defaultOptions,
       method,
       headers,
       body: body ? JSON.stringify(body) : undefined,
