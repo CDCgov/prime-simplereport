@@ -56,7 +56,7 @@ const telemetryFailure = /failed to send telemetry/i;
 export function withInsights(console: Console) {
   const originalConsole = { ...console };
 
-  return Object.entries(logSeverityMap).forEach((el) => {
+  Object.entries(logSeverityMap).forEach((el) => {
     const [method, severityLevel] = el as [
       keyof typeof logSeverityMap,
       SeverityLevel
