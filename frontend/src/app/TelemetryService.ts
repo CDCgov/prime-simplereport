@@ -7,12 +7,13 @@ import { useHistory } from "react-router";
 
 let reactPlugin: ReactPlugin | null = null;
 let appInsights: ApplicationInsights | null = null;
-const instrumentationKey = process.env.REACT_APP_APPINSIGHTS_KEY;
 
 const createTelemetryService = () => {
   const initialize = (browserHistory?: ReturnType<typeof useHistory>) => {
+    const instrumentationKey = process.env.REACT_APP_APPINSIGHTS_KEY;
+
     if (!instrumentationKey) {
-      return console.warn("Instrumentation key not provided in");
+      return console.warn("Instrumentation key not provided");
     }
 
     reactPlugin = new ReactPlugin();
@@ -35,7 +36,6 @@ const createTelemetryService = () => {
     });
 
     appInsights.loadAppInsights();
-    decorateConsole();
   };
 
   return { reactPlugin, appInsights, initialize };
@@ -44,16 +44,6 @@ const createTelemetryService = () => {
 export const ai = createTelemetryService();
 export const getAppInsights = () => appInsights;
 
-const oldConsole = { ...console };
-
-function decorateConsole() {
-  /* eslint-disable-next-line */
-  console = {
-    ...oldConsole,
-    ...consoleMethodsWithTelemetry,
-  };
-}
-
 const logSeverityMap: Partial<Record<keyof Console, SeverityLevel>> = {
   log: SeverityLevel.Information,
   warn: SeverityLevel.Warning,
@@ -61,25 +51,33 @@ const logSeverityMap: Partial<Record<keyof Console, SeverityLevel>> = {
   info: SeverityLevel.Information,
 };
 
-function consoleMethodsWithTelemetry() {
-  return Object.entries(logSeverityMap).reduce((acc, el) => {
+const telemetryFailure = /failed to send telemetry/i;
+
+export function withInsights(console: Console) {
+  const originalConsole = { ...console };
+
+  return Object.entries(logSeverityMap).forEach((el) => {
     const [method, severityLevel] = el as [
       keyof typeof logSeverityMap,
       SeverityLevel
     ];
 
-    acc[method] = (...data: any[]) => {
-      oldConsole[method](data);
+    console[method] = (...data: any[]) => {
+      originalConsole[method](data);
+
+      // Prevent telemetry failure infinite loop
+      if (telemetryFailure.test(data[0])) {
+        return;
+      }
+
       appInsights?.trackTrace(
         {
           message:
             typeof data[0] === "string" ? data[0] : JSON.stringify(data[0]),
           severityLevel,
         },
-        { data }
+        data.length === 1 ? undefined : { data: data.slice(1) }
       );
     };
-
-    return acc;
-  }, {} as Partial<Console>);
+  });
 }

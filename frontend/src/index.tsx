@@ -23,7 +23,7 @@ import HealthChecks from "./app/HealthChecks";
 import * as serviceWorker from "./serviceWorker";
 import { store } from "./app/store";
 import { showError } from "./app/utils";
-import { getAppInsights, ai } from "./app/TelemetryService";
+import { getAppInsights, ai, withInsights } from "./app/TelemetryService";
 import TelemetryProvider from "./app/telemetry-provider";
 import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration";
 
@@ -31,6 +31,7 @@ import "./styles/App.css";
 
 // Initialize telemetry early
 ai.initialize();
+withInsights(console);
 
 // Define the root element for modals
 if (process.env.NODE_ENV !== "test") {
