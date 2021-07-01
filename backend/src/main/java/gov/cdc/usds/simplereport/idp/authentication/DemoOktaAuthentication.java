@@ -119,6 +119,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   public String enrollSmsMfa(String userId, String phoneNumber)
       throws BadRequestException, OktaAuthenticationFailureException {
     validateUser(userId);
+    validateInput(phoneNumber);
     String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
     String factorId = userId + strippedPhoneNumber;
     DemoMfa smsMfa =
@@ -130,6 +131,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   public String enrollVoiceCallMfa(String userId, String phoneNumber)
       throws BadRequestException, OktaAuthenticationFailureException {
     validateUser(userId);
+    validateInput(phoneNumber);
     String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
     String factorId = userId + strippedPhoneNumber;
     DemoMfa callMfa =
@@ -152,6 +154,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
     validateUser(userId);
+    validateInput(appType);
     String factorType = "";
     switch (appType.toLowerCase()) {
       case "google":
@@ -209,6 +212,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       throws BadRequestException, OktaAuthenticationFailureException {
     validateUser(userId);
     validateFactor(userId, factorId);
+    validateInput(passcode);
     DemoMfa mfa = this.idToUserMap.get(userId).getMfa();
     if (passcode.length() != PASSCODE_LENGTH) {
       throw new BadRequestException("Activation passcode does not match our records.");
@@ -234,6 +238,12 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   public void validateUser(String userId) throws OktaAuthenticationFailureException {
     if (!this.idToUserMap.containsKey(userId)) {
       throw new OktaAuthenticationFailureException("User id not recognized.");
+    }
+  }
+
+  public void validateInput(String userInput) throws BadRequestException {
+    if (userInput == null) {
+      throw new BadRequestException("User input cannot be null.");
     }
   }
 

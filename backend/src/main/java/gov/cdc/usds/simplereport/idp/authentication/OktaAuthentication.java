@@ -63,7 +63,7 @@ public interface OktaAuthentication {
    * @throws OktaAuthenticationFailureException if setting the recovery question fails (i.e.,
    *     because the user isn't in the correct state or cannot be found).
    */
-  public void setRecoveryQuestion(String userId, String recoveryQuestion, String answer)
+  public void setRecoveryQuestion(String userId, String question, String answer)
       throws OktaAuthenticationFailureException, BadRequestException;
 
   /**
@@ -114,7 +114,7 @@ public interface OktaAuthentication {
    * @throws OktaAuthenticationFailureException if the app type is not recognized, Okta fails to
    *     enroll the MFA option, or the result from Okta does not contain a QR code.
    */
-  public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String type)
+  public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException;
 
   /**

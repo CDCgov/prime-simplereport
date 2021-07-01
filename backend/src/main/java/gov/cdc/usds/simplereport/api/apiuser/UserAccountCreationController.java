@@ -13,7 +13,6 @@ import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetPasswordRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
-import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountCreationRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
 import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
 import javax.annotation.Nullable;
@@ -75,33 +74,6 @@ public class UserAccountCreationController {
       @Nullable @SessionAttribute String userId,
       @Nullable @SessionAttribute String factorId) {
     return _oktaAuth.getUserStatus(activationToken, userId, factorId);
-  }
-
-  /**
-   * Validates that the requesting user has been sent an invitation to SimpleReport, ensures the
-   * given password meets all requirements, and sets the password in Okta.
-   *
-   * @param requestBody contains the password
-   * @param request contains all header information, including the activation token.
-   * @throws InvalidActivationLinkException if the activation token is invalid.
-   * @throws OktaAuthenticationFailureException if the user is not in a RESET_PASSWORD state.
-   * @throws BadRequestException if the password doesn't meet requirements.
-   */
-  @PostMapping("/initialize-and-set-password")
-  public void activateAccountAndSetPassword(
-      @RequestBody UserAccountCreationRequest requestBody, HttpServletRequest request)
-      throws InvalidActivationLinkException, OktaAuthenticationFailureException,
-          BadRequestException {
-    String userId =
-        _oktaAuth.activateUser(
-            requestBody.getActivationToken(),
-            request.getHeader("X-Forwarded-For"),
-            request.getHeader("User-Agent"));
-    if (userId.isEmpty()) {
-      throw new OktaAuthenticationFailureException("Returned user id is empty.");
-    }
-    request.getSession().setAttribute(USER_ID_KEY, userId);
-    _oktaAuth.setPassword(userId, requestBody.getPassword().toCharArray());
   }
 
   @PostMapping("/initialize")
