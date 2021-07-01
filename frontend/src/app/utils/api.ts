@@ -35,7 +35,6 @@ class FetchClient {
     if (!process.env.REACT_APP_BACKEND_URL) {
       throw Error("process.env.REACT_APP_BACKEND_URL is falsy");
     }
-    const x = joinAbsoluteUrlPath(this.basePath, path);
     return new URL(
       joinAbsoluteUrlPath(
         process.env.REACT_APP_BACKEND_URL,
