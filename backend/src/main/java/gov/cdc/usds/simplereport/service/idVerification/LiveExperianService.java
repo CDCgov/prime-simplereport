@@ -1,5 +1,8 @@
 package gov.cdc.usds.simplereport.service.idVerification;
 
+import static gov.cdc.usds.simplereport.service.idVerification.ExperianTranslator.createInitialRequestBody;
+
+import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationRequest;
 import gov.cdc.usds.simplereport.properties.ExperianProperties;
 import java.util.UUID;
 import org.json.JSONObject;
@@ -43,5 +46,18 @@ public class LiveExperianService implements ExperianService {
     } catch (RestClientException | NullPointerException e) {
       throw new IllegalArgumentException("The activation token could not be retrieved: ", e);
     }
+  }
+
+  public void getQuestions(IdentityVerificationRequest userData) {
+    System.out.println("in the live version");
+    String initialRequestBody =
+        createInitialRequestBody(
+            _experianProperties.getUsername(),
+            _experianProperties.getPassword(),
+            userData,
+            "fakeTenantId",
+            "fakeClientReferenceId");
+    // next steps: get all the actual header information and issue the request
+    System.out.println(initialRequestBody);
   }
 }
