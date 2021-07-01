@@ -108,6 +108,9 @@ dependencies {
     runtimeOnly "io.zipkin.reporter2:zipkin-reporter:2.16.1"
     runtimeOnly "io.zipkin.zipkin2:zipkin:2.23.0"
 
+    // TOTP Generator (only used for testing)
+    testCompile 'dev.samstevens.totp:totp:1.7.1'
+
 }
 
 dependencyManagement {

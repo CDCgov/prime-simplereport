@@ -555,17 +555,11 @@ class UserAccountCreationControllerTest {
     assertThat(getUserStatusResponse.getResponse().getContentAsString()).contains("PASSWORD_RESET");
   }
 
-  /*
   @Test
   void getUserAccountStatus_activeStateSuccessful() throws Exception {
     MockHttpSession session = new MockHttpSession();
-
     issueActivationRequest(session);
     issueSetPasswordRequest(session);
-    // Activate the user and set their password
-    MockHttpServletRequestBuilder activateUserBuilder =
-        createActivationRequest(session, VALID_INITIALIZE_AND_SET_PASSWORD_REQUEST);
-    this._mockMvc.perform(activateUserBuilder).andExpect(status().isOk());
 
     // Set the user's recovery questions
     MockHttpServletRequestBuilder setRecoveryQuestionBuilder =
@@ -599,10 +593,8 @@ class UserAccountCreationControllerTest {
   @Test
   void resendActivationCode_isOK() throws Exception {
     MockHttpSession session = new MockHttpSession();
-
-    MockHttpServletRequestBuilder activateUserBuilder =
-        createActivationRequest(session, VALID_INITIALIZE_AND_SET_PASSWORD_REQUEST);
-    this._mockMvc.perform(activateUserBuilder).andExpect(status().isOk());
+    issueActivationRequest(session);
+    issueSetPasswordRequest(session);
 
     // Set the user's recovery questions
     MockHttpServletRequestBuilder setRecoveryQuestionBuilder =
@@ -625,10 +617,8 @@ class UserAccountCreationControllerTest {
   @Test
   void resendActivationCode_failsIfUserIsNotEnrolledInMfa() throws Exception {
     MockHttpSession session = new MockHttpSession();
-
-    MockHttpServletRequestBuilder activateUserBuilder =
-        createActivationRequest(session, VALID_INITIALIZE_AND_SET_PASSWORD_REQUEST);
-    this._mockMvc.perform(activateUserBuilder).andExpect(status().isOk());
+    issueActivationRequest(session);
+    issueSetPasswordRequest(session);
 
     // Set the user's recovery questions
     MockHttpServletRequestBuilder setRecoveryQuestionBuilder =
@@ -641,7 +631,6 @@ class UserAccountCreationControllerTest {
 
     this._mockMvc.perform(resendActivationPasscodeBuilder).andExpect(status().is4xxClientError());
   }
-  */
 
   private MockHttpServletRequestBuilder createPostRequest(
       MockHttpSession session, String requestBody, String link) {
