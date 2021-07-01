@@ -1,0 +1,44 @@
+{
+  "id" : "42d8d5c6-3846-4e88-bf5d-16ed11ceb1b9",
+  "name" : "api_v1_users_00uepn8ikyrj015lv4h6_factors",
+  "request" : {
+    "url" : "/api/v1/users/00uepn8ikYrJ015lV4h6/factors",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"provider\":\"FIDO\",\"factorType\":\"webauthn\"}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"id\":\"fwfepnfdcnW4VL4Oa4h6\",\"factorType\":\"webauthn\",\"provider\":\"FIDO\",\"vendorName\":\"FIDO\",\"status\":\"PENDING_ACTIVATION\",\"created\":\"2021-07-01T21:49:44.000Z\",\"lastUpdated\":\"2021-07-01T21:49:44.000Z\",\"_links\":{\"activate\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00uepn8ikYrJ015lV4h6/factors/fwfepnfdcnW4VL4Oa4h6/lifecycle/activate\",\"hints\":{\"allow\":[\"POST\"]}},\"self\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00uepn8ikYrJ015lV4h6/factors/fwfepnfdcnW4VL4Oa4h6\",\"hints\":{\"allow\":[\"GET\"]}},\"user\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00uepn8ikYrJ015lV4h6\",\"hints\":{\"allow\":[\"GET\"]}}},\"_embedded\":{\"activation\":{\"rp\":{\"name\":\"SimpleReport\"},\"user\":{\"displayName\":\"TEST INTEGRATION\",\"name\":\"emma+6@skylight.digital\",\"id\":\"00uepn8ikYrJ015lV4h6\"},\"pubKeyCredParams\":[{\"type\":\"public-key\",\"alg\":-7},{\"type\":\"public-key\",\"alg\":-257}],\"challenge\":\"StyPRW3dIyGthU4vLpr2\",\"attestation\":\"direct\",\"authenticatorSelection\":{\"userVerification\":\"preferred\",\"requireResidentKey\":false},\"u2fParams\":{\"appid\":\"https://hhs-prime.okta.com\"},\"excludeCredentials\":[]}}}",
+    "headers" : {
+      "Date" : "Thu, 01 Jul 2021 21:49:44 GMT",
+      "Content-Type" : "application/json",
+      "Server" : "nginx",
+      "Public-Key-Pins-Report-Only" : "pin-sha256=\"r5EfzZxQVvQpKo3AgYRaT7X2bDO/kj3ACwmxfdT2zt8=\"; pin-sha256=\"MaqlcUgk2mvY/RFSGeSwBRkI+rZ6/dxe/DuQfBT/vnQ=\"; pin-sha256=\"72G5IEvDEWn+EThf3qjR7/bQSWaS2ZSLqolhnO6iyJI=\"; pin-sha256=\"rrV6CLCCvqnk89gWibYT0JO6fNQ8cCit7GGoiVTjCOg=\"; max-age=60; report-uri=\"https://okta.report-uri.com/r/default/hpkp/reportOnly\"",
+      "Vary" : "Accept-Encoding",
+      "x-okta-request-id" : "YN44eOgyPjioZyiEPJPU8wAAD2A",
+      "x-xss-protection" : "0",
+      "p3p" : "CP=\"HONK\"",
+      "x-rate-limit-limit" : "600",
+      "x-rate-limit-remaining" : "585",
+      "x-rate-limit-reset" : "1625176230",
+      "cache-control" : "no-cache, no-store",
+      "pragma" : "no-cache",
+      "expires" : "0",
+      "content-security-policy" : "default-src 'self' hhs-prime.okta.com *.oktacdn.com; connect-src 'self' hhs-prime.okta.com hhs-prime-admin.okta.com *.oktacdn.com *.mixpanel.com *.mapbox.com app.pendo.io data.pendo.io pendo-static-5634101834153984.storage.googleapis.com hhs-prime.kerberos.okta.com https://oinmanager.okta.com data:; script-src 'unsafe-inline' 'unsafe-eval' 'self' hhs-prime.okta.com *.oktacdn.com; style-src 'unsafe-inline' 'self' hhs-prime.okta.com *.oktacdn.com app.pendo.io cdn.pendo.io pendo-static-5634101834153984.storage.googleapis.com; frame-src 'self' hhs-prime.okta.com hhs-prime-admin.okta.com login.okta.com; img-src 'self' hhs-prime.okta.com *.oktacdn.com *.tiles.mapbox.com *.mapbox.com app.pendo.io data.pendo.io cdn.pendo.io pendo-static-5634101834153984.storage.googleapis.com data: blob:; font-src 'self' hhs-prime.okta.com data: *.oktacdn.com fonts.gstatic.com",
+      "expect-ct" : "report-uri=\"https://oktaexpectct.report-uri.com/r/t/ct/reportOnly\", max-age=0",
+      "x-content-type-options" : "nosniff",
+      "Strict-Transport-Security" : "max-age=315360000; includeSubDomains",
+      "set-cookie" : [ "sid=\"\"; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/", "JSESSIONID=429A07E869A66FF48731F09B037FF9A9; Path=/; Secure; HttpOnly" ]
+    }
+  },
+  "uuid" : "42d8d5c6-3846-4e88-bf5d-16ed11ceb1b9",
+  "persistent" : true,
+  "scenarioName" : "scenario-8-api-v1-users-00uepn8ikYrJ015lV4h6-factors",
+  "requiredScenarioState" : "Started",
+  "newScenarioState" : "scenario-8-api-v1-users-00uepn8ikYrJ015lV4h6-factors-2",
+  "insertionIndex" : 308
+}

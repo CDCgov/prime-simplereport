@@ -1,0 +1,41 @@
+{
+  "id" : "08b76c9d-5457-4b92-b2df-d38cb30ec244",
+  "name" : "api_v1_users_00uepp0t99yupwzqi4h6_factors_ostepocf0hnjhoeaq4h6_lifecycle_activate",
+  "request" : {
+    "url" : "/api/v1/users/00uepp0t99YUpwZQI4h6/factors/ostepocf0HNJHOeaQ4h6/lifecycle/activate",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"passCode\":\"1234\"}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 403,
+    "body" : "{\"errorCode\":\"E0000068\",\"errorSummary\":\"Invalid Passcode/Answer\",\"errorLink\":\"E0000068\",\"errorId\":\"oaebjyrkncgSJOhWJ0AalesMA\",\"errorCauses\":[{\"errorSummary\":\"Your code doesn't match our records. Please try again.\"}]}",
+    "headers" : {
+      "Date" : "Thu, 01 Jul 2021 21:57:03 GMT",
+      "Content-Type" : "application/json",
+      "Server" : "nginx",
+      "Public-Key-Pins-Report-Only" : "pin-sha256=\"r5EfzZxQVvQpKo3AgYRaT7X2bDO/kj3ACwmxfdT2zt8=\"; pin-sha256=\"MaqlcUgk2mvY/RFSGeSwBRkI+rZ6/dxe/DuQfBT/vnQ=\"; pin-sha256=\"72G5IEvDEWn+EThf3qjR7/bQSWaS2ZSLqolhnO6iyJI=\"; pin-sha256=\"rrV6CLCCvqnk89gWibYT0JO6fNQ8cCit7GGoiVTjCOg=\"; max-age=60; report-uri=\"https://okta.report-uri.com/r/default/hpkp/reportOnly\"",
+      "Vary" : "Accept-Encoding",
+      "x-okta-request-id" : "YN46L2AB4LgZxJSECOWs1wAAAaM",
+      "x-xss-protection" : "0",
+      "p3p" : "CP=\"HONK\"",
+      "x-rate-limit-limit" : "600",
+      "x-rate-limit-remaining" : "569",
+      "x-rate-limit-reset" : "1625176655",
+      "cache-control" : "no-cache, no-store",
+      "pragma" : "no-cache",
+      "expires" : "0",
+      "content-security-policy" : "default-src 'self' hhs-prime.okta.com *.oktacdn.com; connect-src 'self' hhs-prime.okta.com hhs-prime-admin.okta.com *.oktacdn.com *.mixpanel.com *.mapbox.com app.pendo.io data.pendo.io pendo-static-5634101834153984.storage.googleapis.com hhs-prime.kerberos.okta.com https://oinmanager.okta.com data:; script-src 'unsafe-inline' 'unsafe-eval' 'self' hhs-prime.okta.com *.oktacdn.com; style-src 'unsafe-inline' 'self' hhs-prime.okta.com *.oktacdn.com app.pendo.io cdn.pendo.io pendo-static-5634101834153984.storage.googleapis.com; frame-src 'self' hhs-prime.okta.com hhs-prime-admin.okta.com login.okta.com; img-src 'self' hhs-prime.okta.com *.oktacdn.com *.tiles.mapbox.com *.mapbox.com app.pendo.io data.pendo.io cdn.pendo.io pendo-static-5634101834153984.storage.googleapis.com data: blob:; font-src 'self' hhs-prime.okta.com data: *.oktacdn.com fonts.gstatic.com",
+      "expect-ct" : "report-uri=\"https://oktaexpectct.report-uri.com/r/t/ct/reportOnly\", max-age=0",
+      "x-content-type-options" : "nosniff",
+      "Strict-Transport-Security" : "max-age=315360000; includeSubDomains",
+      "set-cookie" : [ "sid=\"\"; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/", "JSESSIONID=6A6F1186A40A660F63750AB4D3908533; Path=/; Secure; HttpOnly" ]
+    }
+  },
+  "uuid" : "08b76c9d-5457-4b92-b2df-d38cb30ec244",
+  "persistent" : true,
+  "insertionIndex" : 564
+}
