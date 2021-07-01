@@ -3,9 +3,10 @@ import { FetchMock } from "jest-fetch-mock/types";
 import FetchClient from "./api";
 
 describe("FetchClient", () => {
-  let sut = new FetchClient("/");
+  let sut: FetchClient;
 
   beforeEach(() => {
+    sut = new FetchClient("/");
     process.env.REACT_APP_BACKEND_URL = "http://localhost:";
     (fetch as FetchMock).resetMocks();
   });
@@ -16,6 +17,16 @@ describe("FetchClient", () => {
     expect(() => {
       sut.getURL("some-path");
     }).toThrow();
+    process.env.REACT_APP_BACKEND_URL = existing;
+  });
+
+  it("getURL works as expected", () => {
+    const existing = process.env.REACT_APP_BACKEND_URL;
+    process.env.REACT_APP_BACKEND_URL = "https://simplereport.gov/api";
+    sut = new FetchClient("pxp");
+    expect(sut.getURL("some-path")).toEqual(
+      "https://simplereport.gov/api/pxp/some-path"
+    );
     process.env.REACT_APP_BACKEND_URL = existing;
   });
 
