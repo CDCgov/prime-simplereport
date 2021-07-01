@@ -14,12 +14,7 @@ export const headers = {
  * joinAbsoluteUrlPath("a/b", "/c/d/", "/e", "f/g", "h") -> "/a/b/c/d/e/f/g/h"
  */
 function joinAbsoluteUrlPath(...args: string[]) {
-  return args
-    .map((pathPart) => {
-      const x = pathPart.replace(/(^\/|\/$)/g, "");
-      return x;
-    })
-    .join("/");
+  return args.map((pathPart) => pathPart.replace(/(^\/|\/$)/g, "")).join("/");
 }
 
 class FetchClient {
