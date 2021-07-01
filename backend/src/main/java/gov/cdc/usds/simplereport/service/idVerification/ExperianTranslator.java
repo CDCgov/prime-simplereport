@@ -113,9 +113,7 @@ public class ExperianTranslator {
   }
 
   public static String parseDate(String d) {
-      System.out.println("date: " + d);
     String date = parseString(d);
-    System.out.println("date after preliminary parsing: " + date);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d");
     try {
       LocalDate.parse(date, formatter);
