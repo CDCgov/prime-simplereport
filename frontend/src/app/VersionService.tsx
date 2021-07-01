@@ -1,3 +1,5 @@
+import { reload } from "./utils/reload";
+
 export class VersionService {
   /**
    * fetch the commit SHA deployed with the static assets and compare it to the
@@ -19,6 +21,6 @@ export class VersionService {
    */
   static reload() {
     console.warn("SHA mismatch. Reloading!");
-    window.location.reload();
+    reload();
   }
 }
