@@ -45,12 +45,12 @@ const createTelemetryService = () => {
 export const ai = createTelemetryService();
 export const getAppInsights = () => appInsights;
 
-const logSeverityMap: Partial<Record<keyof Console, SeverityLevel>> = {
+const logSeverityMap = {
   log: SeverityLevel.Information,
   warn: SeverityLevel.Warning,
   error: SeverityLevel.Error,
   info: SeverityLevel.Information,
-};
+} as const;
 
 const telemetryFailure = /failed to send telemetry/i;
 
@@ -68,6 +68,31 @@ export function withInsights(console: Console) {
 
       // Prevent telemetry failure infinite loop
       if (telemetryFailure.test(data[0])) {
+        return;
+      }
+
+      if (method === "error" || method === "warn") {
+        const exception = data[0] instanceof Error ? data[0] : undefined;
+        const id = (() => {
+          if (exception) {
+            return exception.message;
+          }
+          if (typeof data[0] === "string") {
+            return data[0];
+          }
+          return JSON.stringify(data[0]);
+        })();
+
+        appInsights?.trackException({
+          exception,
+          id,
+          severityLevel,
+          properties: {
+            additionalInformation:
+              data.length === 1 ? undefined : JSON.stringify(data.slice(1)),
+          },
+        });
+
         return;
       }
 

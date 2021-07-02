@@ -13,6 +13,7 @@ jest.mock("@microsoft/applicationinsights-web", () => {
       return {
         loadAppInsights() {},
         trackEvent: jest.fn(),
+        trackException: jest.fn(),
       };
     },
   };
@@ -24,6 +25,7 @@ describe("telemetry", () => {
   beforeEach(() => {
     jest.spyOn(console, "warn").mockImplementation(() => {});
     jest.spyOn(console, "log").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
     jest.spyOn(ai, "initialize");
   });
   afterEach(() => {
@@ -55,12 +57,33 @@ describe("telemetry", () => {
     const warning = "some warning";
     const data = { oh: "no" };
     console.warn(warning, data);
-    expect(appInsights?.trackEvent).toBeCalledWith({
-      name: "WARN - some warning",
+    expect(appInsights?.trackException).toBeCalledWith({
+      id: "some warning",
+      severityLevel: SeverityLevel.Warning,
       properties: {
-        severityLevel: SeverityLevel.Warning,
-        message: warning,
         additionalInformation: JSON.stringify([data]),
+      },
+    });
+
+    const error = new Error("bad news");
+    console.error(error);
+    expect(appInsights?.trackException).toBeCalledWith({
+      exception: error,
+      id: error.message,
+      severityLevel: SeverityLevel.Error,
+      properties: {
+        additionalInformation: undefined,
+      },
+    });
+
+    const nonErrorError = "something bad happened";
+    console.error(nonErrorError);
+    expect(appInsights?.trackException).toBeCalledWith({
+      exception: undefined,
+      id: nonErrorError,
+      severityLevel: SeverityLevel.Error,
+      properties: {
+        additionalInformation: undefined,
       },
     });
   });
