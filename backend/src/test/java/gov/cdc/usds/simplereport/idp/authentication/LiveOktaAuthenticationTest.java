@@ -3,9 +3,7 @@ package gov.cdc.usds.simplereport.idp.authentication;
 import static com.okta.sdk.cache.Caches.forResource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.cache.CacheManager;
 import com.okta.sdk.cache.Caches;
@@ -26,13 +24,8 @@ import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
-import dev.samstevens.totp.code.CodeGenerator;
-import dev.samstevens.totp.code.DefaultCodeGenerator;
-import java.time.Instant;
-
 import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -42,7 +35,6 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import java.util.List;
 
 /**
  * This tests LiveOktaAuthentication with stubbed responses from the Okta API.
@@ -71,7 +63,6 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
   @BeforeAll
   void initializeUser() {
-    WireMock.startRecording("https://hhs-prime.okta.com");
     if (_token == null || _token.isEmpty() || _token.contains("MISSING")) {
       throw new IllegalArgumentException("The Okta token cannot be empty.");
     }
@@ -99,14 +90,6 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
     _userId = "00uepp4y6buAwAXmU4h6";
     _activationToken = "LcslQwc7RAEznizosixd";
-  }
-
-  @AfterAll
-  void removeUser() {
-    List<StubMapping> recordedMappings = WireMock.stopRecording().getStubMappings();
-    User user = _testClient.getUser(_userId);
-    user.deactivate();
-    user.delete();
   }
 
   // Positive Tests
@@ -254,7 +237,8 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
         .isNotNull();
     assertThat(activationObject.getJSONObject("activation").getString("challenge")).isNotNull();
 
-    UserAccountStatus status = _auth.getUserStatus(null, _userId, activationObject.getString("factorId"));
+    UserAccountStatus status =
+        _auth.getUserStatus(null, _userId, activationObject.getString("factorId"));
     assertThat(status).isEqualTo(UserAccountStatus.FIDO_PENDING_ACTIVATION);
   }
 
@@ -270,15 +254,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
     assertThat(factor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
 
-    // String passcode = "807848";
-    JSONObject embeddedJson = new JSONObject(factor.getEmbedded());
-    String sharedSecret = embeddedJson.getJSONObject("activation").getString("sharedSecret");
-    long timeStep = embeddedJson.getJSONObject("activation").getLong("timeStep");
-
-    CodeGenerator codeGenerator = new DefaultCodeGenerator();
-    long millisSinceEpoch = Instant.now().toEpochMilli();
-    long counter = millisSinceEpoch / 1000 / timeStep;
-    String passcode = codeGenerator.generate(sharedSecret, counter);
+    String passcode = "691117";
     String factorId = factor.getId();
     _auth.verifyActivationPasscode(_userId, factorId, passcode);
 
@@ -295,7 +271,6 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     String factorId = _auth.enrollSmsMfa(_userId, "4045312484");
     UserFactor factorBeforeResend = _testClient.getUser(_userId).getFactor(factorId);
 
-    Thread.sleep(45000);
     try {
       _auth.resendActivationPasscode(_userId, factorId);
     } catch (OktaAuthenticationFailureException | IllegalStateException e) {
@@ -306,8 +281,8 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     assertThat(factorBeforeResend.getLastUpdated())
         .isNotEqualTo(user.getFactor(factorId).getLastUpdated());
 
-   UserAccountStatus status = _auth.getUserStatus(null, _userId, factorId);
-   assertThat(status).isEqualTo(UserAccountStatus.SMS_PENDING_ACTIVATION);
+    UserAccountStatus status = _auth.getUserStatus(null, _userId, factorId);
+    assertThat(status).isEqualTo(UserAccountStatus.SMS_PENDING_ACTIVATION);
   }
 
   // Negative Tests
