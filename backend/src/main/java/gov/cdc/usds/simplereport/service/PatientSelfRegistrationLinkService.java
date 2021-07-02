@@ -7,6 +7,9 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +32,7 @@ public class PatientSelfRegistrationLinkService {
   public PatientSelfRegistrationLink getPatientRegistrationLink(String patientRegistrationLink)
       throws InvalidPatientSelfRegistrationLinkException {
     return prlrepo
-        .findByPatientRegistrationLink(patientRegistrationLink)
+        .findByPatientRegistrationLinkIgnoreCase(patientRegistrationLink)
         .orElseThrow(InvalidPatientSelfRegistrationLinkException::new);
   }
 
@@ -56,7 +59,7 @@ public class PatientSelfRegistrationLinkService {
   public String updateRegistrationLink(String link, String newLink) {
     PatientSelfRegistrationLink prl =
         prlrepo
-            .findByPatientRegistrationLink(link)
+            .findByPatientRegistrationLinkIgnoreCase(link)
             .orElseThrow(InvalidPatientSelfRegistrationLinkException::new);
     prl.setLink(newLink);
     prlrepo.save(prl);
@@ -67,10 +70,38 @@ public class PatientSelfRegistrationLinkService {
   public String updateRegistrationLink(String link, Boolean deleted) {
     PatientSelfRegistrationLink prl =
         prlrepo
-            .findByPatientRegistrationLink(link)
+            .findByPatientRegistrationLinkIgnoreCase(link)
             .orElseThrow(InvalidPatientSelfRegistrationLinkException::new);
     prl.setIsDeleted(deleted);
     prlrepo.save(prl);
     return prl.getLink();
+  }
+
+  public String createRegistrationLink(Organization org) {
+    boolean retried = false;
+    while(true) {
+        try {
+          return createRegistrationLink(org, generateLink());
+       } catch (DataIntegrityViolationException e) {
+          if (retried) throw e;
+          retried = true;
+       }
+    }
+  }
+
+  public String createRegistrationLink(Facility fac) {
+    boolean retried = false;
+    while(true) {
+        try {
+          return createRegistrationLink(fac, generateLink());
+       } catch (DataIntegrityViolationException e) {
+          if (retried) throw e;
+          retried = true;
+       }
+    }
+  }
+
+  private static String generateLink() {
+    return RandomStringUtils.random(5, "123456789abcdefghjkmnpqrstuvwxyz");
   }
 }

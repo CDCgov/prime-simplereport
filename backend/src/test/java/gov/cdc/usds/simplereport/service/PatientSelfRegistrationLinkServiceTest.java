@@ -14,6 +14,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 
 class PatientSelfRegistrationLinkServiceTest
@@ -50,6 +51,18 @@ class PatientSelfRegistrationLinkServiceTest
     assertEquals(_fac.getInternalId(), facLink.getFacility().getInternalId());
     _psrlService.createRegistrationLink(_org, "some-org-link");
     PatientSelfRegistrationLink link = _psrlService.getPatientRegistrationLink("some-org-link");
+    assertEquals(_org.getInternalId(), link.getOrganization().getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void caseInsensitiveLinks() {
+    _psrlService.createRegistrationLink(_fac, "some-facility-link");
+    PatientSelfRegistrationLink facLink =
+        _psrlService.getPatientRegistrationLink("some-facility-link");
+    assertEquals(_fac.getInternalId(), facLink.getFacility().getInternalId());
+    _psrlService.createRegistrationLink(_org, "some-org-link");
+    PatientSelfRegistrationLink link = _psrlService.getPatientRegistrationLink("some-ORG-link");
     assertEquals(_org.getInternalId(), link.getOrganization().getInternalId());
   }
 
@@ -101,5 +114,20 @@ class PatientSelfRegistrationLinkServiceTest
     assertThrows(
         AccessDeniedException.class,
         () -> _psrlService.updateRegistrationLink("some-org-link", "some-new-org-link"));
+  }
+
+  @Test
+  void generatesOrgLink() {
+    String link = _psrlService.createRegistrationLink(_org);
+    assertEquals(5, _psrlService.getPatientRegistrationLink(link).getLink().length());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void createDuplicateRegistrationLinkNotAllowed() throws DataIntegrityViolationException {
+    _psrlService.createRegistrationLink(_org, "some-org-link");
+    assertThrows(
+        DataIntegrityViolationException.class,
+        () -> _psrlService.createRegistrationLink(_org, "some-org-link"));
   }
 }
