@@ -14,9 +14,7 @@ export const headers = {
  * joinAbsoluteUrlPath("a/b", "/c/d/", "/e", "f/g", "h") -> "/a/b/c/d/e/f/g/h"
  */
 function joinAbsoluteUrlPath(...args: string[]) {
-  return (
-    "/" + args.map((pathPart) => pathPart.replace(/(^\/|\/$)/g, "")).join("/")
-  );
+  return args.map((pathPart) => pathPart.replace(/(^\/|\/$)/g, "")).join("/");
 }
 
 class FetchClient {
@@ -33,8 +31,11 @@ class FetchClient {
       throw Error("process.env.REACT_APP_BACKEND_URL is falsy");
     }
     return new URL(
-      joinAbsoluteUrlPath(this.basePath, path),
-      process.env.REACT_APP_BACKEND_URL
+      joinAbsoluteUrlPath(
+        process.env.REACT_APP_BACKEND_URL,
+        this.basePath,
+        path
+      )
     ).href;
   };
 
