@@ -13,7 +13,8 @@ const createTelemetryService = () => {
     const instrumentationKey = process.env.REACT_APP_APPINSIGHTS_KEY;
 
     if (!instrumentationKey) {
-      return console.warn("Instrumentation key not provided");
+      console.warn("Instrumentation key not provided");
+      return;
     }
 
     reactPlugin = new ReactPlugin();
