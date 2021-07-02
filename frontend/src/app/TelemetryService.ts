@@ -23,7 +23,7 @@ const createTelemetryService = () => {
       config: {
         instrumentationKey,
         extensions: [reactPlugin],
-        loggingLevelConsole: 2,
+        loggingLevelConsole: process.env.NODE_ENV === "development" ? 2 : 0,
         disableFetchTracking: false,
         enableAutoRouteTracking: true,
         loggingLevelTelemetry: 2,
@@ -52,8 +52,6 @@ const logSeverityMap = {
   info: SeverityLevel.Information,
 } as const;
 
-const telemetryFailure = /failed to send telemetry/i;
-
 export function withInsights(console: Console) {
   const originalConsole = { ...console };
 
@@ -65,11 +63,6 @@ export function withInsights(console: Console) {
 
     console[method] = (...data: any[]) => {
       originalConsole[method](data);
-
-      // Prevent telemetry failure infinite loop
-      if (telemetryFailure.test(data[0])) {
-        return;
-      }
 
       if (method === "error" || method === "warn") {
         const exception = data[0] instanceof Error ? data[0] : undefined;
