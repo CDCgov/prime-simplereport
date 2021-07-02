@@ -327,6 +327,10 @@ public class Translators {
           Map.entry("treatment_center", "Substance Abuse Treatment Center"),
           Map.entry("hospice", "Hospice"),
           Map.entry("pharmacy", "Pharmacy"),
+          Map.entry("employer", "Employer"),
+          Map.entry("government_agency", "Government Agency"),
+          Map.entry("camp", "Camp"),
+          Map.entry("lab", "lab"),
           Map.entry("other", "Other"));
 
   private static final Set<String> ORGANIZATION_TYPE_KEYS = ORGANIZATION_TYPES.keySet();

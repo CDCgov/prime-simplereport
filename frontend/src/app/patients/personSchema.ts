@@ -85,7 +85,8 @@ export function areValidPhoneNumbers(phoneNumbers: any) {
     return phoneNumberIsValid(phoneNumber.number);
   });
 }
-const isValidBirthdate = (date: string | undefined) => {
+
+export function isValidBirthdate(date: string | undefined) {
   if (date === undefined) {
     return false;
   }
@@ -100,7 +101,8 @@ const isValidBirthdate = (date: string | undefined) => {
     return false;
   }
   return true;
-};
+}
+
 const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
   lookupId: yup.string().nullable(),
   role: yup.mixed().oneOf([...getValues(ROLE_VALUES), "UNKNOWN", "", null]),
