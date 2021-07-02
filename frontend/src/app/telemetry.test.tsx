@@ -12,8 +12,7 @@ jest.mock("@microsoft/applicationinsights-web", () => {
     ApplicationInsights: function () {
       return {
         loadAppInsights() {},
-        trackTrace: jest.fn(),
-        startTrackPage: jest.fn(),
+        trackEvent: jest.fn(),
       };
     },
   };
@@ -44,24 +43,26 @@ describe("telemetry", () => {
     withInsights(console);
     const message = "hello there";
     console.log(message);
-    expect(appInsights?.trackTrace).toBeCalledWith(
-      {
-        message,
+    expect(appInsights?.trackEvent).toBeCalledWith({
+      name: "LOG - hello there",
+      properties: {
         severityLevel: SeverityLevel.Information,
+        message,
+        additionalInformation: undefined,
       },
-      undefined
-    );
+    });
 
     const warning = "some warning";
     const data = { oh: "no" };
     console.warn(warning, data);
-    expect(appInsights?.trackTrace).toBeCalledWith(
-      {
-        message: warning,
+    expect(appInsights?.trackEvent).toBeCalledWith({
+      name: "WARN - some warning",
+      properties: {
         severityLevel: SeverityLevel.Warning,
+        message: warning,
+        additionalInformation: JSON.stringify([data]),
       },
-      { data: [data] }
-    );
+    });
   });
 
   describe("Provider", () => {

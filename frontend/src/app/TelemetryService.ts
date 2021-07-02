@@ -71,14 +71,18 @@ export function withInsights(console: Console) {
         return;
       }
 
-      appInsights?.trackTrace(
-        {
-          message:
-            typeof data[0] === "string" ? data[0] : JSON.stringify(data[0]),
+      const message =
+        typeof data[0] === "string" ? data[0] : JSON.stringify(data[0]);
+
+      appInsights?.trackEvent({
+        name: `${method.toUpperCase()} - ${message}`,
+        properties: {
           severityLevel,
+          message,
+          additionalInformation:
+            data.length === 1 ? undefined : JSON.stringify(data.slice(1)),
         },
-        data.length === 1 ? undefined : { data: data.slice(1) }
-      );
+      });
     };
   });
 }
