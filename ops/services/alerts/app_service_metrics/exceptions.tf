@@ -91,7 +91,7 @@ exceptions
 
 todayErrors
 | join kind= leftanti (lastWeekErrors) on combinedErrorString
-| distinct exceptionType, failedMethod, requestName;
+| distinct exceptionType, failedMethod, requestName
   QUERY
 
   severity    = 2
