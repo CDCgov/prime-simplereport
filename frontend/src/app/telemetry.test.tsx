@@ -1,6 +1,6 @@
 import { SeverityLevel } from "@microsoft/applicationinsights-web";
 import { render } from "@testing-library/react";
-import { MemoryRouter, Redirect, useHistory } from "react-router-dom";
+import { MemoryRouter, useHistory } from "react-router-dom";
 import { useEffect } from "react";
 
 import TelemetryProvider from "./telemetry-provider";
