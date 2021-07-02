@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -70,6 +71,7 @@ public class DemoAuthenticationConfiguration {
   }
 
   @Bean
+  @Primary
   public AuthorizationService getDemoAuthorizationService(
       OktaRepository oktaRepo,
       IdentitySupplier supplier,
@@ -151,7 +153,11 @@ public class DemoAuthenticationConfiguration {
 
     @Override
     public boolean isSiteAdmin() {
-      final String userEmail = _getCurrentUser.get().getUsername();
+      final IdentityAttributes identityAttributes = _getCurrentUser.get();
+      if (identityAttributes == null) {
+        return false;
+      }
+      final String userEmail = identityAttributes.getUsername();
       return _adminGroupMemberSet.contains(userEmail);
     }
   }

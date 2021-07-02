@@ -87,7 +87,8 @@ public class LiveOktaRepository implements OktaRepository {
       AuthorizationProperties authorizationProperties,
       OktaClientProperties oktaClientProperties,
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
-      OrganizationExtractor organizationExtractor) {
+      OrganizationExtractor organizationExtractor,
+      CurrentTenantDataAccessContextHolder tenantDataContextHolder) {
     _rolePrefix = authorizationProperties.getRolePrefix();
     _client =
         Clients.builder()
@@ -101,6 +102,7 @@ public class LiveOktaRepository implements OktaRepository {
           "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
     }
     _extractor = organizationExtractor;
+    _tenantDataContextHolder = tenantDataContextHolder;
   }
 
   public Optional<OrganizationRoleClaims> createUser(

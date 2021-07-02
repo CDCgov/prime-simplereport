@@ -91,6 +91,7 @@ class AccountRequestControllerTest {
   @MockBean private AddressValidationService addressValidationService;
   @SpyBean private ApiUserService apiUserService;
   @MockBean private CurrentAccountRequestContextHolder contextHolder;
+  @MockBean private CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder;
 
   @MockBean private CrmService crmService;
   @MockBean private OktaRepository oktaRepository;
