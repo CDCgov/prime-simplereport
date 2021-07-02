@@ -77,7 +77,7 @@ data "azurerm_key_vault_secret" "postgres_nophi_password" {
 }
 
 data "azurerm_key_vault_secret" "datahub_api_key" {
-  name         = "datahub-api-key-dev"
+  name         = "datahub-api-key-test"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
