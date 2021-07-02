@@ -62,7 +62,7 @@ export function withInsights(console: Console) {
     ];
 
     console[method] = (...data: any[]) => {
-      originalConsole[method](data);
+      originalConsole[method](...data);
 
       if (method === "error" || method === "warn") {
         const exception = data[0] instanceof Error ? data[0] : undefined;
