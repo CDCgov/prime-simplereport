@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
+import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
@@ -40,6 +41,7 @@ public abstract class BaseServiceTest<T> {
 
   @Autowired private DbTruncator _truncator;
   @Autowired private OrganizationInitializingService _initService;
+  @MockBean private CurrentTenantDataAccessContextHolder _currentTenantDataAccessContextHolder;
   @Autowired private DemoOktaRepository _oktaRepo;
   @Autowired protected TestDataFactory _dataFactory;
   @Autowired protected T _service;

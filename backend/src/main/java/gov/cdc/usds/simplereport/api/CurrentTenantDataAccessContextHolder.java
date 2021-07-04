@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api;
 
+import java.util.HashSet;
 import java.util.Set;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -9,8 +10,9 @@ import org.springframework.web.context.WebApplicationContext;
 @Repository
 @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CurrentTenantDataAccessContextHolder {
-  private String username;
-  private Set<String> authorityNames;
+
+  private String username = "";
+  private Set<String> authorityNames = new HashSet<>();
   private boolean hasBeenPopulated = false;
 
   public void setTenantDataAccessAuthorities(String username, Set<String> authorityNames) {
@@ -29,5 +31,11 @@ public class CurrentTenantDataAccessContextHolder {
 
   public boolean hasBeenPopulated() {
     return hasBeenPopulated;
+  }
+
+  public void reset() {
+    hasBeenPopulated = false;
+    username = "";
+    authorityNames = new HashSet<>();
   }
 }

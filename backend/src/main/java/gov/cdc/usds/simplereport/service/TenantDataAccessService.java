@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
@@ -30,17 +31,22 @@ public class TenantDataAccessService {
   private static final Logger LOG = LoggerFactory.getLogger(TenantDataAccessService.class);
 
   @Autowired private TenantDataAccessRepository _repo;
+  @Autowired private CurrentTenantDataAccessContextHolder _contextHolder;
   @Autowired private AuthorizationProperties _authProperties;
   @Autowired private OrganizationExtractor _extractor;
 
   public Optional<Set<String>> getTenantDataAccessAuthorityNames(ApiUser apiUser) {
-    Optional<TenantDataAccess> tenantDataAccess =
+    List<TenantDataAccess> tenantDataAccessList =
         _repo.findValidByApiUserId(apiUser.getInternalId());
-    if (tenantDataAccess.isEmpty()) {
+    if (tenantDataAccessList.isEmpty()) {
+      return Optional.empty();
+    } else if (tenantDataAccessList.size() != 1) {
+      // for some reason, there is more than 1 valid tenant data access defined
+      removeAllTenantDataAccess(apiUser);
       return Optional.empty();
     }
 
-    PermissionsData permissionsData = tenantDataAccess.get().getPermissionsData();
+    PermissionsData permissionsData = tenantDataAccessList.get(0).getPermissionsData();
     return Optional.of(permissionsData.getAuthorities());
   }
 
@@ -81,6 +87,7 @@ public class TenantDataAccessService {
   }
 
   public void removeAllTenantDataAccess(ApiUser apiUser) {
-    _repo.deleteAllByApiUserId(apiUser.getInternalId());
+    _repo.findValidByApiUserId(apiUser.getInternalId()).forEach(i -> i.setIsDeleted(true));
+    _contextHolder.reset();
   }
 }

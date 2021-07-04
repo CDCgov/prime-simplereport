@@ -25,4 +25,9 @@ public class CurrentOrganizationRolesContextHolder {
     hasBeenPopulated = true;
     this.organizationRoles = organizationRoles;
   }
+
+  public void reset() {
+    hasBeenPopulated = false;
+    organizationRoles = Optional.empty();
+  }
 }

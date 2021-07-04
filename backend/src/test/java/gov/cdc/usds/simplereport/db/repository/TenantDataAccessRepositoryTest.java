@@ -14,7 +14,7 @@ import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Optional;
+import java.util.List;
 import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.jupiter.api.Test;
@@ -63,9 +63,9 @@ class TenantDataAccessRepositoryTest extends BaseRepositoryTest {
     assertEquals(justification, saved.getJustification());
     assertFalse(saved.isExpired());
 
-    Optional<TenantDataAccess> optRetrieved = _repo.findValidByApiUserId(apiUser.getInternalId());
-    assertTrue(optRetrieved.isPresent());
-    TenantDataAccess retrieved = optRetrieved.get();
+    List<TenantDataAccess> optRetrieved = _repo.findValidByApiUserId(apiUser.getInternalId());
+    assertEquals(1, optRetrieved.size());
+    TenantDataAccess retrieved = optRetrieved.get(0);
 
     assertEquals(apiUser.getLoginEmail(), retrieved.getGrantedToApiUser().getLoginEmail());
     assertEquals(org.getExternalId(), retrieved.getOrganization().getExternalId());

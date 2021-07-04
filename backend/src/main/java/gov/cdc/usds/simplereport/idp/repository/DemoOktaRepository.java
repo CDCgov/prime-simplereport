@@ -1,16 +1,20 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
+import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -28,16 +32,23 @@ public class DemoOktaRepository implements OktaRepository {
 
   private static final Logger LOG = LoggerFactory.getLogger(DemoOktaRepository.class);
 
+  private final OrganizationExtractor organizationExtractor;
+  private final CurrentTenantDataAccessContextHolder tenantDataContextHolder;
+
   Map<String, OrganizationRoleClaims> usernameOrgRolesMap;
   Map<String, Set<String>> orgUsernamesMap;
   Map<String, Set<UUID>> orgFacilitiesMap;
   Set<String> inactiveUsernames;
 
-  public DemoOktaRepository() {
+  public DemoOktaRepository(
+      OrganizationExtractor extractor, CurrentTenantDataAccessContextHolder contextHolder) {
     this.usernameOrgRolesMap = new HashMap<>();
     this.orgUsernamesMap = new HashMap<>();
     this.orgFacilitiesMap = new HashMap<>();
     this.inactiveUsernames = new HashSet<>();
+
+    this.organizationExtractor = extractor;
+    this.tenantDataContextHolder = contextHolder;
 
     LOG.info("Done initializing Demo Okta repository.");
   }
@@ -109,7 +120,8 @@ public class DemoOktaRepository implements OktaRepository {
       throw new IllegalGraphqlArgumentException(
           "Cannot update Okta user privileges for nonexistent organization.");
     }
-    if (!orgUsernamesMap.get(orgId).contains(username)) {
+    if (!tenantDataContextHolder.hasBeenPopulated()
+        && !orgUsernamesMap.get(orgId).contains(username)) {
       throw new IllegalGraphqlArgumentException(
           "Cannot update Okta user privileges for organization they are not in.");
     }
@@ -202,7 +214,25 @@ public class DemoOktaRepository implements OktaRepository {
                     }));
   }
 
+  private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromTenantDataAccess(
+      Collection<String> groupNames) {
+    List<OrganizationRoleClaims> claims = organizationExtractor.convertClaims(groupNames);
+
+    if (claims.size() != 1) {
+      LOG.warn("User is in {} Okta organizations, not 1", claims.size());
+      return Optional.empty();
+    }
+    return Optional.of(claims.get(0));
+  }
+
   public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
+    // when accessing tenant data, bypass okta and get org from the altered authorities
+    if (tenantDataContextHolder.hasBeenPopulated()
+        && username.equals(tenantDataContextHolder.getUsername())) {
+      return getOrganizationRoleClaimsFromTenantDataAccess(
+          tenantDataContextHolder.getAuthorityNames());
+    }
+
     return Optional.ofNullable(usernameOrgRolesMap.get(username));
   }
 

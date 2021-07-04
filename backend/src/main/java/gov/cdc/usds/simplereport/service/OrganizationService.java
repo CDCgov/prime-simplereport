@@ -60,6 +60,10 @@ public class OrganizationService {
     _orderingProviderRequiredValidator = orderingProviderRequiredValidator;
   }
 
+  public void resetOrgRolesContext() {
+    _currentOrgRolesContextHolder.reset();
+  }
+
   public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
     if (_currentOrgRolesContextHolder.hasBeenPopulated()) {
       return _currentOrgRolesContextHolder.getOrganizationRoles();
