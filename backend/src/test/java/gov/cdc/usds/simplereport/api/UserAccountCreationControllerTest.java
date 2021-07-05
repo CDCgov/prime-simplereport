@@ -50,7 +50,7 @@ class UserAccountCreationControllerTest {
   private static final String VALID_RECOVERY_QUESTION_REQUEST =
       "{\"question\":\"Who was your third grade teacher?\", \"answer\" : \"Jane Doe\"}";
 
-  private static final String VALID_ENROLL_PHONE_MFA_REQUEST = "{\"userInput\":\"555-867-5309\"}";
+  private static final String VALID_ENROLL_PHONE_MFA_REQUEST = "{\"userInput\":\"(555)-867-5309\"}";
 
   private static final String VALID_ENROLL_EMAIL_MFA_REQUEST = "{\"userInput\":\"me@example.com\"}";
 

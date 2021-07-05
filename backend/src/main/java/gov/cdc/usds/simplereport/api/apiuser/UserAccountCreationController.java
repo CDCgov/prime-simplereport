@@ -135,7 +135,7 @@ public class UserAccountCreationController {
       @SessionAttribute String userId,
       HttpServletRequest request)
       throws OktaAuthenticationFailureException, BadRequestException {
-    String factorId = _oktaAuth.enrollSmsMfa(userId, requestBody.getUserInput());
+    String factorId = _oktaAuth.enrollSmsMfa(userId, formatPhoneNumber(requestBody.getUserInput()));
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
 
@@ -153,7 +153,7 @@ public class UserAccountCreationController {
       @SessionAttribute String userId,
       HttpServletRequest request)
       throws OktaAuthenticationFailureException, BadRequestException {
-    String factorId = _oktaAuth.enrollVoiceCallMfa(userId, requestBody.getUserInput());
+    String factorId = _oktaAuth.enrollVoiceCallMfa(userId, formatPhoneNumber(requestBody.getUserInput()));
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
 
@@ -266,4 +266,8 @@ public class UserAccountCreationController {
       @SessionAttribute String userId, @SessionAttribute String factorId) {
     _oktaAuth.resendActivationPasscode(userId, factorId);
   }
+
+  private String formatPhoneNumber(String phoneNumber) {
+    return phoneNumber.replaceAll("[^\\d.]", "");
+  } 
 }
