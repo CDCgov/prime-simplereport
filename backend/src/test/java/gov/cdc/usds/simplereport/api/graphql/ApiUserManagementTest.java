@@ -916,7 +916,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
                 .get("setCurrentUserTenantDataAccess");
     assertEquals("ruby@example.com", user.get("email").asText());
     assertEquals(Role.ADMIN, Role.valueOf(user.get("role").asText()));
-    assertEquals(
+    Set<UserPermission> allPermissions =
         EnumSet.of(
             UserPermission.READ_PATIENT_LIST,
             UserPermission.SEARCH_PATIENTS,
@@ -930,8 +930,14 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.EDIT_ORGANIZATION,
             UserPermission.MANAGE_USERS,
             UserPermission.ACCESS_ALL_FACILITIES,
-            UserPermission.READ_ARCHIVED_PATIENT_LIST),
-        extractPermissionsFromUser(user));
+            UserPermission.READ_ARCHIVED_PATIENT_LIST);
+    assertEquals(allPermissions, extractPermissionsFromUser(user));
+    assertLastAuditEntry("ruby@example.com", null, null);
+
+    // run query using tenant data access
+    runQuery("current-user-query").get("whoami");
+    assertLastAuditEntry(
+        "ruby@example.com", TestUserIdentities.DEFAULT_ORGANIZATION, allPermissions);
   }
 
   @Test
