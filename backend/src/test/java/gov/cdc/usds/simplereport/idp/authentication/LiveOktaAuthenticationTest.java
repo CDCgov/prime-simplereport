@@ -330,7 +330,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
             () -> {
               _auth.enrollSmsMfa(_userId, "999");
             });
-    assertThat(exception).hasMessageContaining("This phone number is invalid");
+    assertThat(exception).hasMessageContaining("Invalid phone number");
   }
 
   @Test
@@ -341,7 +341,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
             () -> {
               _auth.enrollVoiceCallMfa(_userId, "999");
             });
-    assertThat(exception).hasMessageContaining("This phone number is invalid");
+    assertThat(exception).hasMessageContaining("Invalid phone number");
   }
 
   @Test
@@ -392,8 +392,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
             () -> {
               _auth.verifyActivationPasscode(_userId, factorId, "1234");
             });
-    assertThat(exception)
-        .hasMessageContaining("Your code doesn't match our records. Please try again.");
+    assertThat(exception).hasMessageContaining("The provided security code is invalid.");
   }
 
   @Test

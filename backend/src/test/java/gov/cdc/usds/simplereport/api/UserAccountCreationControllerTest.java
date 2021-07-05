@@ -69,54 +69,6 @@ class UserAccountCreationControllerTest {
     _oktaAuth.reset();
   }
 
-  // todo(emmastephenson): create individual tests for the activate and set password endpoints
-  // add a failing test for the resend endpoint (if you didn't enroll first, perhaps)
-  // add more through tests for status
-
-  //   @Test
-  //   void setPasswordIsOk() throws Exception {
-  //     MockHttpServletRequestBuilder builder =
-  //         createActivationRequest(new MockHttpSession(),
-  // VALID_INITIALIZE_AND_SET_PASSWORD_REQUEST);
-  //     this._mockMvc.perform(builder).andExpect(status().isOk());
-  //   }
-
-  //   @Test
-  //   void setPassword_failsWithoutActivationToken() throws Exception {
-  //     String passwordRequestNoActivation = "{\"password\":\"superStrongPassword!\"}";
-
-  //     MockHttpServletRequestBuilder builder =
-  //         post(ResourceLinks.USER_ACTIVATE_AND_SET_PASSWORD)
-  //             .contentType(MediaType.APPLICATION_JSON_VALUE)
-  //             .accept(MediaType.APPLICATION_JSON)
-  //             .characterEncoding("UTF-8")
-  //             .content(passwordRequestNoActivation);
-
-  //     this._mockMvc.perform(builder).andExpect(status().isForbidden());
-  //   }
-
-  //   @Test
-  //   void setPassword_worksAsExpectedWithMultipleSessions() throws Exception {
-  //     MockHttpServletRequestBuilder firstBuilder =
-  //         createActivationRequest(new MockHttpSession(),
-  // VALID_INITIALIZE_AND_SET_PASSWORD_REQUEST);
-
-  //     String secondValidPasswordRequest =
-  //         "{\"activationToken\":\"anotherValidAuthToken\",
-  // \"password\":\"secondSuperStrongPassword!?\"}";
-
-  //     MockHttpServletRequestBuilder secondBuilder =
-  //         createActivationRequest(new MockHttpSession(), secondValidPasswordRequest);
-
-  //     HttpSession firstSession = performRequestAndGetSession(firstBuilder);
-
-  //     HttpSession secondSession = performRequestAndGetSession(secondBuilder);
-
-  //     assertThat(firstSession.getId()).isNotEqualTo(secondSession.getId());
-  //     assertThat(firstSession.getAttribute("userId")).isEqualTo("userId " +
-  // "validActivationToken");
-  //   }
-
   @Test
   void initialize_isOk() throws Exception {
     MockHttpSession session = new MockHttpSession();

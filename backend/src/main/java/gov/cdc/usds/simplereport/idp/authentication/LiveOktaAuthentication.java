@@ -222,8 +222,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       return smsFactor.getId();
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
-        throw new BadRequestException("Invalid phone number. You must enter a phone number capable of receiving text messages.", e);
-        // throw new BadRequestException(e.getError().getMessage(), e);
+        throw new BadRequestException(
+            "Invalid phone number. You must enter a phone number capable of receiving text messages.",
+            e);
       }
       throw new OktaAuthenticationFailureException("Error setting SMS MFA", e);
     }
@@ -243,7 +244,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       return callFactor.getId();
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
-        throw new BadRequestException(e.getError().getMessage(), e);
+        throw new BadRequestException("Invalid phone number.", e);
       }
       throw new OktaAuthenticationFailureException("Error setting voice call MFA", e);
     }
@@ -359,8 +360,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       activateFactor.setPassCode(passcode.strip());
       factor.activate(activateFactor);
     } catch (ResourceException e) {
-      throw new BadRequestException("The provided passcode is invalid.", e);
-      // throw new BadRequestException(e.getCauses().get(0).getSummary(), e);
+      throw new BadRequestException("The provided security code is invalid.", e);
     } catch (NullPointerException | IllegalArgumentException e) {
       throw new OktaAuthenticationFailureException(
           "Activation passcode could not be verifed; MFA activation failed.", e);
@@ -409,7 +409,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     } catch (HttpClientErrorException e) {
       if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
         throw new BadRequestException(
-            "An SMS message was recently sent. Please wait 30 seconds before trying again.", e);
+            "A security code was recently sent. Please wait 30 seconds before trying again.", e);
       }
     } catch (RestClientException | ResourceException | NullPointerException e) {
       throw new OktaAuthenticationFailureException(

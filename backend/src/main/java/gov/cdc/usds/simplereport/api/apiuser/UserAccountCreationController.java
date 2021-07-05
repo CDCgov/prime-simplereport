@@ -153,7 +153,8 @@ public class UserAccountCreationController {
       @SessionAttribute String userId,
       HttpServletRequest request)
       throws OktaAuthenticationFailureException, BadRequestException {
-    String factorId = _oktaAuth.enrollVoiceCallMfa(userId, formatPhoneNumber(requestBody.getUserInput()));
+    String factorId =
+        _oktaAuth.enrollVoiceCallMfa(userId, formatPhoneNumber(requestBody.getUserInput()));
     request.getSession().setAttribute(FACTOR_ID_KEY, factorId);
   }
 
@@ -267,7 +268,10 @@ public class UserAccountCreationController {
     _oktaAuth.resendActivationPasscode(userId, factorId);
   }
 
-  private String formatPhoneNumber(String phoneNumber) {
-    return phoneNumber.replaceAll("[^\\d.]", "");
-  } 
+  private String formatPhoneNumber(String userInput) throws BadRequestException {
+    if (userInput == null) {
+      throw new BadRequestException("Phone number cannot be null.");
+    }
+    return userInput.replaceAll("[^\\d.]", "");
+  }
 }
