@@ -199,4 +199,8 @@ type OrganizationType =
   | "treatment_center"
   | "hospice"
   | "pharmacy"
+  | "employer"
+  | "government_agency"
+  | "camp"
+  | "lab"
   | "other";
