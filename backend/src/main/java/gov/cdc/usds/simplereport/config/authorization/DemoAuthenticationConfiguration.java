@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -28,6 +29,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -160,5 +162,11 @@ public class DemoAuthenticationConfiguration {
       final String userEmail = identityAttributes.getUsername();
       return _adminGroupMemberSet.contains(userEmail);
     }
+  }
+
+  @Bean
+  public static TenantDataAuthenticationProvider getTenantDataAuthenticationProvider() {
+    return (String username, Authentication currentAuth, Set<GrantedAuthority> authorities) ->
+        new TestingAuthenticationToken(username, null, new ArrayList<>(authorities));
   }
 }

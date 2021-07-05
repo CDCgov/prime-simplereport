@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.config;
 
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
+import gov.cdc.usds.simplereport.config.authorization.TenantDataAuthenticationProvider;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import java.io.IOException;
@@ -18,8 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,6 +27,7 @@ public class TenantDataAccessFilter implements Filter {
   @Autowired AuthorizationService _authService;
   @Autowired ApiUserService _apiUserService;
   @Autowired CurrentTenantDataAccessContextHolder _currentTenantDataAccessContextHolder;
+  @Autowired TenantDataAuthenticationProvider _tenantDataAuthProvider;
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -46,11 +46,13 @@ public class TenantDataAccessFilter implements Filter {
                   .map(SimpleGrantedAuthority::new)
                   .collect(Collectors.toSet());
 
+          String username =
+              _apiUserService.getCurrentApiUserInContainedTransaction().getLoginEmail();
           _currentTenantDataAccessContextHolder.setTenantDataAccessAuthorities(
-              currentAuth.getName(), permissions.get());
+              username, permissions.get());
 
           Authentication masqAuth =
-              new JwtAuthenticationToken((Jwt) currentAuth.getPrincipal(), grantedAuthorities);
+              _tenantDataAuthProvider.generateToken(username, currentAuth, grantedAuthorities);
 
           SecurityContextHolder.getContext().setAuthentication(masqAuth);
         }

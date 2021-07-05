@@ -22,6 +22,7 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
+import gov.cdc.usds.simplereport.config.authorization.TenantDataAuthenticationProvider;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -92,6 +93,7 @@ class AccountRequestControllerTest {
   @SpyBean private ApiUserService apiUserService;
   @MockBean private CurrentAccountRequestContextHolder contextHolder;
   @MockBean private CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder;
+  @MockBean private TenantDataAuthenticationProvider tenantDataAuthProvider;
 
   @MockBean private CrmService crmService;
   @MockBean private OktaRepository oktaRepository;
