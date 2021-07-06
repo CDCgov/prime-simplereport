@@ -20,6 +20,7 @@ public class PatientSelfRegistrationLinkService {
 
   private PatientRegistrationLinkRepository prlrepo;
   private CurrentPatientContextHolder contextHolder;
+  public static final int LINK_LENGTH = 5;
 
   PatientSelfRegistrationLinkService(
       PatientRegistrationLinkRepository prlrepo,
@@ -113,6 +114,6 @@ public class PatientSelfRegistrationLinkService {
   }
 
   private static String generateLink() {
-    return RandomStringUtils.random(5, "123456789abcdefghjkmnpqrstuvwxyz");
+    return RandomStringUtils.random(LINK_LENGTH, "123456789abcdefghjkmnpqrstuvwxyz");
   }
 }
