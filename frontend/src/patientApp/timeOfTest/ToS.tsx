@@ -113,11 +113,8 @@ function ToS() {
         ]}
       />
       <p>{t("testResult.tos.document.privacy.p1")}</p>
-      <HeaderWithParagraphs
-        headerId="use-of-data"
-        header={t("testResult.tos.document.useOfData.heading")}
-        paragraphs={[t("testResult.tos.document.useOfData.p0")]}
-      />
+      <h3 id="use-of-data">{t("testResult.tos.document.useOfData.heading")}</h3>
+      <p>{t("testResult.tos.document.useOfData.p0")}</p>
       <h3 id="sharing-of-data">
         {t("testResult.tos.document.sharingOfData.heading")}
       </h3>
