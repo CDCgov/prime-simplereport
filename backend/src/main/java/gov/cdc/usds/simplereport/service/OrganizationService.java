@@ -60,7 +60,7 @@ public class OrganizationService {
     _orderingProviderRequiredValidator = orderingProviderRequiredValidator;
   }
 
-  public void resetOrgRolesContext() {
+  public void resetOrganizationRolesContext() {
     _currentOrgRolesContextHolder.reset();
   }
 

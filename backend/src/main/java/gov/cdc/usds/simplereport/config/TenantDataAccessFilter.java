@@ -51,6 +51,9 @@ public class TenantDataAccessFilter implements Filter {
           _currentTenantDataAccessContextHolder.setTenantDataAccessAuthorities(
               username, permissions.get());
 
+          // overwrite authentication with a new token so that subsequent request processing
+          // will see the authorities asserted by the active tenant data access rather than
+          // the token passed with the request
           Authentication masqAuth =
               _tenantDataAuthProvider.generateToken(username, currentAuth, grantedAuthorities);
 

@@ -26,6 +26,8 @@ public class CurrentOrganizationRolesContextHolder {
     this.organizationRoles = organizationRoles;
   }
 
+  // allow re-population of organization roles, this is used when canceling tenant
+  // data access so the cached organization roles will not be returned
   public void reset() {
     hasBeenPopulated = false;
     organizationRoles = Optional.empty();

@@ -422,7 +422,7 @@ public class ApiUserService {
   private UserInfo cancelCurrentUserTenantDataAccess() {
     ApiUser apiUser = getCurrentApiUser();
     _tenantService.removeAllTenantDataAccess(apiUser);
-    _orgService.resetOrgRolesContext();
+    _orgService.resetOrganizationRolesContext();
     return getCurrentUserInfo();
   }
 

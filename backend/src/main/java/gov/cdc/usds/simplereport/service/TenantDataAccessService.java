@@ -41,7 +41,7 @@ public class TenantDataAccessService {
     if (tenantDataAccessList.isEmpty()) {
       return Optional.empty();
     } else if (tenantDataAccessList.size() != 1) {
-      // for some reason, there is more than 1 valid tenant data access defined
+      // there should only be 1 valid tenant data access.  to clean this up, remove all
       removeAllTenantDataAccess(apiUser);
       return Optional.empty();
     }
@@ -66,7 +66,7 @@ public class TenantDataAccessService {
     // retain site admin privileges, in the future it may be nice to drop these
     authorities.add(_authProperties.getAdminGroupName());
 
-    // authority names for the org being accessed
+    // authority names for the org being accessed (assume org-level admin in the tenant)
     authorities.add(prefix + org.getExternalId() + ":" + OrganizationRole.getDefault());
     authorities.add(prefix + org.getExternalId() + ":" + OrganizationRole.ADMIN);
 
