@@ -27,18 +27,15 @@ const TestResult = () => {
               <p className="margin-top-05">
                 {(() => {
                   switch (patient.lastTest.result) {
-                    case "POSITIVE": {
+                    case "POSITIVE":
                       return t("testResult.positive");
-                    }
-                    case "NEGATIVE": {
+                    case "NEGATIVE":
                       return t("testResult.negative");
-                    }
-                    case "UNDETERMINED": {
+                    case "UNDETERMINED":
                       return t("testResult.undetermined");
-                    }
-                    case "UNKNOWN": {
+                    case "UNKNOWN":
+                    default:
                       return t("testResult.unknown");
-                    }
                   }
                 })()}
               </p>
