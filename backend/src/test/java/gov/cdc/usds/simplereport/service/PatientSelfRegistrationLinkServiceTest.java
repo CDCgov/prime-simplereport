@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientSelfRegistrationLinkException;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
@@ -25,7 +26,9 @@ class PatientSelfRegistrationLinkServiceTest
   @Autowired private PatientRegistrationLinkRepository _psrlRepo;
 
   private Organization _org;
+  private Organization _unverifiedOrg;
   private Facility _fac;
+  private Facility _unverifiedFac;
 
   private void truncateDb() {
     _truncator.truncateAll();
@@ -35,6 +38,8 @@ class PatientSelfRegistrationLinkServiceTest
   void setupData() {
     _org = _dataFactory.createValidOrg();
     _fac = _dataFactory.createValidFacility(_org);
+    _unverifiedOrg = _dataFactory.createUnverifiedOrg();
+    _unverifiedFac = _dataFactory.createValidFacility(_unverifiedOrg);
   }
 
   @AfterEach
@@ -59,7 +64,7 @@ class PatientSelfRegistrationLinkServiceTest
   void caseInsensitiveLinks() {
     _psrlService.createRegistrationLink(_fac, "some-facility-link");
     PatientSelfRegistrationLink facLink =
-        _psrlService.getPatientRegistrationLink("some-facility-link");
+        _psrlService.getPatientRegistrationLink("some-FACILITY-link");
     assertEquals(_fac.getInternalId(), facLink.getFacility().getInternalId());
     _psrlService.createRegistrationLink(_org, "some-org-link");
     PatientSelfRegistrationLink link = _psrlService.getPatientRegistrationLink("some-ORG-link");
@@ -129,5 +134,23 @@ class PatientSelfRegistrationLinkServiceTest
     assertThrows(
         DataIntegrityViolationException.class,
         () -> _psrlService.createRegistrationLink(_org, "some-org-link"));
+  }
+
+  @Test
+  void noOrgLinkAccessIfUnverified() {
+    String orgLink = _psrlService.createRegistrationLink(_unverifiedOrg);
+
+    assertThrows(
+        InvalidPatientSelfRegistrationLinkException.class,
+        () -> _psrlService.getPatientRegistrationLink(orgLink));
+  }
+
+  @Test
+  void noFacilityLinkAccessIfUnverified() {
+    String facLink = _psrlService.createRegistrationLink(_unverifiedFac);
+
+    assertThrows(
+        InvalidPatientSelfRegistrationLinkException.class,
+        () -> _psrlService.getPatientRegistrationLink(facLink));
   }
 }

@@ -338,18 +338,19 @@ public class OrganizationService {
       StreetAddress providerAddress,
       String providerTelephone,
       String providerNPI) {
-    Facility fac = createFacilityNoPermissions(
-        getCurrentOrganization(),
-        testingFacilityName,
-        cliaNumber,
-        facilityAddress,
-        phone,
-        email,
-        deviceSpecimenTypes,
-        providerName,
-        providerAddress,
-        providerTelephone,
-        providerNPI);
+    Facility fac =
+        createFacilityNoPermissions(
+            getCurrentOrganization(),
+            testingFacilityName,
+            cliaNumber,
+            facilityAddress,
+            phone,
+            email,
+            deviceSpecimenTypes,
+            providerName,
+            providerAddress,
+            providerTelephone,
+            providerNPI);
     _psrlService.createRegistrationLink(fac);
     return fac;
   }

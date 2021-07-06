@@ -7,7 +7,6 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -31,9 +30,21 @@ public class PatientSelfRegistrationLinkService {
 
   public PatientSelfRegistrationLink getPatientRegistrationLink(String patientRegistrationLink)
       throws InvalidPatientSelfRegistrationLinkException {
-    return prlrepo
-        .findByPatientRegistrationLinkIgnoreCase(patientRegistrationLink)
-        .orElseThrow(InvalidPatientSelfRegistrationLinkException::new);
+    PatientSelfRegistrationLink link =
+        prlrepo
+            .findByPatientRegistrationLinkIgnoreCase(patientRegistrationLink)
+            .orElseThrow(InvalidPatientSelfRegistrationLinkException::new);
+
+    Organization org =
+        link.getOrganization() != null
+            ? link.getOrganization()
+            : link.getFacility().getOrganization();
+
+    if (org.getIdentityVerified() == false) {
+      throw new InvalidPatientSelfRegistrationLinkException();
+    }
+
+    return link;
   }
 
   public boolean flagSelfRegistrationRequest() {
@@ -79,25 +90,25 @@ public class PatientSelfRegistrationLinkService {
 
   public String createRegistrationLink(Organization org) {
     boolean retried = false;
-    while(true) {
-        try {
-          return createRegistrationLink(org, generateLink());
-       } catch (DataIntegrityViolationException e) {
-          if (retried) throw e;
-          retried = true;
-       }
+    while (true) {
+      try {
+        return createRegistrationLink(org, generateLink());
+      } catch (DataIntegrityViolationException e) {
+        if (retried) throw e;
+        retried = true;
+      }
     }
   }
 
   public String createRegistrationLink(Facility fac) {
     boolean retried = false;
-    while(true) {
-        try {
-          return createRegistrationLink(fac, generateLink());
-       } catch (DataIntegrityViolationException e) {
-          if (retried) throw e;
-          retried = true;
-       }
+    while (true) {
+      try {
+        return createRegistrationLink(fac, generateLink());
+      } catch (DataIntegrityViolationException e) {
+        if (retried) throw e;
+        retried = true;
+      }
     }
   }
 
