@@ -351,7 +351,6 @@ public class OrganizationService {
             providerAddress,
             providerTelephone,
             providerNPI);
-    _psrlService.createRegistrationLink(fac);
     return fac;
   }
 }
