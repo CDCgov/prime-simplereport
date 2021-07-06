@@ -1,7 +1,76 @@
 import { Trans, useTranslation } from "react-i18next";
 
+interface headerParagraphProps {
+  header: string;
+  headerId: string;
+  paragraphs: string[];
+}
+function HeaderWithParagraphs(props: headerParagraphProps) {
+  return (
+    <>
+      <h3 id={props.headerId}>{props.header}</h3>
+      {props.paragraphs.map((p) => (
+        <p>{p}</p>
+      ))}
+    </>
+  );
+}
+
 function ToS() {
   const { t } = useTranslation();
+  const headerParagraphBlocks: headerParagraphProps[] = [
+    {
+      headerId: "right-to-limit",
+      header: t("testResult.tos.document.serviceManagement.subheading"),
+      paragraphs: [t("testResult.tos.document.serviceManagement.p0")],
+    },
+    {
+      headerId: "service-termination",
+      header: t("testResult.tos.document.serviceTermination.heading"),
+      paragraphs: [
+        t("testResult.tos.document.serviceTermination.p0"),
+        t("testResult.tos.document.serviceTermination.p1"),
+      ],
+    },
+    {
+      headerId: "intellectual-property-license-grant-and-restrictions",
+      header: t("testResult.tos.document.intellectualProperty.heading"),
+      paragraphs: [t("testResult.tos.document.intellectualProperty.p0")],
+    },
+    {
+      headerId: "disclaimer-of-warranties",
+      header: t("testResult.tos.document.disclaimerOfWarranties.heading"),
+      paragraphs: [t("testResult.tos.document.disclaimerOfWarranties.p0")],
+    },
+    {
+      headerId: "limitations-on-liability",
+      header: t("testResult.tos.document.limitationOfLiability.heading"),
+      paragraphs: [
+        t("testResult.tos.document.limitationOfLiability.p0"),
+        t("testResult.tos.document.limitationOfLiability.p1"),
+      ],
+    },
+    {
+      headerId: "disputes-choice-of-law-venue-and-conflicts",
+      header: t("testResult.tos.document.disputes.heading"),
+      paragraphs: [t("testResult.tos.document.disputes.p0")],
+    },
+    {
+      headerId: "indemnification",
+      header: t("testResult.tos.document.indemnification.heading"),
+      paragraphs: [t("testResult.tos.document.indemnification.p0")],
+    },
+    {
+      headerId: "no-waiver-of-rights",
+      header: t("testResult.tos.document.noWaiverOfRights.heading"),
+      paragraphs: [t("testResult.tos.document.noWaiverOfRights.p0")],
+    },
+    {
+      headerId: "data-analytics-and-monitoring-metrics",
+      header: t("testResult.tos.document.dataAnalytics.heading"),
+      paragraphs: [t("testResult.tos.document.dataAnalytics.p0")],
+    },
+  ];
 
   return (
     <>
@@ -44,8 +113,11 @@ function ToS() {
         ]}
       />
       <p>{t("testResult.tos.document.privacy.p1")}</p>
-      <h3 id="use-of-data">{t("testResult.tos.document.useOfData.heading")}</h3>
-      <p>{t("testResult.tos.document.useOfData.p0")}</p>
+      <HeaderWithParagraphs
+        headerId="use-of-data"
+        header={t("testResult.tos.document.useOfData.heading")}
+        paragraphs={[t("testResult.tos.document.useOfData.p0")]}
+      />
       <h3 id="sharing-of-data">
         {t("testResult.tos.document.sharingOfData.heading")}
       </h3>
@@ -76,44 +148,13 @@ function ToS() {
       <h2 id="service-management">
         {t("testResult.tos.document.serviceManagement.heading")}
       </h2>
-      <h3 id="right-to-limit">
-        {t("testResult.tos.document.serviceManagement.subheading")}
-      </h3>
-      <p>{t("testResult.tos.document.serviceManagement.p0")}</p>
-      <h3 id="service-termination">
-        {t("testResult.tos.document.serviceTermination.heading")}
-      </h3>
-      <p>{t("testResult.tos.document.serviceTermination.p0")}</p>
-      <p>{t("testResult.tos.document.serviceTermination.p1")}</p>
-      <h3 id="intellectual-property-license-grant-and-restrictions-">
-        {t("testResult.tos.document.intellectualProperty.heading")}
-      </h3>
-      <p>{t("testResult.tos.document.intellectualProperty.p0")}</p>
-      <h3 id="disclaimer-of-warranties">
-        {t("testResult.tos.document.disclaimerOfWarranties.heading")}
-      </h3>
-      <p>{t("testResult.tos.document.disclaimerOfWarranties.p0")}</p>
-      <h3 id="limitations-on-liability">
-        {t("testResult.tos.document.limitationOfLiability.heading")}
-      </h3>
-      <p>{t("testResult.tos.document.limitationOfLiability.p0")}</p>
-      <p>{t("testResult.tos.document.limitationOfLiability.p1")}</p>
-      <h3 id="disputes-choice-of-law-venue-and-conflicts">
-        {t("testResult.tos.document.disputes.heading")}
-      </h3>
-      <p>{t("testResult.tos.document.disputes.p0")}</p>
-      <h3 id="indemnification">
-        {t("testResult.tos.document.indemnification.heading")}
-      </h3>
-      <p>{t("testResult.tos.document.indemnification.p0")}</p>
-      <h3 id="no-waiver-of-rights">
-        {t("testResult.tos.document.noWaiverOfRights.heading")}
-      </h3>
-      <p>{t("testResult.tos.document.noWaiverOfRights.p0")}</p>
-      <h3 id="data-analytics-and-monitoring-metrics">
-        {t("testResult.tos.document.dataAnalytics.heading")}
-      </h3>
-      <p>{t("testResult.tos.document.dataAnalytics.p0")}</p>
+      {headerParagraphBlocks.map((block) => (
+        <HeaderWithParagraphs
+          headerId={block.headerId}
+          header={block.header}
+          paragraphs={block.paragraphs}
+        />
+      ))}
     </>
   );
 }
