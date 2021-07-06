@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mockStatic;
 
 import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientSelfRegistrationLinkException;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -11,9 +12,11 @@ import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
@@ -29,6 +32,7 @@ class PatientSelfRegistrationLinkServiceTest
   private Organization _unverifiedOrg;
   private Facility _fac;
   private Facility _unverifiedFac;
+  private MockedStatic<RandomStringUtils> _rsl;
 
   private void truncateDb() {
     _truncator.truncateAll();
@@ -45,6 +49,9 @@ class PatientSelfRegistrationLinkServiceTest
   @AfterEach
   public void cleanup() {
     truncateDb();
+    if (_rsl != null) {
+      _rsl.close();
+    }
   }
 
   @Test
@@ -152,5 +159,63 @@ class PatientSelfRegistrationLinkServiceTest
     assertThrows(
         InvalidPatientSelfRegistrationLinkException.class,
         () -> _psrlService.getPatientRegistrationLink(facLink));
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void retryOnRandomOrgLinkCollision() {
+    _psrlService.createRegistrationLink(_fac, "abcde");
+
+    _rsl = mockStatic(RandomStringUtils.class);
+    _rsl.when(() -> RandomStringUtils.random(5, "123456789abcdefghjkmnpqrstuvwxyz"))
+        .thenReturn("abcde")
+        .thenReturn("uniqe");
+
+    _psrlService.createRegistrationLink(_org);
+    assertEquals("uniqe", _psrlRepo.findByOrganization(_org).get().getLink());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void retryOnRandomFacilityLinkCollision() {
+    _psrlService.createRegistrationLink(_org, "abcde");
+
+    _rsl = mockStatic(RandomStringUtils.class);
+    _rsl.when(() -> RandomStringUtils.random(5, "123456789abcdefghjkmnpqrstuvwxyz"))
+        .thenReturn("abcde")
+        .thenReturn("uniqe");
+
+    _psrlService.createRegistrationLink(_fac);
+    assertEquals("uniqe", _psrlRepo.findByFacility(_fac).get().getLink());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void tooManyRandomOrgLinkCollisionsFails() {
+    _psrlService.createRegistrationLink(_fac, "abcde");
+
+    _rsl = mockStatic(RandomStringUtils.class);
+    _rsl.when(() -> RandomStringUtils.random(5, "123456789abcdefghjkmnpqrstuvwxyz"))
+        .thenReturn("abcde")
+        .thenReturn("abcde")
+        .thenReturn("uniqe");
+
+    assertThrows(
+        DataIntegrityViolationException.class, () -> _psrlService.createRegistrationLink(_org));
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void tooManyRandomFacilityLinkCollisionsFails() {
+    _psrlService.createRegistrationLink(_org, "abcde");
+
+    _rsl = mockStatic(RandomStringUtils.class);
+    _rsl.when(() -> RandomStringUtils.random(5, "123456789abcdefghjkmnpqrstuvwxyz"))
+        .thenReturn("abcde")
+        .thenReturn("abcde")
+        .thenReturn("uniqe");
+
+    assertThrows(
+        DataIntegrityViolationException.class, () -> _psrlService.createRegistrationLink(_fac));
   }
 }

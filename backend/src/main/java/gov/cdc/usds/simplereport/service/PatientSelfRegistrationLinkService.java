@@ -8,7 +8,6 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -90,30 +89,21 @@ public class PatientSelfRegistrationLinkService {
   }
 
   public String createRegistrationLink(Organization org) {
-    boolean retried = false;
-    while (true) {
-      try {
-        return createRegistrationLink(org, generateLink());
-      } catch (DataIntegrityViolationException e) {
-        if (retried) throw e;
-        retried = true;
-      }
-    }
+    return createRegistrationLink(org, generateUniqueLink());
   }
 
   public String createRegistrationLink(Facility fac) {
-    boolean retried = false;
-    while (true) {
-      try {
-        return createRegistrationLink(fac, generateLink());
-      } catch (DataIntegrityViolationException e) {
-        if (retried) throw e;
-        retried = true;
-      }
-    }
+    return createRegistrationLink(fac, generateUniqueLink());
   }
 
-  private static String generateLink() {
+  private String generateUniqueLink() {
+    String link = generateRandomLink();
+    return prlrepo.findByPatientRegistrationLinkIgnoreCase(link).isPresent()
+        ? generateRandomLink()
+        : link;
+  }
+
+  private static String generateRandomLink() {
     return RandomStringUtils.random(LINK_LENGTH, "123456789abcdefghjkmnpqrstuvwxyz");
   }
 }
