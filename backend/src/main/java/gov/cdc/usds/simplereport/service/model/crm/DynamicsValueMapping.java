@@ -101,6 +101,17 @@ public enum DynamicsValueMapping {
       }
     }
 
+    if (typeSet.isEmpty()) {
+      // devices were provided, but none were mappable.  return default so dynamics will
+      // succeed, even though we're reporting the incorrect device
+      try {
+        // prefer other, if it exists
+        return String.valueOf(getDynamicsCodeFromName(prefix, "OTHER"));
+      } catch (IllegalArgumentException e) {
+        // no mappable values found and other doesn't exist for this prefix
+        return String.valueOf(DEFAULT_VALUE);
+      }
+    }
     return typeSet.stream().map(String::valueOf).collect(Collectors.joining(","));
   }
 
