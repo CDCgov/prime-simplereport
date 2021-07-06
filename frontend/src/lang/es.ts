@@ -55,10 +55,8 @@ export const es: LanguageConfig = {
           },
         },
         inconclusive: {
-          p0:
-            "An inconclusive result is neither positive nor negative. This can happen because of problems with the sample collection, a very early-stage COVID-19 infection, or for patients with COVID-19 that are close to recovery. With an inconclusive result, collecting and testing another sample is recommended.",
-          p1:
-            "Please make an appointment for another test as soon as possible. If you’ve gotten tested due to COVID-19 symptoms, it is recommended that you self-isolate until you get your new test results.",
+          p0: "",
+          p1: "",
         },
       },
       tos: {
