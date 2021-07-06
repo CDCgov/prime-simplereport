@@ -9,6 +9,7 @@ module "metric_alerts" {
   mem_threshold                  = 85
   cpu_window_size                = 15
   http_response_time_aggregation = "Minimum"
+  failed_http_2xx_threshold      = 14
 
   action_group_ids = [
     data.terraform_remote_state.global.outputs.pagerduty_demo_action_id
