@@ -7,6 +7,46 @@ describe("AccountCreationApi", () => {
     (fetch as FetchMock).resetMocks();
   });
 
+  describe("getUserStatus", () => {
+    beforeEach(async () => {
+      (fetch as FetchMock).mockResponseOnce(JSON.stringify({}));
+      await AccountCreationApi.getUserStatus("testActivationToken");
+    });
+    it("calls getUserStatus with the correct data", () => {
+      expect(fetch).toHaveBeenCalledWith(
+        "http://localhost:8080/user-account/user-status?activationToken=testActivationToken",
+        {
+          body: undefined,
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          method: "GET",
+        }
+      );
+    });
+  });
+
+  describe("initialize", () => {
+    beforeEach(async () => {
+      (fetch as FetchMock).mockResponseOnce(JSON.stringify({}));
+      await AccountCreationApi.initialize("testActivationToken");
+    });
+    it("calls initialize with the correct data", () => {
+      expect(fetch).toHaveBeenCalledWith(
+        "http://localhost:8080/user-account/initialize",
+        {
+          body: '{"activationToken":"testActivationToken"}',
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+        }
+      );
+    });
+  });
+
   describe("setPassword", () => {
     beforeEach(async () => {
       (fetch as FetchMock).mockResponseOnce(JSON.stringify({}));

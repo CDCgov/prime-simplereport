@@ -467,10 +467,8 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void getUserStatus_pendingMfaActivationStateSuccessful() {
-    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    _auth.setPassword(userId, "thisIsAValidPassword1!".toCharArray());
-    _auth.setRecoveryQuestion(userId, "Who was your third grade teacher?", "Jane Doe");
+  void getUserStatus_pendingSmsActivationStateSuccessful() {
+    String userId = validSetup();
     _auth.enrollSmsMfa(userId, VALID_PHONE_NUMBER);
     UserAccountStatus status = _auth.getUserStatus(null, userId, null);
 
@@ -478,14 +476,64 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
+  void getUserStatus_pendingPhoneCallActivationStateSuccessful() {
+    String userId = validSetup();
+    _auth.enrollVoiceCallMfa(userId, VALID_PHONE_NUMBER);
+    UserAccountStatus status = _auth.getUserStatus(null, userId, null);
+
+    assertThat(status).isEqualTo(UserAccountStatus.CALL_PENDING_ACTIVATION);
+  }
+
+  @Test
+  void getUserStatus_pendingEmailActivationStateSuccessful() {
+    String userId = validSetup();
+    _auth.enrollEmailMfa(userId);
+    UserAccountStatus status = _auth.getUserStatus(null, userId, null);
+
+    assertThat(status).isEqualTo(UserAccountStatus.EMAIL_PENDING_ACTIVATION);
+  }
+
+  @Test
+  void getUserStatus_pendingGoogleAuthActivationStateSuccessful() {
+    String userId = validSetup();
+    _auth.enrollAuthenticatorAppMfa(userId, "google");
+    UserAccountStatus status = _auth.getUserStatus(null, userId, null);
+
+    assertThat(status).isEqualTo(UserAccountStatus.GOOGLE_PENDING_ACTIVATION);
+  }
+
+  @Test
+  void getUserStatus_pendingOktaAuthActivationStateSuccessful() {
+    String userId = validSetup();
+    _auth.enrollAuthenticatorAppMfa(userId, "okta");
+    UserAccountStatus status = _auth.getUserStatus(null, userId, null);
+
+    assertThat(status).isEqualTo(UserAccountStatus.OKTA_PENDING_ACTIVATION);
+  }
+
+  @Test
+  void getUserStatus_pendingSecurityKeyActivationStateSuccessful() {
+    String userId = validSetup();
+    _auth.enrollSecurityKey(userId);
+    UserAccountStatus status = _auth.getUserStatus(null, userId, null);
+
+    assertThat(status).isEqualTo(UserAccountStatus.FIDO_PENDING_ACTIVATION);
+  }
+
+  @Test
   void getUserStatus_activeStateSuccesful() {
-    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    _auth.setPassword(userId, "thisIsAValidPassword1!".toCharArray());
-    _auth.setRecoveryQuestion(userId, "Who was your third grade teacher?", "Jane Doe");
+    String userId = validSetup();
     String factorId = _auth.enrollSmsMfa(userId, VALID_PHONE_NUMBER);
     _auth.verifyActivationPasscode(userId, factorId, "123456");
     UserAccountStatus status = _auth.getUserStatus(null, userId, null);
 
     assertThat(status).isEqualTo(UserAccountStatus.ACTIVE);
+  }
+
+  private String validSetup() {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    _auth.setPassword(userId, "thisIsAValidPassword1!".toCharArray());
+    _auth.setRecoveryQuestion(userId, "Who was your third grade teacher?", "Jane Doe");
+    return userId;
   }
 }
