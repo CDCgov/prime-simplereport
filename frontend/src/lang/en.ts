@@ -2,6 +2,75 @@ export const en = {
   translation: {
     header: "COVID-19 Testing Portal",
     testResult: {
+      result: "SARS-CoV-2 result",
+      patient: "Patient",
+      testResult: "Test result",
+      testDate: "Test date",
+      positive: "Positive",
+      negative: "Negative",
+      undetermined: "Inconclusive",
+      unknown: "Unknown",
+      testDevice: "Test device",
+      meaning: "What does my result mean?",
+      information:
+        "For more information, please visit the <0>Centers for Disease Control and Prevention (CDC) website</0> or contact your local health department.",
+      notes: {
+        positive: {
+          p0:
+            "Getting a positive COVID-19 test result can be difficult news, so it’s important to <0> take steps to cope with stress </0> during this time. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.",
+          p1:
+            "Most people who get COVID-19 will be able to recover at home. Make sure to follow CDC guidelines for people who are recovering at home and their caregivers, including: ",
+          guidelines: {
+            li0: "Stay home when you are sick, except to get medical care.",
+            li1:
+              "Self isolate for 10 full days after symptoms first appeared (or starting the day after you had your test, if you have no symptoms).",
+            li2:
+              "If you are self isolating at home where others live, use a separate room and bathroom for sick household members (if possible). Clean any shared rooms as needed, to avoid transmitting the virus.",
+            li3:
+              "Wash your hands often with soap and water for at least 20 seconds, especially after blowing your nose, coughing, or sneezing; going to the bathroom; and before eating or preparing food.",
+            li4:
+              "If soap and water are not available, use an alcohol-based hand sanitizer with at least 60% alcohol.",
+            li5:
+              "Have a supply of clean, disposable face masks. Everyone, no matter their COVID-19 diagnosis, should wear face masks while in the home.",
+          },
+          p2:
+            "<0>Watch for symptoms and learn when to seek emergency medical attention</0>.",
+          p3:
+            "If someone is showing any of these signs, seek emergency medical care immediately:",
+          emergency: {
+            li0: "Trouble breathing",
+            li1: "Persistent chest pain/pressure",
+            li2: "Confusion",
+            li3: "Inability to wake or stay awake",
+            li4: "Bluish lips or face",
+          },
+          p4:
+            "Call 911 or call ahead to your local emergency room: Notify the operator that you are seeking care for someone who has or may have COVID-19.",
+        },
+        negative: {
+          p0:
+            "COVID-19 antigen tests can sometimes provide inaccurate or false results and follow up testing may be needed. Continue social distancing and wearing a mask. Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:",
+          symptoms: {
+            li0: "Fever or chills",
+            li1: "Cough",
+            li2: "Shortness of breath or difficulty breathing",
+            li3: "Fatigue",
+            li4: "Muscle or body aches",
+            li5: "Headache",
+            li6: "Loss of taste or smell",
+            li7: "Sore throat",
+            li8: "Congestion or runny nose",
+            li9: "Nausea or vomiting",
+            li10: "Diarrhea",
+          },
+        },
+        inconclusive: {
+          p0:
+            "An inconclusive result is neither positive nor negative. This can happen because of problems with the sample collection, a very early-stage COVID-19 infection, or for patients with COVID-19 that are close to recovery. With an inconclusive result, collecting and testing another sample is recommended.",
+          p1:
+            "Please make an appointment for another test as soon as possible. If you’ve gotten tested due to COVID-19 symptoms, it is recommended that you self-isolate until you get your new test results.",
+        },
+      },
       tos: {
         header: "Terms of service",
         introText: `This testing site uses <0>SimpleReport</0> to manage COVID-19 testing and reporting. The terms below explain SimpleReport’s policies and terms of service.`,
@@ -10,7 +79,7 @@ export const en = {
         document: {
           intro: {
             p0:
-              'As a Testing Facility (Facility) or its user (Facility User) accessing or using SimpleReport (Application) provided by the Centers for Disease Control and Prevention (CDC) and the U.S.Department of Health and Human Services (HHS), in a CDC cloud environment (" CDC Platform"), you acknowledge and agree that you are solely responsible for and shall abide by these Terms of Service, as well as any relevant sections of<0>CDC\'s Privacy Policies</0>(collectively, Terms).',
+              'As a Testing Facility (Facility) or its user (Facility User) accessing or using SimpleReport (Application) provided by the Centers for Disease Control and Prevention (CDC) and the U.S.Department of Health and Human Services (HHS), in a CDC cloud environment (" CDC Platform"), you acknowledge and agree that you are solely responsible for and shall abide by these Terms of Service, as well as any relevant sections of <0>CDC\'s Privacy Policies</0> (collectively, Terms).',
           },
           scope: {
             heading: "Scope",
@@ -130,7 +199,6 @@ export const en = {
         linkExpired: "This link has expired. Please contact your provider.",
         submit: "Continue",
       },
-      notes: {},
     },
   },
 };
