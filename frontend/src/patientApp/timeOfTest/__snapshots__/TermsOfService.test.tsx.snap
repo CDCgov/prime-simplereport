@@ -78,7 +78,7 @@ exports[`TermsOfService snapshot 1`] = `
         Privacy
       </h3>
       <p>
-        You may use the Application to search, display, analyze, retrieve, view and otherwise ‘get ' information from data you are sending via the Application and the Platform.Please note that the data which you are sending via the Application may be subject to the Privacy Act of 1974, the Health Insurance Portability and Accountability Act of 1996 (HIPAA), and other laws, and requires special safeguarding.By accessing and using the Application, you agree to strictly abide by all applicable federal and state laws regarding the collection, use, protection and disclosure of information obtained or sent through the Application.If you would like more information about the application of the Privacy Act at CDC, 
+        You may use the Application to search, display, analyze, retrieve, view and otherwise ‘get ' information from data you are sending via the Application and the Platform.Please note that the data which you are sending via the Application may be subject to the Privacy Act of 1974, the Health Insurance Portability and Accountability Act of 1996 (HIPAA), and other laws, and requires special safeguarding.By accessing and using the Application, you agree to strictly abide by all applicable federal and state laws regarding the collection, use, protection and disclosure of information obtained or sent through the Application. If you would like more information about the application of the Privacy Act at CDC, 
         <a
           href="https://www.cms.gov/Research-Statistics-Data-and-Systems/Computer-Data-and-Systems/Privacy/PrivacyActof1974.html"
         >
@@ -87,7 +87,7 @@ exports[`TermsOfService snapshot 1`] = `
         .
       </p>
       <p>
-        For purposes of use of this Application, if you are a HIPAA covered entity or acting on behalf of one as a business associate or if the data is maintained in a HIPAA-covered designated record set, you further acknowledge that you will abide by applicable HIPAA regulations (45 CFR Parts 160 and 164) for purposes of appropriate storage, transmission, use and disclosure of any protected health information.
+        For purposes of use of this Application, if you are a HIPAA covered entity or acting on behalf of one as a business associate or if the data is maintained in a HIPAA-covered designated record set, you further acknowledge that you will abide by applicable HIPAA regulations (45 CFR Parts 160 and 164) for purposes of appropriate storage, transmission, use and disclosure of any  protected health information.
       </p>
       <h3
         id="use-of-data"
@@ -103,7 +103,7 @@ exports[`TermsOfService snapshot 1`] = `
         Sharing of Data
       </h3>
       <p>
-        Data recorded and stored in the Application is for use by the Facility as needed for workflow, record keeping, and reporting purposes.All COVID-19 test results will be automatically reported to the appropriate STLT Public Health Agency based on both the testing facility ZIP code and the Patient's ZIP code, including all relevant fields as defined in the 
+        Data recorded and stored in the Application is for use by the Facility as needed for workflow, record keeping, and reporting purposes. All COVID-19 test results will be automatically reported to the appropriate STLT Public Health Agency based on both the testing facility ZIP code and the Patient's ZIP code, including all relevant fields as defined in the 
         <a
           href="https://www.hhs.gov/sites/default/files/covid-19-laboratory-data-reporting-guidance.pdf"
         >
