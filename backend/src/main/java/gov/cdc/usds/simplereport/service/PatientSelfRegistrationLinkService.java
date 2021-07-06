@@ -41,7 +41,7 @@ public class PatientSelfRegistrationLinkService {
             ? link.getOrganization()
             : link.getFacility().getOrganization();
 
-    if (org.getIdentityVerified() == false) {
+    if (!org.getIdentityVerified()) {
       throw new InvalidPatientSelfRegistrationLinkException();
     }
 
