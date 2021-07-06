@@ -23,12 +23,16 @@ import HealthChecks from "./app/HealthChecks";
 import * as serviceWorker from "./serviceWorker";
 import { store } from "./app/store";
 import { showError } from "./app/utils";
-import { getAppInsights } from "./app/TelemetryService";
+import { getAppInsights, ai, withInsights } from "./app/TelemetryService";
 import TelemetryProvider from "./app/telemetry-provider";
 import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration";
 import "./i18n";
 
 import "./styles/App.css";
+
+// Initialize telemetry early
+ai.initialize();
+withInsights(console);
 
 // Define the root element for modals
 if (process.env.NODE_ENV !== "test") {
@@ -47,8 +51,6 @@ if (window.location.hash) {
     localStorage.setItem("id_token", idToken);
   }
 }
-
-let appInsights: null | ApplicationInsights | any = null;
 
 const httpLink = createUploadLink({
   uri: `${process.env.REACT_APP_BACKEND_URL}/graphql`,
@@ -71,6 +73,7 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
       console.warn("redirect-to:", process.env.REACT_APP_BASE_URL);
       window.location.replace(process.env.REACT_APP_BASE_URL);
     } else {
+      const appInsights = getAppInsights();
       if (appInsights instanceof ApplicationInsights) {
         appInsights.trackException({ error: networkError });
       }
@@ -107,12 +110,7 @@ export const ReactApp = (
     <React.StrictMode>
       <Provider store={store}>
         <Router basename={process.env.PUBLIC_URL}>
-          <TelemetryProvider
-            instrumentationKey={process.env.REACT_APP_APPINSIGHTS_KEY}
-            after={() => {
-              appInsights = getAppInsights();
-            }}
-          >
+          <TelemetryProvider>
             <Switch>
               <Route path="/health" component={HealthChecks} />
               <Route path="/pxp" component={PatientApp} />
