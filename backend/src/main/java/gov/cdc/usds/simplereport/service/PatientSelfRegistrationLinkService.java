@@ -35,12 +35,7 @@ public class PatientSelfRegistrationLinkService {
             .findByPatientRegistrationLinkIgnoreCase(patientRegistrationLink)
             .orElseThrow(InvalidPatientSelfRegistrationLinkException::new);
 
-    Organization org =
-        link.getOrganization() != null
-            ? link.getOrganization()
-            : link.getFacility().getOrganization();
-
-    if (!org.getIdentityVerified()) {
+    if (!link.getOrganization().getIdentityVerified()) {
       throw new InvalidPatientSelfRegistrationLinkException();
     }
 
@@ -104,6 +99,6 @@ public class PatientSelfRegistrationLinkService {
   }
 
   private static String generateRandomLink() {
-    return RandomStringUtils.random(LINK_LENGTH, "123456789abcdefghjkmnpqrstuvwxyz");
+    return RandomStringUtils.random(LINK_LENGTH, "2346789abcdefghjkmnpqrtuvwxyz");
   }
 }
