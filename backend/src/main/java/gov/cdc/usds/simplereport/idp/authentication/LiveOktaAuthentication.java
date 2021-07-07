@@ -186,7 +186,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     }
   }
 
-  /** Using the Okta Management SDK, set's a user's recovery questions. */
+  /** Using the Okta Management SDK, sets a user's recovery questions. */
   public void setRecoveryQuestion(String userId, String question, String answer)
       throws OktaAuthenticationFailureException, BadRequestException {
     try {
