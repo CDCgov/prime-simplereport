@@ -21,19 +21,16 @@ const Admin = () => {
                 </LinkWithQuery>
               </div>
               <div>
-                {" "}
                 <Link to="/admin/add-organization-admin">
                   Add organization admin
                 </Link>
               </div>
               <div>
-                {" "}
                 <Link to="/admin/create-device-type">
                   Create new device type
                 </Link>
               </div>
               <div>
-                {" "}
                 <Link to="/admin/tenant-data-access">Access Tenant Data</Link>
               </div>
             </div>
