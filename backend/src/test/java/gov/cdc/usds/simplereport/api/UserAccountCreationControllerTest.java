@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import gov.cdc.usds.simplereport.api.apiuser.UserAccountCreationController;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
-import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration.DemoAuthorizationService;
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
@@ -30,7 +29,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 @Import({
   DemoAuthenticationConfiguration.class,
-  DemoAuthorizationService.class,
   DemoOktaAuthentication.class,
   DemoOktaRepository.class
 })
