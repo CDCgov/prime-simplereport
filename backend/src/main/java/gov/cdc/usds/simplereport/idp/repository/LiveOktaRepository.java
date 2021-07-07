@@ -456,7 +456,9 @@ public class LiveOktaRepository implements OktaRepository {
 
   // returns the external ID of the organization the specified user belongs to
   public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
-    // when accessing tenant data, bypass okta and get org from the altered authorities
+    // When a site admin is using tenant data access, bypass okta and get org from the altered
+    // authorities.  If the site admin is getting the claims for another site admin who also has
+    // active tenant data access, the reflect what is in Okta, not the temporary claims.
     if (_tenantDataContextHolder.hasBeenPopulated()
         && username.equals(_tenantDataContextHolder.getUsername())) {
       return getOrganizationRoleClaimsFromTenantDataAccess(
@@ -476,7 +478,7 @@ public class LiveOktaRepository implements OktaRepository {
     List<OrganizationRoleClaims> claims = _extractor.convertClaims(groupNames);
 
     if (claims.size() != 1) {
-      LOG.warn("User is in {} Okta organizations, not 1", claims.size());
+      LOG.warn("User's Tenant Data Access has claims in {} organizations, not 1", claims.size());
       return Optional.empty();
     }
     return Optional.of(claims.get(0));
