@@ -35,6 +35,8 @@ import ComboBox from "../../commonComponents/ComboBox";
 
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
+import { useTranslation } from "react-i18next";
+import "../../../i18n";
 
 export type ValidateField = (field: keyof PersonErrors) => Promise<void>;
 
@@ -105,6 +107,8 @@ const PersonForm = (props: Props) => {
   >();
   const { view = PersonFormView.APP } = props;
   const schema = schemata[view];
+
+  const { t } = useTranslation();
 
   const clearError = useCallback(
     (field: keyof PersonErrors) => {
@@ -194,7 +198,8 @@ const PersonForm = (props: Props) => {
           document.getElementsByName(name)[0]?.focus();
           focusedOnError = true;
         }
-        showError(toast, "Please correct before submitting", error);
+        //showError(toast, "Please correct before submitting", error);
+        showError(toast, t("patient.form.errors.validationMsg"), error);
       });
       return;
     }
@@ -227,21 +232,19 @@ const PersonForm = (props: Props) => {
     <>
       <Prompt
         when={formChanged}
-        message={
-          "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing."
-        }
+        message={t("patient.form.errors.unsaved")}
       />
       {view === PersonFormView.APP && props.getHeader && (
         <div className="patient__header">
           {props.getHeader(patient, validateForm, formChanged)}
         </div>
       )}
-      <FormGroup title="General information">
+      <FormGroup title={t("patient.form.general.heading")}>
         <RequiredMessage />
         <div className="usa-form">
           <Input
             {...commonInputProps}
-            label="First name"
+            label={t("patient.form.general.firstName")}
             field="firstName"
             required={view !== PersonFormView.PXP}
             disabled={view === PersonFormView.PXP}
@@ -249,20 +252,20 @@ const PersonForm = (props: Props) => {
           <Input
             {...commonInputProps}
             field="middleName"
-            label="Middle name"
+            label={t("patient.form.general.middleName")}
             disabled={view === PersonFormView.PXP}
           />
           <Input
             {...commonInputProps}
             field="lastName"
-            label="Last name"
+            label={t("patient.form.general.lastName")}
             required={view !== PersonFormView.PXP}
             disabled={view === PersonFormView.PXP}
           />
         </div>
         <div className="usa-form">
           <Select
-            label="Role"
+            label={t("patient.form.general.role.heading")}
             name="role"
             value={patient.role || ""}
             onChange={onPersonChange("role")}
@@ -270,7 +273,7 @@ const PersonForm = (props: Props) => {
             defaultSelect={true}
           />
           {patient.role === "STUDENT" && (
-            <Input {...commonInputProps} field="lookupId" label="Student ID" />
+            <Input {...commonInputProps} field="lookupId" label={t("patient.form.general.studentId")}/>
           )}
           {view !== PersonFormView.SELF_REGISTRATION && (
             <FacilitySelect
@@ -286,7 +289,7 @@ const PersonForm = (props: Props) => {
           )}
           <div className="usa-form-group">
             <label className="usa-label" htmlFor="preferred-language">
-              Preferred language
+              {t("patient.form.general.preferredLanguage")}
             </label>
             <ComboBox
               id="preferred-language-wrapper"
@@ -309,14 +312,14 @@ const PersonForm = (props: Props) => {
           <Input
             {...commonInputProps}
             field="birthDate"
-            label="Date of birth (mm/dd/yyyy)"
+            label={t("patient.form.general.preferredLanguage") + " (mm/dd/yyyy)"}
             type="date"
             required={view !== PersonFormView.PXP}
             disabled={view === PersonFormView.PXP}
           />
         </div>
       </FormGroup>
-      <FormGroup title="Contact information">
+      <FormGroup title={t("patient.form.contact.heading")}>
         <ManagePhoneNumbers
           phoneNumbers={patient.phoneNumbers || []}
           updatePhoneNumbers={onPersonChange("phoneNumbers")}
@@ -325,7 +328,7 @@ const PersonForm = (props: Props) => {
           <Input
             {...commonInputProps}
             field="email"
-            label="Email address"
+            label={t("patient.form.contact.email")}
             type="email"
           />
         </div>
@@ -333,7 +336,7 @@ const PersonForm = (props: Props) => {
           <Input
             {...commonInputProps}
             field="street"
-            label="Street address 1"
+            label={t("patient.form.contact.street1")}
             required
           />
         </div>
@@ -341,18 +344,18 @@ const PersonForm = (props: Props) => {
           <Input
             {...commonInputProps}
             field="streetTwo"
-            label="Street address 2"
+            label={t("patient.form.contact.street2")}
           />
         </div>
         <div className="usa-form">
-          <Input {...commonInputProps} field="city" label="City" />
+          <Input {...commonInputProps} field="city" label={t("patient.form.contact.city")} />
           {view !== PersonFormView.SELF_REGISTRATION && (
-            <Input {...commonInputProps} field="county" label="County" />
+            <Input {...commonInputProps} field="county" label={t("patient.form.contact.county")} />
           )}
           <div className="grid-row grid-gap">
             <div className="mobile-lg:grid-col-6">
               <Select
-                label="State"
+                label={t("patient.form.contact.state")}
                 name="state"
                 value={patient.state || ""}
                 options={stateCodes.map((c) => ({ label: c, value: c }))}
@@ -370,20 +373,19 @@ const PersonForm = (props: Props) => {
               <Input
                 {...commonInputProps}
                 field="zipCode"
-                label="Zip code"
+                label={t("patient.form.contact.zip")}
                 required
               />
             </div>
           </div>
         </div>
       </FormGroup>
-      <FormGroup title="Demographics">
+      <FormGroup title={t("patient.form.demographics.heading")}>
         <p className="usa-hint maxw-prose">
-          This information is collected as part of public health efforts to
-          recognize and address inequality in health outcomes.
+          {t("patient.form.demographics.helpText")}
         </p>
         <RadioGroup
-          legend="Race"
+          legend={t("patient.form.demographics.race.heading")}
           name="race"
           buttons={RACE_VALUES}
           selectedRadio={patient.race}
@@ -391,7 +393,7 @@ const PersonForm = (props: Props) => {
         />
         <div className="usa-form-group">
           <label className="usa-legend" htmlFor="tribal-affiliation">
-            Tribal affiliation
+              {t("patient.form.demographics.tribalAffiliation.heading")}
           </label>
           <ComboBox
             id="tribal-affiliation"
@@ -404,14 +406,14 @@ const PersonForm = (props: Props) => {
           />
         </div>
         <RadioGroup
-          legend="Are you Hispanic or Latino?"
+          legend={t("patient.form.demographics.ethnicity.heading")}
           name="ethnicity"
           buttons={ETHNICITY_VALUES}
           selectedRadio={patient.ethnicity}
           onChange={onPersonChange("ethnicity")}
         />
         <RadioGroup
-          legend="Biological sex"
+          legend={t("patient.form.demographics.gender.heading")}
           name="gender"
           buttons={GENDER_VALUES}
           selectedRadio={patient.gender}
@@ -420,8 +422,8 @@ const PersonForm = (props: Props) => {
       </FormGroup>
       <FormGroup title="Other">
         <YesNoRadioGroup
-          legend="Are you a resident in a congregate living setting?"
-          hintText="For example: nursing home, group home, prison, jail, or military"
+          legend={t("patient.form.other.congregateLiving.heading")}
+          hintText={t("patient.form.other.congregateLiving.helpText")}
           name="residentCongregateSetting"
           value={boolToYesNoUnknown(patient.residentCongregateSetting)}
           onChange={(v) =>
@@ -435,7 +437,7 @@ const PersonForm = (props: Props) => {
           required
         />
         <YesNoRadioGroup
-          legend="Are you a health care worker?"
+          legend={t("patient.form.other.healthcareWorker.heading")}
           name="employedInHealthcare"
           value={boolToYesNoUnknown(patient.employedInHealthcare)}
           onChange={(v) =>

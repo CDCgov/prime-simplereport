@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 
 import Select from "../../commonComponents/Select";
@@ -17,6 +18,8 @@ const ALL_FACILITIES = "~~ALL-FACILITIES~~";
 const NAME = "facilityId";
 
 const FacilitySelect: React.FC<Props> = (props) => {
+  const { t } = useTranslation();
+
   const facilities = useSelector<RootState, Facility[]>(
     (state) => state.facilities
   );
@@ -29,7 +32,7 @@ const FacilitySelect: React.FC<Props> = (props) => {
     label: f.name,
     value: f.id,
   }));
-  facilityList.unshift({ label: "All facilities", value: ALL_FACILITIES });
+  facilityList.unshift({ label: t("facility.form.allFacilities"), value: ALL_FACILITIES });
 
   const onChange = (value: string | null) => {
     props.onChange(value === ALL_FACILITIES ? null : value);
@@ -37,7 +40,7 @@ const FacilitySelect: React.FC<Props> = (props) => {
 
   return (
     <Select
-      label="Facility"
+      label={t("facility.form.heading")}
       name={NAME}
       value={props.facilityId === null ? ALL_FACILITIES : props.facilityId}
       onChange={onChange}

@@ -5,6 +5,7 @@ import createMockStore from "redux-mock-store";
 import faker from "faker";
 
 import { SelfRegistration } from "./SelfRegistration";
+import "../../i18n";
 
 const VALID_LINK = "foo-facility";
 

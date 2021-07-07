@@ -10,6 +10,7 @@ import {
   allPhoneNumberErrors,
   phoneNumberUpdateSchema,
 } from "../personSchema";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   phoneNumbers: PhoneNumber[];
@@ -21,6 +22,8 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   updatePhoneNumbers,
 }) => {
   const [errors, setErrors] = useState<PhoneNumberErrors[]>([]);
+
+  const { t } = useTranslation();
 
   const phoneNumbersOrDefault = useMemo(
     () =>
@@ -127,7 +130,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
               className="flex-fill"
               field="number"
               label={
-                isPrimary ? "Primary phone number" : "Additional phone number"
+                isPrimary ? t("patient.form.contact.primaryPhoneNumber") : t("patient.form.contact.additionalPhoneNumber")
               }
               required={isPrimary}
               formObject={phoneNumber}
@@ -150,7 +153,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
           <RadioGroup
             name={`phoneType-${idx}`}
             className="margin-top-3"
-            legend="Phone type"
+            legend={t("patient.form.contact.phoneType")}
             buttons={PHONE_TYPE_VALUES}
             selectedRadio={phoneNumber.type}
             required={isPrimary}
@@ -168,7 +171,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
         className="margin-top-2"
         onClick={onAddPhoneNumber}
         variant="unstyled"
-        label="Add another number"
+        label={t("patient.form.contact.addNumber")}
         icon="plus"
       />
     </div>
