@@ -5,6 +5,7 @@ import { createMemoryHistory } from "history";
 import { render } from "@testing-library/react";
 
 import TestResult from "./TestResult";
+import "../../i18n";
 
 const mockStore = configureStore([]);
 
