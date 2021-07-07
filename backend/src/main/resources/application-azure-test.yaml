@@ -1,6 +1,10 @@
 spring:
   profiles.include: okta-test, server-debug
 simple-report:
+  data-hub:
+    upload-enabled: true
+    upload-url: "https://staging.prime.cdc.gov/api/reports?option=SkipInvalidItems"
+    upload-schedule: "0 0 5-21/2 * * *"
   patient-link-url: https://test.simplereport.gov/app/pxp?plid=
   sendgrid:
     enabled: false
