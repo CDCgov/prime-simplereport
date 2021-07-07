@@ -1,47 +1,64 @@
 import { useSelector } from "react-redux";
+import { Trans, useTranslation } from "react-i18next";
 
 import { formatFullName } from "../../app/utils/user";
 import { RootState } from "../../app/store";
 import { Patient } from "../../app/patients/ManagePatients";
 import { TestResult as TestResultType } from "../../app/testQueue/QueueItem";
-import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../app/constants";
+import { COVID_RESULTS } from "../../app/constants";
 
 const TestResult = () => {
   const patient = useSelector<RootState, Patient>((state) => state.patient);
   const fullName = formatFullName(patient as any);
   const dateTested = new Date(patient.lastTest.dateTested).toLocaleDateString();
   const deviceType = patient.lastTest.deviceTypeModel;
+  const { t } = useTranslation();
 
   return (
     <main className="patient-app padding-top-105 padding-bottom-4 bg-base-lightest">
       <div className="grid-container maxw-tablet">
         <div className="card usa-prose">
-          <h1 className="font-heading-lg">SARS-CoV-2 result</h1>
-          <h2 className="font-heading-sm">Patient</h2>
+          <h1 className="font-heading-lg">{t("testResult.result")}</h1>
+          <h2 className="font-heading-sm">{t("testResult.patient")}</h2>
           <p className="margin-top-05">{fullName}</p>
           <div className="grid-row">
             <div className="grid-col usa-prose">
-              <h2 className="font-heading-sm">Test result</h2>
+              <h2 className="font-heading-sm">{t("testResult.testResult")}</h2>
               <p className="margin-top-05">
-                {TEST_RESULT_DESCRIPTIONS[patient.lastTest.result]}
+                {(() => {
+                  switch (patient.lastTest.result) {
+                    case "POSITIVE":
+                      return t("testResult.positive");
+                    case "NEGATIVE":
+                      return t("testResult.negative");
+                    case "UNDETERMINED":
+                      return t("testResult.undetermined");
+                    case "UNKNOWN":
+                    default:
+                      return t("testResult.unknown");
+                  }
+                })()}
               </p>
             </div>
             <div className="grid-col usa-prose">
-              <h2 className="font-heading-sm">Test date</h2>
+              <h2 className="font-heading-sm">{t("testResult.testDate")}</h2>
               <p className="margin-top-05">{dateTested}</p>
             </div>
           </div>
-          <h2 className="font-heading-sm">Test device</h2>
+          <h2 className="font-heading-sm">{t("testResult.testDevice")}</h2>
           <p className="margin-top-05">{deviceType}</p>
-          <h2 className="font-heading-sm">What does my result mean?</h2>
+          <h2 className="font-heading-sm">{t("testResult.meaning")}</h2>
           <TestResultNotes result={patient.lastTest.result} />
-          <p>
-            For more information, please visit the{" "}
-            <a href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html">
-              Centers for Disease Control and Prevention (CDC) website
-            </a>{" "}
-            or contact your local health department.
-          </p>
+          <Trans
+            t={t}
+            parent="p"
+            i18nKey="testResult.information"
+            components={[
+              <a href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html">
+                Centers for Disease Control and Prevention (CDC) website
+              </a>,
+            ]}
+          />
         </div>
       </div>
     </main>
@@ -53,117 +70,77 @@ interface TestResultNotesProps {
 }
 
 const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
+  const { t } = useTranslation();
+
   switch (props.result) {
     case COVID_RESULTS.POSITIVE:
       return (
         <>
-          <p>
-            Getting a positive COVID-19 test result can be difficult news, so
-            it’s important to{" "}
-            <a href="https://www.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html">
-              take steps to cope with stress
-            </a>{" "}
-            during this time. Reach out to your support system and make a phone
-            or video appointment with a mental health professional if needed.
-          </p>
-          <p>
-            Most people who get COVID-19 will be able to recover at home. Make
-            sure to follow CDC guidelines for people who are recovering at home
-            and their caregivers, including:
-          </p>
+          <Trans
+            t={t}
+            parent="p"
+            i18nKey="testResult.notes.positive.p0"
+            components={[
+              <a href="https://www.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html">
+                take steps to cope with stress
+              </a>,
+            ]}
+          />
+          <p>{t("testResult.notes.positive.p1")}</p>
           <ul>
-            <li>Stay home when you are sick, except to get medical care.</li>
-            <li>
-              Self isolate for 10 full days after symptoms first appeared (or
-              starting the day after you had your test, if you have no
-              symptoms).
-            </li>
-            <li>
-              If you are self isolating at home where others live, use a
-              separate room and bathroom for sick household members (if
-              possible). Clean any shared rooms as needed, to avoid transmitting
-              the virus.
-            </li>
-            <li>
-              Wash your hands often with soap and water for at least 20 seconds,
-              especially after blowing your nose, coughing, or sneezing; going
-              to the bathroom; and before eating or preparing food.
-            </li>
-            <li>
-              If soap and water are not available, use an alcohol-based hand
-              sanitizer with at least 60% alcohol.
-            </li>
-            <li>
-              Have a supply of clean, disposable face masks. Everyone, no matter
-              their COVID-19 diagnosis, should wear face masks while in the
-              home.
-            </li>
+            <li>{t("testResult.notes.positive.guidelines.li0")}</li>
+            <li>{t("testResult.notes.positive.guidelines.li1")}</li>
+            <li>{t("testResult.notes.positive.guidelines.li2")}</li>
+            <li>{t("testResult.notes.positive.guidelines.li3")}</li>
+            <li>{t("testResult.notes.positive.guidelines.li4")}</li>
+            <li>{t("testResult.notes.positive.guidelines.li5")}</li>
           </ul>
-          <p>
-            <a href="https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html">
-              Watch for symptoms and learn when to seek emergency medical
-              attention
-            </a>
-            .
-          </p>
-          <p>
-            If someone is showing any of these signs, seek emergency medical
-            care immediately:
-          </p>
+          <Trans
+            t={t}
+            parent="p"
+            i18nKey="testResult.notes.positive.p2"
+            components={[
+              <a href="https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html">
+                Watch for symptoms and learn when to seek emergency medical
+                attention
+              </a>,
+            ]}
+          />
+          <p>{t("testResult.notes.positive.p3")}</p>
           <ul>
-            <li>Trouble breathing</li>
-            <li>Persistent chest pain/pressure</li>
-            <li>Confusion</li>
-            <li>Inability to wake or stay awake</li>
-            <li>Bluish lips or face</li>
+            <li>{t("testResult.notes.positive.emergency.li0")}</li>
+            <li>{t("testResult.notes.positive.emergency.li1")}</li>
+            <li>{t("testResult.notes.positive.emergency.li2")}</li>
+            <li>{t("testResult.notes.positive.emergency.li3")}</li>
+            <li>{t("testResult.notes.positive.emergency.li4")}</li>
           </ul>
-          <p>
-            Call 911 or call ahead to your local emergency room: Notify the
-            operator that you are seeking care for someone who has or may have
-            COVID-19.
-          </p>
+          <p>{t("testResult.notes.positive.p4")}</p>
         </>
       );
     case COVID_RESULTS.NEGATIVE:
       return (
         <>
-          <p>
-            COVID-19 antigen tests can sometimes provide inaccurate or false
-            results and follow up testing may be needed. Continue social
-            distancing and wearing a mask. Contact your health care provider to
-            decide if additional testing is needed, especially if you experience
-            any of these symptoms:
-          </p>
+          <p>{t("testResult.notes.negative.p0")}</p>
           <ul>
-            <li>Fever or chills</li>
-            <li>Cough</li>
-            <li>Shortness of breath or difficulty breathing</li>
-            <li>Fatigue</li>
-            <li>Muscle or body aches</li>
-            <li>Headache</li>
-            <li>Loss of taste or smell</li>
-            <li>Sore throat</li>
-            <li>Congestion or runny nose</li>
-            <li>Nausea or vomiting</li>
-            <li>Diarrhea</li>
+            <li>{t("testResult.notes.negative.symptoms.li0")}</li>
+            <li>{t("testResult.notes.negative.symptoms.li1")}</li>
+            <li>{t("testResult.notes.negative.symptoms.li2")}</li>
+            <li>{t("testResult.notes.negative.symptoms.li3")}</li>
+            <li>{t("testResult.notes.negative.symptoms.li4")}</li>
+            <li>{t("testResult.notes.negative.symptoms.li5")}</li>
+            <li>{t("testResult.notes.negative.symptoms.li6")}</li>
+            <li>{t("testResult.notes.negative.symptoms.li7")}</li>
+            <li>{t("testResult.notes.negative.symptoms.li8")}</li>
+            <li>{t("testResult.notes.negative.symptoms.li9")}</li>
+            <li>{t("testResult.notes.negative.symptoms.li10")}</li>
           </ul>
         </>
       );
     default:
       return (
         <>
-          <p>
-            An inconclusive result is neither positive nor negative. This can
-            happen because of problems with the sample collection, a very
-            early-stage COVID-19 infection, or for patients with COVID-19 that
-            are close to recovery. With an inconclusive result, collecting and
-            testing another sample is recommended.
-          </p>
-          <p>
-            Please make an appointment for another test as soon as possible. If
-            you’ve gotten tested due to COVID-19 symptoms, it is recommended
-            that you self-isolate until you get your new test results.
-          </p>
+          <p>{t("testResult.notes.inconclusive.p0")}</p>
+          <p>{t("testResult.notes.inconclusive.p1")}</p>
         </>
       );
   }
