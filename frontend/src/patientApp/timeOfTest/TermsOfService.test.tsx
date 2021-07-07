@@ -6,6 +6,7 @@ import { Router } from "react-router-dom";
 import { createMemoryHistory } from "history";
 
 import TermsOfService from "./TermsOfService";
+import "../../i18n";
 
 const mockStore = configureStore([]);
 

@@ -3,6 +3,7 @@ import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router";
 import createMockStore from "redux-mock-store";
 import faker from "faker";
+import "../../i18n";
 
 import { SelfRegistration } from "./SelfRegistration";
 import "../../i18n";
