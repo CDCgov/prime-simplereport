@@ -228,6 +228,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
           LOG.info(e.getCauses().get(i).getSummary());
         }
         LOG.info(e.toString());
+        if (e.toString().contains("existing verified phone number")) {
+          throw new BadRequestException("You've already been enrolled in SMS MFA and cannot enroll a new phone number.");
+        }
 
         throw new BadRequestException(
             "Invalid phone number. You must enter a phone number capable of receiving text messages.",
@@ -252,6 +255,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
         LOG.info("okta voice call enrollment failure: " + e.getError().getMessage());
+        if (e.toString().contains("factor of this type is already set up")) {
+          throw new BadRequestException("You've already been enrolled in voice call MFA and cannot enroll a new phone number.");
+        }
         throw new BadRequestException("Invalid phone number.", e);
       }
       throw new OktaAuthenticationFailureException("Error setting voice call MFA", e);
@@ -369,7 +375,12 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       factor.activate(activateFactor);
     } catch (ResourceException e) {
       LOG.info("okta verify passcode failure: " + e.getCauses().get(0).getSummary());
-      throw new BadRequestException("The provided security code is invalid.", e);
+      if (e.toString().contains("passcode doesn't match our records")) {
+        throw new BadRequestException("The provided security code is invalid.", e);
+      }
+      else {
+        throw new OktaAuthenticationFailureException("The provided security code could not be verified.");
+      }
     } catch (NullPointerException | IllegalArgumentException e) {
       throw new OktaAuthenticationFailureException(
           "Activation passcode could not be verifed; MFA activation failed.", e);

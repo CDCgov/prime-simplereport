@@ -38,7 +38,7 @@ export const MfaVerify = (props: Props) => {
       await AccountCreationApi.resendActivationPasscode();
       setCodeResendSuccess(true);
     } catch (error) {
-      setCodeError(error?.message);
+      setCodeError(error?.message || "Unable to resend activation passcode, please try again later");
     }
   };
 
