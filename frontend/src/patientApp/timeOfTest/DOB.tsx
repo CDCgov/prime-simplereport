@@ -2,6 +2,7 @@ import React, { FormEvent, useEffect, useState, useRef } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 import Button from "../../app/commonComponents/Button/Button";
 import TextInput from "../../app/commonComponents/TextInput";
@@ -10,6 +11,8 @@ import { PxpApi } from "../PxpApiService";
 import Alert from "../../app/commonComponents/Alert";
 
 const DOB = () => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const [birthDate, setBirthDate] = useState("");
   const [birthDateError, setBirthDateError] = useState("");
@@ -28,7 +31,7 @@ const DOB = () => {
 
     const date = moment(birthDate.replace("/", ""), "MMDDYYYY");
     if (!date.isValid()) {
-      setBirthDateError("Enter your date of birth");
+      setBirthDateError(t("testResult.dob.enterDOB"));
       dobRef?.current?.focus();
       return;
     }
@@ -49,9 +52,7 @@ const DOB = () => {
       if (error?.status === 410) {
         setLinkExpiredError(true);
       } else {
-        setBirthDateError(
-          "No patient link with the supplied ID was found, or the birth date provided was incorrect."
-        );
+        setBirthDateError(t("testResult.dob.error"));
       }
     } finally {
       setLoading(false);
@@ -62,7 +63,7 @@ const DOB = () => {
     return (
       <main>
         <div className="grid-container maxw-tablet">
-          <p className="margin-top-3">Validating birth date...</p>
+          <p className="margin-top-3">{t("testResult.dob.validating")}</p>
         </div>
       </main>
     );
@@ -93,12 +94,10 @@ const DOB = () => {
         <div className="grid-container maxw-tablet">
           {!linkExpiredError ? (
             <>
-              <p className="margin-top-3">
-                Enter your date of birth to access your COVID-19 Testing Portal.
-              </p>
+              <p className="margin-top-3">{t("testResult.dob.enterDOB2")}</p>
               <form className="usa-form" onSubmit={confirmBirthDate}>
                 <TextInput
-                  label={"Date of birth"}
+                  label={t("testResult.dob.dateOfBirth")}
                   name={"birthDate"}
                   type={"password"}
                   autoComplete={"on"}
@@ -115,7 +114,7 @@ const DOB = () => {
                 />
                 <Button
                   id="dob-submit-button"
-                  label={"Continue"}
+                  label={t("testResult.dob.submit")}
                   type={"submit"}
                 />
               </form>
@@ -126,7 +125,7 @@ const DOB = () => {
               <Alert
                 type="error"
                 title="Link expired"
-                body="This link has expired. Please contact your provider."
+                body={t("testResult.dob.linkExpired")}
               />
             </>
           )}
