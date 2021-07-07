@@ -11,7 +11,8 @@ import gov.cdc.usds.simplereport.db.model.TenantDataAccess;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PermissionsData;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
-import java.util.Calendar;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -45,10 +46,7 @@ class TenantDataAccessRepositoryTest extends BaseRepositoryTest {
         TestUserIdentities.TEST_ROLE_PREFIX + TestUserIdentities.DEFAULT_ORGANIZATION + ":ADMIN");
     PermissionsData permissionsData = new PermissionsData(authorities);
 
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(new Date());
-    calendar.add(Calendar.HOUR_OF_DAY, 1);
-    Date expiration = calendar.getTime();
+    Date expiration = Date.from(Instant.now().plus(Duration.ofHours(1)));
 
     final String justification = "Using access to run tests";
 

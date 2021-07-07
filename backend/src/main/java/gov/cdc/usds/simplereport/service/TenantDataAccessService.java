@@ -10,7 +10,8 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TenantDataAccess;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PermissionsData;
 import gov.cdc.usds.simplereport.db.repository.TenantDataAccessRepository;
-import java.util.Calendar;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -55,10 +56,7 @@ public class TenantDataAccessService {
     // ensure user has no current valid tenant access
     removeAllTenantDataAccess(apiUser);
 
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(new Date());
-    calendar.add(Calendar.MINUTE, VALID_MINUTES);
-    Date expirationDate = calendar.getTime();
+    Date expirationDate = Date.from(Instant.now().plus(Duration.ofMinutes(VALID_MINUTES)));
 
     String prefix = _authProperties.getRolePrefix();
     Set<String> authorities = new HashSet<>();
