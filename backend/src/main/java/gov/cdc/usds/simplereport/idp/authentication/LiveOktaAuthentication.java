@@ -38,8 +38,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created by emmastephenson on 4/28/21
@@ -52,10 +50,6 @@ import org.slf4j.LoggerFactory;
 @Profile("!" + BeanProfiles.NO_OKTA_AUTH)
 @Service
 public class LiveOktaAuthentication implements OktaAuthentication {
-
-  private static final Logger LOG = LoggerFactory.getLogger(LiveOktaAuthentication.class);
-
-
   private static final String USER_API_ENDPOINT = "/api/v1/users/";
   private static final String ACTIVATION_KEY = "activation";
 
@@ -179,7 +173,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()
           && e.getMessage().toLowerCase().contains("password requirements")) {
-        LOG.info("okta password failure: " + e.getCauses().get(0).getSummary());
         throw new BadRequestException(e.getCauses().get(0).getSummary(), e);
       }
       throw new OktaAuthenticationFailureException("Error setting user's password", e);
@@ -202,7 +195,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       user.update();
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value() && !e.getCauses().isEmpty()) {
-        LOG.info("okta recovery question failure: " + e.getCauses().get(0).getSummary());
         throw new BadRequestException(e.getCauses().get(0).getSummary(), e);
       }
       throw new OktaAuthenticationFailureException("Error setting recovery questions", e);
@@ -223,15 +215,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       return smsFactor.getId();
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
-        LOG.info("okta sms enrollment failure: " + e.getError().getMessage());
-        for (int i=0; i<e.getCauses().size(); i++) {
-          LOG.info(e.getCauses().get(i).getSummary());
-        }
-        LOG.info(e.toString());
-        if (e.toString().contains("existing verified phone number")) {
-          throw new BadRequestException("You've already been enrolled in SMS MFA and cannot enroll a new phone number.");
-        }
-
         throw new BadRequestException(
             "Invalid phone number. You must enter a phone number capable of receiving text messages.",
             e);
@@ -254,10 +237,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       return callFactor.getId();
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
-        LOG.info("okta voice call enrollment failure: " + e.getError().getMessage());
-        if (e.toString().contains("factor of this type is already set up")) {
-          throw new BadRequestException("You've already been enrolled in voice call MFA and cannot enroll a new phone number.");
-        }
         throw new BadRequestException("Invalid phone number.", e);
       }
       throw new OktaAuthenticationFailureException("Error setting voice call MFA", e);
@@ -374,13 +353,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       activateFactor.setPassCode(passcode.strip());
       factor.activate(activateFactor);
     } catch (ResourceException e) {
-      LOG.info("okta verify passcode failure: " + e.getCauses().get(0).getSummary());
-      if (e.toString().contains("passcode doesn't match our records")) {
-        throw new BadRequestException("The provided security code is invalid.", e);
-      }
-      else {
-        throw new OktaAuthenticationFailureException("The provided security code could not be verified.");
-      }
+      throw new BadRequestException("The provided security code is invalid.", e);
     } catch (NullPointerException | IllegalArgumentException e) {
       throw new OktaAuthenticationFailureException(
           "Activation passcode could not be verifed; MFA activation failed.", e);

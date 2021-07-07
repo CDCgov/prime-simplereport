@@ -27,7 +27,7 @@ describe("Verify Phone MFA", () => {
         initialEntries={[
           {
             pathname: "/mfa-phone/verify",
-            state: { contact: "(530) 867-5309" },
+            state: { contact: "530-867-5309" },
           },
         ]}
       >
@@ -41,7 +41,7 @@ describe("Verify Phone MFA", () => {
 
   it("can submit a valid security code", async () => {
     expect(
-      screen.getByText("(530) 867-5309", { exact: false })
+      screen.getByText("530-867-5309", { exact: false })
     ).toBeInTheDocument();
     fireEvent.change(
       screen.getByLabelText("One-time security code", { exact: false }),
@@ -62,7 +62,7 @@ describe("Verify Phone MFA", () => {
 
   it("shows an error for an invalid security code", async () => {
     expect(
-      screen.getByText("(530) 867-5309", { exact: false })
+      screen.getByText("530-867-5309", { exact: false })
     ).toBeInTheDocument();
     fireEvent.change(
       screen.getByLabelText("One-time security code", { exact: false }),

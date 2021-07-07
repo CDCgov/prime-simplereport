@@ -9,8 +9,9 @@ export const MfaSmsVerify = (props: Props) => (
   <MfaVerify
     hint={
       <>
-        We’ve sent a text message (SMS) to <b>{formatPhoneNumber(props.location.state.contact)}</b>
-        . It will expire in 5 minutes.
+        We’ve sent a text message (SMS) to{" "}
+        <b>{formatPhoneNumber(props.location.state.contact)}</b>. It will expire
+        in 5 minutes.
       </>
     }
   />
