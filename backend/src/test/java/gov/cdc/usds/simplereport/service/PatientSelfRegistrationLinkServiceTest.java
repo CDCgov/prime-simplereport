@@ -167,7 +167,11 @@ class PatientSelfRegistrationLinkServiceTest
     _psrlService.createRegistrationLink(_fac, "abcde");
 
     _rsl = mockStatic(RandomStringUtils.class);
-    _rsl.when(() -> RandomStringUtils.random(5, "123456789abcdefghjkmnpqrstuvwxyz"))
+    _rsl.when(
+            () ->
+                RandomStringUtils.random(
+                    PatientSelfRegistrationLinkService.LINK_LENGTH,
+                    PatientSelfRegistrationLinkService.LINK_CHARACTERS))
         .thenReturn("abcde")
         .thenReturn("uniqe");
 
@@ -181,7 +185,11 @@ class PatientSelfRegistrationLinkServiceTest
     _psrlService.createRegistrationLink(_org, "abcde");
 
     _rsl = mockStatic(RandomStringUtils.class);
-    _rsl.when(() -> RandomStringUtils.random(5, "123456789abcdefghjkmnpqrstuvwxyz"))
+    _rsl.when(
+            () ->
+                RandomStringUtils.random(
+                    PatientSelfRegistrationLinkService.LINK_LENGTH,
+                    PatientSelfRegistrationLinkService.LINK_CHARACTERS))
         .thenReturn("abcde")
         .thenReturn("uniqe");
 
@@ -195,7 +203,11 @@ class PatientSelfRegistrationLinkServiceTest
     _psrlService.createRegistrationLink(_fac, "abcde");
 
     _rsl = mockStatic(RandomStringUtils.class);
-    _rsl.when(() -> RandomStringUtils.random(5, "123456789abcdefghjkmnpqrstuvwxyz"))
+    _rsl.when(
+            () ->
+                RandomStringUtils.random(
+                    PatientSelfRegistrationLinkService.LINK_LENGTH,
+                    PatientSelfRegistrationLinkService.LINK_CHARACTERS))
         .thenReturn("abcde")
         .thenReturn("abcde")
         .thenReturn("uniqe");
@@ -210,7 +222,11 @@ class PatientSelfRegistrationLinkServiceTest
     _psrlService.createRegistrationLink(_org, "abcde");
 
     _rsl = mockStatic(RandomStringUtils.class);
-    _rsl.when(() -> RandomStringUtils.random(5, "123456789abcdefghjkmnpqrstuvwxyz"))
+    _rsl.when(
+            () ->
+                RandomStringUtils.random(
+                    PatientSelfRegistrationLinkService.LINK_LENGTH,
+                    PatientSelfRegistrationLinkService.LINK_CHARACTERS))
         .thenReturn("abcde")
         .thenReturn("abcde")
         .thenReturn("uniqe");
