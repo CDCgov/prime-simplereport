@@ -42,6 +42,7 @@ public class OrganizationService {
   private OktaRepository _oktaRepo;
   private CurrentOrganizationRolesContextHolder _currentOrgRolesContextHolder;
   private OrderingProviderRequiredValidator _orderingProviderRequiredValidator;
+  private PatientSelfRegistrationLinkService _psrlService;
 
   public OrganizationService(
       OrganizationRepository repo,
@@ -50,7 +51,8 @@ public class OrganizationService {
       ProviderRepository providerRepo,
       OktaRepository oktaRepo,
       CurrentOrganizationRolesContextHolder currentOrgRolesContextHolder,
-      OrderingProviderRequiredValidator orderingProviderRequiredValidator) {
+      OrderingProviderRequiredValidator orderingProviderRequiredValidator,
+      PatientSelfRegistrationLinkService patientSelfRegistrationLinkService) {
     _repo = repo;
     _facilityRepo = facilityRepo;
     _authService = authService;
@@ -58,6 +60,7 @@ public class OrganizationService {
     _oktaRepo = oktaRepo;
     _currentOrgRolesContextHolder = currentOrgRolesContextHolder;
     _orderingProviderRequiredValidator = orderingProviderRequiredValidator;
+    _psrlService = patientSelfRegistrationLinkService;
   }
 
   public void resetOrganizationRolesContext() {
@@ -257,6 +260,7 @@ public class OrganizationService {
         providerAddress,
         providerTelephone,
         providerNPI);
+    _psrlService.createRegistrationLink(org);
     return org;
   }
 
@@ -320,6 +324,7 @@ public class OrganizationService {
             deviceSpecimenTypes.getDefault(),
             deviceSpecimenTypes.getFullList());
     facility = _facilityRepo.save(facility);
+    _psrlService.createRegistrationLink(facility);
     _oktaRepo.createFacility(facility);
     return facility;
   }

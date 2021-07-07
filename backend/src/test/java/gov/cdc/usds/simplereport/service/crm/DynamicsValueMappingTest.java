@@ -35,7 +35,20 @@ class DynamicsValueMappingTest {
   }
 
   @Test
-  void convertToValues_invalidOptions_success() {
-    assertEquals("", DynamicsValueMapping.convertToValues(Prefix.B, "Bad, Choices"));
+  void convertToValues_noMappableOptions_success() {
+    // Expect the value of "Other" to be returned
+    assertEquals("810050003", DynamicsValueMapping.convertToValues(Prefix.B, "Bad, Choices"));
+  }
+
+  @Test
+  void convertToValues_noMappableOptionsNoOther_success() {
+    // Expect the value of default option to be returned
+    assertEquals("810050000", DynamicsValueMapping.convertToValues(Prefix.AD, "Bad, Choices"));
+  }
+
+  @Test
+  void convertToValues_mappableAndUnmappableOptions_success() {
+    // Expect the value of "Chrome" to be returned
+    assertEquals("810050001", DynamicsValueMapping.convertToValues(Prefix.B, "Bad Choice, Chrome"));
   }
 }
