@@ -27,7 +27,7 @@ class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
     _repo.save(new PatientSelfRegistrationLink(otherFac, "bar-facility"));
 
     Optional<PatientSelfRegistrationLink> retrieved =
-        _repo.findByPatientRegistrationLink("foo-facility");
+        _repo.findByPatientRegistrationLinkIgnoreCase("foo-facility");
     assertEquals(true, retrieved.isPresent());
     assertEquals(retrieved.get().getFacility().getInternalId(), fac.getInternalId());
   }
@@ -41,7 +41,7 @@ class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
     _repo.save(new PatientSelfRegistrationLink(org, "happy-org"));
 
     Optional<PatientSelfRegistrationLink> retrieved =
-        _repo.findByPatientRegistrationLink("happy-org");
+        _repo.findByPatientRegistrationLinkIgnoreCase("happy-org");
     assertEquals(true, retrieved.isPresent());
     assertEquals(retrieved.get().getOrganization().getInternalId(), org.getInternalId());
   }
@@ -55,7 +55,7 @@ class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
     _repo.save(new PatientSelfRegistrationLink(fac, "foo-facility"));
 
     Optional<PatientSelfRegistrationLink> retrieved =
-        _repo.findByPatientRegistrationLink("some-bad-link");
+        _repo.findByPatientRegistrationLinkIgnoreCase("some-bad-link");
     assertEquals(false, retrieved.isPresent());
   }
 
