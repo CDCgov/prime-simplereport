@@ -38,6 +38,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by emmastephenson on 4/28/21
@@ -50,6 +52,10 @@ import org.springframework.web.client.RestTemplate;
 @Profile("!" + BeanProfiles.NO_OKTA_AUTH)
 @Service
 public class LiveOktaAuthentication implements OktaAuthentication {
+
+  private static final Logger LOG = LoggerFactory.getLogger(LiveOktaAuthentication.class);
+
+
   private static final String USER_API_ENDPOINT = "/api/v1/users/";
   private static final String ACTIVATION_KEY = "activation";
 
@@ -87,50 +93,47 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       if (activationToken != null && !activationToken.isEmpty() && userId == null) {
         return UserAccountStatus.PENDING_ACTIVATION;
       }
-      if (userId != null) {
-        User user = _client.getUser(userId);
-        UserStatus status = user.getStatus();
-        if (status == UserStatus.PROVISIONED) {
-          return UserAccountStatus.PASSWORD_RESET;
-        }
-        if (user.getCredentials().getRecoveryQuestion() == null) {
-          return UserAccountStatus.SET_SECURITY_QUESTIONS;
-        }
-        if (factorId == null) {
-          return UserAccountStatus.MFA_SELECT;
-        } else {
-          UserFactor factor = user.getFactor(factorId);
-          FactorStatus factorStatus = factor.getStatus();
-          if (factorStatus == FactorStatus.PENDING_ACTIVATION
-              || factorStatus == FactorStatus.ENROLLED) {
-            FactorType factorType = factor.getFactorType();
-            switch (factorType) {
-              case SMS:
-                return UserAccountStatus.SMS_PENDING_ACTIVATION;
-              case CALL:
-                return UserAccountStatus.CALL_PENDING_ACTIVATION;
-              case EMAIL:
-                return UserAccountStatus.EMAIL_PENDING_ACTIVATION;
-              case WEBAUTHN:
-                return UserAccountStatus.FIDO_PENDING_ACTIVATION;
-              case TOKEN_SOFTWARE_TOTP:
-                FactorProvider provider = factor.getProvider();
-                if (provider == FactorProvider.GOOGLE) {
-                  return UserAccountStatus.GOOGLE_PENDING_ACTIVATION;
-                } else {
-                  return UserAccountStatus.OKTA_PENDING_ACTIVATION;
-                }
-              default:
-                return UserAccountStatus.ACTIVE;
-            }
-          }
-        }
+      if (userId == null) {
+        return UserAccountStatus.UNKNOWN;
+      }
+      User user = _client.getUser(userId);
+      UserStatus status = user.getStatus();
+      if (status == UserStatus.PROVISIONED) {
+        return UserAccountStatus.PASSWORD_RESET;
+      }
+      if (user.getCredentials().getRecoveryQuestion() == null) {
+        return UserAccountStatus.SET_SECURITY_QUESTIONS;
+      }
+      if (factorId == null) {
+        return UserAccountStatus.MFA_SELECT;
+      }
+      UserFactor factor = user.getFactor(factorId);
+      if (factor.getStatus() == FactorStatus.ACTIVE) {
         return UserAccountStatus.ACTIVE;
+      }
+      FactorType factorType = factor.getFactorType();
+      switch (factorType) {
+        case SMS:
+          return UserAccountStatus.SMS_PENDING_ACTIVATION;
+        case CALL:
+          return UserAccountStatus.CALL_PENDING_ACTIVATION;
+        case EMAIL:
+          return UserAccountStatus.EMAIL_PENDING_ACTIVATION;
+        case WEBAUTHN:
+          return UserAccountStatus.FIDO_PENDING_ACTIVATION;
+        case TOKEN_SOFTWARE_TOTP:
+          FactorProvider provider = factor.getProvider();
+          if (provider == FactorProvider.GOOGLE) {
+            return UserAccountStatus.GOOGLE_PENDING_ACTIVATION;
+          } else {
+            return UserAccountStatus.OKTA_PENDING_ACTIVATION;
+          }
+        default:
+          return UserAccountStatus.ACTIVE;
       }
     } catch (NullPointerException | ResourceException e) {
       return UserAccountStatus.UNKNOWN;
     }
-    return UserAccountStatus.UNKNOWN;
   }
 
   /**
@@ -176,6 +179,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()
           && e.getMessage().toLowerCase().contains("password requirements")) {
+        LOG.info("okta password failure: " + e.getCauses().get(0).getSummary());
         throw new BadRequestException(e.getCauses().get(0).getSummary(), e);
       }
       throw new OktaAuthenticationFailureException("Error setting user's password", e);
@@ -198,6 +202,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       user.update();
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value() && !e.getCauses().isEmpty()) {
+        LOG.info("okta recovery question failure: " + e.getCauses().get(0).getSummary());
         throw new BadRequestException(e.getCauses().get(0).getSummary(), e);
       }
       throw new OktaAuthenticationFailureException("Error setting recovery questions", e);
@@ -218,6 +223,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       return smsFactor.getId();
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
+        LOG.info("okta sms enrollment failure: " + e.getError().getMessage());
         throw new BadRequestException(
             "Invalid phone number. You must enter a phone number capable of receiving text messages.",
             e);
@@ -240,6 +246,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       return callFactor.getId();
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
+        LOG.info("okta voice call enrollment failure: " + e.getError().getMessage());
         throw new BadRequestException("Invalid phone number.", e);
       }
       throw new OktaAuthenticationFailureException("Error setting voice call MFA", e);
@@ -356,6 +363,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       activateFactor.setPassCode(passcode.strip());
       factor.activate(activateFactor);
     } catch (ResourceException e) {
+      LOG.info("okta verify passcode failure: " + e.getCauses().get(0).getSummary());
       throw new BadRequestException("The provided security code is invalid.", e);
     } catch (NullPointerException | IllegalArgumentException e) {
       throw new OktaAuthenticationFailureException(

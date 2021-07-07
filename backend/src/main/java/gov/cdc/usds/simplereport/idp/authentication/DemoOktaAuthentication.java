@@ -49,28 +49,28 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       return UserAccountStatus.MFA_SELECT;
     }
     DemoMfa factor = user.getMfa();
-    if (factor.getFactorStatus() != FactorStatus.ACTIVE) {
-      switch (factor.getFactorType()) {
-        case SMS:
-          return UserAccountStatus.SMS_PENDING_ACTIVATION;
-        case CALL:
-          return UserAccountStatus.CALL_PENDING_ACTIVATION;
-        case EMAIL:
-          return UserAccountStatus.EMAIL_PENDING_ACTIVATION;
-        case WEBAUTHN:
-          return UserAccountStatus.FIDO_PENDING_ACTIVATION;
-        case TOKEN_SOFTWARE_TOTP:
-          String mfaId = factor.getFactorId();
-          if (mfaId.contains("google")) {
-            return UserAccountStatus.GOOGLE_PENDING_ACTIVATION;
-          } else {
-            return UserAccountStatus.OKTA_PENDING_ACTIVATION;
-          }
-        default:
-          return UserAccountStatus.ACTIVE;
-      }
+    if (factor.getFactorStatus() == FactorStatus.ACTIVE) {
+      return UserAccountStatus.ACTIVE;
     }
-    return UserAccountStatus.ACTIVE;
+    switch (factor.getFactorType()) {
+      case SMS:
+        return UserAccountStatus.SMS_PENDING_ACTIVATION;
+      case CALL:
+        return UserAccountStatus.CALL_PENDING_ACTIVATION;
+      case EMAIL:
+        return UserAccountStatus.EMAIL_PENDING_ACTIVATION;
+      case WEBAUTHN:
+        return UserAccountStatus.FIDO_PENDING_ACTIVATION;
+      case TOKEN_SOFTWARE_TOTP:
+        String mfaId = factor.getFactorId();
+        if (mfaId.contains("google")) {
+          return UserAccountStatus.GOOGLE_PENDING_ACTIVATION;
+        } else {
+          return UserAccountStatus.OKTA_PENDING_ACTIVATION;
+        }
+      default:
+        return UserAccountStatus.ACTIVE;
+    }
   }
 
   public String activateUser(String activationToken, String crossForwardedHeader, String userAgent)
