@@ -224,6 +224,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
         LOG.info("okta sms enrollment failure: " + e.getError().getMessage());
+        LOG.info("cause: " + e.getCause().toString());
+        LOG.info(e.toString());
         throw new BadRequestException(
             "Invalid phone number. You must enter a phone number capable of receiving text messages.",
             e);
