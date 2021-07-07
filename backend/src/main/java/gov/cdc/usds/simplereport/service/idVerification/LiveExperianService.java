@@ -57,7 +57,16 @@ public class LiveExperianService implements ExperianService {
             userData,
             "fakeTenantId",
             "fakeClientReferenceId");
-    // next steps: get all the actual header information and issue the request
     System.out.println(initialRequestBody);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.add("Authorization: Bearer", fetchToken());
+    HttpEntity<String> entity = new HttpEntity<>(initialRequestBody, headers);
+    try {
+    JSONObject response = _restTemplate.postForObject(_experianProperties.getIntialRequestEndpoint(), entity, JSONObject.class);
+    // next: unwrap the response and get the questions
+    } catch (RestClientException | NullPointerException e) {
+      throw new IllegalStateException("Questions could not be retrieved from Experian", e);
+    }
   }
 }

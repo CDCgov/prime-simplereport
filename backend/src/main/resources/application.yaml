@@ -97,6 +97,7 @@ simple-report:
     resource-url: ${DYNAMICS_RESOURCE_URL:MISSING}
   experian:
     token-endpoint: ${EXPERIAN_TOKEN_ENDPOINT}
+    initial-request-endpoint: ${EXPERIAN_INITIAL_REQUEST_ENDPOINT}
     domain: ${EXPERIAN_DOMAIN}
     username: ${EXPERIAN_USERNAME}
     password: ${EXPERIAN_PASSWORD}
