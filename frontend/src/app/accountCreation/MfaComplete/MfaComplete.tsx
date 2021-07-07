@@ -22,12 +22,12 @@ export const MfaComplete = () => {
           To start using SimpleReport, log in to your account.
         </p>
         <div className="display-flex flex-justify-center">
-        <Button
-          className="margin-top-3 flex-justify-center"
-          label={"Continue to SimpleReport"}
-          type={"submit"}
-          onClick={() => (window.location.pathname = "/")}
-        />
+          <Button
+            className="margin-top-3 flex-justify-center"
+            label={"Continue to SimpleReport"}
+            type={"submit"}
+            onClick={() => (window.location.pathname = "/")}
+          />
         </div>
       </Card>
     </CardBackground>
