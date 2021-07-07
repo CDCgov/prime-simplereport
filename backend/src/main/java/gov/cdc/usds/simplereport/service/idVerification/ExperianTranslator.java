@@ -60,6 +60,13 @@ public class ExperianTranslator {
     return response.toString();
   }
 
+  // public static 
+  // things to do with this message: 
+  // extract the session token and store it on the user session (kba -> sessionId)
+  // figure out a way to correctly store the question set and the individual answers. 
+  // we need to keep everything in order (so no raw JSON objects)
+  // my instinct is a horrible multimap, but I'm not entirely sure how that will be deserialized by Jackson
+
   /**
    * Translates provided user data into a json "contacts" object. Validates required fields and
    * passes blank strings for optional fields.
@@ -101,18 +108,18 @@ public class ExperianTranslator {
     return new JSONObject(requestBody);
   }
 
-  public static String parseString(String value) {
+  private static String parseString(String value) {
     if (value == null || value.isEmpty()) {
       throw new IllegalArgumentException("String is required and cannot be empty.");
     }
     return value.trim();
   }
 
-  public static String parseOptionalString(String value) {
+  private static String parseOptionalString(String value) {
     return value == null ? "" : value.trim();
   }
 
-  public static String parseDate(String d) {
+  private static String parseDate(String d) {
     String date = parseString(d);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d");
     try {
