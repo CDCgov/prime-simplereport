@@ -31,7 +31,7 @@ const Admin = () => {
                 </Link>
               </div>
               <div>
-                <Link to="/admin/tenant-data-access">Access Tenant Data</Link>
+                <Link to="/admin/tenant-data-access">Organization data</Link>
               </div>
             </div>
           </div>

@@ -79,7 +79,7 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h2 className="font-heading-lg">Access Tenant Data</h2>
+                <h2 className="font-heading-lg">Organization data</h2>
                 <RequiredMessage />
               </div>
               <div
@@ -92,7 +92,7 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
                 <Button
                   type="button"
                   onClick={submitTenantDataAccessRequest}
-                  label="Save Changes"
+                  label="Save changes"
                   disabled={!formIsValid}
                 />
               </div>
@@ -121,7 +121,9 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h2 className="font-heading-lg">Cancel Tenant Data Access</h2>
+                <h2 className="font-heading-lg">
+                  Cancel organization data access
+                </h2>
               </div>
               <div
                 style={{
@@ -133,7 +135,7 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
                 <Button
                   type="button"
                   onClick={submitCancellationRequest}
-                  label="Cancel Access"
+                  label="Cancel access"
                 />
               </div>
             </div>
