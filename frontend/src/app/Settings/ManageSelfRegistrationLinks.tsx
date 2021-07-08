@@ -1,6 +1,6 @@
 import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import "./ManageSelfRegistrationLinks.scss";
 
@@ -25,9 +25,12 @@ export const ManageSelfRegistrationLinks = ({
     if (!copiedSlug) {
       return;
     }
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setCopiedSlug(undefined);
     }, 3000);
+    return () => {
+      clearTimeout(timeout);
+    };
   }, [copiedSlug]);
 
   async function copySlug(slug: String) {
@@ -96,22 +99,16 @@ function OrganizationLink({ slug, copySlug, copied }: OrgLinkProps) {
         Patients who register at this link will be visible at{" "}
         <span className="text-bold text-italic">all</span> your facilities.
       </p>
-      <div className="grid-row flex-no-wrap">
+      <div className="sr-organization-link-container">
         <input
-          style={{ marginTop: 0, height: "auto" }}
-          className="usa-input"
           id="org-link"
+          className="sr-organization-link-input usa-input"
           aria-describedby="org-link-description"
           value={link}
           disabled
         />
         <button
-          style={{
-            flexShrink: 0,
-            borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0,
-          }}
-          className="usa-button"
+          className="sr-organization-link-copy-button usa-button"
           onClick={() => copySlug(slug)}
         >
           <FontAwesomeIcon
@@ -132,6 +129,11 @@ type FacilityLinksProps = {
 };
 
 function FacilityLinks({ slugs, copiedSlug, copySlug }: FacilityLinksProps) {
+  const orderedSlugs = useMemo(
+    () => [...slugs].sort((a, b) => (a.name > b.name ? 1 : -1)),
+    [slugs]
+  );
+
   return (
     <section aria-label="Facility links" className="margin-top-5">
       <p className="usa-label text-bold">Facility links</p>
@@ -147,20 +149,22 @@ function FacilityLinks({ slugs, copiedSlug, copySlug }: FacilityLinksProps) {
           </tr>
         </thead>
         <tbody>
-          {slugs.map(({ name, slug }) => (
+          {orderedSlugs.map(({ name, slug }) => (
             <tr key={slug}>
               <td>{name}</td>
-              <td className="text-no-wrap">
-                {getRegistrationLink(slug, false)}
-                <button
-                  className="usa-button margin-left-1 usa-button--unstyled"
-                  onClick={() => copySlug(slug)}
-                  arial-label={`Copy patient self-registration link for ${name}`}
-                >
-                  <FontAwesomeIcon
-                    icon={copiedSlug === slug ? faCheck : faCopy}
-                  />
-                </button>
+              <td>
+                <div className="display-flex flex-justify">
+                  <span>{getRegistrationLink(slug, false)}</span>
+                  <button
+                    className="usa-button margin-left-1 usa-button--unstyled"
+                    onClick={() => copySlug(slug)}
+                    arial-label={`Copy patient self-registration link for ${name}`}
+                  >
+                    <FontAwesomeIcon
+                      icon={copiedSlug === slug ? faCheck : faCopy}
+                    />
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
@@ -174,5 +178,7 @@ const baseUrl = process.env.REACT_APP_BASE_URL?.replace(/\/$/, "");
 
 function getRegistrationLink(slug: String, withProtocol: boolean = true) {
   const link = `${baseUrl}/register/${slug.toUpperCase()}`;
-  return withProtocol ? link : link.replace(/^http[s]{0,1}:\/\/[www]{0,1}/, "");
+  return withProtocol
+    ? link
+    : link.replace(/^http(s){0,1}:\/\/(www.){0,1}/, "");
 }
