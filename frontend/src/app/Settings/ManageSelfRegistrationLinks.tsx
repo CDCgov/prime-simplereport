@@ -7,19 +7,21 @@ import "./ManageSelfRegistrationLinks.scss";
 type FacilitySlug = { name: string; slug: string };
 
 type Props = {
+  baseUrl: string;
   isNewFeature: boolean;
   organizationSlug: string;
   facilitySlugs: FacilitySlug[];
-  howItWorksLink: string;
+  howItWorksPath: string;
 };
 
 export const ManageSelfRegistrationLinks = ({
+  baseUrl,
   isNewFeature,
   organizationSlug,
   facilitySlugs,
-  howItWorksLink,
+  howItWorksPath,
 }: Props) => {
-  const [copiedSlug, setCopiedSlug] = useState<String>();
+  const [copiedSlug, setCopiedSlug] = useState<string>();
 
   useEffect(() => {
     if (!copiedSlug) {
@@ -33,9 +35,9 @@ export const ManageSelfRegistrationLinks = ({
     };
   }, [copiedSlug]);
 
-  async function copySlug(slug: String) {
+  async function copySlug(slug: string) {
     try {
-      await navigator.clipboard.writeText(getRegistrationLink(slug));
+      await navigator.clipboard.writeText(getRegistrationLink(baseUrl, slug));
       setCopiedSlug(slug);
     } catch (e) {
       console.error(e);
@@ -61,16 +63,22 @@ export const ManageSelfRegistrationLinks = ({
             testing process and reducing data entry for your staff.
           </p>
           <p>
-            <a href={howItWorksLink} target="_blank" rel="noreferrer">
+            <a
+              href={makeLink(baseUrl, howItWorksPath)}
+              target="_blank"
+              rel="noreferrer"
+            >
               How patient self-registration works
             </a>
           </p>
           <OrganizationLink
+            baseUrl={baseUrl}
             slug={organizationSlug}
             copySlug={copySlug}
             copied={copiedSlug === organizationSlug}
           />
           <FacilityLinks
+            baseUrl={baseUrl}
             slugs={facilitySlugs}
             copySlug={copySlug}
             copiedSlug={copiedSlug}
@@ -82,13 +90,14 @@ export const ManageSelfRegistrationLinks = ({
 };
 
 type OrgLinkProps = {
+  baseUrl: string;
   slug: string;
-  copySlug: (slug: String) => void;
+  copySlug: (slug: string) => void;
   copied: boolean;
 };
 
-function OrganizationLink({ slug, copySlug, copied }: OrgLinkProps) {
-  const link = getRegistrationLink(slug);
+function OrganizationLink({ slug, copySlug, copied, baseUrl }: OrgLinkProps) {
+  const link = getRegistrationLink(baseUrl, slug);
 
   return (
     <section aria-label="Organization link" className="margin-top-5">
@@ -123,12 +132,18 @@ function OrganizationLink({ slug, copySlug, copied }: OrgLinkProps) {
 }
 
 type FacilityLinksProps = {
+  baseUrl: string;
   slugs: FacilitySlug[];
-  copySlug: (slug: String) => void;
-  copiedSlug: String | undefined;
+  copySlug: (slug: string) => void;
+  copiedSlug: string | undefined;
 };
 
-function FacilityLinks({ slugs, copiedSlug, copySlug }: FacilityLinksProps) {
+function FacilityLinks({
+  slugs,
+  copiedSlug,
+  copySlug,
+  baseUrl,
+}: FacilityLinksProps) {
   const orderedSlugs = useMemo(
     () => [...slugs].sort((a, b) => (a.name > b.name ? 1 : -1)),
     [slugs]
@@ -137,7 +152,7 @@ function FacilityLinks({ slugs, copiedSlug, copySlug }: FacilityLinksProps) {
   return (
     <section aria-label="Facility links" className="margin-top-5">
       <p className="usa-label text-bold">Facility links</p>
-      <p id="org-link-description" className="text-base margin-y-105">
+      <p className="sr-registration-link-description">
         Patients who register at these links will be visible only at the
         specified facility
       </p>
@@ -154,7 +169,7 @@ function FacilityLinks({ slugs, copiedSlug, copySlug }: FacilityLinksProps) {
               <td>{name}</td>
               <td>
                 <div className="display-flex flex-justify">
-                  <span>{getRegistrationLink(slug, false)}</span>
+                  <span>{getRegistrationLink(baseUrl, slug, false)}</span>
                   <button
                     className="usa-button margin-left-1 usa-button--unstyled"
                     onClick={() => copySlug(slug)}
@@ -174,11 +189,17 @@ function FacilityLinks({ slugs, copiedSlug, copySlug }: FacilityLinksProps) {
   );
 }
 
-const baseUrl = process.env.REACT_APP_BASE_URL?.replace(/\/$/, "");
-
-function getRegistrationLink(slug: String, withProtocol: boolean = true) {
-  const link = `${baseUrl}/register/${slug.toUpperCase()}`;
+function getRegistrationLink(
+  baseUrl: string,
+  slug: string,
+  withProtocol: boolean = true
+) {
+  const link = makeLink(baseUrl, "register", slug.toUpperCase());
   return withProtocol
     ? link
     : link.replace(/^http(s){0,1}:\/\/(www.){0,1}/, "");
+}
+
+function makeLink(...parts: string[]) {
+  return parts.map((part) => part.replace(/(^\/|\/$)/, "")).join("/");
 }
