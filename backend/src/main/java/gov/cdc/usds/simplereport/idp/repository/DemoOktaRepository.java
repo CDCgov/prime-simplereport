@@ -230,7 +230,7 @@ public class DemoOktaRepository implements OktaRepository {
     if (tenantDataContextHolder.hasBeenPopulated()
         && username.equals(tenantDataContextHolder.getUsername())) {
       return getOrganizationRoleClaimsFromTenantDataAccess(
-          tenantDataContextHolder.getAuthorityNames());
+          tenantDataContextHolder.getAuthorities());
     }
 
     return Optional.ofNullable(usernameOrgRolesMap.get(username));

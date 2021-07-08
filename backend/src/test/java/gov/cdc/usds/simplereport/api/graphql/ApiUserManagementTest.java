@@ -917,20 +917,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     assertEquals("ruby@example.com", user.get("email").asText());
     assertEquals(Role.ADMIN, Role.valueOf(user.get("role").asText()));
     Set<UserPermission> allPermissions =
-        EnumSet.of(
-            UserPermission.READ_PATIENT_LIST,
-            UserPermission.SEARCH_PATIENTS,
-            UserPermission.READ_RESULT_LIST,
-            UserPermission.EDIT_PATIENT,
-            UserPermission.ARCHIVE_PATIENT,
-            UserPermission.START_TEST,
-            UserPermission.UPDATE_TEST,
-            UserPermission.SUBMIT_TEST,
-            UserPermission.EDIT_FACILITY,
-            UserPermission.EDIT_ORGANIZATION,
-            UserPermission.MANAGE_USERS,
-            UserPermission.ACCESS_ALL_FACILITIES,
-            UserPermission.READ_ARCHIVED_PATIENT_LIST);
+        Arrays.stream(UserPermission.values()).collect(Collectors.toSet());
     assertEquals(allPermissions, extractPermissionsFromUser(user));
     assertLastAuditEntry("ruby@example.com", null, null);
 

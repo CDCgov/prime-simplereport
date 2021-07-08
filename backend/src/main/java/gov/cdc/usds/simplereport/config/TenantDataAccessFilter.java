@@ -6,7 +6,6 @@ import gov.cdc.usds.simplereport.config.authorization.TenantDataAuthenticationPr
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import java.io.IOException;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.Filter;
@@ -37,19 +36,16 @@ public class TenantDataAccessFilter implements Filter {
 
     try {
       if (currentAuth != null && _authService.isSiteAdmin()) {
-        Optional<Set<String>> permissions =
-            _apiUserService.getTenantDataAccessAuthorityNamesForCurrentUser();
+        Set<String> authorities = _apiUserService.getTenantDataAccessAuthoritiesForCurrentUser();
 
-        if (permissions.isPresent()) {
+        if (authorities.size() > 0) {
           Set<GrantedAuthority> grantedAuthorities =
-              permissions.get().stream()
-                  .map(SimpleGrantedAuthority::new)
-                  .collect(Collectors.toSet());
+              authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
 
           String username =
               _apiUserService.getCurrentApiUserInContainedTransaction().getLoginEmail();
           _currentTenantDataAccessContextHolder.setTenantDataAccessAuthorities(
-              username, permissions.get());
+              username, authorities);
 
           // overwrite authentication with a new token so that subsequent request processing
           // will see the authorities asserted by the active tenant data access rather than

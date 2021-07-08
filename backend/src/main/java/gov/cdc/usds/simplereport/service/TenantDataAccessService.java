@@ -17,8 +17,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,26 +27,24 @@ public class TenantDataAccessService {
 
   private static final int VALID_MINUTES = 60;
 
-  private static final Logger LOG = LoggerFactory.getLogger(TenantDataAccessService.class);
-
   @Autowired private TenantDataAccessRepository _repo;
   @Autowired private CurrentTenantDataAccessContextHolder _contextHolder;
   @Autowired private AuthorizationProperties _authProperties;
   @Autowired private OrganizationExtractor _extractor;
 
-  public Optional<Set<String>> getTenantDataAccessAuthorityNames(ApiUser apiUser) {
+  public Set<String> getTenantDataAccessAuthorities(ApiUser apiUser) {
     List<TenantDataAccess> tenantDataAccessList =
         _repo.findValidByApiUserId(apiUser.getInternalId());
     if (tenantDataAccessList.isEmpty()) {
-      return Optional.empty();
+      return new HashSet<>();
     } else if (tenantDataAccessList.size() != 1) {
       // there should only be 1 valid tenant data access.  to clean this up, remove all
       removeAllTenantDataAccess(apiUser);
-      return Optional.empty();
+      return new HashSet<>();
     }
 
     PermissionsData permissionsData = tenantDataAccessList.get(0).getPermissionsData();
-    return Optional.of(permissionsData.getAuthorities());
+    return permissionsData.getAuthorities();
   }
 
   public Optional<OrganizationRoleClaims> addTenantDataAccess(
@@ -74,14 +70,7 @@ public class TenantDataAccessService {
 
     List<OrganizationRoleClaims> roleClaimsList =
         _extractor.convertClaims(permissionsData.getAuthorities());
-    Optional<OrganizationRoleClaims> roleClaims = Optional.of(roleClaimsList.get(0));
-
-    LOG.info(
-        "** addTenantDataAccess for user: {} to org {}",
-        apiUser.getInternalId(),
-        org.getInternalId());
-
-    return roleClaims;
+    return Optional.of(roleClaimsList.get(0));
   }
 
   public void removeAllTenantDataAccess(ApiUser apiUser) {

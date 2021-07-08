@@ -461,8 +461,7 @@ public class LiveOktaRepository implements OktaRepository {
     // active tenant data access, the reflect what is in Okta, not the temporary claims.
     if (_tenantDataContextHolder.hasBeenPopulated()
         && username.equals(_tenantDataContextHolder.getUsername())) {
-      return getOrganizationRoleClaimsFromTenantDataAccess(
-          _tenantDataContextHolder.getAuthorityNames());
+      return getOrganizationRoleClaimsFromAuthorities(_tenantDataContextHolder.getAuthorities());
     }
 
     UserList users = _client.listUsers(username, null, null, null, null);
@@ -473,9 +472,9 @@ public class LiveOktaRepository implements OktaRepository {
     return getOrganizationRoleClaimsForUser(user);
   }
 
-  private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromTenantDataAccess(
-      Collection<String> groupNames) {
-    List<OrganizationRoleClaims> claims = _extractor.convertClaims(groupNames);
+  private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromAuthorities(
+      Collection<String> authorities) {
+    List<OrganizationRoleClaims> claims = _extractor.convertClaims(authorities);
 
     if (claims.size() != 1) {
       LOG.warn("User's Tenant Data Access has claims in {} organizations, not 1", claims.size());

@@ -404,11 +404,11 @@ public class ApiUserService {
       return cancelCurrentUserTenantDataAccess();
     }
 
-    ApiUser apiUser = getCurrentApiUser();
-    Organization org = _orgService.getOrganization(organizationExternalID);
     if (justification == null) {
       throw new IllegalGraphqlArgumentException("A justification for this access is required.");
     }
+    ApiUser apiUser = getCurrentApiUser();
+    Organization org = _orgService.getOrganization(organizationExternalID);
 
     Optional<OrganizationRoleClaims> roleClaims =
         _tenantService.addTenantDataAccess(apiUser, org, justification);
@@ -427,8 +427,8 @@ public class ApiUserService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public Optional<Set<String>> getTenantDataAccessAuthorityNamesForCurrentUser() {
+  public Set<String> getTenantDataAccessAuthoritiesForCurrentUser() {
     ApiUser apiUser = getCurrentApiUser();
-    return _tenantService.getTenantDataAccessAuthorityNames(apiUser);
+    return _tenantService.getTenantDataAccessAuthorities(apiUser);
   }
 }

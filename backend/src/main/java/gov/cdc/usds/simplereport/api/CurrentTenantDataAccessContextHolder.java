@@ -11,13 +11,13 @@ import org.springframework.web.context.WebApplicationContext;
 @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CurrentTenantDataAccessContextHolder {
 
-  private String username = "";
-  private Set<String> authorityNames = new HashSet<>();
+  private String username;
+  private Set<String> authorities = new HashSet<>();
   private boolean hasBeenPopulated = false;
 
-  public void setTenantDataAccessAuthorities(String username, Set<String> authorityNames) {
+  public void setTenantDataAccessAuthorities(String username, Set<String> authorities) {
     this.username = username;
-    this.authorityNames = Set.copyOf(authorityNames);
+    this.authorities = Set.copyOf(authorities);
     this.hasBeenPopulated = true;
   }
 
@@ -25,8 +25,8 @@ public class CurrentTenantDataAccessContextHolder {
     return username;
   }
 
-  public Set<String> getAuthorityNames() {
-    return authorityNames;
+  public Set<String> getAuthorities() {
+    return authorities;
   }
 
   public boolean hasBeenPopulated() {
@@ -35,7 +35,7 @@ public class CurrentTenantDataAccessContextHolder {
 
   public void reset() {
     hasBeenPopulated = false;
-    username = "";
-    authorityNames = new HashSet<>();
+    username = null;
+    authorities = new HashSet<>();
   }
 }

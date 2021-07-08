@@ -11,7 +11,6 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import org.apache.commons.collections.CollectionUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,9 +31,8 @@ class TenantDataAccessServiceTest extends BaseServiceTest<TenantDataAccessServic
 
     OrganizationRoleClaims claims = claimsOpt.get();
     assertEquals(org.getExternalId(), claims.getOrganizationExternalId());
-    assertTrue(
-        CollectionUtils.isEqualCollection(
-            Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ADMIN), claims.getGrantedRoles()));
+    assertEquals(
+        Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ADMIN), claims.getGrantedRoles());
   }
 
   @Test
@@ -46,16 +44,14 @@ class TenantDataAccessServiceTest extends BaseServiceTest<TenantDataAccessServic
     // set access for a user to an org
     _service.addTenantDataAccess(apiUser, org, justification);
 
-    Optional<Set<String>> authorityNames = _service.getTenantDataAccessAuthorityNames(apiUser);
-    assertTrue(authorityNames.isPresent());
-    assertTrue(
-        CollectionUtils.isEqualCollection(getExpectedAuthoritiesForOrg(org), authorityNames.get()));
+    Set<String> authorities = _service.getTenantDataAccessAuthorities(apiUser);
+    assertEquals(getExpectedAuthoritiesForOrg(org), authorities);
 
     _service.removeAllTenantDataAccess(apiUser);
 
     // expect no tenant data access after removal
-    authorityNames = _service.getTenantDataAccessAuthorityNames(apiUser);
-    assertTrue(authorityNames.isEmpty());
+    authorities = _service.getTenantDataAccessAuthorities(apiUser);
+    assertEquals(0, authorities.size());
   }
 
   private Set<String> getExpectedAuthoritiesForOrg(Organization org) {
