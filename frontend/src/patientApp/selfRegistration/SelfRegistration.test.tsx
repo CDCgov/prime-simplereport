@@ -6,7 +6,6 @@ import faker from "faker";
 import "../../i18n";
 
 import { SelfRegistration } from "./SelfRegistration";
-import "../../i18n";
 
 const VALID_LINK = "foo-facility";
 

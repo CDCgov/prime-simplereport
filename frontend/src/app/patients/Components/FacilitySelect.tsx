@@ -32,7 +32,10 @@ const FacilitySelect: React.FC<Props> = (props) => {
     label: f.name,
     value: f.id,
   }));
-  facilityList.unshift({ label: t("facility.form.allFacilities"), value: ALL_FACILITIES });
+  facilityList.unshift({
+    label: t("facility.form.allFacilities"),
+    value: ALL_FACILITIES,
+  });
 
   const onChange = (value: string | null) => {
     props.onChange(value === ALL_FACILITIES ? null : value);

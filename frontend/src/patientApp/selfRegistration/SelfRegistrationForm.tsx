@@ -27,7 +27,7 @@ export const SelfRegistrationForm = ({ savePerson }: Props) => {
             className="self-registration-button margin-top-3"
             onClick={onSave}
           >
-          {t("common.button.submit")}
+            {t("common.button.submit")}
           </Button>
         )}
         view={PersonFormView.SELF_REGISTRATION}

@@ -1,30 +1,89 @@
 import { LanguageConfig } from "./en";
 
+const YES = "";
+const NO = "";
+const OTHER = "";
+const REFUSED = "";
+const UNKNOWN = "";
+
 export const es: LanguageConfig = {
   translation: {
     header: "Portal de pruebas COVID-19",
+    constants: {
+      testResults: {
+        POSITIVE: "",
+        NEGATIVE: "",
+        UNDETERMINED: "",
+        UNKNOWN: UNKNOWN,
+      },
+      role: {
+        STAFF: "",
+        RESIDENT: "",
+        STUDENT: "",
+        VISITOR: "",
+      },
+      race: {
+        native: "",
+        asian: "",
+        black: "",
+        pacific: "",
+        white: "",
+        other: OTHER,
+        refused: REFUSED,
+      },
+      gender: {
+        female: "",
+        male: "",
+        other: OTHER,
+        refused: REFUSED,
+      },
+      ethnicity: {
+        hispanic: YES,
+        not_hispanic: NO,
+        refused: REFUSED,
+      },
+      phoneType: {
+        MOBILE: "",
+        LANDLINE: "",
+      },
+      yesNoUnk: {
+        YES,
+        NO,
+        UNKNOWN,
+      },
+    },
     common: {
       required: "",
+      defaultDropdownOption: "",
       button: {
-        submit: ""
+        submit: "",
       },
       pageNotFound: {
         heading: "",
         text: "",
-        errorCode: ""
-      }
+        errorCode: "",
+      },
     },
     address: {
+      heading: "",
+      select: "",
+      useAddress: "",
+      getSuggested: "",
+      noSuggestedFound: "",
+      goBack: "",
+      goBack_plural: "",
+      save: "",
       errors: {
         incomplete: "",
-        unverified: ""
-      }
+        unverified: "",
+        unverified_plural: "",
+      },
     },
     facility: {
       form: {
         heading: "",
         allFacilities: "",
-      }
+      },
     },
     patient: {
       form: {
@@ -34,16 +93,7 @@ export const es: LanguageConfig = {
           firstName: "",
           middleName: "",
           lastName: "",
-          role: {
-            heading: "",
-            options: [
-              "",
-              "",
-              "",
-              "",
-              "",
-            ]
-          },
+          role: "",
           studentId: "",
           preferredLanguage: "",
           dob: "",
@@ -52,11 +102,7 @@ export const es: LanguageConfig = {
           heading: "",
           primaryPhoneNumber: "",
           additionalPhoneNumber: "",
-          phoneType: {
-            heading: "",
-            mobile: "",
-            landline: "",
-          },
+          phoneType: "",
           addNumber: "",
           email: "",
           street1: "",
@@ -64,53 +110,52 @@ export const es: LanguageConfig = {
           county: "",
           city: "",
           state: "",
-          zip: ""
+          zip: "",
         },
         demographics: {
           heading: "",
           helpText: "",
-          race: {
-            heading: "",
-            options: [
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-            ]
-          },
-          tribalAffiliation: {
-            heading: "",
-            options: []
-          },
-          ethnicity: {
-            heading: "",
-            options: []
-          },
-          gender: {
-            heading: "",
-            options: []
-          },
+          race: "",
+          tribalAffiliation: "",
+          ethnicity: "",
+          gender: "",
         },
         other: {
           heading: "",
           congregateLiving: {
             heading: "",
             helpText: "",
-            options: []
           },
-          healthcareWorker: {
-            heading: "",
-            options: []
-          }
+          healthcareWorker: "",
         },
         errors: {
           unsaved: "",
           validationMsg: "",
-        }
-      }
+          firstName: "",
+          middleName: "",
+          lastName: "",
+          lookupId: "",
+          role: "",
+          facilityId: "",
+          birthDate: "",
+          telephone: "",
+          phoneNumbers: "",
+          email: "",
+          street: "",
+          streetTwo: "",
+          zipCode: "",
+          state: "",
+          city: "",
+          county: "",
+          race: "",
+          tribalAffiliation: "",
+          ethnicity: "",
+          gender: "",
+          residentCongregateSetting: "",
+          employedInHealthcare: "",
+          preferredLanguage: "",
+        },
+      },
     },
     selfRegistration: {
       form: {
@@ -119,12 +164,12 @@ export const es: LanguageConfig = {
         error: {
           heading: "",
           text: "",
-        }
+        },
       },
       confirmation: {
         registered: "",
-        checkIn: ""
-      }
+        checkIn: "",
+      },
     },
     testResult: {
       result: "",

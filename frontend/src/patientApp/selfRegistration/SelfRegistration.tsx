@@ -66,7 +66,7 @@ export const SelfRegistration = () => {
       setStep(RegistrationStep.FINISHED);
     } catch (e) {
       showError(
-        toast, 
+        toast,
         t("selfRegistration.form.error.heading"),
         t("selfRegistration.form.error.text")
       );
@@ -88,8 +88,7 @@ export const SelfRegistration = () => {
             <h1 className="margin-top-0 margin-bottom-1">
               {step === RegistrationStep.FINISHED
                 ? t("selfRegistration.form.complete")
-                : t("selfRegistration.form.inProgress")
-              }
+                : t("selfRegistration.form.inProgress")}
             </h1>
             <h2 className="margin-y-0 text-normal">{entityName}</h2>
           </div>

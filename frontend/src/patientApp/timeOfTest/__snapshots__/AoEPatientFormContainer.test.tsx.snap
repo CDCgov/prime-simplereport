@@ -88,7 +88,8 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
       <p
         className="message--required"
       >
-        Required fields are marked with an asterisk (
+        Required fields are marked with an asterisk
+         (
         <abbr
           className="usa-hint usa-hint--required"
           title="required"

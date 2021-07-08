@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useTranslation } from "react-i18next";
 
 import { PHONE_TYPE_VALUES } from "../../constants";
 import Button from "../../commonComponents/Button/Button";
@@ -10,7 +11,6 @@ import {
   allPhoneNumberErrors,
   phoneNumberUpdateSchema,
 } from "../personSchema";
-import { useTranslation } from "react-i18next";
 
 interface Props {
   phoneNumbers: PhoneNumber[];
@@ -130,7 +130,9 @@ const ManagePhoneNumbers: React.FC<Props> = ({
               className="flex-fill"
               field="number"
               label={
-                isPrimary ? t("patient.form.contact.primaryPhoneNumber") : t("patient.form.contact.additionalPhoneNumber")
+                isPrimary
+                  ? t("patient.form.contact.primaryPhoneNumber")
+                  : t("patient.form.contact.additionalPhoneNumber")
               }
               required={isPrimary}
               formObject={phoneNumber}

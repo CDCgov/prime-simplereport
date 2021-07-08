@@ -2,6 +2,7 @@ import React, { useCallback, useState } from "react";
 import { Prompt } from "react-router-dom";
 import { toast } from "react-toastify";
 import { SchemaOf } from "yup";
+import { useTranslation } from "react-i18next";
 
 import { languages, stateCodes } from "../../../config/constants";
 import {
@@ -35,7 +36,6 @@ import ComboBox from "../../commonComponents/ComboBox";
 
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
-import { useTranslation } from "react-i18next";
 import "../../../i18n";
 
 export type ValidateField = (field: keyof PersonErrors) => Promise<void>;
@@ -230,10 +230,7 @@ const PersonForm = (props: Props) => {
 
   return (
     <>
-      <Prompt
-        when={formChanged}
-        message={t("patient.form.errors.unsaved")}
-      />
+      <Prompt when={formChanged} message={t("patient.form.errors.unsaved")} />
       {view === PersonFormView.APP && props.getHeader && (
         <div className="patient__header">
           {props.getHeader(patient, validateForm, formChanged)}
@@ -265,7 +262,7 @@ const PersonForm = (props: Props) => {
         </div>
         <div className="usa-form">
           <Select
-            label={t("patient.form.general.role.heading")}
+            label={t("patient.form.general.role")}
             name="role"
             value={patient.role || ""}
             onChange={onPersonChange("role")}
@@ -273,7 +270,11 @@ const PersonForm = (props: Props) => {
             defaultSelect={true}
           />
           {patient.role === "STUDENT" && (
-            <Input {...commonInputProps} field="lookupId" label={t("patient.form.general.studentId")}/>
+            <Input
+              {...commonInputProps}
+              field="lookupId"
+              label={t("patient.form.general.studentId")}
+            />
           )}
           {view !== PersonFormView.SELF_REGISTRATION && (
             <FacilitySelect
@@ -312,7 +313,7 @@ const PersonForm = (props: Props) => {
           <Input
             {...commonInputProps}
             field="birthDate"
-            label={t("patient.form.general.preferredLanguage") + " (mm/dd/yyyy)"}
+            label={t("patient.form.general.dob") + " (mm/dd/yyyy)"}
             type="date"
             required={view !== PersonFormView.PXP}
             disabled={view === PersonFormView.PXP}
@@ -348,9 +349,17 @@ const PersonForm = (props: Props) => {
           />
         </div>
         <div className="usa-form">
-          <Input {...commonInputProps} field="city" label={t("patient.form.contact.city")} />
+          <Input
+            {...commonInputProps}
+            field="city"
+            label={t("patient.form.contact.city")}
+          />
           {view !== PersonFormView.SELF_REGISTRATION && (
-            <Input {...commonInputProps} field="county" label={t("patient.form.contact.county")} />
+            <Input
+              {...commonInputProps}
+              field="county"
+              label={t("patient.form.contact.county")}
+            />
           )}
           <div className="grid-row grid-gap">
             <div className="mobile-lg:grid-col-6">
@@ -385,7 +394,7 @@ const PersonForm = (props: Props) => {
           {t("patient.form.demographics.helpText")}
         </p>
         <RadioGroup
-          legend={t("patient.form.demographics.race.heading")}
+          legend={t("patient.form.demographics.race")}
           name="race"
           buttons={RACE_VALUES}
           selectedRadio={patient.race}
@@ -393,7 +402,7 @@ const PersonForm = (props: Props) => {
         />
         <div className="usa-form-group">
           <label className="usa-legend" htmlFor="tribal-affiliation">
-              {t("patient.form.demographics.tribalAffiliation.heading")}
+            {t("patient.form.demographics.tribalAffiliation")}
           </label>
           <ComboBox
             id="tribal-affiliation"
@@ -406,21 +415,21 @@ const PersonForm = (props: Props) => {
           />
         </div>
         <RadioGroup
-          legend={t("patient.form.demographics.ethnicity.heading")}
+          legend={t("patient.form.demographics.ethnicity")}
           name="ethnicity"
           buttons={ETHNICITY_VALUES}
           selectedRadio={patient.ethnicity}
           onChange={onPersonChange("ethnicity")}
         />
         <RadioGroup
-          legend={t("patient.form.demographics.gender.heading")}
+          legend={t("patient.form.demographics.gender")}
           name="gender"
           buttons={GENDER_VALUES}
           selectedRadio={patient.gender}
           onChange={onPersonChange("gender")}
         />
       </FormGroup>
-      <FormGroup title="Other">
+      <FormGroup title={t("patient.form.other.heading")}>
         <YesNoRadioGroup
           legend={t("patient.form.other.congregateLiving.heading")}
           hintText={t("patient.form.other.congregateLiving.helpText")}
@@ -437,7 +446,7 @@ const PersonForm = (props: Props) => {
           required
         />
         <YesNoRadioGroup
-          legend={t("patient.form.other.healthcareWorker.heading")}
+          legend={t("patient.form.other.healthcareWorker")}
           name="employedInHealthcare"
           value={boolToYesNoUnknown(patient.employedInHealthcare)}
           onChange={(v) =>
