@@ -198,7 +198,6 @@ const PersonForm = (props: Props) => {
           document.getElementsByName(name)[0]?.focus();
           focusedOnError = true;
         }
-        //showError(toast, "Please correct before submitting", error);
         showError(toast, t("patient.form.errors.validationMsg"), error);
       });
       return;
