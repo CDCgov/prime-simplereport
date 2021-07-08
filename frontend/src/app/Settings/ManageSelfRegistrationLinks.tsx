@@ -24,14 +24,15 @@ export const ManageSelfRegistrationLinks = ({
   const [copiedSlug, setCopiedSlug] = useState<string>();
 
   useEffect(() => {
-    if (!copiedSlug) {
-      return;
-    }
-    const timeout = setTimeout(() => {
-      setCopiedSlug(undefined);
-    }, 3000);
+    const timeout = copiedSlug
+      ? setTimeout(() => {
+          setCopiedSlug(undefined);
+        }, 3000)
+      : undefined;
     return () => {
-      clearTimeout(timeout);
+      if (timeout) {
+        clearTimeout(timeout);
+      }
     };
   }, [copiedSlug]);
 
@@ -192,7 +193,7 @@ function FacilityLinks({
 function getRegistrationLink(
   baseUrl: string,
   slug: string,
-  withProtocol: boolean = true
+  withProtocol = true
 ) {
   const link = makeLink(baseUrl, "register", slug.toUpperCase());
   return withProtocol
