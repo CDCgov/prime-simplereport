@@ -120,8 +120,7 @@ public class DemoOktaRepository implements OktaRepository {
       throw new IllegalGraphqlArgumentException(
           "Cannot update Okta user privileges for nonexistent organization.");
     }
-    if (!tenantDataContextHolder.hasBeenPopulated()
-        && !orgUsernamesMap.get(orgId).contains(username)) {
+    if (!orgUsernamesMap.get(orgId).contains(username)) {
       throw new IllegalGraphqlArgumentException(
           "Cannot update Okta user privileges for organization they are not in.");
     }

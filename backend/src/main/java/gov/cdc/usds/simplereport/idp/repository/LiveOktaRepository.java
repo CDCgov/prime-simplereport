@@ -286,8 +286,7 @@ public class LiveOktaRepository implements OktaRepository {
                         && g.getProfile().getName().startsWith(groupOrgPrefix))
             .collect(Collectors.toMap(g -> g.getProfile().getName(), g -> g));
 
-    if (!_tenantDataContextHolder.hasBeenPopulated()
-        && !currentOrgGroupMapForUser.containsKey(groupOrgDefaultName)) {
+    if (!currentOrgGroupMapForUser.containsKey(groupOrgDefaultName)) {
       // The user is not a member of the default group for this organization.  If they happen
       // to be in any of this organization's groups, remove the user from those groups.
       currentOrgGroupMapForUser.values().forEach(g -> g.removeUser(user.getId()));
