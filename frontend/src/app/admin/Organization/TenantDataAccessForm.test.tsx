@@ -40,7 +40,7 @@ describe("TenantDataAccessForm", () => {
     fireEvent.change(screen.getByLabelText("Justification", { exact: false }), {
       target: { value: "sample justification text" },
     });
-    const saveButton = await screen.getAllByText("Save Changes")[0];
+    const saveButton = await screen.getAllByText("Save changes")[0];
     expect(saveButton).toBeEnabled();
     await waitFor(async () => {
       fireEvent.click(saveButton);
@@ -59,7 +59,7 @@ describe("TenantDataAccessForm", () => {
         />
       </MemoryRouter>
     );
-    const cancelButton = await screen.getAllByText("Cancel Access")[0];
+    const cancelButton = await screen.getAllByText("Cancel access")[0];
     expect(cancelButton).toBeEnabled();
     await waitFor(async () => {
       fireEvent.click(cancelButton);
