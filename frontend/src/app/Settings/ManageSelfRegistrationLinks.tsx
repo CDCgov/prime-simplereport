@@ -1,11 +1,15 @@
-import { faCheckCircle, faCopy } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
+
+import "./ManageSelfRegistrationLinks.scss";
+
+type FacilitySlug = { name: string; slug: string };
 
 type Props = {
   isNewFeature: boolean;
   organizationSlug: string;
-  facilitySlugs: { name: string; slug: string }[];
+  facilitySlugs: FacilitySlug[];
   howItWorksLink: string;
 };
 
@@ -18,13 +22,15 @@ export const ManageSelfRegistrationLinks = ({
   const [copiedSlug, setCopiedSlug] = useState<String>();
 
   useEffect(() => {
-    if (!copiedSlug) return;
+    if (!copiedSlug) {
+      return;
+    }
     setTimeout(() => {
       setCopiedSlug(undefined);
     }, 3000);
   }, [copiedSlug]);
 
-  async function copySlug(slug: string) {
+  async function copySlug(slug: String) {
     try {
       await navigator.clipboard.writeText(getRegistrationLink(slug));
       setCopiedSlug(slug);
@@ -58,10 +64,13 @@ export const ManageSelfRegistrationLinks = ({
           </p>
           <OrganizationLink
             slug={organizationSlug}
-            copySlug={() => {
-              copySlug(organizationSlug);
-            }}
+            copySlug={copySlug}
             copied={copiedSlug === organizationSlug}
+          />
+          <FacilityLinks
+            slugs={facilitySlugs}
+            copySlug={copySlug}
+            copiedSlug={copiedSlug}
           />
         </div>
       </div>
@@ -71,7 +80,7 @@ export const ManageSelfRegistrationLinks = ({
 
 type OrgLinkProps = {
   slug: string;
-  copySlug: () => void;
+  copySlug: (slug: String) => void;
   copied: boolean;
 };
 
@@ -83,7 +92,7 @@ function OrganizationLink({ slug, copySlug, copied }: OrgLinkProps) {
       <label className="usa-label text-bold" htmlFor="org-link">
         Organization link
       </label>
-      <p id="org-link-description" className="text-base">
+      <p id="org-link-description" className="sr-registration-link-description">
         Patients who register at this link will be visible at{" "}
         <span className="text-bold text-italic">all</span> your facilities.
       </p>
@@ -103,11 +112,11 @@ function OrganizationLink({ slug, copySlug, copied }: OrgLinkProps) {
             borderBottomLeftRadius: 0,
           }}
           className="usa-button"
-          onClick={copySlug}
+          onClick={() => copySlug(slug)}
         >
           <FontAwesomeIcon
             className="margin-right-1"
-            icon={copied ? faCheckCircle : faCopy}
+            icon={copied ? faCheck : faCopy}
           />
           {copied ? "Copied!" : "Copy link"}
         </button>
@@ -116,8 +125,54 @@ function OrganizationLink({ slug, copySlug, copied }: OrgLinkProps) {
   );
 }
 
+type FacilityLinksProps = {
+  slugs: FacilitySlug[];
+  copySlug: (slug: String) => void;
+  copiedSlug: String | undefined;
+};
+
+function FacilityLinks({ slugs, copiedSlug, copySlug }: FacilityLinksProps) {
+  return (
+    <section aria-label="Facility links" className="margin-top-5">
+      <p className="usa-label text-bold">Facility links</p>
+      <p id="org-link-description" className="text-base margin-y-105">
+        Patients who register at these links will be visible only at the
+        specified facility
+      </p>
+      <table className="usa-table">
+        <thead>
+          <tr>
+            <th scope="col">Facility name</th>
+            <th scope="col">Patient self-registration link</th>
+          </tr>
+        </thead>
+        <tbody>
+          {slugs.map(({ name, slug }) => (
+            <tr key={slug}>
+              <td>{name}</td>
+              <td className="text-no-wrap">
+                {getRegistrationLink(slug, false)}
+                <button
+                  className="usa-button margin-left-1 usa-button--unstyled"
+                  onClick={() => copySlug(slug)}
+                  arial-label={`Copy patient self-registration link for ${name}`}
+                >
+                  <FontAwesomeIcon
+                    icon={copiedSlug === slug ? faCheck : faCopy}
+                  />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  );
+}
+
 const baseUrl = process.env.REACT_APP_BASE_URL?.replace(/\/$/, "");
 
-function getRegistrationLink(slug: string) {
-  return `${baseUrl}/register/${slug.toUpperCase()}`;
+function getRegistrationLink(slug: String, withProtocol: boolean = true) {
+  const link = `${baseUrl}/register/${slug.toUpperCase()}`;
+  return withProtocol ? link : link.replace(/^http[s]{0,1}:\/\/[www]{0,1}/, "");
 }
