@@ -51,6 +51,7 @@ const FacilitySelect: React.FC<Props> = (props) => {
       validationStatus={props.validationStatus(NAME)}
       errorMessage={props.errors[NAME]}
       options={facilityList}
+      defaultOption={t("common.defaultDropdownOption")}
       defaultSelect={true}
       required
     />

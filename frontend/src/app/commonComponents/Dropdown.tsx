@@ -1,7 +1,6 @@
 import React from "react";
 import classnames from "classnames";
 import { UIDConsumer } from "react-uid";
-import { useTranslation } from "react-i18next";
 
 import Required from "../commonComponents/Required";
 
@@ -39,7 +38,7 @@ const Dropdown: React.FC<Props & SelectProps> = ({
   onChange,
   disabled,
   className,
-  defaultOption, // value of the default option
+  defaultOption = "- Select -", // value of the default option
   selectedValue,
   defaultSelect,
   required,
@@ -49,8 +48,6 @@ const Dropdown: React.FC<Props & SelectProps> = ({
   hintText,
   ...inputProps
 }) => {
-  const { t } = useTranslation();
-
   return (
     <UIDConsumer>
       {(id) => (
@@ -97,9 +94,7 @@ const Dropdown: React.FC<Props & SelectProps> = ({
             disabled={disabled}
             {...inputProps}
           >
-            {defaultSelect && (
-              <option value="">{t("common.defaultDropdownOption")}</option>
-            )}
+            {defaultSelect && <option value="">{defaultOption}</option>}
             {options.map(({ value, label, disabled }) => (
               <option key={value} value={value} disabled={disabled}>
                 {label}

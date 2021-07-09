@@ -8,7 +8,8 @@ const RequiredMessage = () => {
 
   return (
     <p className="message--required">
-      {t("common.required")} (<Required />).
+      {t("common.required")} (<Required />
+      ).
     </p>
   );
 };

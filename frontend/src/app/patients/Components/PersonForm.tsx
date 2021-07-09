@@ -266,6 +266,7 @@ const PersonForm = (props: Props) => {
             value={patient.role || ""}
             onChange={onPersonChange("role")}
             options={ROLE_VALUES}
+            defaultOption={t("common.defaultDropdownOption")}
             defaultSelect={true}
           />
           {patient.role === "STUDENT" && (
@@ -367,6 +368,7 @@ const PersonForm = (props: Props) => {
                 name="state"
                 value={patient.state || ""}
                 options={stateCodes.map((c) => ({ label: c, value: c }))}
+                defaultOption={t("common.defaultDropdownOption")}
                 defaultSelect
                 onChange={onPersonChange("state")}
                 onBlur={() => {
