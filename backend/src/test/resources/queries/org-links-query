@@ -6,6 +6,6 @@ query OrgLinks {
     	  name
      	  patientSelfRegistrationLink
   	  }
-	  }
+    }
   }
 }
