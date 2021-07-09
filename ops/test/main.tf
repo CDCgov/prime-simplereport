@@ -56,9 +56,9 @@ resource "azurerm_cdn_endpoint" "cdn_endpoint" {
       behavior = "BypassCache"
     }
 
-    request_uri_condition {
-      operator     = "BeginsWith"
-      match_values = ["/app", "/register"]
+    url_file_name_condition {
+      operator     = "Equal"
+      match_values = ["index.html", "commit.txt"]
       transforms   = ["Lowercase"]
     }
   }
