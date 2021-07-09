@@ -22,6 +22,7 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
+import gov.cdc.usds.simplereport.config.authorization.TenantDataAuthenticationProvider;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -35,6 +36,7 @@ import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
+import gov.cdc.usds.simplereport.service.TenantDataAccessService;
 import gov.cdc.usds.simplereport.service.crm.CrmService;
 import gov.cdc.usds.simplereport.service.email.EmailProvider;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
@@ -83,12 +85,15 @@ class AccountRequestControllerTest {
   @MockBean private AuthorizationService authorizationService;
   @MockBean private IdentitySupplier identitySupplier;
   @MockBean private CurrentPatientContextHolder currentPatientContextHolder;
+  @MockBean private TenantDataAccessService tenantDataAccessService;
 
   @MockBean private OrganizationService orgService;
   @MockBean private DeviceTypeService deviceTypeService;
   @MockBean private AddressValidationService addressValidationService;
   @SpyBean private ApiUserService apiUserService;
   @MockBean private CurrentAccountRequestContextHolder contextHolder;
+  @MockBean private CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder;
+  @MockBean private TenantDataAuthenticationProvider tenantDataAuthProvider;
 
   @MockBean private CrmService crmService;
   @MockBean private OktaRepository oktaRepository;
