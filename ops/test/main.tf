@@ -58,7 +58,7 @@ resource "azurerm_cdn_endpoint" "cdn_endpoint" {
 
     request_uri_condition {
       operator     = "BeginsWith"
-      match_values = ["/app" "/register"]
+      match_values = ["/app", "/register"]
       transforms   = "Lowercase"
     }
   }
