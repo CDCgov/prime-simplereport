@@ -50,7 +50,7 @@ resource "azurerm_cdn_endpoint" "cdn_endpoint" {
 
   delivery_rule {
     name  = "bypassIndexHtmlCache"
-    order = 2
+    order = 1
 
     cache_expiration_action {
       behavior = "BypassCache"
