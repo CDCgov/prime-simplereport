@@ -167,19 +167,13 @@ describe("App", () => {
   it("Render first loading screen", async () => {
     const mockedStore = mockStore({});
     renderApp(mockedStore, [WhoAmIQueryMock]);
-    const loadingAccount = await screen.findByText(
-      "Loading account information..."
-    );
-    expect(loadingAccount).toBeInTheDocument();
+    await screen.findByText("Loading account information...");
   });
 
   it("Render facility loading", async () => {
     const mockedStore = mockStore({ ...store });
     renderApp(mockedStore, [WhoAmIQueryMock, facilityQueryMock]);
-    const loadingFacility = await screen.findByText(
-      "Loading facility information..."
-    );
-    expect(loadingFacility).toBeInTheDocument();
+    await screen.findByText("Loading facility information...");
   });
 
   it("Render main screen", async () => {
