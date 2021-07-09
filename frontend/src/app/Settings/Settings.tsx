@@ -3,6 +3,7 @@ import { Route, RouteComponentProps, Switch } from "react-router-dom";
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import Button from "../commonComponents/Button/Button";
 import { useDocumentTitle } from "../utils/hooks";
+import reload from "../utils/reload";
 
 import ManageOrganizationContainer from "./ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";
@@ -33,9 +34,7 @@ const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
                   </div>
                 </div>
                 <div className="usa-card__footer">
-                  <Button onClick={() => window.location.reload()}>
-                    Refresh Page
-                  </Button>
+                  <Button onClick={() => reload()}>Refresh Page</Button>
                 </div>
               </div>
             </div>

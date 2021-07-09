@@ -9,6 +9,12 @@ import App, { WHOAMI_QUERY } from "./App";
 import { queueQuery } from "./testQueue/TestQueue";
 
 jest.mock("uuid");
+jest.mock("./VersionService", () => ({
+  VersionService: {
+    getSHA: jest.fn(),
+    reload: jest.fn(),
+  },
+}));
 
 const mockStore = createMockStore([]);
 const mockDispatch = jest.fn();
