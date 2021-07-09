@@ -1,21 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`App Render facility loading 1`] = `
-<div>
-  <p>
-    Loading facility information...
-  </p>
-</div>
-`;
-
-exports[`App Render first loading screen 1`] = `
-<div>
-  <p>
-    Loading account information...
-  </p>
-</div>
-`;
-
 exports[`App Render main screen 1`] = `
 <div>
   <div

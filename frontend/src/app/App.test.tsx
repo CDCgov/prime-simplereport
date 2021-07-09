@@ -166,20 +166,20 @@ const renderApp = (
 describe("App", () => {
   it("Render first loading screen", async () => {
     const mockedStore = mockStore({});
-    const { container } = renderApp(mockedStore, [WhoAmIQueryMock]);
-    await screen.findByText("Loading account information...");
-    expect(container).toMatchSnapshot();
+    renderApp(mockedStore, [WhoAmIQueryMock]);
+    const loadingAccount = await screen.findByText(
+      "Loading account information..."
+    );
+    expect(loadingAccount).toBeInTheDocument();
   });
 
   it("Render facility loading", async () => {
     const mockedStore = mockStore({ ...store });
-
-    const { container } = renderApp(mockedStore, [
-      WhoAmIQueryMock,
-      facilityQueryMock,
-    ]);
-    await screen.findByText("Loading facility information...");
-    expect(container).toMatchSnapshot();
+    renderApp(mockedStore, [WhoAmIQueryMock, facilityQueryMock]);
+    const loadingFacility = await screen.findByText(
+      "Loading facility information..."
+    );
+    expect(loadingFacility).toBeInTheDocument();
   });
 
   it("Render main screen", async () => {
