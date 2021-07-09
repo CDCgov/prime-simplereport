@@ -42,7 +42,7 @@ describe("ManageSelfRegistrationLinks", () => {
     expect(navigator.clipboard.writeText).toBeCalledWith(orgUrl);
   });
 
-  it("copies the org link", async () => {
+  it("copies a facility link", async () => {
     const facilityUrl = `${
       props.baseUrl
     }/register/${props.facilitySlugs[1].slug.toUpperCase()}`;
