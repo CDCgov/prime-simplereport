@@ -47,6 +47,21 @@ resource "azurerm_cdn_endpoint" "cdn_endpoint" {
     name      = "${local.name}-${local.env}-static"
     host_name = azurerm_storage_account.app.primary_web_host
   }
+
+  delivery_rule {
+    name  = "bypassIndexHtmlCache"
+    order = 2
+
+    cache_expiration_action {
+      behavior = "BypassCache"
+    }
+
+    request_uri_condition {
+      operator     = "BeginsWith"
+      match_values = ["/app" "/register"]
+      transforms   = "Lowercase"
+    }
+  }
 }
 
 
