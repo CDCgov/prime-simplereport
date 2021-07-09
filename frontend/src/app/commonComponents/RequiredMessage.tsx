@@ -1,14 +1,18 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 
 import Required from "./Required";
 
-const RequiredMessage = () => {
-  const { t } = useTranslation();
+interface Props {
+  message?: string;
+}
+
+const RequiredMessage = (props: Props) => {
+  const message =
+    props.message || "Required fields are marked with an asterisk";
 
   return (
     <p className="message--required">
-      {t("common.required")} (<Required />
+      {message} (<Required />
       ).
     </p>
   );

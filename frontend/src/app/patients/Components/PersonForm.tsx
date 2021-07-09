@@ -236,7 +236,7 @@ const PersonForm = (props: Props) => {
         </div>
       )}
       <FormGroup title={t("patient.form.general.heading")}>
-        <RequiredMessage />
+        <RequiredMessage message={t("common.required")} />
         <div className="usa-form">
           <Input
             {...commonInputProps}
