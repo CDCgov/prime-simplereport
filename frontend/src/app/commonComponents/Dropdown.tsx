@@ -38,7 +38,7 @@ const Dropdown: React.FC<Props & SelectProps> = ({
   onChange,
   disabled,
   className,
-  defaultOption, // value of the default option
+  defaultOption = "- Select -", // value of the default option
   selectedValue,
   defaultSelect,
   required,
@@ -94,7 +94,7 @@ const Dropdown: React.FC<Props & SelectProps> = ({
             disabled={disabled}
             {...inputProps}
           >
-            {defaultSelect && <option value="">- Select -</option>}
+            {defaultSelect && <option value="">{defaultOption}</option>}
             {options.map(({ value, label, disabled }) => (
               <option key={value} value={value} disabled={disabled}>
                 {label}

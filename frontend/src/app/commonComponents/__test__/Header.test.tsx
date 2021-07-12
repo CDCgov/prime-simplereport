@@ -5,6 +5,7 @@ import createMockStore from "redux-mock-store";
 import { useTrackEvent } from "@microsoft/applicationinsights-react-js";
 
 import Header from "../Header";
+import "../../../i18n";
 
 const mockStore = createMockStore([]);
 

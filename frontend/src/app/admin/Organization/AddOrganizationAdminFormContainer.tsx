@@ -9,6 +9,7 @@ import { Redirect } from "react-router-dom";
 
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
+import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 import { OrganizationOptions } from "./OrganizationDropDown";
 import AddOrganizationAdminForm from "./AddOrganizationAdminForm";
@@ -77,7 +78,7 @@ const AddOrganizationAdminFormContainer: any = () => {
   const trackSaveSettings = useTrackEvent(appInsights, "Save Settings", null);
 
   if (loading) {
-    return <p> Loading... </p>;
+    return <LoadingCard message={"Loading Organizations"} />;
   }
   if (error) {
     return error;
