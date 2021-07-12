@@ -4,7 +4,6 @@ import static gov.cdc.usds.simplereport.config.WebConfiguration.IDENTITY_VERIFIC
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationRequest;
 import gov.cdc.usds.simplereport.service.idverification.ExperianService;
-
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;

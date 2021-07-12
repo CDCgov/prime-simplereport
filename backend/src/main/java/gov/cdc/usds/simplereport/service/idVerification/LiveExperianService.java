@@ -1,6 +1,6 @@
-package gov.cdc.usds.simplereport.service.idVerification;
+package gov.cdc.usds.simplereport.service.idverification;
 
-import static gov.cdc.usds.simplereport.service.idVerification.ExperianTranslator.createInitialRequestBody;
+import static gov.cdc.usds.simplereport.service.idverification.ExperianTranslator.createInitialRequestBody;
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationRequest;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
