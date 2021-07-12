@@ -1,8 +1,176 @@
 import { LanguageConfig } from "./en";
 
+const YES = "";
+const NO = "";
+const OTHER = "";
+const REFUSED = "";
+const UNKNOWN = "";
+
 export const es: LanguageConfig = {
   translation: {
     header: "Portal de pruebas COVID-19",
+    constants: {
+      testResults: {
+        POSITIVE: "",
+        NEGATIVE: "",
+        UNDETERMINED: "",
+        UNKNOWN: UNKNOWN,
+      },
+      role: {
+        STAFF: "",
+        RESIDENT: "",
+        STUDENT: "",
+        VISITOR: "",
+      },
+      race: {
+        native: "",
+        asian: "",
+        black: "",
+        pacific: "",
+        white: "",
+        other: OTHER,
+        refused: REFUSED,
+      },
+      gender: {
+        female: "",
+        male: "",
+        other: OTHER,
+        refused: REFUSED,
+      },
+      ethnicity: {
+        hispanic: YES,
+        not_hispanic: NO,
+        refused: REFUSED,
+      },
+      phoneType: {
+        MOBILE: "",
+        LANDLINE: "",
+      },
+      yesNoUnk: {
+        YES,
+        NO,
+        UNKNOWN,
+      },
+    },
+    common: {
+      required: "",
+      defaultDropdownOption: "",
+      button: {
+        submit: "",
+      },
+      pageNotFound: {
+        heading: "",
+        text: "",
+        errorCode: "",
+      },
+    },
+    address: {
+      heading: "",
+      select: "",
+      useAddress: "",
+      getSuggested: "",
+      noSuggestedFound: "",
+      goBack: "",
+      goBack_plural: "",
+      save: "",
+      errors: {
+        incomplete: "",
+        unverified: "",
+        unverified_plural: "",
+      },
+    },
+    facility: {
+      form: {
+        heading: "",
+        allFacilities: "",
+      },
+    },
+    patient: {
+      form: {
+        general: {
+          heading: "",
+          helpText: "",
+          firstName: "",
+          middleName: "",
+          lastName: "",
+          role: "",
+          studentId: "",
+          preferredLanguage: "",
+          dob: "",
+        },
+        contact: {
+          heading: "",
+          primaryPhoneNumber: "",
+          additionalPhoneNumber: "",
+          phoneType: "",
+          addNumber: "",
+          email: "",
+          street1: "",
+          street2: "",
+          county: "",
+          city: "",
+          state: "",
+          zip: "",
+        },
+        demographics: {
+          heading: "",
+          helpText: "",
+          race: "",
+          tribalAffiliation: "",
+          ethnicity: "",
+          gender: "",
+        },
+        other: {
+          heading: "",
+          congregateLiving: {
+            heading: "",
+            helpText: "",
+          },
+          healthcareWorker: "",
+        },
+        errors: {
+          unsaved: "",
+          validationMsg: "",
+          firstName: "",
+          middleName: "",
+          lastName: "",
+          lookupId: "",
+          role: "",
+          facilityId: "",
+          birthDate: "",
+          telephone: "",
+          phoneNumbers: "",
+          email: "",
+          street: "",
+          streetTwo: "",
+          zipCode: "",
+          state: "",
+          city: "",
+          county: "",
+          race: "",
+          tribalAffiliation: "",
+          ethnicity: "",
+          gender: "",
+          residentCongregateSetting: "",
+          employedInHealthcare: "",
+          preferredLanguage: "",
+        },
+      },
+    },
+    selfRegistration: {
+      form: {
+        complete: "",
+        inProgress: "",
+        error: {
+          heading: "",
+          text: "",
+        },
+      },
+      confirmation: {
+        registered: "",
+        checkIn: "",
+      },
+    },
     testResult: {
       result: "",
       patient: "",

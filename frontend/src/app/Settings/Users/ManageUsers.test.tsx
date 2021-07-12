@@ -8,6 +8,7 @@ import { displayFullName } from "../../utils";
 
 import ManageUsers, { SettingsUsers } from "./ManageUsers";
 import { GET_USER } from "./ManageUsersContainer";
+import "../../../i18n";
 
 const organization = { testingFacility: [{ id: "a1", name: "Foo Org" }] };
 const allFacilities = [

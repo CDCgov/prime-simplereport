@@ -1,0 +1,26 @@
+.sr-registration-link-description {
+  color: color($theme-color-base);
+  max-width: 22em;
+}
+
+.sr-organization-link-container {
+  .sr-organization-link-input {
+    margin-top: 0;
+    height: auto;
+  }
+
+  .sr-organization-link-copy-button {
+    @include u-width(full);
+    border-radius: 0 0 4px 4px;
+  }
+
+  @include at-media(mobile-lg) {
+    display: flex;
+
+    .sr-organization-link-copy-button {
+      flex-shrink: 0;
+      border-radius: 0 4px 4px 0;
+      width: auto;
+    }
+  }
+}

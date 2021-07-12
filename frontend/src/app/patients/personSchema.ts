@@ -12,6 +12,7 @@ import {
 } from "../constants";
 import { Option } from "../commonComponents/Dropdown";
 import { languages } from "../../config/constants";
+import i18n from "../../i18n";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -161,36 +162,36 @@ export const selfRegistrationSchema: yup.SchemaOf<SelfRegistationFields> = yup.o
 export type PersonErrors = Partial<Record<keyof PersonFormData, string>>;
 
 export const allPersonErrors: Required<PersonErrors> = {
-  firstName: "First name is required",
-  middleName: "Middle name is incorrectly formatted",
-  lastName: "Last name is required",
-  lookupId: "Lookup ID is incorrectly formatted",
-  role: "Role is incorrectly formatted",
-  facilityId: "Facility is required",
-  birthDate:
-    "Date of birth must be present, correctly formatted (MM/DD/YYYY), and in the past",
-  telephone: "Phone number is missing or invalid",
-  phoneNumbers: "Phone number is missing or invalid",
-  email: "Email is missing or incorrectly formatted",
-  street: "Street is missing",
-  streetTwo: "Street Two is incorrectly formatted",
-  zipCode: "Zip code is missing or incorrectly formatted",
-  state: "State is missing or incorrectly formatted",
-  city: "City is incorrectly formatted",
-  county: "County is incorrectly formatted",
-  race: "Race is incorrectly formatted",
-  tribalAffiliation: "Tribal Affiliation is incorrectly formatted",
-  ethnicity: "Ethnicity is incorrectly formatted",
-  gender: "Biological Sex is incorrectly formatted",
-  residentCongregateSetting:
-    "Are you a resident in a congregate living setting? is required",
-  employedInHealthcare: "Are you a health care worker? is required",
-  preferredLanguage: "Preferred language is incorrectly formatted",
+  firstName: i18n.t("patient.form.errors.firstName"),
+  middleName: i18n.t("patient.form.errors.middleName"),
+  lastName: i18n.t("patient.form.errors.lastName"),
+  lookupId: i18n.t("patient.form.errors.lookupId"),
+  role: i18n.t("patient.form.errors.role"),
+  facilityId: i18n.t("patient.form.errors.facilityId"),
+  birthDate: i18n.t("patient.form.errors.birthDate"),
+  telephone: i18n.t("patient.form.errors.telephone"),
+  phoneNumbers: i18n.t("patient.form.errors.phoneNumbers"),
+  email: i18n.t("patient.form.errors.email"),
+  street: i18n.t("patient.form.errors.street"),
+  streetTwo: i18n.t("patient.form.errors.streetTwo"),
+  zipCode: i18n.t("patient.form.errors.zipCode"),
+  state: i18n.t("patient.form.errors.state"),
+  city: i18n.t("patient.form.errors.city"),
+  county: i18n.t("patient.form.errors.county"),
+  race: i18n.t("patient.form.errors.race"),
+  tribalAffiliation: i18n.t("patient.form.errors.tribalAffiliation"),
+  ethnicity: i18n.t("patient.form.errors.ethnicity"),
+  gender: i18n.t("patient.form.errors.gender"),
+  residentCongregateSetting: i18n.t(
+    "patient.form.errors.residentCongregateSetting"
+  ),
+  employedInHealthcare: i18n.t("patient.form.errors.employedInHealthcare"),
+  preferredLanguage: i18n.t("patient.form.errors.preferredLanguage"),
 };
 
 export type PhoneNumberErrors = Partial<Record<keyof PhoneNumber, string>>;
 
 export const allPhoneNumberErrors: Required<PhoneNumberErrors> = {
-  number: "Phone number is missing or invalid",
+  number: i18n.t("patient.form.errors.telephone"),
   type: "Phone type is missing or invalid",
 };

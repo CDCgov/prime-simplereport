@@ -80,7 +80,8 @@ Object {
                   <p
                     class="message--required"
                   >
-                    Required fields are marked with an asterisk (
+                    Required fields are marked with an asterisk
+                     (
                     <abbr
                       class="usa-hint usa-hint--required"
                       title="required"
@@ -1499,7 +1500,8 @@ Object {
                 <p
                   class="message--required"
                 >
-                  Required fields are marked with an asterisk (
+                  Required fields are marked with an asterisk
+                   (
                   <abbr
                     class="usa-hint usa-hint--required"
                     title="required"
