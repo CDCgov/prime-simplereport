@@ -15,7 +15,7 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 ext {
-    kickstartVersion = '11.0.0'
+    kickstartVersion = '11.1.0'
     set('springCloudVersion', "Hoxton.SR11")
 }
 repositories {
