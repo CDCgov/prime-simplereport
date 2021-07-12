@@ -32,6 +32,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @AutoConfigureMockMvc
 public abstract class BaseFullStackTest {
 
+  @Autowired private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
   @Autowired private DbTruncator _truncator;
   @Autowired private AuditService _auditService;
   @Autowired protected TestDataFactory _dataFactory;
@@ -93,6 +94,24 @@ public abstract class BaseFullStackTest {
     assertEquals(status.value(), event.getResponseCode(), "HTTP status code");
     if (requestId != null) {
       assertEquals(requestId, event.getRequestId(), "SimpleReport request ID");
+    }
+    return event;
+  }
+
+  protected ApiAuditEvent assertLastAuditEntry(
+      String username, String organizationExternalId, Set<UserPermission> permissions) {
+    ApiAuditEvent event = getTimeCheckedEvent();
+    assertEquals(username, event.getUser().getLoginEmail());
+    if (organizationExternalId == null) {
+      assertNull(event.getOrganization());
+    } else {
+      assertEquals(organizationExternalId, event.getOrganization().getExternalId());
+    }
+    if (permissions != null) {
+      assertEquals(
+          permissions.stream().map(UserPermission::name).collect(Collectors.toSet()),
+          Set.copyOf(event.getUserPermissions()),
+          "Recorded user permissions");
     }
     return event;
   }

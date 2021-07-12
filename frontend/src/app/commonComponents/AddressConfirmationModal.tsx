@@ -1,5 +1,6 @@
 import React, { ReactNode, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useTranslation } from "react-i18next";
 
 import { formatAddress, newLineSpan } from "../utils/address";
 
@@ -24,7 +25,7 @@ interface Props<T extends string> {
 }
 
 type addressOptions = "userAddress" | "suggested";
-const ERROR_MESSAGE = "Please choose an address or go back to edit";
+
 export const AddressConfirmationModal = <T extends string>({
   addressSuggestionConfig,
   showModal,
@@ -34,6 +35,7 @@ export const AddressConfirmationModal = <T extends string>({
   const [selectedAddress, setSelectedAddress] = useState<
     Partial<Record<T, addressOptions>>
   >({});
+
   const addressSuggestionConfigMap = addressSuggestionConfig.reduce(
     (acc, el) => {
       acc[el.key] = el;
@@ -42,7 +44,9 @@ export const AddressConfirmationModal = <T extends string>({
     {} as Record<T, AddressSuggestionConfig<T>>
   );
 
-  const multipleAddresses = addressSuggestionConfig.length > 1;
+  const { t } = useTranslation();
+
+  const ERROR_MESSAGE = t("address.errors.incomplete");
 
   const [error, setError] = useState(new Set<T>());
 
@@ -93,12 +97,13 @@ export const AddressConfirmationModal = <T extends string>({
     ) {
       return null;
     }
+
     return (
       <Alert
         type="warning"
-        body={`The address${
-          multipleAddresses ? "es" : ""
-        } you entered could not be verified`}
+        body={t("address.errors.unverified", {
+          count: addressSuggestionConfig.length,
+        })}
         role="alert"
         slim
       />
@@ -129,7 +134,7 @@ export const AddressConfirmationModal = <T extends string>({
       return {
         value: "suggested",
         label: getLabel(
-          "Use suggested address",
+          t("address.getSuggested"),
           addressSuggestionConfigMap[key].suggestedAddress!
         ),
       };
@@ -138,7 +143,7 @@ export const AddressConfirmationModal = <T extends string>({
       value: "suggested",
       label: (
         <span className="address__no-suggestion">
-          No suggested address found
+          {t("address.noSuggestedFound")}
         </span>
       ),
       disabled: true,
@@ -167,20 +172,20 @@ export const AddressConfirmationModal = <T extends string>({
 
   return (
     <Modal onClose={closeModal} showModal={showModal}>
-      <Modal.Header>Address validation</Modal.Header>
+      <Modal.Header>{t("address.heading")}</Modal.Header>
       <div className="border-top border-base-lighter margin-x-neg-205"></div>
       {getAlert()}
       {addressSuggestionConfig.map((address) => (
         <RadioGroup
           key={address.key}
           name={`addressSelect-${address.key}`}
-          legend={address.label || "Please select an option to continue:"}
+          legend={address.label || t("address.select")}
           className="address__select margin-top-0"
           buttons={[
             {
               value: "userAddress",
               label: getLabel(
-                "Use address as entered",
+                t("address.useAddress"),
                 address.userEnteredAddress
               ),
             },
@@ -200,7 +205,7 @@ export const AddressConfirmationModal = <T extends string>({
           <Button variant="unstyled" onClick={closeModal}>
             <FontAwesomeIcon icon={"arrow-left"} />
             <span className="margin-left-1">
-              Go back to edit address{multipleAddresses ? "es" : ""}
+              {t("address.goBack", { count: addressSuggestionConfig.length })}
             </span>
           </Button>
           <Button
@@ -210,7 +215,7 @@ export const AddressConfirmationModal = <T extends string>({
               ({ key }) => !selectedAddress[key]
             )}
           >
-            Save changes
+            {t("address.save")}
           </Button>
         </Modal.Footer>
       </div>

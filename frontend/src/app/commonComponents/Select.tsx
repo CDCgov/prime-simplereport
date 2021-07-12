@@ -15,6 +15,7 @@ interface Props<T> {
   value: T;
   onChange: (value: T) => void;
   onBlur?: () => void;
+  defaultOption?: string;
   defaultSelect?: boolean;
   required?: boolean;
   validationStatus?: "error" | "success";
@@ -30,6 +31,7 @@ const Select = <T extends string>({
   onBlur,
   validationStatus,
   errorMessage,
+  defaultOption,
   defaultSelect,
   required,
 }: Props<T>): React.ReactElement => {
@@ -47,6 +49,7 @@ const Select = <T extends string>({
       validationStatus={validationStatus}
       errorMessage={errorMessage}
       required={required}
+      defaultOption={defaultOption}
       defaultSelect={defaultSelect}
     />
   );
