@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
@@ -51,6 +52,8 @@ public class ApiUserService {
   @Autowired private OrganizationService _orgService;
 
   @Autowired private OktaRepository _oktaRepo;
+
+  @Autowired private TenantDataAccessService _tenantService;
 
   @Autowired private CurrentPatientContextHolder _patientContextHolder;
 
@@ -292,6 +295,7 @@ public class ApiUserService {
           return magicUser;
         });
   }
+
   /** The Account Request User should <em>always</em> exist. */
   private ApiUser getAccountRequestApiUser() {
     Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(ACCOUNT_REQUEST_EMAIL);
@@ -391,5 +395,40 @@ public class ApiUserService {
     OrganizationRoles orgRoles =
         new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
     return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public UserInfo setCurrentUserTenantDataAccess(
+      String organizationExternalID, String justification) {
+    if (organizationExternalID == null) {
+      return cancelCurrentUserTenantDataAccess();
+    }
+
+    if (justification == null) {
+      throw new IllegalGraphqlArgumentException("A justification for this access is required.");
+    }
+    ApiUser apiUser = getCurrentApiUser();
+    Organization org = _orgService.getOrganization(organizationExternalID);
+
+    Optional<OrganizationRoleClaims> roleClaims =
+        _tenantService.addTenantDataAccess(apiUser, org, justification);
+    Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
+
+    boolean isAdmin = isAdmin(apiUser);
+
+    return new UserInfo(apiUser, orgRoles, isAdmin);
+  }
+
+  private UserInfo cancelCurrentUserTenantDataAccess() {
+    ApiUser apiUser = getCurrentApiUser();
+    _tenantService.removeAllTenantDataAccess(apiUser);
+    _orgService.resetOrganizationRolesContext();
+    return getCurrentUserInfo();
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public Set<String> getTenantDataAccessAuthoritiesForCurrentUser() {
+    ApiUser apiUser = getCurrentApiUser();
+    return _tenantService.getTenantDataAccessAuthorities(apiUser);
   }
 }
