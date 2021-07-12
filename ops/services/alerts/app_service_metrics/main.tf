@@ -112,7 +112,7 @@ requests
 
   trigger {
     operator  = "GreaterThan"
-    threshold = 9
+    threshold = var.failed_http_2xx_threshold
   }
 
   action {

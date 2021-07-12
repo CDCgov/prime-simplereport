@@ -15,8 +15,7 @@ exports[`TermsOfService snapshot 1`] = `
     <p
       className="margin-top-105"
     >
-      This testing site uses
-       
+      This testing site uses 
       <a
         href="https://simplereport.gov/"
       >
@@ -31,15 +30,13 @@ exports[`TermsOfService snapshot 1`] = `
         12/4/2020
       </p>
       <p>
-        As a Testing Facility (Facility) or its user (Facility User) accessing or using SimpleReport (Application) provided by the Centers for Disease Control and Prevention (CDC) and the U.S.Department of Health and Human Services (HHS), in a CDC cloud environment (" CDC Platform"), you acknowledge and agree that you are solely responsible for and shall abide by these Terms of Service, as well as any relevant sections of
-         
+        As a Testing Facility (Facility) or its user (Facility User) accessing or using SimpleReport (Application) provided by the Centers for Disease Control and Prevention (CDC) and the U.S.Department of Health and Human Services (HHS), in a CDC cloud environment (" CDC Platform"), you acknowledge and agree that you are solely responsible for and shall abide by these Terms of Service, as well as any relevant sections of 
         <a
           href="https://www.cdc.gov/other/information.html"
         >
           CDC's Privacy Policies
         </a>
-         
-        (collectively, Terms).
+         (collectively, Terms).
       </p>
       <h2
         id="scope"
@@ -81,8 +78,7 @@ exports[`TermsOfService snapshot 1`] = `
         Privacy
       </h3>
       <p>
-        You may use the Application to search, display, analyze, retrieve, view and otherwise ‘get ' information from data you are sending via the Application and the Platform.Please note that the data which you are sending via the Application may be subject to the Privacy Act of 1974, the Health Insurance Portability and Accountability Act of 1996 (HIPAA), and other laws, and requires special safeguarding.By accessing and using the Application, you agree to strictly abide by all applicable federal and state laws regarding the collection, use, protection and disclosure of information obtained or sent through the Application.If you would like more information about the application of the Privacy Act at CDC,
-         
+        You may use the Application to search, display, analyze, retrieve, view and otherwise ‘get ' information from data you are sending via the Application and the Platform.Please note that the data which you are sending via the Application may be subject to the Privacy Act of 1974, the Health Insurance Portability and Accountability Act of 1996 (HIPAA), and other laws, and requires special safeguarding.By accessing and using the Application, you agree to strictly abide by all applicable federal and state laws regarding the collection, use, protection and disclosure of information obtained or sent through the Application. If you would like more information about the application of the Privacy Act at CDC, 
         <a
           href="https://www.cms.gov/Research-Statistics-Data-and-Systems/Computer-Data-and-Systems/Privacy/PrivacyActof1974.html"
         >
@@ -91,7 +87,7 @@ exports[`TermsOfService snapshot 1`] = `
         .
       </p>
       <p>
-        For purposes of use of this Application, if you are a HIPAA covered entity or acting on behalf of one as a business associate or if the data is maintained in a HIPAA-covered designated record set, you further acknowledge that you will abide by applicable HIPAA regulations (45 CFR Parts 160 and 164) for purposes of appropriate storage, transmission, use and disclosure of any protected health information.
+        For purposes of use of this Application, if you are a HIPAA covered entity or acting on behalf of one as a business associate or if the data is maintained in a HIPAA-covered designated record set, you further acknowledge that you will abide by applicable HIPAA regulations (45 CFR Parts 160 and 164) for purposes of appropriate storage, transmission, use and disclosure of any  protected health information.
       </p>
       <h3
         id="use-of-data"
@@ -107,12 +103,11 @@ exports[`TermsOfService snapshot 1`] = `
         Sharing of Data
       </h3>
       <p>
-        Data recorded and stored in the Application is for use by the Facility as needed for workflow, record keeping, and reporting purposes.All COVID-19 test results will be automatically reported to the appropriate STLT Public Health Agency based on both the testing facility ZIP code and the Patient' s ZIP code, including all relevant fields as defined in the
-         
+        Data recorded and stored in the Application is for use by the Facility as needed for workflow, record keeping, and reporting purposes. All COVID-19 test results will be automatically reported to the appropriate STLT Public Health Agency based on both the testing facility ZIP code and the Patient's ZIP code, including all relevant fields as defined in the 
         <a
           href="https://www.hhs.gov/sites/default/files/covid-19-laboratory-data-reporting-guidance.pdf"
         >
-          HHS COVID-19 Laboratory Reporting Requirements
+           HHS COVID-19 Laboratory Reporting Requirements
         </a>
         . By entering results that are being reported to STLT Public Health Agency, the Facility attests that it is authorized to report the data via the Application. Though CDC will not actively access and obtain data from the Application, Facility, directly or in coordination with the relevant STLT Public Health Agency, may decide to use the Application to send deidentified data to CDC; such data sent to CDC will be maintained consistent with applicable federal laws.
       </p>

@@ -1,6 +1,6 @@
 plugins {
     id 'org.springframework.boot' version '2.4.1'
-    id 'org.liquibase.gradle' version '2.0.3'
+    id 'org.liquibase.gradle' version '2.0.4'
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id 'java'
     id 'checkstyle'
@@ -179,6 +179,7 @@ sonarqube {
         // In order to get both the frontend and backend code to report, we need to set the sonar project to the root directory.
         property "sonar.sources", "backend/src/main/java,frontend/src"
         property "sonar.exclusions", "frontend/src/**/*.test.*,frontend/src/stories/**/*,frontend/src/**/*.stories.tsx"
+        property "sonar.cpd.exclusions", "frontend/src/lang/*.ts"
         property "sonar.javascript.lcov.reportPaths", "frontend/coverage/lcov.info"
     }
 }

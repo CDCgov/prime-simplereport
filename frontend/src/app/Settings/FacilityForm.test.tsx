@@ -6,6 +6,7 @@ import * as state from "../utils/state";
 
 import { allFacilityErrors } from "./Facility/facilitySchema";
 import FacilityForm from "./Facility/FacilityForm";
+import "../../i18n";
 
 let saveFacility: jest.Mock;
 

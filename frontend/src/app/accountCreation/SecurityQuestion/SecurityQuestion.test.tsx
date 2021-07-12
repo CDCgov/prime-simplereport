@@ -4,6 +4,7 @@ import { act } from "react-dom/test-utils";
 import { MemoryRouter, Route } from "react-router";
 
 import { SecurityQuestion } from "./SecurityQuestion";
+import "../../../i18n";
 
 jest.mock("../AccountCreationApiService", () => ({
   AccountCreationApi: {

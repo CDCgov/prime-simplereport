@@ -12,8 +12,11 @@ import { EditableOrganization } from "./ManageOrganizationContainer";
 
 const organizationTypes: { value: OrganizationType; label: string }[] = [
   { value: "k12", label: "K-12 School" },
+  { value: "camp", label: "Camp" },
   { value: "university", label: "College/University" },
   { value: "correctional_facility", label: "Correctional Facility" },
+  { value: "employer", label: "Employer" },
+  { value: "government_agency", label: "Government Agency" },
   { value: "airport", label: "Airport/Transit Station" },
   { value: "shelter", label: "Homeless Shelter" },
   { value: "fqhc", label: "FQHC" },
@@ -25,6 +28,7 @@ const organizationTypes: { value: OrganizationType; label: string }[] = [
   { value: "treatment_center", label: "Substance Abuse Treatment Center" },
   { value: "hospice", label: "Hospice" },
   { value: "pharmacy", label: "Pharmacy" },
+  { value: "lab", label: "Lab" },
   { value: "other", label: "Other" },
 ];
 

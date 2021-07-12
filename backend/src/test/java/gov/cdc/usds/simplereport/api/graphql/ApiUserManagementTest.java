@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
@@ -895,6 +896,68 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void getUsers_orgUser_failure() {
     runQuery("users-query", "Current user does not have permission to request [/users]");
+  }
+
+  @Test
+  void setCurrentUserTenantDataAccess_adminUser_success() {
+    useSuperUser();
+    ObjectNode variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("organizationExternalId", TestUserIdentities.DEFAULT_ORGANIZATION)
+            .put("justification", "This is my justification");
+    ObjectNode user =
+        (ObjectNode)
+            runQuery(
+                    "set-current-user-tenant-data-access",
+                    "SetCurrentUserTenantDataAccessOp",
+                    variables,
+                    null)
+                .get("setCurrentUserTenantDataAccess");
+    assertEquals("ruby@example.com", user.get("email").asText());
+    assertEquals(Role.ADMIN, Role.valueOf(user.get("role").asText()));
+    Set<UserPermission> allPermissions =
+        Arrays.stream(UserPermission.values()).collect(Collectors.toSet());
+    assertEquals(allPermissions, extractPermissionsFromUser(user));
+    assertLastAuditEntry("ruby@example.com", null, null);
+
+    // run query using tenant data access
+    runQuery("current-user-query").get("whoami");
+    assertLastAuditEntry(
+        "ruby@example.com", TestUserIdentities.DEFAULT_ORGANIZATION, allPermissions);
+  }
+
+  @Test
+  void setCurrentUserTenantDataAccess_adminUserRemoveAccess_success() {
+    useSuperUser();
+    ObjectNode variables = JsonNodeFactory.instance.objectNode();
+    ObjectNode user =
+        (ObjectNode)
+            runQuery(
+                    "set-current-user-tenant-data-access",
+                    "SetCurrentUserTenantDataAccessOp",
+                    variables,
+                    null)
+                .get("setCurrentUserTenantDataAccess");
+    assertEquals("ruby@example.com", user.get("email").asText());
+    assertEquals(NullNode.instance, user.get("organization"));
+    assertEquals(NullNode.instance, user.get("role"));
+    assertEquals(new HashSet<UserPermission>(), extractPermissionsFromUser(user));
+  }
+
+  @Test
+  void setCurrentUserTenantDataAccess_orgAdminUser_failure() {
+    useOrgAdmin();
+    ObjectNode variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("organizationExternalId", TestUserIdentities.DEFAULT_ORGANIZATION)
+            .put("justification", "This is my justification");
+    runQuery(
+        "set-current-user-tenant-data-access",
+        "SetCurrentUserTenantDataAccessOp",
+        variables,
+        ACCESS_ERROR);
   }
 
   private List<ObjectNode> toList(ArrayNode arr) {

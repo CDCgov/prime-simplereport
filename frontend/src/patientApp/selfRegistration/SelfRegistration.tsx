@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 import { toast, ToastContainer } from "react-toastify";
 import moment from "moment";
 import "react-toastify/dist/ReactToastify.css";
+import { useTranslation } from "react-i18next";
 
 import USAGovBanner from "../../app/commonComponents/USAGovBanner";
 import { showError } from "../../app/utils";
@@ -26,6 +27,8 @@ export const SelfRegistration = () => {
   const [step, setStep] = useState(RegistrationStep.TERMS);
   const [entityName, setEntityName] = useState("");
   const [personName, setPersonName] = useState("");
+
+  const { t } = useTranslation();
 
   const savePerson = async (person: Nullable<PersonFormData>) => {
     const {
@@ -62,7 +65,11 @@ export const SelfRegistration = () => {
       setPersonName(formatFullName(person) || "");
       setStep(RegistrationStep.FINISHED);
     } catch (e) {
-      showError(toast, "There was a registration error", "Registration error");
+      showError(
+        toast,
+        t("selfRegistration.form.error.heading"),
+        t("selfRegistration.form.error.text")
+      );
     }
   };
 
@@ -80,8 +87,8 @@ export const SelfRegistration = () => {
           <div className="grid-container maxw-tablet">
             <h1 className="margin-top-0 margin-bottom-1">
               {step === RegistrationStep.FINISHED
-                ? "Registration complete"
-                : "Register for your test"}
+                ? t("selfRegistration.form.complete")
+                : t("selfRegistration.form.inProgress")}
             </h1>
             <h2 className="margin-y-0 text-normal">{entityName}</h2>
           </div>

@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,8 @@ public class PatientSelfRegistrationLinkService {
 
   private PatientRegistrationLinkRepository prlrepo;
   private CurrentPatientContextHolder contextHolder;
+  public static final int LINK_LENGTH = 5;
+  public static final String LINK_CHARACTERS = "2346789abcdefghjkmnpqrtuvwxyz";
 
   PatientSelfRegistrationLinkService(
       PatientRegistrationLinkRepository prlrepo,
@@ -28,9 +31,16 @@ public class PatientSelfRegistrationLinkService {
 
   public PatientSelfRegistrationLink getPatientRegistrationLink(String patientRegistrationLink)
       throws InvalidPatientSelfRegistrationLinkException {
-    return prlrepo
-        .findByPatientRegistrationLink(patientRegistrationLink)
-        .orElseThrow(InvalidPatientSelfRegistrationLinkException::new);
+    PatientSelfRegistrationLink link =
+        prlrepo
+            .findByPatientRegistrationLinkIgnoreCase(patientRegistrationLink)
+            .orElseThrow(InvalidPatientSelfRegistrationLinkException::new);
+
+    if (!link.getOrganization().getIdentityVerified()) {
+      throw new InvalidPatientSelfRegistrationLinkException();
+    }
+
+    return link;
   }
 
   public boolean flagSelfRegistrationRequest() {
@@ -56,7 +66,7 @@ public class PatientSelfRegistrationLinkService {
   public String updateRegistrationLink(String link, String newLink) {
     PatientSelfRegistrationLink prl =
         prlrepo
-            .findByPatientRegistrationLink(link)
+            .findByPatientRegistrationLinkIgnoreCase(link)
             .orElseThrow(InvalidPatientSelfRegistrationLinkException::new);
     prl.setLink(newLink);
     prlrepo.save(prl);
@@ -67,10 +77,29 @@ public class PatientSelfRegistrationLinkService {
   public String updateRegistrationLink(String link, Boolean deleted) {
     PatientSelfRegistrationLink prl =
         prlrepo
-            .findByPatientRegistrationLink(link)
+            .findByPatientRegistrationLinkIgnoreCase(link)
             .orElseThrow(InvalidPatientSelfRegistrationLinkException::new);
     prl.setIsDeleted(deleted);
     prlrepo.save(prl);
     return prl.getLink();
+  }
+
+  public String createRegistrationLink(Organization org) {
+    return createRegistrationLink(org, generateUniqueLink());
+  }
+
+  public String createRegistrationLink(Facility fac) {
+    return createRegistrationLink(fac, generateUniqueLink());
+  }
+
+  private String generateUniqueLink() {
+    String link = generateRandomLink();
+    return prlrepo.findByPatientRegistrationLinkIgnoreCase(link).isPresent()
+        ? generateRandomLink()
+        : link;
+  }
+
+  private static String generateRandomLink() {
+    return RandomStringUtils.random(LINK_LENGTH, LINK_CHARACTERS);
   }
 }

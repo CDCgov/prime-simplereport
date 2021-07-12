@@ -6,15 +6,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import gov.cdc.usds.simplereport.api.apiuser.UserAccountCreationController;
-import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
+import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication;
+import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
+import gov.cdc.usds.simplereport.service.ApiUserService;
 import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
@@ -24,13 +27,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-@Import(DemoOktaAuthentication.class)
+@Import({
+  DemoAuthenticationConfiguration.class,
+  DemoOktaAuthentication.class,
+  DemoOktaRepository.class
+})
 @WebMvcTest(
     controllers = UserAccountCreationController.class,
-    includeFilters =
-        @Filter(
-            classes = {TemplateConfiguration.class},
-            type = FilterType.ASSIGNABLE_TYPE),
     excludeFilters =
         @Filter(
             classes = {AuditLoggingAdvice.class, WebConfiguration.class},
@@ -40,6 +43,10 @@ class UserAccountCreationControllerTest {
   @Autowired private MockMvc _mockMvc;
 
   @Autowired private DemoOktaAuthentication _oktaAuth;
+
+  // Dependencies of TenantDataAccessFilter
+  @MockBean private ApiUserService _mockApiUserService;
+  @MockBean private CurrentTenantDataAccessContextHolder _mockContextHolder;
 
   private static final String VALID_ACTIVATION_REQUEST =
       "{\"activationToken\":\"validActivationToken\"}";

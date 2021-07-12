@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.config.WebConfiguration.ACCOUNT_REQUEST;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.api.Translators;
+import gov.cdc.usds.simplereport.api.accountrequest.errors.AccountRequestFailureException;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.WaitlistRequest;
@@ -96,114 +97,127 @@ public class AccountRequestController {
   @PostMapping("")
   @Transactional(readOnly = false)
   public void submitAccountRequest(@Valid @RequestBody AccountRequest body) throws IOException {
-    String subject = "New account request";
-    if (LOG.isInfoEnabled()) {
-      LOG.info("Account request submitted: {}", objectMapper.writeValueAsString(body));
-    }
+    try {
+      String subject = "New account request";
+      if (LOG.isInfoEnabled()) {
+        LOG.info("Account request submitted: {}", objectMapper.writeValueAsString(body));
+      }
 
-    Map<String, String> reqVars =
-        body.toTemplateVariables().entrySet().stream()
-            .collect(
-                HashMap::new,
-                (m, e) -> m.put(e.getKey(), e.getValue() == null ? null : e.getValue().toString()),
-                HashMap::putAll);
+      Map<String, String> reqVars =
+          body.toTemplateVariables().entrySet().stream()
+              .collect(
+                  HashMap::new,
+                  (m, e) ->
+                      m.put(e.getKey(), e.getValue() == null ? null : e.getValue().toString()),
+                  HashMap::putAll);
 
-    List<DeviceType> devices = _dts.fetchDeviceTypes();
-    Map<String, String> deviceNamesToIds =
-        devices.stream()
-            .collect(Collectors.toMap(d -> d.getName(), d -> d.getInternalId().toString()));
-    Map<String, String> deviceModelsToIds =
-        devices.stream()
-            .collect(Collectors.toMap(d -> d.getModel(), d -> d.getInternalId().toString()));
+      List<DeviceType> devices = _dts.fetchDeviceTypes();
+      Map<String, String> deviceNamesToIds =
+          devices.stream()
+              .collect(Collectors.toMap(d -> d.getName(), d -> d.getInternalId().toString()));
+      Map<String, String> deviceModelsToIds =
+          devices.stream()
+              .collect(Collectors.toMap(d -> d.getModel(), d -> d.getInternalId().toString()));
 
-    List<String> testingDevicesSubmitted =
-        new ArrayList<>(Arrays.asList(reqVars.get("testingDevices").split(", ")));
-    testingDevicesSubmitted.removeIf(d -> d.toLowerCase().startsWith("other"));
-    List<String> testingDeviceIds =
-        testingDevicesSubmitted.stream()
-            .map(
-                d -> {
-                  String deviceId =
-                      Optional.ofNullable(deviceNamesToIds.get(d)).orElse(deviceModelsToIds.get(d));
-                  if (deviceId == null) {
-                    throw new RuntimeException(
-                        String.format("Submitted device=%s not registered in DB.", d));
-                  }
-                  return deviceId;
-                })
-            .collect(Collectors.toList());
-    String defaultTestingDeviceId =
-        Optional.ofNullable(deviceNamesToIds.get(reqVars.get("defaultTestingDevice")))
-            .orElse(deviceModelsToIds.get(reqVars.get("defaultTestingDevice")));
-    if (defaultTestingDeviceId == null) {
-      throw new RuntimeException(
+      List<String> testingDevicesSubmitted =
+          new ArrayList<>(Arrays.asList(reqVars.get("testingDevices").split(", ")));
+      testingDevicesSubmitted.removeIf(d -> d.toLowerCase().startsWith("other"));
+      List<String> unregisteredTestingDevices = new ArrayList<>();
+      List<String> testingDeviceIds =
+          testingDevicesSubmitted.stream()
+              .map(
+                  d -> {
+                    String deviceId =
+                        Optional.ofNullable(deviceNamesToIds.get(d))
+                            .orElse(deviceModelsToIds.get(d));
+                    if (deviceId == null) {
+                      unregisteredTestingDevices.add(d);
+                    }
+                    return deviceId;
+                  })
+              .collect(Collectors.toList());
+      // Can't easily catch a thrown exception in a stream, so move the throw outside of the stream:
+      if (!unregisteredTestingDevices.isEmpty()) {
+        throw new IOException(
+            String.format(
+                "Submitted device=%s not registered in DB.",
+                unregisteredTestingDevices.iterator().next()));
+      }
+      String defaultTestingDeviceId =
+          Optional.ofNullable(deviceNamesToIds.get(reqVars.get("defaultTestingDevice")))
+              .orElse(deviceModelsToIds.get(reqVars.get("defaultTestingDevice")));
+      if (defaultTestingDeviceId == null) {
+        throw new IOException(
+            String.format(
+                "Submitted default device=%s not registered in DB.",
+                reqVars.get("defaultTestingDevice")));
+      }
+      DeviceSpecimenTypeHolder deviceSpecimenTypes =
+          _dts.getTypesForFacility(defaultTestingDeviceId, testingDeviceIds);
+
+      StreetAddress facilityAddress =
+          _avs.getValidatedAddress(
+              reqVars.get("streetAddress1"),
+              reqVars.get("streetAddress2"),
+              reqVars.get("city"),
+              reqVars.get("state"),
+              reqVars.get("zip"),
+              _avs.FACILITY_DISPLAY_NAME);
+      StreetAddress providerAddress =
+          new StreetAddress(
+              Translators.parseString(reqVars.get("opStreetAddress1")),
+              Translators.parseString(reqVars.get("opStreetAddress2")),
+              Translators.parseString(reqVars.get("opCity")),
+              Translators.parseState(reqVars.get("opState")),
+              Translators.parseString(reqVars.get("opZip")),
+              Translators.parseString(reqVars.get("opCounty")));
+
+      PersonName providerName =
+          Translators.consolidateNameArguments(
+              null, reqVars.get("opFirstName"), null, reqVars.get("opLastName"), null, true);
+      PersonName adminName =
+          Translators.consolidateNameArguments(
+              null, reqVars.get("firstName"), null, reqVars.get("lastName"), null);
+
+      String orgExternalId =
           String.format(
-              "Submitted default device=%s not registered in DB.",
-              reqVars.get("defaultTestingDevice")));
+              "%s-%s-%s",
+              reqVars.get("state"),
+              reqVars.get("organizationName").replace(' ', '-').replace(':', '-'),
+              UUID.randomUUID().toString());
+
+      _os.createOrganization(
+          reqVars.get("organizationName"),
+          Translators.parseOrganizationTypeFromName(reqVars.get("organizationType")),
+          orgExternalId,
+          reqVars.get("facilityName"),
+          reqVars.get("cliaNumber"),
+          facilityAddress,
+          Translators.parsePhoneNumber(reqVars.get("facilityPhoneNumber")),
+          null,
+          deviceSpecimenTypes,
+          providerName,
+          providerAddress,
+          Translators.parsePhoneNumber(reqVars.get("opPhoneNumber")),
+          reqVars.get("npi"));
+
+      /**
+       * Note: we are sending the emails *after* creating the organization so the validation logic
+       * in the organization creation process functions as a CAPTCHA. But we are sending the emails
+       * *before* creating the user so that if sendgrid etc fails, we aren't left with an Okta
+       * entity created for the user that can't be automatically rolled back. (When we add automatic
+       * Okta rollback mechanisms down the road, this won't be an issue.)
+       */
+      // send summary email to SR support
+      _es.send(sendGridProperties.getAccountRequestRecipient(), subject, body);
+      // send next-steps email to requester
+      _es.sendWithProviderTemplate(body.getEmail(), EmailProviderTemplate.ACCOUNT_REQUEST);
+
+      _aus.createUser(reqVars.get("email"), adminName, orgExternalId, Role.ADMIN);
+
+      _crm.submitAccountRequestData(body);
+    } catch (IOException e) {
+      throw new AccountRequestFailureException(e);
     }
-    DeviceSpecimenTypeHolder deviceSpecimenTypes =
-        _dts.getTypesForFacility(defaultTestingDeviceId, testingDeviceIds);
-
-    StreetAddress facilityAddress =
-        _avs.getValidatedAddress(
-            reqVars.get("streetAddress1"),
-            reqVars.get("streetAddress2"),
-            reqVars.get("city"),
-            reqVars.get("state"),
-            reqVars.get("zip"),
-            _avs.FACILITY_DISPLAY_NAME);
-    StreetAddress providerAddress =
-        new StreetAddress(
-            Translators.parseString(reqVars.get("opStreetAddress1")),
-            Translators.parseString(reqVars.get("opStreetAddress2")),
-            Translators.parseString(reqVars.get("opCity")),
-            Translators.parseState(reqVars.get("opState")),
-            Translators.parseString(reqVars.get("opZip")),
-            Translators.parseString(reqVars.get("opCounty")));
-
-    PersonName providerName =
-        Translators.consolidateNameArguments(
-            null, reqVars.get("opFirstName"), null, reqVars.get("opLastName"), null, true);
-    PersonName adminName =
-        Translators.consolidateNameArguments(
-            null, reqVars.get("firstName"), null, reqVars.get("lastName"), null);
-
-    String orgExternalId =
-        String.format(
-            "%s-%s-%s",
-            reqVars.get("state"),
-            reqVars.get("organizationName").replace(' ', '-').replace(':', '-'),
-            UUID.randomUUID().toString());
-
-    _os.createOrganization(
-        reqVars.get("organizationName"),
-        Translators.parseOrganizationTypeFromName(reqVars.get("organizationType")),
-        orgExternalId,
-        reqVars.get("facilityName"),
-        reqVars.get("cliaNumber"),
-        facilityAddress,
-        Translators.parsePhoneNumber(reqVars.get("facilityPhoneNumber")),
-        null,
-        deviceSpecimenTypes,
-        providerName,
-        providerAddress,
-        Translators.parsePhoneNumber(reqVars.get("opPhoneNumber")),
-        reqVars.get("npi"));
-
-    /**
-     * Note: we are sending the emails *after* creating the organization so the validation logic in
-     * the organization creation process functions as a CAPTCHA. But we are sending the emails
-     * *before* creating the user so that if sendgrid etc fails, we aren't left with an Okta entity
-     * created for the user that can't be automatically rolled back. (When we add automatic Okta
-     * rollback mechanisms down the road, this won't be an issue.)
-     */
-    // send summary email to SR support
-    _es.send(sendGridProperties.getAccountRequestRecipient(), subject, body);
-    // send next-steps email to requester
-    _es.sendWithProviderTemplate(body.getEmail(), EmailProviderTemplate.ACCOUNT_REQUEST);
-
-    _aus.createUser(reqVars.get("email"), adminName, orgExternalId, Role.ADMIN);
-
-    _crm.submitAccountRequestData(body);
   }
 }
