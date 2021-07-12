@@ -348,6 +348,7 @@ type Mutation {
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   setUserIsDeleted(id: ID!, deleted: Boolean!): User
     @requiredPermissions(allOf: ["MANAGE_USERS"])
+  setCurrentUserTenantDataAccess(organizationExternalId: String, justification: String): User
   addPatient(
     facilityId: ID
     lookupId: String
