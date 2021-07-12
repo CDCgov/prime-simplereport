@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 
 import PatientFormContainer from "./PatientFormContainer";
+import "../../i18n";
 
 jest.mock("../..//app/commonComponents/ComboBox", () => () => <></>);
 const mockStore = configureStore([]);
