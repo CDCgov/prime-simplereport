@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,13 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(IDENTITY_VERIFICATION)
 public class IdentityVerificationController {
-  private final ExperianService _experianService;
+  @Autowired private ExperianService _experianService;
 
   private static final Logger LOG = LoggerFactory.getLogger(IdentityVerificationController.class);
-
-  public IdentityVerificationController(ExperianService experianService) {
-    this._experianService = experianService;
-  }
 
   @PostConstruct
   private void init() {

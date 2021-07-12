@@ -3,7 +3,12 @@ package gov.cdc.usds.simplereport.service.idVerification;
 import static gov.cdc.usds.simplereport.service.idVerification.ExperianTranslator.createInitialRequestBody;
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationRequest;
+import gov.cdc.usds.simplereport.config.BeanProfiles;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 
+@Profile(BeanProfiles.NO_OKTA_AUTH)
+@Service
 public class DemoExperianService implements ExperianService {
 
   public String fetchToken() {
