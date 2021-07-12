@@ -4,9 +4,6 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationRe
 
 public interface ExperianService {
 
-  /** Fetches an access token from Experian. */
-  public String fetchToken() throws IllegalArgumentException;
-
   /** Retrieves questions from Experian, given user data. */
-  public void getQuestions(IdentityVerificationRequest userData);
+  public String getQuestions(IdentityVerificationRequest userData);
 }
