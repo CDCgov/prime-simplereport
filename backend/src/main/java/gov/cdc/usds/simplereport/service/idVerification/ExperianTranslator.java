@@ -60,13 +60,6 @@ public class ExperianTranslator {
     return response.toString();
   }
 
-  // public static 
-  // things to do with this message: 
-  // extract the session token and store it on the user session (kba -> sessionId)
-  // figure out a way to correctly store the question set and the individual answers. 
-  // we need to keep everything in order (so no raw JSON objects)
-  // my instinct is a horrible multimap, but I'm not entirely sure how that will be deserialized by Jackson
-
   /**
    * Translates provided user data into a json "contacts" object. Validates required fields and
    * passes blank strings for optional fields.

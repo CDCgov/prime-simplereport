@@ -54,6 +54,5 @@ public class IdentityVerificationControllerTest {
             .content(VALID_GET_QUESTIONS_REQUEST);
 
     this._mockMvc.perform(builder).andExpect(status().isOk());
-    assertThat(4).isEqualTo(3 - 2);
   }
 }
