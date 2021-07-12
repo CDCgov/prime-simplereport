@@ -2425,4 +2425,5 @@ databaseChangeLog:
                 FROM ${database.defaultSchemaName}.api_user
                 WHERE login_email = '${migrations_user_email}')
               DELETE FROM ${database.defaultSchemaName}.patient_registration_link 
-              WHERE created_by=migration_user.migrations_user_id;
+              USING migration_user m
+              WHERE created_by = m.migrations_user_id;
