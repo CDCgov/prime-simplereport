@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.service.idVerification;
+package gov.cdc.usds.simplereport.service.idverification;
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationRequest;
 

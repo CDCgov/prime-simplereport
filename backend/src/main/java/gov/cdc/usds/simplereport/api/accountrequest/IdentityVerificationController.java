@@ -3,7 +3,8 @@ package gov.cdc.usds.simplereport.api.accountrequest;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.IDENTITY_VERIFICATION;
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationRequest;
-import gov.cdc.usds.simplereport.service.idVerification.ExperianService;
+import gov.cdc.usds.simplereport.service.idverification.ExperianService;
+
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -30,8 +31,7 @@ public class IdentityVerificationController {
   @PostMapping("/get-questions")
   public String getQuestions(
       HttpServletRequest request, @RequestBody IdentityVerificationRequest requestBody) {
-    String questions = _experianService.getQuestions(requestBody);
-    return questions;
+    return _experianService.getQuestions(requestBody);
   }
 
   @PostMapping("/submit-answers")
