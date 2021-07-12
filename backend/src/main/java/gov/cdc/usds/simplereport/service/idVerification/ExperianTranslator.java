@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.service.idVerification;
+package gov.cdc.usds.simplereport.service.idverification;
 
 import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
@@ -11,6 +11,10 @@ import org.json.JSONObject;
 
 /** Helper class to translate Experian requests and responses used for identity verification. */
 public class ExperianTranslator {
+
+  private ExperianTranslator() {
+    throw new IllegalStateException("ExperianTranslator is a utility class");
+  }
 
   public static final String INITIAL_REQUEST_CONTACTS =
       "{\"contacts\":[{\"id\":\"APPLICANT_CONTACT_ID_1\",\"person\":{\"typeOfPerson\":\"\",\"personIdentifier\":\"\",\"personDetails\":{\"dateOfBirth\":\"%s\",\"yearOfBirth\":\"\",\"age\":\"\",\"gender\":\"\",\"noOfDependents\":\"\",\"occupancyStatus\":\"\",\"mothersMaidenName\":\"\",\"spouseName\":\"\"},\"names\":[{\"id\":\"\",\"firstName\":\"%s\",\"middleNames\":\"%s\",\"surName\":\"%s\",\"nameSuffix\":\"\"}]},\"addresses\":[{\"id\":\"Main_Contact_Address_0\",\"addressType\":\"CURRENT\",\"poBoxNumber\":\"%s\",\"street\":\"%s\",\"street2\":\"%s\",\"postTown\":\"%s\",\"postal\":\"%s\",\"stateProvinceCode\":\"%s\"}],\"telephones\":[{\"id\":\"Main_Phone_0\",\"number\":\"%s\"}],\"emails\":[{\"id\":\"MAIN_EMAIL_0\",\"type\":\"\",\"email\":\"%s\"}]}]}";

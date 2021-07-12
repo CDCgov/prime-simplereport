@@ -1,9 +1,10 @@
-package gov.cdc.usds.simplereport.service.idVerification;
-
-import static gov.cdc.usds.simplereport.service.idVerification.ExperianTranslator.createInitialRequestBody;
+package gov.cdc.usds.simplereport.service.idverification;
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationRequest;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
+
+import static gov.cdc.usds.simplereport.service.idverification.ExperianTranslator.createInitialRequestBody;
+
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 

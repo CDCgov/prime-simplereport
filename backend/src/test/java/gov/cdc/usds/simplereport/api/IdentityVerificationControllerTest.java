@@ -10,7 +10,8 @@ import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfigur
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
 import gov.cdc.usds.simplereport.service.ApiUserService;
-import gov.cdc.usds.simplereport.service.idVerification.DemoExperianService;
+import gov.cdc.usds.simplereport.service.idverification.DemoExperianService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
         @Filter(
             classes = {AuditLoggingAdvice.class, WebConfiguration.class},
             type = FilterType.ASSIGNABLE_TYPE))
-public class IdentityVerificationControllerTest {
+class IdentityVerificationControllerTest {
   @Autowired private MockMvc _mockMvc;
 
   @Autowired private DemoExperianService _experianService;
