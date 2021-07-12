@@ -206,7 +206,7 @@ Array [
       id="3"
       name="prior_test_type"
       onChange={[Function]}
-      value=""
+      value="- Select -"
     >
       <option
         value=""
