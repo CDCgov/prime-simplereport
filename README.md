@@ -16,6 +16,7 @@ https://simplereport.gov/
       - [Organization roles](#organization-roles)
       - [Site roles](#site-roles)
     - [Restart & Clean](#restart--clean)
+    - [Rollbacks](#rollbacks)
     - [API Testing](#api-testing)
     - [Tests](#tests)
     - [E2E Tests](#e2e-tests)
@@ -176,6 +177,24 @@ Restarting the SQL way:
 
 1. run `db-setup/nuke-db.sh`
 2. restart the spring app `gradle bootRun --args='--spring.profiles.active=dev'`
+
+### Rollbacks
+
+The application uses the Liquibase plugin for Gradle to perform certain database management tasks.
+
+To roll the database back to its state at a prior date:
+
+```
+$ ./gradlew liquibaseRollbackToDate -PliquibaseCommandValue=${date}
+```
+
+To roll back a certain _number_ of migrations:
+
+```
+$ ./gradlew liquibaseRollbackCount -PliquibaseCommandValue=${n}
+```
+
+If you are required to roll back a non-local database, you may generate the required SQL to execute elsewhere. Use `liquibaseRollbackToDateSQL` or `liquibaseRollbackCountSQL` in the manner described above to write the rollback SQL to stdout.
 
 ### API Testing
 
@@ -351,20 +370,12 @@ Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/rele
 ### Revert to a Previous Release
 
 1. Find the version tag for the release you want to revert to.
-2. Checkout that version and create a new branch
-    ```bash
-    $ git checkout ${version_tag}
-    ```
-3. Create and publish new branch at that tag
-     ```bash
-    $ git checkout -b revert-to-${version_tag} && git push -u
-    ```
-4. Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/releases/new) page
-5. Add a version tag: `revert-to-${version_tag}`.
-    - If a version has already been reverted to in the past and needs to be again add an counter to the tag: `revert-to-${version_tag}-${X}`
-6. Add a release title `Revert to ${version_tag}`
-7. Add a description briefly explaining why the revert is needed
-8. Click publish release
+2. Select that release from the list on the [release page](https://github.com/CDCgov/prime-simplereport/releases) (or navigate directly to `https://github.com/CDCgov/prime-simplereport/releases/tag/{TAG}`)
+3. Click "Edit Release"
+4. Check the "This is a pre-release" box
+5. Click "Update release"
+6. Verify that the original changes have been re-released successfully on `stg`
+7. Edit the release again, de-select the "This is a pre-release" box, and click "Update release."
 9. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done by going to `/app/static/commit.txt` and `/api/actuator/info`
 
 
@@ -377,3 +388,4 @@ Navigate to the [Github Actions Tab](https://github.com/CDCgov/prime-simplerepor
 3. Select the branch you want to deploy. In this case we are deploying the latest commit on `main`
 4. Click the green "Run workflow" button.
 5. After the workflow is completed you can verify the changes are live by Checking the deployed commit hash. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`
+

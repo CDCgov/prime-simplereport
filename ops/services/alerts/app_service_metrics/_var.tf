@@ -30,11 +30,24 @@ variable "tags" {
   default = {}
 }
 
-# Thresholds
+# Monitoring settings
 variable "mem_threshold" {
   default = 70
 }
 
 variable "cpu_threshold" {
   default = 70
+}
+
+variable "cpu_window_size" {
+  default = 5
+}
+
+variable "http_response_time_aggregation" {
+  default = "Average"
+}
+
+variable "failed_http_2xx_threshold" {
+  // The resource that uses this value doesn't have a >= check, so we need n - 1 here
+  default = 9
 }

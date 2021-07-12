@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import Button from "../../app/commonComponents/Button/Button";
 import { EMPTY_PERSON } from "../../app/patients/AddPatient";
 import PersonForm, {
@@ -9,6 +11,8 @@ type Props = {
 };
 
 export const SelfRegistrationForm = ({ savePerson }: Props) => {
+  const { t } = useTranslation();
+
   return (
     <div
       id="registration-container"
@@ -23,7 +27,7 @@ export const SelfRegistrationForm = ({ savePerson }: Props) => {
             className="self-registration-button margin-top-3"
             onClick={onSave}
           >
-            Submit
+            {t("common.button.submit")}
           </Button>
         )}
         view={PersonFormView.SELF_REGISTRATION}

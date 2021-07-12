@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import siteLogo from "../img/simplereport-logomark-color.svg";
 
@@ -6,6 +7,8 @@ const PatientHeader = () => {
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );
+
+  const { t } = useTranslation("translation");
 
   return (
     <header className="border-bottom border-base-lighter">
@@ -27,7 +30,7 @@ const PatientHeader = () => {
                   {organization?.name}
                 </span>
                 <span className="prime-organization-name margin-left-0 margin-top-05 text-primary-darker">
-                  COVID-19 Testing Portal
+                  {t("header")}
                 </span>
               </div>
             </div>

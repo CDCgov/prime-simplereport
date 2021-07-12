@@ -110,15 +110,13 @@ exports[`TestResult should show a negative result 1`] = `
           </li>
         </ul>
         <p>
-          For more information, please visit the
-           
+          For more information, please visit the 
           <a
             href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html"
           >
             Centers for Disease Control and Prevention (CDC) website
           </a>
-           
-          or contact your local health department.
+           or contact your local health department.
         </p>
       </div>
     </div>
@@ -200,15 +198,13 @@ exports[`TestResult should show a positive result 1`] = `
           What does my result mean?
         </h2>
         <p>
-          Getting a positive COVID-19 test result can be difficult news, so it’s important to
-           
+          Getting a positive COVID-19 test result can be difficult news, so it’s important to 
           <a
             href="https://www.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html"
           >
-            take steps to cope with stress
+             take steps to cope with stress 
           </a>
-           
-          during this time. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.
+           during this time. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.
         </p>
         <p>
           Most people who get COVID-19 will be able to recover at home. Make sure to follow CDC guidelines for people who are recovering at home and their caregivers, including:
@@ -265,15 +261,13 @@ exports[`TestResult should show a positive result 1`] = `
           Call 911 or call ahead to your local emergency room: Notify the operator that you are seeking care for someone who has or may have COVID-19.
         </p>
         <p>
-          For more information, please visit the
-           
+          For more information, please visit the 
           <a
             href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html"
           >
             Centers for Disease Control and Prevention (CDC) website
           </a>
-           
-          or contact your local health department.
+           or contact your local health department.
         </p>
       </div>
     </div>
@@ -359,15 +353,13 @@ exports[`TestResult should show an inconclusive result 1`] = `
           Please make an appointment for another test as soon as possible. If you’ve gotten tested due to COVID-19 symptoms, it is recommended that you self-isolate until you get your new test results.
         </p>
         <p>
-          For more information, please visit the
-           
+          For more information, please visit the 
           <a
             href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html"
           >
             Centers for Disease Control and Prevention (CDC) website
           </a>
-           
-          or contact your local health department.
+           or contact your local health department.
         </p>
       </div>
     </div>

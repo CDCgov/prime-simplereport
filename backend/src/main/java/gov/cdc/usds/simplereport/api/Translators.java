@@ -109,9 +109,12 @@ public class Translators {
     }
   }
 
-  public static PersonRole parsePersonRole(String r) {
+  public static PersonRole parsePersonRole(String r, boolean allowNull) {
     String role = parseString(r);
     if (role == null) {
+      if (allowNull) {
+        return null;
+      }
       return PersonRole.UNKNOWN;
     }
     try {
@@ -306,5 +309,49 @@ public class Translators {
       throw new IllegalGraphqlArgumentException("lastName cannot be empty");
     }
     return name;
+  }
+
+  private static final Map<String, String> ORGANIZATION_TYPES =
+      Map.ofEntries(
+          Map.entry("k12", "K-12 School"),
+          Map.entry("university", "College/University"),
+          Map.entry("correctional_facility", "Correctional Facility"),
+          Map.entry("airport", "Airport/Transit Station"),
+          Map.entry("shelter", "Homeless Shelter"),
+          Map.entry("fqhc", "FQHC"),
+          Map.entry("primary_care", "Primary Care / Mental Health Outpatient"),
+          Map.entry("assisted_living", "Assisted Living Facility"),
+          Map.entry("hospital", "Hospital or Clinic"),
+          Map.entry("urgent_care", "Urgent Care"),
+          Map.entry("nursing_home", "Nursing Home"),
+          Map.entry("treatment_center", "Substance Abuse Treatment Center"),
+          Map.entry("hospice", "Hospice"),
+          Map.entry("pharmacy", "Pharmacy"),
+          Map.entry("employer", "Employer"),
+          Map.entry("government_agency", "Government Agency"),
+          Map.entry("camp", "Camp"),
+          Map.entry("lab", "lab"),
+          Map.entry("other", "Other"));
+
+  private static final Set<String> ORGANIZATION_TYPE_KEYS = ORGANIZATION_TYPES.keySet();
+
+  public static String parseOrganizationType(String t) {
+    String type = parseString(t);
+    if (type == null) {
+      return null;
+    }
+    if (ORGANIZATION_TYPE_KEYS.contains(type)) {
+      return type;
+    }
+    throw IllegalGraphqlArgumentException.invalidInput(t, "organization type");
+  }
+
+  public static String parseOrganizationTypeFromName(String t) {
+    for (Map.Entry<String, String> entry : ORGANIZATION_TYPES.entrySet()) {
+      if (entry.getValue().equals(t)) {
+        return entry.getKey();
+      }
+    }
+    throw IllegalGraphqlArgumentException.invalidInput(t, "organization type");
   }
 }

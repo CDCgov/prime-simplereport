@@ -78,4 +78,13 @@ public class UserMutationResolver implements GraphQLMutationResolver {
     UserInfo user = _us.setIsDeleted(id, deleted);
     return new User(user);
   }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public User setCurrentUserTenantDataAccess(String organizationExternalID, String justification) {
+    UserInfo user =
+        _us.setCurrentUserTenantDataAccess(
+            Translators.parseString(organizationExternalID),
+            Translators.parseString(justification));
+    return new User(user);
+  }
 }

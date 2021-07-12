@@ -14,6 +14,7 @@ import com.okta.sdk.resource.user.UserBuilder;
 import com.okta.sdk.resource.user.UserList;
 import com.okta.sdk.resource.user.UserStatus;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
+import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
@@ -25,6 +26,7 @@ import gov.cdc.usds.simplereport.config.exceptions.MisconfiguredApplicationExcep
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,12 +62,14 @@ public class LiveOktaRepository implements OktaRepository {
   private Client _client;
   private Application _app;
   private OrganizationExtractor _extractor;
+  private CurrentTenantDataAccessContextHolder _tenantDataContextHolder;
 
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
       Client client,
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
-      OrganizationExtractor organizationExtractor) {
+      OrganizationExtractor organizationExtractor,
+      CurrentTenantDataAccessContextHolder tenantDataContextHolder) {
     _rolePrefix = authorizationProperties.getRolePrefix();
     _client = client;
     try {
@@ -75,6 +79,7 @@ public class LiveOktaRepository implements OktaRepository {
           "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
     }
     _extractor = organizationExtractor;
+    _tenantDataContextHolder = tenantDataContextHolder;
   }
 
   @Autowired
@@ -82,7 +87,8 @@ public class LiveOktaRepository implements OktaRepository {
       AuthorizationProperties authorizationProperties,
       OktaClientProperties oktaClientProperties,
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
-      OrganizationExtractor organizationExtractor) {
+      OrganizationExtractor organizationExtractor,
+      CurrentTenantDataAccessContextHolder tenantDataContextHolder) {
     _rolePrefix = authorizationProperties.getRolePrefix();
     _client =
         Clients.builder()
@@ -96,6 +102,7 @@ public class LiveOktaRepository implements OktaRepository {
           "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
     }
     _extractor = organizationExtractor;
+    _tenantDataContextHolder = tenantDataContextHolder;
   }
 
   public Optional<OrganizationRoleClaims> createUser(
@@ -448,6 +455,13 @@ public class LiveOktaRepository implements OktaRepository {
 
   // returns the external ID of the organization the specified user belongs to
   public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
+    // When a site admin is using tenant data access, bypass okta and get org from the altered
+    // authorities.  If the site admin is getting the claims for another site admin who also has
+    // active tenant data access, the reflect what is in Okta, not the temporary claims.
+    if (_tenantDataContextHolder.hasBeenPopulated()
+        && username.equals(_tenantDataContextHolder.getUsername())) {
+      return getOrganizationRoleClaimsFromAuthorities(_tenantDataContextHolder.getAuthorities());
+    }
 
     UserList users = _client.listUsers(username, null, null, null, null);
     if (users.stream().count() == 0) {
@@ -455,6 +469,17 @@ public class LiveOktaRepository implements OktaRepository {
     }
     User user = users.single();
     return getOrganizationRoleClaimsForUser(user);
+  }
+
+  private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromAuthorities(
+      Collection<String> authorities) {
+    List<OrganizationRoleClaims> claims = _extractor.convertClaims(authorities);
+
+    if (claims.size() != 1) {
+      LOG.warn("User's Tenant Data Access has claims in {} organizations, not 1", claims.size());
+      return Optional.empty();
+    }
+    return Optional.of(claims.get(0));
   }
 
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(User user) {

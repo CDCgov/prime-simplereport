@@ -1,22 +1,106 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 
 import TextInput from "../commonComponents/TextInput";
 import Button from "../commonComponents/Button/Button";
 import RequiredMessage from "../commonComponents/RequiredMessage";
 import Alert from "../commonComponents/Alert";
+import Select from "../commonComponents/Select";
+import { showNotification } from "../utils";
+
+import { EditableOrganization } from "./ManageOrganizationContainer";
+
+const organizationTypes: { value: OrganizationType; label: string }[] = [
+  { value: "k12", label: "K-12 School" },
+  { value: "camp", label: "Camp" },
+  { value: "university", label: "College/University" },
+  { value: "correctional_facility", label: "Correctional Facility" },
+  { value: "employer", label: "Employer" },
+  { value: "government_agency", label: "Government Agency" },
+  { value: "airport", label: "Airport/Transit Station" },
+  { value: "shelter", label: "Homeless Shelter" },
+  { value: "fqhc", label: "FQHC" },
+  { value: "primary_care", label: "Primary Care / Mental Health Outpatient" },
+  { value: "assisted_living", label: "Assisted Living Facility" },
+  { value: "hospital", label: "Hospital or Clinic" },
+  { value: "urgent_care", label: "Urgent Care" },
+  { value: "nursing_home", label: "Nursing Home" },
+  { value: "treatment_center", label: "Substance Abuse Treatment Center" },
+  { value: "hospice", label: "Hospice" },
+  { value: "pharmacy", label: "Pharmacy" },
+  { value: "lab", label: "Lab" },
+  { value: "other", label: "Other" },
+];
 
 interface Props {
-  name: string;
-  onSave: (name: string) => void;
+  organization: EditableOrganization;
+  onSave: (organization: EditableOrganization) => void;
   canEditOrganizationName: boolean;
 }
 
 const ManageOrganization: React.FC<Props> = (props) => {
-  const [name, setName] = useState(props.name);
+  const [organization, setOrganization] = useState(props.organization);
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof EditableOrganization, string>>
+  >({});
   const [formChanged, setFormChanged] = useState(false);
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
+  const onChange = <K extends keyof EditableOrganization>(key: K) => (
+    value: EditableOrganization[K]
+  ) => {
+    setOrganization({ ...organization, [key]: value });
     setFormChanged(true);
+  };
+
+  const validateField = (field: keyof EditableOrganization): boolean => {
+    if (field === "name") {
+      if (organization[field].trim().length === 0) {
+        setErrors({
+          ...errors,
+          [field]: "The organization's name cannot be blank",
+        });
+        return false;
+      }
+    }
+    if (field === "type") {
+      if (
+        !organizationTypes
+          .map(({ value }) => value)
+          .includes(organization[field])
+      ) {
+        setErrors({
+          ...errors,
+          [field]: "An organization type must be selected",
+        });
+        return false;
+      }
+    }
+    setErrors({ ...errors, [field]: undefined });
+    return true;
+  };
+
+  const validateAndSave = () => {
+    const validName = validateField("name");
+    const validType = validateField("type");
+    if (validName && validType) {
+      props.onSave(organization);
+    } else {
+      showNotification(
+        toast,
+        <Alert
+          type="error"
+          title="Information missing"
+          body={
+            <ul>
+              {[errors["name"], errors["type"]]
+                .filter((msg) => !!msg)
+                .map((msg) => (
+                  <li key={msg}>{msg}</li>
+                ))}
+            </ul>
+          }
+        />
+      );
+    }
   };
 
   return (
@@ -25,7 +109,7 @@ const ManageOrganization: React.FC<Props> = (props) => {
         <div className="usa-card__header">
           <h2>Manage Organization</h2>
           <Button
-            onClick={() => props.onSave(name)}
+            onClick={validateAndSave}
             label="Save settings"
             disabled={!formChanged}
           />
@@ -42,20 +126,35 @@ const ManageOrganization: React.FC<Props> = (props) => {
               if you need to change it.
             </Alert>
           )}
+
           {props.canEditOrganizationName ? (
             <TextInput
               label="Organization name"
               name="name"
-              value={name}
-              onChange={onChange}
+              value={organization.name}
+              onChange={(e) => onChange("name")(e.target.value)}
               required
             />
           ) : (
             <div className="usa-form-group">
               <span>Organization name</span>
-              <p>{name}</p>
+              <p>{organization.name}</p>
             </div>
           )}
+          <Select
+            name="type"
+            options={organizationTypes}
+            label="Organization type"
+            onChange={onChange("type")}
+            value={organization.type}
+            defaultSelect
+            onBlur={() => {
+              validateField("type");
+            }}
+            errorMessage={errors["type"]}
+            validationStatus={errors["type"] ? "error" : "success"}
+            required
+          />
         </div>
       </div>
     </div>

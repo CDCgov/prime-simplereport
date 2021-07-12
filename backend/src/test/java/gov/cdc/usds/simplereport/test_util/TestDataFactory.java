@@ -39,6 +39,7 @@ import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,18 +76,19 @@ public class TestDataFactory {
   @Autowired private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
   @Autowired private DemoOktaRepository _oktaRepo;
 
-  public Organization createValidOrg(String name, String externalId, boolean identityVerified) {
-    Organization org = _orgRepo.save(new Organization(name, externalId, identityVerified));
+  public Organization createValidOrg(
+      String name, String type, String externalId, boolean identityVerified) {
+    Organization org = _orgRepo.save(new Organization(name, type, externalId, identityVerified));
     _oktaRepo.createOrganization(org);
     return org;
   }
 
   public Organization createValidOrg() {
-    return createValidOrg("The Mall", DEFAULT_ORG_ID, true);
+    return createValidOrg("The Mall", "k12", DEFAULT_ORG_ID, true);
   }
 
   public Organization createUnverifiedOrg() {
-    return createValidOrg("The Plaza", ALT_ORG_ID, false);
+    return createValidOrg("The Plaza", "k12", ALT_ORG_ID, false);
   }
 
   public Facility createValidFacility(Organization org) {
@@ -136,7 +138,12 @@ public class TestDataFactory {
   }
 
   public Person createMinimalPerson(Organization org, Facility fac, PersonName names) {
-    Person p = new Person(names, org, fac);
+    return createMinimalPerson(org, fac, names, PersonRole.STAFF);
+  }
+
+  public Person createMinimalPerson(
+      Organization org, Facility fac, PersonName names, PersonRole role) {
+    Person p = new Person(names, org, fac, role);
     _personRepo.save(p);
     PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, "503-867-5309");
     _phoneNumberRepo.save(pn);
@@ -163,10 +170,10 @@ public class TestDataFactory {
             getAddress(),
             PersonRole.RESIDENT,
             null,
-            "W",
+            "white",
+            "not_hispanic",
             null,
-            null,
-            "M",
+            "male",
             false,
             false);
     _personRepo.save(p);
@@ -198,7 +205,11 @@ public class TestDataFactory {
   public TestOrder createTestOrder(Person p, Facility f) {
     AskOnEntrySurvey survey =
         new AskOnEntrySurvey(null, Collections.emptyMap(), null, null, null, null, null, null);
-    PatientAnswers answers = new PatientAnswers(survey);
+    return createTestOrder(p, f, survey);
+  }
+
+  public TestOrder createTestOrder(Person p, Facility f, AskOnEntrySurvey s) {
+    PatientAnswers answers = new PatientAnswers(s);
     _patientAnswerRepo.save(answers);
     TestOrder o = new TestOrder(p, f);
     o.setAskOnEntrySurvey(answers);
@@ -207,6 +218,18 @@ public class TestDataFactory {
 
   public TestEvent createTestEvent(Person p, Facility f) {
     return createTestEvent(p, f, TestResult.NEGATIVE);
+  }
+
+  public TestEvent createTestEvent(Person p, Facility f, AskOnEntrySurvey s, TestResult r, Date d) {
+    TestOrder o = createTestOrder(p, f, s);
+    o.setDateTestedBackdate(d);
+    o.setResult(r);
+
+    TestEvent e = _testEventRepo.save(new TestEvent(o));
+    o.setTestEventRef(e);
+    o.markComplete();
+    _testOrderRepo.save(o);
+    return e;
   }
 
   public TestEvent createTestEvent(Person p, Facility f, TestResult r) {

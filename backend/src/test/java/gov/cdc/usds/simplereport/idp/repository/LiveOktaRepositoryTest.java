@@ -19,6 +19,7 @@ import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserList;
 import com.okta.sdk.resource.user.UserProfile;
 import com.okta.sdk.resource.user.UserStatus;
+import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
@@ -27,6 +28,7 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -41,6 +43,8 @@ class LiveOktaRepositoryTest {
   private static final AuthorizationProperties MOCK_PROPS =
       new AuthorizationProperties(null, "UNITTEST");
   private static final OrganizationExtractor MOCK_EXTRACTOR = new OrganizationExtractor(MOCK_PROPS);
+  private static final CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder =
+      new CurrentTenantDataAccessContextHolder();
   private static final String MOCK_CLIENT_ID = "FAKE_CLIENT_ID";
   private Client _client = mock(Client.class);
   private Application _app = mock(Application.class);
@@ -49,7 +53,9 @@ class LiveOktaRepositoryTest {
   @BeforeEach
   public void setup() {
     when(_client.getApplication(MOCK_CLIENT_ID)).thenReturn(_app);
-    _repo = new LiveOktaRepository(MOCK_PROPS, _client, MOCK_CLIENT_ID, MOCK_EXTRACTOR);
+    _repo =
+        new LiveOktaRepository(
+            MOCK_PROPS, _client, MOCK_CLIENT_ID, MOCK_EXTRACTOR, tenantDataAccessContextHolder);
   }
 
   @Test
@@ -103,6 +109,24 @@ class LiveOktaRepositoryTest {
             UUID.fromString("f49e8e27-dd41-4a9e-a29f-15ac74422923")),
         claims.getFacilities());
     assertFalse(claims.grantsAllFacilityAccess());
+  }
+
+  @Test
+  void getOrganizationRoleClaimsForUser_withTenantDataAccess_success() {
+    String username = "fraud@fake.com";
+    Set<String> authorities = new HashSet<>();
+    authorities.add("SR-UNITTEST-TENANT:FAKE-ORG:NO_ACCESS");
+    authorities.add("SR-UNITTEST-TENANT:FAKE-ORG:ADMIN");
+
+    tenantDataAccessContextHolder.setTenantDataAccessAuthorities(username, authorities);
+
+    Optional<OrganizationRoleClaims> optClaims = _repo.getOrganizationRoleClaimsForUser(username);
+
+    assertTrue(optClaims.isPresent());
+    OrganizationRoleClaims claims = optClaims.get();
+    assertEquals("FAKE-ORG", claims.getOrganizationExternalId());
+    assertEquals(
+        Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ADMIN), claims.getGrantedRoles());
   }
 
   @Test

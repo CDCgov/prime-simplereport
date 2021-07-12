@@ -6,7 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.config.AuthorizationProperties;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -30,11 +33,18 @@ class DemoOktaRepositoryTest {
   private static final IdentityAttributes DIANE =
       new IdentityAttributes("dianek@gmail.com", "Diane", "M", "Kohl", null);
 
-  private static final Organization ABC = new Organization("ABC General", "ABC", true);
+  private static final Organization ABC = new Organization("ABC General", "k12", "ABC", true);
   private static final Facility ABC_1 = getFacility(UUID.randomUUID(), ABC);
   private static final Facility ABC_2 = getFacility(UUID.randomUUID(), ABC);
 
-  private DemoOktaRepository _repo = new DemoOktaRepository();
+  private static final AuthorizationProperties MOCK_PROPS =
+      new AuthorizationProperties(null, "UNITTEST");
+  private static final OrganizationExtractor MOCK_EXTRACTOR = new OrganizationExtractor(MOCK_PROPS);
+  private static final CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder =
+      new CurrentTenantDataAccessContextHolder();
+
+  private DemoOktaRepository _repo =
+      new DemoOktaRepository(MOCK_EXTRACTOR, tenantDataAccessContextHolder);
 
   @BeforeEach
   public void setup() {

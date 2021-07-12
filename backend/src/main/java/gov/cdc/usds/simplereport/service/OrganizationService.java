@@ -42,6 +42,7 @@ public class OrganizationService {
   private OktaRepository _oktaRepo;
   private CurrentOrganizationRolesContextHolder _currentOrgRolesContextHolder;
   private OrderingProviderRequiredValidator _orderingProviderRequiredValidator;
+  private PatientSelfRegistrationLinkService _psrlService;
 
   public OrganizationService(
       OrganizationRepository repo,
@@ -50,7 +51,8 @@ public class OrganizationService {
       ProviderRepository providerRepo,
       OktaRepository oktaRepo,
       CurrentOrganizationRolesContextHolder currentOrgRolesContextHolder,
-      OrderingProviderRequiredValidator orderingProviderRequiredValidator) {
+      OrderingProviderRequiredValidator orderingProviderRequiredValidator,
+      PatientSelfRegistrationLinkService patientSelfRegistrationLinkService) {
     _repo = repo;
     _facilityRepo = facilityRepo;
     _authService = authService;
@@ -58,6 +60,11 @@ public class OrganizationService {
     _oktaRepo = oktaRepo;
     _currentOrgRolesContextHolder = currentOrgRolesContextHolder;
     _orderingProviderRequiredValidator = orderingProviderRequiredValidator;
+    _psrlService = patientSelfRegistrationLinkService;
+  }
+
+  public void resetOrganizationRolesContext() {
+    _currentOrgRolesContextHolder.reset();
   }
 
   public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
@@ -226,6 +233,7 @@ public class OrganizationService {
   @Transactional(readOnly = false)
   public Organization createOrganization(
       String name,
+      String type,
       String externalId,
       String testingFacilityName,
       String cliaNumber,
@@ -238,7 +246,7 @@ public class OrganizationService {
       String providerTelephone,
       String providerNPI) {
     // for now, all new organizations have identity_verified = false by default
-    Organization org = _repo.save(new Organization(name, externalId, false));
+    Organization org = _repo.save(new Organization(name, type, externalId, false));
     _oktaRepo.createOrganization(org);
     createFacilityNoPermissions(
         org,
@@ -252,14 +260,24 @@ public class OrganizationService {
         providerAddress,
         providerTelephone,
         providerNPI);
+    _psrlService.createRegistrationLink(org);
     return org;
   }
 
   @Transactional(readOnly = false)
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public Organization updateOrganization(String name) {
+  public Organization updateOrganization(String name, String type) {
     Organization org = getCurrentOrganization();
     org.setOrganizationName(name);
+    org.setOrganizationType(type);
+    return _repo.save(org);
+  }
+
+  @Transactional(readOnly = false)
+  @AuthorizationConfiguration.RequirePermissionEditOrganization
+  public Organization updateOrganization(String type) {
+    Organization org = getCurrentOrganization();
+    org.setOrganizationType(type);
     return _repo.save(org);
   }
 
@@ -306,6 +324,7 @@ public class OrganizationService {
             deviceSpecimenTypes.getDefault(),
             deviceSpecimenTypes.getFullList());
     facility = _facilityRepo.save(facility);
+    _psrlService.createRegistrationLink(facility);
     _oktaRepo.createFacility(facility);
     return facility;
   }

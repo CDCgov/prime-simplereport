@@ -183,3 +183,24 @@ interface FacilityData {
 }
 
 type TestCorrectionStatus = "ORIGINAL" | "CORRECTED" | "REMOVED";
+
+type OrganizationType =
+  | "k12"
+  | "university"
+  | "correctional_facility"
+  | "airport"
+  | "shelter"
+  | "fqhc"
+  | "primary_care"
+  | "assisted_living"
+  | "hospital"
+  | "urgent_care"
+  | "nursing_home"
+  | "treatment_center"
+  | "hospice"
+  | "pharmacy"
+  | "employer"
+  | "government_agency"
+  | "camp"
+  | "lab"
+  | "other";

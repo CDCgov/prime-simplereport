@@ -11,8 +11,10 @@ import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
@@ -28,6 +30,7 @@ import org.springframework.security.access.AccessDeniedException;
 class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Autowired private TestDataFactory _dataFactory;
+  @Autowired private PatientRegistrationLinkRepository _prlRepo;
 
   @BeforeEach
   void setupData() {
@@ -48,6 +51,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     Organization org =
         _service.createOrganization(
             "Tim's org",
+            "k12",
             "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
             "Facility 1",
             "12345",
@@ -66,9 +70,16 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     List<Facility> facilities = _service.getFacilities(org);
     assertNotNull(facilities);
     assertEquals(1, facilities.size());
-    assertEquals("Facility 1", facilities.get(0).getFacilityName());
-    assertNotNull(facilities.get(0).getDefaultDeviceType());
-    assertEquals("Bill", facilities.get(0).getDefaultDeviceType().getName());
+
+    Facility fac = facilities.get(0);
+    assertEquals("Facility 1", fac.getFacilityName());
+    assertNotNull(fac.getDefaultDeviceType());
+    assertEquals("Bill", fac.getDefaultDeviceType().getName());
+
+    PatientSelfRegistrationLink orgLink = _prlRepo.findByOrganization(org).get();
+    PatientSelfRegistrationLink facLink = _prlRepo.findByFacility(fac).get();
+    assertEquals(5, orgLink.getLink().length());
+    assertEquals(5, facLink.getLink().length());
   }
 
   private DeviceSpecimenTypeHolder getDeviceConfig() {
@@ -87,6 +98,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     Organization org =
         _service.createOrganization(
             "Tim's org",
+            "university",
             "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
             "Facility 1",
             "12345",
@@ -105,9 +117,15 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     List<Facility> facilities = _service.getFacilities(org);
     assertNotNull(facilities);
     assertEquals(1, facilities.size());
-    assertEquals("Facility 1", facilities.get(0).getFacilityName());
-    assertNotNull(facilities.get(0).getDefaultDeviceType());
-    assertEquals("Bill", facilities.get(0).getDefaultDeviceType().getName());
+    Facility fac = facilities.get(0);
+    assertEquals("Facility 1", fac.getFacilityName());
+    assertNotNull(fac.getDefaultDeviceType());
+    assertEquals("Bill", fac.getDefaultDeviceType().getName());
+
+    PatientSelfRegistrationLink orgLink = _prlRepo.findByOrganization(org).get();
+    PatientSelfRegistrationLink facLink = _prlRepo.findByFacility(fac).get();
+    assertEquals(5, orgLink.getLink().length());
+    assertEquals(5, facLink.getLink().length());
   }
 
   @Test
@@ -120,6 +138,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
         () -> {
           _service.createOrganization(
               "Adam's org",
+              "urgent_care",
               "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
               "Facility 1",
               "12345",
@@ -164,9 +183,10 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void updateOrganization_not_allowed() {
+  void adminUpdateOrganization_not_allowed() {
     AccessDeniedException caught =
-        assertThrows(AccessDeniedException.class, () -> _service.updateOrganization("Foo org"));
+        assertThrows(
+            AccessDeniedException.class, () -> _service.updateOrganization("Foo org", "k12"));
     assertEquals("Access is denied", caught.getMessage());
   }
 }
