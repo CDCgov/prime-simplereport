@@ -1,6 +1,6 @@
 import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useMemo, useState } from "react";
+import { createRef, RefObject, useEffect, useMemo, useState } from "react";
 
 import "./ManageSelfRegistrationLinks.scss";
 
@@ -150,8 +150,15 @@ function FacilityLinks({
     [slugs]
   );
 
+  const [buttonRefs] = useState<Record<string, RefObject<HTMLButtonElement>>>(
+    slugs.reduce((acc, el) => ({ ...acc, [el.slug]: createRef() }), {})
+  );
+
   return (
     <section aria-label="Facility links" className="margin-top-5">
+      <CopyTooltip
+        buttonRef={copiedSlug ? buttonRefs[copiedSlug] : undefined}
+      />
       <p className="usa-label text-bold">Facility links</p>
       <p className="sr-registration-link-description">
         Patients who register at these links will be visible only at the
@@ -175,6 +182,7 @@ function FacilityLinks({
                     className="usa-button margin-left-1 usa-button--unstyled"
                     onClick={() => copySlug(slug)}
                     arial-label={`Copy patient self-registration link for ${name}`}
+                    ref={buttonRefs[slug]}
                   >
                     <FontAwesomeIcon
                       icon={copiedSlug === slug ? faCheck : faCopy}
@@ -204,3 +212,27 @@ function getRegistrationLink(
 function makeLink(...parts: string[]) {
   return parts.map((part) => part.replace(/(^\/|\/$)/, "")).join("/");
 }
+
+type CopyToolTipProps = {
+  buttonRef?: RefObject<HTMLButtonElement>;
+};
+
+const TOOLTIP_OFFSET = 5;
+
+const CopyTooltip = ({ buttonRef }: CopyToolTipProps) => {
+  const buttonRect = buttonRef?.current?.getBoundingClientRect();
+  const top = buttonRect
+    ? TOOLTIP_OFFSET + buttonRect.top - buttonRect.height
+    : 0;
+  const left = buttonRect ? TOOLTIP_OFFSET + buttonRect.left : 0;
+  const display = buttonRect ? "block" : "none";
+
+  return (
+    <span
+      className="usa-tooltip__body usa-tooltip__body--right is-set is-visible"
+      style={{ display, top, left }}
+    >
+      Copied!
+    </span>
+  );
+};
