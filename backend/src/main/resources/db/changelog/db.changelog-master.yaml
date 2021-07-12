@@ -2387,40 +2387,42 @@ databaseChangeLog:
                   temprow record;
                 BEGIN
                 FOR temprow IN
-                  WITH migration_user as (
-                    SELECT
-                      internal_id as migrations_user_id
-                    FROM
-                      ${database.defaultSchemaName}.api_user
-                    WHERE
-                      login_email = '${migrations_user_email}'
-                  )
-                  select
-                    o.internal_id as organization_id,
-                    f.internal_id as facility_id,
-                    m.migrations_user_id as migrations_user_id
-                  from
-                    facility as f 
-                    full outer join ${database.defaultSchemaName}.patient_registration_link as p on f.internal_id = p.facility_id 
-                    full outer join ${database.defaultSchemaName}.organization as o on o.internal_id = p.organization_id
-                    cross join migration_user as m
-                  where
-                    p.patient_registration_link is null
+                  WITH migration_user AS (SELECT internal_id AS migrations_user_id
+                    FROM ${database.defaultSchemaName}.api_user
+                    WHERE login_email = '${migrations_user_email}')
+                  SELECT
+                    o.internal_id AS organization_id,
+                    f.internal_id AS facility_id,
+                    m.migrations_user_id AS migrations_user_id
+                  FROM
+                    facility AS f 
+                    FULL OUTER JOIN ${database.defaultSchemaName}.patient_registration_link AS p ON f.internal_id = p.facility_id 
+                    FULL OUTER JOIN ${database.defaultSchemaName}.organization AS o ON o.internal_id = p.organization_id
+                    CROSS JOIN migration_user AS m
+                  WHERE
+                    p.patient_registration_link IS NULL
                 LOOP
                   BEGIN
-                    insert into
+                    INSERT INTO
                     ${database.defaultSchemaName}.patient_registration_link (internal_id, created_at, created_by,
                       updated_at, updated_by, organization_id, facility_id,
                       patient_registration_link, is_deleted
                     ) VALUES (
-                      gen_random_uuid(), now(), temprow.migrations_user_id,
-                      now(), temprow.migrations_user_id, temprow.organization_id,
-                      temprow.facility_id,
-                      substr(translate(md5(random() :: text), '150ilos', ''), 0, 6),
-                      false);
+                      gen_random_uuid(), now(), temprow.migrations_user_id, now(), temprow.migrations_user_id, temprow.organization_id,
+                      temprow.facility_id, substr(translate(md5(random() :: text), '150ilos', ''), 0, 6), false
+                    );
                   EXCEPTION WHEN unique_violation THEN
                     -- do nothing, try again with new random link
                   END;
                 END LOOP;
                 END;
               $$;
+      rollback:
+        - sql:
+            sql: |
+              WITH migration_user as (
+                SELECT internal_id as migrations_user_id
+                FROM ${database.defaultSchemaName}.api_user
+                WHERE login_email = '${migrations_user_email}')
+              DELETE FROM ${database.defaultSchemaName}.patient_registration_link 
+              WHERE created_by=migration_user.migrations_user_id;
