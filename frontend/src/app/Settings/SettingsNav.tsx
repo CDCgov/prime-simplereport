@@ -27,6 +27,14 @@ const SettingsNav = () => {
             Manage Organization
           </LinkWithQuery>
         </li>
+        <li className="usa-nav__secondary-item">
+          <LinkWithQuery
+            to={`/settings/self-registration`}
+            activeClassName="active"
+          >
+            Patient self-registration
+          </LinkWithQuery>
+        </li>
       </ul>
     </nav>
   );

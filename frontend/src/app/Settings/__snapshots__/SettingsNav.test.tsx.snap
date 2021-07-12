@@ -36,6 +36,15 @@ exports[`SettingsNav displays the nav order correctly and defaults to 'Manage Us
           Manage Organization
         </a>
       </li>
+      <li
+        class="usa-nav__secondary-item"
+      >
+        <a
+          href="/settings/self-registration"
+        >
+          Patient self-registration
+        </a>
+      </li>
     </ul>
   </nav>
 </div>
