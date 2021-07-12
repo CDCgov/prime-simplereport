@@ -6,12 +6,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import gov.cdc.usds.simplereport.api.accountrequest.IdentityVerificationController;
 import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
+import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
+import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
+import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.idVerification.DemoExperianService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
@@ -19,7 +23,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-@Import(DemoExperianService.class)
+@Import({
+  DemoAuthenticationConfiguration.class,
+  DemoExperianService.class,
+  DemoOktaRepository.class
+})
 @WebMvcTest(
     controllers = IdentityVerificationController.class,
     includeFilters =
@@ -34,6 +42,10 @@ public class IdentityVerificationControllerTest {
   @Autowired private MockMvc _mockMvc;
 
   @Autowired private DemoExperianService _experianService;
+
+  // Dependencies of TenantDataAccessFilter
+  @MockBean private ApiUserService _mockApiUserService;
+  @MockBean private CurrentTenantDataAccessContextHolder _mockContextHolder;
 
   private static final String VALID_GET_QUESTIONS_REQUEST =
       "{\"firstName\":\"Jane\", \"lastName\":\"Doe\", \"dateOfBirth\":\"1980-08-12\", \"email\":\"jane@example.com\", \"phoneNumber\":\"410-867-5309\", \"streetAddress1\":\"1600 Pennsylvania Ave\", \"city\":\"Washington\", \"state\":\"DC\", \"zip\":\"20500\"}";
