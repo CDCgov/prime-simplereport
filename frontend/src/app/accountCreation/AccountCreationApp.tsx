@@ -64,7 +64,7 @@ const AccountCreationApp = () => {
     };
     const token = getActivationTokenFromUrl();
     getStatusAndActivate(token);
-  }, [history, userAccountStatus]);
+  }, [history]);
 
   // Show loading card while useEffect func is running
   if (userAccountStatus === UserAccountStatus.LOADING) {
