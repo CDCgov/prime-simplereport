@@ -27,5 +27,10 @@ type Props = React.ComponentProps<typeof NewFeatureTag>;
 
 const Template: Story<Props> = (args) => <NewFeatureTag {...args} />;
 
+const date = new Date();
+date.setMonth(date.getMonth() + 1);
+
 export const Default = Template.bind({});
-Default.args = {};
+Default.args = {
+  customEndDate: date.toLocaleDateString(),
+};
