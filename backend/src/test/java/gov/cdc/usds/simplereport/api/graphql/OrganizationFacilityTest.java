@@ -94,6 +94,20 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
         });
   }
 
+  @Test
+  void getRegistrationLinks_success() {
+    ObjectNode org = (ObjectNode) runQuery("org-links-query").get("whoami");
+    String orgLink = org.get("organization").get("patientSelfRegistrationLink").asText();
+    assertEquals("dis-org", orgLink);
+    String facilityLink =
+        org.get("organization")
+            .get("facilities")
+            .get(0)
+            .get("patientSelfRegistrationLink")
+            .asText();
+    assertEquals("inj3ct", facilityLink);
+  }
+
   private ObjectNode getDeviceArgs() {
     String someDeviceType = _deviceService.fetchDeviceTypes().get(0).getInternalId().toString();
     ObjectNode variables = JsonNodeFactory.instance.objectNode().put("deviceId", someDeviceType);

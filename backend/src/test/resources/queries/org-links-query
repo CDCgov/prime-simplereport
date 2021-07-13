@@ -1,0 +1,11 @@
+query OrgLinks {
+  whoami {
+    organization {
+      patientSelfRegistrationLink
+   	 facilities {
+    	  name
+     	  patientSelfRegistrationLink
+  	  }
+    }
+  }
+}

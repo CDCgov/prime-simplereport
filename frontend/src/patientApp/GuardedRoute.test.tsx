@@ -5,6 +5,7 @@ import { MemoryRouter, Route } from "react-router";
 
 import GuardedRoute from "./GuardedRoute";
 import TermsOfService from "./timeOfTest/TermsOfService";
+import "../i18n";
 
 const mockStore = configureStore([]);
 const store = mockStore({

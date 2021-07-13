@@ -26,6 +26,7 @@ import { showError } from "./app/utils";
 import { getAppInsights, ai, withInsights } from "./app/TelemetryService";
 import TelemetryProvider from "./app/telemetry-provider";
 import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration";
+import "./i18n";
 
 import "./styles/App.css";
 

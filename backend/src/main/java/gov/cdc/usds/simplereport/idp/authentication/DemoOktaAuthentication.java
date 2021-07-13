@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 @Profile(BeanProfiles.NO_OKTA_AUTH)
 @Service
 public class DemoOktaAuthentication implements OktaAuthentication {
-
   private static final int MINIMUM_PASSWORD_LENGTH = 8;
   private static final int PHONE_NUMBER_LENGTH = 10;
   private static final int PASSCODE_LENGTH = 6;
@@ -29,6 +29,48 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   public DemoOktaAuthentication() {
     this.idToUserMap = new HashMap<>();
+  }
+
+  public UserAccountStatus getUserStatus(String activationToken, String userId, String factorId) {
+    if (activationToken != null && !activationToken.isEmpty() && userId == null) {
+      return UserAccountStatus.PENDING_ACTIVATION;
+    }
+    if (!this.idToUserMap.containsKey(userId)) {
+      return UserAccountStatus.UNKNOWN;
+    }
+    DemoAuthUser user = this.idToUserMap.get(userId);
+    if (user.getPassword() == null || user.getPassword().isEmpty()) {
+      return UserAccountStatus.PASSWORD_RESET;
+    }
+    if (user.getRecoveryAnswer() == null || user.getRecoveryAnswer().isEmpty()) {
+      return UserAccountStatus.SET_SECURITY_QUESTIONS;
+    }
+    if (user.getMfa() == null) {
+      return UserAccountStatus.MFA_SELECT;
+    }
+    DemoMfa factor = user.getMfa();
+    if (factor.getFactorStatus() == FactorStatus.ACTIVE) {
+      return UserAccountStatus.ACTIVE;
+    }
+    switch (factor.getFactorType()) {
+      case SMS:
+        return UserAccountStatus.SMS_PENDING_ACTIVATION;
+      case CALL:
+        return UserAccountStatus.CALL_PENDING_ACTIVATION;
+      case EMAIL:
+        return UserAccountStatus.EMAIL_PENDING_ACTIVATION;
+      case WEBAUTHN:
+        return UserAccountStatus.FIDO_PENDING_ACTIVATION;
+      case TOKEN_SOFTWARE_TOTP:
+        String mfaId = factor.getFactorId();
+        if (mfaId.contains("google")) {
+          return UserAccountStatus.GOOGLE_PENDING_ACTIVATION;
+        } else {
+          return UserAccountStatus.OKTA_PENDING_ACTIVATION;
+        }
+      default:
+        return UserAccountStatus.ACTIVE;
+    }
   }
 
   public String activateUser(String activationToken, String crossForwardedHeader, String userAgent)
@@ -77,6 +119,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   public String enrollSmsMfa(String userId, String phoneNumber)
       throws BadRequestException, OktaAuthenticationFailureException {
     validateUser(userId);
+    validateInput(phoneNumber);
     String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
     String factorId = userId + strippedPhoneNumber;
     DemoMfa smsMfa =
@@ -88,6 +131,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   public String enrollVoiceCallMfa(String userId, String phoneNumber)
       throws BadRequestException, OktaAuthenticationFailureException {
     validateUser(userId);
+    validateInput(phoneNumber);
     String strippedPhoneNumber = validatePhoneNumber(phoneNumber);
     String factorId = userId + strippedPhoneNumber;
     DemoMfa callMfa =
@@ -110,6 +154,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
     validateUser(userId);
+    validateInput(appType);
     String factorType = "";
     switch (appType.toLowerCase()) {
       case "google":
@@ -167,6 +212,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
       throws BadRequestException, OktaAuthenticationFailureException {
     validateUser(userId);
     validateFactor(userId, factorId);
+    validateInput(passcode);
     DemoMfa mfa = this.idToUserMap.get(userId).getMfa();
     if (passcode.length() != PASSCODE_LENGTH) {
       throw new BadRequestException("Activation passcode does not match our records.");
@@ -192,6 +238,12 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   public void validateUser(String userId) throws OktaAuthenticationFailureException {
     if (!this.idToUserMap.containsKey(userId)) {
       throw new OktaAuthenticationFailureException("User id not recognized.");
+    }
+  }
+
+  public void validateInput(String userInput) throws BadRequestException {
+    if (userInput == null) {
+      throw new BadRequestException("User input cannot be null.");
     }
   }
 

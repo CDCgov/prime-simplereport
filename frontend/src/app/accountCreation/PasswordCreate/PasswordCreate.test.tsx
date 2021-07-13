@@ -14,12 +14,12 @@ const store = mockStore({
 
 jest.mock("../AccountCreationApiService", () => ({
   AccountCreationApi: {
-    setPassword: (activationToken: string, password: string) => {
+    setPassword: (password: string) => {
       return new Promise((res, rej) => {
         if (password === "validPASS123!") {
           res("success");
         } else {
-          rej({ message: "utter failure" });
+          rej("utter failure");
         }
       });
     },
@@ -161,6 +161,6 @@ describe("PasswordCreate", () => {
     await act(async () => {
       await fireEvent.click(screen.getByText("Continue"));
     });
-    expect(screen.getByText("API Error: utter failure")).toBeInTheDocument();
+    expect(screen.getByText("utter failure")).toBeInTheDocument();
   });
 });

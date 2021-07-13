@@ -1,0 +1,40 @@
+{
+  "id" : "411a4e3a-ee9e-425b-82b2-3a579cf848c4",
+  "name" : "api_v1_users_00uepp0t99yupwzqi4h6_factors_fwfepp27gahujohgn4h6_lifecycle_activate",
+  "request" : {
+    "url" : "/api/v1/users/00uepp0t99YUpwZQI4h6/factors/fwfepp27gAHUJohGN4h6/lifecycle/activate",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"attestation\":\"ZXjAi-9xqhY4C5iDVqtd\",\"clientData\":\"00uepp0t99YUpwZQI4h6\"}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 400,
+    "body" : "{\"errorCode\":\"E0000001\",\"errorSummary\":\"Api validation failed: org.codehaus.jackson.JsonParseException: Unexpected character ('�' (code 65533 / 0xfffd)): expected a valid value (number, String, array, object, 'true', 'false' or 'null')\\n at [Source: java.io.StringReader@4c2ca46; line: 1, column: 2]\",\"errorLink\":\"E0000001\",\"errorId\":\"oae_NkuPjwDT0qcVGOBJJvqqA\",\"errorCauses\":[{\"errorSummary\":\"Invalid data in the request.\"}]}",
+    "headers" : {
+      "Date" : "Thu, 01 Jul 2021 22:09:36 GMT",
+      "Content-Type" : "application/json",
+      "Server" : "nginx",
+      "Public-Key-Pins-Report-Only" : "pin-sha256=\"r5EfzZxQVvQpKo3AgYRaT7X2bDO/kj3ACwmxfdT2zt8=\"; pin-sha256=\"MaqlcUgk2mvY/RFSGeSwBRkI+rZ6/dxe/DuQfBT/vnQ=\"; pin-sha256=\"72G5IEvDEWn+EThf3qjR7/bQSWaS2ZSLqolhnO6iyJI=\"; pin-sha256=\"rrV6CLCCvqnk89gWibYT0JO6fNQ8cCit7GGoiVTjCOg=\"; max-age=60; report-uri=\"https://okta.report-uri.com/r/default/hpkp/reportOnly\"",
+      "x-okta-request-id" : "YN49IHUKBLqgwr-8a3uMqgAACEg",
+      "x-xss-protection" : "0",
+      "p3p" : "CP=\"HONK\"",
+      "x-rate-limit-limit" : "600",
+      "x-rate-limit-remaining" : "588",
+      "x-rate-limit-reset" : "1625177424",
+      "cache-control" : "no-cache, no-store",
+      "pragma" : "no-cache",
+      "expires" : "0",
+      "content-security-policy" : "default-src 'self' hhs-prime.okta.com *.oktacdn.com; connect-src 'self' hhs-prime.okta.com hhs-prime-admin.okta.com *.oktacdn.com *.mixpanel.com *.mapbox.com app.pendo.io data.pendo.io pendo-static-5634101834153984.storage.googleapis.com hhs-prime.kerberos.okta.com https://oinmanager.okta.com data:; script-src 'unsafe-inline' 'unsafe-eval' 'self' hhs-prime.okta.com *.oktacdn.com; style-src 'unsafe-inline' 'self' hhs-prime.okta.com *.oktacdn.com app.pendo.io cdn.pendo.io pendo-static-5634101834153984.storage.googleapis.com; frame-src 'self' hhs-prime.okta.com hhs-prime-admin.okta.com login.okta.com; img-src 'self' hhs-prime.okta.com *.oktacdn.com *.tiles.mapbox.com *.mapbox.com app.pendo.io data.pendo.io cdn.pendo.io pendo-static-5634101834153984.storage.googleapis.com data: blob:; font-src 'self' hhs-prime.okta.com data: *.oktacdn.com fonts.gstatic.com",
+      "expect-ct" : "report-uri=\"https://oktaexpectct.report-uri.com/r/t/ct/reportOnly\", max-age=0",
+      "x-content-type-options" : "nosniff",
+      "Strict-Transport-Security" : "max-age=315360000; includeSubDomains",
+      "set-cookie" : [ "sid=\"\"; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/", "JSESSIONID=4D0FC5C54EB8F1643C78AFD20F16FE73; Path=/; Secure; HttpOnly" ]
+    }
+  },
+  "uuid" : "411a4e3a-ee9e-425b-82b2-3a579cf848c4",
+  "persistent" : true,
+  "insertionIndex" : 798
+}
