@@ -60,7 +60,7 @@ export const MfaSendCodeToContact = (props: Props) => {
         setSubmitted(true);
       } catch (error) {
         setContactError(
-          error?.message || "Unable to setup device, please try again later"
+          error || "Unable to setup device, please try again later"
         );
       } finally {
         setLoading(false);

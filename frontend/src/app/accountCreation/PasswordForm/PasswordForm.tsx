@@ -112,7 +112,7 @@ export const PasswordForm = () => {
         setSubmitted(true);
       } catch (error) {
         setPasswordError(
-          error?.message || "Unable to setup password, please try again later"
+          error || "Unable to setup password, please try again later"
         );
       } finally {
         setLoading(false);

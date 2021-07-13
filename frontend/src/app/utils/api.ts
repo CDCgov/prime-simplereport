@@ -5,9 +5,10 @@ interface JsonObject {
 type RequestMethod = "GET" | "POST";
 
 const JSON_CONTENT = "application/json";
+const TEXT_CONTENT = "text/plain";
 export const headers = {
   "Content-Type": JSON_CONTENT,
-  Accept: JSON_CONTENT,
+  Accept: [JSON_CONTENT, TEXT_CONTENT].join(", "),
 };
 
 /**

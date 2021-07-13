@@ -39,8 +39,7 @@ export const MfaVerify = (props: Props) => {
       setCodeResendSuccess(true);
     } catch (error) {
       setCodeError(
-        error?.message ||
-          "Unable to resend activation passcode, please try again later"
+        error || "Unable to resend activation passcode, please try again later"
       );
     }
   };
@@ -52,9 +51,7 @@ export const MfaVerify = (props: Props) => {
         await AccountCreationApi.verifyActivationPasscode(code);
         setSubmitted(true);
       } catch (error) {
-        setCodeError(
-          error?.message || "Unable to verify code, please try again later"
-        );
+        setCodeError(error || "Unable to verify code, please try again later");
       } finally {
         setLoading(false);
       }

@@ -11,6 +11,8 @@ import Page from "../commonComponents/Page/Page";
 import { getActivationTokenFromUrl } from "../utils/url";
 import { LoadingCard } from "../commonComponents/LoadingCard/LoadingCard";
 import PageNotFound from "../commonComponents/PageNotFound";
+import CardBackground from "../commonComponents/CardBackground/CardBackground";
+import Card from "../commonComponents/Card/Card";
 
 import { SecurityQuestion } from "./SecurityQuestion/SecurityQuestion";
 import { MfaSelect } from "./MfaSelect/MfaSelect";
@@ -34,6 +36,7 @@ const AccountCreationApp = () => {
   const [userAccountStatus, setUserAccountStatus] = useState(
     UserAccountStatus.LOADING
   );
+  const [error, setError] = useState("");
   // Used to reroute based on user's status
   const history = useHistory();
 
@@ -46,7 +49,11 @@ const AccountCreationApp = () => {
       let status = await AccountCreationApi.getUserStatus(activationToken);
       // If the user hasn't been activated yet w/ the activation token, do so
       if (status === UserAccountStatus.PENDING_ACTIVATION && activationToken) {
-        await AccountCreationApi.initialize(activationToken);
+        try {
+          await AccountCreationApi.initialize(activationToken);
+        } catch (error) {
+          setError(error || "Invalid activation token");
+        }
         // Re-retrieve the status since it will have changed after activation
         status = await AccountCreationApi.getUserStatus();
       }
@@ -69,6 +76,15 @@ const AccountCreationApp = () => {
   // Show loading card while useEffect func is running
   if (userAccountStatus === UserAccountStatus.LOADING) {
     return <LoadingCard />;
+  }
+
+  // Show error card if activation token is invalid
+  if (error) {
+    return (
+      <CardBackground>
+        <Card logo bodyKicker={error} bodyKickerCentered={true}></Card>
+      </CardBackground>
+    );
   }
 
   return (
