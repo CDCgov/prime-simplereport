@@ -173,6 +173,40 @@ class QueueManagementTest extends BaseGraphqlTest {
     fetchQueue();
   }
 
+  @Test
+  void addPatientsToQueue_getQueue_NPlusOne() throws Exception {
+    Person p1 = _dataFactory.createFullPerson(_org);
+    String personId1 = p1.getInternalId().toString();
+    ObjectNode variables =
+        getFacilityScopedArguments()
+            .put("id", personId1)
+            .put("previousTestDate", "2020-05-15")
+            .put("symptomOnsetDate", "2020-11-30");
+    performEnqueueMutation(variables, Optional.empty());
+
+    // get the first query count
+    long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
+    fetchQueue();
+    long firstRunCount = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
+
+    for (int ii = 0; ii < 10; ii++) {
+      // add more tests to the queue. (which needs more patients)
+      Person p = _dataFactory.createFullPerson(_org);
+      String personId = p.getInternalId().toString();
+      variables =
+          getFacilityScopedArguments()
+              .put("id", personId)
+              .put("previousTestDate", "2020-05-15")
+              .put("symptomOnsetDate", "2020-11-30");
+      performEnqueueMutation(variables, Optional.empty());
+    }
+
+    startQueryCount = _hibernateQueryInterceptor.getQueryCount();
+    fetchQueue();
+    long secondRunCount = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
+    assertEquals(firstRunCount, secondRunCount);
+  }
+
   private ObjectNode getFacilityScopedArguments() {
     return JsonNodeFactory.instance
         .objectNode()

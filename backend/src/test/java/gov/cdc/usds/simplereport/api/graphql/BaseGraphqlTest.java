@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
+import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
@@ -62,6 +63,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
   @Autowired private DemoUserConfiguration _users;
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private ObjectMapper objectMapper;
+  @Autowired protected HibernateQueryInterceptor _hibernateQueryInterceptor;
   @MockBean private AddressValidationService _addressValidation;
 
   private String _userName = null;
@@ -138,6 +140,8 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     LOG.trace(
         "Usernames configured: {}",
         _users.getAllUsers().stream().map(DemoUser::getUsername).collect(Collectors.toList()));
+
+    _hibernateQueryInterceptor.startQueryCount(); // also resets count
   }
 
   @AfterEach
@@ -145,6 +149,10 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     truncateDb();
     _userName = null;
     _oktaRepo.reset();
+
+    // see output saved to backend/build/test-results/test
+    LoggerFactory.getLogger(BaseGraphqlTest.class)
+        .info("Hibernate Total queries: {}", _hibernateQueryInterceptor.getQueryCount());
   }
 
   private String getBearerAuth() {
