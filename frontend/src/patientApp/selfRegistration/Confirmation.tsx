@@ -20,8 +20,8 @@ export const Confirmation = ({ personName, entityName }: Props) => {
           />
           <p className="padding-left-2">
             <Trans t={t} i18nKey="selfRegistration.confirmation.registered">
-              <span className="text-bold">{{ personName }}</span>, you're
-              registered for a COVID-19 test at {{ entityName }}.
+              <span className="text-bold">{{ personName }}</span>, thanks for
+              completing your patient profile at {{ entityName }}.
             </Trans>
           </p>
         </div>
