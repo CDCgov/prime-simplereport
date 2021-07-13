@@ -59,7 +59,7 @@ export const ManageSelfRegistrationLinksContainer = () => {
       baseUrl={process.env.REACT_APP_BASE_URL || ""}
       organizationSlug={organizationSlug}
       facilitySlugs={facilitySlugs}
-      howItWorksPath="/how-it-works"
+      howItWorksPath="/using-simplereport/manage-people-you-test/self-registration"
     />
   );
 };
