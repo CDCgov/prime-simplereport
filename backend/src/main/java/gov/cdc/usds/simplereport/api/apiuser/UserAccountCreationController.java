@@ -78,11 +78,6 @@ public class UserAccountCreationController {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
   }
 
-  // @ExceptionHandler(Exception.class)
-  // public ResponseEntity<String> handleException(Exception e) {
-  //   return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("");
-  // }
-
   /**
    * Fetches a user status's status within the account creation process. Does not exactly match the
    * Okta account status options, since we also want to know about states such as MFA enrollment.
