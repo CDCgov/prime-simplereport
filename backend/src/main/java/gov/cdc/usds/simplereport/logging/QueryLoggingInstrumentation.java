@@ -64,9 +64,15 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
     requestTelemetry.setId(executionId);
     var appVersionHeaderContents = context.getHttpServletRequest().getHeaders("App-Version").asIterator();
     var appVersionHeader = appVersionHeaderContents.hasNext() ? appVersionHeaderContents.next() : "";
+    System.out.println("---------------------------");
+    System.out.println(appVersionHeader);
+    System.out.println("---------------------------");
 
-    requestTelemetry.getContext().getProperties().put("App Version", appVersionHeader);
-
+    requestTelemetry.getProperties().put("App Version", appVersionHeader);
+      
+    System.out.println("---------------------------");
+    System.out.println(requestTelemetry.getProperties().toString());
+    System.out.println("---------------------------");
     // Try to get the operation name, if one exists
     final String name = parameters.getExecutionInput().getOperationName();
     if (name == null || "".equals(name)) {
