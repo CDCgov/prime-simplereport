@@ -7,18 +7,58 @@ describe("AccountCreationApi", () => {
     (fetch as FetchMock).resetMocks();
   });
 
+  describe("getUserStatus", () => {
+    beforeEach(async () => {
+      (fetch as FetchMock).mockResponseOnce(JSON.stringify({}));
+      await AccountCreationApi.getUserStatus("testActivationToken");
+    });
+    it("calls getUserStatus with the correct data", () => {
+      expect(fetch).toHaveBeenCalledWith(
+        "http://localhost:8080/user-account/user-status?activationToken=testActivationToken",
+        {
+          body: undefined,
+          headers: {
+            Accept: "application/json, text/plain",
+            "Content-Type": "application/json",
+          },
+          method: "GET",
+        }
+      );
+    });
+  });
+
+  describe("initialize", () => {
+    beforeEach(async () => {
+      (fetch as FetchMock).mockResponseOnce(JSON.stringify({}));
+      await AccountCreationApi.initialize("testActivationToken");
+    });
+    it("calls initialize with the correct data", () => {
+      expect(fetch).toHaveBeenCalledWith(
+        "http://localhost:8080/user-account/initialize",
+        {
+          body: '{"activationToken":"testActivationToken"}',
+          headers: {
+            Accept: "application/json, text/plain",
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+        }
+      );
+    });
+  });
+
   describe("setPassword", () => {
     beforeEach(async () => {
       (fetch as FetchMock).mockResponseOnce(JSON.stringify({}));
-      await AccountCreationApi.setPassword("DUMMY_AUTH_CODE", "DROWSSAP");
+      await AccountCreationApi.setPassword("DROWSSAP");
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/initialize-and-set-password",
+        "http://localhost:8080/user-account/set-password",
         {
-          body: '{"activationToken":"DUMMY_AUTH_CODE","password":"DROWSSAP"}',
+          body: '{"password":"DROWSSAP"}',
           headers: {
-            Accept: "application/json",
+            Accept: "application/json, text/plain",
             "Content-Type": "application/json",
           },
           method: "POST",
@@ -40,7 +80,7 @@ describe("AccountCreationApi", () => {
         {
           body: '{"question":"Favorite Cat?","answer":"Savannah cat"}',
           headers: {
-            Accept: "application/json",
+            Accept: "application/json, text/plain",
             "Content-Type": "application/json",
           },
           method: "POST",
@@ -59,7 +99,7 @@ describe("AccountCreationApi", () => {
         {
           body: '{"userInput":"1-800-273-8255"}',
           headers: {
-            Accept: "application/json",
+            Accept: "application/json, text/plain",
             "Content-Type": "application/json",
           },
           method: "POST",
@@ -78,7 +118,7 @@ describe("AccountCreationApi", () => {
         {
           body: '{"userInput":"867-5309"}',
           headers: {
-            Accept: "application/json",
+            Accept: "application/json, text/plain",
             "Content-Type": "application/json",
           },
           method: "POST",
@@ -96,7 +136,7 @@ describe("AccountCreationApi", () => {
         "http://localhost:8080/user-account/enroll-email-mfa",
         {
           headers: {
-            Accept: "application/json",
+            Accept: "application/json, text/plain",
             "Content-Type": "application/json",
           },
           method: "POST",
@@ -115,7 +155,7 @@ describe("AccountCreationApi", () => {
         {
           body: '{"userInput":"Google"}',
           headers: {
-            Accept: "application/json",
+            Accept: "application/json, text/plain",
             "Content-Type": "application/json",
           },
           method: "POST",
@@ -133,7 +173,7 @@ describe("AccountCreationApi", () => {
         "http://localhost:8080/user-account/enroll-security-key-mfa",
         {
           headers: {
-            Accept: "application/json",
+            Accept: "application/json, text/plain",
             "Content-Type": "application/json",
           },
           method: "POST",
@@ -152,7 +192,7 @@ describe("AccountCreationApi", () => {
         {
           body: '{"attestation":"ABC","clientData":"123"}',
           headers: {
-            Accept: "application/json",
+            Accept: "application/json, text/plain",
             "Content-Type": "application/json",
           },
           method: "POST",
@@ -171,7 +211,7 @@ describe("AccountCreationApi", () => {
         {
           body: '{"userInput":"789345"}',
           headers: {
-            Accept: "application/json",
+            Accept: "application/json, text/plain",
             "Content-Type": "application/json",
           },
           method: "POST",
@@ -189,7 +229,7 @@ describe("AccountCreationApi", () => {
         "http://localhost:8080/user-account/resend-activation-passcode",
         {
           headers: {
-            Accept: "application/json",
+            Accept: "application/json, text/plain",
             "Content-Type": "application/json",
           },
           method: "POST",
