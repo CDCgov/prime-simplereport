@@ -2373,3 +2373,54 @@ databaseChangeLog:
             selectQuery: SELECT internal_id, created_at, created_by, updated_at, updated_by, is_deleted, provider_id FROM ${database.defaultSchemaName}.provider
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.provider_no_phi_view TO ${noPhiUsername};
+  - changeSet:
+      id: generate-registration-links
+      author: nicholas.a.scialli@omb.eop.gov
+      comment: Generates self-registration links for orgs and facilities that do not have them yet.
+      changes:
+        - createProcedure:
+            dbms: postgresql
+            schemaName: ${database.defaultSchemaName}
+            procedureBody: |-
+              DO $$
+                DECLARE
+                  temprow record;
+                BEGIN
+                FOR temprow IN
+                  WITH migration_user AS (SELECT internal_id AS migrations_user_id
+                    FROM ${database.defaultSchemaName}.api_user
+                    WHERE login_email = '${migrations_user_email}')
+                  SELECT
+                    o.internal_id AS organization_id, f.internal_id AS facility_id, m.migrations_user_id AS migrations_user_id
+                  FROM
+                    facility AS f 
+                    FULL OUTER JOIN ${database.defaultSchemaName}.patient_registration_link AS p ON f.internal_id = p.facility_id 
+                    FULL OUTER JOIN ${database.defaultSchemaName}.organization AS o ON o.internal_id = p.organization_id
+                    CROSS JOIN migration_user AS m
+                  WHERE
+                    p.patient_registration_link IS NULL
+                LOOP
+                  BEGIN
+                    INSERT INTO ${database.defaultSchemaName}.patient_registration_link 
+                      (internal_id, created_at, created_by, updated_at, updated_by, organization_id, facility_id, 
+                      patient_registration_link, is_deleted) 
+                    VALUES (
+                      gen_random_uuid(), now(), temprow.migrations_user_id, now(), temprow.migrations_user_id, temprow.organization_id,
+                      temprow.facility_id, substr(translate(md5(random() :: text), '150ilos', ''), 0, 6), false
+                    );
+                  EXCEPTION WHEN unique_violation THEN
+                    -- extremely unlikely
+                  END;
+                END LOOP;
+                END;
+              $$;
+      rollback:
+        - sql:
+            sql: |
+              WITH migration_user as (
+                SELECT internal_id as migrations_user_id
+                FROM ${database.defaultSchemaName}.api_user
+                WHERE login_email = '${migrations_user_email}')
+              DELETE FROM ${database.defaultSchemaName}.patient_registration_link 
+              USING migration_user m
+              WHERE created_by = m.migrations_user_id;
