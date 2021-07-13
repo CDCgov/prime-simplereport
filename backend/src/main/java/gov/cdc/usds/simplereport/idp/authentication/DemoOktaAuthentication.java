@@ -257,9 +257,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
 
   public String validatePhoneNumber(String phoneNumber) throws OktaAuthenticationFailureException {
     String strippedPhoneNumber = phoneNumber.replaceAll("[^\\d]", "");
-    System.out.println("about to check phone number: " + strippedPhoneNumber);
     if (strippedPhoneNumber.length() != PHONE_NUMBER_LENGTH) {
-      System.out.println("phone length incorrect");
       throw new BadRequestException("Phone number is invalid.");
     }
     return strippedPhoneNumber;
