@@ -63,8 +63,8 @@ class FetchClient {
       this.getOptions(method, body)
     );
     if (!res.ok) {
-      // throw await res.json().catch((error) => error);
-      throw res;
+      throw await res.json().catch((error) => error);
+      // throw res;
     }
     const contentType = res.headers.get("content-type");
     if (contentType && contentType.indexOf(JSON_CONTENT) !== -1) {
