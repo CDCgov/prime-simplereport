@@ -59,7 +59,9 @@ export const MfaSendCodeToContact = (props: Props) => {
         await props.serviceEnroll(contact);
         setSubmitted(true);
       } catch (error) {
-        setContactError(`API Error: ${error?.message}`);
+        setContactError(
+          error || "Unable to setup device, please try again later"
+        );
       } finally {
         setLoading(false);
       }
@@ -79,6 +81,7 @@ export const MfaSendCodeToContact = (props: Props) => {
   if (submitted) {
     return (
       <Redirect
+        push
         to={{
           pathname: `${window.location.pathname.split("/uac")[1]}/verify`,
           state: { contact },
@@ -121,9 +124,6 @@ export const MfaSendCodeToContact = (props: Props) => {
           onClick={handleSubmit}
         />
       </Card>
-      <p className="margin-top-5">
-        <a href="#0">Return to previous step</a>
-      </p>
     </CardBackground>
   );
 };

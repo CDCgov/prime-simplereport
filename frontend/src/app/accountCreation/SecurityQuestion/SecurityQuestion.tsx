@@ -26,7 +26,7 @@ export const SecurityQuestion = () => {
   const validateSecurityQuestion = (): boolean => {
     let error = "";
     if (securityQuestion === "") {
-      error = "Enter a security question";
+      error = "Select a security question";
     }
     setSecurityQuestionError(error);
     return error === "";
@@ -36,6 +36,12 @@ export const SecurityQuestion = () => {
     let error = "";
     if (securityAnswer === "") {
       error = "Enter your answer";
+    }
+    if (securityAnswer.length < 4) {
+      error = "Answer must be at least 4 characters";
+    }
+    if (securityAnswer.length > 256) {
+      error = "Answer must be less than 256 characters";
     }
     setSecurityAnswerError(error);
     return error === "";
@@ -51,7 +57,9 @@ export const SecurityQuestion = () => {
         );
         setSubmitted(true);
       } catch (error) {
-        setSecurityQuestionError(`API Error: ${error?.message}`);
+        setSecurityQuestionError(
+          error || "Unable to setup security questions, please try again later"
+        );
       } finally {
         setLoading(false);
       }
@@ -63,7 +71,7 @@ export const SecurityQuestion = () => {
   }
 
   if (submitted) {
-    return <Redirect to="/mfa-select" />;
+    return <Redirect push to="/mfa-select" />;
   }
 
   return (
@@ -103,9 +111,6 @@ export const SecurityQuestion = () => {
           onClick={handleSubmit}
         />
       </Card>
-      <p className="margin-top-4">
-        <a href="#0">Return to previous step</a>
-      </p>
     </CardBackground>
   );
 };
