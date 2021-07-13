@@ -57,7 +57,6 @@ export const ManageSelfRegistrationLinksContainer = () => {
   return (
     <ManageSelfRegistrationLinks
       baseUrl={process.env.REACT_APP_BASE_URL || ""}
-      isNewFeature={false}
       organizationSlug={organizationSlug}
       facilitySlugs={facilitySlugs}
       howItWorksPath="/how-it-works"

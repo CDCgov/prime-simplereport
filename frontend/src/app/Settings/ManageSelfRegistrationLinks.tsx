@@ -2,13 +2,14 @@ import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useMemo, useState } from "react";
 
+import { NewFeatureTag } from "../commonComponents/NewFeatureTag";
+
 import "./ManageSelfRegistrationLinks.scss";
 
 type FacilitySlug = { name: string; slug: string };
 
 type Props = {
   baseUrl: string;
-  isNewFeature: boolean;
   organizationSlug: string;
   facilitySlugs: FacilitySlug[];
   howItWorksPath: string;
@@ -16,7 +17,6 @@ type Props = {
 
 export const ManageSelfRegistrationLinks = ({
   baseUrl,
-  isNewFeature,
   organizationSlug,
   facilitySlugs,
   howItWorksPath,
@@ -51,11 +51,10 @@ export const ManageSelfRegistrationLinks = ({
         <div className="usa-card__header">
           <h2 className="display-flex flex-row flex-align-center">
             <span>Patient self-registration</span>
-            {isNewFeature && (
-              <span className="usa-tag margin-left-1 bg-black padding-y-05">
-                New
-              </span>
-            )}
+            <NewFeatureTag
+              feature="selfRegistration"
+              className="margin-left-1 padding-y-05"
+            />
           </h2>
         </div>
         <div className="usa-card__body maxw-prose padding-y-3">

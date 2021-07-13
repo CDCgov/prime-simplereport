@@ -32,7 +32,6 @@ View.args = {
     },
   ],
   organizationSlug: "ab3de",
-  isNewFeature: true,
   howItWorksPath: "/how-it-works",
   baseUrl: "https://simplereport.gov/",
 };

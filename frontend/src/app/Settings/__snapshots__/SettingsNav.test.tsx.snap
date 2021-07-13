@@ -43,6 +43,13 @@ exports[`SettingsNav displays the nav order correctly and defaults to 'Manage Us
           href="/settings/self-registration"
         >
           Patient self-registration
+           
+          <span
+            class="usa-tag bg-black"
+            data-testid="tag"
+          >
+            New
+          </span>
         </a>
       </li>
     </ul>
