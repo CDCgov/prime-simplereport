@@ -207,3 +207,5 @@ simple-report-initialization:
   patient-registration-links:
     - patient-registration-link: dis-org
       organization-external-id: DIS_ORG
+    - patient-registration-link: inj3ct
+      facility-name: Injection Site

@@ -13,6 +13,7 @@ type Organization {
     @deprecated(reason: "Use the one that makes sense")
   facilities: [Facility!]!
   identityVerified: Boolean
+  patientSelfRegistrationLink: String
 }
 
 type Facility {
@@ -31,6 +32,7 @@ type Facility {
   deviceTypes: [DeviceType]
   defaultDeviceType: DeviceType
   orderingProvider: Provider
+  patientSelfRegistrationLink: String
 }
 
 type Provider {
@@ -246,7 +248,7 @@ type Query {
     role: String
     startDate: DateTime
     endDate: DateTime
-    pageNumber: Int 
+    pageNumber: Int
     pageSize: Int
   ): [TestResult] @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResultsCount(
