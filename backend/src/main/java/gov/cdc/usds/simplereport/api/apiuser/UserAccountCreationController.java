@@ -4,7 +4,7 @@ import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQ
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.smartystreets.api.exceptions.BadRequestException;
+import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.ActivateAccountRequest;
@@ -23,6 +23,9 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
+// import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /**
  * Controller used for user account creation.
@@ -58,6 +62,26 @@ public class UserAccountCreationController {
   private void init() {
     LOG.info("User account request creation REST endpoint enabled.");
   }
+
+  @ExceptionHandler(InvalidActivationLinkException.class)
+  public ResponseEntity<String> handleException(InvalidActivationLinkException e) {
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+  }
+
+  @ExceptionHandler(OktaAuthenticationFailureException.class)
+  public ResponseEntity<String> handleException(OktaAuthenticationFailureException e) {
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+  }
+
+  @ExceptionHandler(BadRequestException.class)
+  public ResponseEntity<String> handleException(BadRequestException e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+  }
+
+  // @ExceptionHandler(Exception.class)
+  // public ResponseEntity<String> handleException(Exception e) {
+  //   return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("");
+  // }
 
   /**
    * Fetches a user status's status within the account creation process. Does not exactly match the

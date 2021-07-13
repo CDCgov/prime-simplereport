@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
-import com.smartystreets.api.exceptions.BadRequestException;
+import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
