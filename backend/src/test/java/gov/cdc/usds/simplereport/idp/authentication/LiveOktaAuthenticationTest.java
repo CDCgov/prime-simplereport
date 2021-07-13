@@ -23,9 +23,9 @@ import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
 import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -88,20 +88,20 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
             .setCacheManager(cacheManager)
             .build();
 
-    _userId = "00ucxvarj3CeuPe9B4h6";
-    _activationToken = "lJ8lRfaK0jXeq0YovfNR";
-  }
-
-  @AfterAll
-  void removeUser() {
-    User user = _testClient.getUser(_userId);
-    user.deactivate();
-    user.delete();
+    _userId = "00uepp4y6buAwAXmU4h6";
+    _activationToken = "LcslQwc7RAEznizosixd";
   }
 
   // Positive Tests
   @Test
   @Order(1)
+  void getStatusSuccessful_beforeActivation() {
+    UserAccountStatus status = _auth.getUserStatus(_activationToken, null, null);
+    assertThat(status).isEqualTo(UserAccountStatus.PENDING_ACTIVATION);
+  }
+
+  @Test
+  @Order(2)
   void testActivationSuccessful() throws Exception {
     String userIdResponse =
         _auth.activateUser(
@@ -110,10 +110,13 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
             "23.235.46.133");
 
     assertThat(userIdResponse).isEqualTo(_userId);
+
+    UserAccountStatus status = _auth.getUserStatus(null, _userId, null);
+    assertThat(status).isEqualTo(UserAccountStatus.PASSWORD_RESET);
   }
 
   @Test
-  @Order(2)
+  @Order(3)
   void setPasswordSuccessful() throws Exception {
     // Okta doesn't return the plaintext of the user's password in the response, so instead we check
     // if the passwordChanged field is set.
@@ -125,10 +128,13 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     User user = _testClient.getUser(_userId);
     assertThat(user.getPasswordChanged()).isNotNull();
     assertThat(user.getStatus()).isEqualTo(UserStatus.ACTIVE);
+
+    UserAccountStatus status = _auth.getUserStatus(null, _userId, null);
+    assertThat(status).isEqualTo(UserAccountStatus.SET_SECURITY_QUESTIONS);
   }
 
   @Test
-  @Order(3)
+  @Order(4)
   void setRecoveryQuestionSuccessful() throws Exception {
     String question = "Who was your third grade teacher?";
     _auth.setRecoveryQuestion(_userId, question, "Jane Doe");
@@ -136,10 +142,13 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     User user = _testClient.getUser(_userId);
     // Similarly to passwords, Okta doesn't return the plaintext of the user's answer.
     assertThat(user.getCredentials().getRecoveryQuestion().getQuestion()).isEqualTo(question);
+
+    UserAccountStatus status = _auth.getUserStatus(null, _userId, null);
+    assertThat(status).isEqualTo(UserAccountStatus.MFA_SELECT);
   }
 
   @Test
-  @Order(4)
+  @Order(5)
   void enrollSmsMfaSuccessful() throws Exception {
     String factorId = _auth.enrollSmsMfa(_userId, PHONE_NUMBER);
 
@@ -148,10 +157,13 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     assertThat(smsFactor.getFactorType()).isEqualTo(FactorType.SMS);
     assertThat(smsFactor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
     assertThat(smsFactor.getProfile().getPhoneNumber()).isEqualTo(FORMATTED_PHONE_NUMBER);
+
+    UserAccountStatus status = _auth.getUserStatus(null, _userId, factorId);
+    assertThat(status).isEqualTo(UserAccountStatus.SMS_PENDING_ACTIVATION);
   }
 
   @Test
-  @Order(5)
+  @Order(6)
   void enrollVoiceCallMfaSuccessful() throws Exception {
     String factorId = _auth.enrollVoiceCallMfa(_userId, PHONE_NUMBER);
 
@@ -160,10 +172,13 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     assertThat(callFactor.getFactorType()).isEqualTo(FactorType.CALL);
     assertThat(callFactor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
     assertThat(callFactor.getProfile().getPhoneNumber()).isEqualTo(FORMATTED_PHONE_NUMBER);
+
+    UserAccountStatus status = _auth.getUserStatus(null, _userId, factorId);
+    assertThat(status).isEqualTo(UserAccountStatus.CALL_PENDING_ACTIVATION);
   }
 
   @Test
-  @Order(6)
+  @Order(7)
   void enrollEmailMfaSuccessful() throws Exception {
     String factorId = _auth.enrollEmailMfa(_userId);
 
@@ -172,10 +187,13 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     assertThat(emailFactor.getFactorType()).isEqualTo(FactorType.EMAIL);
     assertThat(emailFactor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
     assertThat(emailFactor.getProfile().getEmail()).isEqualTo(EMAIL);
+
+    UserAccountStatus status = _auth.getUserStatus(null, _userId, factorId);
+    assertThat(status).isEqualTo(UserAccountStatus.EMAIL_PENDING_ACTIVATION);
   }
 
   @Test
-  @Order(7)
+  @Order(8)
   void enrollAuthenticatorAppMfaSuccessful_withGoogle() throws Exception {
     FactorAndQrCode factorAndCode = _auth.enrollAuthenticatorAppMfa(_userId, "google");
 
@@ -185,10 +203,13 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     assertThat(authFactor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
     assertThat(authFactor.getProvider()).isEqualTo(FactorProvider.GOOGLE);
     assertThat(factorAndCode.getQrcode()).isNotNull();
+
+    UserAccountStatus status = _auth.getUserStatus(null, _userId, factorAndCode.getFactorId());
+    assertThat(status).isEqualTo(UserAccountStatus.GOOGLE_PENDING_ACTIVATION);
   }
 
   @Test
-  @Order(8)
+  @Order(9)
   void enrollAuthenticatorAppMfaSuccessful_withOkta() throws Exception {
     FactorAndQrCode factorAndCode = _auth.enrollAuthenticatorAppMfa(_userId, "okta");
 
@@ -198,10 +219,13 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     assertThat(authFactor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
     assertThat(authFactor.getProvider()).isEqualTo(FactorProvider.OKTA);
     assertThat(factorAndCode.getQrcode()).isNotNull();
+
+    UserAccountStatus status = _auth.getUserStatus(null, _userId, factorAndCode.getFactorId());
+    assertThat(status).isEqualTo(UserAccountStatus.OKTA_PENDING_ACTIVATION);
   }
 
   @Test
-  @Order(9)
+  @Order(10)
   void enrollSecurityKeySuccessful() throws Exception {
     JSONObject activationObject = _auth.enrollSecurityKey(_userId);
 
@@ -212,10 +236,14 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     assertThat(activationObject.getJSONObject("activation").getJSONObject("user").getString("id"))
         .isNotNull();
     assertThat(activationObject.getJSONObject("activation").getString("challenge")).isNotNull();
+
+    UserAccountStatus status =
+        _auth.getUserStatus(null, _userId, activationObject.getString("factorId"));
+    assertThat(status).isEqualTo(UserAccountStatus.FIDO_PENDING_ACTIVATION);
   }
 
   @Test
-  @Order(10)
+  @Order(11)
   void verifyActivationPasscodeSuccessful() throws Exception {
     User user = _testClient.getUser(_userId);
 
@@ -226,16 +254,19 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
     assertThat(factor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
 
-    String passcode = "807848";
+    String passcode = "691117";
     String factorId = factor.getId();
     _auth.verifyActivationPasscode(_userId, factorId, passcode);
 
     UserFactor factorAfterActivation = _testClient.getUser(_userId).getFactor(factorId);
     assertThat(factorAfterActivation.getStatus()).isEqualTo(FactorStatus.ACTIVE);
+
+    UserAccountStatus status = _auth.getUserStatus(null, _userId, factorId);
+    assertThat(status).isEqualTo(UserAccountStatus.ACTIVE);
   }
 
   @Test
-  @Order(11)
+  @Order(12)
   void resendActivationPasscode() throws Exception {
     String factorId = _auth.enrollSmsMfa(_userId, "4045312484");
     UserFactor factorBeforeResend = _testClient.getUser(_userId).getFactor(factorId);
@@ -249,6 +280,9 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     User user = _testClient.getUser(_userId);
     assertThat(factorBeforeResend.getLastUpdated())
         .isNotEqualTo(user.getFactor(factorId).getLastUpdated());
+
+    UserAccountStatus status = _auth.getUserStatus(null, _userId, factorId);
+    assertThat(status).isEqualTo(UserAccountStatus.SMS_PENDING_ACTIVATION);
   }
 
   // Negative Tests
@@ -296,7 +330,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
             () -> {
               _auth.enrollSmsMfa(_userId, "999");
             });
-    assertThat(exception).hasMessageContaining("This phone number is invalid");
+    assertThat(exception).hasMessageContaining("Invalid phone number");
   }
 
   @Test
@@ -307,7 +341,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
             () -> {
               _auth.enrollVoiceCallMfa(_userId, "999");
             });
-    assertThat(exception).hasMessageContaining("This phone number is invalid");
+    assertThat(exception).hasMessageContaining("Invalid phone number");
   }
 
   @Test
@@ -358,8 +392,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
             () -> {
               _auth.verifyActivationPasscode(_userId, factorId, "1234");
             });
-    assertThat(exception)
-        .hasMessageContaining("Your code doesn't match our records. Please try again.");
+    assertThat(exception).hasMessageContaining("The provided security code is invalid.");
   }
 
   @Test
