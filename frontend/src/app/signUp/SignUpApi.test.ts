@@ -18,7 +18,7 @@ describe("SignUpApi", () => {
         {
           body: "{}",
           headers: {
-            Accept: "application/json",
+            Accept: "application/json, text/plain",
             "Content-Type": "application/json",
           },
           method: "POST",
@@ -42,7 +42,7 @@ describe("SignUpApi", () => {
         {
           body: '{"answers":["2","3","5"]}',
           headers: {
-            Accept: "application/json",
+            Accept: "application/json, text/plain",
             "Content-Type": "application/json",
           },
           method: "POST",

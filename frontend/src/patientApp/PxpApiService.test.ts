@@ -22,7 +22,7 @@ describe("PxpApi", () => {
           body:
             '{"patientLinkId":"9b831f0b-40f2-4389-87b0-2c90fcd56732","dateOfBirth":"1947-08-21"}',
           headers: {
-            Accept: "application/json",
+            Accept: "application/json, text/plain",
             "Content-Type": "application/json",
           },
           method: "POST",
@@ -48,7 +48,7 @@ describe("PxpApi", () => {
           body:
             '{"patientLinkId":"9b831f0b-40f2-4389-87b0-2c90fcd56732","dateOfBirth":"1947-08-21","data":{}}',
           headers: {
-            Accept: "application/json",
+            Accept: "application/json, text/plain",
             "Content-Type": "application/json",
           },
           method: "POST",
@@ -72,7 +72,7 @@ describe("PxpApi", () => {
         body:
           '{"patientLinkId":"9b831f0b-40f2-4389-87b0-2c90fcd56732","dateOfBirth":"1947-08-21","data":{}}',
         headers: {
-          Accept: "application/json",
+          Accept: "application/json, text/plain",
           "Content-Type": "application/json",
         },
         method: "POST",
@@ -106,7 +106,7 @@ describe("PxpApi", () => {
       expect(fetch).toHaveBeenCalledWith("http://localhost:8080/pxp/register", {
         body: "{}",
         headers: {
-          Accept: "application/json",
+          Accept: "application/json, text/plain",
           "Content-Type": "application/json",
         },
         method: "POST",

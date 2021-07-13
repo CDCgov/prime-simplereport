@@ -14,7 +14,7 @@ jest.mock("../AccountCreationApiService", () => ({
         if (code === "123456") {
           res("success");
         } else {
-          rej({ message: "incorrect code" });
+          rej("incorrect code");
         }
       });
     },

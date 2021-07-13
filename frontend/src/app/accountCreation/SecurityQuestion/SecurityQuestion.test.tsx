@@ -13,7 +13,7 @@ jest.mock("../AccountCreationApiService", () => ({
         if (recoveryAnswer === "Valid answer") {
           res("success");
         } else {
-          rej({ message: "catastrophic failure" });
+          rej("catastrophic failure");
         }
       });
     },
