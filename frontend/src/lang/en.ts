@@ -172,7 +172,7 @@ export const en = {
       },
       confirmation: {
         registered:
-          "<0>{{personName}}</0>, you're registered for a COVID-19 test at {{entityName}}",
+          "<0>{{personName}}</0>, thanks for completing your patient profile at {{entityName}}.",
         checkIn:
           "When you arrive for your test, check in by providing your first and last name.",
       },

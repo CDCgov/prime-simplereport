@@ -49,7 +49,7 @@ function enterInformation(dobFormat) {
   this.section.confirmAddressModal.click("@save");
   this.expect
     .section("@confirmationScreen")
-    .to.contain.text("you're registered for a COVID-19 test");
+    .to.contain.text("thanks for completing your patient profile");
 
   return { patientName: fullName, birthDate: dobForPatientLink };
 }
