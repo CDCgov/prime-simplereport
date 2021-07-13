@@ -8,10 +8,12 @@ import com.okta.sdk.resource.user.PasswordCredential;
 import com.okta.sdk.resource.user.RecoveryQuestionCredential;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserCredentials;
+import com.okta.sdk.resource.user.UserStatus;
 import com.okta.sdk.resource.user.factor.ActivateFactorRequest;
 import com.okta.sdk.resource.user.factor.CallUserFactor;
 import com.okta.sdk.resource.user.factor.EmailUserFactor;
 import com.okta.sdk.resource.user.factor.FactorProvider;
+import com.okta.sdk.resource.user.factor.FactorStatus;
 import com.okta.sdk.resource.user.factor.FactorType;
 import com.okta.sdk.resource.user.factor.SmsUserFactor;
 import com.okta.sdk.resource.user.factor.UserFactor;
@@ -20,6 +22,7 @@ import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
 import org.json.JSONObject;
@@ -76,19 +79,63 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   }
 
   /**
-   * Converts an activation token into a user id by sending a REST request to the Okta API. (The
-   * Okta Authentication SDK does not yet support activating an activation token. If that changes,
-   * update this method to use the SDK.) If successful, it moves the Okta state machine into a
-   * RESET_PASSWORD state.
+   * Fetches the user account status. Does NOT correspond to the user's Okta account status, as we
+   * also care about things like factor activation status.
+   */
+  public UserAccountStatus getUserStatus(String activationToken, String userId, String factorId) {
+    try {
+      if (activationToken != null && !activationToken.isEmpty() && userId == null) {
+        return UserAccountStatus.PENDING_ACTIVATION;
+      }
+      if (userId == null) {
+        return UserAccountStatus.UNKNOWN;
+      }
+      User user = _client.getUser(userId);
+      UserStatus status = user.getStatus();
+      if (status == UserStatus.PROVISIONED) {
+        return UserAccountStatus.PASSWORD_RESET;
+      }
+      if (user.getCredentials().getRecoveryQuestion() == null) {
+        return UserAccountStatus.SET_SECURITY_QUESTIONS;
+      }
+      if (factorId == null) {
+        return UserAccountStatus.MFA_SELECT;
+      }
+      UserFactor factor = user.getFactor(factorId);
+      if (factor.getStatus() == FactorStatus.ACTIVE) {
+        return UserAccountStatus.ACTIVE;
+      }
+      FactorType factorType = factor.getFactorType();
+      switch (factorType) {
+        case SMS:
+          return UserAccountStatus.SMS_PENDING_ACTIVATION;
+        case CALL:
+          return UserAccountStatus.CALL_PENDING_ACTIVATION;
+        case EMAIL:
+          return UserAccountStatus.EMAIL_PENDING_ACTIVATION;
+        case WEBAUTHN:
+          return UserAccountStatus.FIDO_PENDING_ACTIVATION;
+        case TOKEN_SOFTWARE_TOTP:
+          FactorProvider provider = factor.getProvider();
+          if (provider == FactorProvider.GOOGLE) {
+            return UserAccountStatus.GOOGLE_PENDING_ACTIVATION;
+          } else {
+            return UserAccountStatus.OKTA_PENDING_ACTIVATION;
+          }
+        default:
+          return UserAccountStatus.ACTIVE;
+      }
+    } catch (NullPointerException | ResourceException e) {
+      return UserAccountStatus.UNKNOWN;
+    }
+  }
+
+  /**
+   * Uses the Okta API to activate an activation token. (The Okta Authentication SDK does not yet
+   * support activating an activation token. If that changes, update this method to use the SDK.) If
+   * successful, it moves the Okta state machine into a RESET_PASSWORD state.
    * https://developer.okta.com/docs/reference/api/authn/#request-example-for-activation-token
    * https://developer.okta.com/docs/reference/api/authn/#response-example-for-activation-token-success-user-without-password
-   *
-   * @param activationToken the token passed from Okta when creating a new user.
-   * @param crossForwardedHeader the IP address of the user requesting a new account, along with any
-   *     other IP addresses in the request chain (typically Azure).
-   * @param userAgent the user agent of the user requesting a new account.
-   * @return The user id returned by Okta.
-   * @throws OktaAuthenticationFailureException if the state token is not returned by Okta.
    */
   public String activateUser(String activationToken, String crossForwardedHeader, String userAgent)
       throws InvalidActivationLinkException {
@@ -112,14 +159,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     }
   }
 
-  /**
-   * Using the Okta Management SDK, sets a user's password for the first time.
-   *
-   * @param userId the user id of the user making the request.
-   * @param password the user-provided password to set.
-   * @throws BadRequestException if the password doesn't meet Okta requirements
-   * @throws OktaAuthenticationFailureException if the user is not in a RESET_PASSWORD state.
-   */
+  /** Using the Okta Management SDK, sets a user's password for the first time. */
   public void setPassword(String userId, char[] password)
       throws OktaAuthenticationFailureException {
     try {
@@ -139,18 +179,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     }
   }
 
-  /**
-   * Using the Okta Management SDK, set's a user's recovery questions.
-   *
-   * @param userId the user id of the user making the request.
-   * @param question the user-selected question to answer.
-   * @param answer the user-input answer to the selected question.
-   * @throws BadRequestException if the recovery answer doesn't meet Okta requirements.
-   * @throws OktaAuthenticationFailureException if setting the recovery question fails (i.e.,
-   *     because the user isn't in the correct state or cannot be found).
-   */
+  /** Using the Okta Management SDK, sets a user's recovery questions. */
   public void setRecoveryQuestion(String userId, String question, String answer)
-      throws OktaAuthenticationFailureException {
+      throws OktaAuthenticationFailureException, BadRequestException {
     try {
       User user = _client.getUser(userId);
       UserCredentials creds = user.getCredentials();
@@ -173,15 +204,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   /**
    * Using the Okta management SDK, enroll a user in SMS MFA. If successful, this enrollment
    * triggers a text to the user's phone with an activation passcode.
-   *
-   * @param userId the user id of the user making the request.
-   * @param phoneNumber the user-provided phone number to enroll.
-   * @return factorId the Okta-generated id for the phone number factor.
-   * @throws BadRequestException if the phone number is invalid.
-   * @throws OktaAuthenticationFailureException if Okta cannot enroll the user in SMS MFA.
    */
   public String enrollSmsMfa(String userId, String phoneNumber)
-      throws OktaAuthenticationFailureException {
+      throws OktaAuthenticationFailureException, BadRequestException {
     try {
       SmsUserFactor smsFactor = _client.instantiate(SmsUserFactor.class);
       smsFactor.getProfile().setPhoneNumber(phoneNumber);
@@ -190,7 +215,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       return smsFactor.getId();
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
-        throw new BadRequestException(e.getError().getMessage(), e);
+        throw new BadRequestException(
+            "Invalid phone number. You must enter a phone number capable of receiving text messages.",
+            e);
       }
       throw new OktaAuthenticationFailureException("Error setting SMS MFA", e);
     }
@@ -199,15 +226,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   /**
    * Using the Okta management SDK, enroll a user in voice call MFA. If successful, this enrollment
    * triggers a phone call to the user with an activation passcode.
-   *
-   * @param userId the user id of the user making the enrollment request.
-   * @param phoneNumber the user-provided phone number to enroll.
-   * @return factorId the Okta-generated id for the voice call factor.
-   * @throws BadRequestException if the phone number is invalid.
-   * @throws OktaAuthenticationFailureException if Okta cannot enroll the user in SMS MFA.
    */
   public String enrollVoiceCallMfa(String userId, String phoneNumber)
-      throws OktaAuthenticationFailureException {
+      throws OktaAuthenticationFailureException, BadRequestException {
     try {
       CallUserFactor callFactor = _client.instantiate(CallUserFactor.class);
       callFactor.getProfile().setPhoneNumber(phoneNumber);
@@ -216,7 +237,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       return callFactor.getId();
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
-        throw new BadRequestException(e.getError().getMessage(), e);
+        throw new BadRequestException("Invalid phone number.", e);
       }
       throw new OktaAuthenticationFailureException("Error setting voice call MFA", e);
     }
@@ -225,11 +246,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   /**
    * Using the Okta Management SDK, enroll a user in email MFA using their attached profile email.
    * If successful, this enrollment triggers an activation email to the user with an TOTP.
-   *
-   * @param userId the user id of the user making the enrollment request.
-   * @return factorId the Okta-generated id for the email factor.
-   * @throws OktaAuthenticationFailureException if the email is invalid or Okta cannot enroll it as
-   *     an MFA option.
    */
   public String enrollEmailMfa(String userId) throws OktaAuthenticationFailureException {
     try {
@@ -250,13 +266,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * them to finish enrolling in-app.
    *
    * <p>https://developer.okta.com/docs/reference/api/factors/#response-example-12
-   *
-   * @param userId the user id of the user making the enrollment request.
-   * @param appType the appType of the app being enrolled (for now, one of Okta Verify or Google
-   *     Authenticator.)
-   * @return the factor id and qr code.
-   * @throws OktaAuthenticationFailureException if the app type is not recognized, Okta fails to
-   *     enroll the MFA option, or the result from Okta does not contain a QR code.
    */
   public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
@@ -293,11 +302,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * registration information for the frontend.
    *
    * <p>https://developer.okta.com/docs/reference/api/factors/#enroll-webauthn-request-example
-   *
-   * @param userId the user id of the user enrolling their security key.
-   * @return a JSON representation of the activation object.
-   * @throws OktaAuthenticationFailureException if the user id is not recognized or the factor
-   *     cannot be enrolled.
    */
   public JSONObject enrollSecurityKey(String userId) throws OktaAuthenticationFailureException {
     JSONObject requestBody = new JSONObject();
@@ -318,14 +322,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     }
   }
 
-  /**
-   * Activates a security key using the provided frontend-generated credentials.
-   *
-   * @param userId the user id of the user activating their security key.
-   * @param factorId the factor id returned from security key enrollment
-   * @param attestation the base64-encoded attestation from the WebAuthn JavaScript call
-   * @param clientData the base64-encoded client data from the WebAuthn JavaScript call
-   */
+  /** Activates a security key using the provided frontend-generated credentials. */
   public void activateSecurityKey(
       String userId, String factorId, String attestation, String clientData)
       throws OktaAuthenticationFailureException {
@@ -343,17 +340,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
 
   /**
    * Using the Okta Management SDK, activate MFA enrollment with a user-provided passcode. This
-   * method should be used for sms, call, and authentication app MFA options.
+   * method should be used for sms, call, email and authentication app MFA options.
    *
    * <p>https://developer.okta.com/docs/reference/api/factors/#activate-sms-factor
-   *
-   * @param userId the user id of the user activating their MFA.
-   * @param factorId the factor id of the factor being activated.
-   * @param passcode the user-provided passcode to use for activation. This will have been sent to
-   *     the user via SMS, voice call, etc.
-   * @throws BadRequestException if the provided passcode does not match Okta records.
-   * @throws OktaAuthenticationFailureException if the factor could not be activated (because the
-   *     user or factor doesn't exist).
    */
   public void verifyActivationPasscode(String userId, String factorId, String passcode)
       throws OktaAuthenticationFailureException {
@@ -364,7 +353,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       activateFactor.setPassCode(passcode.strip());
       factor.activate(activateFactor);
     } catch (ResourceException e) {
-      throw new BadRequestException(e.getCauses().get(0).getSummary(), e);
+      throw new BadRequestException("The provided security code is invalid.", e);
     } catch (NullPointerException | IllegalArgumentException e) {
       throw new OktaAuthenticationFailureException(
           "Activation passcode could not be verifed; MFA activation failed.", e);
@@ -381,12 +370,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * this is done directly via the API.
    *
    * <p>https://developer.okta.com/docs/reference/api/factors/#resend-sms-as-part-of-enrollment
-   *
-   * @param userId the user id of the user requesting a resend.
-   * @param factorId the factor id that we need to re-request a code from.
-   * @throws OktaAuthenticationFailureException if the user or factor cannot be found.
-   * @throws IllegalStateException if the resend request comes too soon (Okta enforces a minimum 30
-   *     second pause between activation code requests.)
    */
   public void resendActivationPasscode(String userId, String factorId)
       throws OktaAuthenticationFailureException {
@@ -419,7 +402,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     } catch (HttpClientErrorException e) {
       if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
         throw new BadRequestException(
-            "An SMS message was recently sent. Please wait 30 seconds before trying again.", e);
+            "A security code was recently sent. Please wait 30 seconds before trying again.", e);
       }
     } catch (RestClientException | ResourceException | NullPointerException e) {
       throw new OktaAuthenticationFailureException(
@@ -427,6 +410,10 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     }
   }
 
+  /**
+   * Helper method to create the required HTTP headers for sending direct requests to the Okta API.
+   * (This _apiToken is where our authorization comes from.)
+   */
   private HttpHeaders createHeaders() {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);

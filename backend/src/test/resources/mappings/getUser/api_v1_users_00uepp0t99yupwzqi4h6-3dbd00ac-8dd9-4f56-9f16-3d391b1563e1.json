@@ -1,0 +1,39 @@
+{
+  "id" : "3dbd00ac-8dd9-4f56-9f16-3d391b1563e1",
+  "name" : "api_v1_users_00uepp0t99yupwzqi4h6",
+  "request" : {
+    "url" : "/api/v1/users/00uepp0t99YUpwZQI4h6",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"id\":\"00uepp0t99YUpwZQI4h6\",\"status\":\"ACTIVE\",\"created\":\"2021-07-01T21:54:23.000Z\",\"activated\":\"2021-07-01T21:54:57.000Z\",\"statusChanged\":\"2021-07-01T21:56:30.000Z\",\"lastLogin\":null,\"lastUpdated\":\"2021-07-01T21:56:33.000Z\",\"passwordChanged\":\"2021-07-01T21:56:30.000Z\",\"type\":{\"id\":\"oty59yz17WS6hzcM54h6\"},\"profile\":{\"firstName\":\"TEST\",\"lastName\":\"INTEGRATION\",\"mobilePhone\":\"999-999-9999\",\"secondEmail\":null,\"login\":\"test@example.com\",\"email\":\"test@example.com\"},\"credentials\":{\"password\":{},\"recovery_question\":{\"question\":\"Who was your third grade teacher?\"},\"provider\":{\"type\":\"OKTA\",\"name\":\"OKTA\"}},\"_links\":{\"suspend\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00uepp0t99YUpwZQI4h6/lifecycle/suspend\",\"method\":\"POST\"},\"schema\":{\"href\":\"https://hhs-prime.okta.com/api/v1/meta/schemas/user/osc59yz17WS6hzcM54h6\"},\"resetPassword\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00uepp0t99YUpwZQI4h6/lifecycle/reset_password\",\"method\":\"POST\"},\"expirePassword\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00uepp0t99YUpwZQI4h6/lifecycle/expire_password\",\"method\":\"POST\"},\"changeRecoveryQuestion\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00uepp0t99YUpwZQI4h6/credentials/change_recovery_question\",\"method\":\"POST\"},\"self\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00uepp0t99YUpwZQI4h6\"},\"type\":{\"href\":\"https://hhs-prime.okta.com/api/v1/meta/types/user/oty59yz17WS6hzcM54h6\"},\"changePassword\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00uepp0t99YUpwZQI4h6/credentials/change_password\",\"method\":\"POST\"},\"deactivate\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00uepp0t99YUpwZQI4h6/lifecycle/deactivate\",\"method\":\"POST\"}}}",
+    "headers" : {
+      "Date" : "Thu, 01 Jul 2021 21:56:51 GMT",
+      "Content-Type" : "application/json",
+      "Server" : "nginx",
+      "Public-Key-Pins-Report-Only" : "pin-sha256=\"r5EfzZxQVvQpKo3AgYRaT7X2bDO/kj3ACwmxfdT2zt8=\"; pin-sha256=\"MaqlcUgk2mvY/RFSGeSwBRkI+rZ6/dxe/DuQfBT/vnQ=\"; pin-sha256=\"72G5IEvDEWn+EThf3qjR7/bQSWaS2ZSLqolhnO6iyJI=\"; pin-sha256=\"rrV6CLCCvqnk89gWibYT0JO6fNQ8cCit7GGoiVTjCOg=\"; max-age=60; report-uri=\"https://okta.report-uri.com/r/default/hpkp/reportOnly\"",
+      "Vary" : "Accept-Encoding",
+      "x-okta-request-id" : "YN46I7@io@Ic4niln0TtmwAAAY8",
+      "x-xss-protection" : "0",
+      "p3p" : "CP=\"HONK\"",
+      "x-rate-limit-limit" : "2000",
+      "x-rate-limit-remaining" : "1975",
+      "x-rate-limit-reset" : "1625176648",
+      "cache-control" : "no-cache, no-store",
+      "pragma" : "no-cache",
+      "expires" : "0",
+      "content-security-policy" : "default-src 'self' hhs-prime.okta.com *.oktacdn.com; connect-src 'self' hhs-prime.okta.com hhs-prime-admin.okta.com *.oktacdn.com *.mixpanel.com *.mapbox.com app.pendo.io data.pendo.io pendo-static-5634101834153984.storage.googleapis.com hhs-prime.kerberos.okta.com https://oinmanager.okta.com data:; script-src 'unsafe-inline' 'unsafe-eval' 'self' hhs-prime.okta.com *.oktacdn.com; style-src 'unsafe-inline' 'self' hhs-prime.okta.com *.oktacdn.com app.pendo.io cdn.pendo.io pendo-static-5634101834153984.storage.googleapis.com; frame-src 'self' hhs-prime.okta.com hhs-prime-admin.okta.com login.okta.com; img-src 'self' hhs-prime.okta.com *.oktacdn.com *.tiles.mapbox.com *.mapbox.com app.pendo.io data.pendo.io cdn.pendo.io pendo-static-5634101834153984.storage.googleapis.com data: blob:; font-src 'self' hhs-prime.okta.com data: *.oktacdn.com fonts.gstatic.com",
+      "expect-ct" : "report-uri=\"https://oktaexpectct.report-uri.com/r/t/ct/reportOnly\", max-age=0",
+      "x-content-type-options" : "nosniff",
+      "Strict-Transport-Security" : "max-age=315360000; includeSubDomains",
+      "set-cookie" : [ "sid=\"\"; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/", "JSESSIONID=9A34707912237C32D249A8BB0AAF083F; Path=/; Secure; HttpOnly" ]
+    }
+  },
+  "uuid" : "3dbd00ac-8dd9-4f56-9f16-3d391b1563e1",
+  "persistent" : true,
+  "scenarioName" : "scenario-1-api-v1-users-00uepp0t99YUpwZQI4h6",
+  "requiredScenarioState" : "scenario-1-api-v1-users-00uepp0t99YUpwZQI4h6-25",
+  "newScenarioState" : "scenario-1-api-v1-users-00uepp0t99YUpwZQI4h6-26",
+  "insertionIndex" : 540
+}
