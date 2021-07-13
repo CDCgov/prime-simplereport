@@ -56,9 +56,10 @@ const httpLink = createUploadLink({
   uri: `${process.env.REACT_APP_BACKEND_URL}/graphql`,
 });
 
-const authMiddleware = new ApolloLink((operation, forward) => {
+const addHeadersMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext({
     headers: {
+      "App-Version": process.env.REACT_APP_CURRENT_COMMIT,
       "Access-Control-Request-Headers": "Authorization",
       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
     },
@@ -102,7 +103,7 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: logoutLink.concat(concat(authMiddleware, httpLink)),
+  link: logoutLink.concat(concat(addHeadersMiddleware, httpLink)),
 });
 
 export const ReactApp = (
