@@ -12,10 +12,9 @@ export default class PrimeErrorBoundary extends React.Component {
     const appInsights = getAppInsights();
     if (appInsights) {
       getAppInsights().trackException({
-        error: error,
-        //   exception: error,
-        //   severityLevel: SeverityLevel.Error,
-        properties: { ...info },
+        exception: new Error("PrimeErrorBoundary: " + error),
+        severityLevel: 3,
+        properties: { componentStack: info.componentStack },
       });
     }
   }
