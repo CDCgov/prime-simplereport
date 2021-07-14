@@ -16,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.servlet.http.HttpSession;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Parameter;
@@ -102,6 +103,10 @@ public class ApiAuditEvent {
   @JoinColumn(name = "patient_link_id")
   private PatientLink patientLink;
 
+  @Column(nullable = true)
+  @Type(type= "jsonb") 
+  private HttpSession session;
+
   protected ApiAuditEvent() {
     // hibernate
   }
@@ -143,6 +148,18 @@ public class ApiAuditEvent {
     this.user = user;
     this.organization = organization;
     this.patientLink = patientLink;
+  }
+
+  /** Constructor for anonymous REST requests. */
+  public ApiAuditEvent(
+      String requestId,
+      HttpRequestDetails httpRequestDetails,
+      int responseStatus,
+      HttpSession session) {
+    this.requestId = requestId;
+    this.httpRequestDetails = httpRequestDetails;
+    this.responseCode = responseStatus;
+    this.session = session;
   }
 
   public UUID getId() {
@@ -191,5 +208,9 @@ public class ApiAuditEvent {
 
   public PatientLink getPatientLink() {
     return patientLink;
+  }
+
+  public HttpSession getSession() {
+    return session;
   }
 }

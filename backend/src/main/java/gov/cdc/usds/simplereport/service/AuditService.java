@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.db.repository.ApiAuditEventRepository;
 import gov.cdc.usds.simplereport.logging.GraphqlQueryState;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,5 +76,14 @@ public class AuditService {
     HttpRequestDetails reqDetails = new HttpRequestDetails(request);
     ApiUser userInfo = _userService.getCurrentApiUserInContainedTransaction();
     _repo.save(new ApiAuditEvent(requestId, reqDetails, responseCode, userInfo, org, patientLink));
+  }
+
+  @Transactional(readOnly = false)
+  public void logAnonymousRestEvent(
+      String requestId, HttpServletRequest request, int responseCode) {
+    LOG.trace("Saving audit event for {}", requestId);
+    HttpRequestDetails reqDetails = new HttpRequestDetails(request);
+    HttpSession session = request.getSession();
+    _repo.save(new ApiAuditEvent(requestId, reqDetails, responseCode, session));
   }
 }
