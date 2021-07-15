@@ -228,9 +228,7 @@ export const en = {
         },
         negative: {
           p0:
-            "COVID-19 antigen tests can sometimes provide inaccurate or false results and follow up testing may be needed. Continue social " +
-            "distancing and wearing a mask. Contact your health care provider to decide if additional testing is needed, especially if you " +
-            "experience any of these symptoms:",
+            "Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:",
           symptoms: {
             li0: "Fever or chills",
             li1: "Cough",
