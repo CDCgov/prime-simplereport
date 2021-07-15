@@ -211,9 +211,7 @@ export const en = {
               "Have a supply of clean, disposable face masks. Everyone, no matter their COVID-19 diagnosis, should wear face masks while in the home.",
           },
           p2:
-            "Watch for symptoms and <0>learn when to seek emergency medical attention</0>.",
-          p3:
-            "If someone is showing any of these signs, seek emergency medical care immediately:",
+            "Watch for symptoms and <0>learn when to seek emergency medical attention</0>. If someone is showing any of these signs, seek emergency medical care immediately:",
           emergency: {
             li0: "Trouble breathing",
             li1: "Persistent chest pain/pressure",
@@ -221,7 +219,7 @@ export const en = {
             li3: "Inability to wake or stay awake",
             li4: "Bluish lips or face",
           },
-          p4:
+          p3:
             "Call 911 or call ahead to your local emergency room: Notify the operator that you are seeking care for someone who has or may have COVID-19.",
           difficultNewsLink:
             "Getting a positive COVID-19 test result can be difficult news, so it’s important to <0> take steps to cope with stress </0> during this time. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.",

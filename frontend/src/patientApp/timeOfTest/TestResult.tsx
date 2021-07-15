@@ -96,7 +96,6 @@ const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
               </a>,
             ]}
           />
-          <p>{t("testResult.notes.positive.p3")}</p>
           <ul>
             <li>{t("testResult.notes.positive.emergency.li0")}</li>
             <li>{t("testResult.notes.positive.emergency.li1")}</li>
@@ -104,7 +103,7 @@ const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
             <li>{t("testResult.notes.positive.emergency.li3")}</li>
             <li>{t("testResult.notes.positive.emergency.li4")}</li>
           </ul>
-          <p>{t("testResult.notes.positive.p4")}</p>
+          <p>{t("testResult.notes.positive.p3")}</p>
           <Trans
             t={t}
             parent="p"
