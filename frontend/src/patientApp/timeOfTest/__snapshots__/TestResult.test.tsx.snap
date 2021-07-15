@@ -72,7 +72,7 @@ exports[`TestResult should show a negative result 1`] = `
           What does my result mean?
         </h2>
         <p>
-          COVID-19 antigen tests can sometimes provide inaccurate or false results and follow up testing may be needed. Continue social distancing and wearing a mask. Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:
+          Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:
         </p>
         <ul>
           <li>
@@ -198,15 +198,6 @@ exports[`TestResult should show a positive result 1`] = `
           What does my result mean?
         </h2>
         <p>
-          Getting a positive COVID-19 test result can be difficult news, so it’s important to 
-          <a
-            href="https://www.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html"
-          >
-             take steps to cope with stress 
-          </a>
-           during this time. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.
-        </p>
-        <p>
           Most people who get COVID-19 will be able to recover at home. Make sure to follow CDC guidelines for people who are recovering at home and their caregivers, including:
         </p>
         <ul>
@@ -230,10 +221,11 @@ exports[`TestResult should show a positive result 1`] = `
           </li>
         </ul>
         <p>
+          Watch for symptoms and 
           <a
             href="https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html"
           >
-            Watch for symptoms and learn when to seek emergency medical attention
+            learn when to seek emergency medical attention
           </a>
           .
         </p>
@@ -259,6 +251,15 @@ exports[`TestResult should show a positive result 1`] = `
         </ul>
         <p>
           Call 911 or call ahead to your local emergency room: Notify the operator that you are seeking care for someone who has or may have COVID-19.
+        </p>
+        <p>
+          Getting a positive COVID-19 test result can be difficult news, so it’s important to 
+          <a
+            href="https://www.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html"
+          >
+             take steps to cope with stress 
+          </a>
+           during this time. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.
         </p>
         <p>
           For more information, please visit the 
