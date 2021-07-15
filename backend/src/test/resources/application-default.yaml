@@ -43,7 +43,6 @@ simple-report:
     from-email: support@simplereport.gov
     account-request-recipient:
       - support@simplereport.gov
-      - Protect-ServiceDesk@hhs.gov
     waitlist-recipient:
       - support@simplereport.gov
   demo-users:
