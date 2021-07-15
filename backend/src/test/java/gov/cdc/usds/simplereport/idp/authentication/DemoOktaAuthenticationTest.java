@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication.DemoAuthUser;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -436,5 +437,103 @@ class DemoOktaAuthenticationTest {
 
     assertThat(exception)
         .hasMessage("The requested activation factor could not be resent; Okta returned an error.");
+  }
+
+  @Test
+  void getUserStatus_resetPasswordStateSuccessful() {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    UserAccountStatus status = _auth.getUserStatus(null, userId, null);
+
+    assertThat(status).isEqualTo(UserAccountStatus.PASSWORD_RESET);
+  }
+
+  @Test
+  void getUserStatus_setSecurityQuestionsStateSuccessful() {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    _auth.setPassword(userId, "thisIsAValidPassword1!".toCharArray());
+    UserAccountStatus status = _auth.getUserStatus(null, userId, null);
+
+    assertThat(status).isEqualTo(UserAccountStatus.SET_SECURITY_QUESTIONS);
+  }
+
+  @Test
+  void getUserStatus_selectMfaStateSuccessful() {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    _auth.setPassword(userId, "thisIsAValidPassword1!".toCharArray());
+    _auth.setRecoveryQuestion(userId, "Who was your third grade teacher?", "Jane Doe");
+    UserAccountStatus status = _auth.getUserStatus(null, userId, null);
+
+    assertThat(status).isEqualTo(UserAccountStatus.MFA_SELECT);
+  }
+
+  @Test
+  void getUserStatus_pendingSmsActivationStateSuccessful() {
+    String userId = validSetup();
+    _auth.enrollSmsMfa(userId, VALID_PHONE_NUMBER);
+    UserAccountStatus status = _auth.getUserStatus(null, userId, null);
+
+    assertThat(status).isEqualTo(UserAccountStatus.SMS_PENDING_ACTIVATION);
+  }
+
+  @Test
+  void getUserStatus_pendingPhoneCallActivationStateSuccessful() {
+    String userId = validSetup();
+    _auth.enrollVoiceCallMfa(userId, VALID_PHONE_NUMBER);
+    UserAccountStatus status = _auth.getUserStatus(null, userId, null);
+
+    assertThat(status).isEqualTo(UserAccountStatus.CALL_PENDING_ACTIVATION);
+  }
+
+  @Test
+  void getUserStatus_pendingEmailActivationStateSuccessful() {
+    String userId = validSetup();
+    _auth.enrollEmailMfa(userId);
+    UserAccountStatus status = _auth.getUserStatus(null, userId, null);
+
+    assertThat(status).isEqualTo(UserAccountStatus.EMAIL_PENDING_ACTIVATION);
+  }
+
+  @Test
+  void getUserStatus_pendingGoogleAuthActivationStateSuccessful() {
+    String userId = validSetup();
+    _auth.enrollAuthenticatorAppMfa(userId, "google");
+    UserAccountStatus status = _auth.getUserStatus(null, userId, null);
+
+    assertThat(status).isEqualTo(UserAccountStatus.GOOGLE_PENDING_ACTIVATION);
+  }
+
+  @Test
+  void getUserStatus_pendingOktaAuthActivationStateSuccessful() {
+    String userId = validSetup();
+    _auth.enrollAuthenticatorAppMfa(userId, "okta");
+    UserAccountStatus status = _auth.getUserStatus(null, userId, null);
+
+    assertThat(status).isEqualTo(UserAccountStatus.OKTA_PENDING_ACTIVATION);
+  }
+
+  @Test
+  void getUserStatus_pendingSecurityKeyActivationStateSuccessful() {
+    String userId = validSetup();
+    _auth.enrollSecurityKey(userId);
+    UserAccountStatus status = _auth.getUserStatus(null, userId, null);
+
+    assertThat(status).isEqualTo(UserAccountStatus.FIDO_PENDING_ACTIVATION);
+  }
+
+  @Test
+  void getUserStatus_activeStateSuccesful() {
+    String userId = validSetup();
+    String factorId = _auth.enrollSmsMfa(userId, VALID_PHONE_NUMBER);
+    _auth.verifyActivationPasscode(userId, factorId, "123456");
+    UserAccountStatus status = _auth.getUserStatus(null, userId, null);
+
+    assertThat(status).isEqualTo(UserAccountStatus.ACTIVE);
+  }
+
+  private String validSetup() {
+    String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
+    _auth.setPassword(userId, "thisIsAValidPassword1!".toCharArray());
+    _auth.setRecoveryQuestion(userId, "Who was your third grade teacher?", "Jane Doe");
+    return userId;
   }
 }

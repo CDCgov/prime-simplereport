@@ -43,7 +43,6 @@ simple-report:
     from-email: support@simplereport.gov
     account-request-recipient:
       - support@simplereport.gov
-      - Protect-ServiceDesk@hhs.gov
     waitlist-recipient:
       - support@simplereport.gov
   demo-users:
@@ -207,3 +206,5 @@ simple-report-initialization:
   patient-registration-links:
     - patient-registration-link: dis-org
       organization-external-id: DIS_ORG
+    - patient-registration-link: inj3ct
+      facility-name: Injection Site

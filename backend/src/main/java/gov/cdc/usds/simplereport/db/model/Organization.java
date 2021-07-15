@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.db.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 import org.hibernate.annotations.NaturalId;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
@@ -19,6 +20,9 @@ public class Organization extends EternalAuditedEntity {
 
   @Column(nullable = false)
   private boolean identityVerified;
+
+  @OneToOne(mappedBy = "organization")
+  private PatientSelfRegistrationLink patientSelfRegistrationLink;
 
   protected Organization() {
     /* for hibernate */
@@ -59,5 +63,13 @@ public class Organization extends EternalAuditedEntity {
 
   public void setIdentityVerified(boolean newStatus) {
     identityVerified = newStatus;
+  }
+
+  public String getPatientSelfRegistrationLink() {
+    if (null == patientSelfRegistrationLink) {
+      return null;
+    }
+
+    return patientSelfRegistrationLink.getLink();
   }
 }

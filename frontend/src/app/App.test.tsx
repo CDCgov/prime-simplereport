@@ -1,9 +1,8 @@
-import React from "react";
-import TestRenderer, { act } from "react-test-renderer";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import createMockStore, { MockStoreEnhanced } from "redux-mock-store";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
+import { render, screen } from "@testing-library/react";
 
 import App, { WHOAMI_QUERY } from "./App";
 import { queueQuery } from "./testQueue/TestQueue";
@@ -159,7 +158,7 @@ const renderApp = (
   newStore: MockStoreEnhanced<unknown, {}>,
   queryMocks: MockedResponse[]
 ) => {
-  return TestRenderer.create(
+  return render(
     <Provider store={newStore}>
       <MockedProvider mocks={queryMocks} addTypename={false}>
         <Router>
@@ -173,48 +172,29 @@ const renderApp = (
 describe("App", () => {
   it("Render first loading screen", async () => {
     const mockedStore = mockStore({});
-    const component = renderApp(mockedStore, [WhoAmIQueryMock]);
-    const tree = component.toJSON();
-    expect(tree.children).toContain("Loading account information...");
-
-    expect(component).toMatchSnapshot();
+    renderApp(mockedStore, [WhoAmIQueryMock]);
+    await screen.findByText("Loading account information...");
   });
 
   it("Render facility loading", async () => {
     const mockedStore = mockStore({ ...store });
-
-    const component = renderApp(mockedStore, [
-      WhoAmIQueryMock,
-      facilityQueryMock,
-    ]);
-
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    });
-
-    const tree = component.toJSON();
-
-    expect(tree.children).toContain("Loading facility information...");
-    expect(component).toMatchSnapshot();
+    renderApp(mockedStore, [WhoAmIQueryMock, facilityQueryMock]);
+    await screen.findByText("Loading facility information...");
   });
 
   it("Render main screen", async () => {
     const mockedStore = mockStore({ ...store, dataLoaded: true });
-    const component = renderApp(mockedStore, [
+    const { container } = renderApp(mockedStore, [
       WhoAmIQueryMock,
       facilityQueryMock,
     ]);
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    });
-    expect(component).toMatchSnapshot();
+    await screen.findByText("There are no tests running", { exact: false });
+    expect(container).toMatchSnapshot();
   });
   it("should show error UI", async () => {
     const mockedStore = mockStore({ ...store, dataLoaded: true });
-    const component = renderApp(mockedStore, [WhoAmIErrorQueryMock]);
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    });
-    expect(component).toMatchSnapshot();
+    const { container } = renderApp(mockedStore, [WhoAmIErrorQueryMock]);
+    await screen.findByText("error", { exact: false });
+    expect(container).toMatchSnapshot();
   });
 });

@@ -99,7 +99,8 @@ exports[`PatientFormContainer snapshot 1`] = `
             <p
               className="message--required"
             >
-              Required fields are marked with an asterisk (
+              Required fields are marked with an asterisk
+               (
               <abbr
                 className="usa-hint usa-hint--required"
                 title="required"
@@ -196,7 +197,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   id="4"
                   name="role"
                   onChange={[Function]}
-                  value=""
+                  value="- Select -"
                 >
                   <option
                     value=""
@@ -553,7 +554,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       name="state"
                       onBlur={[Function]}
                       onChange={[Function]}
-                      value=""
+                      value="- Select -"
                     >
                       <option
                         value=""

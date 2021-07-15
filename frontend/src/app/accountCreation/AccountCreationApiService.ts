@@ -1,11 +1,25 @@
 import FetchClient from "../utils/api";
 
+import { UserAccountStatus } from "./UserAccountStatus";
+
 const api = new FetchClient("/user-account");
 
 export class AccountCreationApi {
-  static setPassword(activationToken: string, password: string): Promise<any> {
-    return api.request("/initialize-and-set-password", {
+  static getUserStatus(
+    activationToken: string | null = null
+  ): Promise<UserAccountStatus> {
+    const query = activationToken ? `?activationToken=${activationToken}` : "";
+    return api.request("/user-status", null, "GET", query);
+  }
+
+  static initialize(activationToken: string) {
+    return api.request("/initialize", {
       activationToken,
+    });
+  }
+
+  static setPassword(password: string) {
+    return api.request("/set-password", {
       password,
     });
   }
@@ -45,7 +59,9 @@ export class AccountCreationApi {
   }
 
   static verifyActivationPasscode(code: string) {
-    return api.request("/verify-activation-passcode", { userInput: code });
+    return api.request("/verify-activation-passcode", {
+      userInput: code,
+    });
   }
 
   static resendActivationPasscode() {

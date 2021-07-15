@@ -168,16 +168,22 @@ public class InitialSetupProperties {
   public static final class ConfigPatientRegistrationLink {
     private String patientRegistrationLink;
     private String organizationExternalId;
+    private String facilityName;
 
     public ConfigPatientRegistrationLink(
-        String patientRegistrationLink, String organizationExternalId) {
+        String patientRegistrationLink, String organizationExternalId, String facilityName) {
       super();
       this.patientRegistrationLink = patientRegistrationLink;
       this.organizationExternalId = organizationExternalId;
+      this.facilityName = facilityName;
     }
 
     public PatientSelfRegistrationLink makePatientRegistrationLink(Organization org, String link) {
       return new PatientSelfRegistrationLink(org, link);
+    }
+
+    public PatientSelfRegistrationLink makePatientRegistrationLink(Facility fac, String link) {
+      return new PatientSelfRegistrationLink(fac, link);
     }
 
     public String getLink() {
@@ -186,6 +192,10 @@ public class InitialSetupProperties {
 
     public String getOrganizationExternalId() {
       return organizationExternalId;
+    }
+
+    public String getFacilityName() {
+      return facilityName;
     }
   }
 }

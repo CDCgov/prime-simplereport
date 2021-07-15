@@ -2,10 +2,13 @@ interface JsonObject {
   [key: string]: any;
 }
 
+type RequestMethod = "GET" | "POST";
+
 const JSON_CONTENT = "application/json";
+const TEXT_CONTENT = "text/plain";
 export const headers = {
   "Content-Type": JSON_CONTENT,
-  Accept: JSON_CONTENT,
+  Accept: [JSON_CONTENT, TEXT_CONTENT].join(", "),
 };
 
 /**
@@ -16,7 +19,6 @@ export const headers = {
 function joinAbsoluteUrlPath(...args: string[]) {
   return args.map((pathPart) => pathPart.replace(/(^\/|\/$)/g, "")).join("/");
 }
-
 class FetchClient {
   basePath: string;
   defaultOptions: RequestInit | undefined;
@@ -39,19 +41,30 @@ class FetchClient {
     ).href;
   };
 
-  getOptions = (body: JsonObject | null): RequestInit => {
+  getOptions = (
+    method: RequestMethod,
+    body: JsonObject | null
+  ): RequestInit => {
     return {
       ...this.defaultOptions,
-      method: "POST",
+      method,
       headers,
       body: body ? JSON.stringify(body) : undefined,
     };
   };
 
-  request = async (path: string, body: JsonObject | null) => {
-    const res = await fetch(this.getURL(path), this.getOptions(body));
+  request = async (
+    path: string,
+    body: JsonObject | null = null,
+    method: RequestMethod = "POST",
+    query = ""
+  ) => {
+    const res = await fetch(
+      this.getURL(path + query),
+      this.getOptions(method, body)
+    );
     if (!res.ok) {
-      throw res;
+      throw await res.text();
     }
     const contentType = res.headers.get("content-type");
     if (contentType && contentType.indexOf(JSON_CONTENT) !== -1) {

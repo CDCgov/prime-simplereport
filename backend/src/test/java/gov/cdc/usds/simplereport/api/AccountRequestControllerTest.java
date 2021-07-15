@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
@@ -16,12 +17,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.sendgrid.helpers.mail.Mail;
 import gov.cdc.usds.simplereport.api.accountrequest.AccountRequestController;
+import gov.cdc.usds.simplereport.api.accountrequest.errors.AccountRequestFailureException;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
+import gov.cdc.usds.simplereport.config.authorization.TenantDataAuthenticationProvider;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -35,6 +38,7 @@ import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
+import gov.cdc.usds.simplereport.service.TenantDataAccessService;
 import gov.cdc.usds.simplereport.service.crm.CrmService;
 import gov.cdc.usds.simplereport.service.email.EmailProvider;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
@@ -83,12 +87,15 @@ class AccountRequestControllerTest {
   @MockBean private AuthorizationService authorizationService;
   @MockBean private IdentitySupplier identitySupplier;
   @MockBean private CurrentPatientContextHolder currentPatientContextHolder;
+  @MockBean private TenantDataAccessService tenantDataAccessService;
 
   @MockBean private OrganizationService orgService;
   @MockBean private DeviceTypeService deviceTypeService;
   @MockBean private AddressValidationService addressValidationService;
   @SpyBean private ApiUserService apiUserService;
   @MockBean private CurrentAccountRequestContextHolder contextHolder;
+  @MockBean private CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder;
+  @MockBean private TenantDataAuthenticationProvider tenantDataAuthProvider;
 
   @MockBean private CrmService crmService;
   @MockBean private OktaRepository oktaRepository;
@@ -222,7 +229,7 @@ class AccountRequestControllerTest {
     // mail 1: to us (contains formatted request data)
     verify(emailService, times(1))
         .send(
-            eq(List.of("support@simplereport.gov", "Protect-ServiceDesk@hhs.gov")),
+            eq(List.of("support@simplereport.gov")),
             eq("New account request"),
             contentCaptor.capture());
     assertThat(contentCaptor.getValue().getTemplateName()).isEqualTo("account-request");
@@ -338,5 +345,33 @@ class AccountRequestControllerTest {
     verifyNoInteractions(addressValidationService);
     verifyNoInteractions(orgService);
     verifyNoInteractions(apiUserService);
+  }
+
+  @Test
+  void accountRequestSubmittedDeviceNotRegistered() throws Exception {
+    String requestBody =
+        "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"email\":\"kyvuzoxy@mailinator.com\",\"work-phone-number\":\"+1 (969) 768-2863\",\"cell-phone-number\":\"+1 (319) 682-3114\",\"street-address1\":\"707 White Milton Extension\",\"street-address2\":\"Apt 3\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"organization-name\":\"Day Hayes Trading\",\"organization-type\":\"Homeless Shelter\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-street-address2\":\"UNAVAILABLE\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Invalid Device\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}";
+
+    DeviceType device1 = mock(DeviceType.class);
+    UUID deviceUuid1 = UUID.randomUUID();
+    when(device1.getName()).thenReturn("Abbott IDNow");
+    when(device1.getModel()).thenReturn("ID Now");
+    when(device1.getInternalId()).thenReturn(deviceUuid1);
+    when(deviceTypeService.fetchDeviceTypes()).thenReturn(List.of(device1));
+
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ACCOUNT_REQUEST)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    this._mockMvc
+        .perform(builder)
+        .andExpect(status().isInternalServerError())
+        .andExpect(
+            result ->
+                assertTrue(
+                    result.getResolvedException() instanceof AccountRequestFailureException));
   }
 }

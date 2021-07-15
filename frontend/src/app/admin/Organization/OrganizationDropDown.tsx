@@ -75,6 +75,7 @@ const OrganizationDropDown: React.FC<Props> = ({
           onChange={(e) =>
             onOrganizationChange((e.target as HTMLSelectElement).value)
           }
+          data-testid="organization-dropdown"
         />
       </div>
     </div>

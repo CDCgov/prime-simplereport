@@ -1,7 +1,182 @@
-/* eslint-disable no-useless-concat */
+const YES = "Yes";
+const NO = "No";
+const OTHER = "Other";
+const REFUSED = "Prefer not to answer";
+const UNKNOWN = "Unknown";
+
 export const en = {
   translation: {
     header: "COVID-19 Testing Portal",
+    constants: {
+      testResults: {
+        POSITIVE: "Positive",
+        NEGATIVE: "Negative",
+        UNDETERMINED: "Inconclusive",
+        UNKNOWN: UNKNOWN,
+      },
+      role: {
+        STAFF: "Staff",
+        RESIDENT: "Resident",
+        STUDENT: "Student",
+        VISITOR: "Visitor",
+      },
+      race: {
+        native: "American Indian/Alaskan Native",
+        asian: "Asian",
+        black: "Black/African American",
+        pacific: "Native Hawaiian/other Pacific Islander",
+        white: "White",
+        other: OTHER,
+        refused: REFUSED,
+      },
+      gender: {
+        female: "Female",
+        male: "Male",
+        other: OTHER,
+        refused: REFUSED,
+      },
+      ethnicity: {
+        hispanic: YES,
+        not_hispanic: NO,
+        refused: REFUSED,
+      },
+      phoneType: {
+        MOBILE: "Mobile",
+        LANDLINE: "Landline",
+      },
+      yesNoUnk: {
+        YES,
+        NO,
+        UNKNOWN,
+      },
+    },
+    common: {
+      required: "Required fields are marked with an asterisk",
+      defaultDropdownOption: "- Select -",
+      button: {
+        submit: "Submit",
+      },
+      pageNotFound: {
+        heading: "Page not found",
+        text:
+          "We're sorry, we can't find the page you're looking for. It might have been removed, had its name changed, or is otherwise unavailable.",
+        errorCode: "Error code: 404",
+      },
+    },
+    address: {
+      heading: "Address validation",
+      select: "Please select an option to continue:",
+      useAddress: "Use address as entered",
+      getSuggested: "Use suggested address",
+      noSuggestedFound: "No suggested address found",
+      goBack: "Go back to edit address",
+      goBack_plural: "Go back to edit addresses",
+      save: "Save changes",
+      errors: {
+        incomplete: "Please choose an address or go back to edit",
+        unverified: "The address you entered could not be verified",
+        unverified_plural: "The addresses you entered could not be verified",
+      },
+    },
+    facility: {
+      form: {
+        heading: "Facility",
+        allFacilities: "All facilities",
+      },
+    },
+    patient: {
+      form: {
+        general: {
+          heading: "General information",
+          helpText: "Required fields are marked with an asterisk",
+          firstName: "First name",
+          middleName: "Middle name",
+          lastName: "Last name",
+          role: "Role",
+          studentId: "Student ID",
+          preferredLanguage: "Preferred language",
+          dob: "Date of birth",
+        },
+        contact: {
+          heading: "Contact information",
+          primaryPhoneNumber: "Primary phone number",
+          additionalPhoneNumber: "Additional phone number",
+          phoneType: "Phone type",
+          addNumber: "Add another number",
+          email: "Email address",
+          street1: "Street address 1",
+          street2: "Street address 2",
+          county: "County",
+          city: "City",
+          state: "State",
+          zip: "Zip code",
+        },
+        demographics: {
+          heading: "Demographics",
+          helpText:
+            "This information is collected as part of public health efforts to recognize and address inequality in health outcomes.",
+          race: "Race",
+          tribalAffiliation: "Tribal affiliation",
+          ethnicity: "Are you Hispanic or Latino?",
+          gender: "Biological sex",
+        },
+        other: {
+          heading: "Other",
+          congregateLiving: {
+            heading: "Are you a resident in a congregate living setting?",
+            helpText:
+              "For example: nursing home, group home, prison, jail, or military",
+          },
+          healthcareWorker: "Are you a health care worker?",
+        },
+        errors: {
+          unsaved:
+            "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing.",
+          validationMsg: "Please correct before submitting",
+          firstName: "First name is required",
+          middleName: "Middle name is incorrectly formatted",
+          lastName: "Last name is required",
+          lookupId: "Lookup ID is incorrectly formatted",
+          role: "Role is incorrectly formatted",
+          facilityId: "Facility is required",
+          birthDate:
+            "Date of birth must be present, correctly formatted (MM/DD/YYYY), and in the past",
+          telephone: "Phone number is missing or invalid",
+          phoneNumbers: "Phone number is missing or invalid",
+          email: "Email is missing or incorrectly formatted",
+          street: "Street is missing",
+          streetTwo: "Street Two is incorrectly formatted",
+          zipCode: "Zip code is missing or incorrectly formatted",
+          state: "State is missing or incorrectly formatted",
+          city: "City is incorrectly formatted",
+          county: "County is incorrectly formatted",
+          race: "Race is incorrectly formatted",
+          tribalAffiliation: "Tribal Affiliation is incorrectly formatted",
+          ethnicity: "Ethnicity is incorrectly formatted",
+          gender: "Biological Sex is incorrectly formatted",
+          residentCongregateSetting:
+            "Are you a resident in a congregate living setting? is required",
+          employedInHealthcare: "Are you a health care worker? is required",
+          preferredLanguage: "Preferred language is incorrectly formatted",
+        },
+      },
+    },
+    selfRegistration: {
+      form: {
+        complete: "Registration complete",
+        inProgress: "Register for your test",
+        error: {
+          heading: "Registration error",
+          text: "There was a registration error",
+        },
+      },
+      confirmation: {
+        registered:
+          "<0>{{personName}}</0>, thanks for completing your patient profile at {{entityName}}.",
+        checkIn:
+          "When you arrive for your test, check in by providing your first and last name.",
+      },
+    },
     testResult: {
       result: "SARS-CoV-2 result",
       patient: "Patient",

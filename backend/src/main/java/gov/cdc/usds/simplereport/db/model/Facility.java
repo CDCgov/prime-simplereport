@@ -46,6 +46,9 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
       inverseJoinColumns = @JoinColumn(name = "device_specimen_type_id"))
   private Set<DeviceSpecimenType> configuredDeviceSpecimenTypes = new HashSet<>();
 
+  @OneToOne(mappedBy = "facility")
+  private PatientSelfRegistrationLink patientSelfRegistrationLink;
+
   protected Facility() {
     /* for hibernate */ }
 
@@ -176,5 +179,13 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public String getPatientSelfRegistrationLink() {
+    if (null == patientSelfRegistrationLink) {
+      return null;
+    }
+
+    return patientSelfRegistrationLink.getLink();
   }
 }

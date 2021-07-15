@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.ResourceLinks;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -60,6 +61,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
 
   @Autowired private TestRestTemplate _restTemplate;
   @Autowired private OrganizationService _orgService;
+  @MockBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
 
   @MockBean private ApiAuditEventRepository _auditRepo;
   @MockBean private TestEventRepository _testEventRepo;

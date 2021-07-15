@@ -6,7 +6,7 @@ export const MfaSms = () => {
     <MfaSendCodeToContact
       type="phone number"
       cardText="Get your security code via text message (SMS)."
-      cardHint="Message and data rates may apply. Not compatible with web-based (VOIP) phone services like Google Voice."
+      cardHint="Message and data rates may apply."
       serviceEnroll={AccountCreationApi.enrollSmsMfa}
     />
   );
