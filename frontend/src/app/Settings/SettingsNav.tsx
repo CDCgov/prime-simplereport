@@ -1,6 +1,7 @@
 import React from "react";
 
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
+import { NewFeatureTag } from "../commonComponents/NewFeatureTag";
 
 const SettingsNav = () => {
   return (
@@ -25,6 +26,15 @@ const SettingsNav = () => {
         <li className="usa-nav__secondary-item">
           <LinkWithQuery to={`/settings/organization`} activeClassName="active">
             Manage Organization
+          </LinkWithQuery>
+        </li>
+        <li className="usa-nav__secondary-item">
+          <LinkWithQuery
+            to={`/settings/self-registration`}
+            activeClassName="active"
+          >
+            Patient self-registration{" "}
+            <NewFeatureTag feature="selfRegistration" />
           </LinkWithQuery>
         </li>
       </ul>
