@@ -76,16 +76,6 @@ const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
     case COVID_RESULTS.POSITIVE:
       return (
         <>
-          <Trans
-            t={t}
-            parent="p"
-            i18nKey="testResult.notes.positive.p0"
-            components={[
-              <a href="https://www.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html">
-                take steps to cope with stress
-              </a>,
-            ]}
-          />
           <p>{t("testResult.notes.positive.p1")}</p>
           <ul>
             <li>{t("testResult.notes.positive.guidelines.li0")}</li>
@@ -115,6 +105,16 @@ const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
             <li>{t("testResult.notes.positive.emergency.li4")}</li>
           </ul>
           <p>{t("testResult.notes.positive.p4")}</p>
+          <Trans
+            t={t}
+            parent="p"
+            i18nKey="testResult.notes.positive.difficultNewsLink"
+            components={[
+              <a href="https://www.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html">
+                take steps to cope with stress
+              </a>,
+            ]}
+          />
         </>
       );
     case COVID_RESULTS.NEGATIVE:
