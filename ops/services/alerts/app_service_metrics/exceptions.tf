@@ -129,7 +129,34 @@ requests
 | project timestamp, exceptionType = type, failedMethod = method, requestName = name
   QUERY
 
-  severity    = 3
+  severity    = 1
+  frequency   = 5
+  time_window = 5
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 0
+  }
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "frontend_error_boundary" {
+  name                = "${var.env}-frontend-error-boundary"
+  description         = "${local.env_title} uncaught frontend exceptions caught by PrimeErrorBoundary"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+
+  action {
+    action_group = var.action_group_ids
+  }
+
+  data_source_id = var.app_insights_id
+  enabled        = true
+
+  query = <<-QUERY
+ exceptions
+ | where type startswith "PrimeErrorBoundary"
+  QUERY
+
+  severity    = 1
   frequency   = 5
   time_window = 5
   trigger {

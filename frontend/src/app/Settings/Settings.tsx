@@ -9,6 +9,7 @@ import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Facility/FacilityFormContainer";
 import ManageUsersContainer from "./Users/ManageUsersContainer";
 import SettingsNav from "./SettingsNav";
+import { ManageSelfRegistrationLinksContainer } from "./ManageSelfRegistrationLinksContainer";
 
 interface Params {
   facilityId: string;
@@ -62,6 +63,10 @@ const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
             <Route
               path={match.url + "/organization"}
               component={ManageOrganizationContainer}
+            />
+            <Route
+              path={match.url + "/self-registration"}
+              component={ManageSelfRegistrationLinksContainer}
             />
             <Route component={ManageUsersContainer} />
           </Switch>
