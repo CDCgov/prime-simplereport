@@ -7,7 +7,7 @@ import gov.cdc.usds.simplereport.config.BeanProfiles;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-@Profile(BeanProfiles.NO_OKTA_AUTH)
+@Profile(BeanProfiles.NO_EXPERIAN)
 @Service
 public class DemoExperianService implements ExperianService {
 
