@@ -227,10 +227,7 @@ exports[`TestResult should show a positive result 1`] = `
           >
             learn when to seek emergency medical attention
           </a>
-          .
-        </p>
-        <p>
-          If someone is showing any of these signs, seek emergency medical care immediately:
+          . If someone is showing any of these signs, seek emergency medical care immediately:
         </p>
         <ul>
           <li>
