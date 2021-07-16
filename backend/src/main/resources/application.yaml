@@ -79,7 +79,6 @@ simple-report:
     from-display-name: SimpleReport Support (CDC)
     account-request-recipient:
       - support@simplereport.gov
-      - Protect-ServiceDesk@hhs.gov
     waitlist-recipient: 
       - support@simplereport.gov
     dynamic-templates:

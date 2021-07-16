@@ -42,4 +42,8 @@ public class ApiFacility extends WrappedEntity<Facility> implements LocatedWrapp
         .map(ApiProvider::new)
         .orElse(null);
   }
+
+  public String getPatientSelfRegistrationLink() {
+    return getWrapped().getPatientSelfRegistrationLink();
+  }
 }
