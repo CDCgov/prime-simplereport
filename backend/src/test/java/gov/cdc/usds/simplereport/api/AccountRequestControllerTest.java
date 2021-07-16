@@ -95,6 +95,7 @@ class AccountRequestControllerTest {
   @SpyBean private ApiUserService apiUserService;
   @MockBean private CurrentAccountRequestContextHolder contextHolder;
   @MockBean private CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder;
+  @MockBean private CurrentUIVersionContextHolder currentUIVersionContextHolder;
   @MockBean private TenantDataAuthenticationProvider tenantDataAuthProvider;
 
   @MockBean private CrmService crmService;
