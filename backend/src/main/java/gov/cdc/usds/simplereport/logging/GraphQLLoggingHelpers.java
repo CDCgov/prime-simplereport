@@ -91,7 +91,7 @@ public class GraphQLLoggingHelpers {
 
           // Clear the MDC context
           MDC.remove(LoggingConstants.REQUEST_ID_MDC_KEY);
-          client.trackRequest(request);
+          //client.trackRequest(request);
         });
   }
 }
