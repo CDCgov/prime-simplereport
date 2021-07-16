@@ -1,5 +1,5 @@
 import moment from 'moment';
-import getNodeEnv from './utils/env';
+import getNodeEnv from './utils/getNodeEnv';
 
 import reload from "./utils/reload";
 

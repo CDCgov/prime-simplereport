@@ -1,4 +1,4 @@
-import getNodeEnv from './env';
+import getNodeEnv from './getNodeEnv';
 
 describe('getNodeEnv', () => {
     it('returns the node env', () => {

@@ -3,7 +3,7 @@ import moment from "moment";
 import { LOCAL_STORAGE_KEY } from "./VersionService";
 import { FetchMock } from "jest-fetch-mock/types";
 import reload from "./utils/reload";
-import env from "./utils/env";
+import env from "./utils/getNodeEnv";
 
 jest.mock("./utils/reload", () => jest.fn());
 jest.mock("./utils/env", () => jest.fn());
