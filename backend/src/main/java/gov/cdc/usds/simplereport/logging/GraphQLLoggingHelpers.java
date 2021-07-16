@@ -88,6 +88,7 @@ public class GraphQLLoggingHelpers {
             LOG.info("GraphQL execution COMPLETED in {}ms", queryDuration.getMilliseconds());
             request.setSuccess(true);
           }
+
           // Clear the MDC context
           MDC.remove(LoggingConstants.REQUEST_ID_MDC_KEY);
           client.trackRequest(request);
