@@ -229,7 +229,7 @@ class AccountRequestControllerTest {
     // mail 1: to us (contains formatted request data)
     verify(emailService, times(1))
         .send(
-            eq(List.of("support@simplereport.gov", "Protect-ServiceDesk@hhs.gov")),
+            eq(List.of("support@simplereport.gov")),
             eq("New account request"),
             contentCaptor.capture());
     assertThat(contentCaptor.getValue().getTemplateName()).isEqualTo("account-request");

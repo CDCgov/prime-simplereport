@@ -2424,3 +2424,15 @@ databaseChangeLog:
               DELETE FROM ${database.defaultSchemaName}.patient_registration_link 
               USING migration_user m
               WHERE created_by = m.migrations_user_id;
+  - changeSet:
+        id: audit-http-session
+        author: emma@skylight.digital
+        comment: Add HTTP session column to api_audit_event.
+        changes:
+          - addColumn:
+              tableName: api_audit_event
+              columns:
+                - column:
+                    name: session
+                    type: jsonb
+                    remarks: The HTTP session information for this request (only applies to REST requests).
