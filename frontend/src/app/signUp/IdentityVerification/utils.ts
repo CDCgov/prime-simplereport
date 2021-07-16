@@ -34,3 +34,70 @@ export const answersToArray = (answers: Answers): string[] =>
   Object.keys(answers).map((_, index) => {
     return answers[getAnswerKey(index)];
   });
+
+export const personalDetailsFields = [
+  ["firstName", "First name", true, "Legal name"],
+  ["middleName", "Middle name", false, null],
+  ["lastName", "Last name", true, null],
+  ["dateOfBirth", "mm/dd/yyyy", true, "Date of birth"],
+  ["email", "Email", true, "Personal contact information"],
+  ["phoneNumber", "Phone number", true, null],
+  ["streetAddress1", "Street address 1", true, "Home address"],
+  ["streetAddress2", "Street address 2", false, null],
+  ["city", "City", true, null],
+  ["state", "State", true, null],
+  ["zip", "ZIP code", true, null],
+].reduce((fields, field) => {
+  fields[field[0] as keyof IdentityVerificationRequest] = {
+    label: field[1] as string,
+    required: field[2] as boolean,
+    preheader: field[3] as string | null,
+  };
+  return fields;
+}, {} as { [key: string]: { label: string; required: boolean; preheader: string | null } });
+
+export const initPersonalDetails = (): IdentityVerificationRequest => ({
+  firstName: "",
+  lastName: "",
+  dateOfBirth: "",
+  email: "",
+  phoneNumber: "",
+  streetAddress1: "",
+  city: "",
+  state: "",
+  zip: "",
+});
+
+export const initPersonalDetailsErrors = (): Record<
+  keyof IdentityVerificationRequest,
+  string
+> => ({
+  firstName: "",
+  middleName: "",
+  lastName: "",
+  dateOfBirth: "",
+  email: "",
+  phoneNumber: "",
+  streetAddress1: "",
+  streetAddress2: "",
+  city: "",
+  state: "",
+  zip: "",
+});
+
+export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = yup
+  .object()
+  .shape({
+    firstName: yup.string().required("First name is required"),
+    middleName: yup.string().nullable(),
+    lastName: yup.string().required("Last name is required"),
+    dateOfBirth: yup.string().required("Birth date is required"),
+    email: yup.string().email().required("Email is required"),
+    phoneNumber: yup.string().required("Phone number is required"),
+    streetAddress1: yup.string().required("Street address is required"),
+    streetAddress2: yup.string().nullable(),
+    city: yup.string().required("City is required"),
+    state: yup.string().required("State is required"),
+    zip: yup.string().required("ZIP code is required"),
+    poBoxNumber: yup.string().nullable(),
+  });

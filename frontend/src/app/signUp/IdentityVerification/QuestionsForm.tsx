@@ -62,7 +62,7 @@ const QuestionsForm: React.FC<Props> = ({ questionSet, saving, onSubmit }) => {
 
   return (
     <CardBackground>
-      <Card>
+      <Card logo>
         <div className="usa-form">
           {questionSet.map((question, index) => {
             const key = getAnswerKey(index);
