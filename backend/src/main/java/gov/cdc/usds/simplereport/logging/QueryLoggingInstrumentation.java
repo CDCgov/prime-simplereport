@@ -62,19 +62,11 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
     // Create a new Azure Telemetry Event
     final RequestTelemetry requestTelemetry = new RequestTelemetry();
     requestTelemetry.setId(executionId);
-    var appVersionHeaderContents =
-        context.getHttpServletRequest().getHeaders("App-Version").asIterator();
-    var appVersionHeader =
-        appVersionHeaderContents.hasNext() ? appVersionHeaderContents.next() : "";
-    System.out.println("---------------------------");
-    System.out.println(appVersionHeader);
-    System.out.println("---------------------------");
+    var appVersionHeaderContents = context.getHttpServletRequest().getHeaders("App-Version").asIterator();
+    String appVersionHeader = appVersionHeaderContents.hasNext() ? appVersionHeaderContents.next() : "";
 
     requestTelemetry.getProperties().put("App Version", appVersionHeader);
 
-    System.out.println("---------------------------");
-    System.out.println(requestTelemetry.getProperties().toString());
-    System.out.println("---------------------------");
     // Try to get the operation name, if one exists
     final String name = parameters.getExecutionInput().getOperationName();
     if (name == null || "".equals(name)) {

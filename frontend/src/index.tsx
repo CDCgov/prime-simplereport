@@ -59,7 +59,7 @@ const httpLink = createUploadLink({
 const addHeadersMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext({
     headers: {
-      "App-Version": process.env.REACT_APP_CURRENT_COMMIT,
+      "X-SimpleReport-UI-Version": process.env.REACT_APP_CURRENT_COMMIT,
       "Access-Control-Request-Headers": "Authorization",
       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
     },

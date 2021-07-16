@@ -90,9 +90,6 @@ public class GraphQLLoggingHelpers {
           }
           // Clear the MDC context
           MDC.remove(LoggingConstants.REQUEST_ID_MDC_KEY);
-          System.out.println("----------------------------");
-          System.out.println(request.getProperties().get("App Version"));
-          System.out.println("----------------------------");
           client.trackRequest(request);
         });
   }

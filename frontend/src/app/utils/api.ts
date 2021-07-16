@@ -5,7 +5,7 @@ interface JsonObject {
 const JSON_CONTENT = "application/json";
 
 export const headers = {
-  "App-Version": process.env.REACT_APP_CURRENT_COMMIT || "",
+  "X-SimpleReport-UI-Version": process.env.REACT_APP_CURRENT_COMMIT || "",
   "Content-Type": JSON_CONTENT,
   Accept: JSON_CONTENT,
 };
