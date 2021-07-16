@@ -6,7 +6,7 @@ import reload from "./utils/reload";
 import env from "./utils/getNodeEnv";
 
 jest.mock("./utils/reload", () => jest.fn());
-jest.mock("./utils/env", () => jest.fn());
+jest.mock("./utils/getNodeEnv", () => jest.fn());
 
 describe("VersionService", () => {
   beforeEach(() => {
