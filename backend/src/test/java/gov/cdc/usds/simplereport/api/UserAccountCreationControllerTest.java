@@ -47,6 +47,7 @@ class UserAccountCreationControllerTest {
   // Dependencies of TenantDataAccessFilter
   @MockBean private ApiUserService _mockApiUserService;
   @MockBean private CurrentTenantDataAccessContextHolder _mockContextHolder;
+  @MockBean private CurrentUIVersionContextHolder _mockUIVersionContextHolder;
 
   private static final String VALID_PASSWORD_REQUEST =
       "{\"activationToken\":\"validActivationToken\", \"password\":\"superStrongPassword!\"}";
