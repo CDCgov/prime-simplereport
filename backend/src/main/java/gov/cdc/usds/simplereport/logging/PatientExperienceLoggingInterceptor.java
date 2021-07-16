@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.logging;
 
+import gov.cdc.usds.simplereport.api.CurrentUIVersionContextHolder;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +16,11 @@ import org.springframework.web.servlet.ModelAndView;
 @Component
 @ConditionalOnWebApplication
 public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
+  private final CurrentUIVersionContextHolder _currentUIVersionContextHolder;
+
+  PatientExperienceLoggingInterceptor(CurrentUIVersionContextHolder currentUIVersionContextHolder) {
+    _currentUIVersionContextHolder = currentUIVersionContextHolder;
+  }
 
   private static final Logger LOG =
       LoggerFactory.getLogger(PatientExperienceLoggingInterceptor.class);
@@ -30,6 +36,8 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
     String requestId = UUID.randomUUID().toString();
     MDC.put(LoggingConstants.REQUEST_ID_MDC_KEY, requestId);
     response.addHeader(LoggingConstants.REQUEST_ID_HEADER, requestId);
+    _currentUIVersionContextHolder.setUiShaFromHeaders(
+        request.getHeader(LoggingConstants.UI_VERSION_HEADER));
     return true;
   }
 

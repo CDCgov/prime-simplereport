@@ -11,4 +11,6 @@ public final class LoggingConstants {
 
   /** The header we will use to return the request ID for debugging purposes. */
   public static final String REQUEST_ID_HEADER = "X-SimpleReport-RequestId";
+
+  public static final String UI_VERSION_HEADER = "X-SimpleReport-UI-Version";
 }

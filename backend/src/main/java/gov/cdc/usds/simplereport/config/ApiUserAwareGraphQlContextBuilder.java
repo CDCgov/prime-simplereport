@@ -1,9 +1,11 @@
 package gov.cdc.usds.simplereport.config;
 
+import gov.cdc.usds.simplereport.api.CurrentUIVersionContextHolder;
 import gov.cdc.usds.simplereport.config.authorization.ApiUserPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.FacilityPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
+import gov.cdc.usds.simplereport.logging.LoggingConstants;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.dataloader.DataLoaderRegistryBuilder;
 import graphql.kickstart.execution.context.DefaultGraphQLContext;
@@ -30,16 +32,22 @@ import org.springframework.stereotype.Component;
 class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder {
   private final ApiUserService apiUserService;
   private final DataLoaderRegistryBuilder dataLoaderRegistryBuilder;
+  private final CurrentUIVersionContextHolder currentUIVersionContextHolder;
 
   ApiUserAwareGraphQlContextBuilder(
-      ApiUserService apiUserService, DataLoaderRegistryBuilder dataLoaderRegistryBuilder) {
+      ApiUserService apiUserService,
+      DataLoaderRegistryBuilder dataLoaderRegistryBuilder,
+      CurrentUIVersionContextHolder currentUIVersionContextHolder) {
     this.apiUserService = apiUserService;
     this.dataLoaderRegistryBuilder = dataLoaderRegistryBuilder;
+    this.currentUIVersionContextHolder = currentUIVersionContextHolder;
   }
 
   @Override
   public GraphQLContext build(
       HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    currentUIVersionContextHolder.setUiShaFromHeaders(
+        httpServletRequest.getHeader(LoggingConstants.UI_VERSION_HEADER));
     return DefaultGraphQLServletContext.createServletContext()
         .with(httpServletRequest)
         .with(httpServletResponse)

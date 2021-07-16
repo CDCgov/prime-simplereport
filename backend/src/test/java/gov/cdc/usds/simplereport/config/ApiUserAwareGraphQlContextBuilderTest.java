@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import gov.cdc.usds.simplereport.api.CurrentUIVersionContextHolder;
 import gov.cdc.usds.simplereport.config.authorization.ApiUserPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.FacilityPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationPrincipal;
@@ -42,10 +43,13 @@ class ApiUserAwareGraphQlContextBuilderTest {
   void populatesSubject(UserInfo user) {
     var apiUserService = mock(ApiUserService.class);
     var dataLoaderRegistryBuilder = mock(DataLoaderRegistryBuilder.class);
+    var currentUiVersionMock = mock(CurrentUIVersionContextHolder.class);
     when(apiUserService.getCurrentUserInfo()).thenReturn(user);
     when(dataLoaderRegistryBuilder.build()).thenReturn(new DataLoaderRegistry());
 
-    var sut = new ApiUserAwareGraphQlContextBuilder(apiUserService, dataLoaderRegistryBuilder);
+    var sut =
+        new ApiUserAwareGraphQlContextBuilder(
+            apiUserService, dataLoaderRegistryBuilder, currentUiVersionMock);
     validateSubject(
         sut.build(mock(HttpServletRequest.class), mock(HttpServletResponse.class))
             .getSubject()
