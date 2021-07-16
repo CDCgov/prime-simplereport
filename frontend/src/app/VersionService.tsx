@@ -1,8 +1,9 @@
 import moment from 'moment';
+import getNodeEnv from './utils/env';
 
 import reload from "./utils/reload";
 
-const LOCAL_STORAGE_KEY = 'mostRecentVersionReload';
+export const LOCAL_STORAGE_KEY = 'mostRecentVersionReload';
 export class VersionService {
   public static async enforce() {
     const mostRecentReload = VersionService.getMostRecentReload();
@@ -31,7 +32,7 @@ export class VersionService {
    * SHA encoded in the current build
    */
   public static async getSHA(): Promise<string> {
-    if (process.env.NODE_ENV === "production") {
+    if (getNodeEnv() === "production") {
       const result = await fetch(`${process.env.PUBLIC_URL}/static/commit.txt`);
       if (!result.ok) {
         throw result;

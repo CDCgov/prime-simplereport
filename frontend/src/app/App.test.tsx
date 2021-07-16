@@ -10,8 +10,7 @@ import { queueQuery } from "./testQueue/TestQueue";
 jest.mock("uuid");
 jest.mock("./VersionService", () => ({
   VersionService: {
-    getSHA: jest.fn(),
-    reload: jest.fn(),
+    enforce: jest.fn(),
   },
 }));
 
