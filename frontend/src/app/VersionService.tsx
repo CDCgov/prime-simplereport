@@ -1,14 +1,14 @@
-import moment from 'moment';
-import getNodeEnv from './utils/getNodeEnv';
+import moment from "moment";
 
+import getNodeEnv from "./utils/getNodeEnv";
 import reload from "./utils/reload";
 
-export const LOCAL_STORAGE_KEY = 'mostRecentVersionReload';
+export const LOCAL_STORAGE_KEY = "mostRecentVersionReload";
 export class VersionService {
   public static async enforce() {
     const mostRecentReload = VersionService.getMostRecentReload();
     if (mostRecentReload != null) {
-      if(moment().isBefore(moment(mostRecentReload).add(15, 'minutes'))) { 
+      if (moment().isBefore(moment(mostRecentReload).add(15, "minutes"))) {
         // We have reloaded too recently; get outta here
         return;
       }
@@ -24,7 +24,9 @@ export class VersionService {
 
   static getMostRecentReload(): Date | null {
     const serializedLastKnown = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return serializedLastKnown === null ? null : JSON.parse(serializedLastKnown);
+    return serializedLastKnown === null
+      ? null
+      : JSON.parse(serializedLastKnown);
   }
 
   /**

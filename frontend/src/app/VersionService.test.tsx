@@ -1,7 +1,7 @@
-import { VersionService } from "./VersionService";
 import moment from "moment";
-import { LOCAL_STORAGE_KEY } from "./VersionService";
 import { FetchMock } from "jest-fetch-mock/types";
+
+import { VersionService, LOCAL_STORAGE_KEY } from "./VersionService";
 import reload from "./utils/reload";
 import env from "./utils/getNodeEnv";
 
@@ -64,7 +64,10 @@ describe("VersionService", () => {
 
     it("won't getSHA or reload we've reloaded too recently", async () => {
       // GIVEN
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(moment().subtract(14, 'minutes').toDate()));
+      localStorage.setItem(
+        LOCAL_STORAGE_KEY,
+        JSON.stringify(moment().subtract(14, "minutes").toDate())
+      );
       const localSHA = "apples";
       const remoteSHA = "bananas";
       process.env.REACT_APP_CURRENT_COMMIT = localSHA;

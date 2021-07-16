@@ -27,7 +27,7 @@ import { getAppInsights, ai, withInsights } from "./app/TelemetryService";
 import TelemetryProvider from "./app/telemetry-provider";
 import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration";
 import "./i18n";
-import getNodeEnv from './app/utils/getNodeEnv';
+import getNodeEnv from "./app/utils/getNodeEnv";
 
 import "./styles/App.css";
 

@@ -4,9 +4,6 @@ import { createMemoryHistory } from "history";
 
 import VersionEnforcer from "./VersionEnforcer";
 import { VersionService } from "./VersionService";
-import reload from "./utils/reload";
-
-jest.mock("./utils/reload");
 
 jest.mock("./VersionService", () => ({
   VersionService: {
