@@ -150,6 +150,7 @@ class AuditLoggingTest extends BaseGraphqlTest {
 
   @Test
   void auditableRestRequest_funnyHeaders_auditCorrect() throws Exception {
+    System.out.println("in auditable rest request test");
     PatientLink link = createLink();
     String requestBody =
         JsonNodeFactory.instance
@@ -180,13 +181,25 @@ class AuditLoggingTest extends BaseGraphqlTest {
 
   @Test
   void nonAuditableRestRequest_noAudit() throws Exception {
-    String requestBody =
-        "{\"name\":\"Angela Chan\",\"email\":\"qasas@mailinator.com\",\"phone\":\"+1 (157) 294-1842\","
-            + "\"state\":\"Exercitation odit pr\",\"organization\":\"Lane Moss LLC\","
-            + "\"referral\":\"Ea error voluptate v\"}";
-    _mockMvc
-        .perform(withJsonContent(post(ResourceLinks.WAITLIST_REQUEST), requestBody))
-        .andExpect(status().isOk());
+    // String requestBody =
+    //     "{\"name\":\"Angela Chan\",\"email\":\"qasas@mailinator.com\",\"phone\":\"+1 (157) 294-1842\","
+    //         + "\"state\":\"Exercitation odit pr\",\"organization\":\"Lane Moss LLC\","
+    //         + "\"referral\":\"Ea error voluptate v\"}";
+    String requestBody = JsonNodeFactory.instance
+            .objectNode()
+            .put("name", "Angela Chan")
+            .put("email", "qasas@mailinator.com")
+            .put("phone", "+1 (157) 294-1842")
+            .put("state", "Exercitation odit pr")
+            .put("organization", "Lane Moss LLC")
+            .put("referral", "Ea error voluptate v")
+            .toString();
+            MockHttpServletRequestBuilder req =
+            withJsonContent(post(ResourceLinks.WAITLIST_REQUEST), requestBody)
+                .header("X-forwarded-PROTO", "gopher")
+                .header("x-ORIGINAL-HOST", "simplereport.simple")
+                .header("x-forwarded-for", "192.168.153.128:80, 10.3.1.1:443");
+        _mockMvc.perform(req).andExpect(status().isOk());
     assertNoAuditEvent();
   }
 }

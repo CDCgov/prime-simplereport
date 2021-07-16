@@ -81,9 +81,13 @@ public class AuditService {
   @Transactional(readOnly = false)
   public void logAnonymousRestEvent(
       String requestId, HttpServletRequest request, int responseCode) {
+    System.out.println("service: logging anonymous request");
     LOG.trace("Saving audit event for {}", requestId);
+    System.out.println("request: "+ request);
     HttpRequestDetails reqDetails = new HttpRequestDetails(request);
-    HttpSession session = request.getSession();
+    System.out.println("getting session");
+    HttpSession session = request.getSession(true);
+    System.out.println("session retrieved");
     _repo.save(new ApiAuditEvent(requestId, reqDetails, responseCode, session));
   }
 }

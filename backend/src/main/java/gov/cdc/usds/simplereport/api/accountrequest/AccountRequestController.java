@@ -85,6 +85,7 @@ public class AccountRequestController {
   /** Read the waitlist request and generate an email body, then send with the emailService */
   @PostMapping("/waitlist")
   public void submitWaitlistRequest(@Valid @RequestBody WaitlistRequest body) throws IOException {
+    System.out.println("in waitlist request");
     String subject = "New waitlist request";
     if (LOG.isInfoEnabled()) {
       LOG.info("Waitlist request submitted: {}", objectMapper.writeValueAsString(body));

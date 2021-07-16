@@ -30,6 +30,8 @@ public class HttpRequestDetails {
   private final String requestUri;
 
   public HttpRequestDetails(HttpServletRequest request) {
+    System.out.println("creating a new requestDetails object");
+    System.out.println(request);
     serverName = request.getServerName(); // mostly irrelevant
     originalHostName = request.getHeader(Headers.FORWARDED_HOST);
     remoteAddress = request.getRemoteAddr();
@@ -51,6 +53,7 @@ public class HttpRequestDetails {
       @JsonProperty("forwardedProtocol") String forwardedProtocol,
       @JsonProperty("originalHostName") String originalHostName,
       @JsonProperty("requestUri") String requestUri) {
+    System.out.println("creating a new requestDetails object from json");
     this.serverName = serverName;
     this.remoteAddress = remoteAddress;
     this.forwardedAddresses = forwardedAddresses;

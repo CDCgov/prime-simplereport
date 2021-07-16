@@ -44,6 +44,7 @@ public class RestAuditLogManager {
    *     happened.).
    */
   public boolean logRestSuccess(HttpServletRequest request, Object resultObject) {
+    System.out.println("log pxp request: " + request);
     PatientLink patientLink = _contextHolder.getPatientLink();
     if (patientLink == null && !_contextHolder.isPatientSelfRegistrationRequest()) {
       LOG.error(
@@ -60,11 +61,14 @@ public class RestAuditLogManager {
     return true;
   }
 
-  public boolean logAnonymousRestSuccess(HttpServletRequest request, Object resultObject) {
+  public boolean logAnonymousRestSuccess(HttpServletRequest request, Object returnObject) {
+    System.out.println("attempting to log anonymous request");
+    System.out.println("request in log manager: " + request);
     try {
       String requestId = MDC.get(LoggingConstants.REQUEST_ID_MDC_KEY);
       _auditService.logAnonymousRestEvent(requestId, request, DEFAULT_SUCCESS);
     } catch (Exception e) {
+      System.out.println("anonymous audit logging failed; throwing exception");
       throw new RestAuditFailureException(e);
     }
     return true;
