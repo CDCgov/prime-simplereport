@@ -192,9 +192,6 @@ export const en = {
         "For more information, please visit the <0>Centers for Disease Control and Prevention (CDC) website</0> or contact your local health department.",
       notes: {
         positive: {
-          p0:
-            "Getting a positive COVID-19 test result can be difficult news, so it’s important to <0> take steps to cope with stress </0> during " +
-            "this time. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.",
           p1:
             "Most people who get COVID-19 will be able to recover at home. Make sure to follow CDC guidelines for people who are recovering at " +
             "home and their caregivers, including:",
@@ -214,9 +211,7 @@ export const en = {
               "Have a supply of clean, disposable face masks. Everyone, no matter their COVID-19 diagnosis, should wear face masks while in the home.",
           },
           p2:
-            "<0>Watch for symptoms and learn when to seek emergency medical attention</0>.",
-          p3:
-            "If someone is showing any of these signs, seek emergency medical care immediately:",
+            "Watch for symptoms and <0>learn when to seek emergency medical attention</0>. If someone is showing any of these signs, seek emergency medical care immediately:",
           emergency: {
             li0: "Trouble breathing",
             li1: "Persistent chest pain/pressure",
@@ -224,14 +219,14 @@ export const en = {
             li3: "Inability to wake or stay awake",
             li4: "Bluish lips or face",
           },
-          p4:
+          p3:
             "Call 911 or call ahead to your local emergency room: Notify the operator that you are seeking care for someone who has or may have COVID-19.",
+          difficultNewsLink:
+            "Getting a positive COVID-19 test result can be difficult news, so it’s important to <0> take steps to cope with stress </0> during this time. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.",
         },
         negative: {
           p0:
-            "COVID-19 antigen tests can sometimes provide inaccurate or false results and follow up testing may be needed. Continue social " +
-            "distancing and wearing a mask. Contact your health care provider to decide if additional testing is needed, especially if you " +
-            "experience any of these symptoms:",
+            "Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:",
           symptoms: {
             li0: "Fever or chills",
             li1: "Cough",

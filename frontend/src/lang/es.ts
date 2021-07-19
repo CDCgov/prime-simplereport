@@ -185,7 +185,6 @@ export const es: LanguageConfig = {
       information: "",
       notes: {
         positive: {
-          p0: "",
           p1: "",
           guidelines: {
             li0: "",
@@ -204,7 +203,7 @@ export const es: LanguageConfig = {
             li3: "",
             li4: "",
           },
-          p4: "",
+          difficultNewsLink: "",
         },
         negative: {
           p0: "",
