@@ -87,7 +87,6 @@ public class AccountRequestController {
   @PostMapping("/waitlist")
   public void submitWaitlistRequest(
       @Valid @RequestBody WaitlistRequest body, HttpServletRequest request) throws IOException {
-    System.out.println("in waitlist request");
     String subject = "New waitlist request";
     if (LOG.isInfoEnabled()) {
       LOG.info("Waitlist request submitted: {}", objectMapper.writeValueAsString(body));

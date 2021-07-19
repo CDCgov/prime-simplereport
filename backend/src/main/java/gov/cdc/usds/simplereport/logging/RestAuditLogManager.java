@@ -44,7 +44,6 @@ public class RestAuditLogManager {
    *     happened.).
    */
   public boolean logRestSuccess(HttpServletRequest request, Object resultObject) {
-    System.out.println("log pxp request: " + request);
     PatientLink patientLink = _contextHolder.getPatientLink();
     if (patientLink == null && !_contextHolder.isPatientSelfRegistrationRequest()) {
       LOG.error(

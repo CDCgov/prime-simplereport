@@ -150,7 +150,6 @@ class AuditLoggingTest extends BaseGraphqlTest {
 
   @Test
   void auditableRestRequest_funnyHeaders_auditCorrect() throws Exception {
-    System.out.println("in auditable rest request test");
     PatientLink link = createLink();
     String requestBody =
         JsonNodeFactory.instance
