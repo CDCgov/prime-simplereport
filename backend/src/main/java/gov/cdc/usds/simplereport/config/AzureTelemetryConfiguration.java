@@ -23,7 +23,7 @@ public class AzureTelemetryConfiguration {
   @Scope("singleton")
   TelemetryClient getTelemetryClient() {
     TelemetryClient client = new TelemetryClient();
-    TelemetryConfiguration.getActive().getTelemetryInitializers().add(new AzureTelemetryInitializer(_currentUIVersionContextHolder));
+    TelemetryConfiguration.getActiveWithoutInitializingConfig().getTelemetryInitializers().add(new AzureTelemetryInitializer(_currentUIVersionContextHolder));
     return client;
   }
 }
