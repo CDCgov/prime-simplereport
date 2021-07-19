@@ -2,9 +2,6 @@ name: Rollback Test API
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - 'jdorothy/add-rollback-workflow'
 
 env:
   DEPLOY_ENV: test
