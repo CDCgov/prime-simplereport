@@ -21,5 +21,6 @@ public class AzureTelemetryInitializer implements TelemetryInitializer {
         }
 
         requestTelemetry.getProperties().put("UI Version", _currentUIVersionContextHolder.getUiShaFromHeaders());
+        requestTelemetry.getProperties().put("HELLO", "WORLD");
     }
 }
