@@ -2,6 +2,9 @@ name: Rollback Test API
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - 'jdorothy/add-rollback-workflow'
 
 env:
   DEPLOY_ENV: test
@@ -25,10 +28,6 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Roll back to previous release
-        shell: bash
-        working-directory: ./ops
-        run: |
-          echo "::group::Roll back API to previous release and verify readiness"
-          make promote-${{ env.DEPLOY_ENV }}
-          make check-${{ env.DEPLOY_ENV }}-readiness
-          echo "::endgroup::"
+        uses: ./.github/actions/rollback-application
+        with:
+          deploy-env: ${{env.DEPLOY_ENV}}
