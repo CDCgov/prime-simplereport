@@ -22,4 +22,5 @@ interface IdentityVerificationRequest {
   city: string;
   state: string;
   zip: string;
+  poBoxNumber?: string | null;
 }
