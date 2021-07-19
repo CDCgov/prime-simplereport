@@ -20,6 +20,7 @@ import WithFacility from "./facilitySelect/WithFacility";
 import { appPermissions } from "./permissions";
 import Settings from "./Settings/Settings";
 import { getAppInsights } from "./TelemetryService";
+import VersionEnforcer from "./VersionEnforcer";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -91,6 +92,7 @@ const App = () => {
   }
   return (
     <PrimeErrorBoundary>
+      <VersionEnforcer />
       <WithFacility>
         <Page>
           <Header />
