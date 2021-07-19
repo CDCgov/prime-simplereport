@@ -48,13 +48,6 @@ resource "azurerm_cdn_endpoint" "cdn_endpoint" {
     host_name = azurerm_storage_account.app.primary_web_host
   }
 
-  global_delivery_rule {
-    cache_expiration_action {
-      behavior = "SetIfMissing"
-      duration = "7.00:00:00"
-    }
-  }
-
   delivery_rule {
     name  = "bypassIndexHtmlCache"
     order = 1
