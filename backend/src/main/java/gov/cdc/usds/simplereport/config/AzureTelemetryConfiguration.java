@@ -1,9 +1,15 @@
 package gov.cdc.usds.simplereport.config;
 
 import com.microsoft.applicationinsights.TelemetryClient;
-import com.microsoft.applicationinsights.extensibility.TelemetryInitializer;
+import com.microsoft.applicationinsights.TelemetryConfiguration;
+import com.microsoft.applicationinsights.extensibility.ContextInitializer;
+import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
+//import com.microsoft.applicationinsights.extensibility.TelemetryInitializer;
 import com.microsoft.applicationinsights.telemetry.Telemetry;
+import com.microsoft.applicationinsights.telemetry.TelemetryContext;
+
 import gov.cdc.usds.simplereport.api.CurrentUIVersionContextHolder;
+import gov.cdc.usds.simplereport.config.AzureTelemetryInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -20,17 +26,11 @@ public class AzureTelemetryConfiguration {
   @Bean
   @Scope("singleton")
   TelemetryClient getTelemetryClient() {
+    /*
+    TelemetryConfiguration config = new TelemetryConfiguration();
+    config.setConnectionString(System.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"));
+    return new TelemetryClient(config);
+    */
     return new TelemetryClient();
-  }
-
-  @Bean
-  TelemetryInitializer getTelemetryInitializer() {
-    return (Telemetry telemetry) -> {
-      var telemetryProperties = telemetry.getProperties();
-      telemetryProperties.put("HELLO", "WORLD");
-      if (_currentUIVersionContextHolder.getUiShaFromHeaders() != null) {
-        telemetryProperties.put("UI Version", _currentUIVersionContextHolder.getUiShaFromHeaders());
-      }
-    };
   }
 }
