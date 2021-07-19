@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
@@ -16,7 +17,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.servlet.http.HttpSession;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Parameter;
@@ -104,8 +104,8 @@ public class ApiAuditEvent {
   private PatientLink patientLink;
 
   @Column(nullable = true)
-  @Type(type= "jsonb") 
-  private HttpSession session;
+  @Type(type = "jsonb")
+  private JsonNode session;
 
   protected ApiAuditEvent() {
     // hibernate
@@ -155,11 +155,13 @@ public class ApiAuditEvent {
       String requestId,
       HttpRequestDetails httpRequestDetails,
       int responseStatus,
-      HttpSession session) {
+      JsonNode userId,
+      ApiUser user) {
     this.requestId = requestId;
     this.httpRequestDetails = httpRequestDetails;
     this.responseCode = responseStatus;
-    this.session = session;
+    this.session = userId;
+    this.user = user;
   }
 
   public UUID getId() {
@@ -210,7 +212,7 @@ public class ApiAuditEvent {
     return patientLink;
   }
 
-  public HttpSession getSession() {
+  public JsonNode getSession() {
     return session;
   }
 }

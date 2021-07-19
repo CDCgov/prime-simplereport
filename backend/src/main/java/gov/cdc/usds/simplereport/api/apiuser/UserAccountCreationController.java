@@ -50,6 +50,8 @@ import org.springframework.web.bind.annotation.SessionAttribute;
  */
 @RestController
 @RequestMapping(USER_ACCOUNT_REQUEST)
+// All auditable requests need to include `HttpServletRequest request`, even if they don't use it
+// directly.
 @PostAuthorize("@restAuditLogManager.logAnonymousRestSuccess(#request, returnObject)")
 public class UserAccountCreationController {
   private static final Logger LOG = LoggerFactory.getLogger(UserAccountCreationController.class);
@@ -92,7 +94,8 @@ public class UserAccountCreationController {
   public UserAccountStatus getUserStatus(
       @RequestParam @Nullable String activationToken,
       @Nullable @SessionAttribute String userId,
-      @Nullable @SessionAttribute String factorId) {
+      @Nullable @SessionAttribute String factorId,
+      HttpServletRequest request) {
     return _oktaAuth.getUserStatus(activationToken, userId, factorId);
   }
 
@@ -121,7 +124,9 @@ public class UserAccountCreationController {
    */
   @PostMapping("/set-password")
   public void setPassword(
-      @RequestBody SetPasswordRequest requestBody, @SessionAttribute String userId)
+      @RequestBody SetPasswordRequest requestBody,
+      @SessionAttribute String userId,
+      HttpServletRequest request)
       throws OktaAuthenticationFailureException, BadRequestException {
     _oktaAuth.setPassword(userId, requestBody.getPassword().toCharArray());
   }
@@ -136,7 +141,9 @@ public class UserAccountCreationController {
    */
   @PostMapping("/set-recovery-question")
   public void setRecoveryQuestions(
-      @RequestBody SetRecoveryQuestionRequest requestBody, @SessionAttribute String userId)
+      @RequestBody SetRecoveryQuestionRequest requestBody,
+      @SessionAttribute String userId,
+      HttpServletRequest request)
       throws OktaAuthenticationFailureException, BadRequestException {
     _oktaAuth.setRecoveryQuestion(userId, requestBody.getQuestion(), requestBody.getAnswer());
   }
@@ -246,7 +253,8 @@ public class UserAccountCreationController {
   public void activateSecurityKeyMfa(
       @RequestBody @Valid ActivateSecurityKeyRequest requestBody,
       @SessionAttribute String userId,
-      @SessionAttribute String factorId)
+      @SessionAttribute String factorId,
+      HttpServletRequest request)
       throws OktaAuthenticationFailureException {
     _oktaAuth.activateSecurityKey(
         userId, factorId, requestBody.getAttestation(), requestBody.getClientData());
@@ -284,7 +292,9 @@ public class UserAccountCreationController {
    */
   @PostMapping("/resend-activation-passcode")
   public void resendActivationPasscode(
-      @SessionAttribute String userId, @SessionAttribute String factorId) {
+      @SessionAttribute String userId,
+      @SessionAttribute String factorId,
+      HttpServletRequest request) {
     _oktaAuth.resendActivationPasscode(userId, factorId);
   }
 

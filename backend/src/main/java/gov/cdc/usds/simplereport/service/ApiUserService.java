@@ -271,6 +271,7 @@ public class ApiUserService {
   private static final String PATIENT_SELF_REGISTRATION_EMAIL =
       "patient-self-registration" + NOREPLY;
   private static final String ACCOUNT_REQUEST_EMAIL = "account-request" + NOREPLY;
+  private static final String ANONYMOUS_EMAIL = "anonymous-user" + NOREPLY;
 
   private String getPatientIdEmail(Person patient) {
     return patient.getInternalId() + NOREPLY;
@@ -308,6 +309,21 @@ public class ApiUserService {
           _apiUserRepo.save(magicUser);
           LOG.info(
               "Magic account request self-registration user not found. Created Person={}",
+              magicUser.getInternalId());
+          return magicUser;
+        });
+  }
+
+  /** Only used for audit logging. */
+  public ApiUser getAnonymousApiUser() {
+    Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(ANONYMOUS_EMAIL);
+    return found.orElseGet(
+        () -> {
+          ApiUser magicUser =
+              new ApiUser(ANONYMOUS_EMAIL, new PersonName("", "", "Anonymous User", ""));
+          _apiUserRepo.save(magicUser);
+          LOG.info(
+              "Magic account anonymous user not found. Created Person={}",
               magicUser.getInternalId());
           return magicUser;
         });

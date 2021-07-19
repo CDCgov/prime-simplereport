@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
@@ -10,7 +12,6 @@ import gov.cdc.usds.simplereport.db.repository.ApiAuditEventRepository;
 import gov.cdc.usds.simplereport.logging.GraphqlQueryState;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,13 +82,16 @@ public class AuditService {
   @Transactional(readOnly = false)
   public void logAnonymousRestEvent(
       String requestId, HttpServletRequest request, int responseCode) {
-    System.out.println("service: logging anonymous request");
     LOG.trace("Saving audit event for {}", requestId);
-    System.out.println("request: "+ request);
     HttpRequestDetails reqDetails = new HttpRequestDetails(request);
-    System.out.println("getting session");
-    HttpSession session = request.getSession(true);
-    System.out.println("session retrieved");
-    _repo.save(new ApiAuditEvent(requestId, reqDetails, responseCode, session));
+    Object userIdObj = request.getSession(true).getAttribute("userId");
+    JsonNode userId;
+    if (userIdObj == null) {
+      userId = null;
+    } else {
+      userId = JsonNodeFactory.instance.objectNode().put("userId", userIdObj.toString());
+    }
+    ApiUser anonymousUser = _userService.getAnonymousApiUser();
+    _repo.save(new ApiAuditEvent(requestId, reqDetails, responseCode, userId, anonymousUser));
   }
 }

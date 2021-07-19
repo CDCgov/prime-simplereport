@@ -62,13 +62,10 @@ public class RestAuditLogManager {
   }
 
   public boolean logAnonymousRestSuccess(HttpServletRequest request, Object returnObject) {
-    System.out.println("attempting to log anonymous request");
-    System.out.println("request in log manager: " + request);
     try {
       String requestId = MDC.get(LoggingConstants.REQUEST_ID_MDC_KEY);
       _auditService.logAnonymousRestEvent(requestId, request, DEFAULT_SUCCESS);
     } catch (Exception e) {
-      System.out.println("anonymous audit logging failed; throwing exception");
       throw new RestAuditFailureException(e);
     }
     return true;
