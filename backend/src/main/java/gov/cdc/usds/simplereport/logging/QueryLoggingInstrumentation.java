@@ -68,9 +68,9 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
     if (name == null || "".equals(name)) {
       LOG.warn("Anonymous GraphQL operation submitted, we'll be missing interesting data");
     } else {
-      //requestTelemetry.setName(name);
-      requestTelemetry.setName("HelloWorld");
-      requestTelemetry.getContext().getProperties().put("HI", "MOM");
+      requestTelemetry.setName(name);
+      requestTelemetry.getProperties().put("HI", "MOM");
+      requestTelemetry.getContext().getProperties().put("HI", "DAD");
     }
     LOG.trace("Done initializing graphql query logging.");
     return GraphQLLoggingHelpers.createInstrumentationContext(queryStart, client, requestTelemetry);
