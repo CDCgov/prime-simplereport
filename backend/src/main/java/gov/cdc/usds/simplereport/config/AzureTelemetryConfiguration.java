@@ -25,7 +25,10 @@ public class AzureTelemetryConfiguration {
   TelemetryClient getTelemetryClient() {
     TelemetryConfiguration config = new TelemetryConfiguration();
     config.getTelemetryInitializers().add(new AzureTelemetryInitializer(_currentUIVersionContextHolder));
-    config.setConnectionString(System.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"));
-    return new TelemetryClient(config);
+    //config.setInstrumentationKey(System.getenv("APPINSIGHTS_INSTRUMENTATIONKEY"));
+    TelemetryClient client = new TelemetryClient(config);
+    client.getContext().setInstrumentationKey(System.getenv("APPINSIGHTS_INSTRUMENTATIONKEY"));
+    client.getContext().getProperties().put("HI", "MOM");
+    return client;
   }
 }
