@@ -47,6 +47,14 @@ variable "tls_enabled" {
   default = false
 }
 
+variable "subnet_id" {
+  type = string
+}
+
+variable "dns_zone_id" {
+  type = string
+}
+
 variable "nophi_user_password" {
   description = "Password for the simple_report_no_phi user."
   type        = string
