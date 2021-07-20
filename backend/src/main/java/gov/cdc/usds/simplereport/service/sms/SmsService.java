@@ -12,6 +12,9 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TextMessageSent;
 import gov.cdc.usds.simplereport.db.repository.TextMessageSentRepository;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
+import gov.cdc.usds.simplereport.service.model.SmsDeliveryResult;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -46,17 +49,46 @@ public class SmsService {
 
   @AuthorizationConfiguration.RequirePermissionStartTestWithPatientLink
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
-  public String sendToPatientLink(UUID patientLinkId, String text) throws NumberParseException {
+  public Map<String, SmsDeliveryResult> sendToPatientLink(UUID patientLinkId, String text) {
     PatientLink pl = pls.getRefreshedPatientLink(patientLinkId);
-    String messageId = sendToPerson(pl.getTestOrder().getPatient(), text);
-    tmsRepo.save(new TextMessageSent(pl, messageId));
-    return messageId;
+    Map<String, SmsDeliveryResult> smsSendResults =
+        sendToPerson(pl.getTestOrder().getPatient(), text);
+    smsSendResults.forEach(
+        (phoneNumber, smsDeliveryResult) -> {
+          if (smsDeliveryResult.getException() != null) {
+            return;
+          }
+
+          tmsRepo.save(new TextMessageSent(pl, smsDeliveryResult.getMessageId()));
+        });
+
+    return smsSendResults;
   }
 
-  private String sendToPerson(Person p, String text) throws NumberParseException {
-    String msgId = sms.send(new PhoneNumber(formatNumber(p.getTelephone())), fromNumber, text);
-    LOG.debug("SMS send initiated {}", msgId);
-    return msgId;
+  private Map<String, SmsDeliveryResult> sendToPerson(Person p, String text) {
+    Map<String, SmsDeliveryResult> smsSendResults = new HashMap<>();
+
+    p.getPhoneNumbers().stream()
+        .forEach(
+            phoneNumber -> {
+              try {
+                String msgId =
+                    sms.send(
+                        new PhoneNumber(formatNumber(phoneNumber.getNumber())), fromNumber, text);
+                LOG.debug("SMS send initiated {}", msgId);
+
+                smsSendResults.put(phoneNumber.getNumber(), new SmsDeliveryResult(msgId, null));
+              } catch (NumberParseException npe) {
+                LOG.warn("Failed to parse phone number for patient={}", p.getInternalId());
+                smsSendResults.put(phoneNumber.getNumber(), new SmsDeliveryResult(null, npe));
+              } catch (ApiException apiException) {
+                LOG.warn("Failed to send text message to patient={}", p.getInternalId());
+                smsSendResults.put(
+                    phoneNumber.getNumber(), new SmsDeliveryResult(null, apiException));
+              }
+            });
+
+    return smsSendResults;
   }
 
   String formatNumber(String number) throws NumberParseException {

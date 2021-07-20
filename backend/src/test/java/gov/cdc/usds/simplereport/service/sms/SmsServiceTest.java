@@ -124,12 +124,11 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     createTestOrderAndPatientLink(_person);
 
     // WHEN + THEN
-    assertThrows(
-        NumberParseException.class,
-        () -> {
-          _smsService.sendToPatientLink(
-              _patientLink.getInternalId(), "yup here we are, testing stuff");
-        });
+    var sut =
+        _smsService.sendToPatientLink(
+            _patientLink.getInternalId(), "yup here we are, testing stuff");
+    assertTrue(
+        sut.get("ABCD THIS ISN'T A PHONE NUMBER").getException() instanceof NumberParseException);
   }
 
   @Test

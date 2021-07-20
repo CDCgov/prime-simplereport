@@ -7,10 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import com.google.i18n.phonenumbers.NumberParseException;
+import com.twilio.exception.ApiException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -25,6 +26,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.service.model.SmsDeliveryResult;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
@@ -525,7 +527,14 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         false);
     DeviceType devA = _dataFactory.getGenericDevice();
 
-    doThrow(NumberParseException.class).when(_smsService).sendToPatientLink(any(), any());
+    doReturn(
+            new HashMap<String, SmsDeliveryResult>() {
+              {
+                put("message-id", new SmsDeliveryResult("id", new ApiException("message")));
+              }
+            })
+        .when(_smsService)
+        .sendToPatientLink(any(), any());
 
     AddTestResultResponse res =
         _service.addTestResult(
