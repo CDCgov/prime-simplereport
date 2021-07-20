@@ -47,8 +47,12 @@ variable "tls_enabled" {
   default = false
 }
 
-variable "public_access" {
-  default = true
+variable "subnet_id" {
+  type = string
+}
+
+variable "dns_zone_id" {
+  type = string
 }
 
 variable "nophi_user_password" {
