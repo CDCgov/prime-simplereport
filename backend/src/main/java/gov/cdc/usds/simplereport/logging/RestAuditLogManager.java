@@ -59,4 +59,14 @@ public class RestAuditLogManager {
     }
     return true;
   }
+
+  public boolean logAnonymousRestSuccess(HttpServletRequest request, Object returnObject) {
+    try {
+      String requestId = MDC.get(LoggingConstants.REQUEST_ID_MDC_KEY);
+      _auditService.logAnonymousRestEvent(requestId, request, DEFAULT_SUCCESS);
+    } catch (Exception e) {
+      throw new RestAuditFailureException(e);
+    }
+    return true;
+  }
 }
