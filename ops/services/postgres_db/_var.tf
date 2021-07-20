@@ -47,10 +47,6 @@ variable "tls_enabled" {
   default = false
 }
 
-variable "public_access" {
-  default = true
-}
-
 variable "subnet_id" {
   type = string
 }
