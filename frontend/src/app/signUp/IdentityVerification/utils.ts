@@ -47,7 +47,7 @@ export const personalDetailsFields = [
   ["city", "City", true, null],
   ["state", "State", true, null],
   ["zip", "ZIP code", true, null],
-  ["poBoxNumber", "PO box number", false, null],
+  ["poBoxNumber", "PO Box number", false, null],
 ].reduce((fields, field) => {
   fields[field[0] as keyof IdentityVerificationRequest] = {
     label: field[1] as string,
