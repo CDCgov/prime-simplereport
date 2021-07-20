@@ -26,7 +26,6 @@ public class AzureTelemetryConfiguration {
     TelemetryConfiguration config = new TelemetryConfiguration();
     config.getTelemetryInitializers().add(new AzureTelemetryInitializer(_currentUIVersionContextHolder));
     config.setConnectionString(System.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"));
-    var client = new TelemetryClient(config);
-    return client;
+    return new TelemetryClient(config);
   }
 }
