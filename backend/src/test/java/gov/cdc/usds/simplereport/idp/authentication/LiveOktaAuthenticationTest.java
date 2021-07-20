@@ -392,7 +392,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
             () -> {
               _auth.verifyActivationPasscode(_userId, factorId, "1234");
             });
-    assertThat(exception).hasMessageContaining("The provided security code is invalid.");
+    assertThat(exception).hasMessageContaining("Invalid security code.");
   }
 
   @Test

@@ -216,7 +216,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
         throw new BadRequestException(
-            "Invalid phone number. You must enter a phone number capable of receiving text messages.",
+            "Invalid phone number. Please enter a mobile phone number that can receive text messages.",
             e);
       }
       throw new OktaAuthenticationFailureException("Error setting SMS MFA", e);
@@ -353,7 +353,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       activateFactor.setPassCode(passcode.strip());
       factor.activate(activateFactor);
     } catch (ResourceException e) {
-      throw new BadRequestException("The provided security code is invalid.", e);
+      throw new BadRequestException("Invalid security code.", e);
     } catch (NullPointerException | IllegalArgumentException e) {
       throw new OktaAuthenticationFailureException(
           "Activation passcode could not be verifed; MFA activation failed.", e);
@@ -402,7 +402,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     } catch (HttpClientErrorException e) {
       if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
         throw new BadRequestException(
-            "A security code was recently sent. Please wait 30 seconds before trying again.", e);
+            "We're sending over a security code. Please wait 30 seconds before trying again.", e);
       }
     } catch (RestClientException | ResourceException | NullPointerException e) {
       throw new OktaAuthenticationFailureException(
