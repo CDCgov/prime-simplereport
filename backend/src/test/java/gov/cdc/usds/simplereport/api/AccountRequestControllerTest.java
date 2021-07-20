@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -110,6 +111,10 @@ class AccountRequestControllerTest {
   @Captor private ArgumentCaptor<StreetAddress> addressCaptor;
   @Captor private ArgumentCaptor<AccountRequest> accountRequestCaptor;
 
+  private static final String FAKE_ORG_EXTERNAL_ID_PREFIX = "RI-Day-Hayes-Trading-";
+  private static final String FAKE_ORG_EXTERNAL_ID =
+      FAKE_ORG_EXTERNAL_ID_PREFIX + "09e05f77-8765-48bb-adcb-96819af7aa32";
+
   @Test
   void waitlistIsOk() throws Exception {
     String requestBody =
@@ -175,7 +180,23 @@ class AccountRequestControllerTest {
     UUID deviceUuid3 = UUID.randomUUID();
     UUID deviceUuid4 = UUID.randomUUID();
     UUID acctRequestApiUserUuid = UUID.randomUUID();
+    when(orgService.createOrganization(
+            any(),
+            any(),
+            startsWith(FAKE_ORG_EXTERNAL_ID_PREFIX),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any()))
+        .thenReturn(organization);
     when(orgService.getOrganization(any())).thenReturn(organization);
+    when(organization.getExternalId()).thenReturn(FAKE_ORG_EXTERNAL_ID);
     when(apiUserRepository.save(any())).thenReturn(apiUser);
     when(apiUserRepository.findByLoginEmail("account-request-noreply@simplereport.gov"))
         .thenReturn(Optional.of(acctRequestApiUser));
@@ -225,6 +246,8 @@ class AccountRequestControllerTest {
             .content(requestBody);
 
     this._mockMvc.perform(builder).andExpect(status().isOk());
+    //        .andExpect(
+    //            jsonPath("$.orgExternalId", org.hamcrest.Matchers.equalTo(FAKE_ORG_EXTERNAL_ID)));
 
     // mail 1: to us (contains formatted request data)
     verify(emailService, times(1))
@@ -287,7 +310,7 @@ class AccountRequestControllerTest {
     assertNull(nameCaptor.getValue().getMiddleName());
     assertThat(nameCaptor.getValue().getLastName()).isEqualTo("Lopez");
     assertNull(nameCaptor.getValue().getSuffix());
-    assertThat(externalIdCaptor.getValue()).startsWith("RI-Day-Hayes-Trading-");
+    assertThat(externalIdCaptor.getValue()).isEqualTo(FAKE_ORG_EXTERNAL_ID);
 
     verify(orgService, times(1))
         .createOrganization(

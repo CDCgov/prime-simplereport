@@ -8,6 +8,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class IdentityVerificationQuestionsRequest {
+
+  // our org
+  @JsonProperty @NotNull private String orgExternalId;
+
+  // properties to pass to experian
   @JsonProperty @NotNull private String firstName;
   @JsonProperty @NotNull private String lastName;
   @JsonProperty private String middleName;
