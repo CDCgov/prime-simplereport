@@ -4,6 +4,7 @@ import gov.cdc.usds.simplereport.config.AzureTelemetryInitializer;
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.TelemetryConfiguration;
 import com.microsoft.applicationinsights.extensibility.TelemetryInitializer;
+import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
 import com.microsoft.applicationinsights.telemetry.Telemetry;
 import gov.cdc.usds.simplereport.api.CurrentUIVersionContextHolder;
 import org.springframework.context.annotation.Bean;
@@ -22,8 +23,10 @@ public class AzureTelemetryConfiguration {
   @Bean
   @Scope("singleton")
   TelemetryClient getTelemetryClient() {
-    TelemetryClient client = new TelemetryClient();
-    TelemetryConfiguration.getActiveWithoutInitializingConfig().getTelemetryInitializers().add(new AzureTelemetryInitializer(_currentUIVersionContextHolder));
+    TelemetryConfiguration config = new TelemetryConfiguration();
+    config.getTelemetryInitializers().add(new AzureTelemetryInitializer(_currentUIVersionContextHolder));
+    config.setConnectionString(System.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"));
+    var client = new TelemetryClient(config);
     return client;
   }
 }
