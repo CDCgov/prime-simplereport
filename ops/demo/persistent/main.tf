@@ -53,7 +53,8 @@ module "db" {
   global_vault_id      = data.azurerm_key_vault.global.id
   db_vault_id          = data.azurerm_key_vault.db_keys.id
   db_encryption_key_id = data.azurerm_key_vault_key.db_encryption_key.id
-  public_access        = false
+  subnet_id            = module.vnet.subnet_vm_id
+  dns_zone_id          = module.vnet.private_dns_zone_id
   log_workspace_id     = module.monitoring.log_analytics_workspace_id
   nophi_user_password  = random_password.random_nophi_password.result
 
