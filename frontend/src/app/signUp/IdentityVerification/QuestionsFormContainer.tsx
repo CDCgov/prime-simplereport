@@ -19,10 +19,8 @@ const QuestionsFormContainer = ({ personalDetails }: Props) => {
   const [questionSet, setQuestionSet] = useState<Question[] | undefined>();
   const [email, setEmail] = useState<string>("");
 
-  const getQuestionSet = async (
-    personalDetails: IdentityVerificationRequest
-  ) => {
-    const response = await SignUpApi.getQuestions(personalDetails);
+  const getQuestionSet = async (request: IdentityVerificationRequest) => {
+    const response = await SignUpApi.getQuestions(request);
     if (!response.questionSet) {
       return;
     }
