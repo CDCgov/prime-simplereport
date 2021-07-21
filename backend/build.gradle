@@ -47,9 +47,9 @@ dependencies {
 
     // Okta dependencies
     implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
-    implementation 'com.okta.sdk:okta-sdk-api:3.0.1'
-    runtimeOnly 'com.okta.sdk:okta-sdk-impl:3.0.1'
-    runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.1'
+    implementation 'com.okta.sdk:okta-sdk-api:3.0.2'
+    runtimeOnly 'com.okta.sdk:okta-sdk-impl:3.0.2'
+    runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.2'
 
     // SpringSession dependencies
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
