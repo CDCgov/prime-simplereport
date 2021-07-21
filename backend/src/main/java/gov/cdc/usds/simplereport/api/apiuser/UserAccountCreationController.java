@@ -50,9 +50,6 @@ import org.springframework.web.bind.annotation.SessionAttribute;
  */
 @RestController
 @RequestMapping(USER_ACCOUNT_REQUEST)
-// All auditable requests need to include `HttpServletRequest request`, even if they don't use it
-// directly.
-@PostAuthorize("@restAuditLogManager.logAnonymousRestSuccess(#request, returnObject)")
 public class UserAccountCreationController {
   private static final Logger LOG = LoggerFactory.getLogger(UserAccountCreationController.class);
 
