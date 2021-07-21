@@ -2,19 +2,19 @@ package gov.cdc.usds.simplereport.service.model;
 
 public class SmsDeliveryResult {
   private String messageId;
-  private Exception exception;
+  private Boolean deliverySuccess;
 
-  public SmsDeliveryResult(String messageId, Exception exception) {
+  public SmsDeliveryResult(String messageId, Boolean deliverySuccess) {
     super();
     this.messageId = messageId;
-    this.exception = exception;
+    this.deliverySuccess = deliverySuccess;
   }
 
   public String getMessageId() {
     return messageId;
   }
 
-  public Exception getException() {
-    return exception;
+  public Boolean getDeliverySuccess() {
+    return deliverySuccess;
   }
 }

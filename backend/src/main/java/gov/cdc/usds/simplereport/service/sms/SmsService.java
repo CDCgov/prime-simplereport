@@ -51,11 +51,13 @@ public class SmsService {
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public Map<String, SmsDeliveryResult> sendToPatientLink(UUID patientLinkId, String text) {
     PatientLink pl = pls.getRefreshedPatientLink(patientLinkId);
+
     Map<String, SmsDeliveryResult> smsSendResults =
         sendToPerson(pl.getTestOrder().getPatient(), text);
+
     smsSendResults.forEach(
         (phoneNumber, smsDeliveryResult) -> {
-          if (smsDeliveryResult.getException() != null) {
+          if (smsDeliveryResult.getDeliverySuccess() == false) {
             return;
           }
 
@@ -77,14 +79,13 @@ public class SmsService {
                         new PhoneNumber(formatNumber(phoneNumber.getNumber())), fromNumber, text);
                 LOG.debug("SMS send initiated {}", msgId);
 
-                smsSendResults.put(phoneNumber.getNumber(), new SmsDeliveryResult(msgId, null));
+                smsSendResults.put(phoneNumber.getNumber(), new SmsDeliveryResult(msgId, true));
               } catch (NumberParseException npe) {
                 LOG.warn("Failed to parse phone number for patient={}", p.getInternalId());
-                smsSendResults.put(phoneNumber.getNumber(), new SmsDeliveryResult(null, npe));
+                smsSendResults.put(phoneNumber.getNumber(), new SmsDeliveryResult(null, false));
               } catch (ApiException apiException) {
                 LOG.warn("Failed to send text message to patient={}", p.getInternalId());
-                smsSendResults.put(
-                    phoneNumber.getNumber(), new SmsDeliveryResult(null, apiException));
+                smsSendResults.put(phoneNumber.getNumber(), new SmsDeliveryResult(null, false));
               }
             });
 

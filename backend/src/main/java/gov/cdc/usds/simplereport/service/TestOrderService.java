@@ -285,7 +285,8 @@ public class TestOrderService {
               "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
 
       Boolean hasDeliveryFailure =
-          smsSendResults.values().stream().anyMatch(delivery -> delivery.getException() != null);
+          smsSendResults.values().stream()
+              .anyMatch(delivery -> delivery.getDeliverySuccess() == false);
 
       if (hasDeliveryFailure) {
         return new AddTestResultResponse(savedOrder, false);
