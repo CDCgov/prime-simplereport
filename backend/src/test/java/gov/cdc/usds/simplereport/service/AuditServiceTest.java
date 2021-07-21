@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 class AuditServiceTest extends BaseServiceTest<AuditService> {
 
@@ -57,5 +59,12 @@ class AuditServiceTest extends BaseServiceTest<AuditService> {
             .map(Enum::name)
             .collect(Collectors.toList()),
         saved.getUserPermissions());
+  }
+
+  @Test
+  void anonymousRequestAuditSaved() {
+    MockHttpServletRequest request = new MockHttpServletRequest();
+    _service.logAnonymousRestEvent("abc", request, HttpStatus.OK.value());
+    assertEquals(1L, _service.countAuditEvents());
   }
 }
