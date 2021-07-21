@@ -5,8 +5,10 @@ import { answersToArray } from "./IdentityVerification/utils";
 const api = new FetchClient("/identity-verification");
 
 export class SignUpApi {
-  static getQuestions(): Promise<{ questionSet: Question[] }> {
-    return api.request("/get-questions", {});
+  static getQuestions(
+    personalDetails: IdentityVerificationRequest
+  ): Promise<{ questionSet: Question[] }> {
+    return api.request("/get-questions", personalDetails);
   }
   static submitAnswers(
     answers: Answers

@@ -2,14 +2,14 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
 import SignUpApp from "./SignUpApp";
-import QuestionsFormContainer from "./IdentityVerification/QuestionsFormContainer";
+import PersonalDetailsForm from "./IdentityVerification/PersonalDetailsForm";
 
-jest.mock("./IdentityVerification/QuestionsFormContainer");
+jest.mock("./IdentityVerification/PersonalDetailsForm");
 
 describe("SignUpApp", () => {
   beforeEach(() => {
-    (QuestionsFormContainer as any).mockImplementation(() => (
-      <div>questions form</div>
+    (PersonalDetailsForm as any).mockImplementation(() => (
+      <div>personal details form</div>
     ));
 
     render(
@@ -23,6 +23,6 @@ describe("SignUpApp", () => {
     );
   });
   it("renders", () => {
-    expect(screen.getByText("questions form")).toBeInTheDocument();
+    expect(screen.getByText("personal details form")).toBeInTheDocument();
   });
 });

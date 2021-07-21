@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
 
-import QuestionsForm from "./QuestionsForm";
 import { exampleQuestionSet } from "./constants";
+import QuestionsForm from "./QuestionsForm";
 
 describe("QuestionsForm", () => {
   let onSubmit: jest.Mock;
