@@ -150,16 +150,16 @@ function FacilityLinks({
   );
 
   return (
-    <section aria-label="Facility links" className="margin-top-5">
-      <p className="usa-label text-bold">Facility links</p>
+    <section aria-label="Testing facility links" className="margin-top-5">
+      <p className="usa-label text-bold">Testing facility links</p>
       <p className="sr-registration-link-description">
         Patients who register at these links will be visible only at the
-        specified facility
+        specified testing facility.
       </p>
       <table className="usa-table">
         <thead>
           <tr>
-            <th scope="col">Facility name</th>
+            <th scope="col">Testing facility name</th>
             <th scope="col">Patient self-registration link</th>
           </tr>
         </thead>
