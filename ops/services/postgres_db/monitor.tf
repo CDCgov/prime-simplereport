@@ -1,5 +1,3 @@
-# Ignore changes in TF plan, the state seems to not recognize it has already been saved.
-# https://github.com/terraform-providers/terraform-provider-azurerm/issues/7235
 resource "azurerm_monitor_diagnostic_setting" "postgres" {
   name                       = "simple-report-${var.env}-db-diag"
   target_resource_id         = azurerm_postgresql_server.db.id
