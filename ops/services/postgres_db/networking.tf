@@ -15,4 +15,8 @@ resource "azurerm_private_endpoint" "db" {
     name                 = "default"
     private_dns_zone_ids = [var.dns_zone_id]
   }
+
+  tags = {
+    environment : var.env
+  }
 }
