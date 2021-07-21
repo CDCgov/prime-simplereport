@@ -47,9 +47,9 @@ dependencies {
 
     // Okta dependencies
     implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
-    implementation 'com.okta.sdk:okta-sdk-api:3.0.1'
-    runtimeOnly 'com.okta.sdk:okta-sdk-impl:3.0.1'
-    runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.1'
+    implementation 'com.okta.sdk:okta-sdk-api:3.0.2'
+    runtimeOnly 'com.okta.sdk:okta-sdk-impl:3.0.2'
+    runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.2'
 
     // SpringSession dependencies
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
@@ -98,10 +98,10 @@ dependencies {
     testCompile "com.github.tomakehurst:wiremock-jre8:2.28.1"
 
     // Forcing these version resolutions over the BOM of spring-cloud-dependencies below
-    runtimeOnly "com.azure:azure-core-http-netty:1.9.0"
+    runtimeOnly "com.azure:azure-core-http-netty:1.9.2"
     runtimeOnly "com.azure:azure-core:1.14.1"
-    runtimeOnly "com.azure:azure-storage-common:12.11.0-beta.2"
-    runtimeOnly "com.azure:azure-storage-queue:12.9.0-beta.2"
+    runtimeOnly "com.azure:azure-storage-common:12.11.1"
+    runtimeOnly "com.azure:azure-storage-queue:12.9.1"
     runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
     runtimeOnly "io.zipkin.brave:brave:5.13.2"
     runtimeOnly "io.zipkin.reporter2:zipkin-reporter-brave:2.16.3"
