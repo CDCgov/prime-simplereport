@@ -267,11 +267,11 @@ public class TestOrderService {
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
       String deviceID, TestResult result, UUID patientId, Date dateTested) {
-      DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
-      Organization org = _os.getCurrentOrganization();
-      Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
-      TestOrder order =
-          _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
+    DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
+    Organization org = _os.getCurrentOrganization();
+    Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
+    TestOrder order =
+        _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
 
     try {
       if (!_advisoryLockManager.tryLock(
