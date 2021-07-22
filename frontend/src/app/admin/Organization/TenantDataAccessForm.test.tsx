@@ -40,7 +40,7 @@ describe("TenantDataAccessForm", () => {
     fireEvent.change(screen.getByLabelText("Justification", { exact: false }), {
       target: { value: "sample justification text" },
     });
-    const saveButton = await screen.getAllByText("Save changes")[0];
+    const saveButton = await screen.getAllByText("Access data")[0];
     expect(saveButton).toBeEnabled();
     await waitFor(async () => {
       fireEvent.click(saveButton);
@@ -59,6 +59,19 @@ describe("TenantDataAccessForm", () => {
         />
       </MemoryRouter>
     );
+    const organizationDropdown = screen.getByTestId("organization-dropdown");
+    fireEvent.change(organizationDropdown, {
+      target: { selectedValue: organizations[0].externalId },
+    });
+    fireEvent.change(organizationDropdown, {
+      target: { value: organizations[0].externalId },
+    });
+    await waitFor(async () => {
+      fireEvent.blur(organizationDropdown);
+    });
+    fireEvent.change(screen.getByLabelText("Justification", { exact: false }), {
+      target: { value: "sample justification text" },
+    });
     const cancelButton = await screen.getAllByText("Cancel access")[0];
     expect(cancelButton).toBeEnabled();
     await waitFor(async () => {
