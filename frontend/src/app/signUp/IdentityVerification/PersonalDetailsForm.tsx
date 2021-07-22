@@ -33,7 +33,9 @@ const PersonalDetailsForm = () => {
   const [
     personalDetails,
     setPersonalDetails,
-  ] = useState<IdentityVerificationRequest>(initPersonalDetails());
+  ] = useState<IdentityVerificationRequest>(
+    initPersonalDetails(orgExternalId || "")
+  );
   const [errors, setErrors] = useState<PersonalDetailsFormErrors>(
     initPersonalDetailsErrors()
   );

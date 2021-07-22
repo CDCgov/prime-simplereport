@@ -54,7 +54,9 @@ export const personalDetailsFields = [
   return fields;
 }, {} as { [key: string]: { label: string; required: boolean; preheader: string | null } });
 
-export const initPersonalDetails = (): IdentityVerificationRequest => ({
+export const initPersonalDetails = (
+  orgExternalId: string = ""
+): IdentityVerificationRequest => ({
   firstName: "",
   lastName: "",
   dateOfBirth: "",
@@ -64,6 +66,7 @@ export const initPersonalDetails = (): IdentityVerificationRequest => ({
   city: "",
   state: "",
   zip: "",
+  orgExternalId,
 });
 
 export const initPersonalDetailsErrors = (): Record<
@@ -81,6 +84,7 @@ export const initPersonalDetailsErrors = (): Record<
   city: "",
   state: "",
   zip: "",
+  orgExternalId: "",
 });
 
 export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = yup
@@ -97,4 +101,5 @@ export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = 
     city: yup.string().required("City is required"),
     state: yup.string().required("State is required"),
     zip: yup.string().required("ZIP code is required"),
+    orgExternalId: yup.string().required("Organization ID is required"),
   });

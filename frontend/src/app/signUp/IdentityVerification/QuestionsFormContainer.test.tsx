@@ -17,7 +17,7 @@ describe("QuestionsFormContainer", () => {
   beforeEach(() => {
     render(
       <QuestionsFormContainer
-        personalDetails={initPersonalDetails()}
+        personalDetails={initPersonalDetails("foo")}
         orgExternalId="foo"
       />
     );

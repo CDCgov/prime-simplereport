@@ -28,4 +28,5 @@ interface IdentityVerificationRequest {
   city: string;
   state: string;
   zip: string;
+  orgExternalId: string;
 }
