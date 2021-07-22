@@ -305,7 +305,7 @@ const QueueItem: any = ({
 
   if (mutationError) {
     // Don't do anything. These errors will propagate to AppInsights, and
-    // generate a user-facing toast error via ApolloClient's onError handler, 
+    // generate a user-facing toast error via ApolloClient's onError handler,
     // defined in index.tsx
   }
 
