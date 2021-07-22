@@ -62,7 +62,7 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
     // Create a new Azure Telemetry Event
     final RequestTelemetry requestTelemetry = new RequestTelemetry();
     requestTelemetry.setId(executionId);
-    
+
     // Try to get the operation name, if one exists
     final String name = parameters.getExecutionInput().getOperationName();
     if (name == null || "".equals(name)) {
