@@ -24,7 +24,7 @@ public interface OktaAuthentication {
    * @param factorId nullable, a user's Okta factor id.
    * @return a UserAccountStatus enum.
    */
-  public UserAccountStatus getUserStatus(String activationToken, String userId, String factorId);
+  UserAccountStatus getUserStatus(String activationToken, String userId, String factorId);
 
   /**
    * Converts an activation token into a user id. If successful, the user is moved into a
@@ -38,7 +38,7 @@ public interface OktaAuthentication {
    * @throws InvalidActivationLinkException if the activation token is invalid, expired, or has
    *     already been used.
    */
-  public String activateUser(String activationToken, String crossForwardedHeader, String userAgent)
+  String activateUser(String activationToken, String crossForwardedHeader, String userAgent)
       throws InvalidActivationLinkException;
 
   /**
@@ -50,7 +50,7 @@ public interface OktaAuthentication {
    *     id is invalid.)
    * @throws BadRequestException if the user-provided password does not meet Okta requirements.
    */
-  public void setPassword(String userId, char[] password)
+  void setPassword(String userId, char[] password)
       throws OktaAuthenticationFailureException, BadRequestException;
 
   /**
@@ -63,7 +63,7 @@ public interface OktaAuthentication {
    * @throws OktaAuthenticationFailureException if setting the recovery question fails (i.e.,
    *     because the user isn't in the correct state or cannot be found).
    */
-  public void setRecoveryQuestion(String userId, String question, String answer)
+  void setRecoveryQuestion(String userId, String question, String answer)
       throws OktaAuthenticationFailureException, BadRequestException;
 
   /**
@@ -76,7 +76,7 @@ public interface OktaAuthentication {
    * @throws BadRequestException if the phone number is invalid.
    * @throws OktaAuthenticationFailureException if Okta cannot enroll the user in SMS MFA.
    */
-  public String enrollSmsMfa(String userId, String phoneNumber)
+  String enrollSmsMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException, BadRequestException;
 
   /**
@@ -89,7 +89,7 @@ public interface OktaAuthentication {
    * @throws BadRequestException if the phone number is invalid.
    * @throws OktaAuthenticationFailureException if Okta cannot enroll the user in voice call MFA.
    */
-  public String enrollVoiceCallMfa(String userId, String phoneNumber)
+  String enrollVoiceCallMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException, BadRequestException;
 
   /**
@@ -101,7 +101,7 @@ public interface OktaAuthentication {
    * @throws OktaAuthenticationFailureException if the email is invalid or Okta cannot enroll it as
    *     an MFA option.
    */
-  public String enrollEmailMfa(String userId) throws OktaAuthenticationFailureException;
+  String enrollEmailMfa(String userId) throws OktaAuthenticationFailureException;
 
   /**
    * Enroll a user in an authentication app for MFA. If successful, this method returns the factor
@@ -114,7 +114,7 @@ public interface OktaAuthentication {
    * @throws OktaAuthenticationFailureException if the app type is not recognized, Okta fails to
    *     enroll the MFA option, or the result from Okta does not contain a QR code.
    */
-  public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
+  FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException;
 
   /**
@@ -126,7 +126,7 @@ public interface OktaAuthentication {
    * @throws OktaAuthenticationFailureException if the user id is not recognized or the factor
    *     cannot be enrolled.
    */
-  public JSONObject enrollSecurityKey(String userId) throws OktaAuthenticationFailureException;
+  JSONObject enrollSecurityKey(String userId) throws OktaAuthenticationFailureException;
 
   /**
    * Activates a security key using the provided frontend-generated credentials.
@@ -136,7 +136,7 @@ public interface OktaAuthentication {
    * @param attestation the base64-encoded attestation from the WebAuthn JavaScript call
    * @param clientData the base64-encoded client data from the WebAuthn JavaScript call
    */
-  public void activateSecurityKey(
+  void activateSecurityKey(
       String userId, String factorId, String attestation, String clientData)
       throws OktaAuthenticationFailureException;
 
@@ -152,7 +152,7 @@ public interface OktaAuthentication {
    * @throws OktaAuthenticationFailureException if the factor could not be activated (because the
    *     user or factor doesn't exist).
    */
-  public void verifyActivationPasscode(String userId, String factorId, String passcode)
+  void verifyActivationPasscode(String userId, String factorId, String passcode)
       throws OktaAuthenticationFailureException;
 
   /**
@@ -169,6 +169,6 @@ public interface OktaAuthentication {
    * @throws IllegalStateException if the resend request comes too soon (Okta enforces a minimum 30
    *     second pause between activation code requests.)
    */
-  public void resendActivationPasscode(String userId, String factorId)
+  void resendActivationPasscode(String userId, String factorId)
       throws OktaAuthenticationFailureException;
 }

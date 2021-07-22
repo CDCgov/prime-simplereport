@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface PatientLinkRepository extends EternalAuditedEntityRepository<PatientLink> {
 
-  public Optional<PatientLink> findByTestOrder(TestOrder to);
+  Optional<PatientLink> findByTestOrder(TestOrder to);
 }
