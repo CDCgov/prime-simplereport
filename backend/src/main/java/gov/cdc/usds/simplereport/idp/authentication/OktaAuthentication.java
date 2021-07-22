@@ -136,8 +136,7 @@ public interface OktaAuthentication {
    * @param attestation the base64-encoded attestation from the WebAuthn JavaScript call
    * @param clientData the base64-encoded client data from the WebAuthn JavaScript call
    */
-  void activateSecurityKey(
-      String userId, String factorId, String attestation, String clientData)
+  void activateSecurityKey(String userId, String factorId, String attestation, String clientData)
       throws OktaAuthenticationFailureException;
 
   /**

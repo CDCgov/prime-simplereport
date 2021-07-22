@@ -10,8 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 /** Interface specification for fetching and manipulating {@link ApiUser} entities */
 public interface ApiUserRepository extends EternalSystemManagedEntityRepository<ApiUser> {
 
-  String NAME_ORDER =
-      " order by last_name, first_name, middle_name, internal_id";
+  String NAME_ORDER = " order by last_name, first_name, middle_name, internal_id";
 
   // Defining this method explicitly means that findById() will not be able to find soft-deleted
   // users,

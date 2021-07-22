@@ -23,8 +23,7 @@ public interface FacilityRepository extends EternalAuditedEntityRepository<Facil
   @Query(
       EternalAuditedEntityRepository.BASE_QUERY
           + " and e.organization = :org and e.facilityName = :facilityName")
-  Optional<Facility> findByOrganizationAndFacilityName(
-      Organization org, String facilityName);
+  Optional<Facility> findByOrganizationAndFacilityName(Organization org, String facilityName);
 
   @Query(
       EternalAuditedEntityRepository.BASE_QUERY
