@@ -330,7 +330,7 @@ public class Translators {
           Map.entry("employer", "Employer"),
           Map.entry("government_agency", "Government Agency"),
           Map.entry("camp", "Camp"),
-          Map.entry("lab", "lab"),
+          Map.entry("lab", "Lab"),
           Map.entry("other", "Other"));
 
   private static final Set<String> ORGANIZATION_TYPE_KEYS = ORGANIZATION_TYPES.keySet();
