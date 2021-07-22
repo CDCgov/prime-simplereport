@@ -10,5 +10,6 @@ public interface ExperianService {
   /** Retrieves questions from Experian, given user data. */
   IdentityVerificationQuestionsResponse getQuestions(IdentityVerificationQuestionsRequest userData);
 
-  IdentityVerificationAnswersResponse submitAnswers(IdentityVerificationAnswersRequest answerRequest);
+  IdentityVerificationAnswersResponse submitAnswers(
+      IdentityVerificationAnswersRequest answerRequest);
 }
