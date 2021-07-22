@@ -6,6 +6,7 @@ import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import Success from "./Success";
 import NextSteps from "./NextSteps";
 import QuestionsForm from "./QuestionsForm";
+import { answersToArray } from "./utils";
 
 interface Props {
   personalDetails: IdentityVerificationRequest;
@@ -22,12 +23,16 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
   const [email, setEmail] = useState<string>("");
 
   const getQuestionSet = async (request: IdentityVerificationRequest) => {
-    const response = await SignUpApi.getQuestions(request);
-    if (!response.questionSet) {
-      return;
+    try {
+      const response = await SignUpApi.getQuestions(request);
+      if (!response.questionSet) {
+        return;
+      }
+      setQuestionSet(response.questionSet);
+      setSessionId(response.sessionId);
+    } catch (error) {
+      setIdentificationVerified(false);
     }
-    setQuestionSet(response.questionSet);
-    setSessionId(response.sessionId);
     setLoading(false);
   };
 
@@ -40,18 +45,23 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
     const request: IdentityVerificationAnswersRequest = {
       orgExternalId,
       sessionId,
-      answers: Object.keys(answers)
-        .sort()
-        .map((key) => parseInt(answers[key])),
+
+      answers: answersToArray(answers),
     };
-    const response = await SignUpApi.submitAnswers(request);
-    setIdentificationVerified(response.passed);
-    setEmail(response.email);
+    try {
+      const response = await SignUpApi.submitAnswers(request);
+      setIdentificationVerified(response.passed);
+      setEmail(response.email);
+    } catch (error) {
+      setIdentificationVerified(false);
+    }
+    setLoading(false);
   };
 
   if (loading) {
     return <LoadingCard message="Submitting ID verification details" />;
   }
+
   if (identificationVerified === undefined) {
     if (!questionSet) {
       return <p>Error: unable to load questions</p>;
@@ -64,6 +74,7 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
       />
     );
   }
+
   if (identificationVerified) {
     return <Success email={email} />;
   } else {

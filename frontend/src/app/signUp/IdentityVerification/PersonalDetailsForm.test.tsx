@@ -1,10 +1,19 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
 
 import PersonalDetailsForm from "./PersonalDetailsForm";
 
 describe("PersonalDetailsForm", () => {
   beforeEach(() => {
-    render(<PersonalDetailsForm />);
+    render(
+      <MemoryRouter
+        initialEntries={[
+          { pathname: "/identity-verification", search: "?orgExternalId=foo" },
+        ]}
+      >
+        <PersonalDetailsForm />
+      </MemoryRouter>
+    );
   });
   it("initializes with the submit button disabled", () => {
     expect(screen.getByText("Submit")).toHaveAttribute("disabled");

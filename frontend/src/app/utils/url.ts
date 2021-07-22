@@ -1,5 +1,16 @@
+import { useLocation } from "react-router";
+
 const getParameterFromUrl = (param: string): string | null => {
+  console.log(window.location.pathname, window.location.search);
   const queryParams = new URLSearchParams(window.location.search);
+  return queryParams.has(param) ? queryParams.get(param) : null;
+};
+
+// Alternative to getParameterFromUrl that uses react-router's useLocation
+// Easier to use with tests
+export const useSearchParam = (param: string): string | null => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
   return queryParams.has(param) ? queryParams.get(param) : null;
 };
 

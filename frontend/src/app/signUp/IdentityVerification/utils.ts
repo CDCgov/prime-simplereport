@@ -26,6 +26,13 @@ export const buildSchema = (questionSet: Question[]): yup.SchemaOf<Answers> =>
     }, {} as { [key: string]: any })
   );
 
+// Put the questions in the same order as received from the server
+// Then parse the answers in the same order
+export const answersToArray = (answers: Answers): number[] =>
+  Object.keys(answers)
+    .sort()
+    .map((key) => parseInt(answers[key]));
+
 export const personalDetailsFields = [
   ["firstName", "First name", true, "Legal name"],
   ["middleName", "Middle name", false, null],
