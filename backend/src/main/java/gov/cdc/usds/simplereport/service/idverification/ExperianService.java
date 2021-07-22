@@ -5,5 +5,5 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationRe
 public interface ExperianService {
 
   /** Retrieves questions from Experian, given user data. */
-  public String getQuestions(IdentityVerificationRequest userData);
+  String getQuestions(IdentityVerificationRequest userData);
 }

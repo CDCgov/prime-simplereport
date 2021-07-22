@@ -12,12 +12,12 @@ import org.springframework.data.jpa.repository.Query;
 /** Interface specification for fetching and manipulating {@link Person} entities */
 public interface PersonRepository extends EternalAuditedEntityRepository<Person> {
 
-  public List<Person> findAll(Specification<Person> searchSpec, Pageable p);
+  List<Person> findAll(Specification<Person> searchSpec, Pageable p);
 
-  public int count(Specification<Person> searchSpec);
+  int count(Specification<Person> searchSpec);
 
   @Query(
       BASE_ALLOW_DELETED_QUERY
           + " e.isDeleted = :isDeleted AND e.internalId = :id and e.organization = :org")
-  public Optional<Person> findByIdAndOrganization(UUID id, Organization org, boolean isDeleted);
+  Optional<Person> findByIdAndOrganization(UUID id, Organization org, boolean isDeleted);
 }
