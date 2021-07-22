@@ -80,11 +80,14 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
             <div className="usa-card__header">
               <div>
                 <h2 className="font-heading-lg">Organization Data Access</h2>
-                <p className="text-base">This page allows you to reproduce a specific user's issues by accessing their account. 
-                Access automatically expires after an hour, or you can leave the organization manually by selecting "Cancel access" below.</p>
+                <p className="text-base">
+                  This page allows you to reproduce a specific user's issues by
+                  accessing their account. Access automatically expires after an
+                  hour, or you can leave the organization manually by selecting
+                  "Cancel access" below.
+                </p>
                 <RequiredMessage />
               </div>
-              
             </div>
           </div>
           <OrganizationDropDown
