@@ -15,33 +15,33 @@ import java.util.Set;
  */
 public interface OktaRepository {
 
-  public Optional<OrganizationRoleClaims> createUser(
+  Optional<OrganizationRoleClaims> createUser(
       IdentityAttributes userIdentity,
       Organization org,
       Set<Facility> facilities,
       Set<OrganizationRole> roles,
       boolean active);
 
-  public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity);
+  Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity);
 
-  public void reprovisionUser(IdentityAttributes userIdentity);
+  void reprovisionUser(IdentityAttributes userIdentity);
 
-  public Optional<OrganizationRoleClaims> updateUserPrivileges(
+  Optional<OrganizationRoleClaims> updateUserPrivileges(
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles);
 
-  public void setUserIsActive(String username, Boolean active);
+  void setUserIsActive(String username, Boolean active);
 
-  public Set<String> getAllUsersForOrganization(Organization org);
+  Set<String> getAllUsersForOrganization(Organization org);
 
-  public void createOrganization(Organization org);
+  void createOrganization(Organization org);
 
-  public void activateOrganization(Organization org);
+  void activateOrganization(Organization org);
 
-  public void createFacility(Facility facility);
+  void createFacility(Facility facility);
 
-  public void deleteOrganization(Organization org);
+  void deleteOrganization(Organization org);
 
-  public void deleteFacility(Facility facility);
+  void deleteFacility(Facility facility);
 
-  public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username);
+  Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username);
 }

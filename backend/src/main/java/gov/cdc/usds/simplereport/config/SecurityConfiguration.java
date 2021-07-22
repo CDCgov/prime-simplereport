@@ -42,9 +42,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
   private static final Logger LOG = LoggerFactory.getLogger(SecurityConfiguration.class);
 
   public interface OktaAttributes {
-    public static String EMAIL = "email";
-    public static String FIRST_NAME = "given_name";
-    public static String LAST_NAME = "family_name";
+    String EMAIL = "email";
+    String FIRST_NAME = "given_name";
+    String LAST_NAME = "family_name";
   }
 
   @Override

@@ -15,15 +15,15 @@ public interface DataHubUploadRespository
    */
   int SCHEDULED_UPLOAD_LOCK = 66037627; // arbitrary 32-bit integer for our lock
 
-  public DataHubUpload save(DataHubUpload entity);
+  DataHubUpload save(DataHubUpload entity);
 
   // @Query("FROM #{#entityName} e WHERE e.job_status=?1 ORDER BY latest_recorded_timestamp DESC
   // LIMIT 1")
-  public DataHubUpload findDistinctTopByJobStatusOrderByLatestRecordedTimestampDesc(
+  DataHubUpload findDistinctTopByJobStatusOrderByLatestRecordedTimestampDesc(
       DataHubUploadStatus jobStatus);
 
   // used by unit tests
-  public List<DataHubUpload> findAll();
+  List<DataHubUpload> findAll();
 
   /**
    * Try to obtain the lock for the scheduled upload task. (It will be released automatically when
