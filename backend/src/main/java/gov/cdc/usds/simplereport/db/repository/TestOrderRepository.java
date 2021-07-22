@@ -11,6 +11,8 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.persistence.NamedNativeQuery;
+
 public interface TestOrderRepository extends AuditedEntityRepository<TestOrder> {
 
   public static final String BASE_QUERY =
@@ -44,4 +46,10 @@ public interface TestOrderRepository extends AuditedEntityRepository<TestOrder> 
 
   @Query(BASE_ORG_QUERY + " and q.testEvent = :testEvent")
   TestOrder findByTestEvent(Organization org, TestEvent testEvent);
+
+  @NamedNativeQuery("select pg_try_advisory_lock(hashtext('test-order-:id'))")
+  boolean tryTestOrderLock(UUID testEventId);
+
+  @NamedNativeQuery("select pg_try_advisory_lock(hashtext('test-order-:id'))")
+  boolean unlockTestOrder(UUID testEventId);
 }
