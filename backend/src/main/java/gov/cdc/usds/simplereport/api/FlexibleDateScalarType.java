@@ -18,7 +18,7 @@ class FlexibleDateCoercion implements Coercing<Object, Object> {
       DateTimeFormatter.ofPattern("M/d/yyyy");
   private static final DateTimeFormatter US_SLASHDATE_TWO_DIGIT_YEAR_FORMATTER =
       DateTimeFormatter.ofPattern("M/d/yy");
-  private static int CENTURY = 100;
+  private static final int CENTURY = 100;
 
   LocalDate convertImpl(Object input) {
     if (input instanceof String) {
