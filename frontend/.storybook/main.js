@@ -5,6 +5,7 @@ module.exports = {
     "@storybook/addon-links",
     "@storybook/addon-a11y",
     "@storybook/preset-create-react-app",
+
     {
       name: "@storybook/preset-scss",
       options: {

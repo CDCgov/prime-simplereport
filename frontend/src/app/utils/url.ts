@@ -1,7 +1,6 @@
 import { useLocation } from "react-router";
 
 const getParameterFromUrl = (param: string): string | null => {
-  console.log(window.location.pathname, window.location.search);
   const queryParams = new URLSearchParams(window.location.search);
   return queryParams.has(param) ? queryParams.get(param) : null;
 };
@@ -13,9 +12,6 @@ export const useSearchParam = (param: string): string | null => {
   const queryParams = new URLSearchParams(location.search);
   return queryParams.has(param) ? queryParams.get(param) : null;
 };
-
-export const getOrgIdFromUrl = (): string | null =>
-  getParameterFromUrl("orgExternalId");
 
 export const getFacilityIdFromUrl = (): string | null =>
   getParameterFromUrl("facility");
