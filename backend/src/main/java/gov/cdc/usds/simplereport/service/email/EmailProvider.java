@@ -4,5 +4,5 @@ import com.sendgrid.helpers.mail.Mail;
 import java.io.IOException;
 
 public interface EmailProvider {
-  public String send(Mail mail) throws IOException;
+  String send(Mail mail) throws IOException;
 }

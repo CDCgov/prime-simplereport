@@ -7,6 +7,5 @@ import java.util.UUID;
 import org.springframework.data.repository.CrudRepository;
 
 public interface TimeOfConsentRepository extends CrudRepository<TimeOfConsent, UUID> {
-
-  public List<TimeOfConsent> findAllByPatientLink(PatientLink pl);
+  List<TimeOfConsent> findAllByPatientLink(PatientLink pl);
 }

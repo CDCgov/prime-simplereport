@@ -11,12 +11,12 @@ public interface TemplateVariablesProvider {
    * @return resolvable name of template to be filled
    */
   @JsonIgnore
-  public String getTemplateName();
+  String getTemplateName();
 
   /**
    * Convert object fields to parameters used to fill a template.
    *
    * @return map of variables used to fill a template
    */
-  public Map<String, Object> toTemplateVariables();
+  Map<String, Object> toTemplateVariables();
 }

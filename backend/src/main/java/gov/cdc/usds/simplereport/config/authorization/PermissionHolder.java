@@ -38,7 +38,7 @@ public interface PermissionHolder {
    * effective. e.g. [NO_ACCESS, ALL_FACILITIES, ENTRY_ONLY, USER] => [ALL_FACILITIES, USER] e.g.
    * [NO_ACCESS, ENTRY_ONLY, USER, ADMIN] => [ADMIN]
    */
-  public static Set<OrganizationRole> getEffectiveRoles(Collection<OrganizationRole> roles) {
+  static Set<OrganizationRole> getEffectiveRoles(Collection<OrganizationRole> roles) {
     List<OrganizationRole> grantedRoles = new ArrayList<>(roles);
     grantedRoles.sort(new OrganizationRole.EffectiveRoleComparator());
     // set of all permissions granted by the user's granted roles
@@ -74,7 +74,7 @@ public interface PermissionHolder {
     return granted;
   }
 
-  public static boolean grantsAllFacilityAccess(Collection<OrganizationRole> roles) {
+  static boolean grantsAllFacilityAccess(Collection<OrganizationRole> roles) {
     return getPermissionsFromRoles(roles).contains(UserPermission.ACCESS_ALL_FACILITIES);
   }
 }

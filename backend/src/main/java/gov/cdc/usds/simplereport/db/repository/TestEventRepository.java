@@ -24,19 +24,19 @@ public interface TestEventRepository
   @Deprecated
   /** @deprecated (for sonar) */
   @Query("FROM #{#entityName} e WHERE e.patient = :p and e.facility in :facilities")
-  public List<TestEvent> findAllByPatientAndFacilities(Person p, Collection<Facility> facilities);
+  List<TestEvent> findAllByPatientAndFacilities(Person p, Collection<Facility> facilities);
 
   @Deprecated
   /** @deprecated (for sonar) */
-  public List<TestEvent> findAllByOrganizationOrderByCreatedAtDesc(Organization o);
+  List<TestEvent> findAllByOrganizationOrderByCreatedAtDesc(Organization o);
 
   @Deprecated
   /** @deprecated (for sonar) */
-  public List<TestEvent> findAllByOrganizationAndFacility(Organization o, Facility f);
+  List<TestEvent> findAllByOrganizationAndFacility(Organization o, Facility f);
 
   @Deprecated
   /** @deprecated (for sonar) */
-  public TestEvent findFirst1ByPatientOrderByCreatedAtDesc(Person p);
+  TestEvent findFirst1ByPatientOrderByCreatedAtDesc(Person p);
 
   @Deprecated
   /** @deprecated (for sonar) */
@@ -46,12 +46,12 @@ public interface TestEventRepository
               + " WHERE patient_id IN :patientIds"
               + " ORDER BY patient_id, coalesced_last_test_date DESC",
       nativeQuery = true)
-  public List<TestEvent> findLastTestsByPatient(Collection<UUID> patientIds);
+  List<TestEvent> findLastTestsByPatient(Collection<UUID> patientIds);
 
   @Deprecated
   /** @deprecated (for sonar) */
   @EntityGraph(attributePaths = {"patient", "order"})
-  public TestEvent findByOrganizationAndInternalId(Organization o, UUID id);
+  TestEvent findByOrganizationAndInternalId(Organization o, UUID id);
 
   @Deprecated
   /** @deprecated (for sonar) */
@@ -59,7 +59,7 @@ public interface TestEventRepository
   // This is across all Orgs/facilities because datahub uploader users
   @Query(
       "FROM #{#entityName} q WHERE q.createdAt > :before AND q.createdAt <= :after ORDER BY q.createdAt")
-  public List<TestEvent> queryMatchAllBetweenDates(Date before, Date after, Pageable p);
+  List<TestEvent> queryMatchAllBetweenDates(Date before, Date after, Pageable p);
 
   // @Query("FROM #{#entityName} q WHERE q.facility = :facility and q.createdAt >
   // :newerThanDate
@@ -68,7 +68,7 @@ public interface TestEventRepository
   // public List<TestEvent> getTestEventResults(Facility facility, Date
   // newerThanDate);
 
-  public Page<TestEvent> findAll(Specification<TestEvent> searchSpec, Pageable p);
+  Page<TestEvent> findAll(Specification<TestEvent> searchSpec, Pageable p);
 
-  public long count(Specification<TestEvent> searchSpec);
+  long count(Specification<TestEvent> searchSpec);
 }

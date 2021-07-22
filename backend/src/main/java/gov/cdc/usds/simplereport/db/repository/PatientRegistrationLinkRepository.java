@@ -8,13 +8,13 @@ import java.util.Optional;
 public interface PatientRegistrationLinkRepository
     extends EternalAuditedEntityRepository<PatientSelfRegistrationLink> {
 
-  public Optional<PatientSelfRegistrationLink> findByPatientRegistrationLinkIgnoreCase(
+  Optional<PatientSelfRegistrationLink> findByPatientRegistrationLinkIgnoreCase(
       String patientRegistrationLink);
 
-  public Optional<PatientSelfRegistrationLink> findByPatientRegistrationLinkIgnoreCaseAndIsDeleted(
+  Optional<PatientSelfRegistrationLink> findByPatientRegistrationLinkIgnoreCaseAndIsDeleted(
       String patientRegistrationLink, Boolean isDeleted);
 
-  public Optional<PatientSelfRegistrationLink> findByOrganization(Organization org);
+  Optional<PatientSelfRegistrationLink> findByOrganization(Organization org);
 
-  public Optional<PatientSelfRegistrationLink> findByFacility(Facility fac);
+  Optional<PatientSelfRegistrationLink> findByFacility(Facility fac);
 }
