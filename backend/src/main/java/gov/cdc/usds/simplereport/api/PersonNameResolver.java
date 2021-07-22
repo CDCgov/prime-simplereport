@@ -6,7 +6,6 @@ import graphql.kickstart.tools.GraphQLResolver;
 
 /** Resolver mix-in to handle aliasing "nameInfo" to "name" */
 public interface PersonNameResolver<T extends PersonEntity> extends GraphQLResolver<T> {
-
   default PersonName getName(T entity) {
     return entity.getNameInfo();
   }

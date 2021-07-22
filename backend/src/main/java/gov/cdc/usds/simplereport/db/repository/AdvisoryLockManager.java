@@ -31,7 +31,7 @@ public interface AdvisoryLockManager {
       // can't tell hibernate that Types.OTHER is a "void" result in this case:
       // just cast it to text
       value = "select cast(pg_advisory_xact_lock(:lockCategory, :lock) as text)")
-  public void waitForTransactionLock(int lockCategory, int lock);
+  void waitForTransactionLock(int lockCategory, int lock);
 
   /**
    * Attempt to take the advisory lock defined by the two arguments. If the lock is available,
@@ -45,7 +45,7 @@ public interface AdvisoryLockManager {
    * @return true if the lock was obtained, false otherwise
    */
   @Procedure("pg_try_advisory_xact_lock")
-  public boolean tryTransactionLock(int lockCategory, int lock);
+  boolean tryTransactionLock(int lockCategory, int lock);
 
   @Procedure("pg_try_advisory_lock")
   boolean tryLock(int lockCategory, int lock);
