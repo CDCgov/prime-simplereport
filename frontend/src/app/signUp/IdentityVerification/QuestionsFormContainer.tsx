@@ -9,10 +9,10 @@ import QuestionsForm from "./QuestionsForm";
 
 interface Props {
   personalDetails: IdentityVerificationRequest;
-  organizationId: string;
+  orgExternalId: string;
 }
 
-const QuestionsFormContainer = ({ personalDetails }: Props) => {
+const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
   const [loading, setLoading] = useState(true);
   const [identificationVerified, setIdentificationVerified] = useState<
     boolean | undefined
@@ -34,7 +34,8 @@ const QuestionsFormContainer = ({ personalDetails }: Props) => {
   }, [personalDetails]);
 
   const onSubmit = async (answers: Answers) => {
-    setLoading(false);
+    setLoading(true);
+    answers.orgExternalId = orgExternalId;
     const response = await SignUpApi.submitAnswers(answers);
     setIdentificationVerified(response.passed);
     setEmail(response.email);

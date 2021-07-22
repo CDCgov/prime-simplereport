@@ -29,7 +29,7 @@ type PersonalDetailsFormErrors = Record<
 
 const PersonalDetailsForm = () => {
   // Get organization ID from URL
-  const organizationId = getOrgIdFromUrl();
+  const orgExternalId = getOrgIdFromUrl();
   const [
     personalDetails,
     setPersonalDetails,
@@ -81,7 +81,7 @@ const PersonalDetailsForm = () => {
     setSaving(false);
   };
 
-  if (organizationId === null) {
+  if (orgExternalId === null) {
     return (
       <CardBackground>
         <Card logo bodyKicker={"Invalid request"} bodyKickerCentered={true}>
@@ -95,7 +95,7 @@ const PersonalDetailsForm = () => {
     return (
       <QuestionsFormContainer
         personalDetails={personalDetails}
-        organizationId={organizationId}
+        orgExternalId={orgExternalId}
       />
     );
   }

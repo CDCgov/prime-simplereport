@@ -8,6 +8,7 @@ interface Question {
 
 interface Answers {
   [outWalletAnswer: string]: string;
+  orgExternalId: string;
 }
 
 interface IdentityVerificationRequest {
