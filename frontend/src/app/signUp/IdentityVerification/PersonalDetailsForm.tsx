@@ -12,6 +12,7 @@ import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
 import Input from "../../commonComponents/Input";
 import { stateCodes } from "../../../config/constants";
 import Select from "../../commonComponents/Select";
+import { getOrgIdFromUrl } from "../../utils/url";
 
 import {
   initPersonalDetails,
@@ -27,6 +28,8 @@ type PersonalDetailsFormErrors = Record<
 >;
 
 const PersonalDetailsForm = () => {
+  // Get organization ID from URL
+  const organizationId = getOrgIdFromUrl();
   const [
     personalDetails,
     setPersonalDetails,
@@ -78,8 +81,23 @@ const PersonalDetailsForm = () => {
     setSaving(false);
   };
 
+  if (organizationId === null) {
+    return (
+      <CardBackground>
+        <Card logo bodyKicker={"Invalid request"} bodyKickerCentered={true}>
+          <p className="text-center">No organization ID found in the URL.</p>
+        </Card>
+      </CardBackground>
+    );
+  }
+
   if (submitted) {
-    return <QuestionsFormContainer personalDetails={personalDetails} />;
+    return (
+      <QuestionsFormContainer
+        personalDetails={personalDetails}
+        organizationId={organizationId}
+      />
+    );
   }
 
   const getFormElement = (
@@ -125,7 +143,7 @@ const PersonalDetailsForm = () => {
                   const newDate = moment(date)
                     .hour(now.hours())
                     .minute(now.minutes());
-                  onDetailChange("dateOfBirth")(newDate.format("MM/DD/YYYY"));
+                  onDetailChange("dateOfBirth")(newDate.format("YYYY-MM-DD"));
                 }
               }}
             />

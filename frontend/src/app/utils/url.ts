@@ -3,6 +3,9 @@ const getParameterFromUrl = (param: string): string | null => {
   return queryParams.has(param) ? queryParams.get(param) : null;
 };
 
+export const getOrgIdFromUrl = (): string | null =>
+  getParameterFromUrl("orgExternalId");
+
 export const getFacilityIdFromUrl = (): string | null =>
   getParameterFromUrl("facility");
 

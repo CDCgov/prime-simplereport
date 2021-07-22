@@ -47,7 +47,6 @@ export const personalDetailsFields = [
   ["city", "City", true, null],
   ["state", "State", true, null],
   ["zip", "ZIP code", true, null],
-  ["poBoxNumber", "PO Box number", false, null],
 ].reduce((fields, field) => {
   fields[field[0] as keyof IdentityVerificationRequest] = {
     label: field[1] as string,
@@ -84,7 +83,6 @@ export const initPersonalDetailsErrors = (): Record<
   city: "",
   state: "",
   zip: "",
-  poBoxNumber: "",
 });
 
 export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = yup
@@ -101,5 +99,4 @@ export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = 
     city: yup.string().required("City is required"),
     state: yup.string().required("State is required"),
     zip: yup.string().required("ZIP code is required"),
-    poBoxNumber: yup.string().nullable(),
   });

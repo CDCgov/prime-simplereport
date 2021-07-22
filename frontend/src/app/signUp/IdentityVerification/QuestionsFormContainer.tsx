@@ -9,6 +9,7 @@ import QuestionsForm from "./QuestionsForm";
 
 interface Props {
   personalDetails: IdentityVerificationRequest;
+  organizationId: string;
 }
 
 const QuestionsFormContainer = ({ personalDetails }: Props) => {
@@ -35,12 +36,12 @@ const QuestionsFormContainer = ({ personalDetails }: Props) => {
   const onSubmit = async (answers: Answers) => {
     setLoading(false);
     const response = await SignUpApi.submitAnswers(answers);
-    setIdentificationVerified(!response.passed);
+    setIdentificationVerified(response.passed);
     setEmail(response.email);
   };
 
   if (loading) {
-    return <LoadingCard />;
+    return <LoadingCard message="Submitting ID verification details" />;
   }
   if (identificationVerified === undefined) {
     if (!questionSet) {
