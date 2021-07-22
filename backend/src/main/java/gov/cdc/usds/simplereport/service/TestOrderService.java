@@ -239,22 +239,25 @@ public class TestOrderService {
   @Deprecated // switch to specifying device-specimen combo
   public TestOrder editQueueItem(
       UUID testOrderId, String deviceId, String result, Date dateTested) {
-    if(!_advisoryLockManager.tryLock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, testOrderId.hashCode())) {
-        throw new IllegalGraphqlArgumentException("Another user is interacting with this queue item");
+    try {
+      if (!_advisoryLockManager.tryLock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, testOrderId.hashCode())) {
+        throw TestOrderService.noSuchOrderFound();
+      }
+
+      TestOrder order = this.getTestOrder(testOrderId);
+
+      if (deviceId != null) {
+        order.setDeviceSpecimen(_dts.getDefaultForDeviceId(deviceId));
+      }
+
+      order.setResult(result == null ? null : TestResult.valueOf(result));
+
+      order.setDateTestedBackdate(dateTested);
+
+      return _repo.save(order);
+    } finally {
+      _advisoryLockManager.unlock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, testOrderId.hashCode());
     }
-
-    TestOrder order = this.getTestOrder(testOrderId);
-
-    if (deviceId != null) {
-      order.setDeviceSpecimen(_dts.getDefaultForDeviceId(deviceId));
-    }
-
-    order.setResult(result == null ? null : TestResult.valueOf(result));
-
-    order.setDateTestedBackdate(dateTested);
-
-    _advisoryLockManager.unlock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, testOrderId.hashCode());
-    return _repo.save(order);
   }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
@@ -262,53 +265,57 @@ public class TestOrderService {
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
       String deviceID, TestResult result, UUID patientId, Date dateTested) {
-    DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
-    Organization org = _os.getCurrentOrganization();
-    Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
-    TestOrder order =
-        _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
-
-    if(!_advisoryLockManager.tryLock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, order.getInternalId().hashCode())) {
-      throw new IllegalGraphqlArgumentException("Another user is interacting with this queue item");
-    }
-
-    order.setDeviceSpecimen(deviceSpecimen);
-    order.setResult(result);
-    order.setDateTestedBackdate(dateTested);
-    order.markComplete();
-
-    TestEvent testEvent = new TestEvent(order);
-    _terepo.save(testEvent);
-
-    order.setTestEventRef(testEvent);
-    TestOrder savedOrder = _repo.save(order);
-
-    _testEventReportingService.report(testEvent);
-
-    if (TestResultDeliveryPreference.SMS
-        == _ps.getPatientPreferences(person).getTestResultDelivery()) {
-      // After adding test result, create a new patient link and text it to the
-      // patient
-      PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-      UUID internalId = patientLink.getInternalId();
-      savedOrder.setPatientLink(patientLink);
       try {
-        _smss.sendToPatientLink(
-            internalId,
-            "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
+        DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
+        Organization org = _os.getCurrentOrganization();
+        Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
+        TestOrder order =
+                _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
 
-        return new AddTestResultResponse(savedOrder, true);
-      } catch (NumberParseException npe) {
-        LOG.warn("Failed to parse phone number for patient={}", person.getInternalId());
-        return new AddTestResultResponse(savedOrder, false);
-      } catch (TwilioException e) {
-        LOG.warn("Failed to send text message to patient={}", person.getInternalId());
-        return new AddTestResultResponse(savedOrder, false);
+        if (!_advisoryLockManager.tryLock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, order.getInternalId().hashCode())) {
+          throw TestOrderService.noSuchOrderFound();
+        }
+
+        order.setDeviceSpecimen(deviceSpecimen);
+        order.setResult(result);
+        order.setDateTestedBackdate(dateTested);
+        order.markComplete();
+
+        TestEvent testEvent = new TestEvent(order);
+        _terepo.save(testEvent);
+
+        order.setTestEventRef(testEvent);
+        TestOrder savedOrder = _repo.save(order);
+
+        _testEventReportingService.report(testEvent);
+
+        if (TestResultDeliveryPreference.SMS
+                == _ps.getPatientPreferences(person).getTestResultDelivery()) {
+          // After adding test result, create a new patient link and text it to the
+          // patient
+          PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
+          UUID internalId = patientLink.getInternalId();
+          savedOrder.setPatientLink(patientLink);
+          try {
+            _smss.sendToPatientLink(
+                    internalId,
+                    "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
+
+            return new AddTestResultResponse(savedOrder, true);
+          } catch (NumberParseException npe) {
+            LOG.warn("Failed to parse phone number for patient={}", person.getInternalId());
+            return new AddTestResultResponse(savedOrder, false);
+          } catch (TwilioException e) {
+            LOG.warn("Failed to send text message to patient={}", person.getInternalId());
+            return new AddTestResultResponse(savedOrder, false);
+          }
+        }
+
+        return new AddTestResultResponse(savedOrder);
       }
-    }
-
-    _advisoryLockManager.unlock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, order.getInternalId().hashCode());
-    return new AddTestResultResponse(savedOrder);
+      finally {
+        _advisoryLockManager.unlock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, order.getInternalId().hashCode());
+      }
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
@@ -511,5 +518,9 @@ public class TestOrderService {
 
   private static IllegalGraphqlArgumentException noSuchOrderFound() {
     return new IllegalGraphqlArgumentException("No active test order was found for that patient");
+  }
+
+  private static IllegalGraphqlArgumentException orderIsLocked() {
+    throw new IllegalGraphqlArgumentException("Another user is interacting with this queue item");
   }
 }
