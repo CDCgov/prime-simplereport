@@ -87,7 +87,9 @@ const PersonalDetailsForm = () => {
     return (
       <CardBackground>
         <Card logo bodyKicker={"Invalid request"} bodyKickerCentered={true}>
-          <p className="text-center">No organization ID found in the URL.</p>
+          <p className="text-center">
+            We weren't able to find your affiliated organization
+          </p>
         </Card>
       </CardBackground>
     );
