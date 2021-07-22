@@ -7,8 +7,13 @@ interface Question {
 }
 
 interface Answers {
-  [outWalletAnswer: string]: string;
+  [answerIndex: string]: string;
+}
+
+interface IdentityVerificationAnswersRequest {
+  answers: number[];
   orgExternalId: string;
+  sessionId: string;
 }
 
 interface IdentityVerificationRequest {

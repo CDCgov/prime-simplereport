@@ -18,6 +18,7 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
     boolean | undefined
   >();
   const [questionSet, setQuestionSet] = useState<Question[] | undefined>();
+  const [sessionId, setSessionId] = useState<string>("");
   const [email, setEmail] = useState<string>("");
 
   const getQuestionSet = async (request: IdentityVerificationRequest) => {
@@ -26,6 +27,7 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
       return;
     }
     setQuestionSet(response.questionSet);
+    setSessionId(response.sessionId);
     setLoading(false);
   };
 
@@ -35,8 +37,14 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
 
   const onSubmit = async (answers: Answers) => {
     setLoading(true);
-    answers.orgExternalId = orgExternalId;
-    const response = await SignUpApi.submitAnswers(answers);
+    const request: IdentityVerificationAnswersRequest = {
+      orgExternalId,
+      sessionId,
+      answers: Object.keys(answers)
+        .sort()
+        .map((key) => parseInt(answers[key])),
+    };
+    const response = await SignUpApi.submitAnswers(request);
     setIdentificationVerified(response.passed);
     setEmail(response.email);
   };

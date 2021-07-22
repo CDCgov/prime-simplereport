@@ -1,9 +1,6 @@
 import * as yup from "yup";
 
-const EXPERIAN_ANSWER_KEY = "outWalletAnswer";
-
-export const getAnswerKey = (index: number) =>
-  `${EXPERIAN_ANSWER_KEY}${index + 1}`;
+export const getAnswerKey = (index: number) => `${index + 1}`;
 
 export const toOptions = (
   choices: string[]
@@ -28,12 +25,6 @@ export const buildSchema = (questionSet: Question[]): yup.SchemaOf<Answers> =>
       return answers;
     }, {} as { [key: string]: any })
   );
-
-// Note: the order of the answers must be preserved
-export const answersToArray = (answers: Answers): string[] =>
-  Object.keys(answers).map((_, index) => {
-    return answers[getAnswerKey(index)];
-  });
 
 export const personalDetailsFields = [
   ["firstName", "First name", true, "Legal name"],
