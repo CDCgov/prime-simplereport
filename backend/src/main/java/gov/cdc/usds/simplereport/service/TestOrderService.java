@@ -240,7 +240,8 @@ public class TestOrderService {
   public TestOrder editQueueItem(
       UUID testOrderId, String deviceId, String result, Date dateTested) {
     try {
-      if (!_advisoryLockManager.tryLock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, testOrderId.hashCode())) {
+      if (!_advisoryLockManager.tryLock(
+          AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, testOrderId.hashCode())) {
         throw TestOrderService.noSuchOrderFound();
       }
 
@@ -256,7 +257,8 @@ public class TestOrderService {
 
       return _repo.save(order);
     } finally {
-      _advisoryLockManager.unlock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, testOrderId.hashCode());
+      _advisoryLockManager.unlock(
+          AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, testOrderId.hashCode());
     }
   }
 
@@ -265,57 +267,58 @@ public class TestOrderService {
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
       String deviceID, TestResult result, UUID patientId, Date dateTested) {
-      try {
-        DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
-        Organization org = _os.getCurrentOrganization();
-        Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
-        TestOrder order =
-                _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
+    try {
+      DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
+      Organization org = _os.getCurrentOrganization();
+      Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
+      TestOrder order =
+          _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
 
-        if (!_advisoryLockManager.tryLock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, order.getInternalId().hashCode())) {
-          throw TestOrderService.noSuchOrderFound();
-        }
-
-        order.setDeviceSpecimen(deviceSpecimen);
-        order.setResult(result);
-        order.setDateTestedBackdate(dateTested);
-        order.markComplete();
-
-        TestEvent testEvent = new TestEvent(order);
-        _terepo.save(testEvent);
-
-        order.setTestEventRef(testEvent);
-        TestOrder savedOrder = _repo.save(order);
-
-        _testEventReportingService.report(testEvent);
-
-        if (TestResultDeliveryPreference.SMS
-                == _ps.getPatientPreferences(person).getTestResultDelivery()) {
-          // After adding test result, create a new patient link and text it to the
-          // patient
-          PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-          UUID internalId = patientLink.getInternalId();
-          savedOrder.setPatientLink(patientLink);
-          try {
-            _smss.sendToPatientLink(
-                    internalId,
-                    "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
-
-            return new AddTestResultResponse(savedOrder, true);
-          } catch (NumberParseException npe) {
-            LOG.warn("Failed to parse phone number for patient={}", person.getInternalId());
-            return new AddTestResultResponse(savedOrder, false);
-          } catch (TwilioException e) {
-            LOG.warn("Failed to send text message to patient={}", person.getInternalId());
-            return new AddTestResultResponse(savedOrder, false);
-          }
-        }
-
-        return new AddTestResultResponse(savedOrder);
+      if (!_advisoryLockManager.tryLock(
+          AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, order.getInternalId().hashCode())) {
+        throw TestOrderService.noSuchOrderFound();
       }
-      finally {
-        _advisoryLockManager.unlock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, order.getInternalId().hashCode());
+
+      order.setDeviceSpecimen(deviceSpecimen);
+      order.setResult(result);
+      order.setDateTestedBackdate(dateTested);
+      order.markComplete();
+
+      TestEvent testEvent = new TestEvent(order);
+      _terepo.save(testEvent);
+
+      order.setTestEventRef(testEvent);
+      TestOrder savedOrder = _repo.save(order);
+
+      _testEventReportingService.report(testEvent);
+
+      if (TestResultDeliveryPreference.SMS
+          == _ps.getPatientPreferences(person).getTestResultDelivery()) {
+        // After adding test result, create a new patient link and text it to the
+        // patient
+        PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
+        UUID internalId = patientLink.getInternalId();
+        savedOrder.setPatientLink(patientLink);
+        try {
+          _smss.sendToPatientLink(
+              internalId,
+              "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
+
+          return new AddTestResultResponse(savedOrder, true);
+        } catch (NumberParseException npe) {
+          LOG.warn("Failed to parse phone number for patient={}", person.getInternalId());
+          return new AddTestResultResponse(savedOrder, false);
+        } catch (TwilioException e) {
+          LOG.warn("Failed to send text message to patient={}", person.getInternalId());
+          return new AddTestResultResponse(savedOrder, false);
+        }
       }
+
+      return new AddTestResultResponse(savedOrder);
+    } finally {
+      _advisoryLockManager.unlock(
+          AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, order.getInternalId().hashCode());
+    }
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility

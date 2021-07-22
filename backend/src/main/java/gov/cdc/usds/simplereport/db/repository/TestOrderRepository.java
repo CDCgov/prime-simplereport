@@ -11,8 +11,6 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 
-import javax.persistence.NamedNativeQuery;
-
 public interface TestOrderRepository extends AuditedEntityRepository<TestOrder> {
 
   String BASE_QUERY =
