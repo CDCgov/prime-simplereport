@@ -25,6 +25,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.db.repository.AdvisoryLockManager;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
@@ -65,6 +66,7 @@ public class TestOrderService {
   private final CurrentPatientContextHolder _patientContext;
   private static final Logger LOG = LoggerFactory.getLogger(TestOrderService.class);
   private final TestEventReportingService _testEventReportingService;
+  private AdvisoryLockManager _advisoryLockManager;
 
   @PersistenceContext EntityManager _entityManager;
 
@@ -86,7 +88,8 @@ public class TestOrderService {
       PatientLinkService pls,
       SmsService smss,
       CurrentPatientContextHolder patientContext,
-      TestEventReportingService testEventReportingService) {
+      TestEventReportingService testEventReportingService,
+      AdvisoryLockManager advisoryLockManager) {
     _patientContext = patientContext;
     _os = os;
     _ps = ps;
@@ -97,6 +100,7 @@ public class TestOrderService {
     _pls = pls;
     _smss = smss;
     _testEventReportingService = testEventReportingService;
+    _advisoryLockManager = advisoryLockManager;
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
@@ -235,6 +239,10 @@ public class TestOrderService {
   @Deprecated // switch to specifying device-specimen combo
   public TestOrder editQueueItem(
       UUID testOrderId, String deviceId, String result, Date dateTested) {
+    if(!_advisoryLockManager.tryLock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, testOrderId.hashCode())) {
+        throw new IllegalGraphqlArgumentException("Another user is interacting with this queue item");
+    }
+
     TestOrder order = this.getTestOrder(testOrderId);
 
     if (deviceId != null) {
@@ -245,6 +253,7 @@ public class TestOrderService {
 
     order.setDateTestedBackdate(dateTested);
 
+    _advisoryLockManager.unlock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, testOrderId.hashCode());
     return _repo.save(order);
   }
 
@@ -258,6 +267,11 @@ public class TestOrderService {
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order =
         _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
+
+    if(!_advisoryLockManager.tryLock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, order.getInternalId().hashCode())) {
+      throw new IllegalGraphqlArgumentException("Another user is interacting with this queue item");
+    }
+
     order.setDeviceSpecimen(deviceSpecimen);
     order.setResult(result);
     order.setDateTestedBackdate(dateTested);
@@ -293,6 +307,7 @@ public class TestOrderService {
       }
     }
 
+    _advisoryLockManager.unlock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, order.getInternalId().hashCode());
     return new AddTestResultResponse(savedOrder);
   }
 

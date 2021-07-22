@@ -46,10 +46,4 @@ public interface TestOrderRepository extends AuditedEntityRepository<TestOrder> 
 
   @Query(BASE_ORG_QUERY + " and q.testEvent = :testEvent")
   TestOrder findByTestEvent(Organization org, TestEvent testEvent);
-
-  @NamedNativeQuery("select pg_try_advisory_lock(hashtext('test-order-:id'))")
-  boolean tryTestOrderLock(UUID testEventId);
-
-  @NamedNativeQuery("select pg_try_advisory_lock(hashtext('test-order-:id'))")
-  boolean unlockTestOrder(UUID testEventId);
 }

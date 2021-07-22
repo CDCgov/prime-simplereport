@@ -32,6 +32,6 @@ public interface DataHubUploadRespository
    * @return true if the lock was obtained, false otherwise.
    */
   default boolean tryUploadLock() {
-    return tryLock(CORE_API_LOCK_SCOPE, SCHEDULED_UPLOAD_LOCK);
+    return tryTransactionLock(CORE_API_LOCK_SCOPE, SCHEDULED_UPLOAD_LOCK);
   }
 }
