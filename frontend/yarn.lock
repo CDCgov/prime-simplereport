@@ -3549,23 +3549,6 @@
     regenerator-runtime "^0.13.7"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-queryparams@^6.2.9":
-  version "6.2.9"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-queryparams/-/addon-queryparams-6.2.9.tgz#b4f69948948358bbffb30910438ea18c9121a222"
-  integrity sha512-CnmFXM0v0/G2c9irvWhdz6AAxfRKz2ZrGy2mEh2npE7X1xqaDG1MkvjhbsdrNmPYdzl2Dn/ZW55ggwVqQjRClA==
-  dependencies:
-    "@storybook/addons" "6.2.9"
-    "@storybook/api" "6.2.9"
-    "@storybook/client-logger" "6.2.9"
-    "@storybook/components" "6.2.9"
-    "@storybook/core-events" "6.2.9"
-    "@storybook/theming" "6.2.9"
-    core-js "^3.8.2"
-    global "^4.4.0"
-    qs "^6.10.0"
-    regenerator-runtime "^0.13.7"
-    ts-dedent "^2.0.0"
-
 "@storybook/addon-toolbars@6.2.9":
   version "6.2.9"
   resolved "https://registry.yarnpkg.com/@storybook/addon-toolbars/-/addon-toolbars-6.2.9.tgz#29f2f4cba0bfbcff9424958eb573e537f7e2d5af"
