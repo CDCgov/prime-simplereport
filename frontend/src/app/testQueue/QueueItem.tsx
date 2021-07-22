@@ -307,7 +307,6 @@ const QueueItem: any = ({
     // Don't do anything. These errors will propagate to AppInsights, and
     // generate a user-facing toast error via ApolloClient's onError handler, 
     // defined in index.tsx
-    console.error('QueueItem Mutation Error', JSON.stringify(mutationError));
   }
 
   const testResultsSubmitted = (response: any) => {
