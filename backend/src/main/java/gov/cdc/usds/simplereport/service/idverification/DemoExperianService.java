@@ -11,7 +11,7 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAn
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAnswersResponse;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsResponse;
-import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
+import gov.cdc.usds.simplereport.service.errors.ExperianPersonMatchException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +40,7 @@ public class DemoExperianService implements ExperianService {
     // next steps: this still needs proper implementation
     try {
       if (USER_EMAIL_NOT_FOUND.equals(userData.getEmail())) {
-        throw new BadRequestException("No questions returned due to consumer not found");
+        throw new ExperianPersonMatchException("No questions returned due to consumer not found");
       }
 
       createInitialRequestBody(

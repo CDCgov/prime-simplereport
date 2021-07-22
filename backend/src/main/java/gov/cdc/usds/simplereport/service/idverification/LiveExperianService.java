@@ -11,8 +11,8 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAn
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAnswersResponse;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsResponse;
-import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.properties.ExperianProperties;
+import gov.cdc.usds.simplereport.service.errors.ExperianPersonMatchException;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -99,7 +99,7 @@ public class LiveExperianService
                 .at(
                     "/clientResponsePayload/decisionElements/0/otherData/json/fraudSolutions/response/products/preciseIDServer/kbascore/general/kbaresultCodeDescription")
                 .asText();
-        throw new BadRequestException(kbaResultCodeDescription);
+        throw new ExperianPersonMatchException(kbaResultCodeDescription);
       }
 
       // return KIQ questions and session id

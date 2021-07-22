@@ -9,8 +9,8 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAn
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAnswersResponse;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsResponse;
-import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
+import gov.cdc.usds.simplereport.service.errors.ExperianPersonMatchException;
 import java.util.Arrays;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ class DemoExperianServiceTest extends BaseServiceTest<DemoExperianService> {
 
     Exception exception =
         assertThrows(
-            BadRequestException.class,
+            ExperianPersonMatchException.class,
             () -> {
               _service.getQuestions(request);
             });
