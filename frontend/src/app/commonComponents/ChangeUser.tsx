@@ -14,7 +14,6 @@ const ChangeUser = () => {
     </div>
   );
 
-  const url = ``;
   return (
     <>
       {getLink("jamar@example.com", "Jamar (Entry Only)")}
