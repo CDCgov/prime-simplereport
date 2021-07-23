@@ -8,7 +8,7 @@ import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.db.model.DataHubUpload;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.DataHubUploadStatus;
-import gov.cdc.usds.simplereport.db.repository.DataHubUploadRespository;
+import gov.cdc.usds.simplereport.db.repository.DataHubUploadRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import java.io.IOException;
 import java.net.URI;
@@ -43,7 +43,7 @@ public class DataHubUploaderService {
 
   private final DataHubConfig _config;
   private final TestEventRepository _testReportEventsRepo;
-  private final DataHubUploadRespository _dataHubUploadRepo;
+  private final DataHubUploadRepository _dataHubUploadRepo;
   private final UploadTrackingService _trackingService;
   private final SlackMessageService _slack;
   private final TestEventReportingService _testEventReportingService;
@@ -57,7 +57,7 @@ public class DataHubUploaderService {
   public DataHubUploaderService(
       DataHubConfig config,
       TestEventRepository testReportEventsRepo,
-      DataHubUploadRespository dataHubUploadRepo,
+      DataHubUploadRepository dataHubUploadRepo,
       UploadTrackingService trackingService,
       SlackMessageService slack,
       TestEventReportingService testEventReportingService) {

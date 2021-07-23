@@ -66,7 +66,6 @@ public class TestOrderService {
   private final CurrentPatientContextHolder _patientContext;
   private static final Logger LOG = LoggerFactory.getLogger(TestOrderService.class);
   private final TestEventReportingService _testEventReportingService;
-  private AdvisoryLockManager _advisoryLockManager;
 
   @PersistenceContext EntityManager _entityManager;
 
@@ -88,8 +87,7 @@ public class TestOrderService {
       PatientLinkService pls,
       SmsService smss,
       CurrentPatientContextHolder patientContext,
-      TestEventReportingService testEventReportingService,
-      AdvisoryLockManager advisoryLockManager) {
+      TestEventReportingService testEventReportingService) {
     _patientContext = patientContext;
     _os = os;
     _ps = ps;
@@ -100,7 +98,6 @@ public class TestOrderService {
     _pls = pls;
     _smss = smss;
     _testEventReportingService = testEventReportingService;
-    _advisoryLockManager = advisoryLockManager;
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
@@ -512,14 +509,14 @@ public class TestOrderService {
   }
 
   private void lockOrder(UUID orderId) throws IllegalGraphqlArgumentException {
-    if (!_advisoryLockManager.tryLock(
+    if (!_repo.tryLock(
         AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, orderId.hashCode())) {
       throw new IllegalGraphqlArgumentException("Another user is interacting with this queue item");
     }
   }
 
   private void unlockOrder(UUID orderId) {
-    _advisoryLockManager.unlock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, orderId.hashCode());
+    _repo.unlock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, orderId.hashCode());
   }
 
   private static IllegalGraphqlArgumentException noSuchOrderFound() {

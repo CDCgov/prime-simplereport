@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.data.repository.Repository;
 
-public interface DataHubUploadRespository
+public interface DataHubUploadRepository
     extends Repository<DataHubUpload, UUID>, AdvisoryLockManager {
 
   /**

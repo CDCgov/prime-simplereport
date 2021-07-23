@@ -25,6 +25,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.db.repository.DataHubUploadRepository;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
