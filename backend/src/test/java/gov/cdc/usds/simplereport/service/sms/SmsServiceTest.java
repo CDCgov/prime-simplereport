@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service.sms;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -17,17 +18,23 @@ import gov.cdc.usds.simplereport.db.repository.TextMessageSentRepository;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
+import gov.cdc.usds.simplereport.service.model.SmsDeliveryResult;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.access.AccessDeniedException;
@@ -67,6 +74,8 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
   @Captor ArgumentCaptor<PhoneNumber> toNumber;
 
   @Captor ArgumentCaptor<String> message;
+
+  private OngoingStubbing<String> thenAnswer;
 
   @Test
   @WithSimpleReportEntryOnlyAllFacilitiesUser
@@ -127,8 +136,13 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     var sut =
         _smsService.sendToPatientLink(
             _patientLink.getInternalId(), "yup here we are, testing stuff");
-    assertTrue(
-        sut.get("ABCD THIS ISN'T A PHONE NUMBER").getException() instanceof NumberParseException);
+
+    List<SmsDeliveryResult> failedDelivery =
+        sut.stream()
+            .filter(result -> result.getTelephone() == "ABCD THIS ISN'T A PHONE NUMBER")
+            .collect(Collectors.toList());
+
+    assertTrue(failedDelivery.get(0).getDeliverySuccess() == false);
   }
 
   @Test
@@ -148,5 +162,62 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
 
     // THEN
     assertTrue(previousExpiry.before(updatedPatientLink.getExpiresAt()));
+  }
+
+  @Test
+  @WithSimpleReportStandardAllFacilitiesUser
+  void sendPatientLinkSms_sendsToAllPatientPhoneNumbers() throws NumberParseException {
+    // GIVEN
+    _person = _dataFactory.createFullPerson(_org);
+    _dataFactory.addPhoneNumberToPerson(_person, "2708675309");
+    createTestOrderAndPatientLink(_person);
+
+    // WHEN
+    // How many times is smss.send called?
+    thenAnswer =
+        when(mockTwilio.send(any(), fromNumber.capture(), message.capture()))
+            .thenAnswer(
+                new Answer() {
+                  private int count = 0;
+
+                  public Object answer(InvocationOnMock invocation) {
+                    count++;
+
+                    return String.format("some-twilio-id-%d", count);
+                  }
+                });
+
+    var sut = _smsService.sendToPatientLink(_patientLink.getInternalId(), "it's a test!");
+
+    // THEN
+    assertEquals(2, sut.size());
+  }
+
+  @Test
+  @WithSimpleReportStandardAllFacilitiesUser
+  void sendPatientLinkSms_returnsSmsDeliveryResults() throws NumberParseException {
+    // GIVEN
+    _person = _dataFactory.createFullPerson(_org);
+    _dataFactory.addPhoneNumberToPerson(_person, "INVALID");
+    createTestOrderAndPatientLink(_person);
+
+    // WHEN
+    // How many times is smss.send called?
+    when(mockTwilio.send(any(), fromNumber.capture(), message.capture()))
+        .thenAnswer(
+            new Answer() {
+              private int count = 0;
+
+              public Object answer(InvocationOnMock invocation) {
+                count++;
+
+                return String.format("some-twilio-id-%d", count);
+              }
+            });
+
+    var sut = _smsService.sendToPatientLink(_patientLink.getInternalId(), "it's a test!");
+
+    // THEN
+    assertEquals(2, sut.size());
   }
 }

@@ -11,7 +11,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import com.google.i18n.phonenumbers.NumberParseException;
-import com.twilio.exception.ApiException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -37,6 +36,7 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -527,14 +527,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         false);
     DeviceType devA = _dataFactory.getGenericDevice();
 
-    doReturn(
-            new HashMap<String, SmsDeliveryResult>() {
-              {
-                put("message-id", new SmsDeliveryResult("id", new ApiException("message")));
-              }
-            })
-        .when(_smsService)
-        .sendToPatientLink(any(), any());
+    List<SmsDeliveryResult> deliveryResults = new ArrayList<SmsDeliveryResult>();
+    deliveryResults.add(new SmsDeliveryResult("message-id", "id", false));
+
+    doReturn(deliveryResults).when(_smsService).sendToPatientLink(any(), any());
 
     AddTestResultResponse res =
         _service.addTestResult(

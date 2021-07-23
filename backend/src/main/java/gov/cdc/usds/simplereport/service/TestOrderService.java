@@ -279,14 +279,13 @@ public class TestOrderService {
       UUID internalId = patientLink.getInternalId();
       savedOrder.setPatientLink(patientLink);
 
-      Map<String, SmsDeliveryResult> smsSendResults =
+      List<SmsDeliveryResult> smsSendResults =
           _smss.sendToPatientLink(
               internalId,
               "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
 
       Boolean hasDeliveryFailure =
-          smsSendResults.values().stream()
-              .anyMatch(delivery -> delivery.getDeliverySuccess() == false);
+          smsSendResults.stream().anyMatch(delivery -> delivery.getDeliverySuccess() == false);
 
       if (hasDeliveryFailure) {
         return new AddTestResultResponse(savedOrder, false);

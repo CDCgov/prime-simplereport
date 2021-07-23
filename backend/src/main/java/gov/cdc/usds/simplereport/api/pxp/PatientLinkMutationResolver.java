@@ -4,7 +4,7 @@ import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.model.SmsDeliveryResult;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +20,7 @@ public class PatientLinkMutationResolver implements GraphQLMutationResolver {
   @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")
   private String patientLinkUrl;
 
-  public Map<String, SmsDeliveryResult> sendPatientLinkSms(UUID internalId) {
+  public List<SmsDeliveryResult> sendPatientLinkSms(UUID internalId) {
     return smsService.sendToPatientLink(
         internalId,
         "Please fill out your Covid-19 pre-test questionnaire: " + patientLinkUrl + internalId);

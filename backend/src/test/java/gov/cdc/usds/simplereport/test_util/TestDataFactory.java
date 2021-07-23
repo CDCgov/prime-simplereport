@@ -202,6 +202,12 @@ public class TestDataFactory {
     return perple.get(0);
   }
 
+  public PhoneNumber addPhoneNumberToPerson(Person p, String telephone) {
+    var pn = new PhoneNumber(PhoneType.MOBILE, telephone);
+    pn.setPerson(p);
+    return _phoneNumberRepo.save(pn);
+  }
+
   public TestOrder createTestOrder(Person p, Facility f) {
     AskOnEntrySurvey survey =
         new AskOnEntrySurvey(null, Collections.emptyMap(), null, null, null, null, null, null);

@@ -13,8 +13,8 @@ import gov.cdc.usds.simplereport.db.model.TextMessageSent;
 import gov.cdc.usds.simplereport.db.repository.TextMessageSentRepository;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.model.SmsDeliveryResult;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -49,14 +49,13 @@ public class SmsService {
 
   @AuthorizationConfiguration.RequirePermissionStartTestWithPatientLink
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
-  public Map<String, SmsDeliveryResult> sendToPatientLink(UUID patientLinkId, String text) {
+  public List<SmsDeliveryResult> sendToPatientLink(UUID patientLinkId, String text) {
     PatientLink pl = pls.getRefreshedPatientLink(patientLinkId);
 
-    Map<String, SmsDeliveryResult> smsSendResults =
-        sendToPerson(pl.getTestOrder().getPatient(), text);
+    List<SmsDeliveryResult> smsSendResults = sendToPerson(pl.getTestOrder().getPatient(), text);
 
     smsSendResults.forEach(
-        (phoneNumber, smsDeliveryResult) -> {
+        (smsDeliveryResult) -> {
           if (smsDeliveryResult.getDeliverySuccess() == false) {
             return;
           }
@@ -67,8 +66,8 @@ public class SmsService {
     return smsSendResults;
   }
 
-  private Map<String, SmsDeliveryResult> sendToPerson(Person p, String text) {
-    Map<String, SmsDeliveryResult> smsSendResults = new HashMap<>();
+  private List<SmsDeliveryResult> sendToPerson(Person p, String text) {
+    List<SmsDeliveryResult> smsSendResults = new ArrayList<>();
 
     p.getPhoneNumbers().stream()
         .forEach(
@@ -79,13 +78,13 @@ public class SmsService {
                         new PhoneNumber(formatNumber(phoneNumber.getNumber())), fromNumber, text);
                 LOG.debug("SMS send initiated {}", msgId);
 
-                smsSendResults.put(phoneNumber.getNumber(), new SmsDeliveryResult(msgId, true));
+                smsSendResults.add(new SmsDeliveryResult(phoneNumber.getNumber(), msgId, true));
               } catch (NumberParseException npe) {
                 LOG.warn("Failed to parse phone number for patient={}", p.getInternalId());
-                smsSendResults.put(phoneNumber.getNumber(), new SmsDeliveryResult(null, false));
+                smsSendResults.add(new SmsDeliveryResult(phoneNumber.getNumber(), null, false));
               } catch (ApiException apiException) {
                 LOG.warn("Failed to send text message to patient={}", p.getInternalId());
-                smsSendResults.put(phoneNumber.getNumber(), new SmsDeliveryResult(null, false));
+                smsSendResults.add(new SmsDeliveryResult(phoneNumber.getNumber(), null, false));
               }
             });
 
