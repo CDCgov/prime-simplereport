@@ -1,8 +1,5 @@
 package gov.cdc.usds.simplereport.db.model.auxiliary;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class SmsStatusCallback {
   private final String to;
   private final String accountSid;
@@ -13,24 +10,23 @@ public class SmsStatusCallback {
   private final String messageSid;
   private final String smsStatus;
 
-  @JsonCreator
   public SmsStatusCallback(
-      @JsonProperty("To") String to,
-      @JsonProperty("AccountSid") String accountSid,
-      @JsonProperty("ApiVersion") String apiVersion,
-      @JsonProperty("MessageStatus") String messageStatus,
-      @JsonProperty("SmsSid") String smsSid,
-      @JsonProperty("From") String from,
-      @JsonProperty("MessageSid") String messageSid,
-      @JsonProperty("SmsStatus") String smsStatus) {
-    this.to = to;
-    this.accountSid = accountSid;
-    this.apiVersion = apiVersion;
-    this.smsSid = smsSid;
-    this.from = from;
-    this.messageStatus = messageStatus;
-    this.messageSid = messageSid;
-    this.smsStatus = smsStatus;
+      String To,
+      String AccountSid,
+      String ApiVersion,
+      String MessageStatus,
+      String SmsSid,
+      String From,
+      String MessageSid,
+      String SmsStatus) {
+    to = To;
+    accountSid = AccountSid;
+    apiVersion = ApiVersion;
+    smsSid = SmsSid;
+    from = From;
+    messageStatus = MessageStatus;
+    messageSid = MessageSid;
+    smsStatus = SmsStatus;
   }
 
   public String getTo() {
