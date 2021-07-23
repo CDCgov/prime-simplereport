@@ -242,7 +242,7 @@ public class TestOrderService {
     try {
       if (!_advisoryLockManager.tryLock(
           AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, testOrderId.hashCode())) {
-        throw TestOrderService.noSuchOrderFound();
+        throw TestOrderService.orderIsLocked();
       }
 
       TestOrder order = this.getTestOrder(testOrderId);
@@ -276,7 +276,7 @@ public class TestOrderService {
     try {
       if (!_advisoryLockManager.tryLock(
           AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, order.getInternalId().hashCode())) {
-        throw TestOrderService.noSuchOrderFound();
+        throw TestOrderService.orderIsLocked();
       }
 
       order.setDeviceSpecimen(deviceSpecimen);
