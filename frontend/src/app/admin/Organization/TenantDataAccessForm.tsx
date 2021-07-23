@@ -79,22 +79,14 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h2 className="font-heading-lg">Organization data</h2>
+                <h2 className="font-heading-lg">Organization Data Access</h2>
+                <p className="text-base">
+                  This page allows you to reproduce a specific user's issues by
+                  accessing their account. Access automatically expires after an
+                  hour, or you can leave the organization manually by selecting
+                  "Cancel access" below.
+                </p>
                 <RequiredMessage />
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Button
-                  type="button"
-                  onClick={submitTenantDataAccessRequest}
-                  label="Save changes"
-                  disabled={!formIsValid}
-                />
               </div>
             </div>
           </div>
@@ -122,6 +114,33 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
             <div className="usa-card__header">
               <div>
                 <h2 className="font-heading-lg">
+                  Request organization data access
+                </h2>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Button
+                  type="button"
+                  onClick={submitTenantDataAccessRequest}
+                  label="Access data"
+                  disabled={!formIsValid}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="grid-container">
+        <div className="grid-row">
+          <div className="prime-container card-container">
+            <div className="usa-card__header">
+              <div>
+                <h2 className="font-heading-lg">
                   Cancel organization data access
                 </h2>
               </div>
@@ -136,6 +155,7 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
                   type="button"
                   onClick={submitCancellationRequest}
                   label="Cancel access"
+                  disabled={!formIsValid}
                 />
               </div>
             </div>
