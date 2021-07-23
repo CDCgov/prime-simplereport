@@ -2,10 +2,9 @@ spring:
   profiles.include: okta-dev, server-debug
 simple-report:
   data-hub:
-    upload-enabled: false
-    upload-url: "https://prime-data-hub-test.azurefd.net/api/reports?option=SkipInvalidItems"
-    upload-schedule: "0 0/15 * * * *" # every 15min on the clock 1:00, 1:15, 1:30, etc
-    max-csv-rows: 25
+    upload-enabled: true
+    upload-url: "https://staging.prime.cdc.gov/api/reports?option=SkipInvalidItems" # same destination as test
+    upload-schedule: "0 30 5-21/2 * * *" # hourly on the :30 to differentiate from test, which sends on the :00
   patient-link-url: https://dev.simplereport.gov/app/pxp?plid=
   sendgrid:
     enabled: false

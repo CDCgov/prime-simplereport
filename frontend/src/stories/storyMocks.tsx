@@ -14,6 +14,8 @@ import {
   ApolloProvider,
 } from "@apollo/client";
 
+import { exampleQuestionSet } from "../app/signUp/IdentityVerification/constants";
+
 const mocks = {
   EditQueueItem: graphql.mutation("EditQueueItem", (req, res, ctx) => {
     return res(
@@ -70,6 +72,15 @@ const mocks = {
       return res(
         ctx.status(200),
         ctx.json({ qrcode: "https://i.redd.it/tvfnlka65zi51.jpg" })
+      );
+    }
+  ),
+  getQuestions: rest.post(
+    "http://localhost:8080/identity-verification/get-questions",
+    (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({ questionSet: exampleQuestionSet })
       );
     }
   ),
