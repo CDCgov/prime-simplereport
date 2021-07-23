@@ -55,8 +55,8 @@ public class SmsService {
     List<SmsDeliveryResult> smsSendResults = sendToPerson(pl.getTestOrder().getPatient(), text);
 
     smsSendResults.forEach(
-        (smsDeliveryResult) -> {
-          if (smsDeliveryResult.getDeliverySuccess() == false) {
+        smsDeliveryResult -> {
+          if (!smsDeliveryResult.getDeliverySuccess()) {
             return;
           }
 

@@ -133,6 +133,8 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     createTestOrderAndPatientLink(_person);
 
     // WHEN + THEN
+    when(mockTwilio.send(toNumber.capture(), fromNumber.capture(), message.capture()))
+        .thenReturn("some-twilio-id-20");
     var sut =
         _smsService.sendToPatientLink(
             _patientLink.getInternalId(), "yup here we are, testing stuff");
@@ -143,7 +145,7 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
             .collect(Collectors.toList());
 
     assertEquals(1, failedDelivery.size());
-    assertTrue(failedDelivery.get(0).getDeliverySuccess() == false);
+    assertEquals(false, failedDelivery.get(0).getDeliverySuccess());
   }
 
   @Test
@@ -167,6 +169,27 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
 
   @Test
   @WithSimpleReportStandardAllFacilitiesUser
+  void sendPatientLinkSms_returnsSmsDeliveryResults() throws NumberParseException {
+    // GIVEN
+    _person = _dataFactory.createFullPerson(_org);
+    createTestOrderAndPatientLink(_person);
+
+    // WHEN
+    when(mockTwilio.send(any(), fromNumber.capture(), message.capture()))
+        .thenReturn("some-twilio-id-10");
+
+    var sut = _smsService.sendToPatientLink(_patientLink.getInternalId(), "it's a test!");
+
+    // THEN
+    assertEquals(1, sut.size());
+    var result = sut.get(0);
+    assertEquals(_person.getPrimaryPhone().getNumber(), result.getTelephone());
+    assertEquals("some-twilio-id-10", result.getMessageId());
+    assertEquals(true, result.getDeliverySuccess());
+  }
+
+  @Test
+  @WithSimpleReportStandardAllFacilitiesUser
   void sendPatientLinkSms_sendsToAllPatientPhoneNumbers() throws NumberParseException {
     // GIVEN
     _person = _dataFactory.createFullPerson(_org);
@@ -174,7 +197,6 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     createTestOrderAndPatientLink(_person);
 
     // WHEN
-    // How many times is smss.send called?
     thenAnswer =
         when(mockTwilio.send(any(), fromNumber.capture(), message.capture()))
             .thenAnswer(
@@ -187,34 +209,6 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
                     return String.format("some-twilio-id-%d", count);
                   }
                 });
-
-    var sut = _smsService.sendToPatientLink(_patientLink.getInternalId(), "it's a test!");
-
-    // THEN
-    assertEquals(2, sut.size());
-  }
-
-  @Test
-  @WithSimpleReportStandardAllFacilitiesUser
-  void sendPatientLinkSms_returnsSmsDeliveryResults() throws NumberParseException {
-    // GIVEN
-    _person = _dataFactory.createFullPerson(_org);
-    _dataFactory.addPhoneNumberToPerson(_person, "INVALID");
-    createTestOrderAndPatientLink(_person);
-
-    // WHEN
-    // How many times is smss.send called?
-    when(mockTwilio.send(any(), fromNumber.capture(), message.capture()))
-        .thenAnswer(
-            new Answer() {
-              private int count = 0;
-
-              public Object answer(InvocationOnMock invocation) {
-                count++;
-
-                return String.format("some-twilio-id-%d", count);
-              }
-            });
 
     var sut = _smsService.sendToPatientLink(_patientLink.getInternalId(), "it's a test!");
 

@@ -39,8 +39,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -63,7 +61,6 @@ public class TestOrderService {
   private PatientLinkService _pls;
   private SmsService _smss;
   private final CurrentPatientContextHolder _patientContext;
-  private static final Logger LOG = LoggerFactory.getLogger(TestOrderService.class);
   private final TestEventReportingService _testEventReportingService;
 
   @PersistenceContext EntityManager _entityManager;
@@ -285,9 +282,9 @@ public class TestOrderService {
               "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
 
       Boolean hasDeliveryFailure =
-          smsSendResults.stream().anyMatch(delivery -> delivery.getDeliverySuccess() == false);
+          smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
 
-      if (hasDeliveryFailure) {
+      if (hasDeliveryFailure == true) {
         return new AddTestResultResponse(savedOrder, false);
       }
 
