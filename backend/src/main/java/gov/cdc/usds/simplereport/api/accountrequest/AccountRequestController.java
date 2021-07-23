@@ -222,7 +222,9 @@ public class AccountRequestController {
       throw new AccountRequestFailureException(e);
     } catch (RuntimeException e) {
       if (e instanceof ResourceException) {
-        // The `ResourceException` is thrown when an account is requested with an existing organization name. This happens quite frequently and is expected behavior of the current form
+        // The `ResourceException` is thrown when an account is requested with an existing
+        // organization name. This happens quite frequently and is expected behavior of the current
+        // form
         throw e;
       } else {
         throw new AccountRequestFailureException(e);
