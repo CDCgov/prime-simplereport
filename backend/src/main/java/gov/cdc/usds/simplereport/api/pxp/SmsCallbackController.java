@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("@smsValidationService.validateSmsCallback(#request, #body)")
 @Validated
 public class SmsCallbackController {
-  private static final Logger LOG =
-      LoggerFactory.getLogger(PatientSelfRegistrationController.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SmsCallbackController.class);
 
   @PostMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
   public void register(SmsStatusCallback body, HttpServletRequest request) {

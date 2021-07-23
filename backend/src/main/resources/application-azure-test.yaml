@@ -19,15 +19,15 @@ simple-report:
 twilio:
   enabled: true
 logging.level:
-  root: WARN
+  root: OFF
   gov.cdc:
-    usds: WARN
+    usds: OFF
     usds.simplereport:
-      SimpleReportApplication: INFO
-      api: INFO
-      api.pxp: TRACE
-      db: DEBUG
-      service: DEBUG
+      SimpleReportApplication: OFF
+      api: OFF
+      api.pxp: INFO
+      db: OFF
+      service: OFF
   logging:
     QueryLoggingInstrumentation: OFF
     GraphQLLoggingHelpers: OFF
