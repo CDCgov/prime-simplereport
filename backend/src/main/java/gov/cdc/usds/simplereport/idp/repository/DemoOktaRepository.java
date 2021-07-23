@@ -140,6 +140,15 @@ public class DemoOktaRepository implements OktaRepository {
     return Optional.of(newRoleClaims);
   }
 
+  public void resetUserPassword(String username) {
+    System.out.println("BOOYAH in demo reset password");
+    LOG.info("BOOYAH in demo resetting user password");
+    if (!usernameOrgRolesMap.containsKey(username)) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot reset password for Okta user with unrecognized username");
+    }
+  }
+
   public void setUserIsActive(String username, Boolean active) {
     if (active) {
       inactiveUsernames.remove(username);

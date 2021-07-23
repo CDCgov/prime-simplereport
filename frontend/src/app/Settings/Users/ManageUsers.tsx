@@ -29,6 +29,7 @@ interface Props {
   allFacilities: UserFacilitySetting[];
   updateUserPrivileges: (variables: any) => Promise<any>;
   addUserToOrg: (variables: any) => Promise<any>;
+  resetUserPassword: (variables: any) => Promise<any>;
   deleteUser: (variables: any) => Promise<any>;
   reactivateUser: (variables: any) => Promise<any>;
   getUsers: () => Promise<any>;
@@ -76,6 +77,7 @@ const ManageUsers: React.FC<Props> = ({
   allFacilities,
   updateUserPrivileges,
   addUserToOrg,
+  resetUserPassword,
   deleteUser,
   reactivateUser,
   getUsers,
@@ -98,6 +100,7 @@ const ManageUsers: React.FC<Props> = ({
   );
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
   const [showAddUserModal, updateShowAddUserModal] = useState(false);
+  const [showResetPasswordModal, updateShowResetPasswordModal] = useState(false);
   const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
   const [showReactivateUserModal, updateShowReactivateUserModal] = useState(
     false
@@ -240,6 +243,28 @@ const ManageUsers: React.FC<Props> = ({
     }
   };
 
+  const handleResetUserPassword = async (userId: string) => {
+    try {
+      await resetUserPassword({
+        variables: {
+          id: userId,
+        },
+      });
+      const fullName = displayFullNameInOrder(
+        userWithPermissions?.firstName,
+        userWithPermissions?.middleName,
+        userWithPermissions?.lastName
+      );
+      updateShowResetPasswordModal(false);
+      showNotification(
+        toast,
+        <Alert type="success" title={`Password reset for ${fullName}`} />
+      );
+    } catch (e) {
+      setError(e);
+    }
+  };
+
   const handleDeleteUser = async (userId: string) => {
     try {
       await deleteUser({
@@ -375,6 +400,8 @@ const ManageUsers: React.FC<Props> = ({
               updateUser={updateUser}
               showReactivateUserModal={showReactivateUserModal}
               updateShowReactivateUserModal={updateShowReactivateUserModal}
+              showResetUserPasswordModal={showResetPasswordModal}
+              updateShowResetPasswordModal={updateShowResetPasswordModal}
               showDeleteUserModal={showDeleteUserModal}
               updateShowDeleteUserModal={updateShowDeleteUserModal}
               showInProgressModal={showInProgressModal}
@@ -382,6 +409,7 @@ const ManageUsers: React.FC<Props> = ({
               isUserEdited={isUserEdited}
               onContinueChangeActiveUser={onContinueChangeActiveUser}
               handleReactivateUser={handleReactivateUser}
+              handleResetUserPassword={handleResetUserPassword}
             />
           </div>
         </div>

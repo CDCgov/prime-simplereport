@@ -12,6 +12,7 @@ import DeleteUserModal from "./DeleteUserModal";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
 import ReactivateUserModal from "./ReactivateUserModal";
+import ResetUserPasswordModal from "./ResetUserPasswordModal";
 import "./ManageUsers.scss";
 
 interface Props {
@@ -24,6 +25,8 @@ interface Props {
   updateUser: UpdateUser;
   showReactivateUserModal: boolean;
   updateShowReactivateUserModal: (showReactivateUserModal: boolean) => void;
+  showResetUserPasswordModal: boolean;
+  updateShowResetPasswordModal: (showResetPasswordModal: boolean) => void;
   showDeleteUserModal: boolean;
   updateShowDeleteUserModal: (showDeleteUserModal: boolean) => void;
   showInProgressModal: boolean;
@@ -31,6 +34,7 @@ interface Props {
   isUserEdited: boolean;
   onContinueChangeActiveUser: () => void;
   handleReactivateUser: (userId: string) => void;
+  handleResetUserPassword: (userId: string) => void;
 }
 const roles: Role[] = ["ADMIN", "ENTRY_ONLY", "USER"];
 
@@ -44,6 +48,8 @@ const UserDetail: React.FC<Props> = ({
   handleDeleteUser,
   showReactivateUserModal,
   updateShowReactivateUserModal,
+  showResetUserPasswordModal,
+  updateShowResetPasswordModal,
   showDeleteUserModal,
   updateShowDeleteUserModal,
   showInProgressModal,
@@ -51,6 +57,7 @@ const UserDetail: React.FC<Props> = ({
   isUserEdited,
   onContinueChangeActiveUser,
   handleReactivateUser,
+  handleResetUserPassword,
 }) => {
   return (
     <div className="tablet:grid-col padding-left-2">
@@ -153,6 +160,13 @@ const UserDetail: React.FC<Props> = ({
           onReactivateUser={handleReactivateUser}
         />
       ) : null}
+        {showResetUserPasswordModal ? (
+            <ResetUserPasswordModal
+                user={user}
+                onClose={() => updateShowResetPasswordModal(false)}
+                onResetPassword={handleResetUserPassword}
+            />
+        ) : null}
     </div>
   );
 };

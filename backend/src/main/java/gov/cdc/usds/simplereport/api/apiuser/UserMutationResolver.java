@@ -13,9 +13,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class UserMutationResolver implements GraphQLMutationResolver {
+
+  private static final Logger LOG = LoggerFactory.getLogger(UserMutationResolver.class);
 
   private final ApiUserService _us;
 
@@ -71,6 +75,13 @@ public class UserMutationResolver implements GraphQLMutationResolver {
     Set<UUID> facilitySet =
         facilities == null ? Set.of() : new HashSet<>(Arrays.asList(facilities));
     UserInfo user = _us.updateUserPrivileges(id, accessAllFacilities, facilitySet, role);
+    return new User(user);
+  }
+
+  public User resetUserPassword(UUID id) {
+    System.out.println("made it to the mutation resolver!");
+    LOG.info("BOOYAH resetting user's password in UserMutationResolver");
+    UserInfo user = _us.resetUserPassword(id);
     return new User(user);
   }
 

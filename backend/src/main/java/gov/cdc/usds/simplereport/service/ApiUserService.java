@@ -196,6 +196,23 @@ public class ApiUserService {
     return user;
   }
 
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
+  public UserInfo resetUserPassword(UUID userId) {
+    System.out.println("wow, made it to the ApiUserService!");
+    LOG.info("BOOYAH in resetPassword ApiUserService");
+    ApiUser apiUser = getApiUser(userId);
+    String username = apiUser.getLoginEmail();
+    _oktaRepo.resetUserPassword(username);
+    OrganizationRoleClaims orgClaims =
+        _oktaRepo
+            .getOrganizationRoleClaimsForUser(username)
+            .orElseThrow(MisconfiguredUserException::new);
+    Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
+    OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
+    UserInfo user = new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
+    return user;
+  }
+
   @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
   public UserInfo setIsDeleted(UUID userId, boolean deleted) {
     ApiUser apiUser = getApiUser(userId, !deleted);
