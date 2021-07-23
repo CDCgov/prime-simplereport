@@ -141,6 +141,7 @@ const PersonalDetailsForm = () => {
             <span className="usa-hint">mm/dd/yyyy</span>
             <DatePicker
               id={field}
+              data-testid={field}
               name={field}
               onChange={(date) => {
                 if (date) {
