@@ -20,6 +20,7 @@ public class SmsCallbackController {
 
   @PostMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
   public void register(SmsStatusCallback body, HttpServletRequest request) {
-    LOG.info("messageSid={} status={}", body.getMessageSid(), body.getMessageStatus());
+    LOG.info(
+        "Twilio callback messageSid={} status={}", body.getMessageSid(), body.getMessageStatus());
   }
 }
