@@ -22,7 +22,7 @@ public class TwilioWrapper implements SmsProviderWrapper {
   private static final Logger LOG = LoggerFactory.getLogger(TwilioWrapper.class);
 
   @Value("${simple-report.twilio-callback-url:https://simplereport.gov/api/pxp/callback}")
-  private static String twilioCallbackUrl;
+  private String twilioCallbackUrl;
 
   @PostConstruct
   void init() {
