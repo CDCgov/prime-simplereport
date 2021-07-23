@@ -17,3 +17,6 @@ simple-report:
     enabled: true
 twilio:
   enabled: true
+logging.level:
+  "microsoft.applicationinsights"
+    applicationinsights: INFO
