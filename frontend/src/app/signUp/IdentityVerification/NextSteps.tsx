@@ -11,8 +11,7 @@ const NextSteps = () => {
         <p className="margin-bottom-2">
           Experian was unable to verify your identity. You’ll need to schedule a
           quick identity verification call with our customer support team
-          instead. Your SimpleReport account will be accessible after your
-          identity is verified.
+          instead.
         </p>
         <p className="margin-bottom-0">
           Your SimpleReport account will be accessible after your identity is
