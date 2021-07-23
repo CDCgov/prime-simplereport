@@ -240,10 +240,7 @@ public class TestOrderService {
   public TestOrder editQueueItem(
       UUID testOrderId, String deviceId, String result, Date dateTested) {
     try {
-      if (!_advisoryLockManager.tryLock(
-          AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, testOrderId.hashCode())) {
-        throw TestOrderService.orderIsLocked();
-      }
+      lockOrder(testOrderId);
 
       TestOrder order = this.getTestOrder(testOrderId);
 
@@ -257,8 +254,7 @@ public class TestOrderService {
 
       return _repo.save(order);
     } finally {
-      _advisoryLockManager.unlock(
-          AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, testOrderId.hashCode());
+      unlockOrder(testOrderId);
     }
   }
 
@@ -274,10 +270,7 @@ public class TestOrderService {
         _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
 
     try {
-      if (!_advisoryLockManager.tryLock(
-          AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, order.getInternalId().hashCode())) {
-        throw TestOrderService.orderIsLocked();
-      }
+      lockOrder(order.getInternalId());
 
       order.setDeviceSpecimen(deviceSpecimen);
       order.setResult(result);
@@ -316,8 +309,7 @@ public class TestOrderService {
 
       return new AddTestResultResponse(savedOrder);
     } finally {
-      _advisoryLockManager.unlock(
-          AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, order.getInternalId().hashCode());
+      unlockOrder(order.getInternalId());
     }
   }
 
@@ -519,11 +511,18 @@ public class TestOrderService {
         noSymptoms);
   }
 
-  private static IllegalGraphqlArgumentException noSuchOrderFound() {
-    return new IllegalGraphqlArgumentException("No active test order was found for that patient");
+  private void lockOrder(UUID orderId) throws IllegalGraphqlArgumentException {
+    if (!_advisoryLockManager.tryLock(
+        AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, orderId.hashCode())) {
+      throw new IllegalGraphqlArgumentException("Another user is interacting with this queue item");
+    }
   }
 
-  private static IllegalGraphqlArgumentException orderIsLocked() {
-    throw new IllegalGraphqlArgumentException("Another user is interacting with this queue item");
+  private void unlockOrder(UUID orderId) {
+    _advisoryLockManager.unlock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, orderId.hashCode());
+  }
+
+  private static IllegalGraphqlArgumentException noSuchOrderFound() {
+    return new IllegalGraphqlArgumentException("No active test order was found for that patient");
   }
 }
