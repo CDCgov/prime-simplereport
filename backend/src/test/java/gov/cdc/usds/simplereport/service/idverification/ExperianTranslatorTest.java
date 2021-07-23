@@ -86,6 +86,31 @@ class ExperianTranslatorTest {
         FIRST_NAME, requestBody.at("/payload/contacts/0/person/names/0/firstName").asText());
   }
 
+  @Test
+  void createSubmitAnswersRequestBody_worksWithValidInput() throws JsonProcessingException {
+    IdentityVerificationAnswersRequest answersRequest = createValidAnswersRequest();
+    ObjectNode requestBody = finalRequestHelper(answersRequest);
+
+    assertTrue(requestBody.has("payload"));
+    assertTrue(requestBody.has("header"));
+
+    JsonNode payloadBody = requestBody.get("payload");
+    assertTrue(payloadBody.has("control"));
+    assertTrue(payloadBody.has("kba"));
+
+    JsonNode kbaNode = payloadBody.get("kba");
+    assertEquals(SESSION_UUID, kbaNode.get("sessionId").asText());
+    assertEquals("4", kbaNode.get("outWalletQuestionsRequest").asText());
+
+    JsonNode answersNode = kbaNode.get("answers");
+    assertEquals(4, answersNode.size());
+    for (int i = 0; i < 4; i++) {
+      assertEquals(
+          String.valueOf(CORRECT_RESPONSES.get(i)),
+          answersNode.get("outWalletAnswer" + (i + 1)).asText());
+    }
+  }
+
   // negative tests
 
   @Test
@@ -125,31 +150,6 @@ class ExperianTranslatorTest {
               initialRequestHelper(userData);
             });
     assertThat(exception).hasMessageContaining("Date was not properly formatted");
-  }
-
-  @Test
-  void createSubmitAnswersRequestBody_worksWithValidInput() throws JsonProcessingException {
-    IdentityVerificationAnswersRequest answersRequest = createValidAnswersRequest();
-    ObjectNode requestBody = finalRequestHelper(answersRequest);
-
-    assertTrue(requestBody.has("payload"));
-    assertTrue(requestBody.has("header"));
-
-    JsonNode payloadBody = requestBody.get("payload");
-    assertTrue(payloadBody.has("control"));
-    assertTrue(payloadBody.has("kba"));
-
-    JsonNode kbaNode = payloadBody.get("kba");
-    assertEquals(SESSION_UUID, kbaNode.get("sessionId").asText());
-    assertEquals("4", kbaNode.get("outWalletQuestionsRequest").asText());
-
-    JsonNode answersNode = kbaNode.get("answers");
-    assertEquals(4, answersNode.size());
-    for (int i = 0; i < 4; i++) {
-      assertEquals(
-          String.valueOf(CORRECT_RESPONSES.get(i)),
-          answersNode.get("outWalletAnswer" + (i + 1)).asText());
-    }
   }
 
   @Test

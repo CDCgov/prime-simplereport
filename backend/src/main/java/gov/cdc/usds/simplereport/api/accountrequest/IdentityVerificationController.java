@@ -60,6 +60,7 @@ public class IdentityVerificationController {
       // enable the organization and send response email
       _orgService.setIdentityVerified(requestBody.getOrgExternalId(), true);
     } else {
+      // todo: update this before moving to prod
       verificationResponse.setEmail("fakeemail.updatethis@example.com");
     }
 
