@@ -24,8 +24,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-
-import org.eclipse.jetty.util.Callback;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,25 +110,26 @@ class QueueManagementTest extends BaseGraphqlTest {
     String deviceId = d.getInternalId().toString();
     String dateTested = "2020-12-31T14:30:30Z";
     ObjectNode variables =
-            JsonNodeFactory.instance
-                    .objectNode()
-                    .put("id", orderId.toString())
-                    .put("deviceId", deviceId)
-                    .put("result", TestResult.POSITIVE.toString())
-                    .put("dateTested", dateTested);
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("id", orderId.toString())
+            .put("deviceId", deviceId)
+            .put("result", TestResult.POSITIVE.toString())
+            .put("dateTested", dateTested);
 
     CompletableFuture.allOf(
-            CompletableFuture.runAsync(() -> runQuery("edit-queue-item", variables, null)),
-            CompletableFuture.runAsync(() -> {
+        CompletableFuture.runAsync(() -> runQuery("edit-queue-item", variables, null)),
+        CompletableFuture.runAsync(
+            () -> {
               try {
                 // sleeping here to try to avoid a dreaded race condition in an async test
                 Thread.sleep(5);
-              } catch(InterruptedException e) {
+              } catch (InterruptedException e) {
                 // noop
               }
-              runQuery("edit-queue-item", variables, "Another user is interacting with this queue item");
-            })
-    );
+              runQuery(
+                  "edit-queue-item", variables, "Another user is interacting with this queue item");
+            }));
   }
 
   @Test

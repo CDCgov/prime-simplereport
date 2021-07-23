@@ -11,7 +11,8 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 
-public interface TestOrderRepository extends AuditedEntityRepository<TestOrder>, AdvisoryLockManager {
+public interface TestOrderRepository
+    extends AuditedEntityRepository<TestOrder>, AdvisoryLockManager {
 
   String BASE_QUERY =
       "from #{#entityName} q "
