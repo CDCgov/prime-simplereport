@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +19,6 @@ public class SmsValidationService {
   @Value("${simple-report.twilio-callback-url:https://simplereport.gov/api/pxp/callback}")
   private String twilioCallbackUrl;
 
-  private static final Logger LOG = LoggerFactory.getLogger(SmsValidationService.class);
-
   public SmsValidationService(@Value("${TWILIO_AUTH_TOKEN:MISSING}") String authToken) {
     this.validator = new RequestValidator(authToken);
   }
@@ -32,12 +27,6 @@ public class SmsValidationService {
       throws InvalidTwilioCallbackException {
     String twilioSignature = request.getHeader("X-Twilio-Signature");
     Map<String, String> postParams = extractPostParams(request);
-
-    LOG.info(
-        "Twilio signature: {}, Params: {}, callback: {}",
-        twilioSignature,
-        StringUtils.join(postParams),
-        twilioCallbackUrl);
     if (validator.validate(twilioCallbackUrl, postParams, twilioSignature)) {
       return true;
     }
