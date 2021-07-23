@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
@@ -75,5 +77,19 @@ public class AuditService {
     HttpRequestDetails reqDetails = new HttpRequestDetails(request);
     ApiUser userInfo = _userService.getCurrentApiUserInContainedTransaction();
     _repo.save(new ApiAuditEvent(requestId, reqDetails, responseCode, userInfo, org, patientLink));
+  }
+
+  @Transactional(readOnly = false)
+  public void logAnonymousRestEvent(
+      String requestId, HttpServletRequest request, int responseCode) {
+    LOG.trace("Saving audit event for {}", requestId);
+    HttpRequestDetails reqDetails = new HttpRequestDetails(request);
+    Object userIdObj = request.getSession(true).getAttribute("userId");
+    JsonNode userId =
+        (userIdObj == null)
+            ? null
+            : JsonNodeFactory.instance.objectNode().put("userId", userIdObj.toString());
+    ApiUser anonymousUser = _userService.getAnonymousApiUser();
+    _repo.save(new ApiAuditEvent(requestId, reqDetails, responseCode, userId, anonymousUser));
   }
 }

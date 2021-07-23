@@ -36,30 +36,30 @@ describe("utils", () => {
       expect(Object.keys(answers).length).toBe(3);
     });
     it("sets the first answer to null", () => {
-      expect(answers.outWalletAnswer1).toBeNull();
+      expect(answers["1"]).toBeNull();
     });
     it("sets the second answer to null", () => {
-      expect(answers.outWalletAnswer2).toBeNull();
+      expect(answers["2"]).toBeNull();
     });
     it("sets the third answer to null", () => {
-      expect(answers.outWalletAnswer3).toBeNull();
+      expect(answers["3"]).toBeNull();
     });
   });
   describe("answersToArray", () => {
     const answers: Answers = {
-      outWalletAnswer3: "5",
-      outWalletAnswer1: "2",
-      outWalletAnswer2: "3",
+      3: "5",
+      1: "2",
+      2: "3",
     };
     const answersArray = answersToArray(answers);
     it("correctly sets the first value", () => {
-      expect(answersArray[0]).toBe(answers.outWalletAnswer1);
+      expect(answersArray[0]).toBe(parseInt(answers["1"]));
     });
     it("correctly sets the second value", () => {
-      expect(answersArray[1]).toBe(answers.outWalletAnswer2);
+      expect(answersArray[1]).toBe(parseInt(answers["2"]));
     });
     it("correctly sets the third value", () => {
-      expect(answersArray[2]).toBe(answers.outWalletAnswer3);
+      expect(answersArray[2]).toBe(parseInt(answers["3"]));
     });
   });
 });

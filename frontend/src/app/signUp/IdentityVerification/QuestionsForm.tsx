@@ -62,7 +62,7 @@ const QuestionsForm: React.FC<Props> = ({ questionSet, saving, onSubmit }) => {
 
   return (
     <CardBackground>
-      <Card>
+      <Card logo>
         <div className="usa-form">
           {questionSet.map((question, index) => {
             const key = getAnswerKey(index);
@@ -83,6 +83,7 @@ const QuestionsForm: React.FC<Props> = ({ questionSet, saving, onSubmit }) => {
           })}
         </div>
         <Button
+          className="width-full margin-top-3"
           disabled={saving || !formChanged}
           onClick={onSave}
           label={saving ? "Saving..." : "Submit"}

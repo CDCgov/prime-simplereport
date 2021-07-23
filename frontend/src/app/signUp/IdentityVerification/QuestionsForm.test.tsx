@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
 
-import QuestionsForm from "./QuestionsForm";
 import { exampleQuestionSet } from "./constants";
+import QuestionsForm from "./QuestionsForm";
 
 describe("QuestionsForm", () => {
   let onSubmit: jest.Mock;
@@ -96,7 +96,7 @@ describe("QuestionsForm", () => {
           );
         });
       });
-      it("does not shows an error", () => {
+      it("does not show an error", () => {
         expect(screen.queryAllByText("This field is required").length).toBe(0);
       });
       it("calls the onSubmit callback", () => {
