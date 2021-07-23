@@ -96,7 +96,7 @@ describe("QuestionsForm", () => {
           );
         });
       });
-      it("does not shows an error", () => {
+      it("does not show an error", () => {
         expect(screen.queryAllByText("This field is required").length).toBe(0);
       });
       it("calls the onSubmit callback", () => {
