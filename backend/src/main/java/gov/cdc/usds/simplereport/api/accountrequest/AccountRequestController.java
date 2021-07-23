@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.config.AuthorizationConfiguration.AUTHOR
 import static gov.cdc.usds.simplereport.config.WebConfiguration.ACCOUNT_REQUEST;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.okta.sdk.resource.ResourceException;
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.accountrequest.errors.AccountRequestFailureException;
 import gov.cdc.usds.simplereport.api.model.Role;
@@ -94,6 +95,7 @@ public class AccountRequestController {
    * Read the account request and generate an email body, then send with the emailService and create
    * org
    */
+  @SuppressWarnings("checkstyle:illegalcatch")
   @PostMapping("")
   @Transactional(readOnly = false)
   public void submitAccountRequest(@Valid @RequestBody AccountRequest body) throws IOException {
@@ -218,6 +220,15 @@ public class AccountRequestController {
       _crm.submitAccountRequestData(body);
     } catch (IOException e) {
       throw new AccountRequestFailureException(e);
+    } catch (RuntimeException e) {
+      if (e instanceof ResourceException) {
+        // The `ResourceException` is thrown when an account is requested with an existing
+        // organization name. This happens quite frequently and is expected behavior of the current
+        // form
+        throw e;
+      } else {
+        throw new AccountRequestFailureException(e);
+      }
     }
   }
 }
