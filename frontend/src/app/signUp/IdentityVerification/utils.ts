@@ -55,7 +55,7 @@ export const personalDetailsFields = [
 }, {} as { [key: string]: { label: string; required: boolean; preheader: string | null } });
 
 export const initPersonalDetails = (
-  orgExternalId: string = ""
+  orgExternalId = ""
 ): IdentityVerificationRequest => ({
   firstName: "",
   lastName: "",
