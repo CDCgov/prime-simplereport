@@ -1,9 +1,6 @@
 import * as yup from "yup";
 
-const EXPERIAN_ANSWER_KEY = "outWalletAnswer";
-
-export const getAnswerKey = (index: number) =>
-  `${EXPERIAN_ANSWER_KEY}${index + 1}`;
+export const getAnswerKey = (index: number) => `${index + 1}`;
 
 export const toOptions = (
   choices: string[]
@@ -29,11 +26,12 @@ export const buildSchema = (questionSet: Question[]): yup.SchemaOf<Answers> =>
     }, {} as { [key: string]: any })
   );
 
-// Note: the order of the answers must be preserved
-export const answersToArray = (answers: Answers): string[] =>
-  Object.keys(answers).map((_, index) => {
-    return answers[getAnswerKey(index)];
-  });
+// Put the questions in the same order as received from the server
+// Then parse the answers in the same order
+export const answersToArray = (answers: Answers): number[] =>
+  Object.keys(answers)
+    .sort()
+    .map((key) => parseInt(answers[key]));
 
 export const personalDetailsFields = [
   ["firstName", "First name", true, "Legal name"],
@@ -47,7 +45,6 @@ export const personalDetailsFields = [
   ["city", "City", true, null],
   ["state", "State", true, null],
   ["zip", "ZIP code", true, null],
-  ["poBoxNumber", "PO Box number", false, null],
 ].reduce((fields, field) => {
   fields[field[0] as keyof IdentityVerificationRequest] = {
     label: field[1] as string,
@@ -57,7 +54,9 @@ export const personalDetailsFields = [
   return fields;
 }, {} as { [key: string]: { label: string; required: boolean; preheader: string | null } });
 
-export const initPersonalDetails = (): IdentityVerificationRequest => ({
+export const initPersonalDetails = (
+  orgExternalId = ""
+): IdentityVerificationRequest => ({
   firstName: "",
   lastName: "",
   dateOfBirth: "",
@@ -67,6 +66,7 @@ export const initPersonalDetails = (): IdentityVerificationRequest => ({
   city: "",
   state: "",
   zip: "",
+  orgExternalId,
 });
 
 export const initPersonalDetailsErrors = (): Record<
@@ -84,7 +84,7 @@ export const initPersonalDetailsErrors = (): Record<
   city: "",
   state: "",
   zip: "",
-  poBoxNumber: "",
+  orgExternalId: "",
 });
 
 export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = yup
@@ -101,5 +101,5 @@ export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = 
     city: yup.string().required("City is required"),
     state: yup.string().required("State is required"),
     zip: yup.string().required("ZIP code is required"),
-    poBoxNumber: yup.string().nullable(),
+    orgExternalId: yup.string().required("Organization ID is required"),
   });

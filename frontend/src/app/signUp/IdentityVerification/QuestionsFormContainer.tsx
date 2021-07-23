@@ -6,25 +6,33 @@ import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import Success from "./Success";
 import NextSteps from "./NextSteps";
 import QuestionsForm from "./QuestionsForm";
+import { answersToArray } from "./utils";
 
 interface Props {
   personalDetails: IdentityVerificationRequest;
+  orgExternalId: string;
 }
 
-const QuestionsFormContainer = ({ personalDetails }: Props) => {
+const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
   const [loading, setLoading] = useState(true);
   const [identificationVerified, setIdentificationVerified] = useState<
     boolean | undefined
   >();
   const [questionSet, setQuestionSet] = useState<Question[] | undefined>();
+  const [sessionId, setSessionId] = useState<string>("");
   const [email, setEmail] = useState<string>("");
 
   const getQuestionSet = async (request: IdentityVerificationRequest) => {
-    const response = await SignUpApi.getQuestions(request);
-    if (!response.questionSet) {
-      return;
+    try {
+      const response = await SignUpApi.getQuestions(request);
+      if (!response.questionSet) {
+        return;
+      }
+      setQuestionSet(response.questionSet);
+      setSessionId(response.sessionId);
+    } catch (error) {
+      setIdentificationVerified(false);
     }
-    setQuestionSet(response.questionSet);
     setLoading(false);
   };
 
@@ -33,15 +41,27 @@ const QuestionsFormContainer = ({ personalDetails }: Props) => {
   }, [personalDetails]);
 
   const onSubmit = async (answers: Answers) => {
+    setLoading(true);
+    const request: IdentityVerificationAnswersRequest = {
+      orgExternalId,
+      sessionId,
+
+      answers: answersToArray(answers),
+    };
+    try {
+      const response = await SignUpApi.submitAnswers(request);
+      setIdentificationVerified(response.passed);
+      setEmail(response.email);
+    } catch (error) {
+      setIdentificationVerified(false);
+    }
     setLoading(false);
-    const response = await SignUpApi.submitAnswers(answers);
-    setIdentificationVerified(!response.passed);
-    setEmail(response.email);
   };
 
   if (loading) {
-    return <LoadingCard />;
+    return <LoadingCard message="Submitting ID verification details" />;
   }
+
   if (identificationVerified === undefined) {
     if (!questionSet) {
       return <p>Error: unable to load questions</p>;
@@ -54,6 +74,7 @@ const QuestionsFormContainer = ({ personalDetails }: Props) => {
       />
     );
   }
+
   if (identificationVerified) {
     return <Success email={email} />;
   } else {
