@@ -72,6 +72,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
         .antMatchers(HttpMethod.GET, WebConfiguration.PATIENT_EXPERIENCE)
         .permitAll()
 
+        // Twilio callback authorization is handled in the controller
+        .antMatchers(HttpMethod.POST, WebConfiguration.TWILIO_CALLBACK)
+        .permitAll()
+
         // Account requests are unauthorized
         .antMatchers(HttpMethod.POST, WebConfiguration.ACCOUNT_REQUEST + "/**")
         .permitAll()

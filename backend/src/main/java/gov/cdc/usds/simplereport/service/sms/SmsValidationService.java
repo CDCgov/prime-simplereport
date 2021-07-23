@@ -2,8 +2,11 @@ package gov.cdc.usds.simplereport.service.sms;
 
 import com.twilio.security.RequestValidator;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidTwilioCallbackException;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -18,9 +21,6 @@ public class SmsValidationService {
 
   private static final Logger LOG = LoggerFactory.getLogger(SmsValidationService.class);
 
-  @Value("${simple-report.twilio-callback-url:https://simplereport.gov/api/pxp/callback}")
-  private static String twilioCallbackUrl;
-
   public SmsValidationService(@Value("${TWILIO_AUTH_TOKEN:MISSING}") String authToken) {
     this.validator = new RequestValidator(authToken);
   }
@@ -28,25 +28,48 @@ public class SmsValidationService {
   public boolean validateSmsCallback(HttpServletRequest request)
       throws InvalidTwilioCallbackException {
     String twilioSignature = request.getHeader("X-Twilio-Signature");
-    Map<String, String> params = getParameterMap(request);
-    LOG.info("Twilio signature: {}, Params: {}", twilioSignature, StringUtils.join(params));
-    if (validator.validate(twilioCallbackUrl, params, twilioSignature)) {
+    // Concatenates the request URL with the query string
+    String pathAndQueryUrl = getRequestUrlAndQueryString(request);
+    // Extracts only the POST parameters and converts the parameters Map type
+    Map<String, String> postParams = extractPostParams(request);
+
+    LOG.info(
+        "Twilio signature: {}, Params: {}, callback: {}",
+        twilioSignature,
+        StringUtils.join(postParams),
+        pathAndQueryUrl);
+    if (validator.validate(pathAndQueryUrl, postParams, twilioSignature)) {
       return true;
     }
     throw new InvalidTwilioCallbackException();
   }
 
-  private static Map<String, String> getParameterMap(HttpServletRequest request) {
-    Map<String, String[]> springParameterMap = request.getParameterMap();
-    Map<String, String> parameterMap = new HashMap<>();
-    for (String parameterName : springParameterMap.keySet()) {
-      String[] values = springParameterMap.get(parameterName);
-      if (values != null && values.length > 0) {
-        parameterMap.put(parameterName, values[0]);
-      } else {
-        parameterMap.put(parameterName, null);
-      }
+  private Map<String, String> extractPostParams(HttpServletRequest request) {
+    String queryString = request.getQueryString();
+    Map<String, String[]> requestParams = request.getParameterMap();
+    List<String> queryStringKeys = getQueryStringKeys(queryString);
+
+    return requestParams.entrySet().stream()
+        .filter(e -> !queryStringKeys.contains(e.getKey()))
+        .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()[0]));
+  }
+
+  private List<String> getQueryStringKeys(String queryString) {
+    if (queryString == null || queryString.length() == 0) {
+      return Collections.emptyList();
+    } else {
+      return Arrays.stream(queryString.split("&"))
+          .map(pair -> pair.split("=")[0])
+          .collect(Collectors.toList());
     }
-    return parameterMap;
+  }
+
+  private String getRequestUrlAndQueryString(HttpServletRequest request) {
+    String queryString = request.getQueryString();
+    String requestUrl = request.getRequestURL().toString();
+    if (queryString != null && !queryString.equals("")) {
+      return requestUrl + "?" + queryString;
+    }
+    return requestUrl;
   }
 }
