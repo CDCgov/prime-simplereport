@@ -19,6 +19,9 @@ public class SmsValidationService {
 
   private final RequestValidator validator;
 
+  @Value("${simple-report.twilio-callback-url:https://simplereport.gov/api/pxp/callback}")
+  private String twilioCallbackUrl;
+
   private static final Logger LOG = LoggerFactory.getLogger(SmsValidationService.class);
 
   public SmsValidationService(@Value("${TWILIO_AUTH_TOKEN:MISSING}") String authToken) {
@@ -28,17 +31,14 @@ public class SmsValidationService {
   public boolean validateSmsCallback(HttpServletRequest request)
       throws InvalidTwilioCallbackException {
     String twilioSignature = request.getHeader("X-Twilio-Signature");
-    // Concatenates the request URL with the query string
-    String pathAndQueryUrl = getRequestUrlAndQueryString(request);
-    // Extracts only the POST parameters and converts the parameters Map type
     Map<String, String> postParams = extractPostParams(request);
 
     LOG.info(
         "Twilio signature: {}, Params: {}, callback: {}",
         twilioSignature,
         StringUtils.join(postParams),
-        pathAndQueryUrl);
-    if (validator.validate(pathAndQueryUrl, postParams, twilioSignature)) {
+        twilioCallbackUrl);
+    if (validator.validate(twilioCallbackUrl, postParams, twilioSignature)) {
       return true;
     }
     throw new InvalidTwilioCallbackException();
@@ -62,14 +62,5 @@ public class SmsValidationService {
           .map(pair -> pair.split("=")[0])
           .collect(Collectors.toList());
     }
-  }
-
-  private String getRequestUrlAndQueryString(HttpServletRequest request) {
-    String queryString = request.getQueryString();
-    String requestUrl = request.getRequestURL().toString();
-    if (queryString != null && !queryString.equals("")) {
-      return requestUrl + "?" + queryString;
-    }
-    return requestUrl;
   }
 }
