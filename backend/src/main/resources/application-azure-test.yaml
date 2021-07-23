@@ -27,7 +27,7 @@ logging.level:
       api: OFF
       api.pxp: INFO
       db: OFF
-      service: OFF
+      service: INFO
   logging:
     QueryLoggingInstrumentation: OFF
     GraphQLLoggingHelpers: OFF

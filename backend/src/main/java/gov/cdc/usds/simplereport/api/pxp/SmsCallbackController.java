@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/pxp/callback")
-@PreAuthorize("@smsValidationService.validateSmsCallback(#request, #body)")
+@PreAuthorize("@smsValidationService.validateSmsCallback(#request)")
 @Validated
 public class SmsCallbackController {
   private static final Logger LOG = LoggerFactory.getLogger(SmsCallbackController.class);
