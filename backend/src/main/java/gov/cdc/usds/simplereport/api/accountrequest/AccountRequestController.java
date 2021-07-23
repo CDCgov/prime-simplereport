@@ -222,7 +222,7 @@ public class AccountRequestController {
       throw new AccountRequestFailureException(e);
     } catch (RuntimeException e) {
       if (e instanceof ResourceException) {
-        // We don't want to wrap this particular Okta exception as it will make alerts too noisy
+        // The `ResourceException` is thrown when an account is requested with an existing organization name. This happens quite frequently and is expected behavior of the current form
         throw e;
       } else {
         throw new AccountRequestFailureException(e);
