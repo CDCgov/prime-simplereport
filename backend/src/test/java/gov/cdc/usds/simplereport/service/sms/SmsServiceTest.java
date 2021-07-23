@@ -139,9 +139,10 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
 
     List<SmsDeliveryResult> failedDelivery =
         sut.stream()
-            .filter(result -> result.getTelephone() == "ABCD THIS ISN'T A PHONE NUMBER")
+            .filter(result -> result.getTelephone().equals("ABCD THIS ISN'T A PHONE NUMBER"))
             .collect(Collectors.toList());
 
+    assertEquals(1, failedDelivery.size());
     assertTrue(failedDelivery.get(0).getDeliverySuccess() == false);
   }
 
