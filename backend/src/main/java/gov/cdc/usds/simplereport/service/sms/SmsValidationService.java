@@ -24,8 +24,12 @@ public class SmsValidationService {
       throws InvalidTwilioCallbackException {
     String twilioSignature = request.getHeader("X-Twilio-Signature");
     HashMap<String, String> params = new HashMap<>();
+    params.put("To", body.getTo());
+    params.put("AccountSid", body.getAccountSid());
+    params.put("ApiVersion", body.getApiVersion());
     params.put("SmsSid", body.getSmsSid());
     params.put("SmsStatus", body.getSmsStatus());
+    params.put("From", body.getFrom());
     params.put("MessageStatus", body.getMessageStatus());
     params.put("MessageSid", body.getMessageSid());
     if (validator.validate(twilioCallbackUrl, params, twilioSignature)) {
