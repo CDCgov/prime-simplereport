@@ -8,13 +8,12 @@ import org.springframework.beans.factory.annotation.Value;
 
 public class SmsValidationService {
 
-  private final String webhookUrl;
   private final RequestValidator validator;
 
-  public SmsValidationService(
-      @Value("${TWILIO_AUTH_TOKEN}") String authToken,
-      @Value("${twilio.webhookUrl}") String webhookUrl) {
-    this.webhookUrl = webhookUrl;
+  @Value("${simple-report.twilio-callback-url:https://simplereport.gov/api/pxp/callback}")
+  private static String twilioCallbackUrl;
+
+  public SmsValidationService(@Value("${TWILIO_AUTH_TOKEN}") String authToken) {
     this.validator = new RequestValidator(authToken);
   }
 
@@ -25,6 +24,6 @@ public class SmsValidationService {
     params.put("SmsStatus", body.getSmsStatus());
     params.put("MessageStatus", body.getMessageStatus());
     params.put("MessageSid", body.getMessageSid());
-    return validator.validate(webhookUrl, params, twilioSignature);
+    return validator.validate(twilioCallbackUrl, params, twilioSignature);
   }
 }

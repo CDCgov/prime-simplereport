@@ -21,6 +21,6 @@ class SmsCallbackController {
 
   @PostMapping("")
   public void register(@RequestBody SmsStatusCallback body, HttpServletRequest request) {
-    LOG.info("messageSid={} status={}");
+    LOG.info("messageSid={} status={}", body.getMessageSid(), body.getMessageStatus());
   }
 }
