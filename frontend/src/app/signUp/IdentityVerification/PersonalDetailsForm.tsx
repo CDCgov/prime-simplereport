@@ -12,6 +12,7 @@ import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
 import Input from "../../commonComponents/Input";
 import { stateCodes } from "../../../config/constants";
 import Select from "../../commonComponents/Select";
+import { useSearchParam } from "../../utils/url";
 
 import {
   initPersonalDetails,
@@ -27,10 +28,14 @@ type PersonalDetailsFormErrors = Record<
 >;
 
 const PersonalDetailsForm = () => {
+  // Get organization ID from URL
+  const orgExternalId = useSearchParam("orgExternalId");
   const [
     personalDetails,
     setPersonalDetails,
-  ] = useState<IdentityVerificationRequest>(initPersonalDetails());
+  ] = useState<IdentityVerificationRequest>(
+    initPersonalDetails(orgExternalId || "")
+  );
   const [errors, setErrors] = useState<PersonalDetailsFormErrors>(
     initPersonalDetailsErrors()
   );
@@ -78,8 +83,25 @@ const PersonalDetailsForm = () => {
     setSaving(false);
   };
 
+  if (orgExternalId === null) {
+    return (
+      <CardBackground>
+        <Card logo bodyKicker={"Invalid request"} bodyKickerCentered={true}>
+          <p className="text-center">
+            We weren't able to find your affiliated organization
+          </p>
+        </Card>
+      </CardBackground>
+    );
+  }
+
   if (submitted) {
-    return <QuestionsFormContainer personalDetails={personalDetails} />;
+    return (
+      <QuestionsFormContainer
+        personalDetails={personalDetails}
+        orgExternalId={orgExternalId}
+      />
+    );
   }
 
   const getFormElement = (
@@ -119,13 +141,14 @@ const PersonalDetailsForm = () => {
             <span className="usa-hint">mm/dd/yyyy</span>
             <DatePicker
               id={field}
+              data-testid={field}
               name={field}
               onChange={(date) => {
                 if (date) {
                   const newDate = moment(date)
                     .hour(now.hours())
                     .minute(now.minutes());
-                  onDetailChange("dateOfBirth")(newDate.format("MM/DD/YYYY"));
+                  onDetailChange("dateOfBirth")(newDate.format("YYYY-MM-DD"));
                 }
               }}
             />
