@@ -193,7 +193,9 @@ const AoEForm: React.FC<Props> = ({
           Yes
           <span className="usa-checkbox__label-description">
             <p>
-              <strong>Results will be sent to these numbers:</strong>
+              <span className="radio__label-description--checked">
+                <strong>Results will be sent to these numbers:</strong>
+              </span>
             </p>
             {(phoneNumbers || []).map(({ number }) => (
               <span className="radio__label-description--checked usa-radio__label-description text-base">
