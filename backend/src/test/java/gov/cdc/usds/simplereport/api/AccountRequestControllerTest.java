@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.mock;
@@ -51,6 +53,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,8 +166,10 @@ class AccountRequestControllerTest {
     verifyNoInteractions(emailService);
   }
 
-  @Test
-  void accountRequestIsOk() throws Exception {
+  @ParameterizedTest
+  @ValueSource(
+      strings = {ResourceLinks.ACCOUNT_REQUEST, ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE})
+  void accountRequestIsOk(String resourceLink) throws Exception {
     // also need to add default devices and other
     String requestBody =
         "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"email\":\"kyvuzoxy@mailinator.com\",\"work-phone-number\":\"+1 (969) 768-2863\",\"cell-phone-number\":\"+1 (319) 682-3114\",\"street-address1\":\"707 White Milton Extension\",\"street-address2\":\"Apt 3\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"organization-name\":\"Day Hayes Trading\",\"organization-type\":\"Homeless Shelter\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-street-address2\":\"UNAVAILABLE\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Abbott IDNow, BD Veritor, Cue, LumiraDX\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}";
@@ -239,47 +245,57 @@ class AccountRequestControllerTest {
         .thenReturn(facilityAddress);
 
     MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.ACCOUNT_REQUEST)
+        post(resourceLink)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
 
     this._mockMvc.perform(builder).andExpect(status().isOk());
-    //        .andExpect(
-    //            jsonPath("$.orgExternalId", org.hamcrest.Matchers.equalTo(FAKE_ORG_EXTERNAL_ID)));
 
-    // mail 1: to us (contains formatted request data)
-    verify(emailService, times(1))
-        .send(
-            eq(List.of("support@simplereport.gov")),
-            eq("New account request"),
-            contentCaptor.capture());
-    assertThat(contentCaptor.getValue().getTemplateName()).isEqualTo("account-request");
-    assertThat(contentCaptor.getValue().toTemplateVariables()).containsEntry("firstName", "Mary");
+    if (ResourceLinks.ACCOUNT_REQUEST.equals(resourceLink)) {
+      // v1 account request sends emails
 
-    // mail 2: to requester (simplereport new user email)
-    verify(emailService, times(1))
-        .sendWithProviderTemplate("kyvuzoxy@mailinator.com", EmailProviderTemplate.ACCOUNT_REQUEST);
+      // mail 1: to us (contains formatted request data)
+      verify(emailService, times(1))
+          .send(
+              eq(List.of("support@simplereport.gov")),
+              eq("New account request"),
+              contentCaptor.capture());
+      assertThat(contentCaptor.getValue().getTemplateName()).isEqualTo("account-request");
+      assertThat(contentCaptor.getValue().toTemplateVariables()).containsEntry("firstName", "Mary");
 
-    verify(mockSendGrid, times(2)).send(mail.capture());
-    List<Mail> sentMails = mail.getAllValues();
+      // mail 2: to requester (simplereport new user email)
+      verify(emailService, times(1))
+          .sendWithProviderTemplate(
+              "kyvuzoxy@mailinator.com", EmailProviderTemplate.ACCOUNT_REQUEST);
 
-    // mail 1: to us (contains formatted request data)
-    assertThat(sentMails.get(0).getContent().get(0).getValue())
-        .contains(
-            "new SimpleReport account request",
-            "Mary",
-            "Lopez",
-            "kyvuzoxy@mailinator.com",
-            "Reprehenderit nostr");
-    assertNull(sentMails.get(0).getAttachments());
-    assertNull(sentMails.get(0).getTemplateId());
+      verify(mockSendGrid, times(2)).send(mail.capture());
+      List<Mail> sentMails = mail.getAllValues();
 
-    // mail 2: to requester (simplereport new user email)
-    assertThat(sentMails.get(1).getPersonalization().get(0).getTos().get(0).getEmail())
-        .isEqualTo("kyvuzoxy@mailinator.com");
-    assertNotNull(sentMails.get(1).getTemplateId());
+      // mail 1: to us (contains formatted request data)
+      assertThat(sentMails.get(0).getContent().get(0).getValue())
+          .contains(
+              "new SimpleReport account request",
+              "Mary",
+              "Lopez",
+              "kyvuzoxy@mailinator.com",
+              "Reprehenderit nostr");
+      assertNull(sentMails.get(0).getAttachments());
+      assertNull(sentMails.get(0).getTemplateId());
+
+      // mail 2: to requester (simplereport new user email)
+      assertThat(sentMails.get(1).getPersonalization().get(0).getTos().get(0).getEmail())
+          .isEqualTo("kyvuzoxy@mailinator.com");
+      assertNotNull(sentMails.get(1).getTemplateId());
+    } else {
+      // v2 account request does not send any emails
+      verify(emailService, times(0)).send(anyList(), anyString(), any());
+
+      verify(emailService, times(0)).sendWithProviderTemplate(anyString(), any());
+
+      verify(mockSendGrid, times(0)).send(any());
+    }
 
     verify(deviceTypeService, times(1))
         .getTypesForFacility(
@@ -350,7 +366,9 @@ class AccountRequestControllerTest {
         .createUser(any(IdentityAttributes.class), eq(organization), anySet(), anySet(), eq(false));
   }
 
-  @Test
+  @ParameterizedTest
+  @ValueSource(
+      strings = {ResourceLinks.ACCOUNT_REQUEST, ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE})
   void accountRequestValidatesInput() throws Exception {
     String requestBody =
         "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"work-phone-number\":\"+1 (969) 768-2863\",\"cell-phone-number\":\"+1 (319) 682-3114\",\"street-address1\":\"707 White Milton Extension\",\"apt-suite-other\":\"FL\",\"apt-floor-suite-no\":\"694\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"organization-name\":\"Day Hayes Trading\",\"organization-type\":\"Homeless Shelter\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-apt-suite-other\":\"UNAVAILABLE\",\"op-apt-floor-suite-no\":\"546\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Abbott IDNow, BD Veritor, LumiraDX\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}";
@@ -370,7 +388,9 @@ class AccountRequestControllerTest {
     verifyNoInteractions(apiUserService);
   }
 
-  @Test
+  @ParameterizedTest
+  @ValueSource(
+      strings = {ResourceLinks.ACCOUNT_REQUEST, ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE})
   void accountRequestSubmittedDeviceNotRegistered() throws Exception {
     String requestBody =
         "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"email\":\"kyvuzoxy@mailinator.com\",\"work-phone-number\":\"+1 (969) 768-2863\",\"cell-phone-number\":\"+1 (319) 682-3114\",\"street-address1\":\"707 White Milton Extension\",\"street-address2\":\"Apt 3\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"organization-name\":\"Day Hayes Trading\",\"organization-type\":\"Homeless Shelter\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-street-address2\":\"UNAVAILABLE\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Invalid Device\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}";

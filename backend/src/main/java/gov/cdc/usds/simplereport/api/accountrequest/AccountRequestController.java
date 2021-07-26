@@ -88,9 +88,7 @@ public class AccountRequestController {
   @PostMapping("/waitlist")
   public void submitWaitlistRequest(@Valid @RequestBody WaitlistRequest body) throws IOException {
     String subject = "New waitlist request";
-    if (LOG.isInfoEnabled()) {
-      LOG.info("Waitlist request submitted: {}", objectMapper.writeValueAsString(body));
-    }
+    LOG.info("Waitlist request submitted: {}", objectMapper.writeValueAsString(body));
     _es.send(sendGridProperties.getWaitlistRecipient(), subject, body);
   }
 
@@ -156,9 +154,7 @@ public class AccountRequestController {
 
   private Map<String, String> convertAccountRequestToMap(AccountRequest accountRequest)
       throws JsonProcessingException {
-    if (LOG.isInfoEnabled()) {
-      LOG.info("Account request submitted: {}", objectMapper.writeValueAsString(accountRequest));
-    }
+    LOG.info("Account request submitted: {}", objectMapper.writeValueAsString(accountRequest));
 
     return accountRequest.toTemplateVariables().entrySet().stream()
         .collect(
