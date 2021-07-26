@@ -13,9 +13,9 @@ import gov.cdc.usds.simplereport.db.model.TextMessageSent;
 import gov.cdc.usds.simplereport.db.repository.TextMessageSentRepository;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.model.SmsDeliveryResult;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,10 +67,8 @@ public class SmsService {
   }
 
   private List<SmsDeliveryResult> sendToPerson(Person p, String text) {
-    List<SmsDeliveryResult> smsSendResults = new ArrayList<>();
-
-    p.getPhoneNumbers().stream()
-        .forEach(
+    return p.getPhoneNumbers().stream()
+        .map(
             phoneNumber -> {
               try {
                 String msgId =
@@ -78,17 +76,16 @@ public class SmsService {
                         new PhoneNumber(formatNumber(phoneNumber.getNumber())), fromNumber, text);
                 LOG.debug("SMS send initiated {}", msgId);
 
-                smsSendResults.add(new SmsDeliveryResult(phoneNumber.getNumber(), msgId, true));
+                return new SmsDeliveryResult(phoneNumber.getNumber(), msgId, true);
               } catch (NumberParseException npe) {
                 LOG.warn("Failed to parse phone number for patient={}", p.getInternalId());
-                smsSendResults.add(new SmsDeliveryResult(phoneNumber.getNumber(), null, false));
+                return new SmsDeliveryResult(phoneNumber.getNumber(), null, false);
               } catch (ApiException apiException) {
                 LOG.warn("Failed to send text message to patient={}", p.getInternalId());
-                smsSendResults.add(new SmsDeliveryResult(phoneNumber.getNumber(), null, false));
+                return new SmsDeliveryResult(phoneNumber.getNumber(), null, false);
               }
-            });
-
-    return smsSendResults;
+            })
+        .collect(Collectors.toList());
   }
 
   String formatNumber(String number) throws NumberParseException {
