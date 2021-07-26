@@ -7,6 +7,10 @@ describe("NextSteps", () => {
     render(<NextSteps />);
   });
   it("renders", () => {
-    expect(screen.getByText("Schedule an appt")).toBeInTheDocument();
+    expect(
+      screen.getByText("Experian was unable to verify your identity", {
+        exact: false,
+      })
+    ).toBeInTheDocument();
   });
 });

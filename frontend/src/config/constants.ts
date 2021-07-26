@@ -22,6 +22,8 @@ export const liveJurisdictions = [
   "PA",
   "TX",
   "VT",
+  "WA",
+  "WY",
 ];
 
 // States which do not require a valid CLIA number for a facility

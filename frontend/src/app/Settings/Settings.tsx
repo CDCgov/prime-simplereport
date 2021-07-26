@@ -3,12 +3,14 @@ import { Route, RouteComponentProps, Switch } from "react-router-dom";
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import Button from "../commonComponents/Button/Button";
 import { useDocumentTitle } from "../utils/hooks";
+import reload from "../utils/reload";
 
 import ManageOrganizationContainer from "./ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Facility/FacilityFormContainer";
 import ManageUsersContainer from "./Users/ManageUsersContainer";
 import SettingsNav from "./SettingsNav";
+import { ManageSelfRegistrationLinksContainer } from "./ManageSelfRegistrationLinksContainer";
 
 interface Params {
   facilityId: string;
@@ -33,9 +35,7 @@ const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
                   </div>
                 </div>
                 <div className="usa-card__footer">
-                  <Button onClick={() => window.location.reload()}>
-                    Refresh Page
-                  </Button>
+                  <Button onClick={() => reload()}>Refresh Page</Button>
                 </div>
               </div>
             </div>
@@ -62,6 +62,10 @@ const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
             <Route
               path={match.url + "/organization"}
               component={ManageOrganizationContainer}
+            />
+            <Route
+              path={match.url + "/self-registration"}
+              component={ManageSelfRegistrationLinksContainer}
             />
             <Route component={ManageUsersContainer} />
           </Switch>

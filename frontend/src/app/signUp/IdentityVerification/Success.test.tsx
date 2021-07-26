@@ -8,7 +8,10 @@ describe("Success", () => {
   });
   it("renders", () => {
     expect(
-      screen.getByText("Check your email", { exact: false })
+      screen.getByText(
+        "Congratulations, your identity has been verified successfully",
+        { exact: false }
+      )
     ).toBeInTheDocument();
   });
 });

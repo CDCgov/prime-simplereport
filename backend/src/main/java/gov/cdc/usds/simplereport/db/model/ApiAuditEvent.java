@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
@@ -102,6 +103,10 @@ public class ApiAuditEvent {
   @JoinColumn(name = "patient_link_id")
   private PatientLink patientLink;
 
+  @Column(nullable = true)
+  @Type(type = "jsonb")
+  private JsonNode session;
+
   protected ApiAuditEvent() {
     // hibernate
   }
@@ -143,6 +148,20 @@ public class ApiAuditEvent {
     this.user = user;
     this.organization = organization;
     this.patientLink = patientLink;
+  }
+
+  /** Constructor for anonymous REST requests. */
+  public ApiAuditEvent(
+      String requestId,
+      HttpRequestDetails httpRequestDetails,
+      int responseStatus,
+      JsonNode userId,
+      ApiUser user) {
+    this.requestId = requestId;
+    this.httpRequestDetails = httpRequestDetails;
+    this.responseCode = responseStatus;
+    this.session = userId;
+    this.user = user;
   }
 
   public UUID getId() {
@@ -191,5 +210,9 @@ public class ApiAuditEvent {
 
   public PatientLink getPatientLink() {
     return patientLink;
+  }
+
+  public JsonNode getSession() {
+    return session;
   }
 }
