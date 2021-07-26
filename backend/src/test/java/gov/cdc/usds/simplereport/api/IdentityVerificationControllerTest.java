@@ -160,7 +160,33 @@ class IdentityVerificationControllerTest {
 
     this._mockMvc.perform(builder).andExpect(status().isBadRequest());
 
+    // could not find person, id verification failed so emails are sent
     verifyEmailsSent();
+  }
+
+  @Test
+  void getQuestions_badOrg_failure() throws Exception {
+    // org should not be verified and only have 1 member
+    Set<String> orgEmailSet =
+        new HashSet<>() {
+          {
+            add("user1@example.org");
+            add("user2@example.org");
+          }
+        };
+    when(_oktaRepo.getAllUsersForOrganization(any())).thenReturn(orgEmailSet);
+
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ID_VERIFICATION_GET_QUESTIONS)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(getQuestionRequestBody(FAKE_ORG_EXTERNAL_ID, FAKE_ORG_ADMIN_EMAIL));
+
+    this._mockMvc.perform(builder).andExpect(status().isBadRequest());
+
+    // not a new org, no emails sent
+    verifyEmailsNotSent();
   }
 
   @Test
@@ -178,6 +204,7 @@ class IdentityVerificationControllerTest {
         .andExpect(jsonPath("$.passed", is(true)))
         .andExpect(jsonPath("$.email", equalTo(FAKE_ORG_ADMIN_EMAIL)));
 
+    // successful verification, no emails sent
     verifyEmailsNotSent();
   }
 
@@ -196,7 +223,33 @@ class IdentityVerificationControllerTest {
         .andExpect(jsonPath("$.passed", is(false)))
         .andExpect(jsonPath("$.email", equalTo(FAKE_ORG_ADMIN_EMAIL)));
 
+    // unable to verify, emails are sent
     verifyEmailsSent();
+  }
+
+  @Test
+  void submitAnswers_badOrg_success() throws Exception {
+    // org should not be verified and only have 1 member
+    Set<String> orgEmailSet =
+        new HashSet<>() {
+          {
+            add("user1@example.org");
+            add("user2@example.org");
+          }
+        };
+    when(_oktaRepo.getAllUsersForOrganization(any())).thenReturn(orgEmailSet);
+
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ID_VERIFICATION_SUBMIT_ANSWERS)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(SUBMIT_ANSWERS_CORRECT_REQUEST);
+
+    this._mockMvc.perform(builder).andExpect(status().isBadRequest());
+
+    // too many users in org, no emails sent
+    verifyEmailsNotSent();
   }
 
   private String getQuestionRequestBody(String orgExternalId, String email) {
