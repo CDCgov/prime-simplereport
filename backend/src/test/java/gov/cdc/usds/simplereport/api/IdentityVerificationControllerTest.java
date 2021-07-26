@@ -102,7 +102,7 @@ class IdentityVerificationControllerTest {
     _experianService.addSessionId(VALID_SESSION_UUID);
 
     Organization org = mock(Organization.class);
-    when(_orgService.getOrganization(eq(FAKE_ORG_EXTERNAL_ID))).thenReturn(org);
+    when(_orgService.getOrganization(FAKE_ORG_EXTERNAL_ID)).thenReturn(org);
     when(_orgService.getOrganization(not(eq(FAKE_ORG_EXTERNAL_ID))))
         .thenThrow(IllegalGraphqlArgumentException.class);
     when(org.getExternalId()).thenReturn(FAKE_ORG_EXTERNAL_ID);
@@ -214,7 +214,7 @@ class IdentityVerificationControllerTest {
     // should send email to requester
     verify(_emailService, times(1))
         .sendWithProviderTemplate(
-            eq(FAKE_ORG_ADMIN_EMAIL), eq(EmailProviderTemplate.ID_VERIFICATION_FAILED));
+            FAKE_ORG_ADMIN_EMAIL, EmailProviderTemplate.ID_VERIFICATION_FAILED);
   }
 
   private void verifyEmailsNotSent() throws IOException {

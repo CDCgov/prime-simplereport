@@ -121,7 +121,11 @@ public class AccountRequestController {
 
       createAdminUser(org, reqVars);
       _crm.submitAccountRequestData(body);
-    } catch (IOException e) {
+    } catch (ResourceException e) {
+      // The `ResourceException` is thrown when an account is requested with an existing org
+      // name. This happens quite frequently and is expected behavior of the current form
+      throw e;
+    } catch (IOException | RuntimeException e) {
       throw new AccountRequestFailureException(e);
     }
   }
@@ -130,6 +134,7 @@ public class AccountRequestController {
    * Account request for experian id verification workflow. It differs from v1 in that it will not
    * send email to the user or to our support staff and it returns the org external id
    */
+  @SuppressWarnings("checkstyle:illegalcatch")
   @PostMapping("/organization-create")
   @Transactional(readOnly = false)
   public AccountResponse submitAccountRequestV2(@Valid @RequestBody AccountRequest body)
@@ -140,17 +145,12 @@ public class AccountRequestController {
       createAdminUser(org, reqVars);
       _crm.submitAccountRequestData(body);
       return new AccountResponse(org.getExternalId());
-    } catch (IOException e) {
+    } catch (ResourceException e) {
+      // The `ResourceException` is thrown when an account is requested with an existing org
+      // name. This happens quite frequently and is expected behavior of the current form
+      throw e;
+    } catch (IOException | RuntimeException e) {
       throw new AccountRequestFailureException(e);
-    } catch (RuntimeException e) {
-      if (e instanceof ResourceException) {
-        // The `ResourceException` is thrown when an account is requested with an existing
-        // organization name. This happens quite frequently and is expected behavior of the current
-        // form
-        throw e;
-      } else {
-        throw new AccountRequestFailureException(e);
-      }
     }
   }
 
