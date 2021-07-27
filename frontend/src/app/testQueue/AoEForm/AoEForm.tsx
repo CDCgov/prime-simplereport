@@ -184,9 +184,7 @@ const AoEForm: React.FC<Props> = ({
     }
   };
 
-  const getTestResultDeliveryPreferences = (
-    phoneNumbers: PhoneNumber[]
-  ) => [
+  const getTestResultDeliveryPreferences = (phoneNumbers: PhoneNumber[]) => [
     {
       label: (
         <>
@@ -299,7 +297,9 @@ const AoEForm: React.FC<Props> = ({
                 name="testResultDelivery"
                 onChange={setTestResultDelivery}
                 buttons={getTestResultDeliveryPreferences(
-                  (patient.phoneNumbers || []).filter((pn) => pn.type !== "LANDLINE")
+                  (patient.phoneNumbers || []).filter(
+                    (pn) => pn.type !== "LANDLINE"
+                  )
                 )}
                 selectedRadio={testResultDelivery}
               />
