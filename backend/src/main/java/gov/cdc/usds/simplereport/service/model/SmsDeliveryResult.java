@@ -3,9 +3,9 @@ package gov.cdc.usds.simplereport.service.model;
 public class SmsDeliveryResult {
   private String telephone;
   private String messageId;
-  private Boolean deliverySuccess;
+  private boolean deliverySuccess;
 
-  public SmsDeliveryResult(String telephone, String messageId, Boolean deliverySuccess) {
+  public SmsDeliveryResult(String telephone, String messageId, boolean deliverySuccess) {
     super();
     this.telephone = telephone;
     this.messageId = messageId;
@@ -20,7 +20,7 @@ public class SmsDeliveryResult {
     return messageId;
   }
 
-  public Boolean getDeliverySuccess() {
+  public boolean getDeliverySuccess() {
     return deliverySuccess;
   }
 }
