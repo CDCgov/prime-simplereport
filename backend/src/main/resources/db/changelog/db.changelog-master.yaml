@@ -1,7 +1,4 @@
 x-ref-data:
-  type-defs:
-    - &idtype uuid
-    - &string text
   column-defs:
     - column: &pk_column
         name: internal_id
@@ -774,12 +771,47 @@ databaseChangeLog:
             tableName: facility
             remarks: A site where testing occurs (may be called "site" in user-facing language).
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *created_by_column
-              - column: *updated_at_column
-              - column: *updated_by_column
-              - column: *soft_delete_column
+              - column: 
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: 
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column: 
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+              - column: 
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
               - column:
                   name: organization_id
                   remarks: Foreign key to the organization that this facility belongs to.
@@ -1179,12 +1211,47 @@ databaseChangeLog:
             tableName: patient_link
             remarks: Time-sensitive UUIDs granting patients access to answer time of test questions
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *created_by_column
-              - column: *updated_at_column
-              - column: *updated_by_column
-              - column: *soft_delete_column
+              - column: 
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: 
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column: 
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+              - column: 
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
               - column:
                   name: test_order_id
                   remarks: The test order this link was generated for
@@ -1232,12 +1299,47 @@ databaseChangeLog:
             tableName: specimen_type
             remarks: A type of specimen collection from a patient.
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *created_by_column
-              - column: *updated_at_column
-              - column: *updated_by_column
-              - column: *soft_delete_column
+              - column: 
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: 
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column: 
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+              - column: 
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
               - column:
                   name: name
                   type: text
@@ -1266,12 +1368,47 @@ databaseChangeLog:
             tableName: device_specimen_type
             remarks: A usable combination of device type and specimen type.
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *created_by_column
-              - column: *updated_at_column
-              - column: *updated_by_column
-              - column: *soft_delete_column
+              - column: 
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: 
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column: 
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+              - column: 
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
               - column:
                   name: device_type_id
                   remarks: The device type for this combination.
@@ -1486,9 +1623,25 @@ databaseChangeLog:
             tableName: time_of_consent
             remarks: This table stores the time at which patients accept the terms of consent for patient links
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *updated_at_column
+              - column: 
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: 
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
               - column:
                   name: patient_link_id
                   remarks: The patient link that was consented to
