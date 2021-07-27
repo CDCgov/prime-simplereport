@@ -75,16 +75,12 @@ public class IdentityVerificationController {
   public IdentityVerificationQuestionsResponse getQuestions(
       @Valid @RequestBody IdentityVerificationQuestionsRequest requestBody) throws IOException {
     Organization org = _orgService.getOrganization(requestBody.getOrgExternalId());
-    Set<String> orgUserEmailSet = _oktaRepo.getAllUsersForOrganization(org);
-    if (org.getIdentityVerified() || orgUserEmailSet.size() != 1) {
-      throw new BadRequestException("The organization must be unverified and only have 1 member");
-    }
+    String orgAdminEmail = checkOrgAndGetAdminEmail(org);
 
     try {
       return _experianService.getQuestions(requestBody);
     } catch (ExperianPersonMatchException e) {
       // could not match a person with the details in the request
-      String orgAdminEmail = orgUserEmailSet.iterator().next();
       sendIdentityVerificationFailedEmails(org.getExternalId(), orgAdminEmail);
       throw e;
     }
@@ -99,15 +95,11 @@ public class IdentityVerificationController {
      * prior to January 2011"
      */
     Organization org = _orgService.getOrganization(requestBody.getOrgExternalId());
-    Set<String> orgUserEmailSet = _oktaRepo.getAllUsersForOrganization(org);
-    if (org.getIdentityVerified() || orgUserEmailSet.size() != 1) {
-      throw new BadRequestException("The organization must be unverified and only have 1 member");
-    }
+    String orgAdminEmail = checkOrgAndGetAdminEmail(org);
 
     IdentityVerificationAnswersResponse verificationResponse =
         _experianService.submitAnswers(requestBody);
 
-    String orgAdminEmail = orgUserEmailSet.iterator().next();
     verificationResponse.setEmail(orgAdminEmail);
 
     if (verificationResponse.isPassed()) {
@@ -118,6 +110,14 @@ public class IdentityVerificationController {
     }
 
     return verificationResponse;
+  }
+
+  private String checkOrgAndGetAdminEmail(Organization org) {
+    Set<String> orgUserEmailSet = _oktaRepo.getAllUsersForOrganization(org);
+    if (org.getIdentityVerified() || orgUserEmailSet.size() != 1) {
+      throw new BadRequestException("The organization must be unverified and only have 1 member");
+    }
+    return orgUserEmailSet.iterator().next();
   }
 
   private void sendIdentityVerificationFailedEmails(String orgExternalId, String orgAdminEmail)
