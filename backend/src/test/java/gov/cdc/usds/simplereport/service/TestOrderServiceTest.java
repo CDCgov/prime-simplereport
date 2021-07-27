@@ -25,7 +25,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
-import gov.cdc.usds.simplereport.service.model.SmsDeliveryResult;
+import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
@@ -527,8 +527,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         false);
     DeviceType devA = _dataFactory.getGenericDevice();
 
-    List<SmsDeliveryResult> deliveryResults = new ArrayList<SmsDeliveryResult>();
-    deliveryResults.add(new SmsDeliveryResult("message-id", "id", false));
+    List<SmsAPICallResult> deliveryResults = new ArrayList<SmsAPICallResult>();
+    deliveryResults.add(new SmsAPICallResult("message-id", "id", false));
 
     doReturn(deliveryResults).when(_smsService).sendToPatientLink(any(), any());
 

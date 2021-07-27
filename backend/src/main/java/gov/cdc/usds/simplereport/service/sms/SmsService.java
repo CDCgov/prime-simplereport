@@ -10,9 +10,10 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TextMessageSent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.repository.TextMessageSentRepository;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
-import gov.cdc.usds.simplereport.service.model.SmsDeliveryResult;
+import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -49,10 +50,10 @@ public class SmsService {
 
   @AuthorizationConfiguration.RequirePermissionStartTestWithPatientLink
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
-  public List<SmsDeliveryResult> sendToPatientLink(UUID patientLinkId, String text) {
+  public List<SmsAPICallResult> sendToPatientLink(UUID patientLinkId, String text) {
     PatientLink pl = pls.getRefreshedPatientLink(patientLinkId);
 
-    List<SmsDeliveryResult> smsSendResults = sendToPerson(pl.getTestOrder().getPatient(), text);
+    List<SmsAPICallResult> smsSendResults = sendToPerson(pl.getTestOrder().getPatient(), text);
 
     smsSendResults.forEach(
         smsDeliveryResult -> {
@@ -66,8 +67,9 @@ public class SmsService {
     return smsSendResults;
   }
 
-  private List<SmsDeliveryResult> sendToPerson(Person p, String text) {
+  private List<SmsAPICallResult> sendToPerson(Person p, String text) {
     return p.getPhoneNumbers().stream()
+        .filter(phoneNumber -> !PhoneType.LANDLINE.equals(phoneNumber.getType()))
         .map(
             phoneNumber -> {
               try {
@@ -76,13 +78,13 @@ public class SmsService {
                         new PhoneNumber(formatNumber(phoneNumber.getNumber())), fromNumber, text);
                 LOG.debug("SMS send initiated {}", msgId);
 
-                return new SmsDeliveryResult(phoneNumber.getNumber(), msgId, true);
+                return new SmsAPICallResult(phoneNumber.getNumber(), msgId, true);
               } catch (NumberParseException npe) {
                 LOG.warn("Failed to parse phone number for patient={}", p.getInternalId());
-                return new SmsDeliveryResult(phoneNumber.getNumber(), null, false);
+                return new SmsAPICallResult(phoneNumber.getNumber(), null, false);
               } catch (ApiException apiException) {
                 LOG.warn("Failed to send text message to patient={}", p.getInternalId());
-                return new SmsDeliveryResult(phoneNumber.getNumber(), null, false);
+                return new SmsAPICallResult(phoneNumber.getNumber(), null, false);
               }
             })
         .collect(Collectors.toList());

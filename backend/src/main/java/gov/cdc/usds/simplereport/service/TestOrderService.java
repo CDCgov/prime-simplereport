@@ -27,7 +27,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
-import gov.cdc.usds.simplereport.service.model.SmsDeliveryResult;
+import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
 import java.time.LocalDate;
 import java.util.Date;
@@ -276,7 +276,7 @@ public class TestOrderService {
       UUID internalId = patientLink.getInternalId();
       savedOrder.setPatientLink(patientLink);
 
-      List<SmsDeliveryResult> smsSendResults =
+      List<SmsAPICallResult> smsSendResults =
           _smss.sendToPatientLink(
               internalId,
               "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);

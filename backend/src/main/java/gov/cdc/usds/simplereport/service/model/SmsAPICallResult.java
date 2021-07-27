@@ -1,11 +1,11 @@
 package gov.cdc.usds.simplereport.service.model;
 
-public class SmsDeliveryResult {
+public class SmsAPICallResult {
   private String telephone;
   private String messageId;
   private boolean deliverySuccess;
 
-  public SmsDeliveryResult(String telephone, String messageId, boolean deliverySuccess) {
+  public SmsAPICallResult(String telephone, String messageId, boolean deliverySuccess) {
     super();
     this.telephone = telephone;
     this.messageId = messageId;

@@ -18,7 +18,7 @@ import gov.cdc.usds.simplereport.db.repository.TextMessageSentRepository;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
-import gov.cdc.usds.simplereport.service.model.SmsDeliveryResult;
+import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardAllFacilitiesUser;
@@ -139,7 +139,7 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
         _smsService.sendToPatientLink(
             _patientLink.getInternalId(), "yup here we are, testing stuff");
 
-    List<SmsDeliveryResult> failedDelivery =
+    List<SmsAPICallResult> failedDelivery =
         sut.stream()
             .filter(result -> result.getTelephone().equals("ABCD THIS ISN'T A PHONE NUMBER"))
             .collect(Collectors.toList());
