@@ -44,10 +44,30 @@ public class SmsCallbackControllerTest extends BaseFullStackTest {
     this._mockMvc.perform(builder).andExpect(status().isForbidden());
   }
 
+  @Test
+  void badTwilioAuthToken() throws Exception {
+    String requestBody = "food=hamburger&drink=coffee";
+
+    String signature =
+        createSignature(Map.of("food", "hamburger", "drink", "coffee"), "attacker-token");
+
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.TWILIO_CALLBACK)
+            .header("X-Twilio-Signature", signature)
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    this._mockMvc.perform(builder).andExpect(status().isForbidden());
+  }
+
+  @Test
   void successfulCallback() throws Exception {
     String requestBody = "food=hamburger&drink=coffee";
 
-    String signature = createSignature(Map.of("food", "hamburger", "drink", "coffee"));
+    String signature =
+        createSignature(Map.of("food", "hamburger", "drink", "coffee"), twilioAuthToken);
 
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.TWILIO_CALLBACK)
@@ -60,7 +80,7 @@ public class SmsCallbackControllerTest extends BaseFullStackTest {
     this._mockMvc.perform(builder).andExpect(status().isOk());
   }
 
-  private String createSignature(Map<String, String> params) throws Exception {
+  private String createSignature(Map<String, String> params, String token) throws Exception {
     StringBuilder builder = new StringBuilder(twilioCallbackUrl);
     if (params != null) {
       List<String> sortedKeys = new ArrayList<String>(params.keySet());
@@ -74,7 +94,7 @@ public class SmsCallbackControllerTest extends BaseFullStackTest {
     }
 
     Mac mac = Mac.getInstance("HmacSHA1");
-    mac.init(new SecretKeySpec(twilioAuthToken.getBytes(), "HmacSHA1"));
+    mac.init(new SecretKeySpec(token.getBytes(), "HmacSHA1"));
     byte[] rawHmac = mac.doFinal(builder.toString().getBytes(StandardCharsets.UTF_8));
     return DatatypeConverter.printBase64Binary(rawHmac);
   }
