@@ -605,12 +605,10 @@ const QueueItem: any = ({
                     />
                     {isAoeModalOpen && (
                       <AoEModalForm
-                        saveButtonText="Continue"
                         onClose={closeAoeModal}
                         patient={patient}
                         loadState={aoeAnswers}
                         saveCallback={saveAoeCallback}
-                        patientLinkId={patientLinkId}
                       />
                     )}
                     <p>

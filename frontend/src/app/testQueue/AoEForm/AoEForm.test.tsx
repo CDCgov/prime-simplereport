@@ -32,7 +32,6 @@ describe("AoEForm", () => {
     render(
       <MockedProvider mocks={mocks}>
         <AoEModalForm
-          saveButtonText="save"
           onClose={jest.fn()}
           patient={{
             internalId: "123",
@@ -54,10 +53,6 @@ describe("AoEForm", () => {
         />
       </MockedProvider>
     );
-    const verbally = await screen.findByLabelText("verbally", {
-      exact: false,
-    });
-    expect(verbally).toBeChecked();
     const recentTestDate = await screen.findByLabelText(
       "Date of most recent test"
     );
