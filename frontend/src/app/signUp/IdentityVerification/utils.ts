@@ -1,6 +1,6 @@
 import * as yup from "yup";
 
-export const getAnswerKey = (index: number) => `${index + 1}`;
+export const getAnswerKey = (index: number) => `answer${index + 1}`;
 
 export const toOptions = (
   choices: string[]
