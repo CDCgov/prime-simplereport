@@ -202,10 +202,11 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   void verifyOrganizationNoPermissions_orgAlreadyVerified_failure() {
     Organization org = _dataFactory.createValidOrg();
+    String orgExternalId = org.getExternalId();
     IllegalStateException e =
         assertThrows(
             IllegalStateException.class,
-            () -> _service.verifyOrganizationNoPermissions(org.getExternalId()));
+            () -> _service.verifyOrganizationNoPermissions(orgExternalId));
 
     assertEquals("Organization is already verified.", e.getMessage());
   }
