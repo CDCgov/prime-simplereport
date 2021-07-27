@@ -261,7 +261,7 @@ class IdentityVerificationControllerTest {
     verify(_emailService, times(1))
         .send(
             anyList(),
-            eq("New account request"),
+            eq("New account ID verification failure"),
             any(AccountRequestOrganizationCreateTemplate.class));
 
     // should send email to requester
