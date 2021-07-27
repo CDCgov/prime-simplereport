@@ -294,6 +294,22 @@ public class OrganizationService {
     return newStatus;
   }
 
+  /**
+   * This method is for verifying an organization after the Experian identity verification process.
+   * It should not be used for any other purpose and once we move to the updated account request
+   * workflow this should be removed.
+   */
+  @Transactional(readOnly = false)
+  public void verifyOrganizationNoPermissions(String externalId) {
+    Organization org = getOrganization(externalId);
+    if (org.getIdentityVerified()) {
+      throw new IllegalStateException("Organization is already verified.");
+    }
+    org.setIdentityVerified(true);
+    _repo.save(org);
+    _oktaRepo.activateOrganization(org);
+  }
+
   @Transactional(readOnly = false)
   public Facility createFacilityNoPermissions(
       Organization organization,
