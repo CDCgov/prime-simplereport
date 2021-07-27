@@ -236,9 +236,8 @@ public class TestOrderService {
   @Deprecated // switch to specifying device-specimen combo
   public TestOrder editQueueItem(
       UUID testOrderId, String deviceId, String result, Date dateTested) {
+    lockOrder(testOrderId);
     try {
-      lockOrder(testOrderId);
-
       TestOrder order = this.getTestOrder(testOrderId);
 
       if (deviceId != null) {
@@ -266,9 +265,8 @@ public class TestOrderService {
     TestOrder order =
         _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
 
+    lockOrder(order.getInternalId());
     try {
-      lockOrder(order.getInternalId());
-
       order.setDeviceSpecimen(deviceSpecimen);
       order.setResult(result);
       order.setDateTestedBackdate(dateTested);
