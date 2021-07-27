@@ -508,7 +508,8 @@ public class TestOrderService {
 
   private void lockOrder(UUID orderId) throws IllegalGraphqlArgumentException {
     if (!_repo.tryLock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, orderId.hashCode())) {
-      throw new IllegalGraphqlArgumentException("Someone else is currently modifying this test result.");
+      throw new IllegalGraphqlArgumentException(
+          "Someone else is currently modifying this test result.");
     }
   }
 
