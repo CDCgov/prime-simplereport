@@ -2605,3 +2605,39 @@ databaseChangeLog:
       rollback:
         - dropView:
             viewName: api_audit_event_no_phi
+  - changeSet:
+      id: add-text-message-status-table
+      author: nicholas.a.scialli@omb.eop.gov
+      comment: Add table to track the delivery status of text messages
+      changes:
+        - createTable:
+            tableName: text_message_status
+            remarks: A table to store the various statuses of each text message
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: text_message_sent_internal_id
+                  type: uuid
+                  remarks: A foreign key to a text message sent
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__internal_id__text_message_sent
+                    references: text_message_sent
+              - column:
+                  name: status
+                  type: text
+                  remarks: The status of the text message as reported by Twilio
+                  constraints:
+                    nullable: false
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.text_message_status TO ${noPhiUsername};
