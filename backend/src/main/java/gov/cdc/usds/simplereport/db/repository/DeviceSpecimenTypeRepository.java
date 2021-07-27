@@ -15,17 +15,17 @@ public interface DeviceSpecimenTypeRepository
   @Override
   @EntityGraph(attributePaths = {"deviceType", "specimenType"})
   @Query(BASE_QUERY + " and e.deviceType.isDeleted = false and e.specimenType.isDeleted = false")
-  public List<DeviceSpecimenType> findAll();
+  List<DeviceSpecimenType> findAll();
 
   @EntityGraph(attributePaths = {"deviceType", "specimenType"})
   @Query(BASE_QUERY + " and e.deviceType = :deviceType and e.specimenType = :specimenType")
-  public Optional<DeviceSpecimenType> find(DeviceType deviceType, SpecimenType specimenType);
+  Optional<DeviceSpecimenType> find(DeviceType deviceType, SpecimenType specimenType);
 
   // INSTA-DEPRECATION: this should only be used until we fix the API to not need
   // it
   @Deprecated
   @EntityGraph(attributePaths = {"deviceType", "specimenType"})
-  public Optional<DeviceSpecimenType> findFirstByDeviceTypeInternalIdOrderByCreatedAt(
+  Optional<DeviceSpecimenType> findFirstByDeviceTypeInternalIdOrderByCreatedAt(
       UUID deviceTypeId); // IGNORES
   // DELETION
 

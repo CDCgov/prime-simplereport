@@ -20,7 +20,7 @@ describe("QuestionsForm", () => {
   it("initializes with the submit button disabled", () => {
     expect(screen.getByText("Submit")).toHaveAttribute("disabled");
   });
-  describe("One filed entered", () => {
+  describe("One field entered", () => {
     beforeEach(() => {
       fireEvent.click(screen.getByLabelText("2002", { exact: false }), {
         target: { value: "1" },
@@ -96,7 +96,7 @@ describe("QuestionsForm", () => {
           );
         });
       });
-      it("does not shows an error", () => {
+      it("does not show an error", () => {
         expect(screen.queryAllByText("This field is required").length).toBe(0);
       });
       it("calls the onSubmit callback", () => {

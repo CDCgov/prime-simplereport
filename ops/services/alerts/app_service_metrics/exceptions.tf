@@ -80,7 +80,7 @@ requests
     | where timestamp <= now() and timestamp > now(-1d)
     )
     on operation_Id
-| project exceptionType = type, failedMethod = method, requestName = name, combinedErrorString = strcat(type, method, name)
+| project stackTrace = details[0].rawStack, exceptionType = type, failedMethod = method, requestName = name, combinedErrorString = strcat(type, method, name)
 | join kind= leftanti (
     requests
     | where timestamp <= now(-1d) and timestamp > now(-8d) and success == false
@@ -89,10 +89,10 @@ requests
         | where timestamp <= now(-1d) and timestamp > now(-8d)
         )
         on operation_Id
-    | project exceptionType = type, failedMethod = method, requestName = name, combinedErrorString = strcat(type, method, name)
+    | project stackTrace = details[0].rawStack, exceptionType = type, failedMethod = method, requestName = name, combinedErrorString = strcat(type, method, name)
     )
     on combinedErrorString
-| distinct exceptionType, failedMethod, requestName
+| summarize stackTrace = any(stackTrace) by failedMethod, requestName, exceptionType
   QUERY
 
   severity    = 2

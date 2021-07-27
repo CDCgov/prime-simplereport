@@ -1,13 +1,34 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
 
 import PersonalDetailsForm from "./PersonalDetailsForm";
 
 describe("PersonalDetailsForm", () => {
   beforeEach(() => {
-    render(<PersonalDetailsForm />);
+    render(
+      <MemoryRouter
+        initialEntries={[
+          { pathname: "/identity-verification", search: "?orgExternalId=foo" },
+        ]}
+      >
+        <PersonalDetailsForm />
+      </MemoryRouter>
+    );
   });
   it("initializes with the submit button disabled", () => {
     expect(screen.getByText("Submit")).toHaveAttribute("disabled");
+  });
+  it("initializes to an error page if no org id is passed", () => {
+    render(
+      <MemoryRouter>
+        <PersonalDetailsForm />
+      </MemoryRouter>
+    );
+    expect(
+      screen.getByText("We weren't able to find your affiliated organization", {
+        exact: false,
+      })
+    ).toBeInTheDocument();
   });
   describe("Filling out the form", () => {
     beforeEach(() => {
@@ -54,12 +75,10 @@ describe("PersonalDetailsForm", () => {
       fireEvent.change(screen.getByLabelText("Last name", { exact: false }), {
         target: { value: "Bobberton" },
       });
-      fireEvent.change(
-        screen.getByLabelText("Date of birth", { exact: false }),
-        {
-          target: { value: "08/30/1986" },
-        }
-      );
+      fireEvent.click(screen.getByTestId("date-picker-button"));
+      const dateButton = screen.getByText("15");
+      expect(dateButton).toHaveClass("usa-date-picker__calendar__date");
+      fireEvent.click(dateButton);
       fireEvent.change(screen.getByLabelText("Email", { exact: false }), {
         target: { value: "bob@bob.bob" },
       });

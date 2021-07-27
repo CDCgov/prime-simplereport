@@ -1,11 +1,8 @@
 x-ref-data:
-  type-defs:
-    - &idtype uuid
-    - &string text
   column-defs:
     - column: &pk_column
         name: internal_id
-        type: *idtype
+        type: uuid
         remarks: The internal database identifier for this entity.
         constraints:
           primaryKey: true
@@ -24,7 +21,7 @@ x-ref-data:
           nullable: false
     - column: &created_by_column
         name: created_by
-        type: *idtype
+        type: uuid
         remarks: The user who created this entity.
         constraints:
           nullable: false
@@ -32,7 +29,7 @@ x-ref-data:
           references: api_user
     - column: &updated_by_column
         name: updated_by
-        type: *idtype
+        type: uuid
         remarks: The user who most recently updated this entity.
         constraints:
           nullable: false
@@ -84,7 +81,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: internal_id
-                  type: *idtype
+                  type: uuid
                   remarks: The internal database identifier for this entity.
                   constraints:
                     primaryKey: true
@@ -103,7 +100,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: login_email
-                  type: *string
+                  type: text
                   remarks: The e-mail of the logged-in user, assuming that is our unique ID for users.
                   constraints:
                     unique: true
@@ -117,28 +114,28 @@ databaseChangeLog:
               - column:
                   name: first_name
                   remarks: The user's given name, if any (to be derived from authentication claims).
-                  type: *string
+                  type: text
               - column:
                   name: middle_name
                   remarks: The user's middle name, if any (to be derived from authentication claims).
-                  type: *string
+                  type: text
               - column:
                   name: last_name
                   remarks: The user's family name or only name (to be derived from authentication claims).
-                  type: *string
+                  type: text
                   constraints:
                     nullable: false
               - column:
                   name: suffix
                   remarks: The generational or positional designation appended to the user's name.
-                  type: *string
+                  type: text
         - createTable:
             tableName: device_type
             remarks: Testing devices that may be present.
             columns:
               - column:
                   name: internal_id
-                  type: *idtype
+                  type: uuid
                   remarks: The internal database identifier for this entity.
                   constraints:
                     primaryKey: true
@@ -151,7 +148,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: created_by
-                  type: *idtype
+                  type: uuid
                   remarks: The user who created this entity.
                   constraints:
                     nullable: false
@@ -165,7 +162,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: updated_by
-                  type: *idtype
+                  type: uuid
                   remarks: The user who most recently updated this entity.
                   constraints:
                     nullable: false
@@ -179,7 +176,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: name
-                  type: *string
+                  type: text
                   remarks: The name of the device, as displayed in isolation
                   constraints:
                     nullable: false
@@ -187,17 +184,17 @@ databaseChangeLog:
                     uniqueConstraintName: uk__device_type
               - column:
                   name: loinc_code
-                  type: *string
+                  type: text
                   remarks: The LOINC code for this device, for reporting purposes (sadly, not unique)
                   constraints:
                     nullable: false
               - column:
                   name: manufacturer
                   remarks: The manufacturer of the device.
-                  type: *string
+                  type: text
               - column:
                   name: model
-                  type: *string
+                  type: text
                   remarks: The device model name.
         - createTable:
             tableName: provider
@@ -205,7 +202,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: internal_id
-                  type: *idtype
+                  type: uuid
                   remarks: The internal database identifier for this entity.
                   constraints:
                     primaryKey: true
@@ -218,7 +215,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: created_by
-                  type: *idtype
+                  type: uuid
                   remarks: The user who created this entity.
                   constraints:
                     nullable: false
@@ -232,7 +229,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: updated_by
-                  type: *idtype
+                  type: uuid
                   remarks: The user who most recently updated this entity.
                   constraints:
                     nullable: false
@@ -247,25 +244,25 @@ databaseChangeLog:
               - column:
                   name: first_name
                   remarks: The provider's given name, if any.
-                  type: *string
+                  type: text
               - column:
                   name: middle_name
                   remarks: The provider's middle name, if any.
-                  type: *string
+                  type: text
               - column:
                   name: last_name
                   remarks: The provider's family name or only name.
-                  type: *string
+                  type: text
                   constraints:
                     nullable: false
               - column:
                   name: suffix
                   remarks: generational or positional designations appended to the provider's name
-                  type: *string
+                  type: text
               - column:
                   name: provider_id
                   remarks: The external ID (NPI) for this provider.
-                  type: *string
+                  type: text
                   constraints:
                     nullable: false
               - column:
@@ -275,30 +272,30 @@ databaseChangeLog:
               - column:
                   name: city
                   remarks: The city of the provider's address.
-                  type: *string
+                  type: text
               - column:
                   name: county
                   remarks: The county (NOT THE COUNTRY) of the provider's address, if applicable.
-                  type: *string
+                  type: text
               - column:
                   name: state
                   remarks: The state or province of the provider's address.
-                  type: *string
+                  type: text
               - column:
                   name: postal_code
                   remarks: The zip/postal code of the provider's address.
-                  type: *string
+                  type: text
               - column:
                   name: telephone
                   remarks: The provider's contact phone number.
-                  type: *string
+                  type: text
         - createTable:
             tableName: organization
             remarks: A site where testing occurs, and also the main user grouping entity.
             columns:
               - column:
                   name: internal_id
-                  type: *idtype
+                  type: uuid
                   remarks: The internal database identifier for this entity.
                   constraints:
                     primaryKey: true
@@ -311,7 +308,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: created_by
-                  type: *idtype
+                  type: uuid
                   remarks: The user who created this entity.
                   constraints:
                     nullable: false
@@ -325,7 +322,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: updated_by
-                  type: *idtype
+                  type: uuid
                   remarks: The user who most recently updated this entity.
                   constraints:
                     nullable: false
@@ -339,7 +336,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: facility_name
-                  type: *string
+                  type: text
                   remarks: The human-readable name for this facility.
                   constraints:
                     nullable: false
@@ -347,7 +344,7 @@ databaseChangeLog:
                     uniqueConstraintName: uk__facility__name
               - column:
                   name: organization_external_id
-                  type: *string
+                  type: text
                   remarks: The external ID of the organization, for authorization purposes.
                   constraints:
                     nullable: false
@@ -355,20 +352,20 @@ databaseChangeLog:
                     uniqueConstraintName: uk__facility__organization_id
               - column:
                   name: clia_number
-                  type: *string # irony
+                  type: text # irony
                   remarks: The CLIA number for the facility that is ordering (and presumably also conducting) the tests.
                   constraints:
                     nullable: false
               - column:
                   name: default_device_type
                   remarks: The default device type (if any) for tests at this facility.
-                  type: *idtype
+                  type: uuid
                   constraints:
                     foreignKeyName: fk__organization__default_device_type
                     references: device_type
               - column:
                   name: ordering_provider_id
-                  type: *idtype
+                  type: uuid
                   remarks: at what point does this blow up on me?
                   constraints:
                     nullable: false
@@ -380,14 +377,14 @@ databaseChangeLog:
             columns:
               - column:
                   name: organization_id
-                  type: *idtype
+                  type: uuid
                   constraints:
                     nullable: false
                     foreignKeyName: fk__facility_device_type__organization
                     references: organization
               - column:
                   name: device_type_id
-                  type: *idtype
+                  type: uuid
                   constraints:
                     nullable: false
                     foreignKeyName: fk__facility_device_type__device_type
@@ -398,7 +395,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: internal_id
-                  type: *idtype
+                  type: uuid
                   remarks: The internal database identifier for this entity.
                   constraints:
                     primaryKey: true
@@ -411,7 +408,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: created_by
-                  type: *idtype
+                  type: uuid
                   remarks: The user who created this entity.
                   constraints:
                     nullable: false
@@ -425,7 +422,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: updated_by
-                  type: *idtype
+                  type: uuid
                   remarks: The user who most recently updated this entity.
                   constraints:
                     nullable: false
@@ -440,7 +437,7 @@ databaseChangeLog:
               - column:
                   name: organization_id
                   remarks: Foreign key to the facility/organization responsible for entering this person's information.
-                  type: *idtype
+                  type: uuid
                   constraints:
                     nullable: false
                     foreignKeyName: fk__person__organization
@@ -448,21 +445,21 @@ databaseChangeLog:
               - column:
                   name: first_name
                   remarks: The person's given name, if any.
-                  type: *string
+                  type: text
               - column:
                   name: middle_name
                   remarks: The person's middle name, if any.
-                  type: *string
+                  type: text
               - column:
                   name: last_name
                   remarks: The person's family name or only name.
-                  type: *string
+                  type: text
                   constraints:
                     nullable: false
               - column:
                   name: suffix
                   remarks: The generational or positional designations appended to the person's name.
-                  type: *string
+                  type: text
               - column:
                   name: race
                   remarks: grouping of humans based on shared physical or social qualities
@@ -470,15 +467,15 @@ databaseChangeLog:
               - column:
                   name: gender
                   remarks: biological sex
-                  type: *string
+                  type: text
               - column:
                   name: ethnicity
                   remarks: ethnic group
-                  type: *string
+                  type: text
               - column:
                   name: lookup_id
                   remarks: user entered. hopefully unique. patient identifier used for patient search
-                  type: *string
+                  type: text
               - column:
                   name: birth_date
                   remarks: The person's date of birth.
@@ -492,27 +489,27 @@ databaseChangeLog:
               - column:
                   name: city
                   remarks: The city of the person's address.
-                  type: *string
+                  type: text
               - column:
                   name: county
                   remarks: The county (NOT THE COUNTRY) of the person's address, if applicable.
-                  type: *string
+                  type: text
               - column:
                   name: state
                   remarks: The state or province of the person's address.
-                  type: *string
+                  type: text
               - column:
                   name: postal_code
                   remarks: The zip/postal code of the person's address.
-                  type: *string
+                  type: text
               - column:
                   name: telephone
                   remarks: The person's contact phone number.
-                  type: *string
+                  type: text
               - column:
                   name: email
                   remarks: The person's contact email.
-                  type: *string
+                  type: text
               - column:
                   name: employed_in_healthcare
                   remarks: Is the person employed in healthcare?
@@ -520,7 +517,7 @@ databaseChangeLog:
               - column:
                   name: role
                   remarks: The person's role at the facility where they are tested (e.g. "staff", "visitor", "resident").
-                  type: *string
+                  type: text
               - column:
                   name: resident_congregate_setting
                   remarks: Does the person live in a congregate setting?
@@ -530,7 +527,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: internal_id
-                  type: *idtype
+                  type: uuid
                   remarks: The internal database identifier for this entity.
                   constraints:
                     primaryKey: true
@@ -543,7 +540,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: created_by
-                  type: *idtype
+                  type: uuid
                   remarks: The user who created this entity.
                   constraints:
                     nullable: false
@@ -557,7 +554,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: updated_by
-                  type: *idtype
+                  type: uuid
                   remarks: The user who most recently updated this entity.
                   constraints:
                     nullable: false
@@ -572,7 +569,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: internal_id
-                  type: *idtype
+                  type: uuid
                   remarks: The internal database identifier for this entity.
                   constraints:
                     primaryKey: true
@@ -585,7 +582,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: created_by
-                  type: *idtype
+                  type: uuid
                   remarks: The user who created this entity.
                   constraints:
                     nullable: false
@@ -599,7 +596,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: updated_by
-                  type: *idtype
+                  type: uuid
                   remarks: The user who most recently updated this entity.
                   constraints:
                     nullable: false
@@ -608,7 +605,7 @@ databaseChangeLog:
               - column:
                   name: patient_id
                   remarks: The person who is being given the test.
-                  type: *idtype
+                  type: uuid
                   constraints:
                     nullable: false
                     foreignKeyName: fk__test_event__patient__person
@@ -616,7 +613,7 @@ databaseChangeLog:
               - column:
                   name: organization_id
                   remarks: Foreign key to the facility/organization responsible for entering this person's information.
-                  type: *idtype
+                  type: uuid
                   constraints:
                     nullable: false
                     foreignKeyName: fk__test_event__organization
@@ -624,7 +621,7 @@ databaseChangeLog:
               - column:
                   name: device_type_id
                   remarks: The device used to record the test result.
-                  type: *idtype
+                  type: uuid
                   constraints:
                     foreignKeyName: fk__test_event__device_type
                     references: device_type
@@ -646,7 +643,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: internal_id
-                  type: *idtype
+                  type: uuid
                   remarks: The internal database identifier for this entity.
                   constraints:
                     primaryKey: true
@@ -659,7 +656,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: created_by
-                  type: *idtype
+                  type: uuid
                   remarks: The user who created this entity.
                   constraints:
                     nullable: false
@@ -673,7 +670,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: updated_by
-                  type: *idtype
+                  type: uuid
                   remarks: The user who most recently updated this entity.
                   constraints:
                     nullable: false
@@ -682,7 +679,7 @@ databaseChangeLog:
               - column:
                   name: patient_id
                   remarks: The person who is being given the test.
-                  type: *idtype
+                  type: uuid
                   constraints:
                     nullable: false
                     foreignKeyName: fk__test_order__patient__person
@@ -690,7 +687,7 @@ databaseChangeLog:
               - column:
                   name: organization_id
                   remarks: Foreign key to the facility/organization responsible for entering this person's information.
-                  type: *idtype
+                  type: uuid
                   constraints:
                     nullable: false
                     foreignKeyName: fk__test_order__organization
@@ -698,14 +695,14 @@ databaseChangeLog:
               - column:
                   name: patient_answers_id
                   remarks: The questions asked at order entry or at test time.
-                  type: *idtype
+                  type: uuid
                   constraints:
                     foreignKeyName: fk__test_order__patient_answers
                     references: patient_answers
               - column:
                   name: device_type_id
                   remarks: The device used to record the test result
-                  type: *idtype
+                  type: uuid
                   constraints:
                     foreignKeyName: fk__test_order__device_type
                     references: device_type
@@ -727,7 +724,7 @@ databaseChangeLog:
                   type: ${database.defaultSchemaName}.TEST_RESULT
               - column:
                   name: test_event_id
-                  type: *idtype
+                  type: uuid
                   remarks: Data saved at the time the test is marked completed.
                   constraints:
                     nullable: true
@@ -774,40 +771,75 @@ databaseChangeLog:
             tableName: facility
             remarks: A site where testing occurs (may be called "site" in user-facing language).
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *created_by_column
-              - column: *updated_at_column
-              - column: *updated_by_column
-              - column: *soft_delete_column
+              - column: 
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: 
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column: 
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+              - column: 
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
               - column:
                   name: organization_id
                   remarks: Foreign key to the organization that this facility belongs to.
-                  type: *idtype
+                  type: uuid
                   constraints:
                     nullable: false
                     foreignKeyName: fk__facility__organization
                     references: organization
               - column:
                   name: facility_name
-                  type: *string
+                  type: text
                   remarks: The human-readable name for this facility.
                   constraints:
                     nullable: false
               - column:
                   name: clia_number
-                  type: *string # irony
+                  type: text # irony
                   remarks: The CLIA number for the facility that is ordering (and presumably also conducting) the tests.
               - column:
                   name: default_device_type_id
                   remarks: The default device type (if any) for tests at this facility.
-                  type: *idtype
+                  type: uuid
                   constraints:
                     foreignKeyName: fk__facility__default_device_type
                     references: device_type
               - column:
                   name: ordering_provider_id
-                  type: *idtype
+                  type: uuid
                   remarks: The healthcare provider who orders tests at this facility.
                   constraints:
                     nullable: false
@@ -820,23 +852,23 @@ databaseChangeLog:
               - column:
                   name: city
                   remarks: The city of the facility address.
-                  type: *string
+                  type: text
               - column:
                   name: county
                   remarks: The county (NOT THE COUNTRY) of the facility address, if applicable.
-                  type: *string
+                  type: text
               - column:
                   name: state
                   remarks: The state or province of the facility address.
-                  type: *string
+                  type: text
               - column:
                   name: postal_code
                   remarks: The zip/postal code of the facility address.
-                  type: *string
+                  type: text
               - column:
                   name: telephone
                   remarks: The facility's contact phone number.
-                  type: *string
+                  type: text
         - addUniqueConstraint:
             tableName: facility
             constraintName: uk__facility__organization_facility_name
@@ -897,7 +929,7 @@ databaseChangeLog:
               - column:
                   name: facility_id
                   afterColumn: organization_id
-                  type: *idtype
+                  type: uuid
                   valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id)
                   remarks: The facility where this person is expected to be tested (null if they will be tested at multiple sites)
                   constraints:
@@ -910,7 +942,7 @@ databaseChangeLog:
               - column:
                   name: facility_id
                   afterColumn: organization_id
-                  type: *idtype
+                  type: uuid
                   remarks: The facility where this test took place.
                   valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id)
                   constraints:
@@ -925,7 +957,7 @@ databaseChangeLog:
               - column:
                   name: facility_id
                   afterColumn: organization_id
-                  type: *idtype
+                  type: uuid
                   remarks: The facility where this test was ordered.
                   valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id)
                   constraints:
@@ -940,7 +972,7 @@ databaseChangeLog:
               - column:
                   name: facility_id
                   afterColumn: organization_id
-                  type: *idtype
+                  type: uuid
                   valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id)
                   constraints:
                     foreignKeyName: fk__facility_device_type__facility
@@ -982,7 +1014,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: email
-                  type: *string
+                  type: text
                   remarks: The facility's contact email address.
   - changeSet:
       id: add-data-hub-upload
@@ -1002,7 +1034,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: internal_id
-                  type: *idtype
+                  type: uuid
                   remarks: The internal database identifier for this entity.
                   constraints:
                     primaryKey: true
@@ -1086,7 +1118,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: swab_type
-                  type: *string
+                  type: text
                   remarks: The swab type used for this device
                   value: "445297001" # swab of internal nose
         - addNotNullConstraint:
@@ -1132,7 +1164,7 @@ databaseChangeLog:
                   remarks: Timestamp to store a user correction to when the test was ordered. Copied from TestOrder. Null if not backdated.
               - column:
                   name: test_order_id
-                  type: *idtype
+                  type: uuid
                   remarks: Reference to original test_order internal_id.
                   constraints:
                     foreignKeyName: fk__test_event__test_order
@@ -1147,7 +1179,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: prior_corrected_test_event_id
-                  type: *idtype
+                  type: uuid
                   remarks: If this is a correction, this is the id the prior test_event being corrected.
                   constraints:
                     foreignKeyName: fk__test_event__prior_corrected_test_event
@@ -1179,16 +1211,51 @@ databaseChangeLog:
             tableName: patient_link
             remarks: Time-sensitive UUIDs granting patients access to answer time of test questions
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *created_by_column
-              - column: *updated_at_column
-              - column: *updated_by_column
-              - column: *soft_delete_column
+              - column: 
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: 
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column: 
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+              - column: 
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
               - column:
                   name: test_order_id
                   remarks: The test order this link was generated for
-                  type: *idtype
+                  type: uuid
                   constraints:
                     nullable: false
                     foreignKeyName: fk__patient_link__test_order
@@ -1232,15 +1299,50 @@ databaseChangeLog:
             tableName: specimen_type
             remarks: A type of specimen collection from a patient.
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *created_by_column
-              - column: *updated_at_column
-              - column: *updated_by_column
-              - column: *soft_delete_column
+              - column: 
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: 
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column: 
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+              - column: 
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
               - column:
                   name: name
-                  type: *string
+                  type: text
                   remarks: The name of this specimen type.
                   constraints:
                     nullable: false
@@ -1249,7 +1351,7 @@ databaseChangeLog:
               - column:
                   name: type_code
                   remarks: The SNOMED type code for this specimen type.
-                  type: *string
+                  type: text
                   constraints:
                     nullable: false
                     unique: true
@@ -1257,25 +1359,60 @@ databaseChangeLog:
               - column:
                   name: collection_location_name
                   remarks: The collection location of this specimen type.
-                  type: *string
+                  type: text
               - column:
                   name: collection_location_code
                   remarks: The SNOMED code for the collection location of this specimen type.
-                  type: *string
+                  type: text
         - createTable:
             tableName: device_specimen_type
             remarks: A usable combination of device type and specimen type.
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *created_by_column
-              - column: *updated_at_column
-              - column: *updated_by_column
-              - column: *soft_delete_column
+              - column: 
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: 
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column: 
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+              - column: 
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
               - column:
                   name: device_type_id
                   remarks: The device type for this combination.
-                  type: *idtype
+                  type: uuid
                   constraints:
                     nullable: false
                     foreignKeyName: fk__device_specimen_type__device_type
@@ -1283,7 +1420,7 @@ databaseChangeLog:
               - column:
                   name: specimen_type_id
                   remarks: The specimen type for this combination.
-                  type: *idtype
+                  type: uuid
                   constraints:
                     nullable: false
                     foreignKeyName: fk__device_specimen_type__specimen_type
@@ -1299,7 +1436,7 @@ databaseChangeLog:
               - column:
                   name: facility_id
                   remarks: A facility at which this device/specimen combination is used.
-                  type: *idtype
+                  type: uuid
                   constraints:
                     nullable: false
                     foreignKeyName: fk__facility_device_specimen_type__facility
@@ -1307,7 +1444,7 @@ databaseChangeLog:
               - column:
                   name: device_specimen_type_id
                   remarks: A device/specimen combination that is allowed to be used at the facility.
-                  type: *idtype
+                  type: uuid
                   constraints:
                     nullable: false
                     foreignKeyName: fk__facility_device_specimen_type__device_specimen_type
@@ -1321,7 +1458,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: default_device_specimen_type_id
-                  type: *idtype
+                  type: uuid
                   constraints:
                     foreignKeyName: fk__facility__default_device_specimen_type
                     referencedTableName: device_specimen_type
@@ -1331,7 +1468,7 @@ databaseChangeLog:
               - column:
                   name: device_specimen_type_id
                   remarks: The device/specimen combination used to record the test result.
-                  type: *idtype
+                  type: uuid
                   constraints:
                     foreignKeyName: fk__test_order__device_specimen_type
                     referencedTableName: device_specimen_type
@@ -1342,7 +1479,7 @@ databaseChangeLog:
               - column:
                   name: device_specimen_type_id
                   remarks: The device/specimen combination used to record the test result.
-                  type: *idtype
+                  type: uuid
                   constraints:
                     foreignKeyName: fk__test_event__device_specimen_type
                     referencedTableName: device_specimen_type
@@ -1486,13 +1623,29 @@ databaseChangeLog:
             tableName: time_of_consent
             remarks: This table stores the time at which patients accept the terms of consent for patient links
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *updated_at_column
+              - column: 
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: 
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column: 
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
               - column:
                   name: patient_link_id
                   remarks: The patient link that was consented to
-                  type: *idtype
+                  type: uuid
                   constraints:
                     nullable: false
                     foreignKeyName: fk__patient_link__time_of_consent
@@ -1508,7 +1661,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: *idtype
+                  type: uuid
                   remarks: The internal database identifier for this audit event.
                   constraints:
                     primaryKey: true
@@ -1522,7 +1675,7 @@ databaseChangeLog:
               - column:
                   name: request_id
                   remarks: The correlation ID from the application logs.
-                  type: *string
+                  type: text
               - column:
                   name: http_request_details
                   remarks: Key details of the HTTP request.
@@ -1539,7 +1692,7 @@ databaseChangeLog:
                   type: "text[]"
               - column:
                   name: api_user_id
-                  type: *idtype
+                  type: uuid
                   remarks: The user who performed this action.
                   constraints:
                     nullable: false
@@ -1557,7 +1710,7 @@ databaseChangeLog:
                   type: "text[]"
               - column:
                   name: organization_id
-                  type: *idtype
+                  type: uuid
                   remarks: The organization within which this request was performed (if applicable).
                   constraints:
                     nullable: true
@@ -1565,7 +1718,7 @@ databaseChangeLog:
                     references: organization
               - column:
                   name: patient_link_id
-                  type: *idtype
+                  type: uuid
                   remarks: The "magic" patient link that the patient used to perform this action (if applicable).
                   constraints:
                     nullable: true
@@ -1604,7 +1757,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: patient_link_internal_id
-                  type: *idtype
+                  type: uuid
                   remarks: The internal database identifier for this entity, and a foreign key to patient_link
                   constraints:
                     primaryKey: true
@@ -1682,7 +1835,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: internal_id
-                  type: *idtype
+                  type: uuid
                   remarks: The internal database identifier of the Person to whom these preferences belong
                   constraints:
                     foreignKeyName: fk__patient_preferences__person
@@ -1691,7 +1844,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: preferred_language
-                  type: *string
+                  type: text
                   remarks: Tracks the individual's preferred language
               - column:
                   name: test_result_delivery
@@ -1844,13 +1997,13 @@ databaseChangeLog:
               - column:
                   name: patient_registration_link
                   remarks: The unique link
-                  type: *string
+                  type: text
                   constraints:
                     nullable: false
                     unique: true
               - column:
                   name: facility_id
-                  type: *idtype
+                  type: uuid
                   remarks: The facility associated with the link
                   constraints:
                     nullable: true
@@ -1859,7 +2012,7 @@ databaseChangeLog:
                     references: facility
               - column:
                   name: organization_id
-                  type: *idtype
+                  type: uuid
                   remarks: The organization associated with the link
                   constraints:
                     nullable: true
@@ -1926,7 +2079,7 @@ databaseChangeLog:
                         nullable: false
                   - column:
                       name: principal_name
-                      type: *string
+                      type: text
                       remarks: The name or UUID of the user for this session.
           - createIndex:
               tableName: spring_session
@@ -1955,7 +2108,7 @@ databaseChangeLog:
                         deleteCascade: true
                   - column:
                       name: attribute_name
-                      type: *string
+                      type: text
                       remarks: The unique name of this attribute.
                       constraints: 
                         nullable: false
@@ -2017,14 +2170,14 @@ databaseChangeLog:
               columns:
                  - column:
                      name: internal_id
-                     type: *idtype
+                     type: uuid
                      remarks: The internal database identifier for this entity
                      constraints:
                        primaryKey: true
                        nullable: false
                  - column:
                      name: person_internal_id
-                     type: *idtype
+                     type: uuid
                      remarks: A foreign key to a person
                      constraints:
                        nullable: false
@@ -2039,7 +2192,7 @@ databaseChangeLog:
                        nullable: true
                  - column:
                      name: number
-                     type: *string
+                     type: text
                      remarks: A person's contact telephone number
                      constraints:
                        nullable: false
@@ -2053,7 +2206,7 @@ databaseChangeLog:
                 - column:
                     name: primary_phone_internal_id
                     afterColumn: telephone
-                    type: *idtype
+                    type: uuid
                     remarks: The identifier of the primary phone number for this patient
                     constraints:
                       nullable: true
@@ -2261,7 +2414,7 @@ databaseChangeLog:
               - column:
                   name: organization_type
                   afterColumn: organization_name
-                  type: *string
+                  type: text
                   remarks: The type of organization
   - changeSet:
       id: add-tenant-data-access-table
@@ -2280,7 +2433,7 @@ databaseChangeLog:
               - column: *soft_delete_column
               - column:
                   name: api_user_internal_id
-                  type: *idtype
+                  type: uuid
                   remarks: A foreign key to a site admin api user who will access tenant data
                   constraints:
                     nullable: false
@@ -2288,7 +2441,7 @@ databaseChangeLog:
                     references: api_user
               - column:
                   name: organization_internal_id
-                  type: *idtype
+                  type: uuid
                   remarks: A foreign key to an organization will be accessed
                   constraints:
                     nullable: false
@@ -2302,7 +2455,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: justification
-                  type: *string
+                  type: text
                   remarks: The reason tenant data access was used
                   constraints:
                     nullable: false
@@ -2325,14 +2478,14 @@ databaseChangeLog:
             columns:
               - column:
                   name: internal_id
-                  type: *idtype
+                  type: uuid
                   remarks: The internal database identifier for this entity
                   constraints:
                     primaryKey: true
                     nullable: false
               - column:
                   name: patient_link_internal_id
-                  type: *idtype
+                  type: uuid
                   remarks: A foreign key to a patient link
                   constraints:
                     nullable: false
@@ -2340,7 +2493,7 @@ databaseChangeLog:
                     references: patient_link
               - column:
                   name: twilio_message_id
-                  type: *string
+                  type: text
                   remarks: The Twilio text message ID
                   constraints:
                     nullable: false
