@@ -13,7 +13,7 @@ import Button from "../../commonComponents/Button/Button";
 import FormGroup from "../../commonComponents/FormGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import "./AoEForm.scss";
-import { COVID_RESULTS, PHONE_TYPE_VALUES } from "../../constants";
+import { COVID_RESULTS } from "../../constants";
 import { TestResult } from "../QueueItem";
 
 import SymptomInputs from "./SymptomInputs";
@@ -298,7 +298,9 @@ const AoEForm: React.FC<Props> = ({
                 legend="Would you like to receive your results via text message?"
                 name="testResultDelivery"
                 onChange={setTestResultDelivery}
-                buttons={getTestResultDeliveryPreferences(patient.phoneNumbers.filter(pn => pn.type !== "LANDLINE"))}
+                buttons={getTestResultDeliveryPreferences(
+                  patient.phoneNumbers.filter((pn) => pn.type !== "LANDLINE")
+                )}
                 selectedRadio={testResultDelivery}
               />
             </div>
