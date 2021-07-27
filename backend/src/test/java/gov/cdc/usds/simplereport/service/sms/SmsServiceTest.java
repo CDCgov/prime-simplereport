@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service.sms;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TextMessageSent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.repository.TextMessageSentRepository;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import gov.cdc.usds.simplereport.service.OrganizationService;
@@ -190,29 +192,59 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
 
   @Test
   @WithSimpleReportStandardAllFacilitiesUser
-  void sendPatientLinkSms_sendsToAllPatientPhoneNumbers() throws NumberParseException {
+  void sendPatientLinkSms_sendsToAllPatientMobileNumbers() throws NumberParseException {
     // GIVEN
+    var pn = new gov.cdc.usds.simplereport.db.model.PhoneNumber(PhoneType.MOBILE, "2708675309");
     _person = _dataFactory.createFullPerson(_org);
-    _dataFactory.addPhoneNumberToPerson(_person, "2708675309");
+    _dataFactory.addPhoneNumberToPerson(_person, pn);
     createTestOrderAndPatientLink(_person);
 
     // WHEN
-    thenAnswer =
-        when(mockTwilio.send(any(), fromNumber.capture(), message.capture()))
-            .thenAnswer(
-                new Answer() {
-                  private int count = 0;
+    when(mockTwilio.send(any(), fromNumber.capture(), message.capture()))
+        .thenAnswer(
+            new Answer() {
+              private int count = 0;
 
-                  public Object answer(InvocationOnMock invocation) {
-                    count++;
+              public Object answer(InvocationOnMock invocation) {
+                count++;
 
-                    return String.format("some-twilio-id-%d", count);
-                  }
-                });
+                return String.format("some-twilio-id-%d", count);
+              }
+            });
 
     var sut = _smsService.sendToPatientLink(_patientLink.getInternalId(), "it's a test!");
 
     // THEN
     assertEquals(2, sut.size());
+  }
+
+  @Test
+  @WithSimpleReportStandardAllFacilitiesUser
+  void sendPatientLinkSms_doesNotSendToPatientLandlineNumber() throws NumberParseException {
+    // GIVEN
+    _person = _dataFactory.createFullPerson(_org);
+    var pn = new gov.cdc.usds.simplereport.db.model.PhoneNumber(PhoneType.LANDLINE, "2708675309");
+    _dataFactory.addPhoneNumberToPerson(_person, pn);
+    createTestOrderAndPatientLink(_person);
+
+    // WHEN
+    when(mockTwilio.send(any(), fromNumber.capture(), message.capture()))
+        .thenAnswer(
+            new Answer() {
+              private int count = 0;
+
+              public Object answer(InvocationOnMock invocation) {
+                count++;
+
+                return String.format("some-twilio-id-%d", count);
+              }
+            });
+
+    List<SmsAPICallResult> sut =
+        _smsService.sendToPatientLink(_patientLink.getInternalId(), "it's a test!");
+    // THEN
+    assertEquals(1, sut.size());
+    // Should not have attempted delivery to the landline number
+    assertNotEquals("2708675309", sut.get(0).getTelephone());
   }
 }

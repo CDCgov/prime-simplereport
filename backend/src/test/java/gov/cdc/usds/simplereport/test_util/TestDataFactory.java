@@ -202,8 +202,7 @@ public class TestDataFactory {
     return perple.get(0);
   }
 
-  public PhoneNumber addPhoneNumberToPerson(Person p, String telephone) {
-    var pn = new PhoneNumber(PhoneType.MOBILE, telephone);
+  public PhoneNumber addPhoneNumberToPerson(Person p, PhoneNumber pn) {
     pn.setPerson(p);
     return _phoneNumberRepo.save(pn);
   }
