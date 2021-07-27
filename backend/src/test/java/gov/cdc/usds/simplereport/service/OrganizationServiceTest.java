@@ -189,4 +189,25 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             AccessDeniedException.class, () -> _service.updateOrganization("Foo org", "k12"));
     assertEquals("Access is denied", caught.getMessage());
   }
+
+  @Test
+  void verifyOrganizationNoPermissions_noUser_success() {
+    Organization org = _dataFactory.createUnverifiedOrg();
+    _service.verifyOrganizationNoPermissions(org.getExternalId());
+
+    org = _service.getOrganization(org.getExternalId());
+    assertTrue(org.getIdentityVerified());
+  }
+
+  @Test
+  void verifyOrganizationNoPermissions_orgAlreadyVerified_failure() {
+    Organization org = _dataFactory.createValidOrg();
+    String orgExternalId = org.getExternalId();
+    IllegalStateException e =
+        assertThrows(
+            IllegalStateException.class,
+            () -> _service.verifyOrganizationNoPermissions(orgExternalId));
+
+    assertEquals("Organization is already verified.", e.getMessage());
+  }
 }
