@@ -13,7 +13,7 @@ import Button from "../../commonComponents/Button/Button";
 import FormGroup from "../../commonComponents/FormGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import "./AoEForm.scss";
-import { COVID_RESULTS } from "../../constants";
+import { COVID_RESULTS, PHONE_TYPE_VALUES } from "../../constants";
 import { TestResult } from "../QueueItem";
 
 import SymptomInputs from "./SymptomInputs";
@@ -295,10 +295,10 @@ const AoEForm: React.FC<Props> = ({
           <FormGroup title="Results">
             <div className="prime-formgroup__wrapper">
               <RadioGroup
-                legend="Would you like to receive a copy of your results via text message?"
+                legend="Would you like to receive your results via text message?"
                 name="testResultDelivery"
                 onChange={setTestResultDelivery}
-                buttons={getTestResultDeliveryPreferences(patient.phoneNumbers)}
+                buttons={getTestResultDeliveryPreferences(patient.phoneNumbers.filter(pn => pn.type !== "LANDLINE"))}
                 selectedRadio={testResultDelivery}
               />
             </div>
