@@ -125,7 +125,7 @@ public class IdentityVerificationController {
     // send summary email to SR support
     _es.send(
         sendGridProperties.getAccountRequestRecipient(),
-        "New account request",
+        "New account ID verification failure",
         new AccountRequestOrganizationCreateTemplate(orgExternalId, orgAdminEmail));
     // send next-steps email to requester
     _es.sendWithProviderTemplate(orgAdminEmail, EmailProviderTemplate.ID_VERIFICATION_FAILED);
