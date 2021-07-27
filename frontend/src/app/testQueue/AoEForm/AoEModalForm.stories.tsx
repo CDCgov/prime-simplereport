@@ -1,19 +1,45 @@
 import { Story, Meta } from "@storybook/react";
 import { ComponentProps } from "react";
 
+import { getMocks, StoryGraphQLProvider } from "../../../stories/storyMocks";
+import { Patient } from "../../patients/ManagePatients";
+
 import AoEModalForm from "./AoEModalForm";
 
 export default {
   title: "App/Test Queue/AoE Modal Form",
   component: AoEModalForm,
+  parameters: {
+    msw: getMocks("GetPatientsLastResult"),
+  },
   argTypes: {
-    logo: { control: "boolean" },
+    saveCallback: { action: "saved" },
   },
 } as Meta;
 
 const Template: Story<ComponentProps<typeof AoEModalForm>> = (args) => (
-  <AoEModalForm {...args} />
+  <StoryGraphQLProvider>
+    <AoEModalForm {...args} />
+  </StoryGraphQLProvider>
 );
 
+const patient: Patient = {
+  firstName: "Pauline",
+  lastName: "Nida",
+  internalId: "123abc",
+  isDeleted: false,
+  birthDate: "2002-01-29",
+  middleName: "",
+  role: "",
+  lastTest: {
+    dateAdded: "",
+    result: "UNKNOWN",
+    dateTested: "",
+    deviceTypeModel: "",
+  },
+};
+
 export const Default = Template.bind({});
-Default.args = {};
+Default.args = {
+  patient,
+};
