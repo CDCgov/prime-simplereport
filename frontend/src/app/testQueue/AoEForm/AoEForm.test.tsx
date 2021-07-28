@@ -206,7 +206,8 @@ describe("AoEForm", () => {
         </MockedProvider>
       );
       const smsDeliveryRadio = screen.getByRole("radio", {
-        name: "Yes (There are no mobile phone numbers listed in your patient profile.)",
+        name:
+          "Yes (There are no mobile phone numbers listed in your patient profile.)",
       });
 
       expect(smsDeliveryRadio).toBeInTheDocument();
