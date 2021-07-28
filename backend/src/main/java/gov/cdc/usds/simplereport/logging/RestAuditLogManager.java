@@ -66,7 +66,7 @@ public class RestAuditLogManager {
     return true;
   }
 
-  public boolean logWebhookSuccess(HttpServletRequest request, Object resultObject) {
+  public boolean logWebhookSuccess(HttpServletRequest request) {
     if (!_webhookContextHolder.isSmsWebhook()) {
       LOG.error("Somehow reached success handler without webhook context being true");
       return false;

@@ -19,7 +19,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class TextMessageStatusServiceTest extends BaseServiceTest<TextMessageStatusService> {
+class TextMessageStatusServiceTest extends BaseServiceTest<TextMessageStatusService> {
 
   @Autowired TextMessageStatusService _service;
   @Autowired TextMessageSentRepository _textMessageSentRepo;

@@ -33,7 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-public class SmsCallbackControllerTest extends BaseFullStackTest {
+class SmsCallbackControllerTest extends BaseFullStackTest {
 
   @Autowired private MockMvc _mockMvc;
   @Autowired private TestDataFactory _dataFactory;
