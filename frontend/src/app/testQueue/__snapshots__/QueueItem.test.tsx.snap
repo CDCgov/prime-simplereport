@@ -98,7 +98,7 @@ exports[`QueueItem correctly renders the test queue 1`] = `
                   Phone number
                 </strong>
                 <p>
-                  string
+                  fakenumber
                 </p>
               </li>
               <li

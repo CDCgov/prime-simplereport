@@ -205,9 +205,12 @@ describe("AoEForm", () => {
           />
         </MockedProvider>
       );
+      const smsDeliveryRadio = screen.getByRole("radio", {
+        name: "Yes There is no mobile number in the patient profile",
+      });
 
-      expect((await screen.findAllByLabelText("Yes"))[0]).toBeInTheDocument();
-      expect((await screen.findAllByLabelText("Yes"))[0]).toBeDisabled();
+      expect(smsDeliveryRadio).toBeInTheDocument();
+      expect(smsDeliveryRadio).toBeDisabled();
       expect(
         await screen.findByText(
           "There is no mobile number in the patient profile"
