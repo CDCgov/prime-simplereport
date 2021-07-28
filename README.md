@@ -341,7 +341,7 @@ View the [SimpleReport Storybook](https://main--60a556a7c807cc0039ec6786.chromat
 Prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|[Release](#deploy-with-release)
 Demo|[/app/static/commit.txt](https://demo.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://demo.simplereport.gov/api/actuator/info)|[Release](#deploy-with-release) & [Action](#deploy-with-action)
 Training|[/app/static/commit.txt](https://training.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://training.simplereport.gov/api/actuator/info)|[Release](#deploy-with-release) & [Action](#deploy-with-action)
-Staging|[/app/static/commit.txt](https://stg.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://stg.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action) & Daily cron
+Staging|[/app/static/commit.txt](https://stg.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://stg.simplereport.gov/api/actuator/info)|Push to `main`
 Dev|[/app/static/commit.txt](https://dev.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://dev.simplereport.gov/api/actuator/info)|Push to `main`
 Test|[/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://test.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action)
 Pentest|[/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action)
@@ -360,12 +360,8 @@ Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/rele
    Add a version tag. If the release was `v1` then this release should be `v2` 
 2. Add a release title summarizing the changes
 3. If applicable describe some of the changes in detail in the description
-3. Check the "This is a pre-release" box.
-4. Click publish release (this will trigger the release to `stg`)
-5. Verify the changes are live in `stg` by ensuring the deployed commit hash matches the commit hash on the release and the deployed release tag matches. This is done by going to `/app/static/commit.txt` and `/api/actuator/info`
-6. Return to the release page and select "Edit release"
-7. Un-check the "This is a pre-release" checkbox and click "Update release" (this will trigger the release to other environments)
-8. Verify that the changes are live in `prod`, `demo` and `training`.
+4. Click publish release
+5. Verify that the changes are live in `prod`, `demo` and `training`.
 
 ### Revert to a Previous Release
 
