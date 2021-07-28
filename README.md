@@ -26,7 +26,7 @@ https://simplereport.gov/
   - [Frontend](#frontend)
     - [Frontend-Setup](#frontend-setup)
     - [Linters](#linters)
-    - [Storybook](#storybook)
+    - [Storybook and Chromatic](#storybook-and-chromatic)
   - [Deploy](#deploy)
     - [Cloud Environments](#cloud-environments)
     - [Deploy With Release](#deploy-with-release)
