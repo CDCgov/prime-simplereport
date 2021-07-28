@@ -281,7 +281,7 @@ public class TestOrderService {
               internalId,
               "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
 
-      Boolean hasDeliveryFailure =
+      boolean hasDeliveryFailure =
           smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
 
       if (hasDeliveryFailure == true) {
