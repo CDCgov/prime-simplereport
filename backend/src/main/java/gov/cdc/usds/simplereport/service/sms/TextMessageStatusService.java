@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.service.sms;
 
 import com.twilio.security.RequestValidator;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidTwilioCallbackException;
+import gov.cdc.usds.simplereport.api.model.errors.InvalidTwilioMessageIdentifierException;
 import gov.cdc.usds.simplereport.db.model.TextMessageSent;
 import gov.cdc.usds.simplereport.db.model.TextMessageStatus;
 import gov.cdc.usds.simplereport.db.repository.TextMessageSentRepository;
@@ -36,6 +37,10 @@ public class TextMessageStatusService {
 
   public void saveTextMessageStatus(String messageId, String status) {
     TextMessageSent message = sentRepo.findByTwilioMessageId(messageId);
+    if (message == null) {
+      throw new InvalidTwilioMessageIdentifierException();
+    }
+
     TextMessageStatus textMessageStatus = new TextMessageStatus(message, status);
     statusRepo.save(textMessageStatus);
   }

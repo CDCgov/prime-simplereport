@@ -19,4 +19,8 @@ public class TextMessageStatus extends AuditedEntity {
     this.textMessageSent = textMessageSent;
     this.status = status;
   }
+
+  public String getStatus() {
+    return status;
+  }
 }
