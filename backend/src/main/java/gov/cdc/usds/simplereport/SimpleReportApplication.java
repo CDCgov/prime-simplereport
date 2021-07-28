@@ -44,7 +44,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAsync
 @EnableScheduling
 public class SimpleReportApplication {
-  private static final Logger LOG = LoggerFactory.getLogger(AuthTestController.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SimpleReportApplication.class);
 
   public static void main(String[] args) {
     SpringApplication.run(SimpleReportApplication.class, args);
