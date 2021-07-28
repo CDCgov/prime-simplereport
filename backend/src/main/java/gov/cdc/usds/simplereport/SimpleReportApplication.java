@@ -65,6 +65,6 @@ public class SimpleReportApplication {
   @Bean
   @ConditionalOnSingleCandidate(GitProperties.class)
   public CommandLineRunner logGitCommit(GitProperties gitProperties) {
-    return args -> LOG.info("Current commit is: " + gitProperties.getCommitId());
+    return args -> LOG.info("Current commit is: {}", gitProperties.getCommitId());
   }
 }
