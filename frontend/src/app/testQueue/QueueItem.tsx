@@ -32,7 +32,7 @@ import {
 } from "./TestTimer";
 import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
-import { AoEAnswers } from "./AoEForm/AoEForm";
+import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
 
@@ -174,14 +174,7 @@ if (process.env.NODE_ENV !== "test") {
 
 export interface QueueItemProps {
   internalId: string;
-  patient: {
-    internalId: string;
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    telephone: string;
-    birthDate: string;
-  };
+  patient: TestQueuePerson;
   devices: {
     name: string;
     internalId: string;
