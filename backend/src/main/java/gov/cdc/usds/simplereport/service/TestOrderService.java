@@ -24,6 +24,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.db.repository.AdvisoryLockManager;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
@@ -232,17 +233,22 @@ public class TestOrderService {
   @Deprecated // switch to specifying device-specimen combo
   public TestOrder editQueueItem(
       UUID testOrderId, String deviceId, String result, Date dateTested) {
-    TestOrder order = this.getTestOrder(testOrderId);
+    lockOrder(testOrderId);
+    try {
+      TestOrder order = this.getTestOrder(testOrderId);
 
-    if (deviceId != null) {
-      order.setDeviceSpecimen(_dts.getDefaultForDeviceId(deviceId));
+      if (deviceId != null) {
+        order.setDeviceSpecimen(_dts.getDefaultForDeviceId(deviceId));
+      }
+
+      order.setResult(result == null ? null : TestResult.valueOf(result));
+
+      order.setDateTestedBackdate(dateTested);
+
+      return _repo.save(order);
+    } finally {
+      unlockOrder(testOrderId);
     }
-
-    order.setResult(result == null ? null : TestResult.valueOf(result));
-
-    order.setDateTestedBackdate(dateTested);
-
-    return _repo.save(order);
   }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
@@ -255,43 +261,49 @@ public class TestOrderService {
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order =
         _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
-    order.setDeviceSpecimen(deviceSpecimen);
-    order.setResult(result);
-    order.setDateTestedBackdate(dateTested);
-    order.markComplete();
 
-    TestEvent testEvent = new TestEvent(order);
-    _terepo.save(testEvent);
+    lockOrder(order.getInternalId());
+    try {
+      order.setDeviceSpecimen(deviceSpecimen);
+      order.setResult(result);
+      order.setDateTestedBackdate(dateTested);
+      order.markComplete();
 
-    order.setTestEventRef(testEvent);
-    TestOrder savedOrder = _repo.save(order);
+      TestEvent testEvent = new TestEvent(order);
+      _terepo.save(testEvent);
 
-    _testEventReportingService.report(testEvent);
+      order.setTestEventRef(testEvent);
+      TestOrder savedOrder = _repo.save(order);
 
-    if (TestResultDeliveryPreference.SMS
-        == _ps.getPatientPreferences(person).getTestResultDelivery()) {
-      // After adding test result, create a new patient link and text it to the
-      // patient
-      PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-      UUID internalId = patientLink.getInternalId();
-      savedOrder.setPatientLink(patientLink);
+      _testEventReportingService.report(testEvent);
 
-      List<SmsAPICallResult> smsSendResults =
-          _smss.sendToPatientLink(
-              internalId,
-              "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
+      if (TestResultDeliveryPreference.SMS
+          == _ps.getPatientPreferences(person).getTestResultDelivery()) {
+        // After adding test result, create a new patient link and text it to the
+        // patient
+        PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
+        UUID internalId = patientLink.getInternalId();
+        savedOrder.setPatientLink(patientLink);
 
-      boolean hasDeliveryFailure =
-          smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
+        List<SmsAPICallResult> smsSendResults =
+            _smss.sendToPatientLink(
+                internalId,
+                "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
 
-      if (hasDeliveryFailure == true) {
-        return new AddTestResultResponse(savedOrder, false);
+        boolean hasDeliveryFailure =
+            smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
+
+        if (hasDeliveryFailure == true) {
+          return new AddTestResultResponse(savedOrder, false);
+        }
+
+        return new AddTestResultResponse(savedOrder, true);
       }
 
-      return new AddTestResultResponse(savedOrder, true);
+      return new AddTestResultResponse(savedOrder);
+    } finally {
+      unlockOrder(order.getInternalId());
     }
-
-    return new AddTestResultResponse(savedOrder);
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
@@ -490,6 +502,17 @@ public class TestOrderService {
         priorTestResult,
         symptomOnset,
         noSymptoms);
+  }
+
+  private void lockOrder(UUID orderId) throws IllegalGraphqlArgumentException {
+    if (!_repo.tryLock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, orderId.hashCode())) {
+      throw new IllegalGraphqlArgumentException(
+          "Someone else is currently modifying this test result.");
+    }
+  }
+
+  private void unlockOrder(UUID orderId) {
+    _repo.unlock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, orderId.hashCode());
   }
 
   private static IllegalGraphqlArgumentException noSuchOrderFound() {
