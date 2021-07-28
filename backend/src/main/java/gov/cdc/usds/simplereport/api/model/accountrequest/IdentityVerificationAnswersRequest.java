@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class IdentityVerificationAnswersRequest {
+
   @JsonProperty @NotNull private String orgExternalId;
   // experian session id from getting questions
   @JsonProperty @NotNull private String sessionId;

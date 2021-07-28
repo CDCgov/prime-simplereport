@@ -6,5 +6,8 @@ public enum EmailProviderTemplate {
    */
 
   // new account request next-steps email (to account requester)
-  ACCOUNT_REQUEST;
+  ACCOUNT_REQUEST,
+
+  // identity verification failed email (to account requester)
+  ID_VERIFICATION_FAILED;
 }
