@@ -319,7 +319,7 @@ public class ApiUserService {
   }
 
   /** The SMS Webhook API User should <em>always</em> exist. */
-  private ApiUser getSmsWebhookApiUser() {
+  public ApiUser getSmsWebhookApiUser() {
     Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(SMS_WEBHOOK_EMAIL);
     return found.orElseGet(
         () -> {

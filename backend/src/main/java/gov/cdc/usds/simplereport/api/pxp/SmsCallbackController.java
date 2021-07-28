@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/pxp/callback")
 @PreAuthorize("@textMessageStatusService.validateSmsCallback(#request)")
+@PostAuthorize("@restAuditLogManager.logWebhookSuccess(#request, returnObject)")
 @Validated
 public class SmsCallbackController {
   private static final Logger LOG = LoggerFactory.getLogger(SmsCallbackController.class);
