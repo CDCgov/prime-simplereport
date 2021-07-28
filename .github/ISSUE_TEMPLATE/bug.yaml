@@ -22,9 +22,10 @@ body:
     description: Steps to reproduce the behavior.
     placeholder: |
       1. In this environment...
-      2. With this config...
-      3. Run '...'
-      4. See error...
+      2. Go to '...'
+      3. Click on '....'
+      4. Scroll down to '....'
+      5. See error
   validations:
     required: true
 - type: textarea
