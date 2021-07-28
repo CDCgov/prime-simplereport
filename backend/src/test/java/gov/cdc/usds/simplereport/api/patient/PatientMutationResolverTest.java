@@ -92,7 +92,8 @@ class PatientMutationResolverTest {
         null,
         false,
         false,
-        "English");
+        "English",
+        null);
 
     verify(personService)
         .addPatient(
@@ -105,6 +106,7 @@ class PatientMutationResolverTest {
             any(),
             any(),
             argThat((phoneNumbers) -> phoneNumbers.get(0).getNumber().equals(inputPhoneNumber)),
+            any(),
             any(),
             any(),
             any(),
