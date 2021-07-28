@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import com.google.i18n.phonenumbers.NumberParseException;
 import com.twilio.exception.ApiException;
 import com.twilio.exception.TwilioException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
@@ -29,6 +28,7 @@ import gov.cdc.usds.simplereport.db.repository.AdvisoryLockManager;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
+import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
 import java.time.LocalDate;
 import java.util.Date;
@@ -40,8 +40,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -64,7 +62,6 @@ public class TestOrderService {
   private PatientLinkService _pls;
   private SmsService _smss;
   private final CurrentPatientContextHolder _patientContext;
-  private static final Logger LOG = LoggerFactory.getLogger(TestOrderService.class);
   private final TestEventReportingService _testEventReportingService;
 
   @PersistenceContext EntityManager _entityManager;
@@ -287,19 +284,20 @@ public class TestOrderService {
         PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
         UUID internalId = patientLink.getInternalId();
         savedOrder.setPatientLink(patientLink);
-        try {
-          _smss.sendToPatientLink(
-              internalId,
-              "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
 
-          return new AddTestResultResponse(savedOrder, true);
-        } catch (NumberParseException npe) {
-          LOG.warn("Failed to parse phone number for patient={}", person.getInternalId());
-          return new AddTestResultResponse(savedOrder, false);
-        } catch (TwilioException e) {
-          LOG.warn("Failed to send text message to patient={}", person.getInternalId());
+        List<SmsAPICallResult> smsSendResults =
+            _smss.sendToPatientLink(
+                internalId,
+                "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
+
+        boolean hasDeliveryFailure =
+            smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
+
+        if (hasDeliveryFailure == true) {
           return new AddTestResultResponse(savedOrder, false);
         }
+
+        return new AddTestResultResponse(savedOrder, true);
       }
 
       return new AddTestResultResponse(savedOrder);
