@@ -154,6 +154,7 @@ export const es: LanguageConfig = {
           residentCongregateSetting: "",
           employedInHealthcare: "",
           preferredLanguage: "",
+          testResultDelivery: "",
         },
       },
     },
