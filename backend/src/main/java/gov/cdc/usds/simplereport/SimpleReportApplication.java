@@ -19,6 +19,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.context.annotation.Bean;
@@ -62,6 +63,7 @@ public class SimpleReportApplication {
   }
 
   @Bean
+  @ConditionalOnSingleCandidate(GitProperties.class)
   public CommandLineRunner logGitCommit(GitProperties gitProperties) {
     return args -> LOG.info("Current commit is: " + gitProperties.getCommitId());
   }
