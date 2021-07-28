@@ -191,9 +191,13 @@ const AoEForm: React.FC<Props> = ({
           Yes
           <span className="usa-checkbox__label-description">
             <p>
-              <span className="radio__label-description--checked">
-                <strong>Results will be sent to these numbers:</strong>
-              </span>
+              {phoneNumbers.length > 0 ? (
+                <span className="radio__label-description--checked">
+                  <strong>Results will be sent to these numbers:</strong>
+                </span>
+              ) : (
+                "There is no mobile number in the patient profile"
+              )}
             </p>
             {phoneNumbers.map(({ number }) => (
               <span className="radio__label-description--checked usa-radio__label-description text-base">
@@ -204,6 +208,7 @@ const AoEForm: React.FC<Props> = ({
         </>
       ),
       value: "SMS",
+      ...(phoneNumbers.length === 0 && { disabled: true }),
     },
     { label: "No", value: "NONE" },
   ];
@@ -278,6 +283,10 @@ const AoEForm: React.FC<Props> = ({
     </div>
   );
 
+  const patientMobileNumbers = (patient.phoneNumbers || []).filter(
+    (phoneNumber) => phoneNumber.type === "MOBILE"
+  );
+
   return (
     <>
       <form
@@ -296,12 +305,12 @@ const AoEForm: React.FC<Props> = ({
                 legend="Would you like to receive your results via text message?"
                 name="testResultDelivery"
                 onChange={setTestResultDelivery}
-                buttons={getTestResultDeliveryPreferences(
-                  (patient.phoneNumbers || []).filter(
-                    (pn) => pn.type !== "LANDLINE"
-                  )
-                )}
-                selectedRadio={testResultDelivery}
+                buttons={getTestResultDeliveryPreferences(patientMobileNumbers)}
+                selectedRadio={
+                  patientMobileNumbers.length === 0
+                    ? "NONE"
+                    : testResultDelivery
+                }
               />
             </div>
           </FormGroup>
