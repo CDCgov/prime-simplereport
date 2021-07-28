@@ -48,6 +48,10 @@ export const QUERY_PATIENT = gql`
       birthDate
       gender
       telephone
+      phoneNumbers {
+        type
+        number
+      }
       testResultDelivery
     }
   }

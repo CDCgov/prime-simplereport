@@ -141,7 +141,6 @@ describe("QueueItem", () => {
       });
 
       // Verify alert is displayed
-      //expect(await screen.getByRole("alert")).toBeInTheDocument();
       expect(
         await screen.findByText(
           "Unable to text result to Potter, Harry James",
@@ -150,10 +149,6 @@ describe("QueueItem", () => {
           }
         )
       ).toBeInTheDocument();
-
-      /*
-      expect(alertSpy).toBeCalledTimes(2);
-      */
     });
   });
 
@@ -194,7 +189,6 @@ describe("QueueItem", () => {
         target: { value: updatedTimeString },
       });
     });
-    // screen.debug();
   });
 });
 
@@ -207,8 +201,14 @@ const testProps = {
     firstName: "Harry",
     middleName: "James",
     lastName: "Potter",
-    telephone: "string",
+    telephone: "fakenumber",
     birthDate: "1990-07-31",
+    phoneNumbers: [
+      {
+        number: "string",
+        type: "MOBILE",
+      },
+    ],
   },
   devices: [
     {
