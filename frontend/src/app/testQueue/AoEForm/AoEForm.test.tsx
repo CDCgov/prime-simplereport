@@ -206,17 +206,11 @@ describe("AoEForm", () => {
         </MockedProvider>
       );
       const smsDeliveryRadio = screen.getByRole("radio", {
-        name: "Yes There is no mobile number in the patient profile",
+        name: "Yes (There are no mobile phone numbers listed in your patient profile.)",
       });
 
       expect(smsDeliveryRadio).toBeInTheDocument();
       expect(smsDeliveryRadio).toBeDisabled();
-      expect(
-        await screen.findByText(
-          "There is no mobile number in the patient profile"
-        )
-      ).toBeInTheDocument();
-
       expect((await screen.findAllByLabelText("No"))[0]).toBeChecked();
     });
   });

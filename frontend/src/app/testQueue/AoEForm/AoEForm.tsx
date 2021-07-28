@@ -196,7 +196,7 @@ const AoEForm: React.FC<Props> = ({
                   <strong>Results will be sent to these numbers:</strong>
                 </span>
               ) : (
-                "There is no mobile number in the patient profile"
+                "(There are no mobile phone numbers listed in your patient profile.)"
               )}
             </p>
             {phoneNumbers.map(({ number }) => (
