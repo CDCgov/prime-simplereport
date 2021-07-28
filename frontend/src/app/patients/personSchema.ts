@@ -31,7 +31,8 @@ type UpdateOptionalFields =
   | "tribalAffiliation"
   | "residentCongregateSetting"
   | "employedInHealthcare"
-  | "preferredLanguage";
+  | "preferredLanguage"
+  | "testResultDelivery";
 
 type OptionalFields = UpdateOptionalFields | "middleName";
 
@@ -128,6 +129,7 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
     .mixed()
     .oneOf([...getValues(TRIBAL_AFFILIATION_VALUES), "", null]),
   preferredLanguage: yup.mixed().oneOf([...languages, "", null]),
+  testResultDelivery: yup.string().optional(),
 };
 
 const updatePhoneNumberSchemata: Record<keyof PhoneNumber, yup.AnySchema> = {
@@ -190,6 +192,7 @@ export const allPersonErrors: Required<PersonErrors> = {
   ),
   employedInHealthcare: i18n.t("patient.form.errors.employedInHealthcare"),
   preferredLanguage: i18n.t("patient.form.errors.preferredLanguage"),
+  testResultDelivery: "", // TODO: how can I get rid of this?
 };
 
 export type PhoneNumberErrors = Partial<Record<keyof PhoneNumber, string>>;
