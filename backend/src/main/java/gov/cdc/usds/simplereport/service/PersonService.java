@@ -416,7 +416,14 @@ public class PersonService {
     updatePhoneNumbers(patientToUpdate, phoneNumbers);
     upsertPreferredLanguage(patientToUpdate, preferredLanguage);
     updatePersonFacility(patientToUpdate, facilityId);
-    updateTestResultDeliveryPreference(patientToUpdate.getInternalId(), testResultDelivery);
+
+    // Prevent test result delivery preference from getting un-set entirely.
+    // This also keeps backwards compatibility with older versions of the
+    // frontend that will not send in this value from the person form.
+    if (testResultDelivery != null) {
+      updateTestResultDeliveryPreference(patientToUpdate.getInternalId(), testResultDelivery);
+    }
+
     return _repo.save(patientToUpdate);
   }
 
