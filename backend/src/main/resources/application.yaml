@@ -88,6 +88,7 @@ simple-report:
       # The values of the map are the GUID value for the Dynamic Template (also found in the SendGrid web
       # app).  New versions of the template do not change this value.
       ACCOUNT_REQUEST: d-7b0c7810ce5643f295e169f38b8db015
+      ID_VERIFICATION_FAILED: d-b629fce77d604a31a2872746674cf08e
   dynamics:
     enabled: false
     client-id: ${DYNAMICS_CLIENT_ID:MISSING}
