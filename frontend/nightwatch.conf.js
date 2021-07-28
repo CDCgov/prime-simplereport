@@ -25,7 +25,7 @@ module.exports = {
   test_settings: {
     default: {
       disable_error_log: false,
-      launch_url: "https://test.simplereport.gov/app",
+      launch_url: "localhost:3000",
 
       screenshots: {
         enabled: false,
@@ -50,6 +50,7 @@ module.exports = {
       webdriver: {
         start_process: true,
         server_path: Services.geckodriver ? Services.geckodriver.path : "",
+        cli_args: ["--log", "debug"],
       },
     },
 
@@ -104,7 +105,7 @@ module.exports = {
       },
     },
 
-    brave: {
+    chromium: {
       desiredCapabilities: {
         browserName: "chrome",
         chromeOptions: {
@@ -115,9 +116,9 @@ module.exports = {
             //'--no-sandbox',
             //'--ignore-certificate-errors',
             "--allow-insecure-localhost",
-            "--headless",
+            // "--headless",
           ],
-          binary: "/usr/bin/brave",
+          binary: "/usr/bin/chromium",
         },
       },
 

@@ -48,15 +48,7 @@ function mfaSelect(choice) {
 }
 
 module.exports = {
-  url: function (activationToken, path = "") {
-    return (
-      this.api.launchUrl +
-      "/uac/" +
-      path +
-      "?activationToken=" +
-      activationToken
-    );
-  },
+  url: (url) => url,
   commands: [
     {
       setPassword,

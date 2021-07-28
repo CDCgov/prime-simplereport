@@ -81,16 +81,16 @@ module.exports = {
   // },
   "7. Account creation": (browser) => {
     browser.page
-      //       .accountCreation()
-      // .navigate("7a_cVitsQpFVn7V9jgZZ")
-      // .setPassword();
-      .selfRegistration()
-      .navigate()
-      .acceptTos()
-      .enterInformation(getDobFormat(browser));
+      .accountCreation()
+      .navigate("/uac/?activationToken=lJ8lRfaK0jXeq0YovfNR")
+      .setPassword();
+    // .selfRegistration()
+    // .navigate()
+    // .acceptTos()
+    // .enterInformation(getDobFormat(browser));
   },
-  "6. Update organization settings": (browser) => {
-    console.info("Updating organization settings");
-    browser.page.settings().navigate().enterInformation(browser);
-  },
+  // "6. Update organization settings": (browser) => {
+  //   console.info("Updating organization settings");
+  //   browser.page.settings().navigate().enterInformation(browser);
+  // },
 };
