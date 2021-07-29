@@ -123,7 +123,7 @@ class QueueManagementTest extends BaseGraphqlTest {
             () -> {
               try {
                 // sleeping here to try to avoid a dreaded race condition in an async test
-                Thread.sleep(5);
+                Thread.sleep(100);
               } catch (InterruptedException e) {
                 // noop
               }
