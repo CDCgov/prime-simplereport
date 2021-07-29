@@ -83,8 +83,7 @@ public class PatientSelfRegistrationController {
             body.getResidentCongregateSetting(),
             body.getEmployedInHealthcare(),
             parseString(body.getPreferredLanguage()),
-            null // TODO: test result delivery preference
-            );
+            body.getTestResultDelivery());
 
     LOG.info(
         "Patient={} self-registered from link={}", p.getInternalId(), registrationLink.getLink());
