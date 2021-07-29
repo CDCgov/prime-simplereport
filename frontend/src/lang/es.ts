@@ -104,6 +104,8 @@ export const es: LanguageConfig = {
           additionalPhoneNumber: "",
           phoneType: "",
           addNumber: "",
+          testResultDelivery: "",
+          testResultDeliveryHint: "",
           email: "",
           street1: "",
           street2: "",

@@ -132,6 +132,7 @@ describe("AddPatient", () => {
               employedInHealthcare: true,
               facilityId: mockFacilityID,
               preferredLanguage: null,
+              testResultDelivery: null,
             },
           },
           result: {
@@ -171,6 +172,7 @@ describe("AddPatient", () => {
               employedInHealthcare: true,
               facilityId: mockFacilityID,
               preferredLanguage: null,
+              testResultDelivery: null,
             },
           },
           result: {

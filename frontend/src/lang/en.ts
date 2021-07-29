@@ -103,6 +103,9 @@ export const en = {
           additionalPhoneNumber: "Additional phone number",
           phoneType: "Phone type",
           addNumber: "Add another number",
+          testResultDelivery:
+            "Would you like to receive your results via text message?",
+          testResultDeliveryHint: "We'll text all mobile numbers on file",
           email: "Email address",
           street1: "Street address 1",
           street2: "Street address 2",

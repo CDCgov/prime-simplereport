@@ -187,9 +187,9 @@ const ManagePhoneNumbers: React.FC<Props> = ({
       />
       {phoneNumbers.some((pn) => pn.type === "MOBILE") && (
         <RadioGroup
-          legend="Would you like to receive your results via text message?"
+          legend={t("patient.form.contact.testResultDelivery")}
           name="testResultDelivery"
-          hintText="We'll text all mobile numbers on file"
+          hintText={t("patient.form.contact.testResultDeliveryHint")}
           buttons={TEST_RESULT_DELIVERY_PREFERENCE_VALUES}
           onChange={updateTestResultDelivery}
           selectedRadio={testResultDelivery}
