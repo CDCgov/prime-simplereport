@@ -7,7 +7,7 @@ import { showError } from "../utils";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
-import { AoEAnswers } from "./AoEForm/AoEForm";
+import { TestQueuePerson, AoEAnswers } from "./AoEForm/AoEForm";
 
 const pollInterval = 10_000;
 
@@ -105,9 +105,7 @@ interface QueueItemData extends AoEAnswers {
     internalId: string;
     testLength: number;
   };
-  patient: {
-    internalId: string;
-  };
+  patient: TestQueuePerson;
   result: string;
   dateTested: string;
   patientLink: {

@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.db.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gov.cdc.usds.simplereport.db.model.DataHubUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.DataHubUploadStatus;
@@ -12,9 +13,9 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class DataHubUploadEntityRespositoryTest extends BaseRepositoryTest {
+class DataHubUploadEntityRepositoryTest extends BaseRepositoryTest {
 
-  @Autowired private DataHubUploadRespository _repoDH;
+  @Autowired private DataHubUploadRepository _repoDH;
 
   @Test
   void testBasicSavingQueryDataHubUpload() {
@@ -74,5 +75,11 @@ class DataHubUploadEntityRespositoryTest extends BaseRepositoryTest {
             DataHubUploadStatus.SUCCESS);
     assertEquals(DataHubUploadStatus.SUCCESS, result3.getJobStatus());
     assertEquals(result3.getLatestRecordedTimestamp(), DATE_4MIN_AGO);
+  }
+
+  @Test
+  void tryUploadLockReturnsTrue() {
+    // without another lock inside the transaction, we expect this to return true
+    assertTrue(_repoDH.tryUploadLock());
   }
 }

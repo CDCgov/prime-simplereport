@@ -20,7 +20,7 @@ describe("QuestionsForm", () => {
   it("initializes with the submit button disabled", () => {
     expect(screen.getByText("Submit")).toHaveAttribute("disabled");
   });
-  describe("One filed entered", () => {
+  describe("One field entered", () => {
     beforeEach(() => {
       fireEvent.click(screen.getByLabelText("2002", { exact: false }), {
         target: { value: "1" },

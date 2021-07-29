@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import gov.cdc.usds.simplereport.db.model.DataHubUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.DataHubUploadStatus;
-import gov.cdc.usds.simplereport.db.repository.DataHubUploadRespository;
+import gov.cdc.usds.simplereport.db.repository.DataHubUploadRepository;
 import java.sql.Date;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 class UploadTrackingServiceTest extends BaseServiceTest<UploadTrackingService> {
 
-  @Autowired private DataHubUploadRespository _repo;
+  @Autowired private DataHubUploadRepository _repo;
 
   @Test
   void startUpload_validDate_fieldsCorrect() {

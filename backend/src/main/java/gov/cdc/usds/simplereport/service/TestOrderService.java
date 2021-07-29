@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import com.google.i18n.phonenumbers.NumberParseException;
 import com.twilio.exception.ApiException;
 import com.twilio.exception.TwilioException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
@@ -25,9 +24,11 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.db.repository.AdvisoryLockManager;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
+import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
 import java.time.LocalDate;
 import java.util.Date;
@@ -39,8 +40,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -63,7 +62,6 @@ public class TestOrderService {
   private PatientLinkService _pls;
   private SmsService _smss;
   private final CurrentPatientContextHolder _patientContext;
-  private static final Logger LOG = LoggerFactory.getLogger(TestOrderService.class);
   private final TestEventReportingService _testEventReportingService;
 
   @PersistenceContext EntityManager _entityManager;
@@ -235,17 +233,22 @@ public class TestOrderService {
   @Deprecated // switch to specifying device-specimen combo
   public TestOrder editQueueItem(
       UUID testOrderId, String deviceId, String result, Date dateTested) {
-    TestOrder order = this.getTestOrder(testOrderId);
+    lockOrder(testOrderId);
+    try {
+      TestOrder order = this.getTestOrder(testOrderId);
 
-    if (deviceId != null) {
-      order.setDeviceSpecimen(_dts.getDefaultForDeviceId(deviceId));
+      if (deviceId != null) {
+        order.setDeviceSpecimen(_dts.getDefaultForDeviceId(deviceId));
+      }
+
+      order.setResult(result == null ? null : TestResult.valueOf(result));
+
+      order.setDateTestedBackdate(dateTested);
+
+      return _repo.save(order);
+    } finally {
+      unlockOrder(testOrderId);
     }
-
-    order.setResult(result == null ? null : TestResult.valueOf(result));
-
-    order.setDateTestedBackdate(dateTested);
-
-    return _repo.save(order);
   }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
@@ -258,42 +261,49 @@ public class TestOrderService {
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order =
         _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
-    order.setDeviceSpecimen(deviceSpecimen);
-    order.setResult(result);
-    order.setDateTestedBackdate(dateTested);
-    order.markComplete();
 
-    TestEvent testEvent = new TestEvent(order);
-    _terepo.save(testEvent);
+    lockOrder(order.getInternalId());
+    try {
+      order.setDeviceSpecimen(deviceSpecimen);
+      order.setResult(result);
+      order.setDateTestedBackdate(dateTested);
+      order.markComplete();
 
-    order.setTestEventRef(testEvent);
-    TestOrder savedOrder = _repo.save(order);
+      TestEvent testEvent = new TestEvent(order);
+      _terepo.save(testEvent);
 
-    _testEventReportingService.report(testEvent);
+      order.setTestEventRef(testEvent);
+      TestOrder savedOrder = _repo.save(order);
 
-    if (TestResultDeliveryPreference.SMS
-        == _ps.getPatientPreferences(person).getTestResultDelivery()) {
-      // After adding test result, create a new patient link and text it to the
-      // patient
-      PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-      UUID internalId = patientLink.getInternalId();
-      savedOrder.setPatientLink(patientLink);
-      try {
-        _smss.sendToPatientLink(
-            internalId,
-            "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
+      _testEventReportingService.report(testEvent);
+
+      if (TestResultDeliveryPreference.SMS
+          == _ps.getPatientPreferences(person).getTestResultDelivery()) {
+        // After adding test result, create a new patient link and text it to the
+        // patient
+        PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
+        UUID internalId = patientLink.getInternalId();
+        savedOrder.setPatientLink(patientLink);
+
+        List<SmsAPICallResult> smsSendResults =
+            _smss.sendToPatientLink(
+                internalId,
+                "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
+
+        boolean hasDeliveryFailure =
+            smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
+
+        if (hasDeliveryFailure == true) {
+          return new AddTestResultResponse(savedOrder, false);
+        }
 
         return new AddTestResultResponse(savedOrder, true);
-      } catch (NumberParseException npe) {
-        LOG.warn("Failed to parse phone number for patient={}", person.getInternalId());
-        return new AddTestResultResponse(savedOrder, false);
-      } catch (TwilioException e) {
-        LOG.warn("Failed to send text message to patient={}", person.getInternalId());
-        return new AddTestResultResponse(savedOrder, false);
       }
-    }
 
-    return new AddTestResultResponse(savedOrder);
+      return new AddTestResultResponse(savedOrder);
+    } finally {
+      unlockOrder(order.getInternalId());
+    }
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
@@ -492,6 +502,17 @@ public class TestOrderService {
         priorTestResult,
         symptomOnset,
         noSymptoms);
+  }
+
+  private void lockOrder(UUID orderId) throws IllegalGraphqlArgumentException {
+    if (!_repo.tryLock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, orderId.hashCode())) {
+      throw new IllegalGraphqlArgumentException(
+          "Someone else is currently modifying this test result.");
+    }
+  }
+
+  private void unlockOrder(UUID orderId) {
+    _repo.unlock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, orderId.hashCode());
   }
 
   private static IllegalGraphqlArgumentException noSuchOrderFound() {

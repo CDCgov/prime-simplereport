@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
@@ -32,7 +32,7 @@ import {
 } from "./TestTimer";
 import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
-import { AoEAnswers } from "./AoEForm/AoEForm";
+import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
 
@@ -174,14 +174,7 @@ if (process.env.NODE_ENV !== "test") {
 
 export interface QueueItemProps {
   internalId: string;
-  patient: {
-    internalId: string;
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    telephone: string;
-    birthDate: string;
-  };
+  patient: TestQueuePerson;
   devices: {
     name: string;
     internalId: string;
@@ -304,7 +297,9 @@ const QueueItem: any = ({
   const [removePatientId, setRemovePatientId] = useState<string>();
 
   if (mutationError) {
-    throw mutationError;
+    // Don't do anything. These errors will propagate to AppInsights, and
+    // generate a user-facing toast error via ApolloClient's onError handler,
+    // defined in index.tsx
   }
 
   const testResultsSubmitted = (response: any) => {
@@ -354,37 +349,37 @@ const QueueItem: any = ({
     }
   };
 
-  const updateQueueItem = ({
-    deviceId,
-    result,
-    dateTested,
-  }: updateQueueItemProps) => {
-    editQueueItem({
-      variables: {
-        id: internalId,
-        deviceId,
-        result,
-        dateTested,
-      },
-    })
-      .then((response) => {
-        if (!response.data) throw Error("updateQueueItem null response");
-        updateDeviceId(response.data.editQueueItem.deviceType.internalId);
-        updateTestResultValue(response.data.editQueueItem.result || undefined);
-        updateTimer(
-          internalId,
-          response.data.editQueueItem.deviceType.testLength
-        );
-        updateDeviceTestLength(
-          response.data.editQueueItem.deviceType.testLength
-        );
+  const updateQueueItem = useCallback(
+    ({ deviceId, result, dateTested }: updateQueueItemProps) => {
+      editQueueItem({
+        variables: {
+          id: internalId,
+          deviceId,
+          result,
+          dateTested,
+        },
       })
-      .catch(updateMutationError);
-  };
+        .then((response) => {
+          if (!response.data) throw Error("updateQueueItem null response");
+          updateDeviceId(response.data.editQueueItem.deviceType.internalId);
+          updateTestResultValue(
+            response.data.editQueueItem.result || undefined
+          );
+          updateTimer(
+            internalId,
+            response.data.editQueueItem.deviceType.testLength
+          );
+          updateDeviceTestLength(
+            response.data.editQueueItem.deviceType.testLength
+          );
+        })
+        .catch(updateMutationError);
+    },
+    [editQueueItem, internalId]
+  );
 
   const onDeviceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const deviceId = e.currentTarget.value;
-    updateQueueItem({ deviceId, dateTested, result: testResultValue });
+    updateDeviceId(e.currentTarget.value);
   };
 
   const onDateTestedChange = (date: moment.Moment) => {
@@ -399,16 +394,31 @@ const QueueItem: any = ({
       or if we change our updateQueuItem function to update only a single value at a time, which is a TODO for later
     */
       updateDateTested(newDateTested);
-      updateQueueItem({
-        deviceId,
-        dateTested: newDateTested,
-        result: testResultValue,
-      });
     }
   };
 
+  const isMounted = useRef(false);
+  const DEBOUNCE_TIME = 700;
+  useEffect(() => {
+    let debounceTimer: ReturnType<typeof setTimeout>;
+    if (!isMounted.current) {
+      isMounted.current = true;
+    } else {
+      debounceTimer = setTimeout(() => {
+        updateQueueItem({
+          deviceId,
+          dateTested,
+          result: testResultValue,
+        });
+      }, DEBOUNCE_TIME);
+    }
+    return () => {
+      clearTimeout(debounceTimer);
+    };
+  }, [deviceId, dateTested, testResultValue, updateQueueItem]);
+
   const onTestResultChange = (result: TestResult | undefined) => {
-    updateQueueItem({ deviceId, result, dateTested });
+    updateTestResultValue(result);
   };
 
   const removeFromQueue = () => {
