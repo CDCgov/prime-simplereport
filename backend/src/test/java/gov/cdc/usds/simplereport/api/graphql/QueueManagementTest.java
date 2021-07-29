@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.api.graphql;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -121,12 +123,7 @@ class QueueManagementTest extends BaseGraphqlTest {
         CompletableFuture.runAsync(() -> runQuery("edit-queue-item", variables, null)),
         CompletableFuture.runAsync(
             () -> {
-              try {
-                // sleeping here to try to avoid a dreaded race condition in an async test
-                Thread.sleep(5);
-              } catch (InterruptedException e) {
-                // noop
-              }
+              await().atMost(100, MILLISECONDS);
               runQuery(
                   "edit-queue-item", variables, "Another user is interacting with this queue item");
             }));
