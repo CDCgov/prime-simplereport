@@ -233,22 +233,17 @@ public class TestOrderService {
   @Deprecated // switch to specifying device-specimen combo
   public TestOrder editQueueItem(
       UUID testOrderId, String deviceId, String result, Date dateTested) {
-    lockOrder(testOrderId);
-    try {
-      TestOrder order = this.getTestOrder(testOrderId);
+    TestOrder order = this.getTestOrder(testOrderId);
 
-      if (deviceId != null) {
-        order.setDeviceSpecimen(_dts.getDefaultForDeviceId(deviceId));
-      }
-
-      order.setResult(result == null ? null : TestResult.valueOf(result));
-
-      order.setDateTestedBackdate(dateTested);
-
-      return _repo.save(order);
-    } finally {
-      unlockOrder(testOrderId);
+    if (deviceId != null) {
+      order.setDeviceSpecimen(_dts.getDefaultForDeviceId(deviceId));
     }
+
+    order.setResult(result == null ? null : TestResult.valueOf(result));
+
+    order.setDateTestedBackdate(dateTested);
+
+    return _repo.save(order);
   }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
@@ -262,48 +257,43 @@ public class TestOrderService {
     TestOrder order =
         _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
 
-    lockOrder(order.getInternalId());
-    try {
-      order.setDeviceSpecimen(deviceSpecimen);
-      order.setResult(result);
-      order.setDateTestedBackdate(dateTested);
-      order.markComplete();
+    order.setDeviceSpecimen(deviceSpecimen);
+    order.setResult(result);
+    order.setDateTestedBackdate(dateTested);
+    order.markComplete();
 
-      TestEvent testEvent = new TestEvent(order);
-      _terepo.save(testEvent);
+    TestEvent testEvent = new TestEvent(order);
+    _terepo.save(testEvent);
 
-      order.setTestEventRef(testEvent);
-      TestOrder savedOrder = _repo.save(order);
+    order.setTestEventRef(testEvent);
+    TestOrder savedOrder = _repo.save(order);
 
-      _testEventReportingService.report(testEvent);
+    _testEventReportingService.report(testEvent);
 
-      if (TestResultDeliveryPreference.SMS
-          == _ps.getPatientPreferences(person).getTestResultDelivery()) {
-        // After adding test result, create a new patient link and text it to the
-        // patient
-        PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-        UUID internalId = patientLink.getInternalId();
-        savedOrder.setPatientLink(patientLink);
+    if (TestResultDeliveryPreference.SMS
+        == _ps.getPatientPreferences(person).getTestResultDelivery()) {
+      // After adding test result, create a new patient link and text it to the
+      // patient
+      PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
+      UUID internalId = patientLink.getInternalId();
+      savedOrder.setPatientLink(patientLink);
 
-        List<SmsAPICallResult> smsSendResults =
-            _smss.sendToPatientLink(
-                internalId,
-                "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
+      List<SmsAPICallResult> smsSendResults =
+          _smss.sendToPatientLink(
+              internalId,
+              "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
 
-        boolean hasDeliveryFailure =
-            smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
+      boolean hasDeliveryFailure =
+          smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
 
-        if (hasDeliveryFailure == true) {
-          return new AddTestResultResponse(savedOrder, false);
-        }
-
-        return new AddTestResultResponse(savedOrder, true);
+      if (hasDeliveryFailure == true) {
+        return new AddTestResultResponse(savedOrder, false);
       }
 
-      return new AddTestResultResponse(savedOrder);
-    } finally {
-      unlockOrder(order.getInternalId());
+      return new AddTestResultResponse(savedOrder, true);
     }
+
+    return new AddTestResultResponse(savedOrder);
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
