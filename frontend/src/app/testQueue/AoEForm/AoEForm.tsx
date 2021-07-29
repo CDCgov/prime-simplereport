@@ -270,9 +270,6 @@ const AoEForm: React.FC<Props> = ({
         onSubmit={saveAnswers}
         ref={formRef}
       >
-        {isModal && (
-          <div className="margin-top-4 border-top border-base-lighter" />
-        )}
         <RequiredMessage />
         {patientIsOver18 && (
           <FormGroup title="Results">
