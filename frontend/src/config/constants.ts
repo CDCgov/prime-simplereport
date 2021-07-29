@@ -14,6 +14,7 @@ export const liveJurisdictions = [
   "GU",
   "LA",
   "MA",
+  "MD",
   "MS",
   "MT",
   "ND",
