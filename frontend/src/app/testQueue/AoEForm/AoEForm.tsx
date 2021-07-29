@@ -139,11 +139,6 @@ const AoEForm: React.FC<Props> = ({
 
   const patientIsOver18 = moment().diff(patient.birthDate, "years") >= 18;
 
-  // Null is OK and preferred over an empty string
-  if (lastTest?.dateTested) {
-    lastTest.dateTested = lastTest.dateTested.split("T")[0] as ISODate;
-  }
-
   // form validation
   const [symptomError, setSymptomError] = useState<string | undefined>();
   const [symptomOnsetError, setSymptomOnsetError] = useState<
