@@ -466,7 +466,6 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     assertPatientList(patients3, JANNELLE);
   }
 
-
   @Test
   @WithSimpleReportOrgAdminUser
   void getPatients_counts() {
