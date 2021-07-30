@@ -54,7 +54,7 @@ exports[`AoEForm renders correctly 1`] = `
                   className="usa-radio__input"
                   data-required="false"
                   disabled={false}
-                  id="8-val-SMS"
+                  id="7-val-SMS"
                   name="testResultDelivery"
                   onChange={[Function]}
                   type="radio"
@@ -62,7 +62,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-radio__label"
-                  htmlFor="8-val-SMS"
+                  htmlFor="7-val-SMS"
                 >
                   Yes
                   <span
@@ -93,7 +93,7 @@ exports[`AoEForm renders correctly 1`] = `
                   className="usa-radio__input"
                   data-required="false"
                   disabled={false}
-                  id="8-val-NONE"
+                  id="7-val-NONE"
                   name="testResultDelivery"
                   onChange={[Function]}
                   type="radio"
@@ -101,7 +101,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-radio__label"
-                  htmlFor="8-val-NONE"
+                  htmlFor="7-val-NONE"
                 >
                   No
                 </label>
@@ -153,7 +153,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={false}
                   className="usa-checkbox__input"
-                  id="9-val-0"
+                  id="8-val-0"
                   name="no_symptoms"
                   onChange={[Function]}
                   type="checkbox"
@@ -161,7 +161,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="9-val-0"
+                  htmlFor="8-val-0"
                 >
                   No Symptoms
                 </label>
@@ -192,7 +192,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={true}
                   className="usa-checkbox__input"
-                  id="10-val-0"
+                  id="9-val-0"
                   name="symptom_list"
                   onChange={[Function]}
                   type="checkbox"
@@ -200,7 +200,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="10-val-0"
+                  htmlFor="9-val-0"
                 >
                   Fever over 100.4F
                 </label>
@@ -211,7 +211,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={false}
                   className="usa-checkbox__input"
-                  id="10-val-1"
+                  id="9-val-1"
                   name="symptom_list"
                   onChange={[Function]}
                   type="checkbox"
@@ -219,7 +219,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="10-val-1"
+                  htmlFor="9-val-1"
                 >
                   Feeling feverish
                 </label>
@@ -230,7 +230,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={false}
                   className="usa-checkbox__input"
-                  id="10-val-2"
+                  id="9-val-2"
                   name="symptom_list"
                   onChange={[Function]}
                   type="checkbox"
@@ -238,7 +238,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="10-val-2"
+                  htmlFor="9-val-2"
                 >
                   Chills
                 </label>
@@ -249,7 +249,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={false}
                   className="usa-checkbox__input"
-                  id="10-val-3"
+                  id="9-val-3"
                   name="symptom_list"
                   onChange={[Function]}
                   type="checkbox"
@@ -257,7 +257,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="10-val-3"
+                  htmlFor="9-val-3"
                 >
                   Cough
                 </label>
@@ -268,7 +268,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={false}
                   className="usa-checkbox__input"
-                  id="10-val-4"
+                  id="9-val-4"
                   name="symptom_list"
                   onChange={[Function]}
                   type="checkbox"
@@ -276,7 +276,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="10-val-4"
+                  htmlFor="9-val-4"
                 >
                   Shortness of breath
                 </label>
@@ -287,7 +287,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={false}
                   className="usa-checkbox__input"
-                  id="10-val-5"
+                  id="9-val-5"
                   name="symptom_list"
                   onChange={[Function]}
                   type="checkbox"
@@ -295,7 +295,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="10-val-5"
+                  htmlFor="9-val-5"
                 >
                   Difficulty breathing
                 </label>
@@ -306,7 +306,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={false}
                   className="usa-checkbox__input"
-                  id="10-val-6"
+                  id="9-val-6"
                   name="symptom_list"
                   onChange={[Function]}
                   type="checkbox"
@@ -314,7 +314,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="10-val-6"
+                  htmlFor="9-val-6"
                 >
                   Fatigue
                 </label>
@@ -325,7 +325,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={false}
                   className="usa-checkbox__input"
-                  id="10-val-7"
+                  id="9-val-7"
                   name="symptom_list"
                   onChange={[Function]}
                   type="checkbox"
@@ -333,7 +333,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="10-val-7"
+                  htmlFor="9-val-7"
                 >
                   Muscle or body aches
                 </label>
@@ -344,7 +344,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={false}
                   className="usa-checkbox__input"
-                  id="10-val-8"
+                  id="9-val-8"
                   name="symptom_list"
                   onChange={[Function]}
                   type="checkbox"
@@ -352,7 +352,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="10-val-8"
+                  htmlFor="9-val-8"
                 >
                   Headache
                 </label>
@@ -363,7 +363,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={false}
                   className="usa-checkbox__input"
-                  id="10-val-9"
+                  id="9-val-9"
                   name="symptom_list"
                   onChange={[Function]}
                   type="checkbox"
@@ -371,7 +371,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="10-val-9"
+                  htmlFor="9-val-9"
                 >
                   New loss of taste
                 </label>
@@ -382,7 +382,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={false}
                   className="usa-checkbox__input"
-                  id="10-val-10"
+                  id="9-val-10"
                   name="symptom_list"
                   onChange={[Function]}
                   type="checkbox"
@@ -390,7 +390,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="10-val-10"
+                  htmlFor="9-val-10"
                 >
                   New loss of smell
                 </label>
@@ -401,7 +401,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={false}
                   className="usa-checkbox__input"
-                  id="10-val-11"
+                  id="9-val-11"
                   name="symptom_list"
                   onChange={[Function]}
                   type="checkbox"
@@ -409,7 +409,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="10-val-11"
+                  htmlFor="9-val-11"
                 >
                   Sore throat
                 </label>
@@ -420,7 +420,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={false}
                   className="usa-checkbox__input"
-                  id="10-val-12"
+                  id="9-val-12"
                   name="symptom_list"
                   onChange={[Function]}
                   type="checkbox"
@@ -428,7 +428,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="10-val-12"
+                  htmlFor="9-val-12"
                 >
                   Nasal congestion
                 </label>
@@ -439,7 +439,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={false}
                   className="usa-checkbox__input"
-                  id="10-val-13"
+                  id="9-val-13"
                   name="symptom_list"
                   onChange={[Function]}
                   type="checkbox"
@@ -447,7 +447,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="10-val-13"
+                  htmlFor="9-val-13"
                 >
                   Runny nose
                 </label>
@@ -458,7 +458,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={false}
                   className="usa-checkbox__input"
-                  id="10-val-14"
+                  id="9-val-14"
                   name="symptom_list"
                   onChange={[Function]}
                   type="checkbox"
@@ -466,7 +466,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="10-val-14"
+                  htmlFor="9-val-14"
                 >
                   Nausea
                 </label>
@@ -477,7 +477,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={false}
                   className="usa-checkbox__input"
-                  id="10-val-15"
+                  id="9-val-15"
                   name="symptom_list"
                   onChange={[Function]}
                   type="checkbox"
@@ -485,7 +485,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="10-val-15"
+                  htmlFor="9-val-15"
                 >
                   Vomiting
                 </label>
@@ -496,7 +496,7 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked={false}
                   className="usa-checkbox__input"
-                  id="10-val-16"
+                  id="9-val-16"
                   name="symptom_list"
                   onChange={[Function]}
                   type="checkbox"
@@ -504,7 +504,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-checkbox__label"
-                  htmlFor="10-val-16"
+                  htmlFor="9-val-16"
                 >
                   Diarrhea
                 </label>
@@ -659,7 +659,7 @@ exports[`AoEForm renders correctly 1`] = `
                   className="usa-radio__input"
                   data-required="false"
                   disabled={false}
-                  id="11-val-yes"
+                  id="10-val-yes"
                   name="most_recent_flag"
                   onChange={[Function]}
                   type="radio"
@@ -667,7 +667,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-radio__label"
-                  htmlFor="11-val-yes"
+                  htmlFor="10-val-yes"
                 >
                   Yes
                 </label>
@@ -680,7 +680,7 @@ exports[`AoEForm renders correctly 1`] = `
                   className="usa-radio__input"
                   data-required="false"
                   disabled={false}
-                  id="11-val-no"
+                  id="10-val-no"
                   name="most_recent_flag"
                   onChange={[Function]}
                   type="radio"
@@ -688,7 +688,7 @@ exports[`AoEForm renders correctly 1`] = `
                 />
                 <label
                   className="usa-radio__label"
-                  htmlFor="11-val-no"
+                  htmlFor="10-val-no"
                 >
                   No
                 </label>
