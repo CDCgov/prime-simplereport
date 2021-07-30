@@ -45,6 +45,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 /** Note that this controller is automatically authorized. */
 @PreAuthorize("@" + AUTHORIZER_BEAN + ".permitAllAccountRequests()")
@@ -78,6 +81,11 @@ public class AccountRequestController {
     this._es = es;
     this._crm = crm;
     this.objectMapper = new ObjectMapper();
+  }
+
+  @ExceptionHandler(BadRequestException.class)
+  public ResponseEntity<String> handleException(BadRequestException e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
   }
 
   @PostConstruct
