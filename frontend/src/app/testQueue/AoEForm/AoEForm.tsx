@@ -195,7 +195,10 @@ const AoEForm: React.FC<Props> = ({
               )}
             </p>
             {phoneNumbers.map(({ number }) => (
-              <span className="radio__label-description--checked usa-radio__label-description text-base">
+              <span
+                key={number}
+                className="radio__label-description--checked usa-radio__label-description text-base"
+              >
                 {number}
               </span>
             ))}
