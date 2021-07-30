@@ -2589,3 +2589,19 @@ databaseChangeLog:
                     name: session
                     type: jsonb
                     remarks: The HTTP session information for this request (only applies to REST requests).
+  - changeSet:
+      id: add-no-phi-audit-log
+      author: tbest@cdc.gov
+      comment: Add a view for the audit log that omits columns containing PHI.
+      changes:
+        - createView:
+            viewName: api_audit_event_no_phi
+            remarks: A subset of the api_user table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: SELECT id, event_timestamp, request_id, api_user_id, is_admin_user, user_permissions, organization_id, patient_link_id, response_code FROM ${database.defaultSchemaName}.api_audit_event
+        - sql: |
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.api_audit_event_no_phi TO ${noPhiUsername};
+      rollback:
+        - dropView:
+            viewName: api_audit_event_no_phi
