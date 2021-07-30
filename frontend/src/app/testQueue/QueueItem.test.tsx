@@ -1,7 +1,6 @@
 import { MockedProvider } from "@apollo/client/testing";
 import { ToastContainer } from "react-toastify";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
 import moment from "moment";
 
 import * as utils from "../utils/index";
@@ -17,9 +16,11 @@ const updatedDate = Date.parse(updatedDateString);
 describe("QueueItem", () => {
   let nowFn = Date.now;
   beforeEach(() => {
+    jest.useFakeTimers();
     Date.now = jest.fn(() => fakeDate);
   });
   afterEach(() => {
+    jest.useRealTimers();
     Date.now = nowFn;
   });
   it("correctly renders the test queue", () => {
@@ -65,13 +66,17 @@ describe("QueueItem", () => {
         ></QueueItem>
       </MockedProvider>
     );
-    await act(async () => {
+    await waitFor(() => {
       fireEvent.change(getByLabelText("Device", { exact: false }), {
         target: { value: "lumira" },
       });
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      jest.advanceTimersByTime(1000);
     });
-    expect(getByTestId("timer")).toHaveTextContent("15:00");
+
+    await waitFor(() => {
+      expect(getByTestId("timer")).toHaveTextContent("15:00");
+      jest.advanceTimersToNextTimer(1000);
+    });
   });
 
   describe("SMS delivery failure", () => {
@@ -114,17 +119,23 @@ describe("QueueItem", () => {
       );
 
       // Select result
-      fireEvent.click(
-        screen.getByLabelText("Inconclusive", {
-          exact: false,
-        }),
-        {
-          target: { value: "UNDETERMINED" },
-        }
-      );
+      await waitFor(() => {
+        fireEvent.click(
+          screen.getByLabelText("Inconclusive", {
+            exact: false,
+          }),
+          {
+            target: { value: "UNDETERMINED" },
+          }
+        );
+      });
+
+      await waitFor(() => {
+        jest.advanceTimersByTime(1000);
+      });
 
       // Submit
-      await act(async () => {
+      await waitFor(() => {
         fireEvent.click(
           screen.getByText("Submit", {
             exact: false,
@@ -132,7 +143,7 @@ describe("QueueItem", () => {
         );
       });
 
-      await act(async () => {
+      await waitFor(() => {
         fireEvent.click(
           screen.getByText("Submit anyway", {
             exact: false,
