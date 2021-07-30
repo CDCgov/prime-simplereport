@@ -25,7 +25,7 @@ module.exports = {
   test_settings: {
     default: {
       disable_error_log: false,
-      launch_url: "localhost:3000",
+      launch_url: "https://dev.clyde.tech",
 
       screenshots: {
         enabled: false,
@@ -40,7 +40,7 @@ module.exports = {
           acceptInsecureCerts: true,
           "moz:firefoxOptions": {
             args: [
-              // "--headless",
+              "--headless",
               // '-verbose'
             ],
           },

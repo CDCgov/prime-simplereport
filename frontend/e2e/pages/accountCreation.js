@@ -24,7 +24,7 @@ function setSecurityQuestion() {
     "@securityQuestionInput",
     "What’s the first name of your best friend from high school?"
   );
-  this.section.app.setValue("@securityAnswerInput", "Tester");
+  this.section.app.setValue("@securityAnswerInput", "Jane Doe");
   this.section.app.click("@submitButton");
   this.expect
     .section("@app")
@@ -47,6 +47,37 @@ function mfaSelect(choice) {
   return this;
 }
 
+function enterPhoneNumber() {
+  this.expect.section("@app").to.be.visible;
+  this.expect.section("@app").to.contain.text("Get your security code via");
+  this.section.app.expect.element("@phoneInput").to.be.visible;
+  this.section.app.setValue("@phoneInput", "5308675309");
+  this.section.app.click("@submitButton");
+  return this;
+}
+
+function scanQrCode() {
+  this.expect.section("@app").to.be.visible;
+  this.expect.section("@app").to.contain.text("Get your security code via");
+  this.section.app.click("@submitButton");
+  return this;
+}
+
+function verifySecurityCode(code) {
+  this.expect.section("@app").to.be.visible;
+  this.expect.section("@app").to.contain.text("Verify your security code.");
+  this.section.app.expect.element("@securityCodeInput").to.be.visible;
+  this.section.app.setValue("@securityCodeInput", code);
+  this.section.app.click("@submitButton");
+  return this;
+}
+
+function success() {
+  this.expect.section("@app").to.be.visible;
+  this.expect.section("@app").to.contain.text("Account set up complete");
+  return this;
+}
+
 module.exports = {
   url: (url) => url,
   commands: [
@@ -54,6 +85,10 @@ module.exports = {
       setPassword,
       setSecurityQuestion,
       mfaSelect,
+      enterPhoneNumber,
+      scanQrCode,
+      verifySecurityCode,
+      success,
     },
   ],
   sections: {
@@ -71,6 +106,8 @@ module.exports = {
         securityKeyMfaRadio: 'input[value="FIDO"]+label',
         voiceMfaRadio: 'input[value="Phone"]+label',
         emailMfaRadio: 'input[value="Email"]+label',
+        phoneInput: 'input[name="phone-number"]',
+        securityCodeInput: 'input[name="security-code"]',
       },
     },
   },
