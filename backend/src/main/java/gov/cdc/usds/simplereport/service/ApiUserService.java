@@ -19,6 +19,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
+import gov.cdc.usds.simplereport.idp.repository.OktaUserDetail;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
@@ -396,8 +397,10 @@ public class ApiUserService {
   @AuthorizationConfiguration.RequirePermissionManageUsers
   public List<ApiUser> getUsersInCurrentOrg() {
     Organization org = _orgService.getCurrentOrganization();
-    final Set<String> orgUserEmails = _oktaRepo.getAllUsersForOrganization(org);
-    return _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserEmails);
+    //    final Set<String> orgUserEmails = _oktaRepo.getAllUsersForOrganization(org);
+    final Map<String, OktaUserDetail> orgUserMap =
+        _oktaRepo.getAllUsersWithDetailsForOrganization(org);
+    return _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserMap.keySet());
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser

@@ -191,7 +191,7 @@ public class LiveOktaRepository implements OktaRepository {
     return Optional.of(claims.get(0));
   }
 
-  public Set<String> getAllUsersForOrganization(Organization org) {
+  public Map<String, OktaUserDetail> getAllUsersWithDetailsForOrganization(Organization org) {
     final String orgDefaultGroupName =
         generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
     final GroupList oktaGroupList =
@@ -207,8 +207,11 @@ public class LiveOktaRepository implements OktaRepository {
                         "Okta group not found for this organization"));
 
     return orgDefaultOktaGroup.listUsers().stream()
-        .map(u -> u.getProfile().getEmail())
-        .collect(Collectors.toUnmodifiableSet());
+        .collect(Collectors.toUnmodifiableMap(u -> u.getProfile().getEmail(), OktaUserDetail::new));
+  }
+
+  public Set<String> getAllUsersForOrganization(Organization org) {
+    return getAllUsersWithDetailsForOrganization(org).keySet();
   }
 
   public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {
