@@ -409,7 +409,6 @@ const QueueItem: any = ({
   const isMounted = useRef(false);
   const DEBOUNCE_TIME = 500;
   useEffect(() => {
-    // console.info(deviceId, dateTested, testResultValue, patient);
     let debounceTimer: ReturnType<typeof setTimeout>;
     if (!isMounted.current) {
       isMounted.current = true;
