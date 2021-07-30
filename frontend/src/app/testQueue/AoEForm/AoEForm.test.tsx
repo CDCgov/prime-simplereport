@@ -65,7 +65,7 @@ describe("AoEForm", () => {
     expect(result).toHaveValue("UNKNOWN");
   });
 
-  it("converts date of last test to ISO Format", () => {
+  it("renders correctly", () => {
     let component: renderer.ReactTestRenderer;
 
     component = renderer.create(
@@ -110,9 +110,7 @@ describe("AoEForm", () => {
       </MockedProvider>
     );
 
-    expect(component.root.props.children.props.lastTest.dateTested).toEqual(
-      "2021-06-21"
-    );
+    expect(component.toJSON()).toMatchSnapshot();
   });
 
   describe("Test result delivery options", () => {
