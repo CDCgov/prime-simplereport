@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.data.repository.Repository;
 
-public interface DataHubUploadRespository
+public interface DataHubUploadRepository
     extends Repository<DataHubUpload, UUID>, AdvisoryLockManager {
 
   /**
@@ -32,6 +32,6 @@ public interface DataHubUploadRespository
    * @return true if the lock was obtained, false otherwise.
    */
   default boolean tryUploadLock() {
-    return tryLock(CORE_API_LOCK_SCOPE, SCHEDULED_UPLOAD_LOCK);
+    return tryTransactionLock(CORE_API_LOCK_SCOPE, SCHEDULED_UPLOAD_LOCK);
   }
 }

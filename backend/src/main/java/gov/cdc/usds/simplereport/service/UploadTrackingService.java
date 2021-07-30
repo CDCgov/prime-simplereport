@@ -2,7 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.db.model.DataHubUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.DataHubUploadStatus;
-import gov.cdc.usds.simplereport.db.repository.DataHubUploadRespository;
+import gov.cdc.usds.simplereport.db.repository.DataHubUploadRepository;
 import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class UploadTrackingService {
 
   private static final Logger LOG = LoggerFactory.getLogger(UploadTrackingService.class);
 
-  @Autowired private DataHubUploadRespository _repo;
+  @Autowired private DataHubUploadRepository _repo;
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public DataHubUpload startUpload(Date earliestRecordedTimestamp) {

@@ -105,7 +105,6 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
     <>
       {props.page === "queue" && dialogPatient !== null && (
         <AoEModalForm
-          saveButtonText="Continue"
           patient={dialogPatient}
           onClose={() => {
             setDialogPatient(null);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
@@ -239,6 +239,7 @@ const QueueItem: any = ({
     EditQueueItemResponse,
     EditQueueItemParams
   >(EDIT_QUEUE_ITEM);
+  const [debouncingEdit, setDebouncingEdit] = useState(false);
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
   const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
@@ -297,7 +298,9 @@ const QueueItem: any = ({
   const [removePatientId, setRemovePatientId] = useState<string>();
 
   if (mutationError) {
-    throw mutationError;
+    // Don't do anything. These errors will propagate to AppInsights, and
+    // generate a user-facing toast error via ApolloClient's onError handler,
+    // defined in index.tsx
   }
 
   const testResultsSubmitted = (response: any) => {
@@ -347,42 +350,50 @@ const QueueItem: any = ({
     }
   };
 
-  const updateQueueItem = ({
-    deviceId,
-    result,
-    dateTested,
-  }: updateQueueItemProps) => {
-    editQueueItem({
-      variables: {
-        id: internalId,
-        deviceId,
-        result,
-        dateTested,
-      },
-    })
-      .then((response) => {
-        if (!response.data) throw Error("updateQueueItem null response");
-        updateDeviceId(response.data.editQueueItem.deviceType.internalId);
-        updateTestResultValue(response.data.editQueueItem.result || undefined);
-        updateTimer(
-          internalId,
-          response.data.editQueueItem.deviceType.testLength
-        );
-        updateDeviceTestLength(
-          response.data.editQueueItem.deviceType.testLength
-        );
+  const updateQueueItem = useCallback(
+    ({ deviceId, result, dateTested }: updateQueueItemProps) => {
+      return editQueueItem({
+        variables: {
+          id: internalId,
+          deviceId,
+          result,
+          dateTested,
+        },
       })
-      .catch(updateMutationError);
-  };
+        .then((response) => {
+          if (!response.data) throw Error("updateQueueItem null response");
+          updateDeviceId(response.data.editQueueItem.deviceType.internalId);
+          updateTestResultValue(
+            response.data.editQueueItem.result || undefined
+          );
+          updateTimer(
+            internalId,
+            response.data.editQueueItem.deviceType.testLength
+          );
+          updateDeviceTestLength(
+            response.data.editQueueItem.deviceType.testLength
+          );
+        })
+        .catch(updateMutationError);
+    },
+    [editQueueItem, internalId]
+  );
 
   const onDeviceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const deviceId = e.currentTarget.value;
-    updateQueueItem({ deviceId, dateTested, result: testResultValue });
+    updateDeviceId(e.currentTarget.value);
   };
 
   const onDateTestedChange = (date: moment.Moment) => {
     const newDateTested = date.toISOString();
     const isValidDate = isValidCustomDateTested(newDateTested);
+
+    // the date string returned from the server is only precise to seconds; moment's
+    // toISOString method returns millisecond precision. as a result, an onChange event
+    // was being fired when this component initialized, sending an EditQueueItem to
+    // the back end w/ the same data that it already had. this prevents it:
+    if (moment(dateTested).isSame(date)) {
+      return;
+    }
 
     if (isValidDate) {
       /* the custom date input field manages its own state in the DOM, not in the react state
@@ -392,16 +403,34 @@ const QueueItem: any = ({
       or if we change our updateQueuItem function to update only a single value at a time, which is a TODO for later
     */
       updateDateTested(newDateTested);
-      updateQueueItem({
-        deviceId,
-        dateTested: newDateTested,
-        result: testResultValue,
-      });
     }
   };
 
+  const isMounted = useRef(false);
+  const DEBOUNCE_TIME = 500;
+  useEffect(() => {
+    let debounceTimer: ReturnType<typeof setTimeout>;
+    if (!isMounted.current) {
+      isMounted.current = true;
+    } else {
+      setDebouncingEdit(true);
+      debounceTimer = setTimeout(async () => {
+        await updateQueueItem({
+          deviceId,
+          dateTested,
+          result: testResultValue,
+        });
+        setDebouncingEdit(false);
+      }, DEBOUNCE_TIME);
+    }
+    return () => {
+      clearTimeout(debounceTimer);
+      setDebouncingEdit(false);
+    };
+  }, [deviceId, dateTested, testResultValue, updateQueueItem]);
+
   const onTestResultChange = (result: TestResult | undefined) => {
-    updateQueueItem({ deviceId, result, dateTested });
+    updateTestResultValue(result);
   };
 
   const removeFromQueue = () => {
@@ -598,12 +627,10 @@ const QueueItem: any = ({
                     />
                     {isAoeModalOpen && (
                       <AoEModalForm
-                        saveButtonText="Continue"
                         onClose={closeAoeModal}
                         patient={patient}
                         loadState={aoeAnswers}
                         saveCallback={saveAoeCallback}
-                        patientLinkId={patientLinkId}
                       />
                     )}
                     <p>
@@ -694,6 +721,7 @@ const QueueItem: any = ({
                 testResultValue={testResultValue}
                 isSubmitDisabled={
                   loading ||
+                  debouncingEdit ||
                   (!shouldUseCurrentDateTime() &&
                     !isValidCustomDateTested(dateTested))
                 }
