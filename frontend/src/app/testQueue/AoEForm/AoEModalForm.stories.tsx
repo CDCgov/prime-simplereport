@@ -2,7 +2,6 @@ import { Story, Meta } from "@storybook/react";
 import { ComponentProps } from "react";
 
 import { getMocks, StoryGraphQLProvider } from "../../../stories/storyMocks";
-import { Patient } from "../../patients/ManagePatients";
 
 import AoEModalForm from "./AoEModalForm";
 
@@ -23,14 +22,17 @@ const Template: Story<ComponentProps<typeof AoEModalForm>> = (args) => (
   </StoryGraphQLProvider>
 );
 
-const patient: Patient = {
+const patient = {
   firstName: "Pauline",
   lastName: "Nida",
   internalId: "123abc",
-  isDeleted: false,
   birthDate: "2002-01-29",
+  phoneNumbers: [
+    { type: "MOBILE", number: "(703) 867-5309" },
+    { type: "MOBILE", number: "(555) 123-4567" },
+  ],
+  testResultDelivery: "SMS",
   middleName: "",
-  role: "",
   lastTest: {
     dateAdded: "",
     result: "UNKNOWN",
