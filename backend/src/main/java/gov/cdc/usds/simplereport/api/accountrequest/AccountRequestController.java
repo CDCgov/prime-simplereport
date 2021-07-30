@@ -172,7 +172,8 @@ public class AccountRequestController {
       throws IOException {
 
     // verify that the organization doesn't already exist
-    Optional<Organization> potentialDuplicateOrg = _os.getOrganizationByName(reqVars.get("organizationName"));
+    Optional<Organization> potentialDuplicateOrg =
+        _os.getOrganizationByName(reqVars.get("organizationName"));
     if (potentialDuplicateOrg.isPresent()) {
       throw new BadRequestException("Organization is a duplicate.");
     }
