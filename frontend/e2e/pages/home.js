@@ -39,6 +39,7 @@ function conductTest(patientName) {
   this.section.queueCard.expect.element("@negativeResult").to.be.visible;
   this.section.queueCard.click("@negativeResult");
   this.section.queueCard.expect.element("@submitResultButton").to.be.visible;
+  this.section.queueCard.expect.element("@submitResultButton").to.be.enabled;
   this.section.queueCard.click("@submitResultButton");
   this.expect
     .section("@app")
