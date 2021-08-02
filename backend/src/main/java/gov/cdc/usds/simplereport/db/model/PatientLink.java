@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.model;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -24,6 +25,10 @@ public class PatientLink extends EternalAuditedEntity {
 
   public TestOrder getTestOrder() {
     return testOrder;
+  }
+
+  public UUID getTestOrderId() {
+    return testOrder.getInternalId();
   }
 
   public Date getExpiresAt() {

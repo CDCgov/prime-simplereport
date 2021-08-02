@@ -11,7 +11,6 @@ import gov.cdc.usds.simplereport.db.repository.PatientLinkFailedAttemptRepositor
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,21 +33,6 @@ public class PatientLinkService {
   @Autowired private TestOrderRepository torepo;
 
   @Autowired private CurrentPatientContextHolder contextHolder;
-
-  public PatientLink getPatientLink(TestOrder testOrder) {
-    List<PatientLink> results = plrepo.findByTestOrder(testOrder);
-    if(results.size() == 0) {
-      throw new IllegalGraphqlArgumentException("No patient link was found for this Test Order");
-    }
-    results.sort((pl1, pl2) -> {
-      if(pl1.getCreatedAt().equals(pl2.getCreatedAt())) {
-          return 0;
-      } else if(pl1.getCreatedAt().before(pl2.getCreatedAt())) {
-          return -1;
-      } else return 1;
-    });
-    return results.get(0);
-  }
 
   public PatientLink getPatientLink(UUID internalId) {
     return plrepo
