@@ -82,7 +82,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         false,
         false,
-        "English");
+        "English",
+        null);
     _service.addPatient(
         _site1.getInternalId(),
         "BAR",
@@ -101,7 +102,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         false,
         false,
-        "Spanish");
+        "Spanish",
+        null);
     _service.addPatient(
         _site2.getInternalId(),
         "BAZ",
@@ -120,7 +122,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         false,
         false,
-        "French");
+        "French",
+        null);
     List<Person> all =
         _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null);
     assertEquals(3, all.size());
@@ -156,7 +159,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         false,
         false,
-        "English");
+        "English",
+        null);
 
     assertThrows(
         AccessDeniedException.class,
@@ -179,7 +183,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 null,
                 false,
                 false,
-                "English"));
+                "English",
+                null));
 
     TestUserIdentities.setFacilityAuthorities(fac);
     _service.addPatient(
@@ -200,7 +205,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         false,
         false,
-        "Spanish");
+        "Spanish",
+        null);
   }
 
   @Test
@@ -226,7 +232,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 null,
                 false,
                 false,
-                "English"));
+                "English",
+                null));
   }
 
   @Test
@@ -255,7 +262,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             false,
             false,
-            "Spanish");
+            "Spanish",
+            null);
     TestUserIdentities.setFacilityAuthorities();
 
     assertThrows(AccessDeniedException.class, () -> _service.setIsDeleted(p.getInternalId(), true));
@@ -291,7 +299,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             false,
             false,
-            "English");
+            "English",
+            null);
 
     _service.setIsDeleted(p.getInternalId(), true);
     assertEquals(
@@ -336,7 +345,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             false,
             false,
-            "German");
+            "German",
+            null);
 
     assertEquals(
         1, _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null).size());
