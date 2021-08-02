@@ -1,5 +1,8 @@
 package gov.cdc.usds.simplereport.db.model.auxiliary;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.json.JSONObject;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +51,16 @@ public class AskOnEntrySurvey {
 
   public Map<String, Boolean> getSymptoms() {
     return symptoms;
+  }
+
+  @JsonIgnore
+  public String getSymptomsJSON() {
+    Map<String, Boolean> s = getSymptoms();
+    JSONObject obj = new JSONObject();
+    for (Map.Entry<String, Boolean> entry : s.entrySet()) {
+      obj.put(entry.getKey(), entry.getValue().toString());
+    }
+    return obj.toString();
   }
 
   public void setSymptoms(Map<String, Boolean> symptoms) {

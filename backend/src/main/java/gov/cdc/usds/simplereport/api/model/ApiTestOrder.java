@@ -32,14 +32,7 @@ public class ApiTestOrder extends WrappedEntity<TestOrder> {
     return survey.getNoSymptoms();
   }
 
-  public String getSymptoms() {
-    Map<String, Boolean> s = survey.getSymptoms();
-    JSONObject obj = new JSONObject();
-    for (Map.Entry<String, Boolean> entry : s.entrySet()) {
-      obj.put(entry.getKey(), entry.getValue().toString());
-    }
-    return obj.toString();
-  }
+  public String getSymptoms() { return survey.getSymptomsJSON(); }
 
   public LocalDate getSymptomOnset() {
     return survey.getSymptomOnsetDate();
