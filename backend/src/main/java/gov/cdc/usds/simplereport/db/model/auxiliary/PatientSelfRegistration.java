@@ -38,7 +38,8 @@ public class PatientSelfRegistration extends PersonUpdate {
       @JsonProperty("gender") String gender,
       @JsonProperty("residentCongregateSetting") Boolean residentCongregateSetting,
       @JsonProperty("employedInHealthcare") Boolean employedInHealthcare,
-      @JsonProperty("preferredLanguage") String preferredLanguage) {
+      @JsonProperty("preferredLanguage") String preferredLanguage,
+      @JsonProperty("testResultDelivery") TestResultDeliveryPreference testResultDelivery) {
     super(
         address,
         telephone,
@@ -51,7 +52,8 @@ public class PatientSelfRegistration extends PersonUpdate {
         gender,
         residentCongregateSetting,
         employedInHealthcare,
-        preferredLanguage);
+        preferredLanguage,
+        testResultDelivery);
     this.registrationLink = registrationLink;
     this.lookupId = lookupId;
     this.firstName = firstName;

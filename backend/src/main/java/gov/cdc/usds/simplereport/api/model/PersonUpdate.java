@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,6 +22,7 @@ public class PersonUpdate {
   private final Boolean residentCongregateSetting;
   private final Boolean employedInHealthcare;
   private final String preferredLanguage;
+  private final TestResultDeliveryPreference testResultDelivery;
 
   @JsonCreator
   public PersonUpdate(
@@ -35,7 +37,8 @@ public class PersonUpdate {
       @JsonProperty("gender") String gender,
       @JsonProperty("residentCongregateSetting") Boolean residentCongregateSetting,
       @JsonProperty("employedInHealthcare") Boolean employedInHealthcare,
-      @JsonProperty("preferredLanguage") String preferredLanguage) {
+      @JsonProperty("preferredLanguage") String preferredLanguage,
+      @JsonProperty("testResultDelivery") TestResultDeliveryPreference testResultDelivery) {
     this.address = address;
     this.telephone = telephone;
     this.phoneNumbers = phoneNumbers;
@@ -48,6 +51,7 @@ public class PersonUpdate {
     this.residentCongregateSetting = residentCongregateSetting;
     this.employedInHealthcare = employedInHealthcare;
     this.preferredLanguage = preferredLanguage;
+    this.testResultDelivery = testResultDelivery;
   }
 
   public StreetAddress getAddress() {
@@ -96,6 +100,10 @@ public class PersonUpdate {
 
   public String getPreferredLanguage() {
     return preferredLanguage;
+  }
+
+  public TestResultDeliveryPreference getTestResultDelivery() {
+    return testResultDelivery;
   }
 
   @Override

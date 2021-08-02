@@ -103,6 +103,9 @@ export const en = {
           additionalPhoneNumber: "Additional phone number",
           phoneType: "Phone type",
           addNumber: "Add another number",
+          testResultDelivery:
+            "Would you like to receive your results via text message?",
+          testResultDeliveryHint: "We'll text all mobile numbers on file",
           email: "Email address",
           street1: "Street address 1",
           street2: "Street address 2",
@@ -158,6 +161,8 @@ export const en = {
             "Are you a resident in a congregate living setting? is required",
           employedInHealthcare: "Are you a health care worker? is required",
           preferredLanguage: "Preferred language is incorrectly formatted",
+          testResultDelivery:
+            "Test result delivery preference is incorrectly formatted",
         },
       },
     },
