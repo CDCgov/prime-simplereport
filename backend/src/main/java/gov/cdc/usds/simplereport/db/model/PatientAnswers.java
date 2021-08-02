@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
 
+import java.util.UUID;
+
 @Entity
 public class PatientAnswers extends AuditedEntity {
 
@@ -13,7 +15,7 @@ public class PatientAnswers extends AuditedEntity {
   @Type(type = "jsonb")
   private AskOnEntrySurvey askOnEntry;
 
-  @OneToOne(mappedBy = "patient_answers_id")
+  @OneToOne(mappedBy = "askOnEntrySurvey")
   private TestOrder testOrder;
 
   protected PatientAnswers() {
@@ -30,5 +32,9 @@ public class PatientAnswers extends AuditedEntity {
 
   public void setSurvey(AskOnEntrySurvey askOnEntry) {
     this.askOnEntry = askOnEntry;
+  }
+
+  public UUID getTestOrderId() {
+    return testOrder.getInternalId();
   }
 }
