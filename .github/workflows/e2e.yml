@@ -73,8 +73,8 @@ jobs:
         run: |
           sudo cp ./frontend/e2e/utils/localhost.simplereport.gov /etc/nginx/sites-available
           sudo ln -s /etc/nginx/sites-available/localhost.simplereport.gov /etc/nginx/sites-enabled/localhost.simplereport.gov
-          sudo systemctl reload nginx
           sudo echo "127.0.0.1 localhost.simplereport.gov" | sudo tee -a /etc/hosts
+          sudo systemctl start nginx
       - name: Run API
         env:
           OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
