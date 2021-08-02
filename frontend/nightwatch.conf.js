@@ -25,7 +25,7 @@ module.exports = {
   test_settings: {
     default: {
       disable_error_log: false,
-      launch_url: "https://dev.clyde.tech",
+      launch_url: "http://localhost.simplereport.gov",
 
       screenshots: {
         enabled: false,
