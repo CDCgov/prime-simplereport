@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service.dataloader;
 
 import gov.cdc.usds.simplereport.db.model.PatientLink;
-import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
 import java.util.List;
 import java.util.Map;

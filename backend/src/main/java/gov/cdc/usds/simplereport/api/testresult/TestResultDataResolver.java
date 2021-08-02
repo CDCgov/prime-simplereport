@@ -7,7 +7,6 @@ import gov.cdc.usds.simplereport.api.model.errors.NoDataLoaderFoundException;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
-import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
@@ -24,7 +23,6 @@ import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class TestResultDataResolver
