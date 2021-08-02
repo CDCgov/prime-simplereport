@@ -9,6 +9,7 @@ import {
   GENDER_VALUES,
   TRIBAL_AFFILIATION_VALUES,
   PHONE_TYPE_VALUES,
+  TEST_RESULT_DELIVERY_PREFERENCE_VALUES,
 } from "../constants";
 import { Option } from "../commonComponents/Dropdown";
 import { languages } from "../../config/constants";
@@ -31,7 +32,8 @@ type UpdateOptionalFields =
   | "tribalAffiliation"
   | "residentCongregateSetting"
   | "employedInHealthcare"
-  | "preferredLanguage";
+  | "preferredLanguage"
+  | "testResultDelivery";
 
 type OptionalFields = UpdateOptionalFields | "middleName";
 
@@ -128,6 +130,9 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
     .mixed()
     .oneOf([...getValues(TRIBAL_AFFILIATION_VALUES), "", null]),
   preferredLanguage: yup.mixed().oneOf([...languages, "", null]),
+  testResultDelivery: yup
+    .mixed()
+    .oneOf([...getValues(TEST_RESULT_DELIVERY_PREFERENCE_VALUES), "", null]),
 };
 
 const updatePhoneNumberSchemata: Record<keyof PhoneNumber, yup.AnySchema> = {
@@ -190,6 +195,7 @@ export const allPersonErrors: Required<PersonErrors> = {
   ),
   employedInHealthcare: i18n.t("patient.form.errors.employedInHealthcare"),
   preferredLanguage: i18n.t("patient.form.errors.preferredLanguage"),
+  testResultDelivery: i18n.t("patient.form.errors.testResultDelivery"),
 };
 
 export type PhoneNumberErrors = Partial<Record<keyof PhoneNumber, string>>;

@@ -213,7 +213,8 @@ public class PersonService {
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
-      String preferredLanguage) {
+      String preferredLanguage,
+      TestResultDeliveryPreference testResultDelivery) {
     Person newPatient =
         new Person(
             _os.getCurrentOrganization(),
@@ -236,6 +237,7 @@ public class PersonService {
     Person savedPerson = _repo.save(newPatient);
     upsertPreferredLanguage(savedPerson, preferredLanguage);
     updatePhoneNumbers(newPatient, phoneNumbers);
+    updateTestResultDeliveryPreference(savedPerson.getInternalId(), testResultDelivery);
     return savedPerson;
   }
 
@@ -258,7 +260,8 @@ public class PersonService {
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
-      String preferredLanguage) {
+      String preferredLanguage,
+      TestResultDeliveryPreference testResultDelivery) {
     Person newPatient =
         new Person(
             link.getOrganization(),
@@ -281,6 +284,7 @@ public class PersonService {
     Person savedPerson = _repo.save(newPatient);
     upsertPreferredLanguage(savedPerson, preferredLanguage);
     updatePhoneNumbers(newPatient, phoneNumbers);
+    updateTestResultDeliveryPreference(savedPerson.getInternalId(), testResultDelivery);
     return savedPerson;
   }
 
@@ -398,7 +402,8 @@ public class PersonService {
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
-      String preferredLanguage) {
+      String preferredLanguage,
+      TestResultDeliveryPreference testResultDelivery) {
     Person patientToUpdate = this.getPatientNoPermissionsCheck(patientId);
     patientToUpdate.updatePatient(
         lookupId,
@@ -419,6 +424,14 @@ public class PersonService {
     updatePhoneNumbers(patientToUpdate, phoneNumbers);
     upsertPreferredLanguage(patientToUpdate, preferredLanguage);
     updatePersonFacility(patientToUpdate, facilityId);
+
+    // Prevent test result delivery preference from getting un-set entirely.
+    // This also keeps backwards compatibility with older versions of the
+    // frontend that will not send in this value from the person form.
+    if (testResultDelivery != null) {
+      updateTestResultDeliveryPreference(patientToUpdate.getInternalId(), testResultDelivery);
+    }
+
     return _repo.save(patientToUpdate);
   }
 

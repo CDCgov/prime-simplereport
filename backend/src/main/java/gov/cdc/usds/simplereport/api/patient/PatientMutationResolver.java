@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.UploadService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -78,7 +79,8 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
-      String preferredLanguage) {
+      String preferredLanguage,
+      TestResultDeliveryPreference testResultDelivery) {
     List<PhoneNumberInput> backwardsCompatiblePhoneNumbers =
         phoneNumbers != null
             ? phoneNumbers
@@ -108,7 +110,8 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseGender(gender),
         residentCongregateSetting,
         employedInHealthcare,
-        parseString(preferredLanguage));
+        parseString(preferredLanguage),
+        testResultDelivery);
   }
 
   public Person updatePatient(
@@ -136,7 +139,8 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
-      String preferredLanguage) {
+      String preferredLanguage,
+      TestResultDeliveryPreference testResultDelivery) {
     List<PhoneNumberInput> backwardsCompatiblePhoneNumbers =
         phoneNumbers != null
             ? phoneNumbers
@@ -166,7 +170,8 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseGender(gender),
         residentCongregateSetting,
         employedInHealthcare,
-        parseString(preferredLanguage));
+        parseString(preferredLanguage),
+        testResultDelivery);
   }
 
   public Person setPatientIsDeleted(UUID id, Boolean deleted) {
