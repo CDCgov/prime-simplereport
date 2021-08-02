@@ -365,6 +365,8 @@ Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/rele
 
 ### Revert to a Previous Release
 
+**Note:** A bad version can be rolled backed independent of the FE via the [rollback API actions](https://github.com/CDCgov/prime-simplereport/actions/workflows/rollbackProdAPI.yml)
+
 1. checkout `main`
 2. create a new branch (example: `tim-best/revert-feature-A`)
 3. Revert to the desired commit `git revert --no-commit 9999999..HEAD && git commit` where 9999999 is the commit you want to revert to
