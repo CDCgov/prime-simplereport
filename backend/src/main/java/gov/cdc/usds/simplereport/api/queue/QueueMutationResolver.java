@@ -76,7 +76,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
 
     _ps.updateTestResultDeliveryPreference(patientID, testResultDelivery);
 
-    return to.getPatientLink().getInternalId().toString();
+    return ""; // TODO: change to void in GraphQL schema
   }
 
   public void removePatientFromQueue(UUID patientID) {

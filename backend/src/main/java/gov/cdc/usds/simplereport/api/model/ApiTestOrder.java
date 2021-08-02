@@ -88,8 +88,4 @@ public class ApiTestOrder extends WrappedEntity<TestOrder> {
   public String getReasonForCorrection() {
     return wrapped.getReasonForCorrection();
   }
-
-  public PatientLink getPatientLink() {
-    return wrapped.getPatientLink();
-  }
 }

@@ -276,7 +276,6 @@ public class TestOrderService {
       // patient
       PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
       UUID internalId = patientLink.getInternalId();
-      savedOrder.setPatientLink(patientLink);
 
       List<SmsAPICallResult> smsSendResults =
           _smss.sendToPatientLink(
@@ -347,7 +346,6 @@ public class TestOrderService {
     newOrder.setAskOnEntrySurvey(answers);
     TestOrder savedOrder = _repo.save(newOrder);
     PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-    savedOrder.setPatientLink(patientLink);
     return savedOrder;
   }
 

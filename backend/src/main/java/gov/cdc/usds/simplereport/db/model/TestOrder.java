@@ -35,17 +35,6 @@ public class TestOrder extends BaseTestInfo {
   @JoinColumn(name = "test_event_id")
   private TestEvent testEvent;
 
-  @ManyToOne
-  @JoinFormula(
-      "("
-          + "SELECT pl.internal_id "
-          + "FROM {h-schema}patient_link pl "
-          + "WHERE pl.test_order_id = internal_id "
-          + "ORDER BY pl.created_at DESC "
-          + "LIMIT 1"
-          + ")")
-  private PatientLink patientLink;
-
   protected TestOrder() {
     /* for hibernate */ }
 
@@ -150,11 +139,4 @@ public class TestOrder extends BaseTestInfo {
     super.setReasonForCorrection(reasonForCorrection);
   }
 
-  public PatientLink getPatientLink() {
-    return patientLink;
-  }
-
-  public void setPatientLink(PatientLink patientLink) {
-    this.patientLink = patientLink;
-  }
 }
