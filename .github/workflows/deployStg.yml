@@ -47,7 +47,7 @@ jobs:
         run: make deploy-${{ env.DEPLOY_ENV }}-api
       - name: Wait for correct release to be deployed in staging slot
         timeout-minutes: 5
-        run: make wait-for-${{ env.DEPLOY_ENV }}-slot-release
+        run: make wait-for-${{ env.DEPLOY_ENV }}-slot-commit
       - name: Wait for staging deploy to be ready
         timeout-minutes: 1
         run: make wait-for-${{ env.DEPLOY_ENV }}-slot-readiness
