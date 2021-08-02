@@ -132,6 +132,7 @@ describe("AddPatient", () => {
               employedInHealthcare: true,
               facilityId: mockFacilityID,
               preferredLanguage: null,
+              testResultDelivery: "SMS",
             },
           },
           result: {
@@ -171,6 +172,7 @@ describe("AddPatient", () => {
               employedInHealthcare: true,
               facilityId: mockFacilityID,
               preferredLanguage: null,
+              testResultDelivery: null,
             },
           },
           result: {
@@ -215,6 +217,11 @@ describe("AddPatient", () => {
             "Phone type": {
               label: "Mobile",
               value: "MOBILE",
+              exact: true,
+            },
+            "Would you like to receive your results via text message": {
+              label: "Yes",
+              value: "SMS",
               exact: true,
             },
             "Are you a resident in a congregate living setting": {

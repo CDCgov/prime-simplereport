@@ -44,6 +44,7 @@ export const GET_PATIENT = gql`
       facility {
         id
       }
+      testResultDelivery
     }
   }
 `;
@@ -74,6 +75,7 @@ const UPDATE_PATIENT = gql`
     $residentCongregateSetting: Boolean
     $employedInHealthcare: Boolean
     $preferredLanguage: String
+    $testResultDelivery: TestResultDeliveryPreference
   ) {
     updatePatient(
       facilityId: $facilityId
@@ -100,6 +102,7 @@ const UPDATE_PATIENT = gql`
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage
+      testResultDelivery: $testResultDelivery
     ) {
       internalId
     }
