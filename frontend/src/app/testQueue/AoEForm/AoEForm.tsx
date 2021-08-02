@@ -139,11 +139,6 @@ const AoEForm: React.FC<Props> = ({
 
   const patientIsOver18 = moment().diff(patient.birthDate, "years") >= 18;
 
-  // Null is OK and preferred over an empty string
-  if (lastTest?.dateTested) {
-    lastTest.dateTested = lastTest.dateTested.split("T")[0] as ISODate;
-  }
-
   // form validation
   const [symptomError, setSymptomError] = useState<string | undefined>();
   const [symptomOnsetError, setSymptomOnsetError] = useState<
@@ -200,7 +195,10 @@ const AoEForm: React.FC<Props> = ({
               )}
             </p>
             {phoneNumbers.map(({ number }) => (
-              <span className="radio__label-description--checked usa-radio__label-description text-base">
+              <span
+                key={number}
+                className="radio__label-description--checked usa-radio__label-description text-base"
+              >
                 {number}
               </span>
             ))}
@@ -294,9 +292,6 @@ const AoEForm: React.FC<Props> = ({
         onSubmit={saveAnswers}
         ref={formRef}
       >
-        {isModal && (
-          <div className="margin-top-4 border-top border-base-lighter" />
-        )}
         <RequiredMessage />
         {patientIsOver18 && (
           <FormGroup title="Results">

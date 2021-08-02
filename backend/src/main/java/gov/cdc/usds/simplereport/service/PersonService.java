@@ -19,6 +19,7 @@ import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -115,6 +116,12 @@ public class PersonService {
   // called by List function and Count function
   protected Specification<Person> buildPersonSearchFilter(
       UUID facilityId, boolean isArchived, String namePrefixMatch) {
+
+    List<String> namePrefixMatchList =
+        StringUtils.isEmpty(namePrefixMatch)
+            ? Collections.emptyList()
+            : Arrays.stream(namePrefixMatch.split(" ")).collect(Collectors.toList());
+
     // build up filter based on params
     Specification<Person> filter = inCurrentOrganizationFilter().and(isDeletedFilter(isArchived));
     if (facilityId == null) {
@@ -123,9 +130,10 @@ public class PersonService {
       filter = filter.and(inFacilityFilter(facilityId));
     }
 
-    if (StringUtils.isNotBlank(namePrefixMatch)) {
-      filter = filter.and(nameMatchesFilter(namePrefixMatch));
+    for (var prefixMatch : namePrefixMatchList) {
+      filter = filter.and(nameMatchesFilter(prefixMatch));
     }
+
     return filter;
   }
 

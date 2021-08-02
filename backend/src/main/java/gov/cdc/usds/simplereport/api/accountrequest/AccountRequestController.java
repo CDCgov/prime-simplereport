@@ -12,6 +12,7 @@ import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountResponse;
 import gov.cdc.usds.simplereport.api.model.accountrequest.WaitlistRequest;
+import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -38,8 +39,11 @@ import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,6 +81,11 @@ public class AccountRequestController {
     this._es = es;
     this._crm = crm;
     this.objectMapper = new ObjectMapper();
+  }
+
+  @ExceptionHandler(BadRequestException.class)
+  public ResponseEntity<String> handleException(BadRequestException e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
   }
 
   @PostConstruct
@@ -169,6 +178,14 @@ public class AccountRequestController {
 
   private Organization checkAccountRequestAndCreateOrg(Map<String, String> reqVars)
       throws IOException {
+
+    // verify that the organization doesn't already exist
+    Optional<Organization> potentialDuplicateOrg =
+        _os.getOrganizationByName(reqVars.get("organizationName"));
+    if (potentialDuplicateOrg.isPresent()) {
+      throw new BadRequestException("Organization is a duplicate.");
+    }
+
     List<DeviceType> devices = _dts.fetchDeviceTypes();
     Map<String, String> deviceNamesToIds =
         devices.stream()
