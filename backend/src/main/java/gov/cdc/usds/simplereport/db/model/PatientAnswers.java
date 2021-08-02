@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.model;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
 
 @Entity
@@ -11,6 +12,9 @@ public class PatientAnswers extends AuditedEntity {
   @Column
   @Type(type = "jsonb")
   private AskOnEntrySurvey askOnEntry;
+
+  @OneToOne(mappedBy = "patient_answers_id")
+  private TestOrder testOrder;
 
   protected PatientAnswers() {
     /* for hibernate */
