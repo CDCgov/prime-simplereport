@@ -1,12 +1,26 @@
 const { execSync, spawn } = require("child_process");
 
+const downloadWiremock = () => execSync("./e2e/utils/download-wiremock.sh");
 const startWiremock = () => spawn("./e2e/utils/start-wiremock.sh");
+const stopWiremock = () => execSync("./e2e/utils/stop-wiremock.sh");
+
+let wm;
 
 module.exports = {
   // "@disabled": true,
+  before: () => {
+    downloadWiremock();
+  },
+  beforeEach: () => {
+    wm = startWiremock();
+  },
+  afterEach: () => {
+    wm.kill();
+  },
+  after: () => {
+    stopWiremock();
+  },
   "1. Account creation w/ SMS MFA": (browser) => {
-    execSync("./e2e/utils/download-wiremock.sh");
-    const wm = startWiremock();
     browser.page
       .accountCreation()
       .navigate("/uac/?activationToken=h971awbXda7y7jGaxN8f")
@@ -16,10 +30,8 @@ module.exports = {
       .enterPhoneNumber()
       .verifySecurityCode("033457")
       .success();
-    wm.kill();
   },
   "2. Account creation w/ Okta Verify MFA": (browser) => {
-    const wm = startWiremock();
     browser
       .deleteCookies()
       .page.accountCreation()
@@ -30,10 +42,8 @@ module.exports = {
       .scanQrCode()
       .verifySecurityCode("543663")
       .success();
-    wm.kill();
   },
   "3. Account creation w/ Google Authenticator MFA": (browser) => {
-    const wm = startWiremock();
     browser
       .deleteCookies()
       .page.accountCreation()
@@ -44,10 +54,8 @@ module.exports = {
       .scanQrCode()
       .verifySecurityCode("985721")
       .success();
-    wm.kill();
   },
   "4. Account creation w/ Voice Call MFA": (browser) => {
-    const wm = startWiremock();
     browser
       .deleteCookies()
       .page.accountCreation()
@@ -58,10 +66,8 @@ module.exports = {
       .enterPhoneNumber()
       .verifySecurityCode("30835")
       .success();
-    wm.kill();
   },
   "5. Account creation w/ Email MFA": (browser) => {
-    const wm = startWiremock();
     browser
       .deleteCookies()
       .page.accountCreation()
@@ -71,6 +77,5 @@ module.exports = {
       .mfaSelect("@emailMfaRadio")
       .verifySecurityCode("007781")
       .success();
-    wm.kill();
   },
 };
