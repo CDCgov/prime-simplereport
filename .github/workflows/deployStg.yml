@@ -1,8 +1,9 @@
 name: Deploy Stg
 
 on:
-  release:
-    types: [prereleased]
+  push:
+    branches:
+      - main
 
 env:
   DEPLOY_ENV: stg
