@@ -239,6 +239,7 @@ const QueueItem: any = ({
     EditQueueItemResponse,
     EditQueueItemParams
   >(EDIT_QUEUE_ITEM);
+  const [debouncingEdit, setDebouncingEdit] = useState(false);
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
   const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
@@ -351,7 +352,7 @@ const QueueItem: any = ({
 
   const updateQueueItem = useCallback(
     ({ deviceId, result, dateTested }: updateQueueItemProps) => {
-      editQueueItem({
+      return editQueueItem({
         variables: {
           id: internalId,
           deviceId,
@@ -386,6 +387,14 @@ const QueueItem: any = ({
     const newDateTested = date.toISOString();
     const isValidDate = isValidCustomDateTested(newDateTested);
 
+    // the date string returned from the server is only precise to seconds; moment's
+    // toISOString method returns millisecond precision. as a result, an onChange event
+    // was being fired when this component initialized, sending an EditQueueItem to
+    // the back end w/ the same data that it already had. this prevents it:
+    if (moment(dateTested).isSame(date)) {
+      return;
+    }
+
     if (isValidDate) {
       /* the custom date input field manages its own state in the DOM, not in the react state
       The reason for this is an invalid custom date would update react. Updating another field in the queue item, like the test result, would attempt to submit the invalid date to the backend
@@ -398,22 +407,25 @@ const QueueItem: any = ({
   };
 
   const isMounted = useRef(false);
-  const DEBOUNCE_TIME = 700;
+  const DEBOUNCE_TIME = 500;
   useEffect(() => {
     let debounceTimer: ReturnType<typeof setTimeout>;
     if (!isMounted.current) {
       isMounted.current = true;
     } else {
-      debounceTimer = setTimeout(() => {
-        updateQueueItem({
+      setDebouncingEdit(true);
+      debounceTimer = setTimeout(async () => {
+        await updateQueueItem({
           deviceId,
           dateTested,
           result: testResultValue,
         });
+        setDebouncingEdit(false);
       }, DEBOUNCE_TIME);
     }
     return () => {
       clearTimeout(debounceTimer);
+      setDebouncingEdit(false);
     };
   }, [deviceId, dateTested, testResultValue, updateQueueItem]);
 
@@ -615,12 +627,10 @@ const QueueItem: any = ({
                     />
                     {isAoeModalOpen && (
                       <AoEModalForm
-                        saveButtonText="Continue"
                         onClose={closeAoeModal}
                         patient={patient}
                         loadState={aoeAnswers}
                         saveCallback={saveAoeCallback}
-                        patientLinkId={patientLinkId}
                       />
                     )}
                     <p>
@@ -711,6 +721,7 @@ const QueueItem: any = ({
                 testResultValue={testResultValue}
                 isSubmitDisabled={
                   loading ||
+                  debouncingEdit ||
                   (!shouldUseCurrentDateTime() &&
                     !isValidCustomDateTested(dateTested))
                 }

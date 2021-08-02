@@ -138,6 +138,10 @@ public class OrganizationService {
                 "An organization with external_id=" + externalId + " does not exist"));
   }
 
+  public Optional<Organization> getOrganizationByName(String name) {
+    return _repo.findByName(name);
+  }
+
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<Organization> getOrganizations(Boolean identityVerified) {
     return identityVerified == null

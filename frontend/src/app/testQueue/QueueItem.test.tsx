@@ -6,6 +6,7 @@ import moment from "moment";
 import * as utils from "../utils/index";
 
 import QueueItem, { EDIT_QUEUE_ITEM, SUBMIT_TEST_RESULT } from "./QueueItem";
+import { LAST_TEST_QUERY } from "./AoEForm/AoEModalForm";
 
 const initialDateString = "2021-02-14";
 const updatedDateString = "2021-03-10";
@@ -201,6 +202,39 @@ describe("QueueItem", () => {
       });
     });
   });
+
+  it("displays person's mobile phone numbers", async () => {
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <QueueItem
+          internalId={testProps.internalId}
+          patient={testProps.patient}
+          askOnEntry={testProps.askOnEntry}
+          selectedDeviceId={testProps.selectedDeviceId}
+          selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+          selectedTestResult={testProps.selectedTestResult}
+          devices={testProps.devices}
+          defaultDevice={testProps.defaultDevice}
+          refetchQueue={testProps.refetchQueue}
+          facilityId={testProps.facilityId}
+          dateTestedProp={testProps.dateTestedProp}
+          patientLinkId={testProps.patientLinkId}
+        ></QueueItem>
+      </MockedProvider>
+    );
+
+    const questionnaire = await screen.findByText("Test questionnaire");
+    fireEvent.click(questionnaire);
+    await screen.findByText("Required fields are marked", { exact: false });
+    expect(
+      screen.queryByText(testProps.patient.phoneNumbers[0].number, {
+        exact: false,
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(testProps.patient.phoneNumbers[1].number)
+    ).not.toBeInTheDocument();
+  });
 });
 
 const internalId = "f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554";
@@ -216,8 +250,12 @@ const testProps = {
     birthDate: "1990-07-31",
     phoneNumbers: [
       {
-        number: "string",
+        number: "a-mobile-number",
         type: "MOBILE",
+      },
+      {
+        number: "a-landline-number",
+        type: "LANDLINE",
       },
     ],
   },
@@ -392,6 +430,24 @@ const mocks = [
             internalId: internalId,
           },
           deliverySuccess: false,
+        },
+      },
+    },
+  },
+  {
+    request: {
+      query: LAST_TEST_QUERY,
+      variables: {
+        patientId: "f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554",
+      },
+    },
+    result: {
+      data: {
+        patient: {
+          lastTest: {
+            dateTested: "2021-06-04T16:01:00",
+            result: "NEGATIVE",
+          },
         },
       },
     },
