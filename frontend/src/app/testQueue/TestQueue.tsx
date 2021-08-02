@@ -74,9 +74,6 @@ export const queueQuery = gql`
       }
       result
       dateTested
-      patientLink {
-        internalId
-      }
     }
     organization {
       testingFacility {
@@ -112,9 +109,6 @@ interface QueueItemData extends AoEAnswers {
   patient: TestQueuePerson;
   result: string;
   dateTested: string;
-  patientLink: {
-    internalId: string;
-  };
 }
 
 const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
@@ -166,7 +160,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
           patient,
           result,
           dateTested,
-          patientLink,
           ...questions
         }) => {
           return (
@@ -187,7 +180,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 refetchQueue={refetch}
                 facilityId={activeFacilityId}
                 dateTestedProp={dateTested}
-                patientLinkId={patientLink?.internalId || null}
               />
             </CSSTransition>
           );
