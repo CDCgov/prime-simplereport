@@ -345,7 +345,7 @@ public class TestOrderService {
     _parepo.save(answers);
     newOrder.setAskOnEntrySurvey(answers);
     TestOrder savedOrder = _repo.save(newOrder);
-    PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
+    _pls.createPatientLink(savedOrder.getInternalId());
     return savedOrder;
   }
 
