@@ -71,9 +71,7 @@ jobs:
           backend/db-setup/create-db.sh
       - name: Set up nginx reverse proxy
         run: |
-          sudo apt install nginx -y
-          sudo systemctl start nginx
-          sudo cp localhost.simplereport.gov /etc/nginx/sites-available
+          sudo cp ./frontend/e2e/utils/localhost.simplereport.gov /etc/nginx/sites-available
           sudo ln -s /etc/nginx/sites-available/localhost.simplereport.gov /etc/nginx/sites-enabled/localhost.simplereport.gov
           sudo systemctl reload nginx
           sudo echo "127.0.0.1 localhost.simplereport.gov" | sudo tee -a /etc/hosts
