@@ -28,12 +28,6 @@ import org.springframework.stereotype.Component;
 public class TestResultDataResolver
     implements GraphQLResolver<TestEvent>, InternalIdResolver<TestEvent> {
 
-  private final PatientLinkService _patientLinkService;
-
-  TestResultDataResolver(PatientLinkService patientLinkService) {
-    this._patientLinkService = patientLinkService;
-  }
-
   private AskOnEntrySurvey getSurvey(TestEvent testEvent) {
     return testEvent.getSurveyData();
   }
