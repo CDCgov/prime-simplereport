@@ -20,7 +20,6 @@ env:
   SIMPLE_REPORT_SENDGRID_ENABLED: false
   SIMPLE_REPORT_SENDGRID_FROM_EMAIL: admin@simplereport.gov
   SIMPLE_REPORT_SENDGRID_ACCOUNT_REQUEST_RECIPIENT: usds@cdc.gov
-  SERVER_SERVLET_SESSION_COOKIE_DOMAIN: localhost.simplereport.gov
   REACT_APP_BASE_URL: http://localhost.simplereport.gov
   REACT_APP_BACKEND_URL: http://localhost.simplereport.gov/api
 
@@ -71,10 +70,10 @@ jobs:
           backend/db-setup/create-db.sh
       - name: Set up nginx reverse proxy
         run: |
-          sudo apt-get install curl -y
           sudo cp ./frontend/e2e/utils/localhost.simplereport.gov /etc/nginx/sites-available
           sudo ln -s /etc/nginx/sites-available/localhost.simplereport.gov /etc/nginx/sites-enabled/localhost.simplereport.gov
           sudo echo "127.0.0.1 localhost.simplereport.gov" | sudo tee -a /etc/hosts
+          echo "server.servlet.session.cookie.domain: localhost.simplereport.gov" | tee -a ./backend/src/main/resources/application-local.yaml 
           sudo systemctl start nginx
       - name: Run API
         env:
@@ -83,7 +82,7 @@ jobs:
           SMARTY_AUTH_ID: ${{ secrets.SMARTY_AUTH_ID }}
           SMARTY_AUTH_TOKEN: ${{ secrets.SMARTY_AUTH_TOKEN }}
         working-directory: ./backend
-        run: ./gradlew bootRun --args='--spring.profiles.active=dev' &> ../gradle-log.txt &
+        run: ./gradlew bootRun --args='--spring.profiles.active=e2e' &> ../gradle-log.txt &
       - name: Use Node.js ${{env.NODE_VERSION}}
         uses: actions/setup-node@v2.1.5
         with:
