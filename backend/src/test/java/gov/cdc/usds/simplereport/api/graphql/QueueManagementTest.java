@@ -104,32 +104,6 @@ class QueueManagementTest extends BaseGraphqlTest {
   }
 
   @Test
-  void twoSimultaneousUpdates() throws Exception {
-    Person p = _dataFactory.createFullPerson(_org);
-    TestOrder o = _dataFactory.createTestOrder(p, _site);
-    UUID orderId = o.getInternalId();
-    DeviceType d = _dataFactory.getGenericDevice();
-    String deviceId = d.getInternalId().toString();
-    String dateTested = "2020-12-31T14:30:30Z";
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", orderId.toString())
-            .put("deviceId", deviceId)
-            .put("result", TestResult.POSITIVE.toString())
-            .put("dateTested", dateTested);
-
-    CompletableFuture.allOf(
-        CompletableFuture.runAsync(() -> runQuery("edit-queue-item", variables, null)),
-        CompletableFuture.runAsync(
-            () -> {
-              await().atMost(100, MILLISECONDS);
-              runQuery(
-                  "edit-queue-item", variables, "Another user is interacting with this queue item");
-            }));
-  }
-
-  @Test
   void enqueueOnePatientIsoDate() throws Exception {
     Person p = _dataFactory.createFullPerson(_org);
     String personId = p.getInternalId().toString();
