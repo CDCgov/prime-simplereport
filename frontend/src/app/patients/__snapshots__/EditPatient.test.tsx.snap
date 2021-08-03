@@ -1306,13 +1306,6 @@ Object {
                         class="usa-legend"
                       >
                         Are you a resident in a congregate living setting?
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                           
-                          *
-                        </abbr>
                       </legend>
                       <span
                         class="usa-hint"
@@ -1328,7 +1321,7 @@ Object {
                           <input
                             checked=""
                             class="usa-radio__input"
-                            data-required="true"
+                            data-required="false"
                             id="64-val-YES"
                             name="residentCongregateSetting"
                             type="radio"
@@ -1346,7 +1339,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="true"
+                            data-required="false"
                             id="64-val-NO"
                             name="residentCongregateSetting"
                             type="radio"
@@ -1364,7 +1357,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="true"
+                            data-required="false"
                             id="64-val-UNKNOWN"
                             name="residentCongregateSetting"
                             type="radio"
@@ -1390,13 +1383,6 @@ Object {
                         class="usa-legend"
                       >
                         Are you a health care worker?
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                           
-                          *
-                        </abbr>
                       </legend>
                       <div
                         class=""
@@ -1407,7 +1393,7 @@ Object {
                           <input
                             checked=""
                             class="usa-radio__input"
-                            data-required="true"
+                            data-required="false"
                             id="65-val-YES"
                             name="employedInHealthcare"
                             type="radio"
@@ -1425,7 +1411,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="true"
+                            data-required="false"
                             id="65-val-NO"
                             name="employedInHealthcare"
                             type="radio"
@@ -1443,7 +1429,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="true"
+                            data-required="false"
                             id="65-val-UNKNOWN"
                             name="employedInHealthcare"
                             type="radio"
@@ -2784,13 +2770,6 @@ Object {
                       class="usa-legend"
                     >
                       Are you a resident in a congregate living setting?
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
                     </legend>
                     <span
                       class="usa-hint"
@@ -2806,7 +2785,7 @@ Object {
                         <input
                           checked=""
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="64-val-YES"
                           name="residentCongregateSetting"
                           type="radio"
@@ -2824,7 +2803,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="64-val-NO"
                           name="residentCongregateSetting"
                           type="radio"
@@ -2842,7 +2821,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="64-val-UNKNOWN"
                           name="residentCongregateSetting"
                           type="radio"
@@ -2868,13 +2847,6 @@ Object {
                       class="usa-legend"
                     >
                       Are you a health care worker?
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
                     </legend>
                     <div
                       class=""
@@ -2885,7 +2857,7 @@ Object {
                         <input
                           checked=""
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="65-val-YES"
                           name="employedInHealthcare"
                           type="radio"
@@ -2903,7 +2875,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="65-val-NO"
                           name="employedInHealthcare"
                           type="radio"
@@ -2921,7 +2893,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="65-val-UNKNOWN"
                           name="employedInHealthcare"
                           type="radio"
