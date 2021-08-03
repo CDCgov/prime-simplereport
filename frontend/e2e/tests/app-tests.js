@@ -11,7 +11,6 @@ const getDobFormat = (browser) => {
 };
 
 module.exports = {
-  // "@disabled": true,
   "1. Add a patient": (browser) => {
     ({ patientName, birthDate } = browser.page
       .patients()
