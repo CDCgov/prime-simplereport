@@ -128,8 +128,6 @@ describe("AddPatient", () => {
               race: null,
               ethnicity: null,
               gender: null,
-              residentCongregateSetting: false,
-              employedInHealthcare: true,
               facilityId: mockFacilityID,
               preferredLanguage: null,
               testResultDelivery: "SMS",
@@ -168,8 +166,6 @@ describe("AddPatient", () => {
               race: null,
               ethnicity: null,
               gender: null,
-              residentCongregateSetting: false,
-              employedInHealthcare: true,
               facilityId: mockFacilityID,
               preferredLanguage: null,
               testResultDelivery: null,
@@ -222,16 +218,6 @@ describe("AddPatient", () => {
             "Would you like to receive your results via text message": {
               label: "Yes",
               value: "SMS",
-              exact: true,
-            },
-            "Are you a resident in a congregate living setting": {
-              label: "No",
-              value: "No",
-              exact: true,
-            },
-            "Are you a health care worker": {
-              label: "Yes",
-              value: "Yes",
               exact: true,
             },
           }
