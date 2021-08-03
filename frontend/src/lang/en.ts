@@ -7,6 +7,17 @@ const UNKNOWN = "Unknown";
 export const en = {
   translation: {
     header: "COVID-19 Testing Portal",
+    banner: {
+      dotGov: "The .gov means it’s official.",
+      dotGovHelper:
+        "Federal government websites often end in .gov or .mil. Before sharing sensitive information, make sure you’re on a federal government site.",
+      secure: "The site is secure.",
+      // TODO: fix HTML tags
+      secureHelper:
+        "The <strong>https://</strong> ensures that you are connecting to the official website and that any information you provide is encrypted and transmitted securely.",
+      officialWebsite: "An official website of the United States government",
+      howYouKnow: "Here’s how you know",
+    },
     constants: {
       testResults: {
         POSITIVE: "Positive",
@@ -463,6 +474,7 @@ export const en = {
         enterDOB: "Enter your date of birth",
         enterDOB2:
           "Enter your date of birth to access your COVID-19 Testing Portal.",
+        dobFormat: "MM/DD/YYYY or MMDDYYYY",
         error:
           "No patient link with the supplied ID was found, or the birth date provided was incorrect.",
         validating: "Validating birth date...",

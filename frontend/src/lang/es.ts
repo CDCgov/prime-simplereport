@@ -9,6 +9,14 @@ const UNKNOWN = "";
 export const es: LanguageConfig = {
   translation: {
     header: "Portal de pruebas COVID-19",
+    banner: {
+      dotGov: "",
+      dotGovHelper: "",
+      secure: "",
+      secureHelper: "",
+      officialWebsite: "",
+      howYouKnow: "",
+    },
     constants: {
       testResults: {
         POSITIVE: "",
@@ -322,6 +330,7 @@ export const es: LanguageConfig = {
         dateOfBirth: "",
         enterDOB: "",
         enterDOB2: "",
+        dobFormat: "",
         error: "",
         validating: "",
         linkExpired: "",
