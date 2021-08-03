@@ -2641,3 +2641,6 @@ databaseChangeLog:
               - column: *updated_by_column
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.text_message_status TO ${noPhiUsername};
+      rollback:
+        sql: |
+          DROP TABLE ${database.defaultSchemaName}.TEXT_MESSAGE_STATUS;
