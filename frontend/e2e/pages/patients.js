@@ -38,9 +38,11 @@ function addPatient(dobFormat) {
   this.section.editPatient.click("@healthcareWorker");
   this.section.editPatient.click("@saveButton");
   this.expect.section("@editPatient").to.contain.text("Last name is required");
-  this.expect.section("@editPatient").to.contain.text("Facility is required");
+  this.expect
+    .section("@editPatient")
+    .to.contain.text("Testing facility is required");
   this.section.editPatient.setValue("@lastName", lastName);
-  this.section.editPatient.setValue("@facility", "All facilities");
+  this.section.editPatient.setValue("@facility", "All testing facilities");
   this.section.editPatient.click("@saveButton");
   this.section.confirmAddressModal.click("@addressSelect");
   this.section.confirmAddressModal.click("@save");
