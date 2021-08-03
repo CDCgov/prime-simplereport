@@ -11,7 +11,9 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAn
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAnswersResponse;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsResponse;
+import gov.cdc.usds.simplereport.service.errors.ExperianGetQuestionsException;
 import gov.cdc.usds.simplereport.service.errors.ExperianPersonMatchException;
+import gov.cdc.usds.simplereport.service.errors.ExperianSubmitAnswersException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -60,7 +62,7 @@ public class DemoExperianService implements ExperianService {
 
       return new IdentityVerificationQuestionsResponse(sessionId.toString(), response);
     } catch (RestClientException | NullPointerException | JsonProcessingException e) {
-      throw new IllegalStateException("Questions could not be retrieved from Experian: ", e);
+      throw new ExperianGetQuestionsException("Questions could not be retrieved from Experian", e);
     }
   }
 
@@ -86,7 +88,7 @@ public class DemoExperianService implements ExperianService {
 
       return new IdentityVerificationAnswersResponse(passed);
     } catch (JsonProcessingException e) {
-      throw new IllegalStateException("Answers could not be validated by Experian: ", e);
+      throw new ExperianSubmitAnswersException("Answers could not be validated by Experian", e);
     }
   }
 

@@ -12,7 +12,9 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAn
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsResponse;
 import gov.cdc.usds.simplereport.properties.ExperianProperties;
+import gov.cdc.usds.simplereport.service.errors.ExperianGetQuestionsException;
 import gov.cdc.usds.simplereport.service.errors.ExperianPersonMatchException;
+import gov.cdc.usds.simplereport.service.errors.ExperianSubmitAnswersException;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -114,7 +116,7 @@ public class LiveExperianService
 
       return new IdentityVerificationQuestionsResponse(sessionId, questionsDataNode);
     } catch (RestClientException | JsonProcessingException e) {
-      throw new IllegalStateException("Questions could not be retrieved from Experian: ", e);
+      throw new ExperianGetQuestionsException("Questions could not be retrieved from Experian", e);
     }
   }
 
@@ -139,7 +141,7 @@ public class LiveExperianService
 
       return new IdentityVerificationAnswersResponse(passed);
     } catch (RestClientException | JsonProcessingException e) {
-      throw new IllegalStateException("Answers could not be validated by Experian: ", e);
+      throw new ExperianSubmitAnswersException("Answers could not be validated by Experian", e);
     }
   }
 
@@ -152,7 +154,7 @@ public class LiveExperianService
         _restTemplate.postForObject(
             _experianProperties.getInitialRequestEndpoint(), entity, ObjectNode.class);
     if (responseBody == null) {
-      throw new RestClientException("A request to experian returned a null response.");
+      throw new RestClientException("A request to Experian returned a null response.");
     }
     return responseBody;
   }
