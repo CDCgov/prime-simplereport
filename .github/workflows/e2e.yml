@@ -72,7 +72,7 @@ jobs:
         run: |
           sudo cp ./frontend/e2e/utils/nginx/localhost.simplereport.gov /etc/nginx/sites-available
           sudo ln -s /etc/nginx/sites-available/localhost.simplereport.gov /etc/nginx/sites-enabled/localhost.simplereport.gov
-          sudo echo "127.0.0.1 localhost.simplereport.gov" >> /etc/hosts
+          echo "127.0.0.1 localhost.simplereport.gov" | sudo tee -a /etc/hosts
           echo "server.servlet.session.cookie.domain: localhost.simplereport.gov" >> ./backend/src/main/resources/application-local.yaml
           echo "okta.client.org-url: http://localhost:8088" >> ./backend/src/main/resources/application-local.yaml
           echo "okta.client.token: foo" >> ./backend/src/main/resources/application-local.yaml
