@@ -1,7 +1,9 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 /** The durable (and non-deletable) representation of a POC test device model. */
@@ -25,6 +27,13 @@ public class DeviceType extends EternalAuditedEntity {
 
   @Column(nullable = false)
   private int testLength;
+
+  @OneToMany(mappedBy = "deviceType")
+  List<TestOrder> testOrders;
+
+  public List<TestOrder> getTestOrders() {
+    return testOrders;
+  }
 
   protected DeviceType() {
     /* no-op for hibernate */

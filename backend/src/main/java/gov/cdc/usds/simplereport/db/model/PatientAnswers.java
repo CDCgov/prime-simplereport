@@ -1,12 +1,11 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
-
-import java.util.UUID;
 
 @Entity
 public class PatientAnswers extends AuditedEntity {

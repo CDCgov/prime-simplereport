@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.db.repository;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;

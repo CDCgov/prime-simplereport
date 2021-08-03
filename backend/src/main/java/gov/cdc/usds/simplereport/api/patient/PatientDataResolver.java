@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.api.patient;
 
+import static gov.cdc.usds.simplereport.service.dataloader.DataLoaderRegistryBuilder.loadFuture;
+
 import gov.cdc.usds.simplereport.api.InternalIdResolver;
 import gov.cdc.usds.simplereport.api.PersonNameResolver;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
@@ -17,8 +19,6 @@ import graphql.schema.DataFetchingEnvironment;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.stereotype.Component;
-
-import static gov.cdc.usds.simplereport.service.dataloader.DataLoaderRegistryBuilder.loadFuture;
 
 @Component
 public class PatientDataResolver

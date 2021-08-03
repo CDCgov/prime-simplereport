@@ -1,15 +1,10 @@
 package gov.cdc.usds.simplereport.api.model;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
-import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.model.WrappedEntity;
-import java.time.LocalDate;
 import java.util.Date;
-import java.util.Map;
-import org.json.JSONObject;
 
 public class ApiTestOrder extends WrappedEntity<TestOrder> {
 

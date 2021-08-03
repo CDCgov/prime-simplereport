@@ -1,11 +1,10 @@
 package gov.cdc.usds.simplereport.db.model.auxiliary;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.json.JSONObject;
-
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import org.json.JSONObject;
 
 /**
  * A representation of the questions we ask on test entry, somewhat but not excessively flexibly

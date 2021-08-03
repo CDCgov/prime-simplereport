@@ -1,14 +1,12 @@
 package gov.cdc.usds.simplereport.service.dataloader;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-
 import gov.cdc.usds.simplereport.api.model.errors.NoDataLoaderFoundException;
-import gov.cdc.usds.simplereport.db.model.AuditedEntity;
 import gov.cdc.usds.simplereport.db.model.DatabaseEntity;
 import graphql.kickstart.execution.context.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
 import org.springframework.stereotype.Component;
@@ -35,7 +33,7 @@ public class DataLoaderRegistryBuilder {
   }
 
   public static <T> CompletableFuture<T> loadFuture(
-          DatabaseEntity parentObject, DataFetchingEnvironment dfe, final String key) {
+      DatabaseEntity parentObject, DataFetchingEnvironment dfe, final String key) {
     DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
     DataLoader<UUID, T> loader = registry.getDataLoader(key);
     if (loader == null) {
