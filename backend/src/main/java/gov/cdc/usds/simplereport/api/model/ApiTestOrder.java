@@ -13,53 +13,16 @@ import org.json.JSONObject;
 
 public class ApiTestOrder extends WrappedEntity<TestOrder> {
 
-  private AskOnEntrySurvey survey;
-
   public ApiTestOrder(TestOrder order) {
     super(order);
-    this.survey = order.getAskOnEntrySurvey().getSurvey();
   }
 
   public Date getDateAdded() {
     return wrapped.getCreatedAt();
   }
 
-  public String getPregnancy() {
-    return survey.getPregnancy();
-  }
-
-  public Boolean getNoSymptoms() {
-    return survey.getNoSymptoms();
-  }
-
-  public String getSymptoms() { return survey.getSymptomsJSON(); }
-
-  public LocalDate getSymptomOnset() {
-    return survey.getSymptomOnsetDate();
-  }
-
-  public Boolean getFirstTest() {
-    return survey.getFirstTest();
-  }
-
-  public LocalDate getPriorTestDate() {
-    return survey.getPriorTestDate();
-  }
-
-  public String getPriorTestType() {
-    return survey.getPriorTestType();
-  }
-
-  public String getPriorTestResult() {
-    return survey.getPriorTestResult() == null ? "" : survey.getPriorTestResult().toString();
-  }
-
   public DeviceType getDeviceType() {
     return wrapped.getDeviceType();
-  }
-
-  public Person getPatient() {
-    return wrapped.getPatient();
   }
 
   public String getResult() {

@@ -6,6 +6,7 @@ import java.util.concurrent.CompletableFuture;
 
 import gov.cdc.usds.simplereport.api.model.errors.NoDataLoaderFoundException;
 import gov.cdc.usds.simplereport.db.model.AuditedEntity;
+import gov.cdc.usds.simplereport.db.model.DatabaseEntity;
 import graphql.kickstart.execution.context.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
 import org.dataloader.DataLoader;
@@ -34,7 +35,7 @@ public class DataLoaderRegistryBuilder {
   }
 
   public static <T> CompletableFuture<T> loadFuture(
-          AuditedEntity parentObject, DataFetchingEnvironment dfe, final String key) {
+          DatabaseEntity parentObject, DataFetchingEnvironment dfe, final String key) {
     DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
     DataLoader<UUID, T> loader = registry.getDataLoader(key);
     if (loader == null) {
