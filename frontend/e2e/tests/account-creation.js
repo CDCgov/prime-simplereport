@@ -3,25 +3,7 @@ const { execSync, spawn } = require("child_process");
 const downloadWiremock = () => execSync("./e2e/utils/download-wiremock.sh");
 const startWiremock = () => {
   const wm = spawn("./e2e/utils/start-wiremock.sh");
-  wm.stdout.on("data", (data) => {
-    console.log(`stdout: ${data}`);
-  });
-
-  wm.stderr.on("data", (data) => {
-    console.error(`stderr: ${data}`);
-  });
-
-  wm.on("close", (code) => {
-    console.log(`WireMock exited with code ${code}`);
-  });
-  execSync("./e2e/utils/ping-wiremock.sh", (error, stdout, stderr) => {
-    if (error) {
-      console.error(`ping error: ${error}`);
-      return;
-    }
-    console.log(`ping stdout: ${stdout}`);
-    console.error(`ping stderr: ${stderr}`);
-  });
+  execSync("./e2e/utils/ping-wiremock.sh");
   return wm;
 };
 const stopWiremock = () => execSync("./e2e/utils/stop-wiremock.sh");

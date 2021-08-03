@@ -50,7 +50,6 @@ module.exports = {
       webdriver: {
         start_process: true,
         server_path: Services.geckodriver ? Services.geckodriver.path : "",
-        cli_args: ["--log", "debug"],
       },
     },
 
@@ -116,7 +115,7 @@ module.exports = {
             //'--no-sandbox',
             //'--ignore-certificate-errors',
             "--allow-insecure-localhost",
-            // "--headless",
+            "--headless",
           ],
           binary: "/usr/bin/chromium",
         },
