@@ -28,15 +28,11 @@ exports[`ErrorPage displays the correct error message 1`] = `
           >
             <p
               class="usa-banner__header-text"
-            >
-              An official website of the United States government
-            </p>
+            />
             <p
               aria-hidden="true"
               class="usa-banner__header-action"
-            >
-              Here’s how you know
-            </p>
+            />
           </div>
           <button
             aria-controls="gov-banner"
@@ -45,9 +41,7 @@ exports[`ErrorPage displays the correct error message 1`] = `
           >
             <span
               class="usa-banner__button-text"
-            >
-              Here’s how you know
-            </span>
+            />
           </button>
         </div>
       </header>
