@@ -446,7 +446,6 @@ const PersonForm = (props: Props) => {
           }}
           validationStatus={validationStatus("residentCongregateSetting")}
           errorMessage={errors.residentCongregateSetting}
-          required
         />
         <YesNoRadioGroup
           legend={t("patient.form.other.healthcareWorker")}
@@ -460,7 +459,6 @@ const PersonForm = (props: Props) => {
           }}
           validationStatus={validationStatus("employedInHealthcare")}
           errorMessage={errors.employedInHealthcare}
-          required
         />
       </FormGroup>
       {props.getFooter && props.getFooter(validateForm, formChanged)}
