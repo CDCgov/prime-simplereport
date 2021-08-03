@@ -1,3 +1,5 @@
+#!/bin/bash
+
 printf 'Waiting for wiremock to start...'
 curl -k http://localhost:8088 > /dev/null 2>&1
 result=$?
