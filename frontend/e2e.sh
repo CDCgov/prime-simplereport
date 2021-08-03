@@ -40,4 +40,4 @@ fi
 
 echo 'App is online! Starting Nightwatch...'
 
-npx nightwatch -e "$@"
+npx nightwatch -e "$@" --verbose
