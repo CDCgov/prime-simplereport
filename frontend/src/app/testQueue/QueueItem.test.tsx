@@ -1,12 +1,12 @@
 import { MockedProvider } from "@apollo/client/testing";
 import { ToastContainer } from "react-toastify";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
 import moment from "moment";
 
 import * as utils from "../utils/index";
 
 import QueueItem, { EDIT_QUEUE_ITEM, SUBMIT_TEST_RESULT } from "./QueueItem";
+import { LAST_TEST_QUERY } from "./AoEForm/AoEModalForm";
 
 const initialDateString = "2021-02-14";
 const updatedDateString = "2021-03-10";
@@ -17,9 +17,11 @@ const updatedDate = Date.parse(updatedDateString);
 describe("QueueItem", () => {
   let nowFn = Date.now;
   beforeEach(() => {
+    jest.useFakeTimers();
     Date.now = jest.fn(() => fakeDate);
   });
   afterEach(() => {
+    jest.useRealTimers();
     Date.now = nowFn;
   });
   it("correctly renders the test queue", () => {
@@ -65,13 +67,17 @@ describe("QueueItem", () => {
         ></QueueItem>
       </MockedProvider>
     );
-    await act(async () => {
+    await waitFor(() => {
       fireEvent.change(getByLabelText("Device", { exact: false }), {
         target: { value: "lumira" },
       });
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      jest.advanceTimersByTime(1000);
     });
-    expect(getByTestId("timer")).toHaveTextContent("15:00");
+
+    await waitFor(() => {
+      expect(getByTestId("timer")).toHaveTextContent("15:00");
+      jest.advanceTimersToNextTimer(1000);
+    });
   });
 
   describe("SMS delivery failure", () => {
@@ -114,17 +120,23 @@ describe("QueueItem", () => {
       );
 
       // Select result
-      fireEvent.click(
-        screen.getByLabelText("Inconclusive", {
-          exact: false,
-        }),
-        {
-          target: { value: "UNDETERMINED" },
-        }
-      );
+      await waitFor(() => {
+        fireEvent.click(
+          screen.getByLabelText("Inconclusive", {
+            exact: false,
+          }),
+          {
+            target: { value: "UNDETERMINED" },
+          }
+        );
+      });
+
+      await waitFor(() => {
+        jest.advanceTimersByTime(1000);
+      });
 
       // Submit
-      await act(async () => {
+      await waitFor(() => {
         fireEvent.click(
           screen.getByText("Submit", {
             exact: false,
@@ -132,7 +144,7 @@ describe("QueueItem", () => {
         );
       });
 
-      await act(async () => {
+      await waitFor(() => {
         fireEvent.click(
           screen.getByText("Submit anyway", {
             exact: false,
@@ -141,7 +153,6 @@ describe("QueueItem", () => {
       });
 
       // Verify alert is displayed
-      //expect(await screen.getByRole("alert")).toBeInTheDocument();
       expect(
         await screen.findByText(
           "Unable to text result to Potter, Harry James",
@@ -150,10 +161,6 @@ describe("QueueItem", () => {
           }
         )
       ).toBeInTheDocument();
-
-      /*
-      expect(alertSpy).toBeCalledTimes(2);
-      */
     });
   });
 
@@ -194,7 +201,39 @@ describe("QueueItem", () => {
         target: { value: updatedTimeString },
       });
     });
-    // screen.debug();
+  });
+
+  it("displays person's mobile phone numbers", async () => {
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <QueueItem
+          internalId={testProps.internalId}
+          patient={testProps.patient}
+          askOnEntry={testProps.askOnEntry}
+          selectedDeviceId={testProps.selectedDeviceId}
+          selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+          selectedTestResult={testProps.selectedTestResult}
+          devices={testProps.devices}
+          defaultDevice={testProps.defaultDevice}
+          refetchQueue={testProps.refetchQueue}
+          facilityId={testProps.facilityId}
+          dateTestedProp={testProps.dateTestedProp}
+          patientLinkId={testProps.patientLinkId}
+        ></QueueItem>
+      </MockedProvider>
+    );
+
+    const questionnaire = await screen.findByText("Test questionnaire");
+    fireEvent.click(questionnaire);
+    await screen.findByText("Required fields are marked", { exact: false });
+    expect(
+      screen.queryByText(testProps.patient.phoneNumbers[0].number, {
+        exact: false,
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(testProps.patient.phoneNumbers[1].number)
+    ).not.toBeInTheDocument();
   });
 });
 
@@ -207,8 +246,18 @@ const testProps = {
     firstName: "Harry",
     middleName: "James",
     lastName: "Potter",
-    telephone: "string",
+    telephone: "fakenumber",
     birthDate: "1990-07-31",
+    phoneNumbers: [
+      {
+        number: "a-mobile-number",
+        type: "MOBILE",
+      },
+      {
+        number: "a-landline-number",
+        type: "LANDLINE",
+      },
+    ],
   },
   devices: [
     {
@@ -381,6 +430,24 @@ const mocks = [
             internalId: internalId,
           },
           deliverySuccess: false,
+        },
+      },
+    },
+  },
+  {
+    request: {
+      query: LAST_TEST_QUERY,
+      variables: {
+        patientId: "f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554",
+      },
+    },
+    result: {
+      data: {
+        patient: {
+          lastTest: {
+            dateTested: "2021-06-04T16:01:00",
+            result: "NEGATIVE",
+          },
         },
       },
     },

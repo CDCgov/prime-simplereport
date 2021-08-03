@@ -19,6 +19,7 @@ import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -115,6 +116,12 @@ public class PersonService {
   // called by List function and Count function
   protected Specification<Person> buildPersonSearchFilter(
       UUID facilityId, boolean isArchived, String namePrefixMatch) {
+
+    List<String> namePrefixMatchList =
+        StringUtils.isEmpty(namePrefixMatch)
+            ? Collections.emptyList()
+            : Arrays.stream(namePrefixMatch.split(" ")).collect(Collectors.toList());
+
     // build up filter based on params
     Specification<Person> filter = inCurrentOrganizationFilter().and(isDeletedFilter(isArchived));
     if (facilityId == null) {
@@ -123,9 +130,10 @@ public class PersonService {
       filter = filter.and(inFacilityFilter(facilityId));
     }
 
-    if (StringUtils.isNotBlank(namePrefixMatch)) {
-      filter = filter.and(nameMatchesFilter(namePrefixMatch));
+    for (var prefixMatch : namePrefixMatchList) {
+      filter = filter.and(nameMatchesFilter(prefixMatch));
     }
+
     return filter;
   }
 
@@ -205,7 +213,8 @@ public class PersonService {
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
-      String preferredLanguage) {
+      String preferredLanguage,
+      TestResultDeliveryPreference testResultDelivery) {
     Person newPatient =
         new Person(
             _os.getCurrentOrganization(),
@@ -228,6 +237,7 @@ public class PersonService {
     Person savedPerson = _repo.save(newPatient);
     upsertPreferredLanguage(savedPerson, preferredLanguage);
     updatePhoneNumbers(newPatient, phoneNumbers);
+    updateTestResultDeliveryPreference(savedPerson.getInternalId(), testResultDelivery);
     return savedPerson;
   }
 
@@ -250,7 +260,8 @@ public class PersonService {
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
-      String preferredLanguage) {
+      String preferredLanguage,
+      TestResultDeliveryPreference testResultDelivery) {
     Person newPatient =
         new Person(
             link.getOrganization(),
@@ -273,6 +284,7 @@ public class PersonService {
     Person savedPerson = _repo.save(newPatient);
     upsertPreferredLanguage(savedPerson, preferredLanguage);
     updatePhoneNumbers(newPatient, phoneNumbers);
+    updateTestResultDeliveryPreference(savedPerson.getInternalId(), testResultDelivery);
     return savedPerson;
   }
 
@@ -390,7 +402,8 @@ public class PersonService {
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
-      String preferredLanguage) {
+      String preferredLanguage,
+      TestResultDeliveryPreference testResultDelivery) {
     Person patientToUpdate = this.getPatientNoPermissionsCheck(patientId);
     patientToUpdate.updatePatient(
         lookupId,
@@ -411,6 +424,14 @@ public class PersonService {
     updatePhoneNumbers(patientToUpdate, phoneNumbers);
     upsertPreferredLanguage(patientToUpdate, preferredLanguage);
     updatePersonFacility(patientToUpdate, facilityId);
+
+    // Prevent test result delivery preference from getting un-set entirely.
+    // This also keeps backwards compatibility with older versions of the
+    // frontend that will not send in this value from the person form.
+    if (testResultDelivery != null) {
+      updateTestResultDeliveryPreference(patientToUpdate.getInternalId(), testResultDelivery);
+    }
+
     return _repo.save(patientToUpdate);
   }
 

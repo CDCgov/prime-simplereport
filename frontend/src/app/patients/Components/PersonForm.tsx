@@ -323,7 +323,9 @@ const PersonForm = (props: Props) => {
       <FormGroup title={t("patient.form.contact.heading")}>
         <ManagePhoneNumbers
           phoneNumbers={patient.phoneNumbers || []}
+          testResultDelivery={patient.testResultDelivery}
           updatePhoneNumbers={onPersonChange("phoneNumbers")}
+          updateTestResultDelivery={onPersonChange("testResultDelivery")}
         />
         <div className="usa-form">
           <Input
@@ -444,7 +446,6 @@ const PersonForm = (props: Props) => {
           }}
           validationStatus={validationStatus("residentCongregateSetting")}
           errorMessage={errors.residentCongregateSetting}
-          required
         />
         <YesNoRadioGroup
           legend={t("patient.form.other.healthcareWorker")}
@@ -458,7 +459,6 @@ const PersonForm = (props: Props) => {
           }}
           validationStatus={validationStatus("employedInHealthcare")}
           errorMessage={errors.employedInHealthcare}
-          required
         />
       </FormGroup>
       {props.getFooter && props.getFooter(validateForm, formChanged)}

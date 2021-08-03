@@ -42,6 +42,14 @@ const defaultProps: QueueItemProps = {
     lastName: "Finley",
     telephone: "571-867-5309",
     birthDate: "2002-07-21",
+    phoneNumbers: [
+      {
+        number: "571-867-5309",
+        type: "MOBILE",
+      },
+    ],
+    testResultDelivery: "SMS",
+    gender: "male",
   },
   devices: [
     {
@@ -66,7 +74,6 @@ const defaultProps: QueueItemProps = {
   dateTestedProp: "",
   refetchQueue: () => {},
   facilityId: "100",
-  patientLinkId: "200",
 };
 
 export const Unstarted = Template.bind({});

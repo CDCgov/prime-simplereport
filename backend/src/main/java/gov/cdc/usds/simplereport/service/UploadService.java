@@ -133,7 +133,8 @@ public class UploadService {
             parseGender(getRow(row, "biologicalSex", false)),
             parseYesNo(getRow(row, "residentCongregateSetting", true)),
             parseYesNo(getRow(row, "employedInHealthcare", true)),
-            null); // Not including preferredLanguage for now
+            null, // Not including preferredLanguage for now
+            null); // Not including test result delivery preference for now
       } catch (IllegalGraphqlArgumentException e) {
         throw new IllegalGraphqlArgumentException(
             "Error on row " + rowNumber + "; " + e.getMessage());

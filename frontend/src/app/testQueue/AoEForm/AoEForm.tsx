@@ -26,6 +26,18 @@ const findValueForLabel = (
   list: { label: string; value: string }[]
 ) => (list.filter((item) => item.label === label)[0] || {}).value;
 
+export interface TestQueuePerson {
+  internalId: string;
+  birthDate: string;
+  gender: Gender | null;
+  firstName: string;
+  middleName: string | null;
+  lastName: string;
+  phoneNumbers: PhoneNumber[];
+  telephone: string;
+  testResultDelivery: string;
+}
+
 export interface PriorTest {
   priorTestDate: ISODate | undefined | null;
   priorTestResult: TestResult | undefined | null;
@@ -56,13 +68,7 @@ export type LastTest = {
 interface Props {
   saveButtonText: string;
   onClose?: () => void;
-  patient: {
-    internalId: string;
-    gender: string;
-    testResultDelivery: string;
-    birthDate: string;
-    telephone: string;
-  };
+  patient: TestQueuePerson;
   lastTest: LastTest | undefined;
   loadState?: AoEAnswers;
   saveCallback: (response: AoEAnswersDelivery) => void;
@@ -133,11 +139,6 @@ const AoEForm: React.FC<Props> = ({
 
   const patientIsOver18 = moment().diff(patient.birthDate, "years") >= 18;
 
-  // Null is OK and preferred over an empty string
-  if (lastTest?.dateTested) {
-    lastTest.dateTested = lastTest.dateTested.split("T")[0] as ISODate;
-  }
-
   // form validation
   const [symptomError, setSymptomError] = useState<string | undefined>();
   const [symptomOnsetError, setSymptomOnsetError] = useState<
@@ -178,19 +179,36 @@ const AoEForm: React.FC<Props> = ({
     }
   };
 
-  const getTestResultDeliveryPreferences = (phoneNumber: string) => [
+  const getTestResultDeliveryPreferences = (phoneNumbers: PhoneNumber[]) => [
     {
       label: (
         <>
-          Text message
-          <span className="radio__label-description--checked usa-radio__label-description text-base">
-            {phoneNumber}
+          Yes
+          <span className="usa-checkbox__label-description">
+            <p>
+              {phoneNumbers.length > 0 ? (
+                <span className="radio__label-description--checked">
+                  <strong>Results will be sent to these numbers:</strong>
+                </span>
+              ) : (
+                "(There are no mobile phone numbers listed in your patient profile.)"
+              )}
+            </p>
+            {phoneNumbers.map(({ number }) => (
+              <span
+                key={number}
+                className="radio__label-description--checked usa-radio__label-description text-base"
+              >
+                {number}
+              </span>
+            ))}
           </span>
         </>
       ),
       value: "SMS",
+      ...(phoneNumbers.length === 0 && { disabled: true }),
     },
-    { label: "None", value: "NONE" },
+    { label: "No", value: "NONE" },
   ];
 
   // Auto-answer pregnancy question for males
@@ -263,6 +281,10 @@ const AoEForm: React.FC<Props> = ({
     </div>
   );
 
+  const patientMobileNumbers = (patient.phoneNumbers || []).filter(
+    (phoneNumber) => phoneNumber.type === "MOBILE"
+  );
+
   return (
     <>
       <form
@@ -270,19 +292,22 @@ const AoEForm: React.FC<Props> = ({
         onSubmit={saveAnswers}
         ref={formRef}
       >
-        {isModal && (
-          <div className="margin-top-4 border-top border-base-lighter" />
-        )}
         <RequiredMessage />
         {patientIsOver18 && (
           <FormGroup title="Results">
-            <RadioGroup
-              legend="How would you like to receive a copy of your results?"
-              name="testResultDelivery"
-              onChange={setTestResultDelivery}
-              buttons={getTestResultDeliveryPreferences(patient.telephone)}
-              selectedRadio={testResultDelivery}
-            />
+            <div className="prime-formgroup__wrapper">
+              <RadioGroup
+                legend="Would you like to receive your results via text message?"
+                name="testResultDelivery"
+                onChange={setTestResultDelivery}
+                buttons={getTestResultDeliveryPreferences(patientMobileNumbers)}
+                selectedRadio={
+                  patientMobileNumbers.length === 0
+                    ? "NONE"
+                    : testResultDelivery
+                }
+              />
+            </div>
           </FormGroup>
         )}
         <FormGroup title="Symptoms">

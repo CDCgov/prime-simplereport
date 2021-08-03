@@ -138,6 +138,10 @@ public class OrganizationService {
                 "An organization with external_id=" + externalId + " does not exist"));
   }
 
+  public Optional<Organization> getOrganizationByName(String name) {
+    return _repo.findByName(name);
+  }
+
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<Organization> getOrganizations(Boolean identityVerified) {
     return identityVerified == null
@@ -292,6 +296,22 @@ public class OrganizationService {
       _oktaRepo.activateOrganization(org);
     }
     return newStatus;
+  }
+
+  /**
+   * This method is for verifying an organization after the Experian identity verification process.
+   * It should not be used for any other purpose and once we move to the updated account request
+   * workflow this should be removed.
+   */
+  @Transactional(readOnly = false)
+  public void verifyOrganizationNoPermissions(String externalId) {
+    Organization org = getOrganization(externalId);
+    if (org.getIdentityVerified()) {
+      throw new IllegalStateException("Organization is already verified.");
+    }
+    org.setIdentityVerified(true);
+    _repo.save(org);
+    _oktaRepo.activateOrganization(org);
   }
 
   @Transactional(readOnly = false)
