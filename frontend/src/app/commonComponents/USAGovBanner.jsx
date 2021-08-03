@@ -1,7 +1,7 @@
 import React from "react";
-import i18n from "i18next";
 import { Trans } from "react-i18next";
 
+import i18n from "../../i18n";
 import iconDotGov from "../../../node_modules/uswds/dist/img/icon-dot-gov.svg";
 import usFlagSmall from "../../../node_modules/uswds/dist/img/us_flag_small.png";
 import iconHttps from "../../../node_modules/uswds/dist/img/icon-https.svg";
