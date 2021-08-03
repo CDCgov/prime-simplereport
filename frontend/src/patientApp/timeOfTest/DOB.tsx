@@ -106,7 +106,7 @@ const DOB = () => {
                   pattern={"([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})|([0-9]{8})"}
                   inputMode={"numeric"}
                   ariaDescribedBy={"bdayFormat"}
-                  hintText={t("testResult.dob.dobFormat")}
+                  hintText={t("testResult.dob.format")}
                   errorMessage={birthDateError}
                   validationStatus={birthDateError ? "error" : undefined}
                   onChange={(evt) => setBirthDate(evt.currentTarget.value)}

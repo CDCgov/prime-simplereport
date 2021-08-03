@@ -105,6 +105,7 @@ export const es: LanguageConfig = {
           studentId: "",
           preferredLanguage: "",
           dob: "",
+          dobFormat: "",
         },
         contact: {
           heading: "",
@@ -330,7 +331,7 @@ export const es: LanguageConfig = {
         dateOfBirth: "",
         enterDOB: "",
         enterDOB2: "",
-        dobFormat: "",
+        format: "",
         error: "",
         validating: "",
         linkExpired: "",

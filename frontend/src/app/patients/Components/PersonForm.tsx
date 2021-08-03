@@ -313,7 +313,12 @@ const PersonForm = (props: Props) => {
           <Input
             {...commonInputProps}
             field="birthDate"
-            label={t("patient.form.general.dob") + " (mm/dd/yyyy)"}
+            label={
+              t("patient.form.general.dob") +
+              " (" +
+              t("patient.form.general.dobFormat") +
+              ")"
+            }
             type="date"
             required={view !== PersonFormView.PXP}
             disabled={view === PersonFormView.PXP}
