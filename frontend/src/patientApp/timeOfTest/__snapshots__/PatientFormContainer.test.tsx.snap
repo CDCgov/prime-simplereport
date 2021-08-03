@@ -1288,13 +1288,6 @@ exports[`PatientFormContainer snapshot 1`] = `
                   className="usa-legend"
                 >
                   Are you a resident in a congregate living setting?
-                  <abbr
-                    className="usa-hint usa-hint--required"
-                    title="required"
-                  >
-                     
-                    *
-                  </abbr>
                 </legend>
                 <span
                   className="usa-hint"
@@ -1310,7 +1303,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <input
                       checked={true}
                       className="usa-radio__input"
-                      data-required={true}
+                      data-required="false"
                       disabled={false}
                       id="18-val-YES"
                       name="residentCongregateSetting"
@@ -1332,7 +1325,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-radio__input"
-                      data-required={true}
+                      data-required="false"
                       disabled={false}
                       id="18-val-NO"
                       name="residentCongregateSetting"
@@ -1354,7 +1347,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-radio__input"
-                      data-required={true}
+                      data-required="false"
                       disabled={false}
                       id="18-val-UNKNOWN"
                       name="residentCongregateSetting"
@@ -1383,13 +1376,6 @@ exports[`PatientFormContainer snapshot 1`] = `
                   className="usa-legend"
                 >
                   Are you a health care worker?
-                  <abbr
-                    className="usa-hint usa-hint--required"
-                    title="required"
-                  >
-                     
-                    *
-                  </abbr>
                 </legend>
                 <div
                   className=""
@@ -1400,7 +1386,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <input
                       checked={true}
                       className="usa-radio__input"
-                      data-required={true}
+                      data-required="false"
                       disabled={false}
                       id="19-val-YES"
                       name="employedInHealthcare"
@@ -1422,7 +1408,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-radio__input"
-                      data-required={true}
+                      data-required="false"
                       disabled={false}
                       id="19-val-NO"
                       name="employedInHealthcare"
@@ -1444,7 +1430,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-radio__input"
-                      data-required={true}
+                      data-required="false"
                       disabled={false}
                       id="19-val-UNKNOWN"
                       name="employedInHealthcare"
