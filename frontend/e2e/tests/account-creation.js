@@ -11,7 +11,6 @@ const stopWiremock = () => execSync("./e2e/utils/stop-wiremock.sh");
 let wm;
 
 module.exports = {
-  // "@disabled": true,
   before: () => {
     downloadWiremock();
   },

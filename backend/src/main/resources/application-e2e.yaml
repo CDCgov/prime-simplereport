@@ -11,16 +11,6 @@ spring:
         default_schema: simple_report
 logging:
   level:
-    # NOTE: add any of the below in application-local.yaml to turn on something interesting
-    # Hibernate SQL query logging: basically the same as show_sql, above, but through slf4j
-    # org.hibernate.SQL: DEBUG
-    # Hibernate input and output value logging: SUPER VERBOSE
-    # org.hibernate.type: TRACE
-    # Always have our own debug logging turned on in dev environments:
     gov.cdc.usds: DEBUG
-simple-report:
-  data-hub:
-    upload-enabled: ${DATAHUB_UPLOAD_ENABLE:false}
-    upload-url: "https://prime-data-hub-test.azurefd.net/api/reports?option=SkipSend" # ValidatePayload, SkipSend, SkipInvalidItems
 twilio:
   enabled: false
