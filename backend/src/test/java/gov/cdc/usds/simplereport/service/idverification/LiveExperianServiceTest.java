@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.service.idverification;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -17,9 +18,12 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAn
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsResponse;
 import gov.cdc.usds.simplereport.properties.ExperianProperties;
+import gov.cdc.usds.simplereport.service.errors.ExperianGetQuestionsException;
+import gov.cdc.usds.simplereport.service.errors.ExperianSubmitAnswersException;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 class LiveExperianServiceTest {
@@ -80,6 +84,41 @@ class LiveExperianServiceTest {
   }
 
   @Test
+  void getQuestions_remoteConnectionFails_failure() {
+    when(_mockRestTemplate.postForObject(
+            eq(FAKE_PROPERTIES.getInitialRequestEndpoint()), any(), eq(ObjectNode.class)))
+        .thenThrow(RestClientException.class);
+
+    IdentityVerificationQuestionsRequest request = createValidQuestionsRequest();
+
+    ExperianGetQuestionsException e =
+        assertThrows(
+            ExperianGetQuestionsException.class,
+            () -> {
+              _service.getQuestions(request);
+            });
+    assertEquals("Questions could not be retrieved from Experian", e.getMessage());
+  }
+
+  @Test
+  void getQuestions_remoteConnectionNullResponse_failure() {
+    when(_mockRestTemplate.postForObject(
+            eq(FAKE_PROPERTIES.getInitialRequestEndpoint()), any(), eq(ObjectNode.class)))
+        .thenReturn(null);
+
+    IdentityVerificationQuestionsRequest request = createValidQuestionsRequest();
+
+    ExperianGetQuestionsException e =
+        assertThrows(
+            ExperianGetQuestionsException.class,
+            () -> {
+              _service.getQuestions(request);
+            });
+    assertEquals("Questions could not be retrieved from Experian", e.getMessage());
+    assertEquals("A request to Experian returned a null response.", e.getCause().getMessage());
+  }
+
+  @Test
   void submitAnswers_correctResponsesAcceptResponse_success() throws JsonProcessingException {
     setExperianMockResponse(EXPERIAN_ANSWERS_SAMPLE_RESPONSE_ACCEPT);
 
@@ -99,6 +138,23 @@ class LiveExperianServiceTest {
 
     // expect false because experian responded with REFER
     assertFalse(response.isPassed());
+  }
+
+  @Test
+  void submitAnswers_remoteConnectionFails_failure() {
+    when(_mockRestTemplate.postForObject(
+            eq(FAKE_PROPERTIES.getInitialRequestEndpoint()), any(), eq(ObjectNode.class)))
+        .thenThrow(RestClientException.class);
+
+    IdentityVerificationAnswersRequest request = createValidAnswersRequest();
+
+    ExperianSubmitAnswersException e =
+        assertThrows(
+            ExperianSubmitAnswersException.class,
+            () -> {
+              _service.submitAnswers(request);
+            });
+    assertEquals("Answers could not be validated by Experian", e.getMessage());
   }
 
   // test support
