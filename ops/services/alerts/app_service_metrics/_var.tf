@@ -66,3 +66,7 @@ variable "failed_http_2xx_threshold" {
   // The resource that uses this value doesn't have a >= check, so we need n - 1 here
   default = 9
 }
+
+variable "skip_on_weekends" {
+  default = false
+}

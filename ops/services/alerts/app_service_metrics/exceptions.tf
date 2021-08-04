@@ -72,15 +72,19 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "first_error_in_a_week" {
   # - Collect all requests that were exceptions in the week preceeding today
   # - Do the same for today
   # - leftanti join the two result sets to return only results from today that were not found in the week preceeding today
+  # - Note the first 'where' clause - the azurerm_monitor_scheduled_query_rules_alert resource doesn't allow intervals longer
+  #   than a day, and we only want to alert 1x/week. As a workaround, this hardcodes the alert period to Thursdays
+  #   at 16:00 UTC (12:00 EDT). The alert runs hourly, so this guarantees that it will fire once and only once per week.
   query = <<-QUERY
 requests
+| where dayofweek(now()) == time(4) and hourofday(now()) == 16
 | where timestamp <= now() and timestamp > now(-1d) and success == false
 | join kind= inner (
     exceptions
     | where timestamp <= now() and timestamp > now(-1d)
     )
     on operation_Id
-| project stackTrace = details[0].rawStack, exceptionType = type, failedMethod = method, requestName = name, combinedErrorString = strcat(type, method, name)
+| project stackTrace = details[0].rawStack, exceptionType = type, failedMethod = method, requestName = name, combinedErrorString = strcat(type, method, name), timestamp
 | join kind= leftanti (
     requests
     | where timestamp <= now(-1d) and timestamp > now(-8d) and success == false
@@ -92,11 +96,12 @@ requests
     | project stackTrace = details[0].rawStack, exceptionType = type, failedMethod = method, requestName = name, combinedErrorString = strcat(type, method, name)
     )
     on combinedErrorString
-| summarize stackTrace = any(stackTrace) by failedMethod, requestName, exceptionType
+| summarize stackTrace = any(stackTrace) by failedMethod, requestName, exceptionType, timestamp
+| sort by timestamp
   QUERY
 
   severity    = 2
-  frequency   = 1440 // Run daily
+  frequency   = 60 // Run hourly
   time_window = 1440
   trigger {
     operator  = "GreaterThan"
@@ -119,6 +124,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "account_request_failures
 
   query = <<-QUERY
 requests
+${local.skip_on_weekends}
 | where timestamp > ago(2h) and success == false
 | join kind= inner (
     exceptions
@@ -153,6 +159,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "frontend_error_boundary"
 
   query = <<-QUERY
  exceptions
+ ${local.skip_on_weekends}
  | where type startswith "PrimeErrorBoundary"
   QUERY
 
