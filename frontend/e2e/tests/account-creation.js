@@ -18,6 +18,7 @@ module.exports = {
     wm = startWiremock();
   },
   afterEach: () => {
+    stopWiremock();
     wm.kill();
   },
   after: () => {

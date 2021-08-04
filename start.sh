@@ -55,4 +55,4 @@ cd ${BACKEND_DIR}
 # Wait for initial build to complete
 sleep 15
 # Start bootRun without build. It will live reload when the previous process rebuilds
-./gradlew --no-daemon -x build -x test -x checkstyleMain -x checkstyleTest -x spotlessCheck bootRun --args='--spring.profiles.active=dev' | prepend "backend" $PURPLE
+./gradlew --no-daemon -x build -x test -x checkstyleMain -x checkstyleTest -x spotlessCheck bootRun --args='--spring.profiles.active=e2e' | prepend "backend" $PURPLE
