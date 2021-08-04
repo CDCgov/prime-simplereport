@@ -32,7 +32,7 @@ public class SmsCallbackController {
   }
 
   @PostMapping(value = "")
-  public void register(
+  public void callback(
       @RequestBody MultiValueMap<String, String> paramMap, HttpServletRequest request) {
     smsWebhookContextHolder.setIsSmsWebhook(true);
     SmsStatusCallback body = mapToTextMessageSent(paramMap);

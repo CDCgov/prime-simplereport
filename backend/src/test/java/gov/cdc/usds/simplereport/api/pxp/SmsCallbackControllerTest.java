@@ -107,7 +107,7 @@ class SmsCallbackControllerTest extends BaseFullStackTest {
             Map.of("MessageSid", messageId, "MessageStatus", messageStatus), twilioAuthToken);
 
     MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.TWILIO_CALLBACK)
+        post(ResourceLinks.TWILIO_CALLBACK + "?someQueryKey=unimportant")
             .header("X-Twilio-Signature", signature)
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .accept(MediaType.APPLICATION_JSON)
