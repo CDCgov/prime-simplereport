@@ -25,7 +25,16 @@ module.exports = {
   test_settings: {
     default: {
       disable_error_log: false,
-      launch_url: "http://localhost:3000",
+      // In order to get the account creation tests to work, you'll need to use localhost.simplereport.gov.
+      // Add an entry to /etc/hosts with the following:
+      // 127.0.0.1 localhost.simplereport.gov
+      //
+      // Then you'll need to set up a reverse proxy to point to localhost.simplereport.gov.
+      // You can use the config located at /frontend/e2e/utils/nginx/localhost.simplereport.gov
+      //
+      // If you don't want to use a reverse proxy, you can just set the launch_url to localhost
+      // And just run the app-tests.js test suite
+      launch_url: "http://localhost.simplereport.gov",
 
       screenshots: {
         enabled: false,
@@ -104,7 +113,7 @@ module.exports = {
       },
     },
 
-    brave: {
+    chromium: {
       desiredCapabilities: {
         browserName: "chrome",
         chromeOptions: {
@@ -117,7 +126,7 @@ module.exports = {
             "--allow-insecure-localhost",
             "--headless",
           ],
-          binary: "/usr/bin/brave",
+          binary: "/usr/bin/chromium",
         },
       },
 

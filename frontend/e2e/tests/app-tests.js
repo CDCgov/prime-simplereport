@@ -11,7 +11,6 @@ const getDobFormat = (browser) => {
 };
 
 module.exports = {
-  // "@disabled": true,
   "1. Add a patient": (browser) => {
     ({ patientName, birthDate } = browser.page
       .patients()
@@ -24,32 +23,7 @@ module.exports = {
     console.info(`Conducting test for ${patientName}...`);
     browser.page.home().navigate().conductTest(patientName);
   },
-  "3. Conduct a test through patient experience": (browser) => {
-    console.info(`Conducting patient experience test for ${patientName}...`);
-    const patientLinkPromise = browser.page
-      .home()
-      .navigate()
-      .getPatientLink(patientName);
-    patientLinkPromise.then((patientLink) => {
-      browser.page
-        .patientExperience()
-        .navigate(patientLink)
-        .acceptTos()
-        .verifyBirthDate(birthDate)
-        .updateEmail("foo@bar.com")
-        .navigate(patientLink)
-        .acceptTos()
-        .verifyBirthDate(birthDate)
-        .verifyEmail("foo@bar.com")
-        .completeQuestionnaire();
-
-      browser.page
-        .home()
-        .navigate("queue")
-        .verifyQuestionnaireCompleted(patientName);
-    });
-  },
-  "4. View the test result through patient experience": (browser) => {
+  "3. View the test result through patient experience": (browser) => {
     console.info(
       `Viewing test result through patient experience test for ${patientName}...`
     );
@@ -67,7 +41,7 @@ module.exports = {
         .viewTestResult();
     });
   },
-  "5. Self registration through a registration link": (browser) => {
+  "4. Self registration through a registration link": (browser) => {
     console.info(`Registering a patient through a self-registration link`);
     browser.page
       .selfRegistration()
@@ -75,7 +49,7 @@ module.exports = {
       .acceptTos()
       .enterInformation(getDobFormat(browser));
   },
-  "6. Update organization settings": (browser) => {
+  "5. Update organization settings": (browser) => {
     console.info("Updating organization settings");
     browser.page.settings().navigate().enterInformation(browser);
   },

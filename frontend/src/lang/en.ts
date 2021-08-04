@@ -7,6 +7,16 @@ const UNKNOWN = "Unknown";
 export const en = {
   translation: {
     header: "COVID-19 Testing Portal",
+    banner: {
+      dotGov: "The .gov means it’s official.",
+      dotGovHelper:
+        "Federal government websites often end in .gov or .mil. Before sharing sensitive information, make sure you’re on a federal government site.",
+      secure: "The site is secure.",
+      secureHelper:
+        "The <0>https://</0> ensures that you are connecting to the official website and that any information you provide is encrypted and transmitted securely.",
+      officialWebsite: "An official website of the United States government",
+      howYouKnow: "Here’s how you know",
+    },
     constants: {
       testResults: {
         POSITIVE: "Positive",
@@ -50,6 +60,10 @@ export const en = {
         UNKNOWN,
       },
     },
+    languages: {
+      English: "English",
+      Spanish: "Spanish",
+    },
     common: {
       required: "Required fields are marked with an asterisk",
       defaultDropdownOption: "- Select -",
@@ -80,8 +94,8 @@ export const en = {
     },
     facility: {
       form: {
-        heading: "Facility",
-        allFacilities: "All facilities",
+        heading: "Testing facility",
+        allFacilities: "All testing facilities",
       },
     },
     patient: {
@@ -96,6 +110,7 @@ export const en = {
           studentId: "Student ID",
           preferredLanguage: "Preferred language",
           dob: "Date of birth",
+          dobFormat: "mm/dd/yyyy",
         },
         contact: {
           heading: "Contact information",
@@ -103,6 +118,9 @@ export const en = {
           additionalPhoneNumber: "Additional phone number",
           phoneType: "Phone type",
           addNumber: "Add another number",
+          testResultDelivery:
+            "Would you like to receive your results via text message?",
+          testResultDeliveryHint: "We'll text all mobile numbers on file",
           email: "Email address",
           street1: "Street address 1",
           street2: "Street address 2",
@@ -136,28 +154,30 @@ export const en = {
           firstName: "First name is required",
           middleName: "Middle name is incorrectly formatted",
           lastName: "Last name is required",
-          lookupId: "Lookup ID is incorrectly formatted",
+          lookupId: "Student ID is incorrectly formatted",
           role: "Role is incorrectly formatted",
-          facilityId: "Facility is required",
+          facilityId: "Testing facility is required",
           birthDate:
             "Date of birth must be present, correctly formatted (MM/DD/YYYY), and in the past",
           telephone: "Phone number is missing or invalid",
-          phoneNumbers: "Phone number is missing or invalid",
+          phoneNumbers: "Phone numbers are missing or invalid",
           email: "Email is missing or incorrectly formatted",
           street: "Street is missing",
-          streetTwo: "Street Two is incorrectly formatted",
-          zipCode: "Zip code is missing or incorrectly formatted",
+          streetTwo: "Street 2 is incorrectly formatted",
+          zipCode: "ZIP code is missing or incorrectly formatted",
           state: "State is missing or incorrectly formatted",
           city: "City is incorrectly formatted",
           county: "County is incorrectly formatted",
           race: "Race is incorrectly formatted",
-          tribalAffiliation: "Tribal Affiliation is incorrectly formatted",
+          tribalAffiliation: "Tribal affiliation is incorrectly formatted",
           ethnicity: "Ethnicity is incorrectly formatted",
-          gender: "Biological Sex is incorrectly formatted",
+          gender: "Biological sex is incorrectly formatted",
           residentCongregateSetting:
             "Are you a resident in a congregate living setting? is required",
           employedInHealthcare: "Are you a health care worker? is required",
           preferredLanguage: "Preferred language is incorrectly formatted",
+          testResultDelivery:
+            "Test result delivery preference is incorrectly formatted",
         },
       },
     },
@@ -458,6 +478,7 @@ export const en = {
         enterDOB: "Enter your date of birth",
         enterDOB2:
           "Enter your date of birth to access your COVID-19 Testing Portal.",
+        format: "MM/DD/YYYY or MMDDYYYY",
         error:
           "No patient link with the supplied ID was found, or the birth date provided was incorrect.",
         validating: "Validating birth date...",

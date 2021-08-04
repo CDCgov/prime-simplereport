@@ -67,7 +67,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "first_error_in_a_week" {
   }
 
   data_source_id = var.app_insights_id
-  enabled        = true
+  enabled        = contains(var.disabled_alerts, "first_error_in_a_week") ? false : true
 
   # - Collect all requests that were exceptions in the week preceeding today
   # - Do the same for today
@@ -115,7 +115,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "account_request_failures
   }
 
   data_source_id = var.app_insights_id
-  enabled        = true
+  enabled        = contains(var.disabled_alerts, "account_request_failures") ? false : true
 
   query = <<-QUERY
 requests
@@ -149,7 +149,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "frontend_error_boundary"
   }
 
   data_source_id = var.app_insights_id
-  enabled        = true
+  enabled        = contains(var.disabled_alerts, "frontend_error_boundary") ? false : true
 
   query = <<-QUERY
  exceptions

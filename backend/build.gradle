@@ -86,6 +86,7 @@ dependencies {
     // used to autoconfigure WireMock for testing
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
     testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
+    testImplementation 'org.awaitility:awaitility:4.1.0'
 
     // dev tools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

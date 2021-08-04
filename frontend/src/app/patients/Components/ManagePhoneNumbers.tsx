@@ -2,7 +2,10 @@ import React, { useCallback, useState, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTranslation } from "react-i18next";
 
-import { PHONE_TYPE_VALUES } from "../../constants";
+import {
+  PHONE_TYPE_VALUES,
+  TEST_RESULT_DELIVERY_PREFERENCE_VALUES,
+} from "../../constants";
 import Button from "../../commonComponents/Button/Button";
 import Input from "../../commonComponents/Input";
 import RadioGroup from "../../commonComponents/RadioGroup";
@@ -14,12 +17,18 @@ import {
 
 interface Props {
   phoneNumbers: PhoneNumber[];
+  testResultDelivery: TestResultDeliveryPreference | null;
   updatePhoneNumbers: (phoneNumbers: PhoneNumber[]) => void;
+  updateTestResultDelivery: (
+    testResultDelivery: TestResultDeliveryPreference
+  ) => void;
 }
 
 const ManagePhoneNumbers: React.FC<Props> = ({
   phoneNumbers,
+  testResultDelivery,
   updatePhoneNumbers,
+  updateTestResultDelivery,
 }) => {
   const [errors, setErrors] = useState<PhoneNumberErrors[]>([]);
 
@@ -176,6 +185,16 @@ const ManagePhoneNumbers: React.FC<Props> = ({
         label={t("patient.form.contact.addNumber")}
         icon="plus"
       />
+      {phoneNumbers.some((pn) => pn.type === "MOBILE") && (
+        <RadioGroup
+          legend={t("patient.form.contact.testResultDelivery")}
+          name="testResultDelivery"
+          hintText={t("patient.form.contact.testResultDeliveryHint")}
+          buttons={TEST_RESULT_DELIVERY_PREFERENCE_VALUES}
+          onChange={updateTestResultDelivery}
+          selectedRadio={testResultDelivery}
+        />
+      )}
     </div>
   );
 };

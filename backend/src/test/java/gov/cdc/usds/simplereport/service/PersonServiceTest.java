@@ -41,11 +41,11 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   private static final PersonName FRANK = new PersonName("Frank", "Mathew", "Bones", "3");
 
   // used for pagination and searching
-  private static final PersonName GALE = new PersonName("Gale", "Mary", "Vittorio", "PhD");
+  private static final PersonName GALE = new PersonName("Gale", "Mary", "Croger", "PhD");
   private static final PersonName HEINRICK = new PersonName("Heinrick", "Mark", "Silver", "III");
   private static final PersonName IAN = new PersonName("Ian", "Brou", "Rutter", null);
   private static final PersonName JANNELLE = new PersonName("Jannelle", "Martha", "Cromack", null);
-  private static final PersonName KACEY = new PersonName("Kacey", "L", "Mathie", null);
+  private static final PersonName KACEY = new PersonName("Kacey", "Cross", "Mathie", null);
   private static final PersonName LEELOO = new PersonName("Leeloo", "Dallas", "Multipass", null);
 
   @Autowired private OrganizationService _orgService;
@@ -82,7 +82,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         false,
         false,
-        "English");
+        "English",
+        null);
     _service.addPatient(
         _site1.getInternalId(),
         "BAR",
@@ -101,7 +102,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         false,
         false,
-        "Spanish");
+        "Spanish",
+        null);
     _service.addPatient(
         _site2.getInternalId(),
         "BAZ",
@@ -120,7 +122,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         false,
         false,
-        "French");
+        "French",
+        null);
     List<Person> all =
         _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null);
     assertEquals(3, all.size());
@@ -156,7 +159,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         false,
         false,
-        "English");
+        "English",
+        null);
 
     assertThrows(
         AccessDeniedException.class,
@@ -179,7 +183,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 null,
                 false,
                 false,
-                "English"));
+                "English",
+                null));
 
     TestUserIdentities.setFacilityAuthorities(fac);
     _service.addPatient(
@@ -200,7 +205,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         false,
         false,
-        "Spanish");
+        "Spanish",
+        null);
   }
 
   @Test
@@ -226,7 +232,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 null,
                 false,
                 false,
-                "English"));
+                "English",
+                null));
   }
 
   @Test
@@ -255,7 +262,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             false,
             false,
-            "Spanish");
+            "Spanish",
+            null);
     TestUserIdentities.setFacilityAuthorities();
 
     assertThrows(AccessDeniedException.class, () -> _service.setIsDeleted(p.getInternalId(), true));
@@ -291,7 +299,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             false,
             false,
-            "English");
+            "English",
+            null);
 
     _service.setIsDeleted(p.getInternalId(), true);
     assertEquals(
@@ -336,7 +345,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             false,
             false,
-            "German");
+            "German",
+            null);
 
     assertEquals(
         1, _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null).size());
@@ -391,9 +401,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     List<Person> patients_org_page2 = _service.getPatients(null, 2, 5, false, null);
     List<Person> patients_org_page3 = _service.getPatients(null, 3, 5, false, null);
 
-    assertPatientList(patients_org_page0, CHARLES, FRANK, JANNELLE, BRAD, DEXTER);
-    assertPatientList(patients_org_page1, KACEY, ELIZABETH, LEELOO, AMOS, IAN);
-    assertPatientList(patients_org_page2, HEINRICK, GALE);
+    assertPatientList(patients_org_page0, CHARLES, FRANK, GALE, JANNELLE, BRAD);
+    assertPatientList(patients_org_page1, DEXTER, KACEY, ELIZABETH, LEELOO, AMOS);
+    assertPatientList(patients_org_page2, IAN, HEINRICK);
     assertEquals(0, patients_org_page3.size());
 
     List<Person> patients_site2_page0 =
@@ -426,7 +436,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     // all facilities, not deleted, "ma"
     List<Person> patients = _service.getPatients(null, 0, 100, false, "ma");
-    assertPatientList(patients, JANNELLE, KACEY, ELIZABETH, HEINRICK, GALE);
+    assertPatientList(patients, GALE, JANNELLE, KACEY, ELIZABETH, HEINRICK);
 
     // site2, not deleted, "ma"
     patients = _service.getPatients(site2Id, 0, 100, false, "ma");
@@ -438,7 +448,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     // all facilities, not deleted, "mar"
     patients = _service.getPatients(null, 0, 100, false, "mar");
-    assertPatientList(patients, JANNELLE, ELIZABETH, HEINRICK, GALE);
+    assertPatientList(patients, GALE, JANNELLE, ELIZABETH, HEINRICK);
 
     // all facilities, not deleted, "MARTHA"
     patients = _service.getPatients(null, 0, 100, false, "MARTHA");
@@ -446,6 +456,24 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     assertEquals(0, _service.getPatientsCount(null, false, "M"));
     assertEquals(0, _service.getPatientsCount(null, false, ""));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getPatients_search_with_spaces() {
+    makedata(true);
+
+    // "ma" returns a bunch of folks
+    List<Person> patients = _service.getPatients(null, 0, 100, false, "ma");
+    assertPatientList(patients, CHARLES, FRANK, GALE, JANNELLE, KACEY, ELIZABETH, HEINRICK);
+
+    // "ma cr" returns less folks, but not none!
+    List<Person> patients2 = _service.getPatients(null, 0, 100, false, "ma cr");
+    assertPatientList(patients2, GALE, JANNELLE, KACEY);
+
+    // "ma cr ja" returns just janelle
+    List<Person> patients3 = _service.getPatients(null, 0, 100, false, "ma cr ja");
+    assertPatientList(patients3, JANNELLE);
   }
 
   @Test

@@ -15,11 +15,6 @@ function conductTest(patientName) {
   this.expect.section("@modal").to.be.visible;
   this.expect
     .section("@modal")
-    .to.contain.text("Complete questionnaire verbally");
-  this.section.modal.expect.element("@verbalRadio").to.be.visible;
-  this.section.modal.click("@verbalRadio");
-  this.expect
-    .section("@modal")
     .to.contain.text("Are you experiencing any of the following symptoms?");
   this.section.modal.expect.element("@noSymptoms").to.be.visible;
   this.api.execute(
@@ -44,6 +39,7 @@ function conductTest(patientName) {
   this.section.queueCard.expect.element("@negativeResult").to.be.visible;
   this.section.queueCard.click("@negativeResult");
   this.section.queueCard.expect.element("@submitResultButton").to.be.visible;
+  this.section.queueCard.expect.element("@submitResultButton").to.be.enabled;
   this.section.queueCard.click("@submitResultButton");
   this.expect
     .section("@app")
@@ -52,35 +48,6 @@ function conductTest(patientName) {
   this.section.navbar.click("@resultsLink");
   this.section.app.expect.element("@resultsTable").to.be.visible;
   this.section.app.expect.element("@resultsTable").to.contain.text(patientName);
-}
-
-function getPatientLink(patientName) {
-  this.expect.section("@navbar").to.be.visible;
-  this.section.navbar.expect.element("@conductTestLink").to.be.visible;
-  this.section.navbar.click("@conductTestLink");
-  this.section.app.expect.element("@searchBar").to.be.visible;
-  this.section.app.setValue("@searchBar", patientName.split(",")[0]);
-  this.expect.section("@searchResults").to.be.visible;
-  this.section.searchResults.expect.element("@beginTest").to.be.visible;
-  this.section.searchResults.expect
-    .element("@beginTest")
-    .to.contain.text("Begin test");
-  this.section.searchResults.click("@beginTest");
-  this.expect.section("@modal").to.be.visible;
-  this.section.modal.expect.element("@smartphoneRadio").to.be.visible;
-  this.section.modal.click("@smartphoneRadio");
-  this.expect
-    .section("@modal")
-    .to.contain.text("Point your camera at the QR code");
-  return new Promise((resolve) => {
-    this.getAttribute(
-      "#patient-link-qr-code",
-      "data-patient-link",
-      ({ value: patientLink }) => {
-        resolve(patientLink);
-      }
-    );
-  });
 }
 
 function getResultPatientLink(patientName) {
@@ -133,7 +100,6 @@ module.exports = {
   commands: [
     {
       conductTest,
-      getPatientLink,
       getResultPatientLink,
       verifyQuestionnaireCompleted,
     },
@@ -164,7 +130,6 @@ module.exports = {
       selector: ".ReactModal__Content",
       elements: {
         smartphoneRadio: 'input[name="qr-code"][value="smartphone"]+label',
-        verbalRadio: 'input[name="qr-code"][value="verbal"]+label',
         noSymptoms: 'input[name="no_symptoms"][value="no"]+label',
         firstTest: 'input[name="prior_test_flag"][value="YES"]+label',
         pregnant: 'input[name="pregnancy"][value="60001007"]+label',

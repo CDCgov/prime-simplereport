@@ -30,6 +30,7 @@ class PatientSelfRegistrationTest {
             "Male",
             null,
             null,
+            null,
             null);
     PatientSelfRegistration a2 =
         new PatientSelfRegistration(
@@ -51,6 +52,7 @@ class PatientSelfRegistrationTest {
             "Male",
             null,
             null,
+            null,
             null);
     PatientSelfRegistration b =
         new PatientSelfRegistration(
@@ -70,6 +72,7 @@ class PatientSelfRegistrationTest {
             null,
             null,
             "Male",
+            null,
             null,
             null,
             null);
@@ -99,6 +102,7 @@ class PatientSelfRegistrationTest {
             "Male",
             null,
             null,
+            null,
             null);
     PatientSelfRegistration a2 =
         new PatientSelfRegistration(
@@ -120,6 +124,7 @@ class PatientSelfRegistrationTest {
             "Male",
             null,
             null,
+            null,
             null);
     PatientSelfRegistration b =
         new PatientSelfRegistration(
@@ -139,6 +144,7 @@ class PatientSelfRegistrationTest {
             null,
             null,
             "Male",
+            null,
             null,
             null,
             null);

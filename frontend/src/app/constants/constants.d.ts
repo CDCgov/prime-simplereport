@@ -10,6 +10,7 @@ type Ethnicity = "hispanic" | "not_hispanic" | "refused";
 type Gender = "male" | "female" | "other" | "refused";
 type YesNo = "YES" | "NO";
 type Role = "STAFF" | "RESIDENT" | "STUDENT" | "VISITOR" | "";
+type TestResultDeliveryPreference = "SMS" | "NONE";
 type PhoneType = "MOBILE" | "LANDLINE" | "UNKNOWN";
 type YesNoUnknown = YesNo | "UNKNOWN";
 type TribalAffiliation =
@@ -594,6 +595,7 @@ interface PersonUpdate extends Address {
   county: string;
   email: string;
   preferredLanguage: Language | null;
+  testResultDelivery: TestResultDeliveryPreference | null;
 }
 
 interface Person extends PersonUpdate {

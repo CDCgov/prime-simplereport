@@ -23,6 +23,7 @@ class PersonUpdateTest {
             + "\"residentCongregateSetting\":false,"
             + "\"employedInHealthcare\":true,"
             + "\"preferredLanguage\":\"French\","
+            + "\"testResultDelivery\":\"SMS\","
             + "\"address\":{"
             + "\"street\":[\"12 Someplace\",\"CA\"],"
             + "\"city\":null,"

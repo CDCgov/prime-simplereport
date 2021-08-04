@@ -12,6 +12,14 @@ const UNDETERMINED = "No concluyente";
 export const es: LanguageConfig = {
   translation: {
     header: "Portal de pruebas de COVID-19",
+    banner: {
+      dotGov: "",
+      dotGovHelper: "",
+      secure: "",
+      secureHelper: "",
+      officialWebsite: "",
+      howYouKnow: "",
+    },
     constants: {
       testResults: {
         POSITIVE,
@@ -54,6 +62,10 @@ export const es: LanguageConfig = {
         NO,
         UNKNOWN,
       },
+    },
+    languages: {
+      English: "",
+      Spanish: "",
     },
     common: {
       required: "",
@@ -100,6 +112,7 @@ export const es: LanguageConfig = {
           studentId: "",
           preferredLanguage: "Idioma preferido",
           dob: "Fecha de nacimiento",
+          dobFormat: "",
         },
         contact: {
           heading: "Información de contacto",
@@ -107,6 +120,8 @@ export const es: LanguageConfig = {
           additionalPhoneNumber: "Número de teléfono adicional",
           phoneType: "Tipo de teléfono",
           addNumber: "Agregar otro número",
+          testResultDelivery: "",
+          testResultDeliveryHint: "",
           email: "Dirección de correo electrónico",
           street1: "Dirección 1",
           street2: "Dirección 2",
@@ -160,6 +175,7 @@ export const es: LanguageConfig = {
           residentCongregateSetting: "",
           employedInHealthcare: "",
           preferredLanguage: "",
+          testResultDelivery: "",
         },
       },
     },
@@ -372,7 +388,7 @@ export const es: LanguageConfig = {
         enterDOB: "Ingrese su fecha de nacimiento",
         enterDOB2:
           "Ingrese su fecha de nacimiento para acceder a su portal de pruebas de COVID-19.",
-        //dateFormat: "",
+        format: "",
         error: "",
         validating: "Validación de la fecha de nacimiento...",
         linkExpired: "",
