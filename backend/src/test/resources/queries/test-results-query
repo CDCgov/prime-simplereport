@@ -20,5 +20,12 @@ query GetFacilityResults($facilityId: ID!, $nameType: String = "long") {
     patientLink {
       internalId
     }
+    symptoms
+    noSymptoms
+    pregnancy
+    symptomOnset
+    priorTestDate
+    priorTestResult
+    priorTestType
   }
 }
