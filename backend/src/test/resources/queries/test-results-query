@@ -17,5 +17,15 @@ query GetFacilityResults($facilityId: ID!, $nameType: String = "long") {
     testPerformed {
       name(nameType: $nameType)
     }
+    patientLink {
+      internalId
+    }
+    symptoms
+    noSymptoms
+    pregnancy
+    symptomOnset
+    priorTestDate
+    priorTestResult
+    priorTestType
   }
 }

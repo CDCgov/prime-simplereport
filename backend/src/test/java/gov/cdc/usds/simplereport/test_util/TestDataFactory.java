@@ -225,7 +225,9 @@ public class TestDataFactory {
     _patientAnswerRepo.save(answers);
     TestOrder o = new TestOrder(p, f);
     o.setAskOnEntrySurvey(answers);
-    return _testOrderRepo.save(o);
+    var savedOrder = _testOrderRepo.save(o);
+    _patientLinkRepository.save(new PatientLink(savedOrder));
+    return savedOrder;
   }
 
   public TestEvent createTestEvent(Person p, Facility f) {

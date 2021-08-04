@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.api.model;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
@@ -87,9 +86,5 @@ public class ApiTestOrder extends WrappedEntity<TestOrder> {
 
   public String getReasonForCorrection() {
     return wrapped.getReasonForCorrection();
-  }
-
-  public PatientLink getPatientLink() {
-    return wrapped.getPatientLink();
   }
 }
