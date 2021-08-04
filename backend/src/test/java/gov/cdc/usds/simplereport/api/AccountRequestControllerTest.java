@@ -92,6 +92,7 @@ class AccountRequestControllerTest {
   @MockBean private AuthorizationService authorizationService;
   @MockBean private IdentitySupplier identitySupplier;
   @MockBean private CurrentPatientContextHolder currentPatientContextHolder;
+  @MockBean private SmsWebhookContextHolder smsWebhookContextHolder;
   @MockBean private TenantDataAccessService tenantDataAccessService;
 
   @MockBean private OrganizationService orgService;
