@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
+import gov.cdc.usds.simplereport.api.SmsWebhookContextHolder;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -58,6 +59,8 @@ public class ApiUserService {
   @Autowired private CurrentPatientContextHolder _patientContextHolder;
 
   @Autowired private CurrentAccountRequestContextHolder _accountRequestContextHolder;
+
+  @Autowired private SmsWebhookContextHolder _smsWebhookContextHolder;
 
   private static final Logger LOG = LoggerFactory.getLogger(ApiUserService.class);
 
@@ -271,6 +274,7 @@ public class ApiUserService {
   private static final String PATIENT_SELF_REGISTRATION_EMAIL =
       "patient-self-registration" + NOREPLY;
   private static final String ACCOUNT_REQUEST_EMAIL = "account-request" + NOREPLY;
+  private static final String SMS_WEBHOOK_EMAIL = "sms-webhook" + NOREPLY;
   private static final String ANONYMOUS_EMAIL = "anonymous-user" + NOREPLY;
 
   private String getPatientIdEmail(Person patient) {
@@ -314,6 +318,21 @@ public class ApiUserService {
         });
   }
 
+  /** The SMS Webhook API User should <em>always</em> exist. */
+  public ApiUser getSmsWebhookApiUser() {
+    Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(SMS_WEBHOOK_EMAIL);
+    return found.orElseGet(
+        () -> {
+          ApiUser magicUser =
+              new ApiUser(SMS_WEBHOOK_EMAIL, new PersonName("", "", "SMS Webhook User", ""));
+          _apiUserRepo.save(magicUser);
+          LOG.info(
+              "Magic account SMS webhook user not found. Created Person={}",
+              magicUser.getInternalId());
+          return magicUser;
+        });
+  }
+
   /** Only used for audit logging. */
   public ApiUser getAnonymousApiUser() {
     Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(ANONYMOUS_EMAIL);
@@ -340,6 +359,9 @@ public class ApiUserService {
       }
       if (_accountRequestContextHolder.isAccountRequest()) {
         return getAccountRequestApiUser();
+      }
+      if (_smsWebhookContextHolder.isSmsWebhook()) {
+        return getSmsWebhookApiUser();
       }
       throw new UnidentifiedUserException();
     }

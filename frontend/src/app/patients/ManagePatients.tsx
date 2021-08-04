@@ -113,7 +113,6 @@ export const DetachedManagePatients = ({
   activeFacilityId,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
-  const [showFilters, setShowFilters] = useState(false);
   const history = useHistory();
 
   const [queryString, debounced, setDebounced] = useDebounce<string | null>(
@@ -229,18 +228,14 @@ export const DetachedManagePatients = ({
               </h2>
               <div>
                 <Button
-                  variant={!showFilters ? "outline" : undefined}
-                  className={showFilters ? "sr-active-button" : undefined}
+                  className="sr-active-button"
                   icon={faSlidersH}
                   onClick={() => {
-                    if (showFilters) {
-                      setNamePrefixMatch(null);
-                      setDebounced(null);
-                    }
-                    setShowFilters(!showFilters);
+                    setNamePrefixMatch(null);
+                    setDebounced(null);
                   }}
                 >
-                  {showFilters ? "Clear filters" : "Filter"}
+                  Clear filters
                 </Button>
                 {canEditUser ? (
                   <LinkWithQuery
@@ -254,24 +249,22 @@ export const DetachedManagePatients = ({
                 ) : null}
               </div>
             </div>
-            {showFilters && (
-              <div className="display-flex flex-row bg-base-lightest padding-x-3 padding-y-2">
-                <SearchInput
-                  label="Person"
-                  onInputChange={(e) => {
-                    setDebounced(e.target.value);
-                  }}
-                  onSearchClick={(e) => {
-                    e.preventDefault();
-                    setNamePrefixMatch(debounced);
-                  }}
-                  queryString={debounced || ""}
-                  className="display-inline-block"
-                  placeholder=""
-                  focusOnMount
-                />
-              </div>
-            )}
+            <div className="display-flex flex-row bg-base-lightest padding-x-3 padding-y-2">
+              <SearchInput
+                label="Person"
+                onInputChange={(e) => {
+                  setDebounced(e.target.value);
+                }}
+                onSearchClick={(e) => {
+                  e.preventDefault();
+                  setNamePrefixMatch(debounced);
+                }}
+                queryString={debounced || ""}
+                className="display-inline-block"
+                placeholder=""
+                focusOnMount
+              />
+            </div>
             <div className="usa-card__body sr-patient-list">
               <table className="usa-table usa-table--borderless width-full">
                 <thead>
