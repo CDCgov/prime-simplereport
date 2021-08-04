@@ -2,6 +2,7 @@ spring:
   profiles.include: okta-stg
 simple-report:
   patient-link-url: https://stg.simplereport.gov/app/pxp?plid=
+  twilio-callback-url: https://stg.simplereport.gov/api/pxp/callback
   cors:
     allowed-origins:
       - https://simple-report-api-stg.azurewebsites.net
