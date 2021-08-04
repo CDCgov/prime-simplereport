@@ -3,7 +3,7 @@
 exports[`QueueItem correctly renders the test queue 1`] = `
 <div>
   <div
-    class="grid-container prime-container prime-queue-item card-container"
+    class="position-relative grid-container prime-container prime-queue-item card-container"
   >
     <div
       class="prime-card-container"

@@ -152,6 +152,13 @@ describe("QueueItem", () => {
         );
       });
 
+      // Displays submitting indicator
+      expect(
+        await screen.findByText(
+          "Submitting test data for Harry James Potter..."
+        )
+      );
+
       // Verify alert is displayed
       expect(
         await screen.findByText(
@@ -161,6 +168,14 @@ describe("QueueItem", () => {
           }
         )
       ).toBeInTheDocument();
+
+      // Submitting indicator and card are gone
+      await waitFor(() => {
+        expect(screen.queryByText("Potter, Harry James"));
+        expect(
+          screen.queryByText("Submitting test data for Harry James Potter...")
+        );
+      });
     });
   });
 
