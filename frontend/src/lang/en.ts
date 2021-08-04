@@ -60,6 +60,10 @@ export const en = {
         UNKNOWN,
       },
     },
+    languages: {
+      English: "English",
+      Spanish: "Spanish",
+    },
     common: {
       required: "Required fields are marked with an asterisk",
       defaultDropdownOption: "- Select -",
@@ -150,7 +154,7 @@ export const en = {
           firstName: "First name is required",
           middleName: "Middle name is incorrectly formatted",
           lastName: "Last name is required",
-          lookupId: "Lookup ID is incorrectly formatted",
+          lookupId: "Student ID is incorrectly formatted",
           role: "Role is incorrectly formatted",
           facilityId: "Testing facility is required",
           birthDate:

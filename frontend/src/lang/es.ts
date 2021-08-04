@@ -60,6 +60,10 @@ export const es: LanguageConfig = {
         UNKNOWN,
       },
     },
+    languages: {
+      English: "",
+      Spanish: "",
+    },
     common: {
       required: "",
       defaultDropdownOption: "",
