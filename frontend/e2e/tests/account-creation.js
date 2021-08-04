@@ -3,25 +3,10 @@ const { execSync, spawn } = require("child_process");
 const downloadWiremock = () => execSync("./e2e/utils/download-wiremock.sh");
 const startWiremock = () => {
   const wm = spawn("./e2e/utils/start-wiremock.sh");
-  execSync("./e2e/utils/ping-wiremock.sh", (error, stdout, stderr) => {
-    if (error) {
-      console.error(`ping error: ${error}`);
-      return;
-    }
-    console.log(`ping stdout: ${stdout}`);
-    console.error(`ping stderr: ${stderr}`);
-  });
+  execSync("./e2e/utils/ping-wiremock.sh");
   return wm;
 };
-const stopWiremock = () =>
-  execSync("./e2e/utils/stop-wiremock.sh", (error, stdout, stderr) => {
-    if (error) {
-      console.error(`stop error: ${error}`);
-      return;
-    }
-    console.log(`stop stdout: ${stdout}`);
-    console.error(`stop stderr: ${stderr}`);
-  });
+const stopWiremock = () => execSync("./e2e/utils/stop-wiremock.sh");
 
 let wm;
 
@@ -31,20 +16,8 @@ module.exports = {
   },
   beforeEach: () => {
     wm = startWiremock();
-    wm.stdout.on("data", (data) => {
-      console.log(`start stdout: ${data}`);
-    });
-
-    wm.stderr.on("data", (data) => {
-      console.error(`start stderr: ${data}`);
-    });
-
-    wm.on("close", (code) => {
-      console.log(`start process exited with code ${code}`);
-    });
   },
   afterEach: () => {
-    stopWiremock();
     wm.kill();
   },
   after: () => {
