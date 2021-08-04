@@ -118,14 +118,17 @@ public class TestDataFactory {
     return save;
   }
 
+  @Transactional
   public Person createMinimalPerson(Organization org) {
     return createMinimalPerson(org, null, "John", "Brown", "Boddie", "Jr.");
   }
 
+  @Transactional
   public Person createMinimalPerson(Organization org, Facility fac) {
     return createMinimalPerson(org, fac, "Rebecca", "Grey", "Green", "III");
   }
 
+  @Transactional
   public Person createMinimalPerson(
       Organization org,
       Facility fac,
@@ -137,10 +140,12 @@ public class TestDataFactory {
     return createMinimalPerson(org, fac, names);
   }
 
+  @Transactional
   public Person createMinimalPerson(Organization org, Facility fac, PersonName names) {
     return createMinimalPerson(org, fac, names, PersonRole.STAFF);
   }
 
+  @Transactional
   public Person createMinimalPerson(
       Organization org, Facility fac, PersonName names, PersonRole role) {
     Person p = new Person(names, org, fac, role);
@@ -151,10 +156,12 @@ public class TestDataFactory {
     return _personRepo.save(p);
   }
 
+  @Transactional
   public Person createFullPerson(Organization org) {
     return createFullPersonWithTelephone(org, "202-123-4567");
   }
 
+  @Transactional
   public Person createFullPersonWithTelephone(Organization org, String telephone) {
     // consts are to keep style check happy othewise it complains about
     // "magic numbers"
