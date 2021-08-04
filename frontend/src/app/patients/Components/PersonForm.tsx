@@ -4,7 +4,8 @@ import { toast } from "react-toastify";
 import { SchemaOf } from "yup";
 import { useTranslation } from "react-i18next";
 
-import { languages, stateCodes } from "../../../config/constants";
+import { stateCodes } from "../../../config/constants";
+import getLanguages from "../../utils/languages";
 import {
   RACE_VALUES,
   ETHNICITY_VALUES,
@@ -105,6 +106,9 @@ const PersonForm = (props: Props) => {
   const [addressSuggestion, setAddressSuggestion] = useState<
     AddressWithMetaData | undefined
   >();
+
+  const languages = getLanguages();
+
   const { view = PersonFormView.APP } = props;
   const schema = schemata[view];
 
@@ -313,7 +317,12 @@ const PersonForm = (props: Props) => {
           <Input
             {...commonInputProps}
             field="birthDate"
-            label={t("patient.form.general.dob") + " (mm/dd/yyyy)"}
+            label={
+              t("patient.form.general.dob") +
+              " (" +
+              t("patient.form.general.dobFormat") +
+              ")"
+            }
             type="date"
             required={view !== PersonFormView.PXP}
             disabled={view === PersonFormView.PXP}

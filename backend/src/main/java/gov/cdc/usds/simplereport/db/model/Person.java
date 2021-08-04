@@ -69,7 +69,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
    * Note that for the purposes of all upserts, the <em>first</em> phone number in a
    * List<PhoneNumber> is considered to be the primary
    */
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   private PhoneNumber primaryPhone;
 
   @OneToMany(mappedBy = "person")

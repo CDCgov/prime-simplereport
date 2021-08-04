@@ -765,7 +765,6 @@ describe("TestResultsList", () => {
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();
     expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-    userEvent.click(screen.getByText("Filter"));
     expect(await screen.findByText("Search by name")).toBeInTheDocument();
     userEvent.type(screen.getByRole("searchbox"), "Cragell");
     expect(await screen.findByText("Filter")).toBeInTheDocument();
@@ -792,7 +791,6 @@ describe("TestResultsList", () => {
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();
     expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
-    userEvent.click(screen.getByText("Filter"));
     expect(
       await screen.findByRole("option", { name: "Negative" })
     ).toBeInTheDocument();
@@ -819,7 +817,6 @@ describe("TestResultsList", () => {
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();
     expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-    userEvent.click(screen.getByText("Filter"));
     expect(
       await screen.findByRole("option", { name: "Resident" })
     ).toBeInTheDocument();
@@ -847,7 +844,6 @@ describe("TestResultsList", () => {
     ).toBeInTheDocument();
     expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
     expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
-    userEvent.click(screen.getByText("Filter"));
     expect(await screen.findByText("Date range (start)")).toBeInTheDocument();
     expect(await screen.findByText("Date range (end)")).toBeInTheDocument();
     userEvent.type(
@@ -887,7 +883,6 @@ describe("TestResultsList", () => {
     ).toBeInTheDocument();
 
     // Apply filter
-    userEvent.click(screen.getByText("Filter"));
     expect(await screen.findByText("Search by name")).toBeInTheDocument();
     userEvent.type(screen.getByRole("searchbox"), "Cragell");
     expect(await screen.findByText("Filter")).toBeInTheDocument();
