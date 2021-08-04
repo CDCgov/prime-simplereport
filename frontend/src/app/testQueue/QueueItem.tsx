@@ -326,30 +326,31 @@ const QueueItem: any = ({
     showNotification(toast, alert);
   };
 
-  const onTestResultSubmit = (forceSubmit: boolean = false) => {
-    if (forceSubmit || areAnswersComplete(aoeAnswers)) {
-      setSaveState("saving");
-      if (appInsights) {
-        trackSubmitTestResult({});
-      }
-      setConfirmationType("none");
-      submitTestResult({
+  const onTestResultSubmit = async (forceSubmit: boolean = false) => {
+    if (!forceSubmit && !areAnswersComplete(aoeAnswers)) {
+      return setConfirmationType("submitResult");
+    }
+
+    setSaveState("saving");
+    if (appInsights) {
+      trackSubmitTestResult({});
+    }
+    setConfirmationType("none");
+    try {
+      const result = await submitTestResult({
         variables: {
           patientId: patient.internalId,
           deviceId: deviceId,
           result: testResultValue,
           dateTested: shouldUseCurrentDateTime() ? null : dateTested,
         },
-      })
-        .then(testResultsSubmitted, () => {})
-        .then(refetchQueue)
-        .then(() => removeTimer(internalId))
-        .catch((error) => {
-          setSaveState("error");
-          updateMutationError(error);
-        });
-    } else {
-      setConfirmationType("submitResult");
+      });
+      testResultsSubmitted(result);
+      refetchQueue();
+      removeTimer(internalId);
+    } catch (error) {
+      setSaveState("error");
+      updateMutationError(error);
     }
   };
 
