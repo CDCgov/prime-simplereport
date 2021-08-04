@@ -9,6 +9,14 @@ const UNKNOWN = "";
 export const es: LanguageConfig = {
   translation: {
     header: "Portal de pruebas COVID-19",
+    banner: {
+      dotGov: "",
+      dotGovHelper: "",
+      secure: "",
+      secureHelper: "",
+      officialWebsite: "",
+      howYouKnow: "",
+    },
     constants: {
       testResults: {
         POSITIVE: "",
@@ -51,6 +59,10 @@ export const es: LanguageConfig = {
         NO,
         UNKNOWN,
       },
+    },
+    languages: {
+      English: "",
+      Spanish: "",
     },
     common: {
       required: "",
@@ -97,6 +109,7 @@ export const es: LanguageConfig = {
           studentId: "",
           preferredLanguage: "",
           dob: "",
+          dobFormat: "",
         },
         contact: {
           heading: "",
@@ -322,6 +335,7 @@ export const es: LanguageConfig = {
         dateOfBirth: "",
         enterDOB: "",
         enterDOB2: "",
+        format: "",
         error: "",
         validating: "",
         linkExpired: "",
