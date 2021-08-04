@@ -18,7 +18,7 @@ public class PatientLinkDataLoader extends KeyedDataLoaderFactory<UUID, PatientL
     return KEY;
   }
 
-  private static PatientLink getMostRecentPatientLink(List<PatientLink> patientLinks) {
+  public static PatientLink getMostRecentPatientLink(List<PatientLink> patientLinks) {
     if (patientLinks == null) {
       return null;
     }
@@ -27,8 +27,8 @@ public class PatientLinkDataLoader extends KeyedDataLoaderFactory<UUID, PatientL
           if (pl1.getCreatedAt().equals(pl2.getCreatedAt())) {
             return 0;
           } else if (pl1.getCreatedAt().before(pl2.getCreatedAt())) {
-            return -1;
-          } else return 1;
+            return 1;
+          } else return -1;
         });
     return patientLinks.get(0);
   }
