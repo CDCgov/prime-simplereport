@@ -33,6 +33,7 @@ import {
 import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
 import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
+import { QueueItemSubmitLoader } from "./QueueItemSubmitLoader";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
 
@@ -199,6 +200,8 @@ interface updateQueueItemProps {
   dateTested?: string;
 }
 
+type SaveState = "idle" | "editing" | "saving" | "error";
+
 const QueueItem: any = ({
   internalId,
   patient,
@@ -237,7 +240,7 @@ const QueueItem: any = ({
     EditQueueItemResponse,
     EditQueueItemParams
   >(EDIT_QUEUE_ITEM);
-  const [debouncingEdit, setDebouncingEdit] = useState(false);
+  const [saveState, setSaveState] = useState<SaveState>("idle");
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
   const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
@@ -325,6 +328,7 @@ const QueueItem: any = ({
 
   const onTestResultSubmit = (forceSubmit: boolean = false) => {
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
+      setSaveState("saving");
       if (appInsights) {
         trackSubmitTestResult({});
       }
@@ -341,6 +345,7 @@ const QueueItem: any = ({
         .then(refetchQueue)
         .then(() => removeTimer(internalId))
         .catch((error) => {
+          setSaveState("error");
           updateMutationError(error);
         });
     } else {
@@ -411,19 +416,19 @@ const QueueItem: any = ({
     if (!isMounted.current) {
       isMounted.current = true;
     } else {
-      setDebouncingEdit(true);
+      setSaveState("editing");
       debounceTimer = setTimeout(async () => {
         await updateQueueItem({
           deviceId,
           dateTested,
           result: testResultValue,
         });
-        setDebouncingEdit(false);
+        setSaveState("idle");
       }, DEBOUNCE_TIME);
     }
     return () => {
       clearTimeout(debounceTimer);
-      setDebouncingEdit(false);
+      setSaveState("idle");
     };
   }, [deviceId, dateTested, testResultValue, updateQueueItem]);
 
@@ -581,19 +586,36 @@ const QueueItem: any = ({
 
   const timer = useTestTimer(internalId, deviceTestLength);
 
+  function cardColorDisplay() {
+    const prefix = "prime-queue-item__";
+    if (saveState === "error") {
+      return prefix + "error";
+    }
+    if (timer.countdown < 0 && testResultValue === "UNKNOWN") {
+      return prefix + "ready";
+    }
+    return undefined;
+  }
+
   const containerClasses = classnames(
+    "position-relative",
     "grid-container",
     "prime-container",
     "prime-queue-item card-container",
-    timer.countdown < 0 && !testResultValue && "prime-queue-item__ready",
-    timer.countdown < 0 && testResultValue && "prime-queue-item__completed"
+    timer.countdown < 0 &&
+      testResultValue !== "UNKNOWN" &&
+      "prime-queue-item__completed",
+    cardColorDisplay()
   );
 
   return (
     <React.Fragment>
       <div className={containerClasses}>
+        {saveState === "saving" && (
+          <QueueItemSubmitLoader name={patientFullName} />
+        )}
         <div className="prime-card-container">
-          {closeButton}
+          {saveState !== "saving" && closeButton}
           <div className="grid-row">
             <div className="tablet:grid-col-9">
               <div
@@ -719,7 +741,8 @@ const QueueItem: any = ({
                 testResultValue={testResultValue}
                 isSubmitDisabled={
                   loading ||
-                  debouncingEdit ||
+                  saveState === "editing" ||
+                  saveState === "saving" ||
                   (!shouldUseCurrentDateTime() &&
                     !isValidCustomDateTested(dateTested))
                 }
