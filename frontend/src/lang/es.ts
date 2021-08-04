@@ -1,7 +1,7 @@
 import { LanguageConfig } from "./en";
 
-const YES = "";
-const NO = "";
+const YES = "Sí";
+const NO = "No";
 const OTHER = "Otra";
 const REFUSED = "Prefiero no responder";
 const UNKNOWN = "Desconocido";
@@ -13,12 +13,15 @@ export const es: LanguageConfig = {
   translation: {
     header: "Portal de pruebas de COVID-19",
     banner: {
-      dotGov: "",
-      dotGovHelper: "",
-      secure: "",
-      secureHelper: "",
-      officialWebsite: "",
-      howYouKnow: "",
+      dotGov: "La terminación .gov significa que el sito es oficial.",
+      dotGovHelper:
+        "Los sitios web del gobierno federal a menudo terminan en .gov o .mil. Antes de compartir información sensible, asegúrese de que está en un sitio del gobierno federal.",
+      secure: "El sitio es seguro.",
+      secureHelper:
+        "El <0>https://</0> garantiza que se está conectando al sitio web oficial y que cualquier información que proporcione está encriptada y se transmite de forma segura.",
+      officialWebsite:
+        "Un sitio web oficial del gobierno de los Estados Unidos",
+      howYouKnow: "Así es como lo sabe",
     },
     constants: {
       testResults: {
@@ -64,40 +67,43 @@ export const es: LanguageConfig = {
       },
     },
     languages: {
-      English: "",
-      Spanish: "",
+      English: "Inglés",
+      Spanish: "Español",
     },
     common: {
-      required: "",
-      defaultDropdownOption: "",
+      required: "Los campos obligatorios están marcados con un asterisco",
+      defaultDropdownOption: "- Elige -",
       button: {
         submit: "Enviar",
+        save: "Guardar cambios",
       },
       pageNotFound: {
-        heading: "",
-        text: "",
-        errorCode: "",
+        heading: "Página no encontrada",
+        text:
+          "Lo lamentamos, no podemos encontrar la página que busca. Es posible que se haya eliminado, se haya cambiado de nombre o no esté disponible.",
+        errorCode: "​​Código de error: 404",
       },
     },
     address: {
-      heading: "",
-      select: "",
-      useAddress: "",
-      getSuggested: "",
-      noSuggestedFound: "",
-      goBack: "",
-      goBack_plural: "",
-      save: "",
+      heading: "Verificación de dirección",
+      select: "Por favor, seleccione una opción para continuar",
+      useAddress: "Utilice la dirección tal como la ingresó",
+      getSuggested: "Utilice la dirección sugerida",
+      noSuggestedFound: "No se encontró ninguna dirección sugerida",
+      goBack: "Regresar para editar la dirección",
+      goBack_plural: "Regresar para editar las direcciones",
+      save: "Guardar cambios",
       errors: {
-        incomplete: "",
-        unverified: "",
-        unverified_plural: "",
+        incomplete: "Elija una dirección o vuelva a editar",
+        unverified: "No pudimos verificar la dirección que ingresaste",
+        unverified_plural:
+          "No pudimos verificar las direcciones que ingresaste",
       },
     },
     facility: {
       form: {
-        heading: "",
-        allFacilities: "",
+        heading: "Centro de pruebas",
+        allFacilities: "Todos los centros de pruebas",
       },
     },
     patient: {
@@ -106,13 +112,13 @@ export const es: LanguageConfig = {
           heading: "Información general",
           helpText: "Los campos obligatorios están marcados con un asterisco",
           firstName: "Nombre",
-          middleName: "",
+          middleName: "Segundo nombre",
           lastName: "Apellido",
           role: "Rol",
-          studentId: "",
+          studentId: "Identificación del estudiante",
           preferredLanguage: "Idioma preferido",
           dob: "Fecha de nacimiento",
-          dobFormat: "",
+          dobFormat: "mm/dd/aaaa",
         },
         contact: {
           heading: "Información de contacto",
@@ -120,12 +126,14 @@ export const es: LanguageConfig = {
           additionalPhoneNumber: "Número de teléfono adicional",
           phoneType: "Tipo de teléfono",
           addNumber: "Agregar otro número",
-          testResultDelivery: "",
-          testResultDeliveryHint: "",
+          testResultDelivery:
+            "¿Le gustaría recibir sus resultados por mensaje de texto?",
+          testResultDeliveryHint:
+            "Enviaremos un mensaje de texto a todos los números de teléfono móviles registrados",
           email: "Dirección de correo electrónico",
           street1: "Dirección 1",
           street2: "Dirección 2",
-          county: "",
+          county: "Condado",
           city: "Ciudad",
           state: "Estado",
           zip: "Código postal",
@@ -150,32 +158,36 @@ export const es: LanguageConfig = {
           healthcareWorker: "¿Es usted un trabajador de la salud?",
         },
         errors: {
-          unsaved: "",
-          validationMsg: "",
-          firstName: "",
-          middleName: "",
-          lastName: "",
-          lookupId: "",
-          role: "",
-          facilityId: "",
-          birthDate: "",
-          telephone: "",
-          phoneNumbers: "",
-          email: "",
-          street: "",
-          streetTwo: "",
-          zipCode: "",
-          state: "",
-          city: "",
-          county: "",
-          race: "",
-          tribalAffiliation: "",
-          ethnicity: "",
-          gender: "",
-          residentCongregateSetting: "",
-          employedInHealthcare: "",
-          preferredLanguage: "",
-          testResultDelivery: "",
+          unsaved:
+            "“¡Sus cambios aún no están guardados!Haga clic en OK para descartar cambios, Cancelar para continuar con la edición.",
+          validationMsg: "Corrija antes de enviar",
+          firstName: "Se requiere primer nombre",
+          middleName: "El segundo nombre tiene un formato incorrecto",
+          lastName: "Se requiere apellido",
+          lookupId: "Identificación del estudiante tiene un formato incorrecto",
+          role: "Rol tiene un formato incorrecto",
+          facilityId: "Se requiere centro de pruebas",
+          birthDate:
+            "Se requiere fecha de nacimiento, formateada correctamente (MM/DD/AAAA) y en el pasado",
+          telephone: "Falta el número de teléfono o no es válido",
+          phoneNumbers: "Faltan los números de teléfono o no son válidos",
+          email: "Falta el correo electrónico o tiene un formato incorrecto",
+          street: "Falta el nombre de la calle",
+          streetTwo: "Calle 2 tiene un formato incorrecto",
+          zipCode: "Falta el código postal o tiene un formato incorrecto",
+          state: "Falta el estado o tiene un formato incorrecto",
+          city: "La ciudad tiene un formato incorrecto",
+          county: "El formato del condado es incorrecto",
+          race: "La raza tiene un formato incorrecto",
+          tribalAffiliation: "La afiliación tribal tiene un formato incorrecto",
+          ethnicity: "La etnia tiene un formato incorrecto",
+          gender: "El sexo biológico tiene un formato incorrecto",
+          residentCongregateSetting:
+            "¿Reside usted en un entorno compartido por muchas personas?  Se requiere una respuesta",
+          employedInHealthcare:
+            "¿Es usted un trabajador de la salud? Se requiere una respuesta",
+          preferredLanguage: "Idioma preferido tiene un formato incorrecto",
+          testResultDelivery: "Mensaje de texto tiene un formato incorrecto",
         },
       },
     },
@@ -184,19 +196,20 @@ export const es: LanguageConfig = {
         complete: "Inscripción completa",
         inProgress: "Inscríbase para programar su prueba",
         error: {
-          heading: "",
-          text: "",
+          heading: "Error de registro",
+          text: "Hubo un error de registro",
         },
       },
       confirmation: {
         registered:
           "<0>{{personName}}</0>, gracias por completar su perfil de paciente en {{nombre del centro de pruebas}}.",
-        checkIn: "",
+        checkIn:
+          "Cuando llegue para su examen, regístrese dando su nombre y apellido.",
       },
     },
     testResult: {
-      result: "",
-      patient: "",
+      result: "Resultado de SARS-CoV-2",
+      patient: "Paciente",
       testResult: "Resultado de la prueba",
       testDate: "Fecha de la prueba",
       positive: POSITIVE,
@@ -388,10 +401,12 @@ export const es: LanguageConfig = {
         enterDOB: "Ingrese su fecha de nacimiento",
         enterDOB2:
           "Ingrese su fecha de nacimiento para acceder a su portal de pruebas de COVID-19.",
-        format: "",
-        error: "",
+        format: "MM/DD/AAAA or MMDDAAAA",
+        error:
+          "No se encontró el resultado de la prueba o la fecha de nacimiento proporcionada es incorrecta.",
         validating: "Validación de la fecha de nacimiento...",
-        linkExpired: "",
+        linkExpired:
+          "Este enlace ha caducado. Comuníquese con su proveedor de pruebas.",
         submit: "Continuar",
       },
     },

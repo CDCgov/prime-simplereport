@@ -3,6 +3,7 @@ import { gql, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM_CAP } from "../../config/constants";
@@ -109,6 +110,8 @@ interface AddPatientResponse {
 const AddPatient = () => {
   useDocumentTitle("Add Patient");
 
+  const { t } = useTranslation();
+
   const [addPatient, { loading }] = useMutation<
     AddPatientResponse,
     AddPatientParams
@@ -184,7 +187,7 @@ const AddPatient = () => {
                   disabled={loading || !formChanged}
                   onClick={onSave}
                 >
-                  {loading ? "Saving..." : "Save changes"}
+                  {loading ? "Saving..." : t("common.button.save")}
                 </button>
               </div>
             </div>
@@ -196,7 +199,7 @@ const AddPatient = () => {
                 className="prime-save-patient-changes"
                 disabled={loading || !formChanged}
                 onClick={onSave}
-                label={loading ? "Saving..." : "Save changes"}
+                label={loading ? "Saving..." : t("common.button.save")}
               />
             </div>
           )}
