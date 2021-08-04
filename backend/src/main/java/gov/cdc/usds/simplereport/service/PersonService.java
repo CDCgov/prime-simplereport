@@ -120,7 +120,7 @@ public class PersonService {
     List<String> namePrefixMatchList =
         StringUtils.isEmpty(namePrefixMatch)
             ? Collections.emptyList()
-            : Arrays.stream(namePrefixMatch.split(" ")).collect(Collectors.toList());
+            : Arrays.stream(namePrefixMatch.split("[ ,]")).collect(Collectors.toList());
 
     // build up filter based on params
     Specification<Person> filter = inCurrentOrganizationFilter().and(isDeletedFilter(isArchived));
