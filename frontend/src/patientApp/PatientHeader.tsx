@@ -43,7 +43,7 @@ const PatientHeader = () => {
           <Button
             icon={"globe"}
             className="usa-button--unstyled"
-            onClick={() => {
+            onClick={async () => {
               const displayLanguage = i18n.language === "en" ? "es" : "en";
               i18n.changeLanguage(displayLanguage);
             }}
