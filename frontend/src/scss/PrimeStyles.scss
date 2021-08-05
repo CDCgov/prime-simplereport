@@ -592,6 +592,9 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 }
 
 // header and navbar customizations
+.patient-header {
+  justify-content: space-between;
+}
 
 .prime-nav {
   justify-content: left;
