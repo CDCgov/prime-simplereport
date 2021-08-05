@@ -374,8 +374,8 @@ const ManageUsers: React.FC<Props> = ({
               onChangeActiveUser={onChangeActiveUser}
             />
             <div className="tablet:grid-col padding-left-2">
-              <div className="user-header grid-row flex-row flex-justify">
-                <h2 className="flex-align-self-center">
+              <div className="user-header grid-row flex-row flex-align-center">
+                <h2 className="display-inline-block margin-y-1">
                   {displayFullNameInOrder(
                     activeUser.firstName,
                     activeUser.middleName,
@@ -391,7 +391,7 @@ const ManageUsers: React.FC<Props> = ({
                 user.status === "SUSPENDED" ? (
                   <Button
                     variant="secondary"
-                    className="margin-1"
+                    className="margin-left-auto"
                     onClick={() => updateShowReactivateUserModal(true)}
                     label="Reactivate user"
                     disabled={isUpdating}
