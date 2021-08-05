@@ -16,7 +16,9 @@ import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
+import gov.cdc.usds.simplereport.service.errors.ExperianGetQuestionsException;
 import gov.cdc.usds.simplereport.service.errors.ExperianPersonMatchException;
+import gov.cdc.usds.simplereport.service.errors.ExperianSubmitAnswersException;
 import gov.cdc.usds.simplereport.service.idverification.ExperianService;
 import java.io.IOException;
 import java.util.Set;
@@ -66,6 +68,16 @@ public class IdentityVerificationController {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
   }
 
+  @ExceptionHandler(ExperianGetQuestionsException.class)
+  public ResponseEntity<String> handleException(ExperianGetQuestionsException e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+  }
+
+  @ExceptionHandler(ExperianSubmitAnswersException.class)
+  public ResponseEntity<String> handleException(ExperianSubmitAnswersException e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+  }
+
   @ExceptionHandler(IllegalGraphqlArgumentException.class)
   public ResponseEntity<String> handleException(IllegalGraphqlArgumentException e) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -79,8 +91,8 @@ public class IdentityVerificationController {
 
     try {
       return _experianService.getQuestions(requestBody);
-    } catch (ExperianPersonMatchException e) {
-      // could not match a person with the details in the request
+    } catch (ExperianPersonMatchException | ExperianGetQuestionsException e) {
+      // could not match a person with the details in the request or general experian error
       sendIdentityVerificationFailedEmails(org.getExternalId(), orgAdminEmail);
       throw e;
     }
@@ -97,19 +109,25 @@ public class IdentityVerificationController {
     Organization org = _orgService.getOrganization(requestBody.getOrgExternalId());
     String orgAdminEmail = checkOrgAndGetAdminEmail(org);
 
-    IdentityVerificationAnswersResponse verificationResponse =
-        _experianService.submitAnswers(requestBody);
+    try {
+      IdentityVerificationAnswersResponse verificationResponse =
+          _experianService.submitAnswers(requestBody);
 
-    verificationResponse.setEmail(orgAdminEmail);
+      verificationResponse.setEmail(orgAdminEmail);
 
-    if (verificationResponse.isPassed()) {
-      // enable the organization and send account activation email (through okta)
-      _orgService.verifyOrganizationNoPermissions(requestBody.getOrgExternalId());
-    } else {
+      if (verificationResponse.isPassed()) {
+        // enable the organization and send account activation email (through okta)
+        _orgService.verifyOrganizationNoPermissions(requestBody.getOrgExternalId());
+      } else {
+        sendIdentityVerificationFailedEmails(org.getExternalId(), orgAdminEmail);
+      }
+
+      return verificationResponse;
+    } catch (ExperianSubmitAnswersException e) {
+      // a general error with experian occurred
       sendIdentityVerificationFailedEmails(org.getExternalId(), orgAdminEmail);
+      throw e;
     }
-
-    return verificationResponse;
   }
 
   private String checkOrgAndGetAdminEmail(Organization org) {
