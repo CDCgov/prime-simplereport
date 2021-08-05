@@ -107,7 +107,9 @@ const ManageUsers: React.FC<Props> = ({
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
   const [showAddUserModal, updateShowAddUserModal] = useState(false);
   const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
-  const [showReactivateUserModal, updateShowReactivateUserModal] = useState(false);
+  const [showReactivateUserModal, updateShowReactivateUserModal] = useState(
+    false
+  );
   const [isUserEdited, updateIsUserEdited] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<Error>();
@@ -271,7 +273,7 @@ const ManageUsers: React.FC<Props> = ({
     }
   };
 
-  const handleReactivateUser = async(userId: string) => {
+  const handleReactivateUser = async (userId: string) => {
     try {
       await reactivateUser({
         variables: {
@@ -286,12 +288,15 @@ const ManageUsers: React.FC<Props> = ({
       updateShowReactivateUserModal(false);
       showNotification(
         toast,
-        <Alert type="success" title={`${fullName} has recieved a new activation email.`} />
+        <Alert
+          type="success"
+          title={`${fullName} has recieved a new activation email.`}
+        />
       );
     } catch (e) {
       setError(e);
     }
-  }
+  };
 
   // Default to first user
   useEffect(() => {
@@ -384,14 +389,15 @@ const ManageUsers: React.FC<Props> = ({
                     YOU
                   </span>
                 ) : null}
-                {process.env.REACT_APP_EDIT_USER_ROLE === "true" && user.status !== "ACTIVE" ? (
-                   <Button
-                   variant="outline"
-                   className="flex-align-self-start display-inline-block"
-                   onClick={() => updateShowReactivateUserModal(true)}
-                   label="Reactivate user"
-                   disabled={isUpdating}
-                 />
+                {process.env.REACT_APP_EDIT_USER_ROLE === "true" &&
+                user.status !== "ACTIVE" ? (
+                  <Button
+                    variant="outline"
+                    className="flex-align-self-start display-inline-block"
+                    onClick={() => updateShowReactivateUserModal(true)}
+                    label="Reactivate user"
+                    disabled={isUpdating}
+                  />
                 ) : null}
               </div>
               <div className="user-content">
@@ -461,7 +467,8 @@ const ManageUsers: React.FC<Props> = ({
                   onDeleteUser={handleDeleteUser}
                 />
               ) : null}
-              {showReactivateUserModal && process.env.REACT_APP_EDIT_USER_ROLE === "true" ? (
+              {showReactivateUserModal &&
+              process.env.REACT_APP_EDIT_USER_ROLE === "true" ? (
                 <ReactivateUserModal
                   user={user}
                   onClose={() => updateShowReactivateUserModal(false)}

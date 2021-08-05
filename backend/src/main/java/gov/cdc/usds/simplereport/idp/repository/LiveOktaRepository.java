@@ -368,7 +368,7 @@ public class LiveOktaRepository implements OktaRepository {
           "Cannot retrieve Okta user with unrecognized username");
     }
     User user = users.single();
-    return user.getStatus(); 
+    return user.getStatus();
   }
 
   public void reactivateUser(String username) {
@@ -378,7 +378,8 @@ public class LiveOktaRepository implements OktaRepository {
           "Cannot reactivate Okta user with unrecognized username");
     }
     User user = users.single();
-    // I'm not sure if this activation email pulls from the activation email set in our Okta dashboard.
+    // I'm not sure if this activation email pulls from the activation email set in our Okta
+    // dashboard.
     // if it doesn't, we may need to manually send the activation token to the frontend?
     user.activate(true);
   }

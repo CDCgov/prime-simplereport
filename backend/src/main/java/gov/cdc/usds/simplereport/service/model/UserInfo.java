@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service.model;
 
+import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
@@ -14,8 +15,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import com.okta.sdk.resource.user.UserStatus;
 
 public class UserInfo extends WrappedEntity<ApiUser> implements DatabaseEntity, PersonEntity {
 
@@ -40,7 +39,8 @@ public class UserInfo extends WrappedEntity<ApiUser> implements DatabaseEntity, 
     this.isAdmin = isAdmin;
   }
 
-  public UserInfo(ApiUser user, Optional<OrganizationRoles> orgwrapper, boolean isAdmin, UserStatus status) {
+  public UserInfo(
+      ApiUser user, Optional<OrganizationRoles> orgwrapper, boolean isAdmin, UserStatus status) {
     super(user);
     this.org = orgwrapper.map(OrganizationRoles::getOrganization);
     this.permissions = new ArrayList<>();

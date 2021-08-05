@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.SmsWebhookContextHolder;
 import gov.cdc.usds.simplereport.api.model.Role;
@@ -19,7 +20,6 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
-import gov.cdc.usds.simplereport.idp.repository.OktaUserDetail;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
@@ -33,9 +33,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import com.okta.sdk.resource.user.UserStatus;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -417,8 +414,8 @@ public class ApiUserService {
   @AuthorizationConfiguration.RequirePermissionManageUsers
   public List<ApiUser> getUsersInCurrentOrg() {
     Organization org = _orgService.getCurrentOrganization();
-       final Set<String> orgUserEmails = _oktaRepo.getAllUsersForOrganization(org);
-       return _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserEmails);
+    final Set<String> orgUserEmails = _oktaRepo.getAllUsersForOrganization(org);
+    return _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserEmails);
     // final Map<String, OktaUserDetail> orgUserMap =
     //     _oktaRepo.getAllUsersWithDetailsForOrganization(org);
     // return _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserMap.keySet());

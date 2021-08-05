@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
+import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
@@ -20,9 +21,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import com.okta.sdk.resource.user.UserStatus;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -153,8 +151,7 @@ public class DemoOktaRepository implements OktaRepository {
   public UserStatus getUserStatus(String username) {
     if (inactiveUsernames.contains(username)) {
       return UserStatus.DEPROVISIONED;
-    }
-    else {
+    } else {
       return UserStatus.ACTIVE;
     }
   }
