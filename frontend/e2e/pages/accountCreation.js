@@ -20,10 +20,8 @@ function setSecurityQuestion() {
   this.section.app.expect.element("@securityQuestionInput").to.be.visible;
   this.section.app.expect.element("@securityAnswerInput").to.be.visible;
   this.section.app.expect.element("@submitButton").to.be.visible;
-  this.section.app.setValue(
-    "@securityQuestionInput",
-    "What’s the first name of your best friend from high school?"
-  );
+  this.section.app.click("@securityQuestionInput");
+  this.section.app.click("@firstSecurityQuestionOption");
   this.section.app.setValue("@securityAnswerInput", "Jane Doe");
   this.section.app.click("@submitButton");
   this.expect
@@ -99,6 +97,8 @@ module.exports = {
         passConfInput: 'input[name="confirm-password"]',
         submitButton: "button.usa-button",
         securityQuestionInput: 'select[name="security-question"]',
+        firstSecurityQuestionOption:
+          'select[name="security-question"] option[value="What’s the first name of your best friend from high school?"]',
         securityAnswerInput: 'input[name="answer"]',
         smsMfaRadio: 'input[value="SMS"]+label',
         oktaMfaRadio: 'input[value="Okta"]+label',
