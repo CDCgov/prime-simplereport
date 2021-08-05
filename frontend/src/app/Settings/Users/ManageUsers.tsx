@@ -11,6 +11,7 @@ import {
   displayFullName,
 } from "../../utils";
 import { Role } from "../../permissions";
+import reload from "../../utils/reload";
 
 import CreateUserModal from "./CreateUserModal";
 import DeleteUserModal from "./DeleteUserModal";
@@ -285,12 +286,10 @@ const ManageUsers: React.FC<Props> = ({
         userWithPermissions?.lastName
       );
       updateShowReactivateUserModal(false);
+      reload();
       showNotification(
         toast,
-        <Alert
-          type="success"
-          title={`${fullName} has recieved a new activation email.`}
-        />
+        <Alert type="success" title={`${fullName} has been reactivated.`} />
       );
     } catch (e) {
       setError(e);

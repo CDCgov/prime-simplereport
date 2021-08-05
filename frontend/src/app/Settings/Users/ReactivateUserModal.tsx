@@ -48,18 +48,22 @@ const ReactivateUserModal: React.FC<Props> = ({
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
         <div className="grid-row grid-gap">
           <p>
-            This user is not currently active. They will not be able to access
-            SimpleReport until they're reactivated. Are you sure you want to
-            reactivate{" "}
+            This user has been suspended for inactivity. They will not be able
+            to sign in to SimpleReport until they're reactivated. Are you sure
+            you want to reactivate{" "}
             <strong>
               {displayFullName(user.firstName, user.middleName, user.lastName)}
             </strong>
             ?
           </p>
           <p>
-            {" "}
-            Reactivating {user.firstName} will send them a new invitation to
-            SimpleReport. They'll also have to reset their password.
+            <strong>
+              {" "}
+              WARNING: {user.firstName} must sign in to SimpleReport within 24
+              hours.
+            </strong>
+            If they don't sign in within one day, their account will be
+            re-suspended.
           </p>
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
