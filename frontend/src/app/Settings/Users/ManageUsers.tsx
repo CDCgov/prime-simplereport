@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Prompt } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useLazyQuery } from "@apollo/client";
+
 import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button/Button";
 import {
@@ -10,6 +11,7 @@ import {
   displayFullName,
 } from "../../utils";
 import { Role } from "../../permissions";
+
 import CreateUserModal from "./CreateUserModal";
 import DeleteUserModal from "./DeleteUserModal";
 import InProgressModal from "./InProgressModal";
