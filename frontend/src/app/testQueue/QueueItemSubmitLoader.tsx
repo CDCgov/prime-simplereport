@@ -11,7 +11,6 @@ type Props = {
 
 export const QueueItemSubmitLoader = ({ name, show }: Props) => {
   const classnames = classNames(
-    !show && "display-none",
     "sr-queue-item-submit-loader",
     "z-top",
     "position-absolute",
