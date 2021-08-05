@@ -203,7 +203,7 @@ export const es: LanguageConfig = {
       },
       confirmation: {
         registered:
-          "<0>{{personName}}</0>, gracias por completar su perfil de paciente en {{nombre del centro de pruebas}}.",
+          "<0>{{personName}}</0>, gracias por completar su perfil de paciente en {{entityName}}.",
         checkIn:
           "Cuando llegue para su examen, regístrese dando su nombre y apellido.",
       },
