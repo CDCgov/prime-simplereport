@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.okta.sdk.resource.user.UserStatus;
+
 /**
  * Created by jeremyzitomer-usds on 1/7/21
  *
@@ -31,6 +33,10 @@ public interface OktaRepository {
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles);
 
   void setUserIsActive(String username, Boolean active);
+
+  void reactivateUser(String username);
+
+  UserStatus getUserStatus(String username);
 
   Map<String, OktaUserDetail> getAllUsersWithDetailsForOrganization(Organization org);
 

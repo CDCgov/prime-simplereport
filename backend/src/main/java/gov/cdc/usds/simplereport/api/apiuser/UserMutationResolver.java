@@ -79,6 +79,16 @@ public class UserMutationResolver implements GraphQLMutationResolver {
     return new User(user);
   }
 
+  public User reactivateUser(UUID id) {
+    UserInfo user = _us.reactivateUser(id);
+    return new User(user);
+  }
+  
+  // we need to somehow return the user status on getUser requests
+  // probably need to somehow make it a part of the apiUser??
+  // problem is that status is being route through the Okta repo and our api users aren't
+  // one thought - we don't need the status for all users, just whatever user is currently being retrieved
+
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public User setCurrentUserTenantDataAccess(String organizationExternalID, String justification) {
     UserInfo user =

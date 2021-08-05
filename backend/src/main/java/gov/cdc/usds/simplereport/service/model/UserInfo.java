@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.okta.sdk.resource.user.UserStatus;
+
 public class UserInfo extends WrappedEntity<ApiUser> implements DatabaseEntity, PersonEntity {
 
   private Optional<Organization> org;
@@ -22,6 +24,7 @@ public class UserInfo extends WrappedEntity<ApiUser> implements DatabaseEntity, 
   private List<UserPermission> permissions;
   private List<OrganizationRole> roles;
   private List<Facility> facilities;
+  private UserStatus status;
 
   public UserInfo(ApiUser user, Optional<OrganizationRoles> orgwrapper, boolean isAdmin) {
     super(user);
@@ -35,6 +38,21 @@ public class UserInfo extends WrappedEntity<ApiUser> implements DatabaseEntity, 
         orgwrapper.map(OrganizationRoles::getFacilities).orElse(Set.of()).stream()
             .collect(Collectors.toList());
     this.isAdmin = isAdmin;
+  }
+
+  public UserInfo(ApiUser user, Optional<OrganizationRoles> orgwrapper, boolean isAdmin, UserStatus status) {
+    super(user);
+    this.org = orgwrapper.map(OrganizationRoles::getOrganization);
+    this.permissions = new ArrayList<>();
+    this.roles =
+        orgwrapper.map(OrganizationRoles::getGrantedRoles).orElse(Set.of()).stream()
+            .collect(Collectors.toList());
+    orgwrapper.map(OrganizationRoles::getGrantedPermissions).ifPresent(permissions::addAll);
+    this.facilities =
+        orgwrapper.map(OrganizationRoles::getFacilities).orElse(Set.of()).stream()
+            .collect(Collectors.toList());
+    this.isAdmin = isAdmin;
+    this.status = status;
   }
 
   @Override
@@ -70,5 +88,9 @@ public class UserInfo extends WrappedEntity<ApiUser> implements DatabaseEntity, 
 
   public List<Facility> getFacilities() {
     return facilities;
+  }
+
+  public UserStatus getUserStatus() {
+    return status;
   }
 }

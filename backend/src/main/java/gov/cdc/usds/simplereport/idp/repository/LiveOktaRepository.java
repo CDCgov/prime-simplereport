@@ -361,6 +361,28 @@ public class LiveOktaRepository implements OktaRepository {
     }
   }
 
+  public UserStatus getUserStatus(String username) {
+    UserList users = _client.listUsers(username, null, null, null, null);
+    if (users.stream().count() == 0) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot retrieve Okta user with unrecognized username");
+    }
+    User user = users.single();
+    return user.getStatus(); 
+  }
+
+  public void reactivateUser(String username) {
+    UserList users = _client.listUsers(username, null, null, null, null);
+    if (users.stream().count() == 0) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot reactivate Okta user with unrecognized username");
+    }
+    User user = users.single();
+    // I'm not sure if this activation email pulls from the activation email set in our Okta dashboard.
+    // if it doesn't, we may need to manually send the activation token to the frontend?
+    user.activate(true);
+  }
+
   /**
    * Iterates over all OrganizationRole's, creating new corresponding Okta groups for this
    * organization where they do not already exist. For those OrganizationRole's that are in

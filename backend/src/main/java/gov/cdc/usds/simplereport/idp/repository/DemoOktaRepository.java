@@ -20,6 +20,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import com.okta.sdk.resource.user.UserStatus;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -144,6 +147,21 @@ public class DemoOktaRepository implements OktaRepository {
       inactiveUsernames.remove(username);
     } else if (!active) {
       inactiveUsernames.add(username);
+    }
+  }
+
+  public UserStatus getUserStatus(String username) {
+    if (inactiveUsernames.contains(username)) {
+      return UserStatus.DEPROVISIONED;
+    }
+    else {
+      return UserStatus.ACTIVE;
+    }
+  }
+
+  public void reactivateUser(String username) {
+    if (inactiveUsernames.contains(username)) {
+      inactiveUsernames.remove(username);
     }
   }
 

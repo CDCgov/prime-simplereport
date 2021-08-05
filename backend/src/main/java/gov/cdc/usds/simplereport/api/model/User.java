@@ -7,6 +7,8 @@ import gov.cdc.usds.simplereport.service.model.WrappedEntity;
 import java.util.List;
 import java.util.Optional;
 
+import com.okta.sdk.resource.user.UserStatus;
+
 public class User extends WrappedEntity<UserInfo> implements PersonWrapper<UserInfo> {
 
   public User(UserInfo user) {
@@ -52,5 +54,9 @@ public class User extends WrappedEntity<UserInfo> implements PersonWrapper<UserI
 
   public Optional<Role> getRole() {
     return Role.fromOrganizationRoles(wrapped.getRoles());
+  }
+
+  public UserStatus getStatus() {
+    return wrapped.getUserStatus();
   }
 }

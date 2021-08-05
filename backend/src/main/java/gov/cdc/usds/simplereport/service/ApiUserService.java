@@ -33,6 +33,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import com.okta.sdk.resource.user.UserStatus;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -205,10 +208,27 @@ public class ApiUserService {
     return new UserInfo(apiUser, Optional.empty(), isAdmin(apiUser));
   }
 
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
+  public UserInfo reactivateUser(UUID userId) {
+    ApiUser apiUser = getApiUser(userId);
+    String username = apiUser.getLoginEmail();
+    _oktaRepo.reactivateUser(username);
+    OrganizationRoleClaims orgClaims =
+        _oktaRepo
+            .getOrganizationRoleClaimsForUser(username)
+            .orElseThrow(MisconfiguredUserException::new);
+    Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
+    OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
+    UserInfo user = new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
+    return user;
+  }
+
   private ApiUser getApiUser(UUID id) {
+    System.out.println("IN GETAPIUSER");
     return getApiUser(id, false);
   }
 
+  // this seems like potentially the place to add user status?
   private ApiUser getApiUser(UUID id, Boolean includeArchived) {
     Optional<ApiUser> found =
         includeArchived ? _apiUserRepo.findByIdIncludeArchived(id) : _apiUserRepo.findById(id);
@@ -397,19 +417,24 @@ public class ApiUserService {
   @AuthorizationConfiguration.RequirePermissionManageUsers
   public List<ApiUser> getUsersInCurrentOrg() {
     Organization org = _orgService.getCurrentOrganization();
-    //    final Set<String> orgUserEmails = _oktaRepo.getAllUsersForOrganization(org);
-    final Map<String, OktaUserDetail> orgUserMap =
-        _oktaRepo.getAllUsersWithDetailsForOrganization(org);
-    return _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserMap.keySet());
+       final Set<String> orgUserEmails = _oktaRepo.getAllUsersForOrganization(org);
+       return _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserEmails);
+    // final Map<String, OktaUserDetail> orgUserMap =
+    //     _oktaRepo.getAllUsersWithDetailsForOrganization(org);
+    // return _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserMap.keySet());
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
   public UserInfo getUser(final UUID userId) {
+    System.out.println("FETCHING USER");
+    // this is the call that we need to muck around with
     final Optional<ApiUser> optApiUser = _apiUserRepo.findById(userId);
     if (optApiUser.isEmpty()) {
       throw new UnidentifiedUserException();
     }
     final ApiUser apiUser = optApiUser.get();
+
+    UserStatus status = _oktaRepo.getUserStatus(apiUser.getLoginEmail());
 
     Optional<OrganizationRoleClaims> optClaims =
         _oktaRepo.getOrganizationRoleClaimsForUser(apiUser.getLoginEmail());
@@ -435,7 +460,7 @@ public class ApiUserService {
                 .collect(Collectors.toSet());
     OrganizationRoles orgRoles =
         new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
-    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
+    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser), status);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
