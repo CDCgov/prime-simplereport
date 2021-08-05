@@ -150,11 +150,10 @@ public class LiveExperianService
 
       // if experian responds with ACCEPT, we will consider the id verification successful
       boolean passed = SUCCESS_DECISION.equals(decision);
-      if (!passed) {
-        // Generate a searchable log message so we can monitor non-ACCEPT decisions from Experian
-        String requestData = _objectMapper.writeValueAsString(answersRequest);
-        LOG.info("EXPERIAN_DECISION ({}): {}", decision, requestData);
-      }
+
+      // Generate a searchable log message so we can monitor decisions from Experian
+      String requestData = _objectMapper.writeValueAsString(answersRequest);
+      LOG.info("EXPERIAN_DECISION ({}): {}", decision, requestData);
 
       return new IdentityVerificationAnswersResponse(passed);
     } catch (RestClientException | JsonProcessingException e) {

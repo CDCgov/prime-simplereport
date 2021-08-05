@@ -55,7 +55,7 @@ public class IdentityVerificationController {
 
   @PostConstruct
   private void init() {
-    LOG.info("WIP: Identity verification REST endpoint enabled.");
+    LOG.info("Identity verification REST endpoint enabled.");
   }
 
   @ExceptionHandler(BadRequestException.class)

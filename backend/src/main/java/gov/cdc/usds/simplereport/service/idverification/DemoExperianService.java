@@ -30,6 +30,8 @@ public class DemoExperianService implements ExperianService {
   private static final ObjectMapper _objectMapper = new ObjectMapper();
   private static final List<Integer> EXPECTED_ANSWERS = Arrays.asList(1, 4, 2, 1);
   private static final String USER_EMAIL_NOT_FOUND = "notfound@example.com";
+  private static final String USER_EMAIL_GENERATE_REST_EXCEPTION = "rest.exception@example.com";
+  private static final String SESSION_ID_GENERATE_REST_EXCEPTION = "GENERATE_REST_EXCEPTION";
 
   private final Set<UUID> sessionIdSet;
 
@@ -42,6 +44,8 @@ public class DemoExperianService implements ExperianService {
     try {
       if (USER_EMAIL_NOT_FOUND.equals(userData.getEmail())) {
         throw new ExperianPersonMatchException("No questions returned due to consumer not found");
+      } else if (USER_EMAIL_GENERATE_REST_EXCEPTION.equals(userData.getEmail())) {
+        throw new RestClientException("Fake RestException");
       }
 
       createInitialRequestBody(
@@ -69,6 +73,10 @@ public class DemoExperianService implements ExperianService {
   public IdentityVerificationAnswersResponse submitAnswers(
       IdentityVerificationAnswersRequest answersRequest) {
     try {
+      if (SESSION_ID_GENERATE_REST_EXCEPTION.equals(answersRequest.getSessionId())) {
+        throw new RestClientException("Fake RestException");
+      }
+
       createSubmitAnswersRequestBody(
           "fakeSubcode",
           "fakeUsername",
@@ -87,7 +95,7 @@ public class DemoExperianService implements ExperianService {
       }
 
       return new IdentityVerificationAnswersResponse(passed);
-    } catch (JsonProcessingException e) {
+    } catch (RestClientException | JsonProcessingException e) {
       throw new ExperianSubmitAnswersException("Answers could not be validated by Experian", e);
     }
   }
