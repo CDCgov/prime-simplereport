@@ -375,35 +375,29 @@ const ManageUsers: React.FC<Props> = ({
               onChangeActiveUser={onChangeActiveUser}
             />
             <div className="tablet:grid-col padding-left-2">
-              <div className="user-header grid-row flex-row flex-align-center">
-                <div className="display-flex flex-column flex-justify">
-                  {/* <div className="grid-col"> */}
-                  <h2 className="display-inline-block margin-y-1">
-                    {displayFullNameInOrder(
-                      activeUser.firstName,
-                      activeUser.middleName,
-                      activeUser.lastName
-                    )}
-                  </h2>
-                  {/* </div> */}
-                  {activeUser?.id === loggedInUser.id ? (
-                    <span className="usa-tag margin-left-1 bg-base-lighter text-ink">
-                      YOU
-                    </span>
-                  ) : null}
-                  {/* <div className="grid-col flex-align-self-end"> */}
-                  {process.env.REACT_APP_EDIT_USER_ROLE === "true" &&
-                  user.status === "SUSPENDED" ? (
-                    <Button
-                      variant="secondary"
-                      className="flex-align-self-start display-inline-block"
-                      onClick={() => updateShowReactivateUserModal(true)}
-                      label="Reactivate user"
-                      disabled={isUpdating}
-                    />
-                  ) : null}
-                  {/* </div> */}
-                </div>
+              <div className="user-header grid-row flex-row flex-justify">
+                <h2 className="flex-align-self-center">
+                  {displayFullNameInOrder(
+                    activeUser.firstName,
+                    activeUser.middleName,
+                    activeUser.lastName
+                  )}
+                </h2>
+                {activeUser?.id === loggedInUser.id ? (
+                  <span className="usa-tag margin-left-1 bg-base-lighter text-ink">
+                    YOU
+                  </span>
+                ) : null}
+                {process.env.REACT_APP_EDIT_USER_ROLE === "true" &&
+                user.status === "SUSPENDED" ? (
+                  <Button
+                    variant="secondary"
+                    className="margin-1"
+                    onClick={() => updateShowReactivateUserModal(true)}
+                    label="Reactivate user"
+                    disabled={isUpdating}
+                  />
+                ) : null}
               </div>
               <div className="user-content">
                 <p className="text-base">
