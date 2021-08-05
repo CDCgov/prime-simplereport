@@ -235,7 +235,7 @@ public class OrganizationService {
   }
 
   @Transactional(readOnly = false)
-  public Organization createOrganization(
+  public Organization createOrganizationAndFacility(
       String name,
       String type,
       String externalId,
@@ -250,8 +250,7 @@ public class OrganizationService {
       String providerTelephone,
       String providerNPI) {
     // for now, all new organizations have identity_verified = false by default
-    Organization org = _repo.save(new Organization(name, type, externalId, false));
-    _oktaRepo.createOrganization(org);
+    Organization org = createOrganization(name, type, externalId);
     createFacilityNoPermissions(
         org,
         testingFacilityName,
@@ -264,6 +263,14 @@ public class OrganizationService {
         providerAddress,
         providerTelephone,
         providerNPI);
+    return org;
+  }
+
+  @Transactional(readOnly = false)
+  public Organization createOrganization(String name, String type, String externalId) {
+    // for now, all new organizations have identity_verified = false by default
+    Organization org = _repo.save(new Organization(name, type, externalId, false));
+    _oktaRepo.createOrganization(org);
     _psrlService.createRegistrationLink(org);
     return org;
   }
