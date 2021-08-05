@@ -11,7 +11,9 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAn
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAnswersResponse;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsResponse;
+import gov.cdc.usds.simplereport.service.errors.ExperianGetQuestionsException;
 import gov.cdc.usds.simplereport.service.errors.ExperianPersonMatchException;
+import gov.cdc.usds.simplereport.service.errors.ExperianSubmitAnswersException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +30,8 @@ public class DemoExperianService implements ExperianService {
   private static final ObjectMapper _objectMapper = new ObjectMapper();
   private static final List<Integer> EXPECTED_ANSWERS = Arrays.asList(1, 4, 2, 1);
   private static final String USER_EMAIL_NOT_FOUND = "notfound@example.com";
+  private static final String USER_EMAIL_GENERATE_REST_EXCEPTION = "rest.exception@example.com";
+  private static final String SESSION_ID_GENERATE_REST_EXCEPTION = "GENERATE_REST_EXCEPTION";
 
   private final Set<UUID> sessionIdSet;
 
@@ -40,6 +44,8 @@ public class DemoExperianService implements ExperianService {
     try {
       if (USER_EMAIL_NOT_FOUND.equals(userData.getEmail())) {
         throw new ExperianPersonMatchException("No questions returned due to consumer not found");
+      } else if (USER_EMAIL_GENERATE_REST_EXCEPTION.equals(userData.getEmail())) {
+        throw new RestClientException("Fake RestException");
       }
 
       createInitialRequestBody(
@@ -60,13 +66,17 @@ public class DemoExperianService implements ExperianService {
 
       return new IdentityVerificationQuestionsResponse(sessionId.toString(), response);
     } catch (RestClientException | NullPointerException | JsonProcessingException e) {
-      throw new IllegalStateException("Questions could not be retrieved from Experian: ", e);
+      throw new ExperianGetQuestionsException("Questions could not be retrieved from Experian", e);
     }
   }
 
   public IdentityVerificationAnswersResponse submitAnswers(
       IdentityVerificationAnswersRequest answersRequest) {
     try {
+      if (SESSION_ID_GENERATE_REST_EXCEPTION.equals(answersRequest.getSessionId())) {
+        throw new RestClientException("Fake RestException");
+      }
+
       createSubmitAnswersRequestBody(
           "fakeSubcode",
           "fakeUsername",
@@ -85,8 +95,8 @@ public class DemoExperianService implements ExperianService {
       }
 
       return new IdentityVerificationAnswersResponse(passed);
-    } catch (JsonProcessingException e) {
-      throw new IllegalStateException("Answers could not be validated by Experian: ", e);
+    } catch (RestClientException | JsonProcessingException e) {
+      throw new ExperianSubmitAnswersException("Answers could not be validated by Experian", e);
     }
   }
 
