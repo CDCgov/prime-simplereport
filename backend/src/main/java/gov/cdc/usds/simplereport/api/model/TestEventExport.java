@@ -476,4 +476,9 @@ public class TestEventExport {
     // order_test_date = test_date for antigen testing
     return getTestDate();
   }
+
+  @JsonProperty("Site_of_care")
+  public String getSiteOfCare() {
+    return testEvent.getOrganization().getOrganizationType();
+  }
 }
