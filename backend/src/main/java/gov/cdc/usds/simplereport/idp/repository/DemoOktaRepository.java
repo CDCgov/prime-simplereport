@@ -162,10 +162,6 @@ public class DemoOktaRepository implements OktaRepository {
     }
   }
 
-  public Map<String, OktaUserDetail> getAllUsersWithDetailsForOrganization(Organization org) {
-    return new HashMap<>();
-  }
-
   public Set<String> getAllUsersForOrganization(Organization org) {
     if (!orgUsernamesMap.containsKey(org.getExternalId())) {
       throw new IllegalGraphqlArgumentException(

@@ -191,7 +191,7 @@ public class LiveOktaRepository implements OktaRepository {
     return Optional.of(claims.get(0));
   }
 
-  public Map<String, OktaUserDetail> getAllUsersWithDetailsForOrganization(Organization org) {
+  public Set<String> getAllUsersForOrganization(Organization org) {
     final String orgDefaultGroupName =
         generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
     final GroupList oktaGroupList =
@@ -207,11 +207,8 @@ public class LiveOktaRepository implements OktaRepository {
                         "Okta group not found for this organization"));
 
     return orgDefaultOktaGroup.listUsers().stream()
-        .collect(Collectors.toUnmodifiableMap(u -> u.getProfile().getEmail(), OktaUserDetail::new));
-  }
-
-  public Set<String> getAllUsersForOrganization(Organization org) {
-    return getAllUsersWithDetailsForOrganization(org).keySet();
+        .map(u -> u.getProfile().getEmail())
+        .collect(Collectors.toUnmodifiableSet());
   }
 
   public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {
@@ -365,7 +362,7 @@ public class LiveOktaRepository implements OktaRepository {
     UserList users = _client.listUsers(username, null, null, null, null);
     if (users.stream().count() == 0) {
       throw new IllegalGraphqlArgumentException(
-          "Cannot retrieve Okta user with unrecognized username");
+          "Cannot retrieve Okta user's status with unrecognized username");
     }
     User user = users.single();
     return user.getStatus();
@@ -378,10 +375,7 @@ public class LiveOktaRepository implements OktaRepository {
           "Cannot reactivate Okta user with unrecognized username");
     }
     User user = users.single();
-    // I'm not sure if this activation email pulls from the activation email set in our Okta
-    // dashboard.
-    // if it doesn't, we may need to manually send the activation token to the frontend?
-    user.activate(true);
+    user.unsuspend();
   }
 
   /**

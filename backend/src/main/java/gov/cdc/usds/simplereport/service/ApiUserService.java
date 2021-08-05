@@ -221,11 +221,9 @@ public class ApiUserService {
   }
 
   private ApiUser getApiUser(UUID id) {
-    System.out.println("IN GETAPIUSER");
     return getApiUser(id, false);
   }
 
-  // this seems like potentially the place to add user status?
   private ApiUser getApiUser(UUID id, Boolean includeArchived) {
     Optional<ApiUser> found =
         includeArchived ? _apiUserRepo.findByIdIncludeArchived(id) : _apiUserRepo.findById(id);
@@ -416,15 +414,10 @@ public class ApiUserService {
     Organization org = _orgService.getCurrentOrganization();
     final Set<String> orgUserEmails = _oktaRepo.getAllUsersForOrganization(org);
     return _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserEmails);
-    // final Map<String, OktaUserDetail> orgUserMap =
-    //     _oktaRepo.getAllUsersWithDetailsForOrganization(org);
-    // return _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserMap.keySet());
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
   public UserInfo getUser(final UUID userId) {
-    System.out.println("FETCHING USER");
-    // this is the call that we need to muck around with
     final Optional<ApiUser> optApiUser = _apiUserRepo.findById(userId);
     if (optApiUser.isEmpty()) {
       throw new UnidentifiedUserException();
