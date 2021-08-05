@@ -218,7 +218,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         Translators.consolidateNameArguments(
             adminName, adminFirstName, adminMiddleName, adminLastName, adminSuffix);
     Organization org =
-        _os.createOrganization(
+        _os.createOrganizationAndFacility(
             name,
             Translators.parseOrganizationType(type),
             externalId,
