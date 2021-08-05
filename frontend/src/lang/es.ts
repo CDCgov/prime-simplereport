@@ -76,6 +76,7 @@ export const es: LanguageConfig = {
       button: {
         submit: "Enviar",
         save: "Guardar cambios",
+        saving: "Guardando",
       },
       pageNotFound: {
         heading: "Página no encontrada",

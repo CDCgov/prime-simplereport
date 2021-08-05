@@ -187,7 +187,9 @@ const AddPatient = () => {
                   disabled={loading || !formChanged}
                   onClick={onSave}
                 >
-                  {loading ? "Saving..." : t("common.button.save")}
+                  {loading
+                    ? `${t("common.button.saving")}...`
+                    : t("common.button.save")}
                 </button>
               </div>
             </div>
@@ -199,7 +201,11 @@ const AddPatient = () => {
                 className="prime-save-patient-changes"
                 disabled={loading || !formChanged}
                 onClick={onSave}
-                label={loading ? "Saving..." : t("common.button.save")}
+                label={
+                  loading
+                    ? `${t("common.button.saving")}...`
+                    : t("common.button.save")
+                }
               />
             </div>
           )}

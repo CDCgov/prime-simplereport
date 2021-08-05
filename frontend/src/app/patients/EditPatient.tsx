@@ -246,7 +246,7 @@ const EditPatient = (props: Props) => {
                       onClick={onSave}
                     >
                       {editPersonLoading
-                        ? "Saving..."
+                        ? `${t("common.button.saving")}...`
                         : t("common.button.save")}
                     </button>
                   </div>
@@ -260,7 +260,9 @@ const EditPatient = (props: Props) => {
                     disabled={editPersonLoading || !formChanged}
                     onClick={onSave}
                     label={
-                      editPersonLoading ? "Saving..." : t("common.button.save")
+                      editPersonLoading
+                        ? `${t("common.button.saving")}...`
+                        : t("common.button.save")
                     }
                   />
                 </div>

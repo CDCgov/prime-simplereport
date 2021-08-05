@@ -70,6 +70,7 @@ export const en = {
       button: {
         submit: "Submit",
         save: "Save changes",
+        saving: "Saving",
       },
       pageNotFound: {
         heading: "Page not found",
