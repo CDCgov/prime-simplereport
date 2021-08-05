@@ -1,9 +1,12 @@
 name: Deploy Training
 
 on:
-  workflow_dispatch:
-  release:
-    types: [released]
+  workflow_run:
+    workflows: ["Deploy Dev,", "Deploy Stg"]
+    branches:
+      - main
+    types:
+      - completed
 
 env:
   DEPLOY_ENV: training
@@ -13,6 +16,7 @@ concurrency:
 
 jobs:
   verify-lower-envs-are-released:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -28,6 +32,7 @@ jobs:
             CURL_TIMEOUT: 5
         run: make check-dev-commit check-dev-readiness
   build-docker:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -41,6 +46,7 @@ jobs:
       - name: Build and push Docker images
         run: ./build_and_push.sh
   prerelease-backend:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     needs: [build-docker, verify-lower-envs-are-released]
     defaults:
@@ -67,6 +73,7 @@ jobs:
         timeout-minutes: 1
         run: make wait-for-${{ env.DEPLOY_ENV }}-slot-readiness
   build-frontend:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     needs: [verify-lower-envs-are-released]
     steps:
@@ -98,6 +105,7 @@ jobs:
           path: client.tgz
           retention-days: 1
   deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     environment:
       name: Training
