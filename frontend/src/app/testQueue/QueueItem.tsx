@@ -612,9 +612,10 @@ const QueueItem: any = ({
   return (
     <React.Fragment>
       <div className={containerClasses}>
-        {saveState === "saving" && (
-          <QueueItemSubmitLoader name={patientFullName} />
-        )}
+        <QueueItemSubmitLoader
+          show={saveState === "saving"}
+          name={patientFullName}
+        />
         <div className="prime-card-container">
           {saveState !== "saving" && closeButton}
           <div className="grid-row">

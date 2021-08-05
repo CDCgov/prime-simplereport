@@ -137,11 +137,7 @@ describe("QueueItem", () => {
 
       // Submit
       await waitFor(() => {
-        fireEvent.click(
-          screen.getByText("Submit", {
-            exact: false,
-          })
-        );
+        fireEvent.click(screen.getByText("Submit"));
       });
 
       await waitFor(() => {
