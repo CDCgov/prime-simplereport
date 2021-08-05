@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountResponse;
 import gov.cdc.usds.simplereport.api.model.accountrequest.WaitlistRequest;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -259,7 +260,7 @@ public class AccountRequestController {
 
     return _os.createOrganization(
         reqVars.get("organizationName"),
-        Translators.parseOrganizationTypeFromName(reqVars.get("organizationType")),
+        getOrganizationTypeFromLabelOrValue(reqVars.get("organizationType")),
         orgExternalId,
         reqVars.get("facilityName"),
         reqVars.get("cliaNumber"),
@@ -278,5 +279,16 @@ public class AccountRequestController {
         Translators.consolidateNameArguments(
             null, reqVars.get("firstName"), null, reqVars.get("lastName"), null);
     _aus.createUser(reqVars.get("email"), adminName, org.getExternalId(), Role.ADMIN);
+  }
+
+  // This is for temporary compatibility so the request can contain either the type label (old way)
+  // or the type name (new way).  Once the request is updated, then we only need to validate the
+  // type with `parseOrganizationType`
+  private String getOrganizationTypeFromLabelOrValue(String labelOrValue) {
+    try {
+      return Translators.parseOrganizationTypeFromName(labelOrValue);
+    } catch (IllegalGraphqlArgumentException e) {
+      return Translators.parseOrganizationType(labelOrValue);
+    }
   }
 }
