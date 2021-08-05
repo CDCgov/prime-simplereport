@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM_CAP } from "../../config/constants";
@@ -124,6 +125,9 @@ interface EditPatientResponse {
 
 const EditPatient = (props: Props) => {
   useDocumentTitle("Edit Patient");
+
+  const { t } = useTranslation();
+
   const { data, loading, error } = useQuery(GET_PATIENT, {
     variables: { id: props.patientId || "" },
     fetchPolicy: "no-cache",
@@ -241,7 +245,9 @@ const EditPatient = (props: Props) => {
                       disabled={editPersonLoading || !formChanged}
                       onClick={onSave}
                     >
-                      {editPersonLoading ? "Saving..." : "Save changes"}
+                      {editPersonLoading
+                        ? `${t("common.button.saving")}...`
+                        : t("common.button.save")}
                     </button>
                   </div>
                 </div>
@@ -253,7 +259,11 @@ const EditPatient = (props: Props) => {
                     className="prime-save-patient-changes"
                     disabled={editPersonLoading || !formChanged}
                     onClick={onSave}
-                    label={editPersonLoading ? "Saving..." : "Save changes"}
+                    label={
+                      editPersonLoading
+                        ? `${t("common.button.saving")}...`
+                        : t("common.button.save")
+                    }
                   />
                 </div>
               )}

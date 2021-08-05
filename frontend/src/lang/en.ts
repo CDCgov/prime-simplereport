@@ -69,6 +69,8 @@ export const en = {
       defaultDropdownOption: "- Select -",
       button: {
         submit: "Submit",
+        save: "Save changes",
+        saving: "Saving",
       },
       pageNotFound: {
         heading: "Page not found",
@@ -194,7 +196,7 @@ export const en = {
         registered:
           "<0>{{personName}}</0>, thanks for completing your patient profile at {{entityName}}.",
         checkIn:
-          "When you arrive for your test, check in by providing your first and last name.",
+          "When you arrive for your test, check in by giving your first and last name.",
       },
     },
     testResult: {
@@ -480,9 +482,10 @@ export const en = {
           "Enter your date of birth to access your COVID-19 Testing Portal.",
         format: "MM/DD/YYYY or MMDDYYYY",
         error:
-          "No patient link with the supplied ID was found, or the birth date provided was incorrect.",
+          "Test result not found, or the birth date provided is incorrect.",
         validating: "Validating birth date...",
-        linkExpired: "This link has expired. Please contact your provider.",
+        linkExpired:
+          "This link has expired. Please contact your test provider.",
         submit: "Continue",
       },
     },
