@@ -54,7 +54,7 @@ exports[`TestQueue should render the test queue 1`] = `
       >
         <div
           aria-hidden="true"
-          class="display-none sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center radius-lg"
+          class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center radius-lg"
         >
           <h4
             class="margin-top-6 margin-bottom-5"
@@ -372,7 +372,7 @@ exports[`TestQueue should render the test queue 1`] = `
       >
         <div
           aria-hidden="true"
-          class="display-none sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center radius-lg"
+          class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center radius-lg"
         >
           <h4
             class="margin-top-6 margin-bottom-5"
