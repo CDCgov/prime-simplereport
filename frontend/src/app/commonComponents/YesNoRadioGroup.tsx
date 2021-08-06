@@ -1,5 +1,4 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 
 import { useTranslatedConstants } from "../constants";
 
@@ -28,8 +27,7 @@ const YesNoRadioGroup: React.FC<Props> = ({
   errorMessage,
   required,
 }) => {
-  const { t } = useTranslation();
-  const { YES_NO_UNKNOWN_VALUES: values } = useTranslatedConstants(t);
+  const { YES_NO_UNKNOWN_VALUES: values } = useTranslatedConstants();
 
   return (
     <RadioGroup

@@ -1,4 +1,5 @@
 import { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
 import { TestResult } from "../testQueue/QueueItem";
 import i18n from "../../i18n";
@@ -716,7 +717,9 @@ export const TEST_RESULT_DELIVERY_PREFERENCE_VALUES = testResultDeliveryPreferen
 );
 export const YES_NO_UNKNOWN_VALUES = yesNoUnkownValues(i18n.t);
 
-export const useTranslatedConstants = (t: TFunction) => {
+export const useTranslatedConstants = () => {
+  const { t } = useTranslation();
+
   return {
     TEST_RESULT_DESCRIPTIONS: testResultDescriptions(t),
     RACE_VALUES: raceValues(t),

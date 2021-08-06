@@ -20,7 +20,7 @@ import {
   personUpdateSchema,
   selfRegistrationSchema,
   PersonUpdateFields,
-  getPersonErrors,
+  usePersonErrors,
 } from "../personSchema";
 import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
 import Input from "../../commonComponents/Input";
@@ -111,7 +111,7 @@ const PersonForm = (props: Props) => {
 
   const { t } = useTranslation();
 
-  const allPersonErrors: Required<PersonErrors> = getPersonErrors(t);
+  const allPersonErrors: Required<PersonErrors> = usePersonErrors();
   const clearError = useCallback(
     (field: keyof PersonErrors) => {
       if (errors[field]) {
@@ -234,7 +234,7 @@ const PersonForm = (props: Props) => {
     ETHNICITY_VALUES,
     GENDER_VALUES,
     ROLE_VALUES,
-  } = useTranslatedConstants(t);
+  } = useTranslatedConstants();
 
   return (
     <>

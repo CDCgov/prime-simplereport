@@ -36,7 +36,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   const {
     PHONE_TYPE_VALUES,
     TEST_RESULT_DELIVERY_PREFERENCE_VALUES,
-  } = useTranslatedConstants(t);
+  } = useTranslatedConstants();
 
   const phoneNumbersOrDefault = useMemo(
     () =>

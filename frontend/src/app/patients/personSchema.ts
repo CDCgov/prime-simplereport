@@ -2,6 +2,7 @@ import * as yup from "yup";
 import { PhoneNumberUtil } from "google-libphonenumber";
 import moment from "moment";
 import { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
 import {
   RACE_VALUES,
@@ -169,7 +170,9 @@ export const selfRegistrationSchema: yup.SchemaOf<SelfRegistationFields> = yup.o
 
 export type PersonErrors = Partial<Record<keyof PersonFormData, string>>;
 
-export const getPersonErrors = (t: TFunction) => {
+export const usePersonErrors = () => {
+  const { t } = useTranslation();
+
   return {
     firstName: t("patient.form.errors.firstName"),
     middleName: t("patient.form.errors.middleName"),
