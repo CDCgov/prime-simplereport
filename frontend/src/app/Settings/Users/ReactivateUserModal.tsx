@@ -62,8 +62,10 @@ const ReactivateUserModal: React.FC<Props> = ({
               WARNING: {user.firstName} must sign in to SimpleReport within 24
               hours.
             </strong>
-            If they don't sign in within one day, their account will be
-            re-suspended.
+            <p>
+              If they don't sign in within one day, their account will be
+              re-suspended.
+            </p>
           </p>
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
