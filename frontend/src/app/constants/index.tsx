@@ -13,19 +13,17 @@ export const COVID_RESULTS: { [key: string]: TestResult } = {
   UNKNOWN: "UNKNOWN",
 };
 
-const testResultDescriptions = (t: TFunction) => {
-  const result: Record<TestResult, string> = {
+const testResultDescriptions = (t: TFunction): Record<TestResult, string> => {
+  return {
     NEGATIVE: i18n.t("constants.testResults.NEGATIVE"),
     POSITIVE: i18n.t("constants.testResults.POSITIVE"),
     UNDETERMINED: i18n.t("constants.testResults.UNDETERMINED"),
     UNKNOWN: i18n.t("constants.testResults.UNKNOWN"),
   };
-
-  return result;
 };
 
-const raceValues = (t: TFunction) => {
-  const result: { value: Race; label: string }[] = [
+const raceValues = (t: TFunction): { value: Race; label: string }[] => {
+  return [
     { value: "native", label: i18n.t("constants.race.native") },
     { value: "asian", label: i18n.t("constants.race.asian") },
     { value: "black", label: i18n.t("constants.race.black") },
@@ -34,23 +32,21 @@ const raceValues = (t: TFunction) => {
     { value: "other", label: i18n.t("constants.race.other") },
     { value: "refused", label: i18n.t("constants.race.refused") },
   ];
-
-  return result;
 };
 
-const roleValues = (t: TFunction) => {
-  const result: { value: Role; label: string }[] = [
+const roleValues = (t: TFunction): { value: Role; label: string }[] => {
+  return [
     { label: i18n.t("constants.role.STAFF"), value: "STAFF" },
     { label: i18n.t("constants.role.RESIDENT"), value: "RESIDENT" },
     { label: i18n.t("constants.role.STUDENT"), value: "STUDENT" },
     { label: i18n.t("constants.role.VISITOR"), value: "VISITOR" },
   ];
-
-  return result;
 };
 
-const ethnicityValues = (t: TFunction) => {
-  const result: { value: Ethnicity; label: string }[] = [
+const ethnicityValues = (
+  t: TFunction
+): { value: Ethnicity; label: string }[] => {
+  return [
     { label: i18n.t("constants.ethnicity.hispanic"), value: "hispanic" },
     {
       label: i18n.t("constants.ethnicity.not_hispanic"),
@@ -58,61 +54,55 @@ const ethnicityValues = (t: TFunction) => {
     },
     { label: i18n.t("constants.ethnicity.refused"), value: "refused" },
   ];
-
-  return result;
 };
 
-const genderValues = (t: TFunction) => {
-  const result: { value: Gender; label: string }[] = [
+const genderValues = (t: TFunction): { value: Gender; label: string }[] => {
+  return [
     { label: i18n.t("constants.gender.female"), value: "female" },
     { label: i18n.t("constants.gender.male"), value: "male" },
     { label: i18n.t("constants.gender.other"), value: "other" },
     { label: i18n.t("constants.gender.refused"), value: "refused" },
   ];
-
-  return result;
 };
 
-const yesNoValues = (t: TFunction) => {
-  const result: { value: YesNo; label: string }[] = [
+const yesNoValues = (t: TFunction): { value: YesNo; label: string }[] => {
+  return [
     { label: i18n.t("constants.yesNoUnk.YES"), value: "YES" },
     { label: i18n.t("constants.yesNoUnk.NO"), value: "NO" },
   ];
-
-  return result;
 };
 
-const phoneTypeValues = (t: TFunction) => {
-  const result: { value: PhoneType; label: string }[] = [
+const phoneTypeValues = (
+  t: TFunction
+): { value: PhoneType; label: string }[] => {
+  return [
     { label: i18n.t("constants.phoneType.MOBILE"), value: "MOBILE" },
     { label: i18n.t("constants.phoneType.LANDLINE"), value: "LANDLINE" },
   ];
-
-  return result;
 };
 
-const testResultDeliveryPreferenceValues = (t: TFunction) => {
-  const result: {
-    value: TestResultDeliveryPreference;
-    label: string;
-  }[] = [
+const testResultDeliveryPreferenceValues = (
+  t: TFunction
+): {
+  value: TestResultDeliveryPreference;
+  label: string;
+}[] => {
+  return [
     { label: i18n.t("constants.yesNoUnk.YES"), value: "SMS" },
     { label: i18n.t("constants.yesNoUnk.NO"), value: "NONE" },
   ];
-
-  return result;
 };
 
-const yesNoUnkownValues = (t: TFunction) => {
-  const result: {
-    value: YesNoUnknown;
-    label: string;
-  }[] = [
+const yesNoUnkownValues = (
+  t: TFunction
+): {
+  value: YesNoUnknown;
+  label: string;
+}[] => {
+  return [
     ...yesNoValues(i18n.t),
     { value: "UNKNOWN", label: i18n.t("constants.yesNoUnk.UNKNOWN") },
   ];
-
-  return result;
 };
 
 const fullTribalAffiliationValueSetMap: { [key: string]: TribalAffiliation } = {
