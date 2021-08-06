@@ -163,6 +163,7 @@ const ADD_FACILITY_MUTATION = gql`
 
 interface Props {
   facilityId: string;
+  newOrg?: boolean;
 }
 
 const FacilityFormContainer: any = (props: Props) => {
@@ -190,6 +191,9 @@ const FacilityFormContainer: any = (props: Props) => {
   }
 
   if (saveSuccess) {
+    if (props.newOrg) {
+      window.location.pathname = "/";
+    }
     return <Redirect push to={{ pathname: "/settings/facilities" }} />;
   }
 
@@ -288,6 +292,7 @@ const FacilityFormContainer: any = (props: Props) => {
       facility={getFacilityData()}
       deviceOptions={data.deviceType}
       saveFacility={saveFacility}
+      newOrg={props.newOrg}
     />
   );
 };

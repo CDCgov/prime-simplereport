@@ -2,6 +2,8 @@ import { createStore } from "redux";
 
 import { COVID_RESULTS } from "../app/constants";
 
+import { UserPermission } from "./permissions";
+
 const SET_INITIAL_STATE = "SET_INITIAL_STATE";
 const UPDATE_ORGANIZATION = "UPDATE_ORGANIZATION";
 const UPDATE_FACILITY = "UPDATE_FACILITY";
@@ -26,7 +28,7 @@ const initialState = {
     lastName: "",
     suffix: "",
     email: "",
-    permissions: [],
+    permissions: [] as UserPermission[],
     roleDescription: "",
     isAdmin: false,
   },
