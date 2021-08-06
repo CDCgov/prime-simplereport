@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.SmsWebhookContextHolder;
 import gov.cdc.usds.simplereport.api.model.Role;
@@ -202,6 +203,21 @@ public class ApiUserService {
     apiUser = _apiUserRepo.save(apiUser);
     _oktaRepo.setUserIsActive(apiUser.getLoginEmail(), !deleted);
     return new UserInfo(apiUser, Optional.empty(), isAdmin(apiUser));
+  }
+
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
+  public UserInfo reactivateUser(UUID userId) {
+    ApiUser apiUser = getApiUser(userId);
+    String username = apiUser.getLoginEmail();
+    _oktaRepo.reactivateUser(username);
+    OrganizationRoleClaims orgClaims =
+        _oktaRepo
+            .getOrganizationRoleClaimsForUser(username)
+            .orElseThrow(MisconfiguredUserException::new);
+    Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
+    OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
+    UserInfo user = new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
+    return user;
   }
 
   private ApiUser getApiUser(UUID id) {
@@ -408,6 +424,8 @@ public class ApiUserService {
     }
     final ApiUser apiUser = optApiUser.get();
 
+    UserStatus status = _oktaRepo.getUserStatus(apiUser.getLoginEmail());
+
     Optional<OrganizationRoleClaims> optClaims =
         _oktaRepo.getOrganizationRoleClaimsForUser(apiUser.getLoginEmail());
     if (optClaims.isEmpty()) {
@@ -432,7 +450,7 @@ public class ApiUserService {
                 .collect(Collectors.toSet());
     OrganizationRoles orgRoles =
         new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
-    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
+    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser), status);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser

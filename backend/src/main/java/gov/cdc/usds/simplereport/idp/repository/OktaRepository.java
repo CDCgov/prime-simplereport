@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
+import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -30,6 +31,10 @@ public interface OktaRepository {
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles);
 
   void setUserIsActive(String username, Boolean active);
+
+  void reactivateUser(String username);
+
+  UserStatus getUserStatus(String username);
 
   Set<String> getAllUsersForOrganization(Organization org);
 
