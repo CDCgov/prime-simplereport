@@ -52,8 +52,11 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -167,13 +170,24 @@ class AccountRequestControllerTest {
     verifyNoInteractions(emailService);
   }
 
+  private static Stream<Arguments> getAccountRequestIsOkParameters() {
+    return Stream.of(
+        // using organization-type labels (old way)
+        Arguments.of(ResourceLinks.ACCOUNT_REQUEST, "Homeless Shelter"),
+        Arguments.of(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE, "Homeless Shelter"),
+        // using organization-type values (new way)
+        Arguments.of(ResourceLinks.ACCOUNT_REQUEST, "shelter"),
+        Arguments.of(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE, "shelter"));
+  }
+
   @ParameterizedTest
-  @ValueSource(
-      strings = {ResourceLinks.ACCOUNT_REQUEST, ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE})
-  void accountRequestIsOk(String resourceLink) throws Exception {
+  @MethodSource("getAccountRequestIsOkParameters")
+  void accountRequestIsOk(String resourceLink, String organizationType) throws Exception {
     // also need to add default devices and other
     String requestBody =
-        "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"email\":\"kyvuzoxy@mailinator.com\",\"work-phone-number\":\"+1 (969) 768-2863\",\"cell-phone-number\":\"+1 (319) 682-3114\",\"street-address1\":\"707 White Milton Extension\",\"street-address2\":\"Apt 3\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"organization-name\":\"Day Hayes Trading\",\"organization-type\":\"Homeless Shelter\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-street-address2\":\"UNAVAILABLE\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Abbott IDNow, BD Veritor, Cue, LumiraDX\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}";
+        String.format(
+            "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"email\":\"kyvuzoxy@mailinator.com\",\"work-phone-number\":\"+1 (969) 768-2863\",\"cell-phone-number\":\"+1 (319) 682-3114\",\"street-address1\":\"707 White Milton Extension\",\"street-address2\":\"Apt 3\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"organization-name\":\"Day Hayes Trading\",\"organization-type\":\"%s\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-street-address2\":\"UNAVAILABLE\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Abbott IDNow, BD Veritor, Cue, LumiraDX\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}",
+            organizationType);
 
     Organization organization = mock(Organization.class);
     ApiUser apiUser = mock(ApiUser.class);

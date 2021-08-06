@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.service.idverification.ExperianTranslato
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAnswersRequest;
@@ -12,8 +13,12 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAn
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsResponse;
 import gov.cdc.usds.simplereport.properties.ExperianProperties;
+import gov.cdc.usds.simplereport.service.errors.ExperianGetQuestionsException;
 import gov.cdc.usds.simplereport.service.errors.ExperianPersonMatchException;
+import gov.cdc.usds.simplereport.service.errors.ExperianSubmitAnswersException;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpEntity;
@@ -28,21 +33,30 @@ import org.springframework.web.client.RestTemplate;
 public class LiveExperianService
     implements gov.cdc.usds.simplereport.service.idverification.ExperianService {
 
+  private static final Logger LOG = LoggerFactory.getLogger(LiveExperianService.class);
+
   private static final String SUCCESS_DECISION = "ACCEPT";
   private static final int KBA_SUCCESS_RESULT_CODE = 0;
 
   private final ExperianProperties _experianProperties;
+  private final ObjectMapper _objectMapper;
+
   private final RestTemplate _restTemplate;
 
   @Autowired
-  public LiveExperianService(final ExperianProperties experianProperties) {
+  public LiveExperianService(
+      final ExperianProperties experianProperties, final ObjectMapper mapper) {
     _experianProperties = experianProperties;
+    _objectMapper = mapper;
     _restTemplate = new RestTemplate();
   }
 
   public LiveExperianService(
-      final ExperianProperties experianProperties, final RestTemplate restTemplate) {
+      final ExperianProperties experianProperties,
+      final ObjectMapper mapper,
+      final RestTemplate restTemplate) {
     _experianProperties = experianProperties;
+    _objectMapper = mapper;
     _restTemplate = restTemplate;
   }
 
@@ -114,7 +128,7 @@ public class LiveExperianService
 
       return new IdentityVerificationQuestionsResponse(sessionId, questionsDataNode);
     } catch (RestClientException | JsonProcessingException e) {
-      throw new IllegalStateException("Questions could not be retrieved from Experian: ", e);
+      throw new ExperianGetQuestionsException("Questions could not be retrieved from Experian", e);
     }
   }
 
@@ -137,9 +151,13 @@ public class LiveExperianService
       // if experian responds with ACCEPT, we will consider the id verification successful
       boolean passed = SUCCESS_DECISION.equals(decision);
 
+      // Generate a searchable log message so we can monitor decisions from Experian
+      String requestData = _objectMapper.writeValueAsString(answersRequest);
+      LOG.info("EXPERIAN_DECISION ({}): {}", decision, requestData);
+
       return new IdentityVerificationAnswersResponse(passed);
     } catch (RestClientException | JsonProcessingException e) {
-      throw new IllegalStateException("Answers could not be validated by Experian: ", e);
+      throw new ExperianSubmitAnswersException("Answers could not be validated by Experian", e);
     }
   }
 
@@ -152,7 +170,7 @@ public class LiveExperianService
         _restTemplate.postForObject(
             _experianProperties.getInitialRequestEndpoint(), entity, ObjectNode.class);
     if (responseBody == null) {
-      throw new RestClientException("A request to experian returned a null response.");
+      throw new RestClientException("A request to Experian returned a null response.");
     }
     return responseBody;
   }

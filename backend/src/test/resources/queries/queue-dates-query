@@ -8,8 +8,5 @@
       symptomOnset
       priorTestDate
       dateTested
-      patientLink {
-        internalId
-      }
     }
 }
