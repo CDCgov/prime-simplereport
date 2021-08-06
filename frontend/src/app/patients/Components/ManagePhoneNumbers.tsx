@@ -2,18 +2,15 @@ import React, { useCallback, useState, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTranslation } from "react-i18next";
 
-import {
-  PHONE_TYPE_VALUES,
-  TEST_RESULT_DELIVERY_PREFERENCE_VALUES,
-} from "../../constants";
 import Button from "../../commonComponents/Button/Button";
 import Input from "../../commonComponents/Input";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import {
+  getAllPhoneNumberErrors,
   PhoneNumberErrors,
-  allPhoneNumberErrors,
   phoneNumberUpdateSchema,
 } from "../personSchema";
+import { useTranslatedConstants } from "../../constants";
 
 interface Props {
   phoneNumbers: PhoneNumber[];
@@ -33,6 +30,13 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   const [errors, setErrors] = useState<PhoneNumberErrors[]>([]);
 
   const { t } = useTranslation();
+
+  const allPhoneNumberErrors = getAllPhoneNumberErrors(t);
+
+  const {
+    PHONE_TYPE_VALUES,
+    TEST_RESULT_DELIVERY_PREFERENCE_VALUES,
+  } = useTranslatedConstants(t);
 
   const phoneNumbersOrDefault = useMemo(
     () =>
@@ -88,7 +92,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
         });
       }
     },
-    [phoneNumbersOrDefault, clearError]
+    [phoneNumbersOrDefault, clearError, allPhoneNumberErrors]
   );
 
   const onPhoneTypeChange = (index: number, newPhoneType: string) => {

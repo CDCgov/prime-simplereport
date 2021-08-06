@@ -1,3 +1,5 @@
+import { TFunction } from "i18next";
+
 import { TestResult } from "../testQueue/QueueItem";
 import i18n from "../../i18n";
 
@@ -11,67 +13,107 @@ export const COVID_RESULTS: { [key: string]: TestResult } = {
   UNKNOWN: "UNKNOWN",
 };
 
-export const TEST_RESULT_DESCRIPTIONS: Record<TestResult, string> = {
-  NEGATIVE: i18n.t("constants.testResults.NEGATIVE"),
-  POSITIVE: i18n.t("constants.testResults.POSITIVE"),
-  UNDETERMINED: i18n.t("constants.testResults.UNDETERMINED"),
-  UNKNOWN: i18n.t("constants.testResults.UNKNOWN"),
+const testResultDescriptions = (t: TFunction) => {
+  const result: Record<TestResult, string> = {
+    NEGATIVE: i18n.t("constants.testResults.NEGATIVE"),
+    POSITIVE: i18n.t("constants.testResults.POSITIVE"),
+    UNDETERMINED: i18n.t("constants.testResults.UNDETERMINED"),
+    UNKNOWN: i18n.t("constants.testResults.UNKNOWN"),
+  };
+
+  return result;
 };
 
-export const RACE_VALUES: { value: Race; label: string }[] = [
-  { value: "native", label: i18n.t("constants.race.native") },
-  { value: "asian", label: i18n.t("constants.race.asian") },
-  { value: "black", label: i18n.t("constants.race.black") },
-  { value: "pacific", label: i18n.t("constants.race.pacific") },
-  { value: "white", label: i18n.t("constants.race.white") },
-  { value: "other", label: i18n.t("constants.race.other") },
-  { value: "refused", label: i18n.t("constants.race.refused") },
-];
+const raceValues = (t: TFunction) => {
+  const result: { value: Race; label: string }[] = [
+    { value: "native", label: i18n.t("constants.race.native") },
+    { value: "asian", label: i18n.t("constants.race.asian") },
+    { value: "black", label: i18n.t("constants.race.black") },
+    { value: "pacific", label: i18n.t("constants.race.pacific") },
+    { value: "white", label: i18n.t("constants.race.white") },
+    { value: "other", label: i18n.t("constants.race.other") },
+    { value: "refused", label: i18n.t("constants.race.refused") },
+  ];
 
-export const ROLE_VALUES: { value: Role; label: string }[] = [
-  { label: i18n.t("constants.role.STAFF"), value: "STAFF" },
-  { label: i18n.t("constants.role.RESIDENT"), value: "RESIDENT" },
-  { label: i18n.t("constants.role.STUDENT"), value: "STUDENT" },
-  { label: i18n.t("constants.role.VISITOR"), value: "VISITOR" },
-];
+  return result;
+};
 
-export const ETHNICITY_VALUES: { value: Ethnicity; label: string }[] = [
-  { label: i18n.t("constants.ethnicity.hispanic"), value: "hispanic" },
-  { label: i18n.t("constants.ethnicity.not_hispanic"), value: "not_hispanic" },
-  { label: i18n.t("constants.ethnicity.refused"), value: "refused" },
-];
-export const GENDER_VALUES: { value: Gender; label: string }[] = [
-  { label: i18n.t("constants.gender.female"), value: "female" },
-  { label: i18n.t("constants.gender.male"), value: "male" },
-  { label: i18n.t("constants.gender.other"), value: "other" },
-  { label: i18n.t("constants.gender.refused"), value: "refused" },
-];
+const roleValues = (t: TFunction) => {
+  const result: { value: Role; label: string }[] = [
+    { label: i18n.t("constants.role.STAFF"), value: "STAFF" },
+    { label: i18n.t("constants.role.RESIDENT"), value: "RESIDENT" },
+    { label: i18n.t("constants.role.STUDENT"), value: "STUDENT" },
+    { label: i18n.t("constants.role.VISITOR"), value: "VISITOR" },
+  ];
 
-export const YES_NO_VALUES: { value: YesNo; label: string }[] = [
-  { label: i18n.t("constants.yesNoUnk.YES"), value: "YES" },
-  { label: i18n.t("constants.yesNoUnk.NO"), value: "NO" },
-];
+  return result;
+};
 
-export const PHONE_TYPE_VALUES: { value: PhoneType; label: string }[] = [
-  { label: i18n.t("constants.phoneType.MOBILE"), value: "MOBILE" },
-  { label: i18n.t("constants.phoneType.LANDLINE"), value: "LANDLINE" },
-];
+const ethnicityValues = (t: TFunction) => {
+  const result: { value: Ethnicity; label: string }[] = [
+    { label: i18n.t("constants.ethnicity.hispanic"), value: "hispanic" },
+    {
+      label: i18n.t("constants.ethnicity.not_hispanic"),
+      value: "not_hispanic",
+    },
+    { label: i18n.t("constants.ethnicity.refused"), value: "refused" },
+  ];
 
-export const TEST_RESULT_DELIVERY_PREFERENCE_VALUES: {
-  value: TestResultDeliveryPreference;
-  label: string;
-}[] = [
-  { label: i18n.t("constants.yesNoUnk.YES"), value: "SMS" },
-  { label: i18n.t("constants.yesNoUnk.NO"), value: "NONE" },
-];
+  return result;
+};
 
-export const YES_NO_UNKNOWN_VALUES: {
-  value: YesNoUnknown;
-  label: string;
-}[] = [
-  ...YES_NO_VALUES,
-  { value: "UNKNOWN", label: i18n.t("constants.yesNoUnk.UNKNOWN") },
-];
+const genderValues = (t: TFunction) => {
+  const result: { value: Gender; label: string }[] = [
+    { label: i18n.t("constants.gender.female"), value: "female" },
+    { label: i18n.t("constants.gender.male"), value: "male" },
+    { label: i18n.t("constants.gender.other"), value: "other" },
+    { label: i18n.t("constants.gender.refused"), value: "refused" },
+  ];
+
+  return result;
+};
+
+const yesNoValues = (t: TFunction) => {
+  const result: { value: YesNo; label: string }[] = [
+    { label: i18n.t("constants.yesNoUnk.YES"), value: "YES" },
+    { label: i18n.t("constants.yesNoUnk.NO"), value: "NO" },
+  ];
+
+  return result;
+};
+
+const phoneTypeValues = (t: TFunction) => {
+  const result: { value: PhoneType; label: string }[] = [
+    { label: i18n.t("constants.phoneType.MOBILE"), value: "MOBILE" },
+    { label: i18n.t("constants.phoneType.LANDLINE"), value: "LANDLINE" },
+  ];
+
+  return result;
+};
+
+const testResultDeliveryPreferenceValues = (t: TFunction) => {
+  const result: {
+    value: TestResultDeliveryPreference;
+    label: string;
+  }[] = [
+    { label: i18n.t("constants.yesNoUnk.YES"), value: "SMS" },
+    { label: i18n.t("constants.yesNoUnk.NO"), value: "NONE" },
+  ];
+
+  return result;
+};
+
+const yesNoUnkownValues = (t: TFunction) => {
+  const result: {
+    value: YesNoUnknown;
+    label: string;
+  }[] = [
+    ...yesNoValues(i18n.t),
+    { value: "UNKNOWN", label: i18n.t("constants.yesNoUnk.UNKNOWN") },
+  ];
+
+  return result;
+};
 
 const fullTribalAffiliationValueSetMap: { [key: string]: TribalAffiliation } = {
   "Village of Afognak": "338",
@@ -671,3 +713,31 @@ export const AUTH_OR_IDENTITY_METHODS_BUTTONS: {
   label: e[1],
   value: e[0],
 }));
+
+export const TEST_RESULT_DESCRIPTIONS = testResultDescriptions(i18n.t);
+export const RACE_VALUES = raceValues(i18n.t);
+export const ROLE_VALUES = roleValues(i18n.t);
+export const ETHNICITY_VALUES = ethnicityValues(i18n.t);
+export const GENDER_VALUES = genderValues(i18n.t);
+export const YES_NO_VALUES = yesNoValues(i18n.t);
+export const PHONE_TYPE_VALUES = phoneTypeValues(i18n.t);
+export const TEST_RESULT_DELIVERY_PREFERENCE_VALUES = testResultDeliveryPreferenceValues(
+  i18n.t
+);
+export const YES_NO_UNKNOWN_VALUES = yesNoUnkownValues(i18n.t);
+
+export const useTranslatedConstants = (t: TFunction) => {
+  return {
+    TEST_RESULT_DESCRIPTIONS: testResultDescriptions(t),
+    RACE_VALUES: raceValues(t),
+    ROLE_VALUES: roleValues(t),
+    ETHNICITY_VALUES: ethnicityValues(t),
+    GENDER_VALUES: genderValues(t),
+    TEST_RESULT_DELIVERY_PREFERENCE_VALUES: testResultDeliveryPreferenceValues(
+      t
+    ),
+    PHONE_TYPE_VALUES: phoneTypeValues(t),
+    YES_NO_VALUES: yesNoValues(t),
+    YES_NO_UNKNOWN_VALUES: yesNoUnkownValues(t),
+  };
+};

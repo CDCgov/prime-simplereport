@@ -45,7 +45,7 @@ const PatientHeader = () => {
             className="usa-button--unstyled"
             onClick={async () => {
               const displayLanguage = i18n.language === "en" ? "es" : "en";
-              i18n.changeLanguage(displayLanguage);
+              await i18n.changeLanguage(displayLanguage);
             }}
           >
             {i18n.language === "en" ? "Español" : "English"}
