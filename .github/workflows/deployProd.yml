@@ -2,9 +2,7 @@ name: Deploy Prod
 
 on:
   workflow_run:
-    workflows: ["Deploy Dev,", "Deploy Stg"]
-    branches:
-      - main
+    workflows: ["Deploy Stg"]
     types:
       - completed
 
@@ -27,10 +25,6 @@ jobs:
         env:
             CURL_TIMEOUT: 5
         run: make check-stg-commit check-stg-readiness
-      - name: Check that the current release is in the dev environment
-        env:
-            CURL_TIMEOUT: 5
-        run: make check-dev-commit check-dev-readiness
   build-docker:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
