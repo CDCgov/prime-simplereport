@@ -75,25 +75,20 @@ class IdentityVerificationControllerTest {
   private static final String FAKE_ORG_EXTERNAL_ID = "FAKE_ORG_EXTERNAL_ID";
   private static final String FAKE_ORG_EXTERNAL_ID_DOES_NOT_EXIST = "DOES_NOT_EXIST";
   private static final String FAKE_ORG_ADMIN_EMAIL = "org.admin.email@example.com";
+  // email address that generates PersonMatchException in DemoExperianService
   private static final String FAKE_NON_EXISTENT_EMAIL = "notfound@example.com";
+  // email address that generates RestClientException in DemoExperianService
+  private static final String FAKE_REST_EXCEPTION_EMAIL = "rest.exception@example.com";
+  // session id that generates RestClientException in DemoExperianService
+  private static final String FAKE_REST_EXCEPTION_SESSION_STRING = "GENERATE_REST_EXCEPTION";
 
-  private static final UUID VALID_SESSION_UUID =
-      UUID.fromString("099244e0-bebc-4f59-83fd-453dc7f0b858");
+  private static final String VALID_SESSION_STRING = "099244e0-bebc-4f59-83fd-453dc7f0b858";
+  private static final UUID VALID_SESSION_UUID = UUID.fromString(VALID_SESSION_STRING);
 
-  private static final String GET_QUESTIONS_REQUEST =
+  private static final String GET_QUESTIONS_REQUEST_TEMPLATE =
       "{\"orgExternalId\": \"%s\", \"firstName\":\"Jane\", \"lastName\":\"Doe\", \"dateOfBirth\":\"1980-08-12\", \"email\":\"%s\", \"phoneNumber\":\"410-867-5309\", \"streetAddress1\":\"1600 Pennsylvania Ave\", \"city\":\"Washington\", \"state\":\"DC\", \"zip\":\"20500\"}";
-  private static final String SUBMIT_ANSWERS_CORRECT_REQUEST =
-      "{\"orgExternalId\": \""
-          + FAKE_ORG_EXTERNAL_ID
-          + "\", \"sessionId\": \""
-          + VALID_SESSION_UUID
-          + "\", \"answers\": [1, 4, 2, 1]}";
-  private static final String SUBMIT_ANSWERS_INCORRECT_REQUEST =
-      "{\"orgExternalId\": \""
-          + FAKE_ORG_EXTERNAL_ID
-          + "\", \"sessionId\": \""
-          + VALID_SESSION_UUID
-          + "\", \"answers\": [4, 3, 2, 1]}";
+  private static final String SUBMIT_ANSWERS_REQUEST_TEMPLATE =
+      "{\"orgExternalId\": \"%s\", \"sessionId\": \"%s\", \"answers\": [%s]}";
 
   @BeforeEach
   public void setup() {
@@ -122,7 +117,7 @@ class IdentityVerificationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .content(getQuestionRequestBody(FAKE_ORG_EXTERNAL_ID, FAKE_ORG_ADMIN_EMAIL));
+            .content(getQuestionsRequestBody(FAKE_ORG_EXTERNAL_ID, FAKE_ORG_ADMIN_EMAIL));
 
     this._mockMvc
         .perform(builder)
@@ -141,7 +136,7 @@ class IdentityVerificationControllerTest {
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(
-                getQuestionRequestBody(FAKE_ORG_EXTERNAL_ID_DOES_NOT_EXIST, FAKE_ORG_ADMIN_EMAIL));
+                getQuestionsRequestBody(FAKE_ORG_EXTERNAL_ID_DOES_NOT_EXIST, FAKE_ORG_ADMIN_EMAIL));
 
     this._mockMvc.perform(builder).andExpect(status().isBadRequest());
 
@@ -156,7 +151,7 @@ class IdentityVerificationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .content(getQuestionRequestBody(FAKE_ORG_EXTERNAL_ID, FAKE_NON_EXISTENT_EMAIL));
+            .content(getQuestionsRequestBody(FAKE_ORG_EXTERNAL_ID, FAKE_NON_EXISTENT_EMAIL));
 
     this._mockMvc.perform(builder).andExpect(status().isBadRequest());
 
@@ -181,12 +176,27 @@ class IdentityVerificationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .content(getQuestionRequestBody(FAKE_ORG_EXTERNAL_ID, FAKE_ORG_ADMIN_EMAIL));
+            .content(getQuestionsRequestBody(FAKE_ORG_EXTERNAL_ID, FAKE_ORG_ADMIN_EMAIL));
 
     this._mockMvc.perform(builder).andExpect(status().isBadRequest());
 
     // not a new org, no emails sent
     verifyEmailsNotSent();
+  }
+
+  @Test
+  void getQuestions_restClientException_failure() throws Exception {
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ID_VERIFICATION_GET_QUESTIONS)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(getQuestionsRequestBody(FAKE_ORG_EXTERNAL_ID, FAKE_REST_EXCEPTION_EMAIL));
+
+    this._mockMvc.perform(builder).andExpect(status().isBadRequest());
+
+    // general experian request failure, id verification failed so emails are sent
+    verifyEmailsSent();
   }
 
   @Test
@@ -196,7 +206,7 @@ class IdentityVerificationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .content(SUBMIT_ANSWERS_CORRECT_REQUEST);
+            .content(submitAnswersRequestBody(FAKE_ORG_EXTERNAL_ID, VALID_SESSION_STRING, true));
 
     this._mockMvc
         .perform(builder)
@@ -215,7 +225,7 @@ class IdentityVerificationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .content(SUBMIT_ANSWERS_INCORRECT_REQUEST);
+            .content(submitAnswersRequestBody(FAKE_ORG_EXTERNAL_ID, VALID_SESSION_STRING, false));
 
     this._mockMvc
         .perform(builder)
@@ -228,7 +238,7 @@ class IdentityVerificationControllerTest {
   }
 
   @Test
-  void submitAnswers_badOrg_success() throws Exception {
+  void submitAnswers_badOrg_failure() throws Exception {
     // org should not be verified and only have 1 member
     Set<String> orgEmailSet =
         new HashSet<>() {
@@ -244,7 +254,7 @@ class IdentityVerificationControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .content(SUBMIT_ANSWERS_CORRECT_REQUEST);
+            .content(submitAnswersRequestBody(FAKE_ORG_EXTERNAL_ID, VALID_SESSION_STRING, true));
 
     this._mockMvc.perform(builder).andExpect(status().isBadRequest());
 
@@ -252,8 +262,32 @@ class IdentityVerificationControllerTest {
     verifyEmailsNotSent();
   }
 
-  private String getQuestionRequestBody(String orgExternalId, String email) {
-    return String.format(GET_QUESTIONS_REQUEST, orgExternalId, email);
+  @Test
+  void submitAnswers_restClientException_failure() throws Exception {
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ID_VERIFICATION_SUBMIT_ANSWERS)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(
+                submitAnswersRequestBody(
+                    FAKE_ORG_EXTERNAL_ID, FAKE_REST_EXCEPTION_SESSION_STRING, true));
+
+    this._mockMvc.perform(builder).andExpect(status().isBadRequest());
+
+    // general request failure to experian, send emails
+    verifyEmailsSent();
+  }
+
+  private String getQuestionsRequestBody(String orgExternalId, String email) {
+    return String.format(GET_QUESTIONS_REQUEST_TEMPLATE, orgExternalId, email);
+  }
+
+  private String submitAnswersRequestBody(
+      String orgExternalId, String sessionId, boolean correctAnswers) {
+    // these answers are recognized by DemoExperianService
+    String answerString = correctAnswers ? "1, 4, 2, 1" : "4, 3, 2, 1";
+    return String.format(SUBMIT_ANSWERS_REQUEST_TEMPLATE, orgExternalId, sessionId, answerString);
   }
 
   private void verifyEmailsSent() throws IOException {

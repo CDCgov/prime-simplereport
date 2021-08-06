@@ -32,15 +32,22 @@ const mocks = {
       })
     );
   }),
-  SubmitTestResults: graphql.mutation("SubmitTestResults", (req, res, ctx) => {
-    return res(
-      ctx.data({
-        submitTestResults: {
-          internalId: req.body?.variables.patientId,
-        },
-      })
-    );
-  }),
+  SubmitTestResult: graphql.mutation(
+    "SubmitTestResult",
+    async (req, res, ctx) => {
+      await new Promise((res) => setTimeout(res, 200));
+
+      const data =
+        req.body?.variables.patientId === "this-should-fail"
+          ? {}
+          : {
+              addTestResultNew: {
+                internalId: req.body?.variables.patientId,
+              },
+            };
+      return res(ctx.data(data));
+    }
+  ),
   GetPatientsLastResult: graphql.query(
     "GetPatientsLastResult",
     (req, res, ctx) => {
