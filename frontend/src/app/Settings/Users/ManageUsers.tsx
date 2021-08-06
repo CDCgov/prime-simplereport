@@ -391,7 +391,7 @@ const ManageUsers: React.FC<Props> = ({
                 user.status === "SUSPENDED" ? (
                   <Button
                     variant="secondary"
-                    className="margin-left-auto"
+                    className="margin-left-auto margin-bottom-1"
                     onClick={() => updateShowReactivateUserModal(true)}
                     label="Reactivate user"
                     disabled={isUpdating}
