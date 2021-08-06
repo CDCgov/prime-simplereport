@@ -10,6 +10,7 @@ module "metric_alerts" {
   cpu_window_size                = 15
   http_response_time_aggregation = "Minimum"
   failed_http_2xx_threshold      = 14
+  skip_on_weekends               = true
 
   action_group_ids = [
     data.terraform_remote_state.global.outputs.pagerduty_demo_action_id

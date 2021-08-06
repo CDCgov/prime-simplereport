@@ -32,7 +32,6 @@ describe("AoEForm", () => {
     render(
       <MockedProvider mocks={mocks}>
         <AoEModalForm
-          saveButtonText="save"
           onClose={jest.fn()}
           patient={{
             internalId: "123",
@@ -54,10 +53,6 @@ describe("AoEForm", () => {
         />
       </MockedProvider>
     );
-    const verbally = await screen.findByLabelText("verbally", {
-      exact: false,
-    });
-    expect(verbally).toBeChecked();
     const recentTestDate = await screen.findByLabelText(
       "Date of most recent test"
     );
@@ -70,7 +65,7 @@ describe("AoEForm", () => {
     expect(result).toHaveValue("UNKNOWN");
   });
 
-  it("converts date of last test to ISO Format", () => {
+  it("renders correctly", () => {
     let component: renderer.ReactTestRenderer;
 
     component = renderer.create(
@@ -115,9 +110,7 @@ describe("AoEForm", () => {
       </MockedProvider>
     );
 
-    expect(component.root.props.children.props.lastTest.dateTested).toEqual(
-      "2021-06-21"
-    );
+    expect(component.toJSON()).toMatchSnapshot();
   });
 
   describe("Test result delivery options", () => {

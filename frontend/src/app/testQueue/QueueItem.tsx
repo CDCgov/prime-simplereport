@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
@@ -33,6 +33,7 @@ import {
 import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
 import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
+import { QueueItemSubmitLoader } from "./QueueItemSubmitLoader";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
 
@@ -190,7 +191,6 @@ export interface QueueItemProps {
   dateTestedProp: string;
   refetchQueue: () => void;
   facilityId: string;
-  patientLinkId: string;
 }
 
 interface updateQueueItemProps {
@@ -199,6 +199,8 @@ interface updateQueueItemProps {
   result?: TestResult;
   dateTested?: string;
 }
+
+type SaveState = "idle" | "editing" | "saving" | "error";
 
 const QueueItem: any = ({
   internalId,
@@ -212,7 +214,6 @@ const QueueItem: any = ({
   refetchQueue,
   facilityId,
   dateTestedProp,
-  patientLinkId,
 }: QueueItemProps) => {
   const appInsights = useAppInsightsContext();
   const trackRemovePatientFromQueue = useTrackEvent(
@@ -239,6 +240,7 @@ const QueueItem: any = ({
     EditQueueItemResponse,
     EditQueueItemParams
   >(EDIT_QUEUE_ITEM);
+  const [saveState, setSaveState] = useState<SaveState>("idle");
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
   const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
@@ -324,67 +326,78 @@ const QueueItem: any = ({
     showNotification(toast, alert);
   };
 
-  const onTestResultSubmit = (forceSubmit: boolean = false) => {
-    if (forceSubmit || areAnswersComplete(aoeAnswers)) {
-      if (appInsights) {
-        trackSubmitTestResult({});
-      }
-      setConfirmationType("none");
-      submitTestResult({
+  const onTestResultSubmit = async (forceSubmit: boolean = false) => {
+    if (!forceSubmit && !areAnswersComplete(aoeAnswers)) {
+      return setConfirmationType("submitResult");
+    }
+
+    setSaveState("saving");
+    if (appInsights) {
+      trackSubmitTestResult({});
+    }
+    setConfirmationType("none");
+    try {
+      const result = await submitTestResult({
         variables: {
           patientId: patient.internalId,
           deviceId: deviceId,
           result: testResultValue,
           dateTested: shouldUseCurrentDateTime() ? null : dateTested,
         },
-      })
-        .then(testResultsSubmitted, () => {})
-        .then(refetchQueue)
-        .then(() => removeTimer(internalId))
-        .catch((error) => {
-          updateMutationError(error);
-        });
-    } else {
-      setConfirmationType("submitResult");
+      });
+      testResultsSubmitted(result);
+      refetchQueue();
+      removeTimer(internalId);
+    } catch (error) {
+      setSaveState("error");
+      updateMutationError(error);
     }
   };
 
-  const updateQueueItem = ({
-    deviceId,
-    result,
-    dateTested,
-  }: updateQueueItemProps) => {
-    editQueueItem({
-      variables: {
-        id: internalId,
-        deviceId,
-        result,
-        dateTested,
-      },
-    })
-      .then((response) => {
-        if (!response.data) throw Error("updateQueueItem null response");
-        updateDeviceId(response.data.editQueueItem.deviceType.internalId);
-        updateTestResultValue(response.data.editQueueItem.result || undefined);
-        updateTimer(
-          internalId,
-          response.data.editQueueItem.deviceType.testLength
-        );
-        updateDeviceTestLength(
-          response.data.editQueueItem.deviceType.testLength
-        );
+  const updateQueueItem = useCallback(
+    ({ deviceId, result, dateTested }: updateQueueItemProps) => {
+      return editQueueItem({
+        variables: {
+          id: internalId,
+          deviceId,
+          result,
+          dateTested,
+        },
       })
-      .catch(updateMutationError);
-  };
+        .then((response) => {
+          if (!response.data) throw Error("updateQueueItem null response");
+          updateDeviceId(response.data.editQueueItem.deviceType.internalId);
+          updateTestResultValue(
+            response.data.editQueueItem.result || undefined
+          );
+          updateTimer(
+            internalId,
+            response.data.editQueueItem.deviceType.testLength
+          );
+          updateDeviceTestLength(
+            response.data.editQueueItem.deviceType.testLength
+          );
+        })
+        .catch(updateMutationError);
+    },
+    [editQueueItem, internalId]
+  );
 
   const onDeviceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const deviceId = e.currentTarget.value;
-    updateQueueItem({ deviceId, dateTested, result: testResultValue });
+    updateDeviceId(e.currentTarget.value);
   };
 
   const onDateTestedChange = (date: moment.Moment) => {
     const newDateTested = date.toISOString();
     const isValidDate = isValidCustomDateTested(newDateTested);
+
+    // the date string returned from the server is only precise to seconds; moment's
+    // toISOString method returns millisecond precision. as a result, an onChange event
+    // was being fired when this component initialized, sending an EditQueueItem to
+    // the back end w/ the same data that it already had. this prevents it:
+    if (moment(dateTested).isSame(date)) {
+      return;
+    }
 
     if (isValidDate) {
       /* the custom date input field manages its own state in the DOM, not in the react state
@@ -394,16 +407,34 @@ const QueueItem: any = ({
       or if we change our updateQueuItem function to update only a single value at a time, which is a TODO for later
     */
       updateDateTested(newDateTested);
-      updateQueueItem({
-        deviceId,
-        dateTested: newDateTested,
-        result: testResultValue,
-      });
     }
   };
 
+  const isMounted = useRef(false);
+  const DEBOUNCE_TIME = 500;
+  useEffect(() => {
+    let debounceTimer: ReturnType<typeof setTimeout>;
+    if (!isMounted.current) {
+      isMounted.current = true;
+    } else {
+      setSaveState("editing");
+      debounceTimer = setTimeout(async () => {
+        await updateQueueItem({
+          deviceId,
+          dateTested,
+          result: testResultValue,
+        });
+        setSaveState("idle");
+      }, DEBOUNCE_TIME);
+    }
+    return () => {
+      clearTimeout(debounceTimer);
+      setSaveState("idle");
+    };
+  }, [deviceId, dateTested, testResultValue, updateQueueItem]);
+
   const onTestResultChange = (result: TestResult | undefined) => {
-    updateQueueItem({ deviceId, result, dateTested });
+    updateTestResultValue(result);
   };
 
   const removeFromQueue = () => {
@@ -556,19 +587,37 @@ const QueueItem: any = ({
 
   const timer = useTestTimer(internalId, deviceTestLength);
 
+  function cardColorDisplay() {
+    const prefix = "prime-queue-item__";
+    if (saveState === "error") {
+      return prefix + "error";
+    }
+    if (timer.countdown < 0 && testResultValue === "UNKNOWN") {
+      return prefix + "ready";
+    }
+    return undefined;
+  }
+
   const containerClasses = classnames(
+    "position-relative",
     "grid-container",
     "prime-container",
     "prime-queue-item card-container",
-    timer.countdown < 0 && !testResultValue && "prime-queue-item__ready",
-    timer.countdown < 0 && testResultValue && "prime-queue-item__completed"
+    timer.countdown < 0 &&
+      testResultValue !== "UNKNOWN" &&
+      "prime-queue-item__completed",
+    cardColorDisplay()
   );
 
   return (
     <React.Fragment>
       <div className={containerClasses}>
+        <QueueItemSubmitLoader
+          show={saveState === "saving"}
+          name={patientFullName}
+        />
         <div className="prime-card-container">
-          {closeButton}
+          {saveState !== "saving" && closeButton}
           <div className="grid-row">
             <div className="tablet:grid-col-9">
               <div
@@ -600,12 +649,10 @@ const QueueItem: any = ({
                     />
                     {isAoeModalOpen && (
                       <AoEModalForm
-                        saveButtonText="Continue"
                         onClose={closeAoeModal}
                         patient={patient}
                         loadState={aoeAnswers}
                         saveCallback={saveAoeCallback}
-                        patientLinkId={patientLinkId}
                       />
                     )}
                     <p>
@@ -696,6 +743,8 @@ const QueueItem: any = ({
                 testResultValue={testResultValue}
                 isSubmitDisabled={
                   loading ||
+                  saveState === "editing" ||
+                  saveState === "saving" ||
                   (!shouldUseCurrentDateTime() &&
                     !isValidCustomDateTested(dateTested))
                 }

@@ -67,7 +67,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "first_error_in_a_week" {
   }
 
   data_source_id = var.app_insights_id
-  enabled        = true
+  enabled        = false
 
   # - Collect all requests that were exceptions in the week preceeding today
   # - Do the same for today
@@ -80,7 +80,7 @@ requests
     | where timestamp <= now() and timestamp > now(-1d)
     )
     on operation_Id
-| project stackTrace = details[0].rawStack, exceptionType = type, failedMethod = method, requestName = name, combinedErrorString = strcat(type, method, name)
+| project stackTrace = details[0].rawStack, exceptionType = type, failedMethod = method, requestName = name, combinedErrorString = strcat(type, method, name), timestamp
 | join kind= leftanti (
     requests
     | where timestamp <= now(-1d) and timestamp > now(-8d) and success == false
@@ -92,11 +92,12 @@ requests
     | project stackTrace = details[0].rawStack, exceptionType = type, failedMethod = method, requestName = name, combinedErrorString = strcat(type, method, name)
     )
     on combinedErrorString
-| summarize stackTrace = any(stackTrace) by failedMethod, requestName, exceptionType
+| summarize stackTrace = any(stackTrace) by failedMethod, requestName, exceptionType, timestamp
+| sort by timestamp
   QUERY
 
   severity    = 2
-  frequency   = 1440 // Run daily
+  frequency   = 60 // Run hourly
   time_window = 1440
   trigger {
     operator  = "GreaterThan"
@@ -115,10 +116,11 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "account_request_failures
   }
 
   data_source_id = var.app_insights_id
-  enabled        = true
+  enabled        = contains(var.disabled_alerts, "account_request_failures") ? false : true
 
   query = <<-QUERY
 requests
+${local.skip_on_weekends}
 | where timestamp > ago(2h) and success == false
 | join kind= inner (
     exceptions
@@ -149,10 +151,11 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "frontend_error_boundary"
   }
 
   data_source_id = var.app_insights_id
-  enabled        = true
+  enabled        = contains(var.disabled_alerts, "frontend_error_boundary") ? false : true
 
   query = <<-QUERY
  exceptions
+ ${local.skip_on_weekends}
  | where type startswith "PrimeErrorBoundary"
   QUERY
 

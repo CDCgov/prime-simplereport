@@ -57,6 +57,14 @@ export const PHONE_TYPE_VALUES: { value: PhoneType; label: string }[] = [
   { label: i18n.t("constants.phoneType.LANDLINE"), value: "LANDLINE" },
 ];
 
+export const TEST_RESULT_DELIVERY_PREFERENCE_VALUES: {
+  value: TestResultDeliveryPreference;
+  label: string;
+}[] = [
+  { label: i18n.t("constants.yesNoUnk.YES"), value: "SMS" },
+  { label: i18n.t("constants.yesNoUnk.NO"), value: "NONE" },
+];
+
 export const YES_NO_UNKNOWN_VALUES: {
   value: YesNoUnknown;
   label: string;

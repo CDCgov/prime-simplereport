@@ -32,4 +32,6 @@ public final class ResourceLinks {
   public static final String ID_VERIFICATION_GET_QUESTIONS = "/identity-verification/get-questions";
   public static final String ID_VERIFICATION_SUBMIT_ANSWERS =
       "/identity-verification/submit-answers";
+
+  public static final String TWILIO_CALLBACK = "/pxp/callback";
 }

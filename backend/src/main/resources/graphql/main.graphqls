@@ -175,7 +175,6 @@ type TestOrder {
   dateTested: DateTime
   correctionStatus: String
   reasonForCorrection: String
-  patientLink: PatientLink
 }
 
 type TestResult {
@@ -350,7 +349,10 @@ type Mutation {
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   setUserIsDeleted(id: ID!, deleted: Boolean!): User
     @requiredPermissions(allOf: ["MANAGE_USERS"])
-  setCurrentUserTenantDataAccess(organizationExternalId: String, justification: String): User
+  setCurrentUserTenantDataAccess(
+    organizationExternalId: String
+    justification: String
+  ): User
   addPatient(
     facilityId: ID
     lookupId: String
@@ -376,6 +378,7 @@ type Mutation {
     residentCongregateSetting: Boolean
     employedInHealthcare: Boolean
     preferredLanguage: String
+    testResultDelivery: TestResultDeliveryPreference
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   updatePatient(
     facilityId: ID @Size(min: 36, max: 36)
@@ -408,6 +411,7 @@ type Mutation {
     residentCongregateSetting: Boolean
     employedInHealthcare: Boolean
     preferredLanguage: String
+    testResultDelivery: TestResultDeliveryPreference
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   setPatientIsDeleted(id: ID!, deleted: Boolean!): Patient
     @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
