@@ -205,7 +205,7 @@ export const es: LanguageConfig = {
         registered:
           "<0>{{personName}}</0>, gracias por completar su perfil de paciente en {{entityName}}.",
         checkIn:
-          "Cuando llegue para su examen, regístrese dando su nombre y apellido.",
+          "Cuando llegue para su prueba, regístrese dando su nombre y apellido.",
       },
     },
     testResult: {
@@ -402,7 +402,7 @@ export const es: LanguageConfig = {
         enterDOB: "Ingrese su fecha de nacimiento",
         enterDOB2:
           "Ingrese su fecha de nacimiento para acceder a su portal de pruebas de COVID-19.",
-        format: "MM/DD/AAAA or MMDDAAAA",
+        format: "MM/DD/AAAA o MMDDAAAA",
         error:
           "No se encontró el resultado de la prueba o la fecha de nacimiento proporcionada es incorrecta.",
         validating: "Validación de la fecha de nacimiento...",
