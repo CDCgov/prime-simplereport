@@ -58,7 +58,7 @@ jobs:
       - name: Terraform Init
         run: make init-${{ env.DEPLOY_ENV }}
       - name: Terraform deploy (infrastructure and staging slot)
-        run: make deploy-${{ env.DEPLOY_ENV }}
+        run: make deploy-${{ env.DEPLOY_ENV }}-api
       - name: Wait for correct release to be deployed in staging slot
         timeout-minutes: 5
         run: make wait-for-${{ env.DEPLOY_ENV }}-slot-release
