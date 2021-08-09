@@ -18,7 +18,6 @@ import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { showError } from "../../utils";
 import FormGroup from "../../commonComponents/FormGroup";
 import {
-  allPersonErrors,
   personSchema,
   PersonErrors,
   personUpdateSchema,
@@ -131,7 +130,7 @@ const PersonForm = (props: Props) => {
       } catch (e) {
         setErrors((existingErrors) => ({
           ...existingErrors,
-          [field]: e.errors.join(", "),
+          [field]: e.errors?.join(", ") || "Field is missing or invalid",
         }));
       }
     },
@@ -186,7 +185,7 @@ const PersonForm = (props: Props) => {
           acc: PersonErrors,
           el: { path: keyof PersonErrors; message: string }
         ) => {
-          acc[el.path] = allPersonErrors[el.path];
+          acc[el.path] = el?.message || "Field is missing or invalid";
           return acc;
         },
         {} as PersonErrors

@@ -55,8 +55,13 @@ export function phoneNumberIsValid(input: any) {
   if (!input) {
     return false;
   }
-  const number = phoneUtil.parseAndKeepRawInput(input, "US");
-  return phoneUtil.isValidNumber(number);
+
+  try {
+    const number = phoneUtil.parseAndKeepRawInput(input, "US");
+    return phoneUtil.isValidNumber(number);
+  } catch (e) {
+    return false;
+  }
 }
 
 export function areValidPhoneNumbers(phoneNumbers: any) {
@@ -174,8 +179,17 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
 };
 
 const updatePhoneNumberSchemata: Record<keyof PhoneNumber, yup.AnySchema> = {
-  number: yup.string().test(phoneNumberIsValid).required(),
-  type: yup.mixed().oneOf(getValues(PHONE_TYPE_VALUES)),
+  number: yup
+    .string()
+    .test(
+      "phone-number",
+      i18n.t("patient.form.errors.telephone"),
+      phoneNumberIsValid
+    )
+    .required(),
+  type: yup
+    .mixed()
+    .oneOf(getValues(PHONE_TYPE_VALUES), "Phone type is missing or invalid"),
 };
 
 export const phoneNumberUpdateSchema: yup.SchemaOf<PhoneNumber> = yup.object(
@@ -217,38 +231,4 @@ export const selfRegistrationSchema: yup.SchemaOf<SelfRegistationFields> = yup.o
 
 export type PersonErrors = Partial<Record<keyof PersonFormData, string>>;
 
-export const allPersonErrors: Required<PersonErrors> = {
-  firstName: i18n.t("patient.form.errors.firstName"),
-  middleName: i18n.t("patient.form.errors.middleName"),
-  lastName: i18n.t("patient.form.errors.lastName"),
-  lookupId: i18n.t("patient.form.errors.lookupId"),
-  role: i18n.t("patient.form.errors.role"),
-  facilityId: i18n.t("patient.form.errors.facilityId"),
-  birthDate: i18n.t("patient.form.errors.birthDate"),
-  telephone: i18n.t("patient.form.errors.telephone"),
-  phoneNumbers: i18n.t("patient.form.errors.phoneNumbers"),
-  email: i18n.t("patient.form.errors.email"),
-  street: i18n.t("patient.form.errors.street"),
-  streetTwo: i18n.t("patient.form.errors.streetTwo"),
-  zipCode: i18n.t("patient.form.errors.zipCode"),
-  state: i18n.t("patient.form.errors.state"),
-  city: i18n.t("patient.form.errors.city"),
-  county: i18n.t("patient.form.errors.county"),
-  race: i18n.t("patient.form.errors.race"),
-  tribalAffiliation: i18n.t("patient.form.errors.tribalAffiliation"),
-  ethnicity: i18n.t("patient.form.errors.ethnicity"),
-  gender: i18n.t("patient.form.errors.gender"),
-  residentCongregateSetting: i18n.t(
-    "patient.form.errors.residentCongregateSetting"
-  ),
-  employedInHealthcare: i18n.t("patient.form.errors.employedInHealthcare"),
-  preferredLanguage: i18n.t("patient.form.errors.preferredLanguage"),
-  testResultDelivery: i18n.t("patient.form.errors.testResultDelivery"),
-};
-
 export type PhoneNumberErrors = Partial<Record<keyof PhoneNumber, string>>;
-
-export const allPhoneNumberErrors: Required<PhoneNumberErrors> = {
-  number: i18n.t("patient.form.errors.telephone"),
-  type: "Phone type is missing or invalid",
-};

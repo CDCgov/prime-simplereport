@@ -9,11 +9,7 @@ import {
 import Button from "../../commonComponents/Button/Button";
 import Input from "../../commonComponents/Input";
 import RadioGroup from "../../commonComponents/RadioGroup";
-import {
-  PhoneNumberErrors,
-  allPhoneNumberErrors,
-  phoneNumberUpdateSchema,
-} from "../personSchema";
+import { PhoneNumberErrors, phoneNumberUpdateSchema } from "../personSchema";
 
 interface Props {
   phoneNumbers: PhoneNumber[];
@@ -77,11 +73,12 @@ const ManagePhoneNumbers: React.FC<Props> = ({
           phoneNumbersOrDefault[idx]
         );
       } catch (e) {
+        console.log(e);
         setErrors((existingErrors) => {
           const newErrors = [...existingErrors];
           newErrors[idx] = {
             ...newErrors[idx],
-            [field]: allPhoneNumberErrors[field],
+            [field]: e.errors?.join(", ") || "Field is missing or invalid",
           };
 
           return newErrors;
