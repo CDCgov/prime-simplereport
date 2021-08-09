@@ -11,6 +11,7 @@ import {
   displayFullName,
 } from "../../utils";
 import { Role } from "../../permissions";
+import reload from "../../utils/reload";
 
 import CreateUserModal from "./CreateUserModal";
 import DeleteUserModal from "./DeleteUserModal";
@@ -25,8 +26,8 @@ import {
   SingleUserData,
   GET_USER,
 } from "./ManageUsersContainer";
-
 import "./ManageUsers.scss";
+import ReactivateUserModal from "./ReactivateUserModal";
 
 interface Props {
   users: LimitedUser[];
@@ -35,6 +36,7 @@ interface Props {
   updateUserPrivileges: (variables: any) => Promise<any>;
   addUserToOrg: (variables: any) => Promise<any>;
   deleteUser: (variables: any) => Promise<any>;
+  reactivateUser: (variables: any) => Promise<any>;
   getUsers: () => Promise<any>;
 }
 
@@ -55,6 +57,7 @@ const emptySettingsUser: SettingsUser = {
   lastName: "",
   id: "",
   email: "",
+  status: "",
   organization: { testingFacility: [] },
   permissions: [],
   roleDescription: "user",
@@ -82,6 +85,7 @@ const ManageUsers: React.FC<Props> = ({
   updateUserPrivileges,
   addUserToOrg,
   deleteUser,
+  reactivateUser,
   getUsers,
 }) => {
   const [activeUser, updateActiveUser] = useState<LimitedUser>();
@@ -103,6 +107,9 @@ const ManageUsers: React.FC<Props> = ({
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
   const [showAddUserModal, updateShowAddUserModal] = useState(false);
   const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
+  const [showReactivateUserModal, updateShowReactivateUserModal] = useState(
+    false
+  );
   const [isUserEdited, updateIsUserEdited] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<Error>();
@@ -266,6 +273,29 @@ const ManageUsers: React.FC<Props> = ({
     }
   };
 
+  const handleReactivateUser = async (userId: string) => {
+    try {
+      await reactivateUser({
+        variables: {
+          id: userId,
+        },
+      });
+      const fullName = displayFullNameInOrder(
+        userWithPermissions?.firstName,
+        userWithPermissions?.middleName,
+        userWithPermissions?.lastName
+      );
+      updateShowReactivateUserModal(false);
+      reload();
+      showNotification(
+        toast,
+        <Alert type="success" title={`${fullName} has been reactivated.`} />
+      );
+    } catch (e) {
+      setError(e);
+    }
+  };
+
   // Default to first user
   useEffect(() => {
     if (!activeUser && sortedUsers.length) {
@@ -357,6 +387,16 @@ const ManageUsers: React.FC<Props> = ({
                     YOU
                   </span>
                 ) : null}
+                {process.env.REACT_APP_EDIT_USER_ROLE === "true" &&
+                user.status === "SUSPENDED" ? (
+                  <Button
+                    variant="secondary"
+                    className="margin-left-auto margin-bottom-1"
+                    onClick={() => updateShowReactivateUserModal(true)}
+                    label="Reactivate user"
+                    disabled={isUpdating}
+                  />
+                ) : null}
               </div>
               <div className="user-content">
                 <p className="text-base">
@@ -370,7 +410,6 @@ const ManageUsers: React.FC<Props> = ({
                     onUpdateUser={updateUser}
                   />
                 }
-
                 {process.env.REACT_APP_VIEW_USER_FACILITIES === "true" ? (
                   <UserFacilitiesSettingsForm
                     activeUser={user}
@@ -424,6 +463,14 @@ const ManageUsers: React.FC<Props> = ({
                   user={user}
                   onClose={() => updateShowDeleteUserModal(false)}
                   onDeleteUser={handleDeleteUser}
+                />
+              ) : null}
+              {showReactivateUserModal &&
+              process.env.REACT_APP_EDIT_USER_ROLE === "true" ? (
+                <ReactivateUserModal
+                  user={user}
+                  onClose={() => updateShowReactivateUserModal(false)}
+                  onReactivateUser={handleReactivateUser}
                 />
               ) : null}
             </div>
