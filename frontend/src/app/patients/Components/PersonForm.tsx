@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { Prompt } from "react-router-dom";
 import { toast } from "react-toastify";
 import { SchemaOf } from "yup";
@@ -112,6 +112,24 @@ const PersonForm = (props: Props) => {
   const { t } = useTranslation();
 
   const allPersonErrors: Required<PersonErrors> = usePersonErrors();
+
+  // Detect language change for form validations
+  useEffect(() => {
+    const translatedErrors = Object.entries(errors).reduce(
+      (acc, [key, value]) => {
+        const errorKey = key as keyof PersonErrors;
+        if (allPersonErrors[errorKey] !== value) {
+          acc[errorKey] = allPersonErrors[errorKey];
+        }
+        return acc;
+      },
+      {} as PersonErrors
+    );
+    if (Object.keys(translatedErrors).length) {
+      setErrors(translatedErrors);
+    }
+  }, [allPersonErrors, errors]);
+
   const clearError = useCallback(
     (field: keyof PersonErrors) => {
       if (errors[field]) {
