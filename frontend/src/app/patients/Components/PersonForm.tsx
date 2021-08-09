@@ -131,7 +131,7 @@ const PersonForm = (props: Props) => {
       } catch (e) {
         setErrors((existingErrors) => ({
           ...existingErrors,
-          [field]: allPersonErrors[field],
+          [field]: e.errors.join(", "),
         }));
       }
     },

@@ -111,28 +111,66 @@ export function isValidBirthdate(date: string | undefined) {
 
 const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
   lookupId: yup.string().nullable(),
-  role: yup.mixed().oneOf([...getValues(ROLE_VALUES), "UNKNOWN", "", null]),
+  role: yup
+    .mixed()
+    .oneOf(
+      [...getValues(ROLE_VALUES), "UNKNOWN", "", null],
+      i18n.t("patient.form.errors.role")
+    ),
   telephone: yup.mixed().optional(),
-  phoneNumbers: yup.array().test(areValidPhoneNumbers).required(),
-  email: yup.string().email().nullable(),
-  street: yup.string().required(),
+  phoneNumbers: yup
+    .array()
+    .test(
+      "phone-numbers",
+      i18n.t("patient.form.errors.phoneNumbers"),
+      areValidPhoneNumbers
+    )
+    .required(),
+  email: yup.string().email(i18n.t("patient.form.errors.email")).nullable(),
+  street: yup.string().required(i18n.t("patient.form.errors.street")),
   streetTwo: yup.string().nullable(),
   city: yup.string().nullable(),
   county: yup.string().nullable(),
-  state: yup.string().required(),
-  zipCode: yup.string().required(),
-  race: yup.mixed().oneOf([...getValues(RACE_VALUES), "", null]),
-  ethnicity: yup.mixed().oneOf([...getValues(ETHNICITY_VALUES), "", null]),
-  gender: yup.mixed().oneOf([...getValues(GENDER_VALUES), "", null]),
+  state: yup.string().required(i18n.t("patient.form.errors.state")),
+  zipCode: yup.string().required(i18n.t("patient.form.errors.zipCode")),
+  race: yup
+    .mixed()
+    .oneOf(
+      [...getValues(RACE_VALUES), "", null],
+      i18n.t("patient.form.errors.race")
+    ),
+  ethnicity: yup
+    .mixed()
+    .oneOf(
+      [...getValues(ETHNICITY_VALUES), "", null],
+      i18n.t("patient.form.errors.ethnicity")
+    ),
+  gender: yup
+    .mixed()
+    .oneOf(
+      [...getValues(GENDER_VALUES), "", null],
+      i18n.t("patient.form.errors.gender")
+    ),
   residentCongregateSetting: yup.boolean().nullable(),
   employedInHealthcare: yup.boolean().nullable(),
   tribalAffiliation: yup
     .mixed()
-    .oneOf([...getValues(TRIBAL_AFFILIATION_VALUES), "", null]),
-  preferredLanguage: yup.mixed().oneOf([...languages, "", null]),
+    .oneOf(
+      [...getValues(TRIBAL_AFFILIATION_VALUES), "", null],
+      i18n.t("patient.form.errors.tribalAffiliation")
+    ),
+  preferredLanguage: yup
+    .mixed()
+    .oneOf(
+      [...languages, "", null],
+      i18n.t("patient.form.errors.preferredLanguage")
+    ),
   testResultDelivery: yup
     .mixed()
-    .oneOf([...getValues(TEST_RESULT_DELIVERY_PREFERENCE_VALUES), "", null]),
+    .oneOf(
+      [...getValues(TEST_RESULT_DELIVERY_PREFERENCE_VALUES), "", null],
+      i18n.t("patient.form.errors.testResultDelivery")
+    ),
 };
 
 const updatePhoneNumberSchemata: Record<keyof PhoneNumber, yup.AnySchema> = {
@@ -149,17 +187,27 @@ export const personUpdateSchema: yup.SchemaOf<PersonUpdateFields> = yup.object(
 );
 
 export const personSchema: yup.SchemaOf<RequiredPersonFields> = yup.object({
-  firstName: yup.string().required(),
+  firstName: yup.string().required(i18n.t("patient.form.errors.firstName")),
   middleName: yup.string().nullable(),
-  lastName: yup.string().required(),
-  birthDate: yup.string().test(isValidBirthdate).required(),
-  facilityId: yup.string().nullable().min(1) as any,
+  lastName: yup.string().required(i18n.t("patient.form.errors.lastName")),
+  birthDate: yup
+    .string()
+    .test(
+      "birth-date",
+      i18n.t("patient.form.errors.birthDate"),
+      isValidBirthdate
+    )
+    .required(i18n.t("patient.form.errors.birthDate")),
+  facilityId: yup
+    .string()
+    .nullable()
+    .min(1, i18n.t("patient.form.errors.facilityId")) as any,
   ...updateFieldSchemata,
 });
 
 export const selfRegistrationSchema: yup.SchemaOf<SelfRegistationFields> = yup.object(
   {
-    firstName: yup.string().required(),
+    firstName: yup.string().required(i18n.t("patient.form.errors.firstName")),
     middleName: yup.string().nullable(),
     lastName: yup.string().required(),
     birthDate: yup.string().test(isValidBirthdate).required(),
