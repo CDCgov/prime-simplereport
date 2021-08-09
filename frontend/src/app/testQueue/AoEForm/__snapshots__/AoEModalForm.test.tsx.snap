@@ -1,42 +1,37 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`AoEModalForm on data loaded renders 1`] = `
-Array [
+<div>
   <div
-    className="display-flex flex-justify"
+    class="display-flex flex-justify"
   >
     <h1
-      className="font-heading-lg margin-top-05 margin-bottom-0"
+      class="font-heading-lg margin-top-05 margin-bottom-0"
     >
       Jobs, Steve
     </h1>
     <div
-      className="sr-time-of-test-buttons"
+      class="sr-time-of-test-buttons"
     >
       <button
-        className="modal__close-button"
-        onClick={[MockFunction]}
-        style={
-          Object {
-            "cursor": "pointer",
-          }
-        }
+        class="modal__close-button"
+        style="cursor: pointer;"
       >
         <img
           alt="Close"
-          className="modal__close-img"
+          class="modal__close-img"
           src="close.svg"
         />
       </button>
     </div>
-  </div>,
+  </div>
   <div
-    className="border-top border-base-lighter margin-x-neg-205 margin-top-1"
-  />,
+    class="border-top border-base-lighter margin-x-neg-205 margin-top-1"
+  />
   <h2
-    className="font-heading-lg margin-top-205 margin-bottom-0"
+    class="font-heading-lg margin-top-205 margin-bottom-0"
   >
     Test questionnaire
-  </h2>,
-]
+  </h2>
+</div>
 `;
