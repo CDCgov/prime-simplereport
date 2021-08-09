@@ -103,7 +103,7 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: logoutLink.concat(concat(authMiddleware, httpLink as any)),
+  link: logoutLink.concat(concat(authMiddleware, httpLink)),
 });
 
 export const ReactApp = (
