@@ -29,6 +29,7 @@ export const GET_USER = gql`
       role
       permissions
       email
+      status
       organization {
         testingFacility {
           id
@@ -49,6 +50,7 @@ export interface SettingsUser {
   role: Role;
   permissions: UserPermission[];
   email: string;
+  status: string;
   organization: {
     testingFacility: UserFacilitySetting[];
   };
@@ -92,6 +94,14 @@ const UPDATE_USER_PRIVILEGES = gql`
 const DELETE_USER = gql`
   mutation SetUserIsDeleted($id: ID!, $deleted: Boolean!) {
     setUserIsDeleted(id: $id, deleted: $deleted) {
+      id
+    }
+  }
+`;
+
+const REACTIVATE_USER = gql`
+  mutation ReactivateUser($id: ID!) {
+    reactivateUser(id: $id) {
       id
     }
   }
@@ -148,6 +158,7 @@ const ManageUsersContainer: any = () => {
   const loggedInUser = useSelector((state) => (state as any).user as User);
   const [updateUserPrivileges] = useMutation(UPDATE_USER_PRIVILEGES);
   const [deleteUser] = useMutation(DELETE_USER);
+  const [reactivateUser] = useMutation(REACTIVATE_USER);
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
 
   const { data, loading, error, refetch: getUsers } = useQuery<UserData, {}>(
@@ -190,6 +201,7 @@ const ManageUsersContainer: any = () => {
       updateUserPrivileges={updateUserPrivileges}
       addUserToOrg={addUserToOrg}
       deleteUser={deleteUser}
+      reactivateUser={reactivateUser}
       getUsers={getUsers}
     />
   );

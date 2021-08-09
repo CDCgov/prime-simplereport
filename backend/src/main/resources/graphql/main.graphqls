@@ -95,6 +95,7 @@ type User {
   # for backward compatibility, currently maintaining both `role` and `roles`
   role: Role
   roles: [Role!]! @deprecated(reason: "Users have only one role now")
+  status: String
 }
 
 type ApiUser {
@@ -348,6 +349,8 @@ type Mutation {
     role: Role!
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   setUserIsDeleted(id: ID!, deleted: Boolean!): User
+    @requiredPermissions(allOf: ["MANAGE_USERS"])
+  reactivateUser(id: ID!): User
     @requiredPermissions(allOf: ["MANAGE_USERS"])
   setCurrentUserTenantDataAccess(
     organizationExternalId: String

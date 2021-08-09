@@ -79,6 +79,11 @@ public class UserMutationResolver implements GraphQLMutationResolver {
     return new User(user);
   }
 
+  public User reactivateUser(UUID id) {
+    UserInfo user = _us.reactivateUser(id);
+    return new User(user);
+  }
+
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public User setCurrentUserTenantDataAccess(String organizationExternalID, String justification) {
     UserInfo user =
