@@ -20,7 +20,7 @@ SLOT_READY=$(CURL) https://$(API_NAME)-$(SOURCE_SLOT).azurewebsites.net/actuator
 default:
 	@echo "Hello, SimpleReport operator!"
 	@echo "You can use 'make promote-ENV' to promote the $(SOURCE_SLOT) slot of any environment, if you are logged in to azure"
-	@echo "You can also run 'make init-ENV' or 'make deploy-ENV' but those may not be as useful locally."
+	@echo "You can also run 'make init-ENV' or 'make deploy-ENV-api' but those may not be as useful locally."
 	@echo "In addition, there are a variety of targets that start with 'check' or 'wait-for', which you should just look at."
 	@echo "Please note in particular that most if not all 'wait' tasks do not have a built-in timeout."
 
@@ -44,11 +44,9 @@ api.tfvars: /dev/null
 
 init-%: .valid-env-%
 	terraform -chdir=$* init
-	terraform -chdir=$*/persistent init
 
-deploy-%: .valid-env-% api.tfvars
+deploy-%-api: .valid-env-% api.tfvars
 	terraform -chdir=$* apply -auto-approve -var-file=../api.tfvars
-	terraform -chdir=$*/persistent apply -auto-approve
 
 promote-%: .be-logged-in .valid-env-%
 	az webapp deployment slot swap -g prime-simple-report-$* -n $(API_NAME) --slot $(SOURCE_SLOT) --target-slot $(TARGET_SLOT)
