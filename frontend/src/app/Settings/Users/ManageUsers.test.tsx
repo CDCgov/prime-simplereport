@@ -52,6 +52,7 @@ const users: SettingsUsers[keyof SettingsUsers][] = [
     permissions: ["READ_PATIENT_LIST"],
     roleDescription: "user",
     role: "USER",
+    status: "ACTIVE",
   },
   {
     ...loggedInUser,
@@ -59,6 +60,30 @@ const users: SettingsUsers[keyof SettingsUsers][] = [
     organization,
     roleDescription: "admin",
     role: "ADMIN",
+    status: "ACTIVE",
+  },
+];
+
+const suspendedUsers: SettingsUsers[keyof SettingsUsers][] = [
+  {
+    firstName: "Sarah",
+    middleName: "",
+    lastName: "Abba",
+    id: "b234",
+    email: "sarah@abba.org",
+    organization: { testingFacility: [] },
+    permissions: ["READ_PATIENT_LIST"],
+    roleDescription: "user",
+    role: "USER",
+    status: "SUSPENDED",
+  },
+  {
+    ...loggedInUser,
+    permissions: [],
+    organization,
+    roleDescription: "admin",
+    role: "ADMIN",
+    status: "ACTIVE",
   },
 ];
 
@@ -109,12 +134,37 @@ const mocks = [
       },
     },
   },
+  {
+    request: {
+      query: GET_USER,
+      variables: {
+        id: "b234",
+      },
+    },
+    result: {
+      data: {
+        user: {
+          id: "b234",
+          firstName: "Sarah",
+          middleName: "",
+          lastName: "Abba",
+          roleDescription: "user",
+          role: "USER",
+          permissions: ["READ_PATIENT_LIST"],
+          email: "sarah@abba.com",
+          organization: { testingFacility: [] },
+          status: "SUSPENDED",
+        },
+      },
+    },
+  },
 ];
 
 let updateUserPrivileges: () => Promise<any>;
 let addUserToOrg: () => Promise<any>;
 let deleteUser: (obj: any) => Promise<any>;
 let getUsers: () => Promise<any>;
+let reactivateUser: (obj: any) => Promise<any>;
 
 let inputValue = (value: string) => ({ target: { value } });
 
@@ -140,6 +190,11 @@ describe("ManageUsers", () => {
       Promise.resolve({ data: { setUserIsDeleted: { id: obj.variables.id } } })
     );
     getUsers = jest.fn(() => Promise.resolve({ data: users }));
+    reactivateUser = jest.fn((obj) =>
+      Promise.resolve({
+        data: { setUserIsReactivated: { id: obj.variables.id } },
+      })
+    );
   });
 
   describe("regular list of users", () => {
@@ -166,6 +221,7 @@ describe("ManageUsers", () => {
               addUserToOrg={addUserToOrg}
               deleteUser={deleteUser}
               getUsers={getUsers}
+              reactivateUser={reactivateUser}
             />
           </TestContainer>
         );
@@ -322,6 +378,7 @@ describe("ManageUsers", () => {
               addUserToOrg={addUserToOrg}
               deleteUser={deleteUser}
               getUsers={getUsers}
+              reactivateUser={reactivateUser}
             />
           </TestContainer>
         );
@@ -357,6 +414,40 @@ describe("ManageUsers", () => {
       });
       expect(addUserToOrg).toBeCalledWith({
         variables: { ...newUser, role: "USER" },
+      });
+    });
+  });
+
+  describe("suspended users", () => {
+    let findByText: any;
+    beforeEach(async () => {
+      await waitFor(() => {
+        const { findByText: findText } = render(
+          <TestContainer>
+            <ManageUsers
+              users={suspendedUsers}
+              loggedInUser={loggedInUser}
+              allFacilities={allFacilities}
+              updateUserPrivileges={updateUserPrivileges}
+              addUserToOrg={addUserToOrg}
+              deleteUser={deleteUser}
+              getUsers={getUsers}
+              reactivateUser={reactivateUser}
+            />
+          </TestContainer>
+        );
+        findByText = findText;
+      });
+    });
+
+    it("reactivates a suspended user", async () => {
+      const reactivateButton = await findByText("Reactivate", { exact: false });
+      fireEvent.click(reactivateButton);
+      const sureButton = await findByText("Yes", { exact: false });
+      fireEvent.click(sureButton);
+      await waitFor(() => expect(reactivateUser).toBeCalled());
+      expect(reactivateUser).toBeCalledWith({
+        variables: { id: suspendedUsers[0].id },
       });
     });
   });
@@ -433,6 +524,7 @@ describe("ManageUsers", () => {
                 addUserToOrg={addUserToOrg}
                 deleteUser={deleteUser}
                 getUsers={getUsers}
+                reactivateUser={reactivateUser}
               />
             </MockedProvider>
           </Provider>

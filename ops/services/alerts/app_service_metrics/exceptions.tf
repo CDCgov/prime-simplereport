@@ -67,17 +67,13 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "first_error_in_a_week" {
   }
 
   data_source_id = var.app_insights_id
-  enabled        = contains(var.disabled_alerts, "first_error_in_a_week") ? false : true
+  enabled        = false
 
   # - Collect all requests that were exceptions in the week preceeding today
   # - Do the same for today
   # - leftanti join the two result sets to return only results from today that were not found in the week preceeding today
-  # - Note the first 'where' clause - the azurerm_monitor_scheduled_query_rules_alert resource doesn't allow intervals longer
-  #   than a day, and we only want to alert 1x/week. As a workaround, this hardcodes the alert period to Thursdays
-  #   at 16:00 UTC (12:00 EDT). The alert runs hourly, so this guarantees that it will fire once and only once per week.
   query = <<-QUERY
 requests
-| where dayofweek(now()) == time(4) and hourofday(now()) == 16
 | where timestamp <= now() and timestamp > now(-1d) and success == false
 | join kind= inner (
     exceptions
