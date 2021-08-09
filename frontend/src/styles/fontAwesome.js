@@ -26,6 +26,7 @@ import {
   faSignOutAlt,
   faWindowClose,
   faEdit,
+  faGlobe,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -53,5 +54,6 @@ library.add(
   faCog,
   faSignOutAlt,
   faWindowClose,
-  faEdit
+  faEdit,
+  faGlobe
 );
