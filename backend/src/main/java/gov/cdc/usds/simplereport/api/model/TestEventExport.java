@@ -32,12 +32,13 @@ import java.util.UUID;
  * practice.
  */
 public class TestEventExport {
-  public static final String CSV_API_VERSION = "27Jan2021"; // last time we changed something
+  public static final String CSV_API_VERSION = "05Aug2021"; // last time we changed something
   private final TestEvent testEvent;
   private final Optional<Person> patient;
   private final Optional<AskOnEntrySurvey> survey;
   private final Optional<Provider> provider;
   private final Optional<Facility> facility;
+  private final Optional<Organization> organization;
   private final Optional<SpecimenType> specimenType;
   private final Optional<DeviceType> device;
 
@@ -47,6 +48,7 @@ public class TestEventExport {
     this.survey = Optional.ofNullable(testEvent.getSurveyData());
     this.provider = Optional.ofNullable(testEvent.getProviderData());
     this.facility = Optional.ofNullable(testEvent.getFacility());
+    this.organization = Optional.ofNullable(testEvent.getOrganization());
     this.specimenType =
         Optional.ofNullable(testEvent.getDeviceSpecimen()).map(DeviceSpecimenType::getSpecimenType);
     this.device =
@@ -354,10 +356,7 @@ public class TestEventExport {
 
   @JsonProperty("Organization_name")
   public String getOrganizationName() {
-    return facility
-        .map(Facility::getOrganization)
-        .map(Organization::getOrganizationName)
-        .orElse(null);
+    return organization.map(Organization::getOrganizationName).orElse(null);
   }
 
   @JsonProperty("Ordering_facility_phone_number")
@@ -475,5 +474,10 @@ public class TestEventExport {
   public String getOrderTestDate() {
     // order_test_date = test_date for antigen testing
     return getTestDate();
+  }
+
+  @JsonProperty("Site_of_care")
+  public String getSiteOfCare() {
+    return organization.map(Organization::getOrganizationType).orElse(null);
   }
 }
