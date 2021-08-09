@@ -114,7 +114,7 @@ public class DataHubUploaderService {
     } else {
       // This should only happen when database is empty, throw?
       LOG.error(
-          "No default timestamp, will return everything. Add at least one successful record to the data_hub_upload table.");
+          "No default timestamp, will return everything. Use url to set initial lastEndCreateOn.");
       return null;
     }
   }
@@ -158,8 +158,6 @@ public class DataHubUploaderService {
   }
 
   private void uploadCSVDocument(String apiKey) throws RestClientException {
-    LOG.info("Uploading CSV document");
-
     ByteArrayResource contentsAsResource =
         new ByteArrayResource(this._fileContents.getBytes(StandardCharsets.UTF_8));
 
@@ -211,7 +209,6 @@ public class DataHubUploaderService {
     }
     if (!msgs.isEmpty()) {
       _slack.sendSlackChannelMessage("DataHubUploader not run", msgs, true);
-      msgs.forEach(msg -> LOG.info(msg));
       return;
     }
 
