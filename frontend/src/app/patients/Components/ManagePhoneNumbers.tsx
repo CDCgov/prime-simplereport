@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTranslation } from "react-i18next";
 
@@ -25,8 +25,8 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 }) => {
   const [errors, setErrors] = useState<PhoneNumberErrors[]>([]);
 
-  const { t, i18n } = useTranslation();
-  const { phoneNumberUpdateSchema } = usePersonSchemata();
+  const { t } = useTranslation();
+  const { phoneNumberUpdateSchema, getValidationError } = usePersonSchemata();
 
   const {
     PHONE_TYPE_VALUES,
@@ -70,26 +70,64 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   const validateField = useCallback(
     async (idx: number, field: keyof PhoneNumber) => {
       try {
-        clearError(idx, field);
         await phoneNumberUpdateSchema.validateAt(
           field,
           phoneNumbersOrDefault[idx]
         );
+        clearError(idx, field);
       } catch (e) {
         console.log(e);
         setErrors((existingErrors) => {
           const newErrors = [...existingErrors];
           newErrors[idx] = {
             ...newErrors[idx],
-            [field]: e.errors?.join(", ") || "Field is missing or invalid",
+            [field]: getValidationError(e),
           };
 
           return newErrors;
         });
       }
     },
-    [phoneNumbersOrDefault, clearError, phoneNumberUpdateSchema]
+    [
+      phoneNumbersOrDefault,
+      clearError,
+      phoneNumberUpdateSchema,
+      getValidationError,
+    ]
   );
+
+  // Make sure all existing errors are up-to-date (including translations)
+  useEffect(() => {
+    errors.forEach((phone, idx) => {
+      Object.entries(phone).forEach(async ([field, message]) => {
+        try {
+          await phoneNumberUpdateSchema.validateAt(
+            field,
+            phoneNumbersOrDefault[idx]
+          );
+        } catch (e) {
+          const error = getValidationError(e);
+          if (message && error !== message) {
+            setErrors((existingErrors) => {
+              const newErrors = [...existingErrors];
+              newErrors[idx] = {
+                ...newErrors[idx],
+                [field]: getValidationError(e),
+              };
+
+              return newErrors;
+            });
+          }
+        }
+      });
+    });
+  }, [
+    validateField,
+    errors,
+    phoneNumberUpdateSchema,
+    phoneNumbersOrDefault,
+    getValidationError,
+  ]);
 
   const onPhoneTypeChange = (index: number, newPhoneType: string) => {
     const newPhoneNumbers = Array.from(phoneNumbersOrDefault);

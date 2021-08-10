@@ -15,7 +15,6 @@ import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { showError } from "../../utils";
 import FormGroup from "../../commonComponents/FormGroup";
 import {
-  getValidationErrorOrDefault,
   PersonErrors,
   PersonUpdateFields,
   usePersonSchemata,
@@ -105,6 +104,8 @@ const PersonForm = (props: Props) => {
     personSchema,
     personUpdateSchema,
     selfRegistrationSchema,
+    defaultValidationError,
+    getValidationError,
   } = usePersonSchemata();
 
   const schemata: Record<PersonFormView, SchemaOf<PersonUpdateFields>> = {
@@ -132,21 +133,21 @@ const PersonForm = (props: Props) => {
       } catch (e) {
         setErrors((existingErrors) => ({
           ...existingErrors,
-          [field]: e.errors?.join(", ") || "Field is missing or invalid",
+          [field]: getValidationError(e),
         }));
       }
     },
-    [patient, clearError, schema]
+    [patient, clearError, schema, getValidationError]
   );
 
+  // Make sure all existing errors are up-to-date (including translations)
   useEffect(() => {
     Object.entries(errors).forEach(async ([field, message]) => {
       try {
         await schema.validateAt(field, patient);
       } catch (e) {
-        const error = getValidationErrorOrDefault(e);
+        const error = getValidationError(e);
         if (message && error !== message) {
-          console.log("resetting", { error, message });
           setErrors((existing) => ({
             ...existing,
             [field]: error,
@@ -154,7 +155,7 @@ const PersonForm = (props: Props) => {
         }
       }
     });
-  }, [validateField, errors, schema, patient]);
+  }, [validateField, errors, schema, patient, getValidationError]);
 
   const onPersonChange = <K extends keyof PersonFormData>(field: K) => (
     value: PersonFormData[K]
@@ -204,7 +205,7 @@ const PersonForm = (props: Props) => {
           acc: PersonErrors,
           el: { path: keyof PersonErrors; message: string }
         ) => {
-          acc[el.path] = el?.message || "Field is missing or invalid";
+          acc[el.path] = el?.message || defaultValidationError;
           return acc;
         },
         {} as PersonErrors

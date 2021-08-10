@@ -227,7 +227,7 @@ const translateSelfRegistrationSchema: TranslatedSchema<SelfRegistationFields> =
   yup.object({
     firstName: yup.string().required(t("patient.form.errors.firstName")),
     middleName: yup.string().nullable(),
-    lastName: yup.string().required(),
+    lastName: yup.string().required(t("patient.form.errors.lastName")),
     birthDate: yup
       .string()
       .test("birth-date", t("patient.form.errors.birthDate"), isValidBirthdate)
@@ -241,13 +241,16 @@ export type PhoneNumberErrors = Partial<Record<keyof PhoneNumber, string>>;
 
 export const usePersonSchemata = () => {
   const { t } = useTranslation();
+  // TODO: translate this default error
+  const defaultValidationError = "Field is missing or invalid";
+
   return {
     phoneNumberUpdateSchema: translatePhoneNumberUpdateSchema(t),
     personUpdateSchema: translatePersonUpdateSchema(t),
     personSchema: translatePersonSchema(t),
     selfRegistrationSchema: translateSelfRegistrationSchema(t),
+    defaultValidationError,
+    getValidationError: (e: yup.ValidationError) =>
+      e.errors?.join(", ") || e?.message || defaultValidationError,
   };
 };
-
-export const getValidationErrorOrDefault = (e: yup.ValidationError) =>
-  e.errors?.join(", ") || "Field is missing or invalid";
