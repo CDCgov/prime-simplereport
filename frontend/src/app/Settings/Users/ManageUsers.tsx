@@ -100,7 +100,9 @@ const ManageUsers: React.FC<Props> = ({
   );
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
   const [showAddUserModal, updateShowAddUserModal] = useState(false);
-  const [showResetPasswordModal, updateShowResetPasswordModal] = useState(false);
+  const [showResetPasswordModal, updateShowResetPasswordModal] = useState(
+    false
+  );
   const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
   const [showReactivateUserModal, updateShowReactivateUserModal] = useState(
     false

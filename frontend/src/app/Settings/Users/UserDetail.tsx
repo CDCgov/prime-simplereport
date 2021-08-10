@@ -84,6 +84,16 @@ const UserDetail: React.FC<Props> = ({
             disabled={isUpdating}
           />
         ) : null}
+        {process.env.REACT_APP_EDIT_USER_ROLE === "true" && user.status !== "SUSPENDED" &&
+        user?.id !== loggedInUser.id  ? (
+            <Button
+                variant="outline"
+                className="margin-left-auto margin-bottom-1"
+                onClick={() => updateShowResetPasswordModal(true)}
+                label={"Reset password"}
+                disabled={isUpdating}
+            />
+        ) : null}
       </div>
       <div className="user-content">
         <p className="text-base">
