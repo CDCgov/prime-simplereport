@@ -192,7 +192,7 @@ const FacilityFormContainer: any = (props: Props) => {
 
   if (saveSuccess) {
     if (props.newOrg) {
-      window.location.pathname = "/";
+      window.location.pathname = process.env.REACT_APP_BASE_URL || "";
     }
     return <Redirect push to={{ pathname: "/settings/facilities" }} />;
   }
