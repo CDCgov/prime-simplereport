@@ -3,9 +3,9 @@ name: Run end-to-end tests
 # Run this on pushes to any branch that change a backend file or the workflow definition
 on:
   workflow_dispatch: # because sometimes you just want to force a branch to have tests run
-  push:
-    branches:
-      - "**"
+  # push:
+  #   branches:
+  #     - "**"
 
 env:
   NODE_VERSION: 14
