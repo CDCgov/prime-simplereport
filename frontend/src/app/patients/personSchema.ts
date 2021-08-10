@@ -1,6 +1,8 @@
 import * as yup from "yup";
 import { PhoneNumberUtil } from "google-libphonenumber";
 import moment from "moment";
+import { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
 import {
   RACE_VALUES,
@@ -13,7 +15,6 @@ import {
 } from "../constants";
 import { Option } from "../commonComponents/Dropdown";
 import { languages } from "../../config/constants";
-import i18n from "../../i18n";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -169,38 +170,44 @@ export const selfRegistrationSchema: yup.SchemaOf<SelfRegistationFields> = yup.o
 
 export type PersonErrors = Partial<Record<keyof PersonFormData, string>>;
 
-export const allPersonErrors: Required<PersonErrors> = {
-  firstName: i18n.t("patient.form.errors.firstName"),
-  middleName: i18n.t("patient.form.errors.middleName"),
-  lastName: i18n.t("patient.form.errors.lastName"),
-  lookupId: i18n.t("patient.form.errors.lookupId"),
-  role: i18n.t("patient.form.errors.role"),
-  facilityId: i18n.t("patient.form.errors.facilityId"),
-  birthDate: i18n.t("patient.form.errors.birthDate"),
-  telephone: i18n.t("patient.form.errors.telephone"),
-  phoneNumbers: i18n.t("patient.form.errors.phoneNumbers"),
-  email: i18n.t("patient.form.errors.email"),
-  street: i18n.t("patient.form.errors.street"),
-  streetTwo: i18n.t("patient.form.errors.streetTwo"),
-  zipCode: i18n.t("patient.form.errors.zipCode"),
-  state: i18n.t("patient.form.errors.state"),
-  city: i18n.t("patient.form.errors.city"),
-  county: i18n.t("patient.form.errors.county"),
-  race: i18n.t("patient.form.errors.race"),
-  tribalAffiliation: i18n.t("patient.form.errors.tribalAffiliation"),
-  ethnicity: i18n.t("patient.form.errors.ethnicity"),
-  gender: i18n.t("patient.form.errors.gender"),
-  residentCongregateSetting: i18n.t(
-    "patient.form.errors.residentCongregateSetting"
-  ),
-  employedInHealthcare: i18n.t("patient.form.errors.employedInHealthcare"),
-  preferredLanguage: i18n.t("patient.form.errors.preferredLanguage"),
-  testResultDelivery: i18n.t("patient.form.errors.testResultDelivery"),
+export const usePersonErrors = () => {
+  const { t } = useTranslation();
+
+  return {
+    firstName: t("patient.form.errors.firstName"),
+    middleName: t("patient.form.errors.middleName"),
+    lastName: t("patient.form.errors.lastName"),
+    lookupId: t("patient.form.errors.lookupId"),
+    role: t("patient.form.errors.role"),
+    facilityId: t("patient.form.errors.facilityId"),
+    birthDate: t("patient.form.errors.birthDate"),
+    telephone: t("patient.form.errors.telephone"),
+    phoneNumbers: t("patient.form.errors.phoneNumbers"),
+    email: t("patient.form.errors.email"),
+    street: t("patient.form.errors.street"),
+    streetTwo: t("patient.form.errors.streetTwo"),
+    zipCode: t("patient.form.errors.zipCode"),
+    state: t("patient.form.errors.state"),
+    city: t("patient.form.errors.city"),
+    county: t("patient.form.errors.county"),
+    race: t("patient.form.errors.race"),
+    tribalAffiliation: t("patient.form.errors.tribalAffiliation"),
+    ethnicity: t("patient.form.errors.ethnicity"),
+    gender: t("patient.form.errors.gender"),
+    residentCongregateSetting: t(
+      "patient.form.errors.residentCongregateSetting"
+    ),
+    employedInHealthcare: t("patient.form.errors.employedInHealthcare"),
+    preferredLanguage: t("patient.form.errors.preferredLanguage"),
+    testResultDelivery: t("patient.form.errors.testResultDelivery"),
+  };
 };
 
 export type PhoneNumberErrors = Partial<Record<keyof PhoneNumber, string>>;
 
-export const allPhoneNumberErrors: Required<PhoneNumberErrors> = {
-  number: i18n.t("patient.form.errors.telephone"),
-  type: "Phone type is missing or invalid",
+export const getAllPhoneNumberErrors = (t: TFunction) => {
+  return {
+    number: t("patient.form.errors.telephone"),
+    type: "Phone type is missing or invalid",
+  };
 };

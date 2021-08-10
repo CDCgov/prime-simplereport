@@ -79,4 +79,16 @@ class TestEventExportTest {
 
     assertEquals("2106-3", sut.getPatientRace());
   }
+
+  @Test
+  void json_property_site_of_care_reporting() throws Exception {
+    Organization o = _dataFactory.createValidOrg();
+    Facility f = _dataFactory.createValidFacility(o);
+    Person p = _dataFactory.createFullPerson(o);
+    TestEvent te = _dataFactory.createTestEvent(p, f);
+
+    TestEventExport sut = new TestEventExport(te);
+
+    assertEquals(o.getOrganizationType(), sut.getSiteOfCare());
+  }
 }

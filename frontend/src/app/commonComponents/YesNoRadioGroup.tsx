@@ -1,6 +1,6 @@
 import React from "react";
 
-import { YES_NO_UNKNOWN_VALUES } from "../constants";
+import { useTranslatedConstants } from "../constants";
 
 import RadioGroup from "./RadioGroup";
 
@@ -27,7 +27,7 @@ const YesNoRadioGroup: React.FC<Props> = ({
   errorMessage,
   required,
 }) => {
-  const values = YES_NO_UNKNOWN_VALUES;
+  const { YES_NO_UNKNOWN_VALUES: values } = useTranslatedConstants();
 
   return (
     <RadioGroup
