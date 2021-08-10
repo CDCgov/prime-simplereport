@@ -129,6 +129,7 @@ export interface Props {
   facility: Facility;
   deviceOptions: DeviceType[];
   saveFacility: (facility: Facility) => void;
+  newOrg?: boolean;
 }
 
 const FacilityForm: React.FC<Props> = (props) => {
@@ -292,25 +293,31 @@ const FacilityForm: React.FC<Props> = (props) => {
           "\nYour changes are not saved yet!\n\nClick OK to delete your answers and leave, or Cancel to return and save your progress."
         }
       />
-      <div className="">
+      <div className="padding-bottom-2">
         <div className="prime-container card-container">
           <div className="usa-card__header">
             <div>
               <div className="display-flex flex-align-center">
-                <svg
-                  className="usa-icon text-base margin-left-neg-2px"
-                  aria-hidden="true"
-                  focusable="false"
-                  role="img"
-                >
-                  <use xlinkHref={iconSprite + "#arrow_back"}></use>
-                </svg>
-                <LinkWithQuery
-                  to={`/settings/facilities`}
-                  className="margin-left-05"
-                >
-                  All facilities
-                </LinkWithQuery>
+                {props.newOrg ? (
+                  <h2 className="margin-top-05">Welcome to SimpleReport!</h2>
+                ) : (
+                  <>
+                    <svg
+                      className="usa-icon text-base margin-left-neg-2px"
+                      aria-hidden="true"
+                      focusable="false"
+                      role="img"
+                    >
+                      <use xlinkHref={iconSprite + "#arrow_back"}></use>
+                    </svg>
+                    <LinkWithQuery
+                      to={`/settings/facilities`}
+                      className="margin-left-05"
+                    >
+                      All facilities
+                    </LinkWithQuery>
+                  </>
+                )}
               </div>
               <h1 className="font-heading-lg margin-y-0">{facility.name}</h1>
             </div>
@@ -331,6 +338,9 @@ const FacilityForm: React.FC<Props> = (props) => {
             </div>
           </div>
           <div className="usa-card__body padding-top-2">
+            {props.newOrg ? (
+              <h3>To get started, add a testing facility.</h3>
+            ) : null}
             <RequiredMessage />
             <FacilityInformation
               facility={facility}
@@ -355,7 +365,7 @@ const FacilityForm: React.FC<Props> = (props) => {
           errors={errors}
           validateField={validateField}
         />
-        <div className="float-right margin-bottom-4">
+        <div className="float-right margin-bottom-4 margin-top-4">
           <Button
             className="margin-right-0"
             type="button"
