@@ -13,18 +13,6 @@ concurrency:
   group: prod-deploy
 
 jobs:
-  verify-lower-envs-are-released:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./ops
-    steps:
-      - uses: actions/checkout@v2
-      - name: Check that the current release is in the stg environment
-        env:
-            CURL_TIMEOUT: 5
-        run: make check-stg-commit check-stg-readiness
   build-docker:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
