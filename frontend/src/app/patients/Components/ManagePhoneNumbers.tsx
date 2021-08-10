@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import Button from "../../commonComponents/Button/Button";
 import Input from "../../commonComponents/Input";
 import RadioGroup from "../../commonComponents/RadioGroup";
-import { PhoneNumberErrors, phoneNumberUpdateSchema } from "../personSchema";
+import { PhoneNumberErrors, usePersonSchemata } from "../personSchema";
 import { useTranslatedConstants } from "../../constants";
 
 interface Props {
@@ -25,7 +25,8 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 }) => {
   const [errors, setErrors] = useState<PhoneNumberErrors[]>([]);
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { phoneNumberUpdateSchema } = usePersonSchemata();
 
   const {
     PHONE_TYPE_VALUES,
@@ -87,7 +88,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
         });
       }
     },
-    [phoneNumbersOrDefault, clearError]
+    [phoneNumbersOrDefault, clearError, phoneNumberUpdateSchema]
   );
 
   const onPhoneTypeChange = (index: number, newPhoneType: string) => {

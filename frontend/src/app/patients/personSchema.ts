@@ -1,6 +1,8 @@
 import * as yup from "yup";
 import { PhoneNumberUtil } from "google-libphonenumber";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
+import { TFunction } from "i18next";
 
 import {
   RACE_VALUES,
@@ -13,9 +15,10 @@ import {
 } from "../constants";
 import { Option } from "../commonComponents/Dropdown";
 import { languages } from "../../config/constants";
-import i18n from "../../i18n";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
+
+type TranslatedSchema<T> = (t: TFunction) => yup.SchemaOf<T>;
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -114,47 +117,49 @@ export function isValidBirthdate(date: string | undefined) {
   return true;
 }
 
-const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
+const updateFieldSchemata: (
+  t: TFunction
+) => Record<keyof PersonUpdate, yup.AnySchema> = (t) => ({
   lookupId: yup.string().nullable(),
   role: yup
     .mixed()
     .oneOf(
       [...getValues(ROLE_VALUES), "UNKNOWN", "", null],
-      i18n.t("patient.form.errors.role")
+      t("patient.form.errors.role")
     ),
   telephone: yup.mixed().optional(),
   phoneNumbers: yup
     .array()
     .test(
       "phone-numbers",
-      i18n.t("patient.form.errors.phoneNumbers"),
+      t("patient.form.errors.phoneNumbers"),
       areValidPhoneNumbers
     )
     .required(),
-  email: yup.string().email(i18n.t("patient.form.errors.email")).nullable(),
-  street: yup.string().required(i18n.t("patient.form.errors.street")),
+  email: yup.string().email(t("patient.form.errors.email")).nullable(),
+  street: yup.string().required(t("patient.form.errors.street")),
   streetTwo: yup.string().nullable(),
   city: yup.string().nullable(),
   county: yup.string().nullable(),
-  state: yup.string().required(i18n.t("patient.form.errors.state")),
-  zipCode: yup.string().required(i18n.t("patient.form.errors.zipCode")),
+  state: yup.string().required(t("patient.form.errors.state")),
+  zipCode: yup.string().required(t("patient.form.errors.zipCode")),
   race: yup
     .mixed()
     .oneOf(
       [...getValues(RACE_VALUES), "", null],
-      i18n.t("patient.form.errors.race")
+      t("patient.form.errors.race")
     ),
   ethnicity: yup
     .mixed()
     .oneOf(
       [...getValues(ETHNICITY_VALUES), "", null],
-      i18n.t("patient.form.errors.ethnicity")
+      t("patient.form.errors.ethnicity")
     ),
   gender: yup
     .mixed()
     .oneOf(
       [...getValues(GENDER_VALUES), "", null],
-      i18n.t("patient.form.errors.gender")
+      t("patient.form.errors.gender")
     ),
   residentCongregateSetting: yup.boolean().nullable(),
   employedInHealthcare: yup.boolean().nullable(),
@@ -162,73 +167,87 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
     .mixed()
     .oneOf(
       [...getValues(TRIBAL_AFFILIATION_VALUES), "", null],
-      i18n.t("patient.form.errors.tribalAffiliation")
+      t("patient.form.errors.tribalAffiliation")
     ),
   preferredLanguage: yup
     .mixed()
     .oneOf(
       [...languages, "", null],
-      i18n.t("patient.form.errors.preferredLanguage")
+      t("patient.form.errors.preferredLanguage")
     ),
   testResultDelivery: yup
     .mixed()
     .oneOf(
       [...getValues(TEST_RESULT_DELIVERY_PREFERENCE_VALUES), "", null],
-      i18n.t("patient.form.errors.testResultDelivery")
+      t("patient.form.errors.testResultDelivery")
     ),
-};
+});
 
-const updatePhoneNumberSchemata: Record<keyof PhoneNumber, yup.AnySchema> = {
+const updatePhoneNumberSchemata: (
+  t: TFunction
+) => Record<keyof PhoneNumber, yup.AnySchema> = (t) => ({
   number: yup
     .string()
     .test(
       "phone-number",
-      i18n.t("patient.form.errors.telephone"),
+      t("patient.form.errors.telephone"),
       phoneNumberIsValid
     )
     .required(),
   type: yup
     .mixed()
     .oneOf(getValues(PHONE_TYPE_VALUES), "Phone type is missing or invalid"),
-};
-
-export const phoneNumberUpdateSchema: yup.SchemaOf<PhoneNumber> = yup.object(
-  updatePhoneNumberSchemata
-);
-
-export const personUpdateSchema: yup.SchemaOf<PersonUpdateFields> = yup.object(
-  updateFieldSchemata
-);
-
-export const personSchema: yup.SchemaOf<RequiredPersonFields> = yup.object({
-  firstName: yup.string().required(i18n.t("patient.form.errors.firstName")),
-  middleName: yup.string().nullable(),
-  lastName: yup.string().required(i18n.t("patient.form.errors.lastName")),
-  birthDate: yup
-    .string()
-    .test(
-      "birth-date",
-      i18n.t("patient.form.errors.birthDate"),
-      isValidBirthdate
-    )
-    .required(i18n.t("patient.form.errors.birthDate")),
-  facilityId: yup
-    .string()
-    .nullable()
-    .min(1, i18n.t("patient.form.errors.facilityId")) as any,
-  ...updateFieldSchemata,
 });
 
-export const selfRegistrationSchema: yup.SchemaOf<SelfRegistationFields> = yup.object(
-  {
-    firstName: yup.string().required(i18n.t("patient.form.errors.firstName")),
+const translatePhoneNumberUpdateSchema: TranslatedSchema<PhoneNumber> = (t) =>
+  yup.object(updatePhoneNumberSchemata(t));
+
+const translatePersonUpdateSchema: TranslatedSchema<PersonUpdateFields> = (t) =>
+  yup.object(updateFieldSchemata(t));
+
+const translatePersonSchema: TranslatedSchema<RequiredPersonFields> = (t) =>
+  yup.object({
+    firstName: yup.string().required(t("patient.form.errors.firstName")),
+    middleName: yup.string().nullable(),
+    lastName: yup.string().required(t("patient.form.errors.lastName")),
+    birthDate: yup
+      .string()
+      .test("birth-date", t("patient.form.errors.birthDate"), isValidBirthdate)
+      .required(t("patient.form.errors.birthDate")),
+    facilityId: yup
+      .string()
+      .nullable()
+      .min(1, t("patient.form.errors.facilityId")) as any,
+    ...updateFieldSchemata(t),
+  });
+
+const translateSelfRegistrationSchema: TranslatedSchema<SelfRegistationFields> = (
+  t
+) =>
+  yup.object({
+    firstName: yup.string().required(t("patient.form.errors.firstName")),
     middleName: yup.string().nullable(),
     lastName: yup.string().required(),
-    birthDate: yup.string().test(isValidBirthdate).required(),
-    ...updateFieldSchemata,
-  }
-);
+    birthDate: yup
+      .string()
+      .test("birth-date", t("patient.form.errors.birthDate"), isValidBirthdate)
+      .required(t("patient.form.errors.birthDate")),
+    ...updateFieldSchemata(t),
+  });
 
 export type PersonErrors = Partial<Record<keyof PersonFormData, string>>;
 
 export type PhoneNumberErrors = Partial<Record<keyof PhoneNumber, string>>;
+
+export const usePersonSchemata = () => {
+  const { t } = useTranslation();
+  return {
+    phoneNumberUpdateSchema: translatePhoneNumberUpdateSchema(t),
+    personUpdateSchema: translatePersonUpdateSchema(t),
+    personSchema: translatePersonSchema(t),
+    selfRegistrationSchema: translateSelfRegistrationSchema(t),
+  };
+};
+
+export const getValidationErrorOrDefault = (e: yup.ValidationError) =>
+  e.errors?.join(", ") || "Field is missing or invalid";

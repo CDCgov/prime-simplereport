@@ -15,12 +15,10 @@ import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { showError } from "../../utils";
 import FormGroup from "../../commonComponents/FormGroup";
 import {
-  personSchema,
+  getValidationErrorOrDefault,
   PersonErrors,
-  personUpdateSchema,
-  selfRegistrationSchema,
   PersonUpdateFields,
-  usePersonErrors,
+  usePersonSchemata,
 } from "../personSchema";
 import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
 import Input from "../../commonComponents/Input";
@@ -89,12 +87,6 @@ interface Props {
   view?: PersonFormView;
 }
 
-const schemata: Record<PersonFormView, SchemaOf<PersonUpdateFields>> = {
-  [PersonFormView.APP]: personSchema,
-  [PersonFormView.PXP]: personUpdateSchema,
-  [PersonFormView.SELF_REGISTRATION]: selfRegistrationSchema,
-};
-
 const PersonForm = (props: Props) => {
   const [formChanged, setFormChanged] = useState(false);
   const [patient, setPatient] = useState(props.patient);
@@ -103,32 +95,25 @@ const PersonForm = (props: Props) => {
   const [addressSuggestion, setAddressSuggestion] = useState<
     AddressWithMetaData | undefined
   >();
-
   const languages = getLanguages();
 
   const { view = PersonFormView.APP } = props;
-  const schema = schemata[view];
 
   const { t } = useTranslation();
 
-  const allPersonErrors: Required<PersonErrors> = usePersonErrors();
+  const {
+    personSchema,
+    personUpdateSchema,
+    selfRegistrationSchema,
+  } = usePersonSchemata();
 
-  // Detect language change for form validations
-  useEffect(() => {
-    const translatedErrors = Object.entries(errors).reduce(
-      (acc, [key, value]) => {
-        const errorKey = key as keyof PersonErrors;
-        if (allPersonErrors[errorKey] !== value) {
-          acc[errorKey] = allPersonErrors[errorKey];
-        }
-        return acc;
-      },
-      {} as PersonErrors
-    );
-    if (Object.keys(translatedErrors).length) {
-      setErrors(translatedErrors);
-    }
-  }, [allPersonErrors, errors]);
+  const schemata: Record<PersonFormView, SchemaOf<PersonUpdateFields>> = {
+    [PersonFormView.APP]: personSchema,
+    [PersonFormView.PXP]: personUpdateSchema,
+    [PersonFormView.SELF_REGISTRATION]: selfRegistrationSchema,
+  };
+
+  const schema = schemata[view];
 
   const clearError = useCallback(
     (field: keyof PersonErrors) => {
@@ -142,8 +127,8 @@ const PersonForm = (props: Props) => {
   const validateField = useCallback(
     async (field: keyof PersonErrors) => {
       try {
-        clearError(field);
         await schema.validateAt(field, patient);
+        clearError(field);
       } catch (e) {
         setErrors((existingErrors) => ({
           ...existingErrors,
@@ -151,8 +136,25 @@ const PersonForm = (props: Props) => {
         }));
       }
     },
-    [patient, clearError, schema, allPersonErrors]
+    [patient, clearError, schema]
   );
+
+  useEffect(() => {
+    Object.entries(errors).forEach(async ([field, message]) => {
+      try {
+        await schema.validateAt(field, patient);
+      } catch (e) {
+        const error = getValidationErrorOrDefault(e);
+        if (message && error !== message) {
+          console.log("resetting", { error, message });
+          setErrors((existing) => ({
+            ...existing,
+            [field]: error,
+          }));
+        }
+      }
+    });
+  }, [validateField, errors, schema, patient]);
 
   const onPersonChange = <K extends keyof PersonFormData>(field: K) => (
     value: PersonFormData[K]
