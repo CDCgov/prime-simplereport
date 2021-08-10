@@ -29,13 +29,40 @@ function orderingProviderIsRequired(
 
 type RequiredProviderFields = Nullable<Partial<Provider>>;
 
+const orderingProviderFormatError = (field: string) =>
+  `Ordering provider ${field} is incorrectly formatted`;
+
 const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
-  firstName: yup.string().test(orderingProviderIsRequired),
+  firstName: yup
+    .string()
+    .test(
+      "ordering-provider-first-name",
+      orderingProviderFormatError("first name"),
+      orderingProviderIsRequired
+    ),
   middleName: yup.string().nullable(),
-  lastName: yup.string().test(orderingProviderIsRequired),
+  lastName: yup
+    .string()
+    .test(
+      "ordering-provider-last-name",
+      orderingProviderFormatError("last name"),
+      orderingProviderIsRequired
+    ),
   suffix: yup.string().nullable(),
-  NPI: yup.string().test(orderingProviderIsRequired),
-  phone: yup.string().test(orderingProviderIsRequired),
+  NPI: yup
+    .string()
+    .test(
+      "ordering-provider-npi",
+      orderingProviderFormatError("NPI"),
+      orderingProviderIsRequired
+    ),
+  phone: yup
+    .string()
+    .test(
+      "ordering-provider-phone",
+      orderingProviderFormatError("phone"),
+      orderingProviderIsRequired
+    ),
   street: yup.string().nullable(),
   streetTwo: yup.string().nullable(),
   city: yup.string().nullable(),
@@ -44,48 +71,60 @@ const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
 });
 
 export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
-  name: yup.string().required(),
+  name: yup.string().required("Facility name is missing"),
   cliaNumber: yup
     .string()
-    .required()
-    .test((input, facility) => {
-      if (!stateRequiresCLIANumberValidation(facility.parent.state)) {
-        return true;
-      }
+    .required("CLIA number should be 10 characters (##D#######)")
+    .test(
+      "facility-clia",
+      "CLIA number should be 10 characters (##D#######)",
+      (input, facility) => {
+        if (!stateRequiresCLIANumberValidation(facility.parent.state)) {
+          return true;
+        }
 
-      if (!input) {
-        return false;
-      }
+        if (!input) {
+          return false;
+        }
 
-      return isValidCLIANumber(input);
-    }),
-  street: yup.string().required(),
-  zipCode: yup.string().required(),
-  deviceTypes: yup.array().of(yup.string().required()).min(1).required(),
-  defaultDevice: yup.string().required(),
+        return isValidCLIANumber(input);
+      }
+    ),
+  street: yup.string().required("Facility street is missing"),
+  zipCode: yup.string().required("Facility zip code is missing"),
+  deviceTypes: yup
+    .array()
+    .of(yup.string().required())
+    .min(1, "There must be at least one device")
+    .required("There must be at least one device"),
+  defaultDevice: yup.string().required("A default device must be selected"),
   orderingProvider: providerSchema.nullable(),
   phone: yup
     .string()
-    .test(function (input) {
-      if (!input) {
-        return false;
+    .test(
+      "facility-phone",
+      "Facility phone number is missing or invalid",
+      function (input) {
+        if (!input) {
+          return false;
+        }
+        const number = phoneUtil.parseAndKeepRawInput(input, "US");
+        return phoneUtil.isValidNumber(number);
       }
-      const number = phoneUtil.parseAndKeepRawInput(input, "US");
-      return phoneUtil.isValidNumber(number);
-    })
-    .required(),
+    )
+    .required("Facility phone number is missing or invalid"),
   state: yup
     .string()
-    .test(function (input) {
+    .test("facility-state", "Facility state is missing", function (input) {
       if (!input) {
         return false;
       }
 
       return liveJurisdictions.includes(input);
     })
-    .required(),
+    .required("Facility state is missing"),
   id: yup.string(),
-  email: yup.string().email().nullable(),
+  email: yup.string().email("Email is incorrectly formatted").nullable(),
   streetTwo: yup.string().nullable(),
   city: yup.string().nullable(),
 });
@@ -107,33 +146,3 @@ type FacilityErrorKeys =
 export type FacilityErrors = Partial<
   Record<FacilityErrorKeys, React.ReactNode>
 >;
-
-const orderingProviderFormatError = (field: string) =>
-  `Ordering provider ${field} is incorrectly formatted`;
-
-export const allFacilityErrors: Required<FacilityErrors> = {
-  id: "ID is missing",
-  email: "Email is incorrectly formatted",
-  city: "City is incorrectly formatted",
-  cliaNumber: "CLIA number should be 10 characters (##D#######)",
-  defaultDevice: "A default device must be selected",
-  deviceTypes: "There must be at least one device",
-  name: "Facility name is missing",
-  phone: "Facility phone number is missing or invalid",
-  street: "Facility street is missing",
-  streetTwo: "Facility street is incorrectly formatted",
-  zipCode: "Facility zip code is missing",
-  state: "Facility state is missing",
-  orderingProvider: "Ordering provider is incorrectly formatted",
-  "orderingProvider.NPI": orderingProviderFormatError("NPI"),
-  "orderingProvider.city": orderingProviderFormatError("city"),
-  "orderingProvider.firstName": orderingProviderFormatError("first name"),
-  "orderingProvider.lastName": orderingProviderFormatError("last name"),
-  "orderingProvider.middleName": orderingProviderFormatError("middle name"),
-  "orderingProvider.phone": orderingProviderFormatError("phone"),
-  "orderingProvider.state": orderingProviderFormatError("state"),
-  "orderingProvider.street": orderingProviderFormatError("street"),
-  "orderingProvider.streetTwo": orderingProviderFormatError("street"),
-  "orderingProvider.suffix": orderingProviderFormatError("suffix"),
-  "orderingProvider.zipCode": orderingProviderFormatError("zip code"),
-};
