@@ -22,11 +22,7 @@ import {
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
 import FacilityInformation from "./Components/FacilityInformation";
-import {
-  allFacilityErrors,
-  FacilityErrors,
-  facilitySchema,
-} from "./facilitySchema";
+import { FacilityErrors, facilitySchema } from "./facilitySchema";
 
 export type ValidateField = (field: keyof FacilityErrors) => Promise<void>;
 
@@ -52,7 +48,10 @@ export const useFacilityValidation = (facility: Facility) => {
           },
         });
       } catch (e) {
-        const errorMessage = createFieldError(field, facility);
+        const errorMessage =
+          field === "state" && stateCodes.includes(facility[field])
+            ? createStateError(facility.state)
+            : e.errors.join(", ");
         setErrors((existingErrors) => ({
           ...existingErrors,
           [field]: errorMessage,
@@ -77,7 +76,8 @@ export const useFacilityValidation = (facility: Facility) => {
           acc: FacilityErrors,
           el: { path: keyof FacilityErrors; message: string }
         ) => {
-          acc[el.path] = createFieldError(el.path, facility);
+          acc[el.path] =
+            el.path === "state" ? createStateError(facility.state) : el.message;
           return acc;
         },
         {} as FacilityErrors
@@ -98,29 +98,23 @@ export const useFacilityValidation = (facility: Facility) => {
   return { errors, validateField, validateFacility };
 };
 
-const createFieldError = (field: keyof FacilityErrors, facility: Facility) => {
-  // The `state` field may produce two different errors: one indicating
-  // that no option has been selected and the other indicating that
-  // SimpleReport has not gone live in that particular state.
-  if (field === "state" && stateCodes.includes(facility[field])) {
-    return (
-      <>
-        <span>
-          SimpleReport isn’t currently supported in{" "}
-          {getStateNameFromCode(facility.state)}.
-        </span>
-        <span className="display-block margin-top-05">
-          See a{" "}
-          <a href={urls.FACILITY_INFO}>
-            {" "}
-            list of states where SimpleReport is supported
-          </a>
-          .
-        </span>
-      </>
-    );
-  }
-  return allFacilityErrors[field];
+const createStateError = (stateCode: string | number) => {
+  return (
+    <>
+      <span>
+        SimpleReport isn’t currently supported in{" "}
+        {getStateNameFromCode(stateCode)}.
+      </span>
+      <span className="display-block margin-top-05">
+        See a{" "}
+        <a href={urls.FACILITY_INFO}>
+          {" "}
+          list of states where SimpleReport is supported
+        </a>
+        .
+      </span>
+    </>
+  );
 };
 
 type AddressOptions = "facility" | "provider";
