@@ -20,7 +20,7 @@ describe("phoneNumberIsValid", () => {
   });
 
   it("returns false on nonsense input", () => {
-    expect(phoneNumberIsValid("not a number")).toBe(true);
+    expect(phoneNumberIsValid("not a number")).toBe(false);
   });
 });
 
