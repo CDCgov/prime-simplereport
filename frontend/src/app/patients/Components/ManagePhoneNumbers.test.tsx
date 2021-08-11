@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
+import i18n from "../../../i18n";
+import { es } from "../../../lang/es";
+
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
 
 function ManagePhoneNumbersContainer() {
@@ -20,7 +23,10 @@ describe("ManagePhoneNumbers", () => {
   beforeEach(() => {
     render(<ManagePhoneNumbersContainer />);
   });
-  afterEach(() => {
+  afterEach(async () => {
+    await waitFor(() => {
+      i18n.changeLanguage("en");
+    });
     jest.clearAllMocks();
   });
 
@@ -42,6 +48,48 @@ describe("ManagePhoneNumbers", () => {
         screen.queryByText("Phone number is missing or invalid")
       ).not.toBeInTheDocument()
     );
+  });
+  it("handles multiple errors", async () => {
+    const primary = await screen.findByLabelText("Primary phone", {
+      exact: false,
+    });
+    // Show two errors
+    fireEvent.change(primary, { target: { value: "" } });
+    fireEvent.blur(primary);
+    const addButton = screen.getByText("Add another number", { exact: false });
+    fireEvent.click(addButton);
+    const second = await screen.findByLabelText("Additional phone", {
+      exact: false,
+    });
+    fireEvent.change(second, { target: { value: "" } });
+    fireEvent.blur(second);
+    await waitFor(() => {
+      expect(
+        screen.getAllByText("Phone number is missing or invalid").length
+      ).toBe(2);
+    });
+    // Fix one of the errors
+    fireEvent.change(primary, { target: { value: "3018675309" } });
+    fireEvent.blur(primary);
+    await waitFor(() => {
+      expect(
+        screen.getAllByText("Phone number is missing or invalid").length
+      ).toBe(1);
+    });
+  });
+  it("translates errors", async () => {
+    const primary = await screen.findByLabelText("Primary phone", {
+      exact: false,
+    });
+    // Show two errors
+    fireEvent.change(primary, { target: { value: "" } });
+    fireEvent.blur(primary);
+    await waitFor(() => {
+      i18n.changeLanguage("es");
+    });
+    expect(
+      await screen.findByText(es.translation.patient.form.errors.telephone)
+    ).toBeInTheDocument();
   });
   it("adds and removes phone numbers", async () => {
     const primary = await screen.findByLabelText("Primary phone", {
