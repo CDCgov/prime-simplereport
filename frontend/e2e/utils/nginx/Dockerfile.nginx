@@ -1,4 +1,2 @@
 FROM nginx:1.21.1-alpine
 COPY ./e2e/utils/nginx/conf /etc/nginx/conf.d/default.conf
-
-
