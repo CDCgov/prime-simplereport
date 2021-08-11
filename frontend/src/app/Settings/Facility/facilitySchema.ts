@@ -108,8 +108,12 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
         if (!input) {
           return false;
         }
-        const number = phoneUtil.parseAndKeepRawInput(input, "US");
-        return phoneUtil.isValidNumber(number);
+        try {
+          const number = phoneUtil.parseAndKeepRawInput(input, "US");
+          return phoneUtil.isValidNumber(number);
+        } catch (e) {
+          return false;
+        }
       }
     )
     .required("Facility phone number is missing or invalid"),
