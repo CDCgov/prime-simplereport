@@ -76,7 +76,6 @@ const ManagePhoneNumbers: React.FC<Props> = ({
         );
         clearError(idx, field);
       } catch (e) {
-        console.log(e);
         setErrors((existingErrors) => {
           const newErrors = [...existingErrors];
           newErrors[idx] = {
