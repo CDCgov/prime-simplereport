@@ -2,6 +2,8 @@ import React from "react";
 import { useDispatch, useSelector, connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 
+import { appPermissions } from "../permissions";
+import FacilityFormContainer from "../Settings/Facility/FacilityFormContainer";
 import { RootState, updateFacility } from "../store";
 import { getFacilityIdFromUrl } from "../utils/url";
 
@@ -17,6 +19,11 @@ const WithFacility: React.FC<Props> = ({ children }) => {
   const history = useHistory();
   const isAdmin = useSelector<RootState, boolean>(
     (state) => state.user.isAdmin
+  );
+  const canViewSettings = useSelector<RootState, boolean>((state) =>
+    appPermissions.settings.canView.every((requiredPermission) =>
+      state.user.permissions.includes(requiredPermission)
+    )
   );
   const dataLoaded = useSelector<RootState, boolean>(
     (state) => state.dataLoaded
@@ -47,6 +54,17 @@ const WithFacility: React.FC<Props> = ({ children }) => {
   if (isAdmin && facilities.length === 0) {
     // site admin without an organization
     return <>{children}</>;
+  }
+
+  if (canViewSettings && facilities.length === 0) {
+    // new org needs to create a facility
+    return (
+      <main className="prime-home">
+        <div className="grid-container">
+          <FacilityFormContainer newOrg={true} />
+        </div>
+      </main>
+    );
   }
 
   if (facilities.length === 0) {

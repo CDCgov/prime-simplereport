@@ -131,8 +131,10 @@ public class AccountRequestController {
 
       createAdminUser(org, reqVars);
       _crm.submitAccountRequestData(body);
-    } catch (ResourceException e) {
-      // The `ResourceException` is thrown when an account is requested with an existing org
+    } catch (ResourceException | BadRequestException e) {
+      // The `ResourceException` is thrown when an account is requested with an existing user email
+      // address
+      // The `BadRequestException` is thrown when an account is requested with an existing org
       // name. This happens quite frequently and is expected behavior of the current form
       throw e;
     } catch (IOException | RuntimeException e) {
@@ -155,8 +157,10 @@ public class AccountRequestController {
       createAdminUser(org, reqVars);
       _crm.submitAccountRequestData(body);
       return new AccountResponse(org.getExternalId());
-    } catch (ResourceException e) {
-      // The `ResourceException` is thrown when an account is requested with an existing org
+    } catch (ResourceException | BadRequestException e) {
+      // The `ResourceException` is thrown when an account is requested with an existing user email
+      // address
+      // The `BadRequestException` is thrown when an account is requested with an existing org
       // name. This happens quite frequently and is expected behavior of the current form
       throw e;
     } catch (IOException | RuntimeException e) {
