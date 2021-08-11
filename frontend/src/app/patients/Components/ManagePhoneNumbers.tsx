@@ -98,7 +98,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   // Make sure all existing errors are up-to-date (including translations)
   useEffect(() => {
     errors.forEach((phone, idx) => {
-      Object.entries(phone).forEach(async ([field, message]) => {
+      Object.entries(phone || {}).forEach(async ([field, message]) => {
         try {
           await phoneNumberUpdateSchema.validateAt(
             field,
@@ -192,6 +192,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
                 <button
                   className="usa-button--unstyled padding-105 height-5"
                   onClick={() => onPhoneNumberRemove(idx)}
+                  aria-label={`Delete phone number ${phoneNumber.number}`.trim()}
                 >
                   <FontAwesomeIcon icon={"trash"} className={"text-error"} />
                 </button>
