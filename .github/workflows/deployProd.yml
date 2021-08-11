@@ -30,7 +30,7 @@ jobs:
   prerelease-backend:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    needs: [build-docker, verify-lower-envs-are-released]
+    needs: [build-docker]
     defaults:
       run:
         working-directory: ./ops
@@ -57,7 +57,6 @@ jobs:
   build-frontend:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    needs: [verify-lower-envs-are-released]
     outputs:
       download-url: ${{steps.upload.outputs.url}}
     steps:
