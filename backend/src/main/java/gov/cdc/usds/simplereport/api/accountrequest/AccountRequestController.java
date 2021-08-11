@@ -9,8 +9,10 @@ import com.okta.sdk.resource.ResourceException;
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.accountrequest.errors.AccountRequestFailureException;
 import gov.cdc.usds.simplereport.api.model.Role;
+import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountResponse;
+import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.WaitlistRequest;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -30,7 +32,6 @@ import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,6 +39,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -54,6 +56,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("@" + AUTHORIZER_BEAN + ".permitAllAccountRequests()")
 @RestController
 @RequestMapping(ACCOUNT_REQUEST)
+@RequiredArgsConstructor
 public class AccountRequestController {
   private final OrganizationService _os;
   private final DeviceTypeService _dts;
@@ -62,27 +65,9 @@ public class AccountRequestController {
   private final EmailService _es;
   private final SendGridProperties sendGridProperties;
   private final CrmService _crm;
-  private final ObjectMapper objectMapper;
+  private final ObjectMapper objectMapper = new ObjectMapper();
 
   private static final Logger LOG = LoggerFactory.getLogger(AccountRequestController.class);
-
-  public AccountRequestController(
-      SendGridProperties sendGridProperties,
-      OrganizationService os,
-      DeviceTypeService dts,
-      AddressValidationService avs,
-      ApiUserService aus,
-      EmailService es,
-      CrmService crm) {
-    this.sendGridProperties = sendGridProperties;
-    this._os = os;
-    this._dts = dts;
-    this._avs = avs;
-    this._aus = aus;
-    this._es = es;
-    this._crm = crm;
-    this.objectMapper = new ObjectMapper();
-  }
 
   @ExceptionHandler(BadRequestException.class)
   public ResponseEntity<String> handleException(BadRequestException e) {
@@ -96,12 +81,13 @@ public class AccountRequestController {
 
   /** Read the waitlist request and generate an email body, then send with the emailService */
   @PostMapping("/waitlist")
-  public void submitWaitlistRequest(@Valid @RequestBody WaitlistRequest body) throws IOException {
-    String subject = "New waitlist request";
+  public void submitWaitlistRequest(@Valid @RequestBody WaitlistRequest request)
+      throws IOException {
     if (LOG.isInfoEnabled()) {
-      LOG.info("Waitlist request submitted: {}", objectMapper.writeValueAsString(body));
+      LOG.info("Waitlist request submitted: {}", objectMapper.writeValueAsString(request));
     }
-    _es.send(sendGridProperties.getWaitlistRecipient(), subject, body);
+    String subject = "New waitlist request";
+    _es.send(sendGridProperties.getWaitlistRecipient(), subject, request);
   }
 
   /**
@@ -111,10 +97,10 @@ public class AccountRequestController {
   @SuppressWarnings("checkstyle:illegalcatch")
   @PostMapping("")
   @Transactional(readOnly = false)
-  public void submitAccountRequest(@Valid @RequestBody AccountRequest body) throws IOException {
+  public void submitAccountRequest(@Valid @RequestBody AccountRequest request) throws IOException {
     try {
-      Map<String, String> reqVars = convertAccountRequestToMap(body);
-      Organization org = checkAccountRequestAndCreateOrg(reqVars);
+      logAccountRequest(request);
+      Organization org = checkAccountRequestAndCreateOrgWithFacility(request);
 
       /**
        * Note: we are sending the emails *after* creating the organization so the validation logic
@@ -123,14 +109,43 @@ public class AccountRequestController {
        * entity created for the user that can't be automatically rolled back. (When we add automatic
        * Okta rollback mechanisms down the road, this won't be an issue.)
        */
-      // send summary email to SR support
-      String subject = "New account request";
-      _es.send(sendGridProperties.getAccountRequestRecipient(), subject, body);
-      // send next-steps email to requester
-      _es.sendWithProviderTemplate(body.getEmail(), EmailProviderTemplate.ACCOUNT_REQUEST);
+      sendNewAccountRequestEmailToSrSupport(request.getEmail(), request);
+      createAdminUser(
+          request.getFirstName(), request.getLastName(), request.getEmail(), org.getExternalId());
+      _crm.submitAccountRequestData(request);
+    } catch (ResourceException e) {
+      // The `ResourceException` is thrown when an account is requested with an existing org
+      // name. This happens quite frequently and is expected behavior of the current form
+      throw e;
+    } catch (IOException | RuntimeException e) {
+      throw new AccountRequestFailureException(e);
+    }
+  }
 
-      createAdminUser(org, reqVars);
-      _crm.submitAccountRequestData(body);
+  /**
+   * Read the account request and generate an email body, then send with the emailService and create
+   * org without creating a facility
+   */
+  @SuppressWarnings("checkstyle:illegalcatch")
+  @PostMapping("/without-facility-with-emails")
+  @Transactional(readOnly = false)
+  public void submitAccountRequestWithoutFacility(
+      @Valid @RequestBody OrganizationAccountRequest request) throws IOException {
+    try {
+      logOrganizationAccountRequest(request);
+      Organization org = checkAccountRequestAndCreateOrg(request);
+
+      /**
+       * Note: we are sending the emails *after* creating the organization so the validation logic
+       * in the organization creation process functions as a CAPTCHA. But we are sending the emails
+       * *before* creating the user so that if sendgrid etc fails, we aren't left with an Okta
+       * entity created for the user that can't be automatically rolled back. (When we add automatic
+       * Okta rollback mechanisms down the road, this won't be an issue.)
+       */
+      sendNewAccountRequestEmailToSrSupport(request.getEmail(), request);
+      createAdminUser(
+          request.getFirstName(), request.getLastName(), request.getEmail(), org.getExternalId());
+      _crm.submitOrganizationAccountRequestData(request);
     } catch (ResourceException | BadRequestException e) {
       // The `ResourceException` is thrown when an account is requested with an existing user email
       // address
@@ -149,13 +164,15 @@ public class AccountRequestController {
   @SuppressWarnings("checkstyle:illegalcatch")
   @PostMapping("/organization-create")
   @Transactional(readOnly = false)
-  public AccountResponse submitAccountRequestV2(@Valid @RequestBody AccountRequest body)
+  public AccountResponse submitAccountRequestV2(@Valid @RequestBody AccountRequest request)
       throws IOException {
     try {
-      Map<String, String> reqVars = convertAccountRequestToMap(body);
-      Organization org = checkAccountRequestAndCreateOrg(reqVars);
-      createAdminUser(org, reqVars);
-      _crm.submitAccountRequestData(body);
+      logAccountRequest(request);
+
+      Organization org = checkAccountRequestAndCreateOrgWithFacility(request);
+      createAdminUser(
+          request.getFirstName(), request.getLastName(), request.getEmail(), org.getExternalId());
+      _crm.submitAccountRequestData(request);
       return new AccountResponse(org.getExternalId());
     } catch (ResourceException | BadRequestException e) {
       // The `ResourceException` is thrown when an account is requested with an existing user email
@@ -168,28 +185,33 @@ public class AccountRequestController {
     }
   }
 
-  private Map<String, String> convertAccountRequestToMap(AccountRequest accountRequest)
-      throws JsonProcessingException {
-    if (LOG.isInfoEnabled()) {
-      LOG.info("Account request submitted: {}", objectMapper.writeValueAsString(accountRequest));
+  /** Organization Account request without facility for experian id verification workflow. */
+  @SuppressWarnings("checkstyle:illegalcatch")
+  @PostMapping("/organization-create-without-facility")
+  @Transactional(readOnly = false)
+  public AccountResponse submitOrganizationAccountRequest(
+      @Valid @RequestBody OrganizationAccountRequest request) throws IOException {
+    try {
+      logOrganizationAccountRequest(request);
+      Organization org = checkAccountRequestAndCreateOrg(request);
+      createAdminUser(
+          request.getFirstName(), request.getLastName(), request.getEmail(), org.getExternalId());
+      _crm.submitOrganizationAccountRequestData(request);
+      return new AccountResponse(org.getExternalId());
+    } catch (ResourceException e) {
+      // The `ResourceException` is thrown when an account is requested with an existing org
+      // name. This happens quite frequently and is expected behavior of the current form
+      throw e;
+    } catch (IOException | RuntimeException e) {
+      throw new AccountRequestFailureException(e);
     }
-
-    return accountRequest.toTemplateVariables().entrySet().stream()
-        .collect(
-            HashMap::new,
-            (m, e) -> m.put(e.getKey(), e.getValue() == null ? null : e.getValue().toString()),
-            HashMap::putAll);
   }
 
-  private Organization checkAccountRequestAndCreateOrg(Map<String, String> reqVars)
+  private Organization checkAccountRequestAndCreateOrgWithFacility(AccountRequest request)
       throws IOException {
 
     // verify that the organization doesn't already exist
-    Optional<Organization> potentialDuplicateOrg =
-        _os.getOrganizationByName(reqVars.get("organizationName"));
-    if (potentialDuplicateOrg.isPresent()) {
-      throw new BadRequestException("Organization is a duplicate.");
-    }
+    checkForDuplicateOrg(request.getOrganizationName());
 
     List<DeviceType> devices = _dts.fetchDeviceTypes();
     Map<String, String> deviceNamesToIds =
@@ -200,7 +222,7 @@ public class AccountRequestController {
             .collect(Collectors.toMap(d -> d.getModel(), d -> d.getInternalId().toString()));
 
     List<String> testingDevicesSubmitted =
-        new ArrayList<>(Arrays.asList(reqVars.get("testingDevices").split(", ")));
+        new ArrayList<>(Arrays.asList(request.getTestingDevices().split(", ")));
     testingDevicesSubmitted.removeIf(d -> d.toLowerCase().startsWith("other"));
     List<String> unregisteredTestingDevices = new ArrayList<>();
     List<String> testingDeviceIds =
@@ -223,66 +245,85 @@ public class AccountRequestController {
               unregisteredTestingDevices.iterator().next()));
     }
     String defaultTestingDeviceId =
-        Optional.ofNullable(deviceNamesToIds.get(reqVars.get("defaultTestingDevice")))
-            .orElse(deviceModelsToIds.get(reqVars.get("defaultTestingDevice")));
+        Optional.ofNullable(deviceNamesToIds.get(request.getDefaultTestingDevice()))
+            .orElse(deviceModelsToIds.get(request.getDefaultTestingDevice()));
     if (defaultTestingDeviceId == null) {
       throw new IOException(
           String.format(
               "Submitted default device=%s not registered in DB.",
-              reqVars.get("defaultTestingDevice")));
+              request.getDefaultTestingDevice()));
     }
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
         _dts.getTypesForFacility(defaultTestingDeviceId, testingDeviceIds);
 
     StreetAddress facilityAddress =
         _avs.getValidatedAddress(
-            reqVars.get("streetAddress1"),
-            reqVars.get("streetAddress2"),
-            reqVars.get("city"),
-            reqVars.get("state"),
-            reqVars.get("zip"),
+            request.getStreetAddress1(),
+            request.getStreetAddress2(),
+            request.getCity(),
+            request.getState(),
+            request.getZip(),
             _avs.FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
         new StreetAddress(
-            Translators.parseString(reqVars.get("opStreetAddress1")),
-            Translators.parseString(reqVars.get("opStreetAddress2")),
-            Translators.parseString(reqVars.get("opCity")),
-            Translators.parseState(reqVars.get("opState")),
-            Translators.parseString(reqVars.get("opZip")),
-            Translators.parseString(reqVars.get("opCounty")));
+            Translators.parseString(request.getOpStreetAddress1()),
+            Translators.parseString(request.getOpStreetAddress2()),
+            Translators.parseString(request.getOpCity()),
+            Translators.parseState(request.getOpState()),
+            Translators.parseString(request.getOpZip()),
+            Translators.parseString(request.getOpCounty()));
 
     PersonName providerName =
         Translators.consolidateNameArguments(
-            null, reqVars.get("opFirstName"), null, reqVars.get("opLastName"), null, true);
+            null, request.getOpFirstName(), null, request.getOpLastName(), null, true);
 
-    String orgExternalId =
-        String.format(
-            "%s-%s-%s",
-            reqVars.get("state"),
-            reqVars.get("organizationName").replace(' ', '-').replace(':', '-'),
-            UUID.randomUUID().toString());
+    String orgExternalId = getOrgExternalId(request.getOrganizationName(), request.getState());
 
-    return _os.createOrganization(
-        reqVars.get("organizationName"),
-        getOrganizationTypeFromLabelOrValue(reqVars.get("organizationType")),
+    return _os.createOrganizationAndFacility(
+        request.getOrganizationName(),
+        getOrganizationTypeFromLabelOrValue(request.getOrganizationType()),
         orgExternalId,
-        reqVars.get("facilityName"),
-        reqVars.get("cliaNumber"),
+        request.getFacilityName(),
+        request.getCliaNumber(),
         facilityAddress,
-        Translators.parsePhoneNumber(reqVars.get("facilityPhoneNumber")),
+        Translators.parsePhoneNumber(request.getFacilityPhoneNumber()),
         null,
         deviceSpecimenTypes,
         providerName,
         providerAddress,
-        Translators.parsePhoneNumber(reqVars.get("opPhoneNumber")),
-        reqVars.get("npi"));
+        Translators.parsePhoneNumber(request.getOpPhoneNumber()),
+        request.getNpi());
   }
 
-  private void createAdminUser(Organization org, Map<String, String> reqVars) {
+  private Organization checkAccountRequestAndCreateOrg(OrganizationAccountRequest request) {
+    String organizationName = request.getOrganizationName();
+
+    // verify that the organization doesn't already exist
+    checkForDuplicateOrg(organizationName);
+
+    String orgExternalId = getOrgExternalId(organizationName, request.getState());
+
+    String organizationType = getOrganizationTypeFromLabelOrValue(request.getOrganizationType());
+    return _os.createOrganization(organizationName, organizationType, orgExternalId);
+  }
+
+  private void checkForDuplicateOrg(String organizationName) {
+    Optional<Organization> potentialDuplicateOrg = _os.getOrganizationByName(organizationName);
+    if (potentialDuplicateOrg.isPresent()) {
+      throw new BadRequestException("Organization is a duplicate.");
+    }
+  }
+
+  private String getOrgExternalId(String organizationName, String state) {
+    return String.format(
+        "%s-%s-%s",
+        state, organizationName.replace(' ', '-').replace(':', '-'), UUID.randomUUID().toString());
+  }
+
+  private void createAdminUser(String firstName, String lastName, String email, String externalId) {
     PersonName adminName =
-        Translators.consolidateNameArguments(
-            null, reqVars.get("firstName"), null, reqVars.get("lastName"), null);
-    _aus.createUser(reqVars.get("email"), adminName, org.getExternalId(), Role.ADMIN);
+        Translators.consolidateNameArguments(null, firstName, null, lastName, null);
+    _aus.createUser(email, adminName, externalId, Role.ADMIN);
   }
 
   // This is for temporary compatibility so the request can contain either the type label (old way)
@@ -294,5 +335,27 @@ public class AccountRequestController {
     } catch (IllegalGraphqlArgumentException e) {
       return Translators.parseOrganizationType(labelOrValue);
     }
+  }
+
+  private void logOrganizationAccountRequest(@RequestBody @Valid OrganizationAccountRequest request)
+      throws JsonProcessingException {
+    if (LOG.isInfoEnabled()) {
+      LOG.info("Account request submitted: {}", objectMapper.writeValueAsString(request));
+    }
+  }
+
+  private void logAccountRequest(@RequestBody @Valid AccountRequest request)
+      throws JsonProcessingException {
+    if (LOG.isInfoEnabled()) {
+      LOG.info("Account request submitted: {}", objectMapper.writeValueAsString(request));
+    }
+  }
+
+  private void sendNewAccountRequestEmailToSrSupport(
+      String email, TemplateVariablesProvider templateVariables) throws IOException {
+    String subject = "New account request";
+    _es.send(sendGridProperties.getAccountRequestRecipient(), subject, templateVariables);
+    // send next-steps email to requester
+    _es.sendWithProviderTemplate(email, EmailProviderTemplate.ACCOUNT_REQUEST);
   }
 }
