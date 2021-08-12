@@ -9,7 +9,6 @@ import {
   displayFullNameInOrder,
   displayFullName,
 } from "../../utils";
-import { Role } from "../../permissions";
 import reload from "../../utils/reload";
 
 import CreateUserModal from "./CreateUserModal";
@@ -44,7 +43,6 @@ export type UpdateUser = <K extends keyof SettingsUser>(
   value: SettingsUser[K]
 ) => void;
 
-const roles: Role[] = ["ADMIN", "ENTRY_ONLY", "USER"];
 
 const emptySettingsUser: SettingsUser = {
   firstName: "",
@@ -379,6 +377,13 @@ const ManageUsers: React.FC<Props> = ({
               updateUser={updateUser}
               showReactivateUserModal={showReactivateUserModal}
               updateShowReactivateUserModal={updateShowReactivateUserModal}
+              showDeleteUserModal={showDeleteUserModal}
+              updateShowDeleteUserModal={updateShowDeleteUserModal}
+              showInProgressModal={showInProgressModal}
+              updateShowInProgressModal={updateShowInProgressModal}
+              isUserEdited={isUserEdited}
+              onContinueChangeActiveUser={onContinueChangeActiveUser}
+              handleReactivateUser={handleReactivateUser}
             />
           </div>
         </div>

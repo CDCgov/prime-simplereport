@@ -1,6 +1,7 @@
 
 import React, {  useState } from "react";
 import { Prompt } from "react-router-dom";
+import { Role } from "../../permissions";
 
 import classnames from "classnames";
 
@@ -34,9 +35,15 @@ interface Props {
   updateUser: UpdateUser;
   showReactivateUserModal: boolean;
   updateShowReactivateUserModal: (showReactivateUserModal: boolean) => void;
+  showDeleteUserModal: boolean;
+  updateShowDeleteUserModal: (showDeleteUserModal: boolean) => void;
+  showInProgressModal: boolean;
+  updateShowInProgressModal: (showInProgressUserModal: boolean) => void;
+  isUserEdited: boolean;
+  onContinueChangeActiveUser: () => void;
+  handleReactivateUser: (userId:string) => void;
 }
-
-
+const roles: Role[] = ["ADMIN", "ENTRY_ONLY", "USER"];
 
 const UserDetail: React.FC<Props> = ({
   activeUser,
@@ -48,7 +55,14 @@ const UserDetail: React.FC<Props> = ({
   isUpdating,
   handleDeleteUser,
   showReactivateUserModal,
-  updateShowReactivateUserModal
+  updateShowReactivateUserModal,
+  showDeleteUserModal,
+  updateShowDeleteUserModal,
+  showInProgressModal,
+  updateShowInProgressModal,
+  isUserEdited,
+  onContinueChangeActiveUser,
+  handleReactivateUser
 }) => {
   return (
     <div className="tablet:grid-col padding-left-2">
