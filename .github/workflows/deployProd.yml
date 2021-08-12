@@ -50,7 +50,7 @@ jobs:
         run: make deploy-${{ env.DEPLOY_ENV }}-api
       - name: Wait for correct release to be deployed in staging slot
         timeout-minutes: 5
-        run: make wait-for-${{ env.DEPLOY_ENV }}-slot-release
+        run: make wait-for-${{ env.DEPLOY_ENV }}-slot-commit
       - name: Wait for staging deploy to be ready
         timeout-minutes: 1
         run: make wait-for-${{ env.DEPLOY_ENV }}-slot-readiness
@@ -99,13 +99,10 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Retrieve frontend build from release
-        run: |
-          curl -L -v \
-           --header 'Accept: application/octet-stream' \
-           --header 'Authorization: Bearer ${{secrets.GITHUB_TOKEN}}' \
-           ${{needs.build-frontend.outputs.download-url}} \
-           -o client.tgz
+      - name: Retrieve frontend build
+        uses: actions/download-artifact@v2
+        with:
+          name: frontend-tarball
       - name: Promote and deploy
         uses: ./.github/actions/deploy-application
         with:
