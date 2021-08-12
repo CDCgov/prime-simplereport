@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { PhoneNumberUtil } from "google-libphonenumber";
+import { PhoneNumberUtil, PhoneNumberFormat } from "google-libphonenumber";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 import { TFunction } from "i18next";
@@ -65,6 +65,15 @@ export function phoneNumberIsValid(input: any) {
   } catch (e) {
     return false;
   }
+}
+
+export function areUniquePhoneNumbers(phoneNumbers: any) {
+  const phoneNumbersSeen = new Set(
+    phoneNumbers.map((p: { number: string }) =>
+      phoneUtil.format(phoneUtil.parse(p.number), PhoneNumberFormat.E164)
+    )
+  );
+  return phoneNumbersSeen.size === phoneNumbers.length;
 }
 
 export function areValidPhoneNumbers(phoneNumbers: any) {
@@ -135,6 +144,7 @@ const updateFieldSchemata: (
       t("patient.form.errors.phoneNumbers"),
       areValidPhoneNumbers
     )
+    .test("phone-numbers", "dupe phone numbers", areUniquePhoneNumbers)
     .required(),
   email: yup.string().email(t("patient.form.errors.email")).nullable(),
   street: yup.string().required(t("patient.form.errors.street")),
