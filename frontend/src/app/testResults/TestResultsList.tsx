@@ -367,7 +367,8 @@ export const DetachedTestResultsList: any = ({
                 Test Results
                 {!loadingTotalResults && (
                   <span className="sr-showing-results-on-page">
-                    Showing {(page - 1) * entriesPerPage + 1}-
+                    Showing{" "}
+                    {totalEntries === 0 ? 0 : (page - 1) * entriesPerPage + 1}-
                     {Math.min(entriesPerPage * page, totalEntries)} of{" "}
                     {totalEntries}
                   </span>
