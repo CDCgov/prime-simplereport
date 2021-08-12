@@ -902,6 +902,54 @@ describe("TestResultsList", () => {
     expect(await screen.queryByText("Colleer, Barde X")).toBeInTheDocument();
   });
 
+  it("should be able to clear date filters", async () => {
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks}>
+            <TestResultsList page={1} />
+          </MockedProvider>
+        </Provider>
+      </MemoryRouter>
+    );
+
+    // Apply filter
+    userEvent.type(
+      screen.getAllByTestId("date-picker-external-input")[0],
+      "03/18/2021"
+    );
+
+    userEvent.tab();
+
+    // Filter applied
+    expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
+    expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Cragell, Barb Whitaker")
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen
+        .getAllByTestId("date-picker-external-input")[0]
+        .getAttribute("value")
+    ).toEqual("03/18/2021");
+    // Clear filter
+    expect(await screen.findByText("Clear filters")).toBeInTheDocument();
+    userEvent.click(screen.getByText("Clear filters"));
+
+    // Filter no longer applied
+    expect(
+      await screen.findByText("Cragell, Barb Whitaker")
+    ).toBeInTheDocument();
+
+    // Date picker no longer displays the selected date
+    expect(
+      screen
+        .getAllByTestId("date-picker-external-input")[0]
+        .getAttribute("value")
+    ).toEqual("");
+  });
+
   it("opens the test detail view", async () => {
     render(
       <MemoryRouter>
