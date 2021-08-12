@@ -79,7 +79,7 @@ const PatientProfile = ({ patient }: Props) => {
       <p>{ethnicity || notProvided}</p>
       <h3 className="font-heading-sm">Tribal affiliation</h3>
       <p>{tribalAffiliation || notProvided}</p>
-      <h3 className="font-heading-sm">Biological sex</h3>
+      <h3 className="font-heading-sm">Sex assigned at birth</h3>
       <p>{gender || notProvided}</p>
       <h2 className="prime-formgroup-heading font-heading-lg">Other</h2>
       <h3 className="font-heading-sm">

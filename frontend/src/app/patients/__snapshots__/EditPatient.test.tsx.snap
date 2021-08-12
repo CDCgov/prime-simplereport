@@ -1203,8 +1203,13 @@ Object {
                       <legend
                         class="usa-legend"
                       >
-                        Biological sex
+                        Sex assigned at birth
                       </legend>
+                      <span
+                        class="usa-hint"
+                      >
+                        This is usually the gender that is written on your original birth certificate.
+                      </span>
                       <div
                         class=""
                       >
@@ -2667,8 +2672,13 @@ Object {
                     <legend
                       class="usa-legend"
                     >
-                      Biological sex
+                      Sex assigned at birth
                     </legend>
+                    <span
+                      class="usa-hint"
+                    >
+                      This is usually the gender that is written on your original birth certificate.
+                    </span>
                     <div
                       class=""
                     >
