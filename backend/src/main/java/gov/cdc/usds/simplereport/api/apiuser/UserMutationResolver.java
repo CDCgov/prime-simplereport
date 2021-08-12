@@ -79,8 +79,6 @@ public class UserMutationResolver implements GraphQLMutationResolver {
   }
 
   public User resetUserPassword(UUID id) {
-    System.out.println("made it to the mutation resolver!");
-    LOG.info("BOOYAH resetting user's password in UserMutationResolver");
     UserInfo user = _us.resetUserPassword(id);
     return new User(user);
   }
