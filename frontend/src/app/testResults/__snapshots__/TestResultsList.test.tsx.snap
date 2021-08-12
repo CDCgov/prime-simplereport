@@ -23,6 +23,8 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 class="sr-showing-results-on-page"
               >
                 Showing 
+                1
+                -
                 3
                  of
                  
