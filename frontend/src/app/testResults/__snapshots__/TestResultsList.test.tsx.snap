@@ -22,7 +22,10 @@ exports[`TestResultsList should render a list of tests 1`] = `
               <span
                 class="sr-showing-results-on-page"
               >
-                Showing 
+                Showing
+                 
+                1
+                -
                 3
                  of
                  

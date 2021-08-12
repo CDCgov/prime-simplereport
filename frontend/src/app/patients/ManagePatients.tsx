@@ -220,7 +220,8 @@ export const DetachedManagePatients = ({
                     "Loading..."
                   ) : (
                     <>
-                      Showing {Math.min(entriesPerPage, totalEntries)} of{" "}
+                      Showing {(currentPage - 1) * entriesPerPage + 1}-
+                      {Math.min(entriesPerPage * currentPage, totalEntries)} of{" "}
                       {totalEntries}
                     </>
                   )}
