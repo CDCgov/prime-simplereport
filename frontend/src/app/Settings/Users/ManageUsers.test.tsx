@@ -306,9 +306,9 @@ describe("ManageUsers", () => {
         expect(sendButton).not.toBeDisabled();
       });
       fireEvent.click(sendButton);
-      await waitFor(() => expect(addUserToOrg).toBeCalled());
+      await waitFor(() => expect(addUserToOrg).not.toBeCalled());
       expect(
-        screen.queryAllByText("Email is incorrectly formatted").length
+        screen.queryAllByText("Email must be a valid email address").length
       ).toBe(1);
     });
 
