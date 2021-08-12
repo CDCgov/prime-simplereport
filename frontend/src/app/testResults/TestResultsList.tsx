@@ -246,6 +246,7 @@ export const DetachedTestResultsList: any = ({
   const [endDateEntry, setEndDateEntry] = useState<string>();
   const [startDateError, setStartDateError] = useState<string | undefined>();
   const [endDateError, setEndDateError] = useState<string | undefined>();
+  const [resetCount, setResetCount] = useState<number>(0);
 
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
@@ -383,6 +384,15 @@ export const DetachedTestResultsList: any = ({
                     setRoleFilter("");
                     setStartDateFilter("");
                     setEndDateFilter("");
+                    setStartDateEntry("");
+                    setEndDateEntry("");
+
+                    // The DatePicker component contains bits of state that represent the selected date
+                    // as represented internally to the component and displayed externally to the DOM. Directly
+                    // changing the value of the date via props does not cause the internal state to be updated.
+                    // This hack forces the DatePicker component to be fully re-mounted whenever the filters are
+                    // cleared, therefore resetting the external date display.
+                    setResetCount(resetCount + 1);
                   }}
                 >
                   Clear filters
@@ -423,6 +433,7 @@ export const DetachedTestResultsList: any = ({
                   )}
                   <DatePicker
                     id="start-date"
+                    key={resetCount}
                     name="start-date"
                     data-testid="start-date"
                     value={startDateEntry}
@@ -442,6 +453,7 @@ export const DetachedTestResultsList: any = ({
                   )}
                   <DatePicker
                     id="end-date"
+                    key={resetCount + 1}
                     name="end-date"
                     data-testid="end-date"
                     value={endDateEntry}
