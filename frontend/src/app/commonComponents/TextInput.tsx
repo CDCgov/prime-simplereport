@@ -40,6 +40,8 @@ interface Props {
   format?: string;
   formatMessage?: string;
   labelClassName?: string;
+  min?: number | string;
+  max?: number | string;
 }
 
 type InputProps = JSX.IntrinsicElements["input"];
@@ -66,6 +68,8 @@ export const TextInput = ({
   format,
   formatMessage,
   labelClassName,
+  min,
+  max,
   ...inputProps
 }: Props & InputProps): React.ReactElement => {
   return (
@@ -113,6 +117,8 @@ export const TextInput = ({
             autoComplete={autoComplete}
             size={size}
             pattern={pattern}
+            min={min}
+            max={max}
             inputMode={inputMode}
             ref={inputRef}
             data-format={format}
