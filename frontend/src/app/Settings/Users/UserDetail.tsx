@@ -1,7 +1,9 @@
 import React from "react";
 import { Prompt } from "react-router-dom";
+
 import { Role } from "../../permissions";
 import { displayFullNameInOrder } from "../../utils";
+
 import Button from "../../commonComponents/Button/Button";
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import { UpdateUser } from "./ManageUsers";
