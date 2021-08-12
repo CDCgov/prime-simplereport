@@ -75,7 +75,7 @@ const UserDetail: React.FC<Props> = ({
           </span>
         ) : null}
         {(process.env.REACT_APP_EDIT_USER_ROLE === "true" &&
-          user.status === "SUSPENDED" ? (
+          user.status === "SUSPENDED" ) ? (
           <Button
             variant="secondary"
             className="margin-left-auto margin-bottom-1"
