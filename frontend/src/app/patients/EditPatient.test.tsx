@@ -290,7 +290,7 @@ describe("EditPatient", () => {
     });
 
     it("shows prefer not to answer options", () => {
-      ["Race", "Are you Hispanic or Latino?", "Biological sex"].forEach(
+      ["Race", "Are you Hispanic or Latino?", "Sex assigned at birth"].forEach(
         (legend) => {
           const fieldset = screen.getByText(legend).closest("fieldset");
           if (fieldset === null) {

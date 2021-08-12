@@ -138,7 +138,9 @@ export const en = {
           race: "Race",
           tribalAffiliation: "Tribal affiliation",
           ethnicity: "Are you Hispanic or Latino?",
-          gender: "Biological sex",
+          gender: "Sex assigned at birth",
+          genderHelpText:
+            "This is usually the gender that is written on your original birth certificate.",
         },
         other: {
           heading: "Other",
@@ -173,7 +175,7 @@ export const en = {
           race: "Race is incorrectly formatted",
           tribalAffiliation: "Tribal affiliation is incorrectly formatted",
           ethnicity: "Ethnicity is incorrectly formatted",
-          gender: "Biological sex is incorrectly formatted",
+          gender: "Sex assigned at birth is incorrectly formatted",
           residentCongregateSetting:
             "Are you a resident in a congregate living setting? is required",
           employedInHealthcare: "Are you a health care worker? is required",
