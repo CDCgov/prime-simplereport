@@ -13,7 +13,7 @@ import reload from "../../utils/reload";
 
 import CreateUserModal from "./CreateUserModal";
 import UsersSideNav from "./UsersSideNav";
-import UserDetail from "./UserDetail"
+import UserDetail from "./UserDetail";
 import {
   SettingsUser,
   LimitedUser,
@@ -42,7 +42,6 @@ export type UpdateUser = <K extends keyof SettingsUser>(
   key: K,
   value: SettingsUser[K]
 ) => void;
-
 
 const emptySettingsUser: SettingsUser = {
   firstName: "",
@@ -366,24 +365,24 @@ const ManageUsers: React.FC<Props> = ({
               users={sortedUsers}
               onChangeActiveUser={onChangeActiveUser}
             />
-              <UserDetail
-                user={user}
-                isUpdating={isUpdating}
-                loggedInUser={loggedInUser}
-                allFacilities={allFacilities}
-                handleUpdateUser={handleUpdateUser}
-                handleDeleteUser={handleDeleteUser}
-                updateUser={updateUser}
-                showReactivateUserModal={showReactivateUserModal}
-                updateShowReactivateUserModal={updateShowReactivateUserModal}
-                showDeleteUserModal={showDeleteUserModal}
-                updateShowDeleteUserModal={updateShowDeleteUserModal}
-                showInProgressModal={showInProgressModal}
-                updateShowInProgressModal={updateShowInProgressModal}
-                isUserEdited={isUserEdited}
-                onContinueChangeActiveUser={onContinueChangeActiveUser}
-                handleReactivateUser={handleReactivateUser}
-              />
+            <UserDetail
+              user={user}
+              isUpdating={isUpdating}
+              loggedInUser={loggedInUser}
+              allFacilities={allFacilities}
+              handleUpdateUser={handleUpdateUser}
+              handleDeleteUser={handleDeleteUser}
+              updateUser={updateUser}
+              showReactivateUserModal={showReactivateUserModal}
+              updateShowReactivateUserModal={updateShowReactivateUserModal}
+              showDeleteUserModal={showDeleteUserModal}
+              updateShowDeleteUserModal={updateShowDeleteUserModal}
+              showInProgressModal={showInProgressModal}
+              updateShowInProgressModal={updateShowInProgressModal}
+              isUserEdited={isUserEdited}
+              onContinueChangeActiveUser={onContinueChangeActiveUser}
+              handleReactivateUser={handleReactivateUser}
+            />
           </div>
         </div>
       )}
