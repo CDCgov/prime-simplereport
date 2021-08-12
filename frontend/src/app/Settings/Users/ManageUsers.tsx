@@ -366,24 +366,24 @@ const ManageUsers: React.FC<Props> = ({
               users={sortedUsers}
               onChangeActiveUser={onChangeActiveUser}
             />
-            <UserDetail
-              user={user}
-              isUpdating={isUpdating}
-              loggedInUser={loggedInUser}
-              allFacilities={allFacilities}
-              handleUpdateUser={handleUpdateUser}
-              handleDeleteUser={handleDeleteUser}
-              updateUser={updateUser}
-              showReactivateUserModal={showReactivateUserModal}
-              updateShowReactivateUserModal={updateShowReactivateUserModal}
-              showDeleteUserModal={showDeleteUserModal}
-              updateShowDeleteUserModal={updateShowDeleteUserModal}
-              showInProgressModal={showInProgressModal}
-              updateShowInProgressModal={updateShowInProgressModal}
-              isUserEdited={isUserEdited}
-              onContinueChangeActiveUser={onContinueChangeActiveUser}
-              handleReactivateUser={handleReactivateUser}
-            />
+              <UserDetail
+                user={user}
+                isUpdating={isUpdating}
+                loggedInUser={loggedInUser}
+                allFacilities={allFacilities}
+                handleUpdateUser={handleUpdateUser}
+                handleDeleteUser={handleDeleteUser}
+                updateUser={updateUser}
+                showReactivateUserModal={showReactivateUserModal}
+                updateShowReactivateUserModal={updateShowReactivateUserModal}
+                showDeleteUserModal={showDeleteUserModal}
+                updateShowDeleteUserModal={updateShowDeleteUserModal}
+                showInProgressModal={showInProgressModal}
+                updateShowInProgressModal={updateShowInProgressModal}
+                isUserEdited={isUserEdited}
+                onContinueChangeActiveUser={onContinueChangeActiveUser}
+                handleReactivateUser={handleReactivateUser}
+              />
           </div>
         </div>
       )}

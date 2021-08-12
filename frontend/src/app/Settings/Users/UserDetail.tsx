@@ -1,22 +1,18 @@
 
-import React, {  useState } from "react";
+import React from "react";
 import { Prompt } from "react-router-dom";
 import { Role } from "../../permissions";
 
-import classnames from "classnames";
 
 import { displayFullNameInOrder } from "../../utils";
 import Button from "../../commonComponents/Button/Button";
 
 import {
   SettingsUser,
-  LimitedUser,
   UserFacilitySetting,
 } from "./ManageUsersContainer";
 
-import {
-    UpdateUser
-} from "./ManageUsers"
+import { UpdateUser } from "./ManageUsers"
 import InProgressModal from "./InProgressModal";
 import DeleteUserModal from "./DeleteUserModal";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
@@ -62,6 +58,7 @@ const UserDetail: React.FC<Props> = ({
   onContinueChangeActiveUser,
   handleReactivateUser
 }) => {
+    
   return (
     <div className="tablet:grid-col padding-left-2">
       <div className="user-header grid-row flex-row flex-align-center">
@@ -79,7 +76,7 @@ const UserDetail: React.FC<Props> = ({
         ) : null}
         {(process.env.REACT_APP_EDIT_USER_ROLE === "true" &&
           user.status === "SUSPENDED") ||
-        user.firstName === "test" ? (
+        user.firstName === "test23" ? (
           <Button
             variant="secondary"
             className="margin-left-auto margin-bottom-1"
