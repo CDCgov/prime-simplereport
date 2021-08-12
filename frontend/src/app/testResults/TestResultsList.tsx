@@ -18,6 +18,7 @@ import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName, displayFullNameInOrder } from "../utils";
+import { isValidDate } from "../utils/date";
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
@@ -30,7 +31,6 @@ import {
   COVID_RESULTS,
   ROLE_VALUES,
   TEST_RESULT_DESCRIPTIONS,
-  DATE_FORMAT_MM_DD_YYYY,
 } from "../constants";
 import "./TestResultsList.scss";
 import Button from "../commonComponents/Button/Button";
@@ -323,7 +323,7 @@ export const DetachedTestResultsList: any = ({
   function processDates() {
     var validStart = false;
     if (startDateEntry) {
-      if (!startDateEntry.match(DATE_FORMAT_MM_DD_YYYY)) {
+      if (!isValidDate(startDateEntry)) {
         setStartDateError("Date must be in format MM/DD/YYYY or MM-DD-YYYY");
         setStartDateFilter("");
       } else {
@@ -334,7 +334,7 @@ export const DetachedTestResultsList: any = ({
       }
     }
     if (endDateEntry) {
-      if (!endDateEntry.match(DATE_FORMAT_MM_DD_YYYY)) {
+      if (!isValidDate(endDateEntry)) {
         setEndDateError("Date must be in format MM/DD/YYYY or MM-DD-YYYY");
       } else {
         const endDate = moment(endDateEntry).endOf("day");
