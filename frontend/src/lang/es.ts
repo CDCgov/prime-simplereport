@@ -164,6 +164,7 @@ export const es: LanguageConfig = {
           unsaved:
             "“¡Sus cambios aún no están guardados!Haga clic en OK para descartar cambios, Cancelar para continuar con la edición.",
           validationMsg: "Corrija antes de enviar",
+          fieldLength: "El campo debe tener menos de {{limit}} caracteres",
           firstName: "Se requiere primer nombre",
           middleName: "El segundo nombre tiene un formato incorrecto",
           lastName: "Se requiere apellido",
