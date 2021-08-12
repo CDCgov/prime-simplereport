@@ -1,18 +1,10 @@
-
 import React from "react";
 import { Prompt } from "react-router-dom";
 import { Role } from "../../permissions";
-
-
 import { displayFullNameInOrder } from "../../utils";
 import Button from "../../commonComponents/Button/Button";
-
-import {
-  SettingsUser,
-  UserFacilitySetting,
-} from "./ManageUsersContainer";
-
-import { UpdateUser } from "./ManageUsers"
+import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
+import { UpdateUser } from "./ManageUsers";
 import InProgressModal from "./InProgressModal";
 import DeleteUserModal from "./DeleteUserModal";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
@@ -36,7 +28,7 @@ interface Props {
   updateShowInProgressModal: (showInProgressUserModal: boolean) => void;
   isUserEdited: boolean;
   onContinueChangeActiveUser: () => void;
-  handleReactivateUser: (userId:string) => void;
+  handleReactivateUser: (userId: string) => void;
 }
 const roles: Role[] = ["ADMIN", "ENTRY_ONLY", "USER"];
 
@@ -56,9 +48,8 @@ const UserDetail: React.FC<Props> = ({
   updateShowInProgressModal,
   isUserEdited,
   onContinueChangeActiveUser,
-  handleReactivateUser
+  handleReactivateUser,
 }) => {
-    
   return (
     <div className="tablet:grid-col padding-left-2">
       <div className="user-header grid-row flex-row flex-align-center">
@@ -74,8 +65,8 @@ const UserDetail: React.FC<Props> = ({
             YOU
           </span>
         ) : null}
-        {(process.env.REACT_APP_EDIT_USER_ROLE === "true" &&
-          user.status === "SUSPENDED" ) ? (
+        {process.env.REACT_APP_EDIT_USER_ROLE === "true" &&
+        user.status === "SUSPENDED" ? (
           <Button
             variant="secondary"
             className="margin-left-auto margin-bottom-1"
