@@ -15,6 +15,7 @@ import {
 } from "../constants";
 import { Option } from "../commonComponents/Dropdown";
 import { languages } from "../../config/constants";
+import { TestContext } from "yup";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -97,7 +98,7 @@ export function areValidPhoneNumbers(phoneNumbers: any) {
   });
 }
 
-export function isValidBirthdate(date: string | undefined) {
+export function isValidBirthdate(this: TestContext, date: string | undefined) { 
   if (date === undefined) {
     return false;
   }
@@ -109,10 +110,15 @@ export function isValidBirthdate(date: string | undefined) {
     return false;
   }
   if (parsedDate.year() < 1900) {
-    return false;
+    // TODO: translations
+    return this.createError({
+      message: 'The year you have entered is too far in the past'
+    })
   }
   if (parsedDate.isAfter(moment())) {
-    return false;
+    return this.createError({
+      message: 'Birthdates can\'t be in the future'
+    })
   }
   return true;
 }
