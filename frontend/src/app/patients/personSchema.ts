@@ -144,7 +144,11 @@ const updateFieldSchemata: (
       t("patient.form.errors.phoneNumbers"),
       areValidPhoneNumbers
     )
-    .test("phone-numbers", "dupe phone numbers", areUniquePhoneNumbers)
+    .test(
+      "phone-numbers",
+      t("patient.form.errors.phoneNumbers"),
+      areUniquePhoneNumbers
+    )
     .required(),
   email: yup.string().email(t("patient.form.errors.email")).nullable(),
   street: yup.string().required(t("patient.form.errors.street")),

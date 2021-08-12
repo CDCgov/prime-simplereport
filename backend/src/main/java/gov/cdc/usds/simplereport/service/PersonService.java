@@ -342,7 +342,7 @@ public class PersonService {
         phoneNumber -> {
           phoneNumber.setPerson(person);
           if (phoneNumbersSeen.contains(phoneNumber.getNumber())) {
-            throw new IllegalGraphqlArgumentException("Duplicate phone numbers are not allowed");
+            throw new IllegalGraphqlArgumentException("This phone number has already been added");
           }
           phoneNumbersSeen.add(phoneNumber.getNumber());
         });
