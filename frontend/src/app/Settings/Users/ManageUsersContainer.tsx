@@ -63,6 +63,7 @@ export interface LimitedUser {
   middleName: string;
   lastName: string;
   email: string;
+  status: string;
 }
 
 interface UserData {
