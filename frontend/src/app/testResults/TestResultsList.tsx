@@ -266,6 +266,9 @@ export const DetachedTestResultsList: any = ({
   }, [queryString, queryPatients]);
 
   const onInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    if (event.target.value === "") {
+      setSelectedPatientId("");
+    }
     setShowSuggestion(true);
     setDebounced(event.target.value);
   };
@@ -275,8 +278,10 @@ export const DetachedTestResultsList: any = ({
   };
 
   const onPatientSelect = (patient: Patient) => {
-    setDebounced("");
     setSelectedPatientId(patient.internalId);
+    setDebounced(
+      displayFullName(patient.firstName, patient.middleName, patient.lastName)
+    );
     setShowSuggestion(false);
   };
 
@@ -367,7 +372,9 @@ export const DetachedTestResultsList: any = ({
                 Test Results
                 {!loadingTotalResults && (
                   <span className="sr-showing-results-on-page">
-                    Showing {Math.min(entriesPerPage, totalEntries)} of{" "}
+                    Showing{" "}
+                    {totalEntries === 0 ? 0 : (page - 1) * entriesPerPage + 1}-
+                    {Math.min(entriesPerPage * page, totalEntries)} of{" "}
                     {totalEntries}
                   </span>
                 )}
@@ -402,7 +409,8 @@ export const DetachedTestResultsList: any = ({
                     disabled={!allowQuery}
                     label={"Search by name"}
                     placeholder={""}
-                    className="usa-form-group"
+                    className="usa-form-group search-input_without_submit_button"
+                    showSubmitButton={false}
                   />
                   <SearchResults
                     page="test-results"

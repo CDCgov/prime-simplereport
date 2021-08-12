@@ -22,7 +22,10 @@ exports[`TestResultsList should render a list of tests 1`] = `
               <span
                 class="sr-showing-results-on-page"
               >
-                Showing 
+                Showing
+                 
+                1
+                -
                 3
                  of
                  
@@ -64,7 +67,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 class="person-search"
               >
                 <div
-                  class="prime-search-container usa-form-group"
+                  class="prime-search-container usa-form-group search-input_without_submit_button"
                 >
                   <form
                     class="usa-search usa-search--small prime-search-input display-inline-block"
@@ -86,17 +89,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                         type="search"
                         value=""
                       />
-                      <button
-                        class="usa-button"
-                        disabled=""
-                        type="submit"
-                      >
-                        <span
-                          class="usa-sr-only"
-                        >
-                          Search
-                        </span>
-                      </button>
                     </div>
                   </form>
                 </div>

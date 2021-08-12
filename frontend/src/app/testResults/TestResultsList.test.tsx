@@ -773,6 +773,9 @@ describe("TestResultsList", () => {
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();
     expect(screen.queryByText("Colleer, Barde X")).not.toBeInTheDocument();
+    expect(screen.getByRole("searchbox").getAttribute("value")).toBe(
+      "Cragell, Barb Whitaker"
+    );
   });
   it("should be able to filter by result value", async () => {
     render(
