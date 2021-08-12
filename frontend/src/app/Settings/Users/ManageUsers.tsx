@@ -367,7 +367,6 @@ const ManageUsers: React.FC<Props> = ({
               onChangeActiveUser={onChangeActiveUser}
             />
             <UserDetail
-              activeUser={activeUser}
               user={user}
               isUpdating={isUpdating}
               loggedInUser={loggedInUser}

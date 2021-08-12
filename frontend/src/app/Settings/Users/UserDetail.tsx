@@ -25,7 +25,6 @@ import ReactivateUserModal from "./ReactivateUserModal";
 import "./ManageUsers.scss";
 
 interface Props {
-  activeUser: LimitedUser;
   user: SettingsUser;
   isUpdating: boolean;
   loggedInUser: User;
@@ -46,7 +45,6 @@ interface Props {
 const roles: Role[] = ["ADMIN", "ENTRY_ONLY", "USER"];
 
 const UserDetail: React.FC<Props> = ({
-  activeUser,
   user,
   loggedInUser,
   allFacilities,
@@ -74,14 +72,14 @@ const UserDetail: React.FC<Props> = ({
             user.lastName
           )}
         </h2>
-        {activeUser?.id === loggedInUser.id ? (
+        {user?.id === loggedInUser.id ? (
           <span className="usa-tag margin-left-1 bg-base-lighter text-ink">
             YOU
           </span>
         ) : null}
         {(process.env.REACT_APP_EDIT_USER_ROLE === "true" &&
           user.status === "SUSPENDED") ||
-        activeUser.firstName === "test" ? (
+        user.firstName === "test" ? (
           <Button
             variant="secondary"
             className="margin-left-auto margin-bottom-1"
@@ -119,7 +117,7 @@ const UserDetail: React.FC<Props> = ({
             className="flex-align-self-start display-inline-block"
             onClick={() => updateShowDeleteUserModal(true)}
             label="Remove user"
-            disabled={loggedInUser.id === activeUser.id || isUpdating}
+            disabled={loggedInUser.id === user.id || isUpdating}
           />
         ) : null}
         <Button
