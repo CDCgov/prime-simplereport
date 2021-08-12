@@ -24,6 +24,7 @@ export const liveJurisdictions = [
   "TX",
   "VT",
   "WA",
+  "WI",
   "WY",
 ];
 
