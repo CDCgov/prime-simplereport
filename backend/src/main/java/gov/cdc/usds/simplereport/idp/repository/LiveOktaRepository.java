@@ -344,8 +344,6 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   public void resetUserPassword(String username) {
-    System.out.println("BOOYAH in live reset password");
-    LOG.info("BOOYAH in live resetting user password");
     UserList users = _client.listUsers(username, null, null, null, null);
     if (users.stream().count() == 0) {
       throw new IllegalGraphqlArgumentException(
