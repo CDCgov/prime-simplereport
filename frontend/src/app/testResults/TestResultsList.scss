@@ -81,3 +81,9 @@
   vertical-align: middle;
   font-weight: normal;
 }
+
+.search-input_without_submit_button {
+  input {
+    border: 1px solid rgb(86, 92, 101);
+  }
+}
