@@ -100,7 +100,7 @@ exports[`PatientProfile snapshot 1`] = `
   <h3
     className="font-heading-sm"
   >
-    Biological sex
+    Sex assigned at birth
   </h3>
   <p>
     Not provided

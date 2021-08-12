@@ -45,11 +45,11 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  void createOrganization_standardUser_error() {
+  void createOrganizationAndFacility_standardUser_error() {
     DeviceSpecimenTypeHolder holder = getDeviceConfig();
     PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
     Organization org =
-        _service.createOrganization(
+        _service.createOrganizationAndFacility(
             "Tim's org",
             "k12",
             "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
@@ -92,11 +92,11 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void createOrganization_adminUser_success() {
+  void createOrganizationAndFacility_adminUser_success() {
     DeviceSpecimenTypeHolder holder = getDeviceConfig();
     PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
     Organization org =
-        _service.createOrganization(
+        _service.createOrganizationAndFacility(
             "Tim's org",
             "university",
             "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
@@ -130,13 +130,13 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void createOrganization_orderingProviderRequired_failure() {
+  void createOrganizationAndFacility_orderingProviderRequired_failure() {
     DeviceSpecimenTypeHolder holder = getDeviceConfig();
     PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
     assertThrows(
         OrderingProviderRequiredException.class,
         () -> {
-          _service.createOrganization(
+          _service.createOrganizationAndFacility(
               "Adam's org",
               "urgent_care",
               "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
@@ -155,7 +155,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void getOrganizations_filterByIdentityVerified_success() {
+  void getOrganizationsAndFacility_filterByIdentityVerified_success() {
     Organization verifiedOrg = _dataFactory.createValidOrg();
     Organization unverifiedOrg = _dataFactory.createUnverifiedOrg();
     List<Organization> allOrgs = _service.getOrganizations(null);
