@@ -31,6 +31,7 @@ import ComboBox from "../../commonComponents/ComboBox";
 
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
+
 import "../../../i18n";
 import { formatDate } from "../../utils/date";
 
@@ -353,7 +354,7 @@ const PersonForm = (props: Props) => {
             type="date"
             required={view !== PersonFormView.PXP}
             disabled={view === PersonFormView.PXP}
-            min={formatDate(new Date("Jan 1, 1900"))} 
+            min={formatDate(new Date("Jan 1, 1900"))}
             max={formatDate(new Date())}
           />
         </div>

@@ -8,7 +8,9 @@ export const daysSince = (date: moment.Moment): String => {
 
 export function formatDate(date: string | Date): ISODate;
 export function formatDate(date: undefined | null): null;
-export function formatDate(date: string | undefined | null | Date): ISODate | null;
+export function formatDate(
+  date: string | undefined | null | Date
+): ISODate | null;
 export function formatDate(date: string | undefined | null | Date) {
   if (!date) {
     return null;

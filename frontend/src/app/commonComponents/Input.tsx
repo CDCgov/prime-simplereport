@@ -14,8 +14,8 @@ interface Props<T> {
   type?: HTMLInputElementType;
   required?: boolean;
   disabled?: boolean;
-  min?: number|string;
-  max?: number|string;
+  min?: number | string;
+  max?: number | string;
 }
 
 export const Input = <T extends { [key: string]: any }>({
@@ -31,7 +31,7 @@ export const Input = <T extends { [key: string]: any }>({
   required,
   disabled,
   min,
-  max
+  max,
 }: Props<T>): React.ReactElement => {
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(field)(e.target.value);
