@@ -71,7 +71,7 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     if (
       facilityFromUrl &&
       facilityInStore &&
-      facilityFromUrl !== facilityInStore
+      facilityFromUrl.id !== facilityInStore.id
     ) {
       setActiveFacility(facilityFromUrl);
       return;
@@ -92,7 +92,6 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     // If only one facility in org, use that one
     if (shouldSetOnlyFacility) {
       setActiveFacility(facilities[0]);
-      return;
     }
   }, [
     shouldSetOnlyFacility,
