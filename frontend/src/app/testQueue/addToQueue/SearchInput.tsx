@@ -15,6 +15,7 @@ type Props = {
   label?: string;
   placeholder?: string;
   focusOnMount?: boolean;
+  showSubmitButton?: boolean;
 };
 
 const SearchInput = ({
@@ -26,6 +27,7 @@ const SearchInput = ({
   label,
   placeholder,
   focusOnMount,
+  showSubmitButton = true,
 }: Props) => {
   const classes = classnames(
     "usa-search",
@@ -67,14 +69,16 @@ const SearchInput = ({
             ref={inputRef}
             onFocus={onInputChange}
           />
-          <button
-            type="submit"
-            className="usa-button"
-            disabled={disabled}
-            onClick={onSearchClick}
-          >
-            <span className="usa-sr-only">Search</span>
-          </button>
+          {showSubmitButton && (
+            <button
+              type="submit"
+              className="usa-button"
+              disabled={disabled}
+              onClick={onSearchClick}
+            >
+              <span className="usa-sr-only">Search</span>
+            </button>
+          )}
         </div>
       </form>
     </div>

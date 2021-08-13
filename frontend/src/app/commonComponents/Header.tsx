@@ -153,7 +153,7 @@ const Header: React.FC<{}> = () => {
                     color: "white",
                   }}
                 >
-                  Conduct Tests
+                  Conduct tests
                 </LinkWithQuery>
               </li>
             ) : null}
@@ -254,7 +254,7 @@ const Header: React.FC<{}> = () => {
                     color: "white",
                   }}
                 >
-                  Conduct Tests
+                  Conduct tests
                 </LinkWithQuery>
               </li>
             ) : null}
