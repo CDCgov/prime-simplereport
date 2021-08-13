@@ -193,6 +193,8 @@ const EditPatient = (props: Props) => {
             <PersonForm
               patient={{
                 ...data.patient,
+                tribalAffiliation:
+                  data.patient.tribalAffiliation[0] || undefined,
                 phoneNumbers: data.patient.phoneNumbers.sort(function (
                   x: PhoneNumber,
                   y: PhoneNumber
