@@ -160,6 +160,9 @@ const PersonForm = (props: Props) => {
   const onPersonChange = <K extends keyof PersonFormData>(field: K) => (
     value: PersonFormData[K]
   ) => {
+    if (value === patient[field]) {
+      return;
+    }
     setFormChanged(true);
     setPatient({ ...patient, [field]: value });
   };
@@ -449,7 +452,7 @@ const PersonForm = (props: Props) => {
             onChange={
               onPersonChange("tribalAffiliation") as (value?: string) => void
             }
-            defaultValue={String(patient.tribalAffiliation)}
+            defaultValue={patient.tribalAffiliation || undefined}
           />
         </div>
         <RadioGroup
