@@ -174,6 +174,7 @@ export const es: LanguageConfig = {
             "Se requiere fecha de nacimiento, formateada correctamente (MM/DD/AAAA) y en el pasado",
           telephone: "Falta el número de teléfono o no es válido",
           phoneNumbers: "Faltan los números de teléfono o no son válidos",
+          phoneNumbersDuplicate: "Número de teléfono duplicado ingresado",
           email: "Falta el correo electrónico o tiene un formato incorrecto",
           street: "Falta el nombre de la calle",
           streetTwo: "Calle 2 tiene un formato incorrecto",

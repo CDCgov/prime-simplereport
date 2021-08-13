@@ -152,7 +152,7 @@ const updateFieldSchemata: (
     )
     .test(
       "phone-numbers",
-      t("patient.form.errors.phoneNumbers"),
+      t("patient.form.errors.phoneNumbersDuplicate"),
       areUniquePhoneNumbers
     )
     .required(),

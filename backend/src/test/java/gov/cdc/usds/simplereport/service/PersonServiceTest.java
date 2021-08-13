@@ -274,7 +274,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                   "English",
                   null);
             });
-    assertEquals("Duplicate phone numbers are not allowed", e.getMessage());
+    assertEquals("Duplicate phone number entered", e.getMessage());
   }
 
   @Test
