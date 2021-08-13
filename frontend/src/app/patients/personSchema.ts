@@ -68,12 +68,18 @@ export function phoneNumberIsValid(input: any) {
 }
 
 export function areUniquePhoneNumbers(phoneNumbers: any) {
-  const phoneNumbersSeen = new Set(
-    phoneNumbers.map((p: { number: string }) =>
-      phoneUtil.format(phoneUtil.parse(p.number), PhoneNumberFormat.E164)
-    )
-  );
-  return phoneNumbersSeen.size === phoneNumbers.length;
+  try {
+    const phoneNumbersSeen = new Set(
+      phoneNumbers.map((p: { number: string }) => {
+        const parsedNumber = phoneUtil.parse(p.number, "US");
+        return phoneUtil.format(parsedNumber, PhoneNumberFormat.E164);
+      })
+    );
+    return phoneNumbersSeen.size === phoneNumbers.length;
+  } catch (e) {
+    // parsing number can fail
+    return false;
+  }
 }
 
 export function areValidPhoneNumbers(phoneNumbers: any) {
