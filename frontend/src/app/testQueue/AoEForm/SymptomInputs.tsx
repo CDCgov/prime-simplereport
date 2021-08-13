@@ -36,7 +36,7 @@ const SymptomInputs: React.FC<Props> = ({
   symptomOnsetRef,
 }) => {
   function setFormattedOnsetDate(input: string | null | undefined) {
-    return setOnsetDate(formatDate(input, "MM/DD/YYYY"));
+    return setOnsetDate(formatDate(input));
   }
   return (
     <>

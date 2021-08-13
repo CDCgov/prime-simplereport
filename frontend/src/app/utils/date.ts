@@ -6,13 +6,22 @@ export const daysSince = (date: moment.Moment): String => {
   return `${days} day${days === 1 ? "" : "s"}`;
 };
 
+const formats = [
+  { regexp: /^\d{4}-\d{2}-\d{2}$/, format: "YYYY-MM-DD" },
+  { regexp: /^\d{2}\/\d{2}\/\d{4}$/, format: "MM/DD/YYYY" },
+];
+
 export const formatDate = (
-  date: string | undefined | null,
-  inputFormat?: string
+  date: string | undefined | null | Date
 ): ISODate | null => {
   if (!date) {
     return null;
   }
+
+  const inputFormat =
+    date instanceof Date
+      ? undefined
+      : formats.find(({ regexp }) => regexp.test(date))?.format;
 
   return moment(date, inputFormat).format("YYYY-MM-DD") as ISODate;
 };

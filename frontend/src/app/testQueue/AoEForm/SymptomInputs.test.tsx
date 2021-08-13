@@ -71,7 +71,7 @@ describe("SymptomInputs", () => {
       renderer.act(() => {
         component.root
           .findByProps({ id: "symptom_onset" })
-          .props.onChange("06/03/2021");
+          .props.onChange("2021-06-03");
       });
     });
 
