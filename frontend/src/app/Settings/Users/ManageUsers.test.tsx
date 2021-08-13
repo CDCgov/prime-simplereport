@@ -179,6 +179,19 @@ const TestContainer: React.FC = ({ children }) => (
 );
 
 describe("ManageUsers", () => {
+  const { reload } = window.location;
+
+  beforeAll(() => {
+    Object.defineProperty(window, "location", {
+      writable: true,
+      value: { reload: jest.fn() },
+    });
+  });
+
+  afterAll(() => {
+    window.location.reload = reload;
+  });
+
   beforeEach(() => {
     updateUserPrivileges = jest.fn(() => Promise.resolve());
     addUserToOrg = jest.fn(() =>
