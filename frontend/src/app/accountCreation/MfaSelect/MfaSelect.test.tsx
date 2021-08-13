@@ -12,6 +12,11 @@ import { MfaSelect } from "./MfaSelect";
 
 jest.mock("../AccountCreationApiService", () => ({
   AccountCreationApi: {
+    enrollSecurityKeyMfa: () => {
+      return new Promise((res) => {
+        res({ activation: { challenge: "challenge", user: { id: "userId" } } });
+      });
+    },
     enrollEmailMfa: () => {},
     enrollTotpMfa: (app: "Google" | "Okta") => {
       return new Promise((res, rej) => {
