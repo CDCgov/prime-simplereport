@@ -236,7 +236,7 @@ const ManageUsers: React.FC<Props> = ({
       setAddedUserId(addedUser);
       setIsUpdating(false);
     } catch (e) {
-      setError(e);
+      setIsUpdating(false);
     }
   };
 
