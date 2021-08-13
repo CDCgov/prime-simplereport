@@ -84,15 +84,16 @@ const UserDetail: React.FC<Props> = ({
             disabled={isUpdating}
           />
         ) : null}
-        {process.env.REACT_APP_EDIT_USER_ROLE === "true" && user.status !== "SUSPENDED" &&
-        user?.id !== loggedInUser.id  ? (
-            <Button
-                variant="outline"
-                className="margin-left-auto margin-bottom-1"
-                onClick={() => updateShowResetPasswordModal(true)}
-                label={"Reset password"}
-                disabled={isUpdating}
-            />
+        {process.env.REACT_APP_EDIT_USER_ROLE === "true" &&
+        user.status !== "SUSPENDED" &&
+        user?.id !== loggedInUser.id ? (
+          <Button
+            variant="outline"
+            className="margin-left-auto margin-bottom-1"
+            onClick={() => updateShowResetPasswordModal(true)}
+            label={"Reset password"}
+            disabled={isUpdating}
+          />
         ) : null}
       </div>
       <div className="user-content">
@@ -170,13 +171,13 @@ const UserDetail: React.FC<Props> = ({
           onReactivateUser={handleReactivateUser}
         />
       ) : null}
-        {showResetUserPasswordModal ? (
-            <ResetUserPasswordModal
-                user={user}
-                onClose={() => updateShowResetPasswordModal(false)}
-                onResetPassword={handleResetUserPassword}
-            />
-        ) : null}
+      {showResetUserPasswordModal ? (
+        <ResetUserPasswordModal
+          user={user}
+          onClose={() => updateShowResetPasswordModal(false)}
+          onResetPassword={handleResetUserPassword}
+        />
+      ) : null}
     </div>
   );
 };
