@@ -145,7 +145,7 @@ const PersonalDetailsForm = () => {
               name={field}
               onChange={(date) => {
                 if (date) {
-                  const newDate = moment(date)
+                  const newDate = moment(date, "MM/DD/YYYY")
                     .hour(now.hours())
                     .minute(now.minutes());
                   onDetailChange("dateOfBirth")(newDate.format("YYYY-MM-DD"));
