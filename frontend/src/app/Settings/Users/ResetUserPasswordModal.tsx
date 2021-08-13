@@ -36,7 +36,7 @@ const ResetUserPasswordModal: React.FC<Props> = ({
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">
           <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-            Reset user's password
+            Reset {displayFullName(user.firstName, user.middleName, user.lastName)}'s password
           </h1>
           <button onClick={onClose} className="close-button" aria-label="Close">
             <span className="fa-layers">
@@ -56,8 +56,7 @@ const ResetUserPasswordModal: React.FC<Props> = ({
           </p>
           <p>
             {" "}
-            Doing so will send them an email with a link to reset their
-            password.
+            Doing so will email this person a link to reset their password. The link will expire in 24 hours.
           </p>
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
