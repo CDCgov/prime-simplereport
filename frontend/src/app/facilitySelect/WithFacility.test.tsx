@@ -91,7 +91,7 @@ describe("WithFacility", () => {
         facilities: [{ id: "1", name: "Facility 1" }],
       });
       store.dispatch = jest.fn();
-      component = renderer.create(
+      component = render(
         <Provider store={store}>
           <WithFacility>App</WithFacility>
         </Provider>
@@ -99,7 +99,7 @@ describe("WithFacility", () => {
     });
 
     it("should render with a value", () => {
-      expect(component.toJSON()).toMatchSnapshot();
+      expect(component.container.firstChild).toMatchSnapshot();
     });
     it("should select a facility once", () => {
       expect(store.dispatch).toHaveBeenCalledTimes(1);
