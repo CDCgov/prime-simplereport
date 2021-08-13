@@ -527,8 +527,8 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     ObjectNode resetUserPasswordVariables = JsonNodeFactory.instance.objectNode().put("id", id);
     ObjectNode resp =
         runQuery("reset-user-password", "resetUserPassword", resetUserPasswordVariables, null);
-    ObjectNode updateUser = (ObjectNode) resp.get("updateUser");
-    assertEquals(USERNAMES.get(0), updateUser.get("email").asText());
+    ObjectNode resetUserPassword = (ObjectNode) resp.get("resetUserPassword");
+    assertEquals(USERNAMES.get(0), resetUserPassword.get("email").asText());
   }
 
   @Test
