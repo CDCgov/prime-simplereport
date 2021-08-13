@@ -17,30 +17,34 @@ export const MfaSecurityKey = () => {
 
   useEffect(() => {
     const enrollKey = async () => {
-      const { activation } = await AccountCreationApi.enrollSecurityKeyMfa();
-      if (!activation.challenge) {
-        return;
-      }
-      const publicKey = Object.assign({}, activation);
-      // Convert activation object's challenge and user id from string to binary
-      publicKey.challenge = strToBin(activation.challenge);
-      publicKey.user.id = strToBin(activation.user.id);
+      try {
+        const { activation } = await AccountCreationApi.enrollSecurityKeyMfa();
+        if (!activation.challenge) {
+          return;
+        }
+        const publicKey = Object.assign({}, activation);
+        // Convert activation object's challenge and user id from string to binary
+        publicKey.challenge = strToBin(activation.challenge);
+        publicKey.user.id = strToBin(activation.user.id);
 
-      // navigator.credentials is a global object on WebAuthn-supported clients, used to access WebAuthn API
-      // if the user's browser doesn't support WebAuthn, display a message telling them to use a different browser
-      if (!navigator?.credentials) {
-        setUnsupported(true);
-        return;
+        // navigator.credentials is a global object on WebAuthn-supported clients, used to access WebAuthn API
+        // if the user's browser doesn't support WebAuthn, display a message telling them to use a different browser
+        if (!navigator?.credentials) {
+          setUnsupported(true);
+          return;
+        }
+        navigator.credentials
+          .create({ publicKey })
+          .then(function (newCredential) {
+            // Get attestation and clientData from callback result, convert from binary to string
+            const response = (newCredential as PublicKeyCredential)
+              ?.response as AuthenticatorAttestationResponse;
+            setAttestation(binToStr(response.attestationObject));
+            setClientData(binToStr(response.clientDataJSON));
+          });
+      } catch (e) {
+        console.error(e.message);
       }
-      navigator.credentials
-        .create({ publicKey })
-        .then(function (newCredential) {
-          // Get attestation and clientData from callback result, convert from binary to string
-          const response = (newCredential as PublicKeyCredential)
-            ?.response as AuthenticatorAttestationResponse;
-          setAttestation(binToStr(response.attestationObject));
-          setClientData(binToStr(response.clientDataJSON));
-        });
     };
     enrollKey();
   }, []);

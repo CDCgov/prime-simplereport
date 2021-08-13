@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Switch } from "react-router";
 
 import { MfaEmailVerify } from "../MfaEmailVerify/MfaEmailVerify";
@@ -14,7 +14,9 @@ jest.mock("../AccountCreationApiService", () => ({
   AccountCreationApi: {
     enrollSecurityKeyMfa: () => {
       return new Promise((res) => {
-        res({ activation: { challenge: "challenge", user: { id: "userId" } } });
+        res({
+          activation: { challenge: "some-string", user: { id: "userId" } },
+        });
       });
     },
     enrollEmailMfa: () => {},
@@ -51,9 +53,26 @@ describe("MfaSelect", () => {
   });
 });
 
+function create(obj: any) {
+  return new Promise((cred) => {
+    cred({
+      response: {
+        attestationObject: "attestation",
+        clientDataJSON: "clientDataJSON",
+      },
+    });
+  });
+}
+
 describe("MfaSelect routing", () => {
   let continueButton: HTMLElement;
   beforeEach(() => {
+    let credContainer = { create: create };
+    Object.defineProperty(window.navigator, "credentials", {
+      value: credContainer,
+      configurable: true,
+    });
+
     render(
       <MemoryRouter initialEntries={["/mfa-select"]}>
         <Switch>
@@ -111,16 +130,20 @@ describe("MfaSelect routing", () => {
     ).toBeInTheDocument();
   });
 
-  it("can route to the Security Key page", () => {
+  it("can route to the Security Key page", async () => {
     const securityKeyRadio = screen.getByLabelText(
       "Security key or biometric authentication",
       {
         exact: false,
       }
     );
-    fireEvent.click(securityKeyRadio);
-    expect(securityKeyRadio).toBeChecked();
-    fireEvent.click(continueButton);
+
+    await waitFor(() => {
+      fireEvent.click(securityKeyRadio);
+      expect(securityKeyRadio).toBeChecked();
+      fireEvent.click(continueButton);
+    });
+
     expect(
       screen.getByText(
         "Insert your Security Key in your computer’s USB port or connect it with a USB cable."
