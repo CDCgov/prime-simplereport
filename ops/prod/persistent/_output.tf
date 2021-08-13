@@ -22,3 +22,7 @@ output "app_insights_instrumentation_key" {
 output "postgres_server_name" {
   value = module.db.server_name
 }
+
+output "postgres_server_fqdn" {
+  value = module.db.server_fqdn
+}

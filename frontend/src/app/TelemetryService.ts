@@ -13,7 +13,9 @@ const createTelemetryService = () => {
     const instrumentationKey = process.env.REACT_APP_APPINSIGHTS_KEY;
 
     if (!instrumentationKey) {
-      console.warn("Instrumentation key not provided");
+      if (process.env.NODE_ENV !== "test") {
+        console.warn("Instrumentation key not provided");
+      }
       return;
     }
 
