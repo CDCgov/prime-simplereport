@@ -26,7 +26,7 @@ export function getDateFormat(date: DateInputType) {
   return formats.find(({ regexp }) => regexp.test(date))?.format;
 }
 
-export function asMomentDate(date: DateInputType) {
+export function formattedStringToMoment(date: DateInputType) {
   if (!date) {
     return null;
   }
@@ -41,7 +41,7 @@ export function asMomentDate(date: DateInputType) {
 }
 
 export const formatDate = (date: DateInputType): ISODate | null => {
-  const momentDate = asMomentDate(date);
+  const momentDate = formattedStringToMoment(date);
 
   if (!momentDate) {
     return null;

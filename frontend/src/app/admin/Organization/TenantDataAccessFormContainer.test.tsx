@@ -73,27 +73,29 @@ const mocks = [
     },
     result: {
       data: {
-        id: "e2255aa4-cdbd-4429-859e-9dc642624301",
-        email: "sample@user.com",
-        permissions: [
-          "EDIT_FACILITY",
-          "EDIT_PATIENT",
-          "MANAGE_USERS",
-          "READ_PATIENT_LIST",
-          "UPDATE_TEST",
-          "ARCHIVE_PATIENT",
-          "SUBMIT_TEST",
-          "READ_RESULT_LIST",
-          "EDIT_ORGANIZATION",
-          "ACCESS_ALL_FACILITIES",
-          "SEARCH_PATIENTS",
-          "START_TEST",
-          "READ_ARCHIVED_PATIENT_LIST",
-        ],
-        role: "ADMIN",
-        organization: {
-          name: "Org 1 Name",
-          externalId: "ORG_1",
+        setCurrentUserTenantDataAccess: {
+          id: "e2255aa4-cdbd-4429-859e-9dc642624301",
+          email: "sample@user.com",
+          permissions: [
+            "EDIT_FACILITY",
+            "EDIT_PATIENT",
+            "MANAGE_USERS",
+            "READ_PATIENT_LIST",
+            "UPDATE_TEST",
+            "ARCHIVE_PATIENT",
+            "SUBMIT_TEST",
+            "READ_RESULT_LIST",
+            "EDIT_ORGANIZATION",
+            "ACCESS_ALL_FACILITIES",
+            "SEARCH_PATIENTS",
+            "START_TEST",
+            "READ_ARCHIVED_PATIENT_LIST",
+          ],
+          role: "ADMIN",
+          organization: {
+            name: "Org 1 Name",
+            externalId: "ORG_1",
+          },
         },
       },
     },
@@ -101,6 +103,19 @@ const mocks = [
 ];
 
 describe("TenantDataAccessFormContainer", () => {
+  const { reload } = window.location;
+
+  beforeAll(() => {
+    Object.defineProperty(window, "location", {
+      writable: true,
+      value: { reload: jest.fn() },
+    });
+  });
+
+  afterAll(() => {
+    window.location.reload = reload;
+  });
+
   beforeEach(() => {
     render(
       <MemoryRouter>

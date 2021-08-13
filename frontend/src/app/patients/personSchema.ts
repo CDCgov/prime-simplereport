@@ -15,7 +15,7 @@ import {
 } from "../constants";
 import { Option } from "../commonComponents/Dropdown";
 import { languages } from "../../config/constants";
-import { asMomentDate } from "../utils/date";
+import { formattedStringToMoment } from "../utils/date";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -105,7 +105,7 @@ export function isValidBirthdate(date: string | undefined) {
   if (date.split("/").length === 3 && date.split("/")[2].length < 4) {
     return false;
   }
-  const parsedDate = asMomentDate(date);
+  const parsedDate = formattedStringToMoment(date);
   if (!parsedDate) {
     return false;
   }
