@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
@@ -249,31 +250,33 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     phoneNumbers.add(new PhoneNumber(PhoneType.MOBILE, "2342342344"));
     phoneNumbers.add(new PhoneNumber(PhoneType.LANDLINE, "2342342344"));
 
+    LocalDate birthDate = LocalDate.of(1865, 12, 25);
+    StreetAddress address = _dataFactory.getAddress();
+
     IllegalGraphqlArgumentException e =
         assertThrows(
             IllegalGraphqlArgumentException.class,
-            () -> {
-              _service.addPatient(
-                  (UUID) null,
-                  "FOO",
-                  "Fred",
-                  null,
-                  "Fosbury",
-                  "Sr.",
-                  LocalDate.of(1865, 12, 25),
-                  _dataFactory.getAddress(),
-                  phoneNumbers,
-                  PersonRole.STAFF,
-                  null,
-                  null,
-                  null,
-                  null,
-                  null,
-                  false,
-                  false,
-                  "English",
-                  null);
-            });
+            () ->
+                _service.addPatient(
+                    (UUID) null,
+                    "FOO",
+                    "Fred",
+                    null,
+                    "Fosbury",
+                    "Sr.",
+                    birthDate,
+                    address,
+                    phoneNumbers,
+                    PersonRole.STAFF,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    false,
+                    false,
+                    "English",
+                    null));
     assertEquals("Duplicate phone number entered", e.getMessage());
   }
 
