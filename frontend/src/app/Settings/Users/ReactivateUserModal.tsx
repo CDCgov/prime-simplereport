@@ -54,14 +54,14 @@ const ReactivateUserModal: React.FC<Props> = ({
             </strong>
             's SimpleReport account is currently inactive. They can't log in
             until their account is reactivated.
-            <p>
-              <strong>
-                Please note: Users will have 24 hours to log back in to
-                SimpleReport.
-              </strong>
-            </p>
-            <p>Are you sure you want to reactivate this account?</p>
           </p>
+          <p>
+            <strong>
+              Please note: Users will have 24 hours to log back in to
+              SimpleReport.
+            </strong>
+          </p>
+          <p>Are you sure you want to reactivate this account?</p>
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
           <div className="display-flex flex-justify-end">
