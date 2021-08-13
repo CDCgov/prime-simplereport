@@ -556,7 +556,7 @@ const QueueItem: any = ({
               maxDate={moment().add(1, "days").format("YYYY-MM-DDThh:mm")} // TODO: is this a reasonable max?
               onChange={(date) => {
                 if (date) {
-                  const newDate = moment(date)
+                  const newDate = moment(date, "MM/DD/YYYY")
                     .hour(selectedDate.hours())
                     .minute(selectedDate.minutes());
                   onDateTestedChange(newDate);
