@@ -38,6 +38,9 @@ jobs:
       OKTA_API_TOKEN: ${{ secrets.OKTA_API_TOKEN }}
     steps:
       - uses: actions/checkout@v2
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 0.15.1
