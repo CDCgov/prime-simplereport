@@ -36,7 +36,8 @@ const ReactivateUserModal: React.FC<Props> = ({
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">
           <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-            Reactivate user
+            Reactivate account:{" "}
+            {displayFullName(user.firstName, user.middleName, user.lastName)}
           </h1>
           <button onClick={onClose} className="close-button" aria-label="Close">
             <span className="fa-layers">
@@ -48,24 +49,18 @@ const ReactivateUserModal: React.FC<Props> = ({
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
         <div className="grid-row grid-gap">
           <p>
-            This user has been suspended for inactivity. They will not be able
-            to sign in to SimpleReport until they're reactivated. Are you sure
-            you want to reactivate{" "}
             <strong>
               {displayFullName(user.firstName, user.middleName, user.lastName)}
             </strong>
-            ?
-          </p>
-          <p>
-            <strong>
-              {" "}
-              WARNING: {user.firstName} must sign in to SimpleReport within 24
-              hours.
-            </strong>
+            's SimpleReport account is currently inactive. They can't log in
+            until their account is reactivated.
             <p>
-              If they don't sign in within one day, their account will be
-              re-suspended.
+              <strong>
+                Please note: Users will have 24 hours to log back in to
+                SimpleReport.
+              </strong>
             </p>
+            <p>Are you sure you want to reactivate this account?</p>
           </p>
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
@@ -79,7 +74,7 @@ const ReactivateUserModal: React.FC<Props> = ({
             <Button
               className="margin-right-205"
               onClick={() => onReactivateUser(user.id)}
-              label="Yes, I'm sure"
+              label="Yes, reactivate"
             />
           </div>
         </div>

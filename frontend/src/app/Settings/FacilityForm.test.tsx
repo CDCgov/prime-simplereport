@@ -4,7 +4,6 @@ import { MemoryRouter } from "react-router";
 import * as clia from "../utils/clia";
 import * as state from "../utils/state";
 
-import { allFacilityErrors } from "./Facility/facilitySchema";
 import FacilityForm from "./Facility/FacilityForm";
 import "../../i18n";
 
@@ -251,7 +250,7 @@ describe("FacilityForm", () => {
         });
         fireEvent.blur(cliaInput);
 
-        const expectedError = allFacilityErrors["cliaNumber"] as string;
+        const expectedError = "CLIA number should be 10 characters";
 
         expect(
           await screen.findByText(expectedError, {
@@ -338,9 +337,7 @@ describe("FacilityForm", () => {
         });
         fireEvent.blur(npiInput);
 
-        const expectedError = allFacilityErrors[
-          "orderingProvider.NPI"
-        ] as string;
+        const expectedError = "Ordering provider NPI is incorrectly formatted";
 
         // The mock function was called at least once
         expect(spy.mock.calls.length).toBeGreaterThan(0);

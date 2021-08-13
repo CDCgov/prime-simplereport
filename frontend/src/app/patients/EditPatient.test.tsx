@@ -4,6 +4,7 @@ import {
   fireEvent,
   cleanup,
   within,
+  waitFor,
 } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
@@ -116,7 +117,9 @@ describe("EditPatient", () => {
 
     it("populates primary phone number field with patient `telephone`", () => {
       const legend = "Primary phone number";
-      const input = screen.getByLabelText(legend, { exact: false });
+      const input = screen.getByLabelText(legend, {
+        exact: false,
+      }) as HTMLInputElement;
 
       if (input === null) {
         throw Error(`Unable to corresponding input for ${legend}`);
@@ -223,51 +226,52 @@ describe("EditPatient", () => {
       });
     });
   });
-  describe("non-answer and unknown options", () => {
-    beforeEach(async () => {
-      const mocks = [
-        {
-          request: {
-            query: GET_PATIENT,
-            variables: {
-              id: mockPatientID,
-            },
-          },
-          result: {
-            data: {
-              patient: {
-                firstName: "Eugenia",
-                middleName: null,
-                lastName: "Franecki",
-                birthDate: "1939-10-11",
-                street: "736 Jackson PI NW",
-                streetTwo: "DC",
-                city: null,
-                state: "DC",
-                zipCode: null,
-                telephone: "(634) 397-4114",
-                phoneNumbers: [
-                  {
-                    type: "MOBILE",
-                    number: "(634) 397-4114",
-                  },
-                ],
-                role: "UNKNOWN",
-                email: "foo@bar.com",
-                county: null,
-                race: "refused",
-                ethnicity: "refused",
-                gender: "refused",
-                residentCongregateSetting: null,
-                employedInHealthcare: null,
-                facility: null,
-                testResultDelivery: null,
+
+  const mocks = [
+    {
+      request: {
+        query: GET_PATIENT,
+        variables: {
+          id: mockPatientID,
+        },
+      },
+      result: {
+        data: {
+          patient: {
+            firstName: "Eugenia",
+            middleName: null,
+            lastName: "Franecki",
+            birthDate: "1939-10-11",
+            street: "736 Jackson PI NW",
+            streetTwo: "DC",
+            city: null,
+            state: "DC",
+            zipCode: null,
+            telephone: "(634) 397-4114",
+            phoneNumbers: [
+              {
+                type: "MOBILE",
+                number: "(634) 397-4114",
               },
-            },
+            ],
+            role: "UNKNOWN",
+            email: "foo@bar.com",
+            county: null,
+            race: "refused",
+            ethnicity: "refused",
+            gender: "refused",
+            residentCongregateSetting: null,
+            employedInHealthcare: null,
+            facility: null,
+            testResultDelivery: null,
           },
         },
-      ];
+      },
+    },
+  ];
 
+  describe("non-answer and unknown options", () => {
+    beforeEach(async () => {
       render(
         <MemoryRouter>
           <Provider store={store}>
@@ -286,7 +290,7 @@ describe("EditPatient", () => {
     });
 
     it("shows prefer not to answer options", () => {
-      ["Race", "Are you Hispanic or Latino?", "Biological sex"].forEach(
+      ["Race", "Are you Hispanic or Latino?", "Sex assigned at birth"].forEach(
         (legend) => {
           const fieldset = screen.getByText(legend).closest("fieldset");
           if (fieldset === null) {
@@ -309,6 +313,40 @@ describe("EditPatient", () => {
         }
         const option = within(fieldset).getByLabelText("Unknown");
         expect(option).toBeChecked();
+      });
+    });
+  });
+  describe("form validations", () => {
+    beforeEach(async () => {
+      render(
+        <MemoryRouter>
+          <Provider store={store}>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <EditPatient
+                facilityId={mockFacilityID}
+                patientId={mockPatientID}
+              />
+            </MockedProvider>
+          </Provider>
+        </MemoryRouter>
+      );
+      await screen.findAllByText("Franecki, Eugenia", { exact: false });
+    });
+    it("shows validation errors", async () => {
+      const name = await screen.findByLabelText("First name", { exact: false });
+      // Error message on bad value
+      fireEvent.change(name, { target: { value: "" } });
+      fireEvent.blur(name);
+      await waitFor(() => {
+        expect(screen.getByText("First name is required")).toBeInTheDocument();
+      });
+      // No error message on good value
+      fireEvent.change(name, { target: { value: "James" } });
+      fireEvent.blur(name);
+      await waitFor(() => {
+        expect(
+          screen.queryByText("First name is required")
+        ).not.toBeInTheDocument();
       });
     });
   });

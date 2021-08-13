@@ -39,6 +39,7 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
+      OKTA_API_KEY: ${{ secrets.OKTA_API_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
@@ -47,10 +48,10 @@ jobs:
       - name: Terraform Init
         run: make init-${{ env.DEPLOY_ENV }}
       - name: Terraform deploy (infrastructure and staging slot)
-        run: make deploy-${{ env.DEPLOY_ENV }}-api
+        run: make deploy-${{ env.DEPLOY_ENV }}
       - name: Wait for correct release to be deployed in staging slot
         timeout-minutes: 5
-        run: make wait-for-${{ env.DEPLOY_ENV }}-slot-release
+        run: make wait-for-${{ env.DEPLOY_ENV }}-slot-commit
       - name: Wait for staging deploy to be ready
         timeout-minutes: 1
         run: make wait-for-${{ env.DEPLOY_ENV }}-slot-readiness
@@ -73,8 +74,6 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Add upload URL to environment
-        run: echo UPLOAD_URL=$(jq -r .release.upload_url < ${GITHUB_EVENT_PATH}| sed -e 's/{?name,label}//') >> $GITHUB_ENV
       - uses: ./.github/actions/build-frontend
         name: Build front-end application
         with:
@@ -83,24 +82,12 @@ jobs:
           base-domain-name: simplereport.gov
           client-tarball: ./client.tgz
       - name: Save compiled frontend application
-        id: upload
+        uses: actions/upload-artifact@v2
         if: success()
-        run: |
-          DOWNLOAD_URL=$(
-            curl -s -X POST --header 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-              --data-binary @client.tgz \
-              --header "Accept: application/vnd.github.v3+json" \
-              --header "Content-type:  application/gzip" \
-              "$UPLOAD_URL?name=simple-report-client-application.tgz&label=Compiled%20Client%20Application" \
-            | jq .url
-          )
-          if [[ -n "$DOWNLOAD_URL" ]]; then
-            echo Uploaded file to $DOWNLOAD_URL
-            echo "::set-output name=url::$DOWNLOAD_URL"
-          else
-            echo "Upload unsuccessful (probably you already uploaded it?)"
-            exit 1
-          fi
+        with:
+          name: frontend-tarball
+          path: client.tgz
+          retention-days: 1
   deploy:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
@@ -113,13 +100,10 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Retrieve frontend build from release
-        run: |
-          curl -L -v \
-           --header 'Accept: application/octet-stream' \
-           --header 'Authorization: Bearer ${{secrets.GITHUB_TOKEN}}' \
-           ${{needs.build-frontend.outputs.download-url}} \
-           -o client.tgz
+      - name: Retrieve frontend build
+        uses: actions/download-artifact@v2
+        with:
+          name: frontend-tarball
       - name: Promote and deploy
         uses: ./.github/actions/deploy-application
         with:

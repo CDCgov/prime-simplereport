@@ -1173,8 +1173,13 @@ exports[`PatientFormContainer snapshot 1`] = `
                 <legend
                   className="usa-legend"
                 >
-                  Biological sex
+                  Sex assigned at birth
                 </legend>
+                <span
+                  className="usa-hint"
+                >
+                  This is usually the gender that is written on your original birth certificate.
+                </span>
                 <div
                   className=""
                 >
