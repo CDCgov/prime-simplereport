@@ -9,21 +9,45 @@ export const daysSince = (date: moment.Moment): String => {
 const formats = [
   { regexp: /^\d{4}-\d{2}-\d{2}$/, format: "YYYY-MM-DD" },
   { regexp: /^\d{2}\/\d{2}\/\d{4}$/, format: "MM/DD/YYYY" },
+  { regexp: /^\d{2}\/\d{2}\/\d{2}$/, format: "MM/DD/YY" },
+  { regexp: /^\d{1,2}\/\d{1,2}\/\d{2}$/, format: "M/D/YY" },
+  { regexp: /^\d{1,2}\/\d{1,2}\/\d{4}$/, format: "M/D/YYYY" },
+  { regexp: /^\d{2}-\d{2}-\d{4}$/, format: "MM-DD-YYYY" },
+  { regexp: /^\d{1,2}-\d{1,2}-\d{4}$/, format: "M-D-YYYY" },
 ];
 
-export const formatDate = (
-  date: string | undefined | null | Date
-): ISODate | null => {
+type DateInputType = string | undefined | null | Date;
+
+export function getDateFormat(date: DateInputType) {
+  if (!date || date instanceof Date) {
+    return undefined;
+  }
+
+  return formats.find(({ regexp }) => regexp.test(date))?.format;
+}
+
+export function asMomentDate(date: DateInputType) {
   if (!date) {
     return null;
   }
 
-  const inputFormat =
-    date instanceof Date
-      ? undefined
-      : formats.find(({ regexp }) => regexp.test(date))?.format;
+  const dateFormat = getDateFormat(date);
 
-  return moment(date, inputFormat).format("YYYY-MM-DD") as ISODate;
+  if (date instanceof Date || dateFormat) {
+    return moment(date, dateFormat);
+  }
+
+  return null;
+}
+
+export const formatDate = (date: DateInputType): ISODate | null => {
+  const momentDate = asMomentDate(date);
+
+  if (!momentDate) {
+    return null;
+  }
+
+  return momentDate.format("YYYY-MM-DD") as ISODate;
 };
 
 export const isValidDate = (date: string): boolean => {
