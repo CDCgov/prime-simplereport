@@ -447,7 +447,7 @@ const QueueItem: any = ({
         patientId: removePatientId,
       },
     })
-      .then(refetchQueue)
+      .then(() => refetchQueue())
       .then(() => removeTimer(internalId))
       .catch((error) => {
         updateMutationError(error);
