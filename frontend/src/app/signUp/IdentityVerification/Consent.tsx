@@ -4,14 +4,12 @@ import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button/Button";
 import { useSearchParam } from "../../utils/url";
-import Checkboxes from "../../commonComponents/Checkboxes";
 
 import PersonalDetailsForm from "./PersonalDetailsForm";
 
 const Consent = () => {
   // Get organization ID from URL
   const orgExternalId = useSearchParam("orgExternalId");
-  const [consentGiven, setConsentGiven] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState(false);
 
   if (orgExternalId === null) {
@@ -32,7 +30,7 @@ const Consent = () => {
 
   return (
     <CardBackground>
-      <Card logo bodyKicker="Consent to Identify Verification">
+      <Card logo bodyKicker="Identity verification consent">
         <div className="margin-bottom-2">
           <p className="font-ui-2xs text-base">
             To create your account, you’ll need to consent to identity
@@ -40,10 +38,10 @@ const Consent = () => {
             <a href="https://www.experian.com/decision-analytics/identity-proofing">
               Experian
             </a>
-            . SimpleReport doesn’t access identity verification details.
+            . SimpleReport doesn’t access your identity verification details.
           </p>
           <p className="font-ui-2xs text-base margin-top-0">
-            You understand that by clicking on the I AGREE button immediately
+            You understand that by clicking on the "I agree" button immediately
             following this notice, you are providing ‘written instructions’ to
             SimpleReport under the Fair Credit Reporting Act authorizing
             SimpleReport to obtain information from your personal credit profile
@@ -59,30 +57,14 @@ const Consent = () => {
             applicable, this information may also be shared by us with other
             companies to support your transactions and for fraud avoidance
             purposes. You can see a more detailed list of information
-            potentially disclosed and how we use your data in our Privacy
-            Policy.
+            potentially disclosed and how we use your data in our{" "}
+            <a href="https://www.cdc.gov/other/privacy.html">privacy policy</a>.
           </p>
-          <div className="display-flex flex-column flex-align-center">
-            <Checkboxes
-              className="margin-top-neg-3"
-              onChange={(e) => setConsentGiven(e.target.checked)}
-              name="consent_given"
-              legend=""
-              boxes={[
-                {
-                  value: "1",
-                  label: "I AGREE",
-                  checked: consentGiven,
-                },
-              ]}
-            />
-          </div>
         </div>
         <Button
           className="width-full"
-          disabled={!consentGiven}
           onClick={() => setSubmitted(true)}
-          label={"Submit"}
+          label={"I agree"}
         />
       </Card>
     </CardBackground>
