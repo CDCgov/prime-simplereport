@@ -33,7 +33,7 @@ const Consent = () => {
       <Card logo bodyKicker="Identity verification consent">
         <div className="margin-bottom-2">
           <p className="font-ui-2xs text-base">
-            To create your account, you’ll need to consent to identity
+            To create an account, you’ll need to consent to identity
             verification by{" "}
             <a href="https://www.experian.com/decision-analytics/identity-proofing">
               Experian
@@ -43,15 +43,15 @@ const Consent = () => {
           <p className="font-ui-2xs text-base margin-top-0">
             You understand that by clicking on the "I agree" button immediately
             following this notice, you are providing ‘written instructions’ to
-            SimpleReport under the Fair Credit Reporting Act authorizing
+            SimpleReport under the Fair Credit Reporting Act, authorizing
             SimpleReport to obtain information from your personal credit profile
             or other information from Experian. You authorize SimpleReport to
             obtain such information solely to verify your identity to avoid
             fraudulent transactions in your name.
           </p>
-          <p className="font-ui-2xs text-base margin-top-0 margin-bottom-neg-2">
+          <p className="font-ui-2xs text-base margin-top-0">
             You authorize your wireless operator to disclose to us details of
-            your account, subscriber, billing and device, if available, to
+            your account, subscriber, billing, and device, if available, to
             support verification of identity, fraud avoidance in support of and
             for the duration of your business relationship with us. Where
             applicable, this information may also be shared by us with other
