@@ -145,7 +145,7 @@ export const en = {
         other: {
           heading: "Other",
           congregateLiving: {
-            heading: "Are you a resident in a congregate living setting?",
+            heading: "Are you a resident in a congregate living setggggting?",
             helpText:
               "For example: nursing home, group home, prison, jail, or military",
           },
@@ -204,6 +204,10 @@ export const en = {
     testResult: {
       result: "SARS-CoV-2 result",
       patient: "Patient",
+      patientDetails: "Patient details",
+      name: "Name",
+      testDetails: "Test details",
+      testName: "Test name",
       testResult: "Test result",
       testDate: "Test date",
       positive: "Positive",
@@ -211,10 +215,24 @@ export const en = {
       undetermined: "Inconclusive",
       unknown: "Unknown",
       testDevice: "Test device",
+      specimen: "Specimen ID",
       meaning: "What does my result mean?",
       information:
         "For more information, please visit the <0>Centers for Disease Control and Prevention (CDC) website</0> or contact your local health department.",
+      testingFacility: {
+        details: "Testing facility details",
+        name: "Testing facility name",
+        phone: "Testing facility phone",
+        address: "Testing facility address",
+        clia: "CLIA number",
+        orderingProvider: "Ordering provider",
+        npi: "NPI",
+      },
       notes: {
+        meaning:
+          "COVID-19 antigen tests can sometimes provid inaccurate or false results and follow up testing may be needed. Continue " +
+          "social distancing and wearing a mask. Contact your health care provider to determine if additional " +
+          "testing is needed especially if you experience any of these  symptoms.",
         positive: {
           p1:
             "Most people who get COVID-19 will be able to recover at home. Make sure to follow CDC guidelines for people who are recovering at " +

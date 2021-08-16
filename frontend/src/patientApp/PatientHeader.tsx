@@ -1,10 +1,11 @@
+import React from "react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 
 import siteLogo from "../img/simplereport-logomark-color.svg";
 import "../styles/fontAwesome";
-import i18n from "../i18n";
-import Button from "../app/commonComponents/Button/Button";
+
+import LanguageToggler from "./LanguageToggler";
 
 const PatientHeader = () => {
   const organization = useSelector(
@@ -40,16 +41,7 @@ const PatientHeader = () => {
           </div>
         </div>
         <div className="display-flex flex-align-end">
-          <Button
-            icon={"globe"}
-            className="usa-button--unstyled"
-            onClick={async () => {
-              const displayLanguage = i18n.language === "en" ? "es" : "en";
-              await i18n.changeLanguage(displayLanguage);
-            }}
-          >
-            {i18n.language === "en" ? "Español" : "English"}
-          </Button>
+          <LanguageToggler />
         </div>
       </div>
     </header>

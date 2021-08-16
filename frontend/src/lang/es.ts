@@ -213,6 +213,10 @@ export const es: LanguageConfig = {
     testResult: {
       result: "Resultado de SARS-CoV-2",
       patient: "Paciente",
+      patientDetails: "Detalles del paciente",
+      name: "Nombre",
+      testDetails: "Detalles de la prueba",
+      testName: "Nombre de la prueba",
       testResult: "Resultado de la prueba",
       testDate: "Fecha de la prueba",
       positive: POSITIVE,
@@ -220,11 +224,27 @@ export const es: LanguageConfig = {
       undetermined: UNDETERMINED,
       unknown: UNKNOWN,
       testDevice: "Dispositivo de prueba",
+      specimen: "Identificación de la muestra",
       meaning: "¿Qué significa mi resultado?",
       information:
         "Para obtener más información, visite el <0>sitio web de los Centros para el Control y la Prevención de Enfermedades (CDC)</0> o comuníquese con su departamento de " +
         "salud local.",
+      testingFacility: {
+        details: "Detalles del centro de pruebas",
+        name: "Nombre del centro de pruebas",
+        phone: "Teléfono del centro de pruebas",
+        address: "Dirección del centro de pruebas",
+        clia:
+          "Número de Enmiendas para Mejoras de Laboratorios Clínicos (CLIA)",
+        orderingProvider: "Solicitado por",
+        npi: "Identificador de Proveedor Nacional (NPI)",
+      },
       notes: {
+        meaning:
+          "Las pruebas de antígenos de COVID-19 a veces pueden arrojar resultados inexactos o falsos, y es posible que se " +
+          "necesiten pruebas de seguimiento. Continúe practicando el distanciamiento social y usando mascarilla. Comuníquese " +
+          "con su proveedor de atención médica para determinar si es necesario realizar pruebas adicionales, especialmente si " +
+          "tiene alguno de estos síntomas.",
         positive: {
           p1:
             "La mayoría de las personas que contraen COVID-19 pueden recuperarse en casa.  Asegúrese de seguir las directrices de los CDC para las personas que se están " +
