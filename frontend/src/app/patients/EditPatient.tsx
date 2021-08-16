@@ -66,10 +66,7 @@ interface GetPatientResponse {
     state: string;
     zipCode: string;
     telephone: string;
-    phoneNumbers: {
-      type: string;
-      number: string;
-    }[];
+    phoneNumbers: PhoneNumber[];
     role: Role | null;
     lookupId: string | null;
     email: string | null;
