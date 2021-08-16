@@ -123,10 +123,12 @@ export const es: LanguageConfig = {
         },
         contact: {
           heading: "Información de contacto",
-          helpText: "MISSING",
+          helpText:
+            "Usted es responsable de ingresar la información de contacto correcta, siguiendo las leyes federales y estatales aplicables.",
           primaryPhoneNumber: "Número de teléfono principal",
           additionalPhoneNumber: "Número de teléfono adicional",
-          receiveTextMessageResults: "MISSING",
+          receiveTextMessageResults:
+            "Sí, envíe un mensaje de texto a todos los números registrados de teléfonos móviles.",
           phoneType: "Tipo de teléfono",
           addNumber: "Agregar otro número",
           testResultDelivery:
