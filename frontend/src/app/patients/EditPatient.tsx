@@ -50,6 +50,41 @@ export const GET_PATIENT = gql`
   }
 `;
 
+interface GetPatientParams {
+  id: string;
+}
+
+interface GetPatientResponse {
+  patient: {
+    firstName: string;
+    middleName: string | null;
+    lastName: string;
+    birthDate: string;
+    street: string;
+    streetTwo: string | null;
+    city: string | null;
+    state: string;
+    zipCode: string;
+    telephone: string;
+    phoneNumbers: PhoneNumber[];
+    role: Role | null;
+    lookupId: string | null;
+    email: string | null;
+    county: string | null;
+    race: Race | null;
+    ethnicity: Ethnicity | null;
+    tribalAffiliation: (TribalAffiliation | null)[] | null;
+    gender: Gender | null;
+    residentCongregateSetting: boolean | null;
+    employedInHealthcare: boolean | null;
+    preferredLanguage: Language | null;
+    facility: {
+      id: string;
+    } | null;
+    testResultDelivery: TestResultDeliveryPreference | null;
+  };
+}
+
 const UPDATE_PATIENT = gql`
   mutation UpdatePatient(
     $facilityId: ID
@@ -128,7 +163,10 @@ const EditPatient = (props: Props) => {
 
   const { t } = useTranslation();
 
-  const { data, loading, error } = useQuery(GET_PATIENT, {
+  const { data, loading, error } = useQuery<
+    GetPatientResponse,
+    GetPatientParams
+  >(GET_PATIENT, {
     variables: { id: props.patientId || "" },
     fetchPolicy: "no-cache",
   });
@@ -146,7 +184,7 @@ const EditPatient = (props: Props) => {
   if (loading) {
     return <p>Loading...</p>;
   }
-  if (error) {
+  if (error || data === undefined) {
     return <p>error loading patient with id {props.patientId}...</p>;
   }
 
