@@ -15,7 +15,6 @@ import {
 } from "../constants";
 import { Option } from "../commonComponents/Dropdown";
 import { languages } from "../../config/constants";
-import { getDateFormat } from "../utils/date";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -105,15 +104,7 @@ export function isValidBirthdate(date: string | undefined) {
   if (date.split("/").length === 3 && date.split("/")[2].length < 4) {
     return false;
   }
-
-  const recognizedDateFormat = getDateFormat(date);
-
-  if (!recognizedDateFormat) {
-    return false;
-  }
-
-  const parsedDate = moment(date, recognizedDateFormat);
-
+  const parsedDate = moment(date);
   if (!parsedDate.isValid()) {
     return false;
   }
