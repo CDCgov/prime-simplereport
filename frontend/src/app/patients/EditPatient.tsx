@@ -187,7 +187,7 @@ const EditPatient = (props: Props) => {
   if (loading) {
     return <p>Loading...</p>;
   }
-  if (error || data == undefined) {
+  if (error || data === undefined) {
     return <p>error loading patient with id {props.patientId}...</p>;
   }
 
