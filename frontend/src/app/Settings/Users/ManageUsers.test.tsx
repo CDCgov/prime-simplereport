@@ -298,6 +298,33 @@ describe("ManageUsers", () => {
       });
     });
 
+    it("fails with invalid email address", async () => {
+      const newUser = {
+        firstName: "Jane",
+        lastName: "Smith",
+        email: "jane",
+        role: "USER",
+      };
+
+      fireEvent.click(getByText("New User", { exact: false }));
+      const [first, last, email] = await findAllByRole("textbox");
+      const select = getByLabelText("Access Level", { exact: false });
+      fireEvent.change(first, inputValue(newUser.firstName));
+      fireEvent.change(last, inputValue(newUser.lastName));
+      fireEvent.change(email, inputValue(newUser.email));
+      fireEvent.change(select, inputValue(newUser.role));
+      const sendButton = getByText("Send invite");
+      await waitFor(() => {
+        fireEvent.click(screen.getAllByRole("checkbox")[1]);
+        expect(sendButton).not.toBeDisabled();
+      });
+      fireEvent.click(sendButton);
+      await waitFor(() => expect(addUserToOrg).not.toBeCalled());
+      expect(
+        screen.queryAllByText("Email must be a valid email address").length
+      ).toBe(1);
+    });
+
     it("passes user details to the addUserToOrg function without a role", async () => {
       const newUser = {
         firstName: "Jane",
