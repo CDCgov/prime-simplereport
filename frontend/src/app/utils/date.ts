@@ -26,14 +26,17 @@ export function getDateFormat(date: DateInputType) {
   return formats.find(({ regexp }) => regexp.test(date))?.format;
 }
 
-export function formattedStringToMoment(date: DateInputType) {
+export function formattedStringToMoment(
+  date: DateInputType,
+  formatMustBeRecognized = false
+) {
   if (!date) {
     return null;
   }
 
   const dateFormat = getDateFormat(date);
 
-  if (date instanceof Date || dateFormat) {
+  if (!formatMustBeRecognized || date instanceof Date || dateFormat) {
     return moment(date, dateFormat);
   }
 

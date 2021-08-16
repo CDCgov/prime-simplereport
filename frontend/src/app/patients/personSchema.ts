@@ -105,7 +105,7 @@ export function isValidBirthdate(date: string | undefined) {
   if (date.split("/").length === 3 && date.split("/")[2].length < 4) {
     return false;
   }
-  const parsedDate = formattedStringToMoment(date);
+  const parsedDate = formattedStringToMoment(date, true);
   if (!parsedDate) {
     return false;
   }
