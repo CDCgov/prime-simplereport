@@ -8,6 +8,11 @@ import { MfaOktaVerify } from "./MfaOktaVerify";
 
 jest.mock("../AccountCreationApiService", () => ({
   AccountCreationApi: {
+    enrollSecurityKeyMfa: () => {
+      return new Promise((res) => {
+        res({ activation: { challenge: "challenge", user: { id: "userId" } } });
+      });
+    },
     verifyActivationPasscode: (code: string) => {
       return new Promise((res, rej) => {
         if (code === "123456") {

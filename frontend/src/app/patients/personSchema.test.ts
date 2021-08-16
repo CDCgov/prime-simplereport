@@ -90,7 +90,9 @@ describe("isValidBirthdate", () => {
   });
 
   it("returns false for dates farrr in the past", () => {
-    expect(isValidBirthdate(moment("08/02/1776").format("L"))).toBeFalsy();
+    expect(
+      isValidBirthdate(moment("08/02/1776", "MM/DD/YYYY").format("L"))
+    ).toBeFalsy();
   });
 
   it("returns true for valid birthdates", () => {

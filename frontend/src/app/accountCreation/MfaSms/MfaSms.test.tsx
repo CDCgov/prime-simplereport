@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import { MfaSms } from "./MfaSms";
 
@@ -7,11 +7,17 @@ describe("SMS MFA", () => {
     render(<MfaSms />);
   });
 
-  it("can enter a valid phone number", () => {
-    fireEvent.change(screen.getByLabelText("Phone number", { exact: false }), {
-      target: { value: "(910) 867-5309" },
+  it("can enter a valid phone number", async () => {
+    await waitFor(() => {
+      fireEvent.change(
+        screen.getByLabelText("Phone number", { exact: false }),
+        {
+          target: { value: "(910) 867-5309" },
+        }
+      );
+      fireEvent.click(screen.getByText("Send code"));
     });
-    fireEvent.click(screen.getByText("Send code"));
+
     expect(
       screen.queryByText("Phone number is invalid")
     ).not.toBeInTheDocument();

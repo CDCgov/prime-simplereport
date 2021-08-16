@@ -100,7 +100,7 @@ const mocks = [
     },
     result: {
       data: {
-        updatedOrganization: null,
+        adminUpdateOrganization: null,
       },
     },
   },
