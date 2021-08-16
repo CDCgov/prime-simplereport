@@ -12,10 +12,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserMutationResolver implements GraphQLMutationResolver {
+
+  private static final Logger LOG = LoggerFactory.getLogger(UserMutationResolver.class);
 
   private final ApiUserService _us;
 
@@ -71,6 +75,11 @@ public class UserMutationResolver implements GraphQLMutationResolver {
     Set<UUID> facilitySet =
         facilities == null ? Set.of() : new HashSet<>(Arrays.asList(facilities));
     UserInfo user = _us.updateUserPrivileges(id, accessAllFacilities, facilitySet, role);
+    return new User(user);
+  }
+
+  public User resetUserPassword(UUID id) {
+    UserInfo user = _us.resetUserPassword(id);
     return new User(user);
   }
 

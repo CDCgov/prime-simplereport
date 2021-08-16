@@ -343,6 +343,16 @@ public class LiveOktaRepository implements OktaRepository {
     return getOrganizationRoleClaimsForUser(user);
   }
 
+  public void resetUserPassword(String username) {
+    UserList users = _client.listUsers(username, null, null, null, null);
+    if (users.stream().count() == 0) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot reset password for Okta user with unrecognized username");
+    }
+    User user = users.single();
+    user.resetPassword(true);
+  }
+
   public void setUserIsActive(String username, Boolean active) {
     UserList users = _client.listUsers(username, null, null, null, null);
     if (users.stream().count() == 0) {

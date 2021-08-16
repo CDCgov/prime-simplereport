@@ -348,6 +348,8 @@ type Mutation {
     facilities: [ID!]
     role: Role!
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
+  resetUserPassword(id: ID!): User
+    @requiredPermissions(allOf: ["MANAGE_USERS"])
   setUserIsDeleted(id: ID!, deleted: Boolean!): User
     @requiredPermissions(allOf: ["MANAGE_USERS"])
   reactivateUser(id: ID!): User
