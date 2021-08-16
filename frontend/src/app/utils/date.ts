@@ -26,31 +26,15 @@ export function getDateFormat(date: DateInputType) {
   return formats.find(({ regexp }) => regexp.test(date))?.format;
 }
 
-export function formattedStringToMoment(
-  date: DateInputType,
-  formatMustBeRecognized = false
-) {
+export const formatDate = (date: DateInputType): ISODate | null => {
   if (!date) {
     return null;
   }
 
-  const dateFormat = getDateFormat(date);
+  // Attempt to get date format
+  const format = getDateFormat(date);
 
-  if (!formatMustBeRecognized || date instanceof Date || dateFormat) {
-    return moment(date, dateFormat);
-  }
-
-  return null;
-}
-
-export const formatDate = (date: DateInputType): ISODate | null => {
-  const momentDate = formattedStringToMoment(date);
-
-  if (!momentDate) {
-    return null;
-  }
-
-  return momentDate.format("YYYY-MM-DD") as ISODate;
+  return moment(date, format).format("YYYY-MM-DD") as ISODate;
 };
 
 export const isValidDate = (date: string): boolean => {
