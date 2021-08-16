@@ -5,7 +5,7 @@ import { getMocks } from "../../../stories/storyMocks";
 import QuestionsFormContainer from "./QuestionsFormContainer";
 
 export default {
-  title: "App/Identity Verification/Step 2: Identity verification questions",
+  title: "App/Identity Verification/Step 3: Identity verification questions",
   component: QuestionsFormContainer,
   parameters: {
     msw: getMocks("getQuestions"),

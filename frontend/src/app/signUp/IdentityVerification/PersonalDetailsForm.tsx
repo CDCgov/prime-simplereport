@@ -12,7 +12,6 @@ import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
 import Input from "../../commonComponents/Input";
 import { stateCodes } from "../../../config/constants";
 import Select from "../../commonComponents/Select";
-import { useSearchParam } from "../../utils/url";
 
 import {
   initPersonalDetails,
@@ -27,9 +26,11 @@ type PersonalDetailsFormErrors = Record<
   string
 >;
 
-const PersonalDetailsForm = () => {
-  // Get organization ID from URL
-  const orgExternalId = useSearchParam("orgExternalId");
+interface Props {
+  orgExternalId: string;
+}
+
+const PersonalDetailsForm = ({ orgExternalId }: Props) => {
   const [
     personalDetails,
     setPersonalDetails,
