@@ -200,7 +200,7 @@ describe("AoEForm", () => {
       );
       const smsDeliveryRadio = screen.getByRole("radio", {
         name:
-          "Yes (There are no mobile phone numbers listed in your patient profile.)",
+          "Yes, text all mobile numbers on file. (There are no mobile phone numbers listed in your patient profile.)",
       });
 
       expect(smsDeliveryRadio).toBeInTheDocument();
