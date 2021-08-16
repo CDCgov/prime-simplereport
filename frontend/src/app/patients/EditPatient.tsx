@@ -194,7 +194,7 @@ const EditPatient = (props: Props) => {
               patient={{
                 ...data.patient,
                 tribalAffiliation:
-                  data.patient.tribalAffiliation[0] || undefined,
+                  data.patient.tribalAffiliation?.[0] || undefined,
                 phoneNumbers: data.patient.phoneNumbers.sort(function (
                   x: PhoneNumber,
                   y: PhoneNumber
