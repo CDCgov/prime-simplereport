@@ -359,6 +359,9 @@ const PersonForm = (props: Props) => {
         </div>
       </FormGroup>
       <FormGroup title={t("patient.form.contact.heading")}>
+        <p className="usa-hint maxw-prose">
+          {t("patient.form.contact.helpText")}
+        </p>
         <ManagePhoneNumbers
           phoneNumbers={patient.phoneNumbers || []}
           testResultDelivery={patient.testResultDelivery}

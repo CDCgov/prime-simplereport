@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import classnames from "classnames";
-import moment from "moment";
 
 import {
   globalSymptomDefinitions,
@@ -137,8 +136,6 @@ const AoEForm: React.FC<Props> = ({
     patient.testResultDelivery
   );
 
-  const patientIsOver18 = moment().diff(patient.birthDate, "years") >= 18;
-
   // form validation
   const [symptomError, setSymptomError] = useState<string | undefined>();
   const [symptomOnsetError, setSymptomOnsetError] = useState<
@@ -183,7 +180,7 @@ const AoEForm: React.FC<Props> = ({
     {
       label: (
         <>
-          Yes
+          Yes, text all mobile numbers on file.
           <span className="usa-checkbox__label-description">
             <p>
               {phoneNumbers.length > 0 ? (
@@ -293,23 +290,21 @@ const AoEForm: React.FC<Props> = ({
         ref={formRef}
       >
         <RequiredMessage />
-        {patientIsOver18 && (
-          <FormGroup title="Results">
-            <div className="prime-formgroup__wrapper">
-              <RadioGroup
-                legend="Would you like to receive your results via text message?"
-                name="testResultDelivery"
-                onChange={setTestResultDelivery}
-                buttons={getTestResultDeliveryPreferences(patientMobileNumbers)}
-                selectedRadio={
-                  patientMobileNumbers.length === 0
-                    ? "NONE"
-                    : testResultDelivery
-                }
-              />
-            </div>
-          </FormGroup>
-        )}
+        <FormGroup title="Results">
+          <div className="prime-formgroup__wrapper">
+            <RadioGroup
+              legend="Would you like to receive a copy of your results via text message?"
+              hintText="You’re responsible for entering the correct contact information, following applicable federal and state laws."
+              wrapperClassName="margin-top-0"
+              name="testResultDelivery"
+              onChange={setTestResultDelivery}
+              buttons={getTestResultDeliveryPreferences(patientMobileNumbers)}
+              selectedRadio={
+                patientMobileNumbers.length === 0 ? "NONE" : testResultDelivery
+              }
+            />
+          </div>
+        </FormGroup>
         <FormGroup title="Symptoms">
           <SymptomInputs
             noSymptoms={noSymptoms}

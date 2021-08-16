@@ -227,7 +227,6 @@ const ManagePhoneNumbers: React.FC<Props> = ({
         <RadioGroup
           legend={t("patient.form.contact.testResultDelivery")}
           name="testResultDelivery"
-          hintText={t("patient.form.contact.testResultDeliveryHint")}
           buttons={TEST_RESULT_DELIVERY_PREFERENCE_VALUES}
           onChange={updateTestResultDelivery}
           selectedRadio={testResultDelivery}

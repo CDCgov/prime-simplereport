@@ -116,13 +116,15 @@ export const en = {
         },
         contact: {
           heading: "Contact information",
+          helpText:
+            "You're responsible for entering the correct contact information, following applicable federal and state laws.",
           primaryPhoneNumber: "Primary phone number",
           additionalPhoneNumber: "Additional phone number",
+          receiveTextMessageResults: "Yes, text all mobile numbers on file.",
           phoneType: "Phone type",
           addNumber: "Add another number",
           testResultDelivery:
             "Would you like to receive your results via text message?",
-          testResultDeliveryHint: "We'll text all mobile numbers on file",
           email: "Email address",
           street1: "Street address 1",
           street2: "Street address 2",
