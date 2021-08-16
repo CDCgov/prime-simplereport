@@ -2,16 +2,15 @@
 
 exports[`AoEForm renders correctly 1`] = `
 <form
-  className="display-flex flex-column padding-bottom-10"
-  onSubmit={[Function]}
+  class="display-flex flex-column padding-bottom-10"
 >
   <p
-    className="message--required"
+    class="message--required"
   >
     Required fields are marked with an asterisk
      (
     <abbr
-      className="usa-hint usa-hint--required"
+      class="usa-hint usa-hint--required"
       title="required"
     >
       *
@@ -19,27 +18,27 @@ exports[`AoEForm renders correctly 1`] = `
     ).
   </p>
   <div
-    className="prime-formgroup"
+    class="prime-formgroup"
   >
     <fieldset
-      className="usa-fieldset"
+      class="usa-fieldset"
     >
       <legend
-        className="prime-formgroup-heading usa-legend"
+        class="prime-formgroup-heading usa-legend"
       >
         Results
       </legend>
       <div
-        className="prime-formgroup__wrapper"
+        class="prime-formgroup__wrapper"
       >
         <div
           className="usa-form-group margin-top-0"
         >
           <fieldset
-            className="usa-fieldset prime-radios"
+            class="usa-fieldset prime-radios"
           >
             <legend
-              className="usa-legend"
+              class="usa-legend"
             >
               Would you like to receive a copy of your results via text message?
             </legend>
@@ -49,19 +48,18 @@ exports[`AoEForm renders correctly 1`] = `
               You’re responsible for entering the correct contact information, following applicable federal and state laws.
             </span>
             <div
-              className=""
+              class=""
             >
               <div
-                className="usa-radio"
+                class="usa-radio"
               >
                 <input
-                  checked={true}
-                  className="usa-radio__input"
+                  checked=""
+                  class="usa-radio__input"
                   data-required="false"
                   disabled={false}
                   id="8-val-SMS"
                   name="testResultDelivery"
-                  onChange={[Function]}
                   type="radio"
                   value="SMS"
                 />
@@ -71,11 +69,11 @@ exports[`AoEForm renders correctly 1`] = `
                 >
                   Yes, text all mobile numbers on file.
                   <span
-                    className="usa-checkbox__label-description"
+                    class="usa-checkbox__label-description"
                   >
                     <p>
                       <span
-                        className="radio__label-description--checked"
+                        class="radio__label-description--checked"
                       >
                         <strong>
                           Results will be sent to these numbers:
@@ -83,7 +81,7 @@ exports[`AoEForm renders correctly 1`] = `
                       </span>
                     </p>
                     <span
-                      className="radio__label-description--checked usa-radio__label-description text-base"
+                      class="radio__label-description--checked usa-radio__label-description text-base"
                     >
                       2708675309
                     </span>
@@ -91,16 +89,14 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-radio"
+                class="usa-radio"
               >
                 <input
-                  checked={false}
-                  className="usa-radio__input"
+                  class="usa-radio__input"
                   data-required="false"
                   disabled={false}
                   id="8-val-NONE"
                   name="testResultDelivery"
-                  onChange={[Function]}
                   type="radio"
                   value="NONE"
                 />
@@ -118,31 +114,31 @@ exports[`AoEForm renders correctly 1`] = `
     </fieldset>
   </div>
   <div
-    className="prime-formgroup"
+    class="prime-formgroup"
   >
     <fieldset
-      className="usa-fieldset"
+      class="usa-fieldset"
     >
       <legend
-        className="prime-formgroup-heading usa-legend"
+        class="prime-formgroup-heading usa-legend"
       >
         Symptoms
       </legend>
       <div
-        className="usa-fieldset"
+        class="usa-fieldset"
       >
         <div
-          className="usa-form-group"
+          class="usa-form-group"
         >
           <fieldset
-            className="usa-fieldset prime-checkboxes"
+            class="usa-fieldset prime-checkboxes"
           >
             <legend
-              className="usa-legend"
+              class="usa-legend"
             >
               Are you experiencing any of the following symptoms?
               <abbr
-                className="usa-hint usa-hint--required"
+                class="usa-hint usa-hint--required"
                 title="required"
               >
                  
@@ -150,17 +146,16 @@ exports[`AoEForm renders correctly 1`] = `
               </abbr>
             </legend>
             <div
-              className="checkboxes"
+              class="checkboxes"
             >
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={false}
                   className="usa-checkbox__input"
                   id="9-val-0"
                   name="no_symptoms"
-                  onChange={[Function]}
                   type="checkbox"
                   value="no"
                 />
@@ -175,31 +170,30 @@ exports[`AoEForm renders correctly 1`] = `
           </fieldset>
         </div>
         <div
-          className="border-top-1px border-base-lighter margin-y-2"
+          class="border-top-1px border-base-lighter margin-y-2"
         />
         <div
-          className="usa-form-group"
+          class="usa-form-group"
         >
           <fieldset
-            className="usa-fieldset prime-checkboxes symptom-checkboxes"
+            class="usa-fieldset prime-checkboxes symptom-checkboxes"
           >
             <legend
-              className="usa-legend usa-sr-only"
+              class="usa-legend usa-sr-only"
             >
               What are your symptoms?
             </legend>
             <div
-              className="checkboxes"
+              class="checkboxes"
             >
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={true}
                   className="usa-checkbox__input"
                   id="10-val-0"
                   name="symptom_list"
-                  onChange={[Function]}
                   type="checkbox"
                   value="426000000"
                 />
@@ -211,14 +205,13 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={false}
                   className="usa-checkbox__input"
                   id="10-val-1"
                   name="symptom_list"
-                  onChange={[Function]}
                   type="checkbox"
                   value="103001002"
                 />
@@ -230,14 +223,13 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={false}
                   className="usa-checkbox__input"
                   id="10-val-2"
                   name="symptom_list"
-                  onChange={[Function]}
                   type="checkbox"
                   value="43724002"
                 />
@@ -249,14 +241,13 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={false}
                   className="usa-checkbox__input"
                   id="10-val-3"
                   name="symptom_list"
-                  onChange={[Function]}
                   type="checkbox"
                   value="49727002"
                 />
@@ -268,14 +259,13 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={false}
                   className="usa-checkbox__input"
                   id="10-val-4"
                   name="symptom_list"
-                  onChange={[Function]}
                   type="checkbox"
                   value="267036007"
                 />
@@ -287,14 +277,13 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={false}
                   className="usa-checkbox__input"
                   id="10-val-5"
                   name="symptom_list"
-                  onChange={[Function]}
                   type="checkbox"
                   value="230145002"
                 />
@@ -306,14 +295,13 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={false}
                   className="usa-checkbox__input"
                   id="10-val-6"
                   name="symptom_list"
-                  onChange={[Function]}
                   type="checkbox"
                   value="84229001"
                 />
@@ -325,14 +313,13 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={false}
                   className="usa-checkbox__input"
                   id="10-val-7"
                   name="symptom_list"
-                  onChange={[Function]}
                   type="checkbox"
                   value="68962001"
                 />
@@ -344,14 +331,13 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={false}
                   className="usa-checkbox__input"
                   id="10-val-8"
                   name="symptom_list"
-                  onChange={[Function]}
                   type="checkbox"
                   value="25064002"
                 />
@@ -363,14 +349,13 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={false}
                   className="usa-checkbox__input"
                   id="10-val-9"
                   name="symptom_list"
-                  onChange={[Function]}
                   type="checkbox"
                   value="36955009"
                 />
@@ -382,14 +367,13 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={false}
                   className="usa-checkbox__input"
                   id="10-val-10"
                   name="symptom_list"
-                  onChange={[Function]}
                   type="checkbox"
                   value="44169009"
                 />
@@ -401,14 +385,13 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={false}
                   className="usa-checkbox__input"
                   id="10-val-11"
                   name="symptom_list"
-                  onChange={[Function]}
                   type="checkbox"
                   value="162397003"
                 />
@@ -420,14 +403,13 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={false}
                   className="usa-checkbox__input"
                   id="10-val-12"
                   name="symptom_list"
-                  onChange={[Function]}
                   type="checkbox"
                   value="68235000"
                 />
@@ -439,14 +421,13 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={false}
                   className="usa-checkbox__input"
                   id="10-val-13"
                   name="symptom_list"
-                  onChange={[Function]}
                   type="checkbox"
                   value="64531003"
                 />
@@ -458,14 +439,13 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={false}
                   className="usa-checkbox__input"
                   id="10-val-14"
                   name="symptom_list"
-                  onChange={[Function]}
                   type="checkbox"
                   value="422587007"
                 />
@@ -477,14 +457,13 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={false}
                   className="usa-checkbox__input"
                   id="10-val-15"
                   name="symptom_list"
-                  onChange={[Function]}
                   type="checkbox"
                   value="422400008"
                 />
@@ -496,14 +475,13 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-checkbox"
+                class="usa-checkbox"
               >
                 <input
                   checked={false}
                   className="usa-checkbox__input"
                   id="10-val-16"
                   name="symptom_list"
-                  onChange={[Function]}
                   type="checkbox"
                   value="62315008"
                 />
@@ -519,113 +497,97 @@ exports[`AoEForm renders correctly 1`] = `
         </div>
       </div>
       <div
-        className="usa-form-group"
+        class="usa-form-group"
       >
         <label
-          className="usa-label"
+          class="usa-label"
           data-testid="label"
-          htmlFor="meeting-time"
+          for="meeting-time"
         >
           Date of symptom onset
         </label>
         <span
-          className="usa-hint"
+          class="usa-hint"
         >
           mm/dd/yyyy
         </span>
         <div
-          className="usa-date-picker usa-date-picker--initialized maxw-mobile"
+          class="usa-date-picker usa-date-picker--initialized maxw-mobile"
           data-testid="date-picker"
-          onBlur={[Function]}
-          onKeyDown={[Function]}
         >
           <input
-            aria-hidden={true}
-            className="usa-input usa-sr-only usa-date-picker__internal-input"
+            aria-hidden="true"
+            class="usa-input usa-sr-only usa-date-picker__internal-input"
             data-testid="date-picker-internal-input"
-            disabled={false}
             name="symptom_onset"
-            readOnly={true}
-            required={false}
-            tabIndex={-1}
+            readonly=""
+            tabindex="-1"
             type="text"
-            value=""
+            value="2021-06-20"
           />
           <div
-            className="usa-date-picker__wrapper"
-            tabIndex={-1}
+            class="usa-date-picker__wrapper"
+            tabindex="-1"
           >
             <input
-              className="usa-input usa-date-picker__external-input"
+              class="usa-input usa-date-picker__external-input"
               data-testid="date-picker-external-input"
               id="symptom_onset"
-              onBlur={[Function]}
-              onFocus={[Function]}
-              onInput={[Function]}
-              required={true}
+              required=""
               type="text"
-              value=""
+              value="06/20/2021"
             />
             <button
-              aria-haspopup={true}
+              aria-haspopup="true"
               aria-label="Toggle calendar"
-              className="usa-date-picker__button"
+              class="usa-date-picker__button"
               data-testid="date-picker-button"
-              onClick={[Function]}
               type="button"
             >
                
             </button>
             <div
               aria-modal="true"
-              className="usa-date-picker__calendar"
+              class="usa-date-picker__calendar"
               data-testid="date-picker-calendar"
-              hidden={true}
-              onKeyDown={[Function]}
-              onKeyUp={[Function]}
+              hidden=""
               role="dialog"
-              style={
-                Object {
-                  "top": "0px",
-                }
-              }
+              style="top: 0px;"
             />
             <div
               aria-live="polite"
-              className="usa-sr-only usa-date-picker__status"
+              class="usa-sr-only usa-date-picker__status"
               data-testid="date-picker-status"
               role="status"
-            >
-              
-            </div>
+            />
           </div>
         </div>
       </div>
     </fieldset>
   </div>
   <div
-    className="prime-formgroup"
+    class="prime-formgroup"
   >
     <fieldset
-      className="usa-fieldset"
+      class="usa-fieldset"
     >
       <legend
-        className="prime-formgroup-heading usa-legend"
+        class="prime-formgroup-heading usa-legend"
       >
         Test history
       </legend>
       <div
-        className="prime-formgroup__wrapper"
+        class="prime-formgroup__wrapper"
       >
         <div
-          className="margin-top-2"
+          class="margin-top-2"
         >
           <b>
             Was this your most recent COVID-19 test?
           </b>
         </div>
         <p
-          className="prime-previous-test-display margin-top-2 margin-bottom-0 line-height-sans-5"
+          class="prime-previous-test-display margin-top-2 margin-bottom-0 line-height-sans-5"
         >
           <b>
             Date: 
@@ -643,30 +605,29 @@ exports[`AoEForm renders correctly 1`] = `
           NEGATIVE
         </p>
         <div
-          className="usa-form-group"
+          class="usa-form-group"
         >
           <fieldset
-            className="usa-fieldset prime-radios"
+            class="usa-fieldset prime-radios"
           >
             <legend
-              className="usa-legend usa-sr-only"
+              class="usa-legend usa-sr-only"
             >
               Was this your most recent COVID-19 test?
             </legend>
             <div
-              className="prime-radio--horizontal"
+              class="prime-radio--horizontal"
             >
               <div
-                className="usa-radio prime-radio--horizontal__container"
+                class="usa-radio prime-radio--horizontal__container"
               >
                 <input
-                  checked={true}
-                  className="usa-radio__input"
+                  checked=""
+                  class="usa-radio__input"
                   data-required="false"
                   disabled={false}
                   id="11-val-yes"
                   name="most_recent_flag"
-                  onChange={[Function]}
                   type="radio"
                   value="yes"
                 />
@@ -678,16 +639,14 @@ exports[`AoEForm renders correctly 1`] = `
                 </label>
               </div>
               <div
-                className="usa-radio prime-radio--horizontal__container"
+                class="usa-radio prime-radio--horizontal__container"
               >
                 <input
-                  checked={false}
-                  className="usa-radio__input"
+                  class="usa-radio__input"
                   data-required="false"
                   disabled={false}
                   id="11-val-no"
                   name="most_recent_flag"
-                  onChange={[Function]}
                   type="radio"
                   value="no"
                 />
@@ -705,13 +664,13 @@ exports[`AoEForm renders correctly 1`] = `
     </fieldset>
   </div>
   <div
-    className="margin-top-3"
+    class="margin-top-3"
   >
     <div
-      className="sr-time-of-test-buttons sr-time-of-test-buttons-footer"
+      class="sr-time-of-test-buttons sr-time-of-test-buttons-footer"
     >
       <button
-        className="usa-button margin-right-0"
+        class="usa-button margin-right-0"
         id="aoe-form-save-button"
         type="submit"
       >
