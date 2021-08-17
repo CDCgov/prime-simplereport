@@ -28,12 +28,12 @@ import {
 } from "../../utils/smartyStreets";
 import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
 import ComboBox from "../../commonComponents/ComboBox";
+import { formatDate } from "../../utils/date";
 
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
 
 import "../../../i18n";
-import { formatDate } from "../../utils/date";
 
 export type ValidateField = (field: keyof PersonErrors) => Promise<void>;
 
