@@ -88,7 +88,13 @@ export const DetachedTestResultPrintModal = ({
       overlayClassName="sr-test-results-modal-overlay"
       contentLabel="Printable test result"
     >
-      {buttonGroup}
+      <div
+        className="display-flex flex-align-center maxw-tablet grid-container patient-header"
+        style={{ paddingLeft: "0rem", paddingRight: "0rem" }}
+      >
+        <LanguageToggler />
+        {buttonGroup}
+      </div>
       <div
         className={classnames(
           "sr-test-result-report",
@@ -96,7 +102,6 @@ export const DetachedTestResultPrintModal = ({
         )}
       >
         <header>
-          <LanguageToggler />
           <img alt="SimpleReport logo" src={logo} className="sr-print-logo" />
           <h1>{t("testResult.result")}</h1>
         </header>
