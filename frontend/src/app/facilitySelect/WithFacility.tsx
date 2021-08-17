@@ -1,22 +1,19 @@
-import React, { useCallback, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 import { appPermissions } from "../permissions";
 import FacilityFormContainer from "../Settings/Facility/FacilityFormContainer";
-import { RootState, updateFacility } from "../store";
-import { getFacilityIdFromUrl } from "../utils/url";
+import { RootState } from "../store";
 
 import FacilityPopup from "./FacilityPopup";
 import FacilitySelect from "./FacilitySelect";
+import { useSelectedFacility } from "./useSelectedFacility";
 
 const Loading: React.FC<{}> = () => <p>Loading facility information...</p>;
 
 interface Props {}
 
 const WithFacility: React.FC<Props> = ({ children }) => {
-  const dispatch = useDispatch();
-  const history = useHistory();
   const isAdmin = useSelector<RootState, boolean>(
     (state) => state.user.isAdmin
   );
@@ -25,89 +22,32 @@ const WithFacility: React.FC<Props> = ({ children }) => {
       state.user.permissions.includes(requiredPermission)
     )
   );
+
   const dataLoaded = useSelector<RootState, boolean>(
     (state) => state.dataLoaded
   );
   const facilities = useSelector<RootState, Facility[]>(
     (state) => state.facilities
   );
-  const facilityInStore = useSelector<RootState, Pick<Facility, "id" | "name">>(
-    (state) => state.facility
-  );
-  const facilityFromUrl = facilities.find(
-    (f) => f.id === getFacilityIdFromUrl()
-  );
 
-  const setFacilityProp = useCallback(
-    (facilityId: string) => {
-      history.push({ search: `?facility=${facilityId}` });
-    },
-    [history]
-  );
-
-  const setActiveFacility = useCallback(
-    (facility: Facility) => {
-      dispatch(updateFacility(facility));
-      setFacilityProp(facility.id);
-    },
-    [dispatch, setFacilityProp]
-  );
-
-  const shouldSetOnlyFacility = facilities.length === 1 && !facilityInStore?.id;
-
-  const shouldSetFacilityFromUrl = facilityFromUrl?.id && !facilityInStore?.id;
+  const [selectedFacility, setSelectedFacility] = useSelectedFacility();
 
   useEffect(() => {
-    // No action if facility in store and URL exist and are equal
-    if (
-      facilityFromUrl?.id &&
-      facilityInStore?.id &&
-      facilityFromUrl.id === facilityInStore.id
-    ) {
+    if (selectedFacility || !dataLoaded) {
       return;
     }
 
-    // If both exist but are different, URL selection is correct
-    if (
-      facilityFromUrl?.id &&
-      facilityInStore?.id &&
-      facilityFromUrl.id !== facilityInStore.id
-    ) {
-      setActiveFacility(facilityFromUrl);
+    if (facilities.length === 1) {
+      setSelectedFacility(facilities[0]);
       return;
     }
+  }, [facilities, selectedFacility, dataLoaded, setSelectedFacility]);
 
-    // If only in URL, set store value
-    if (facilityFromUrl?.id && !facilityInStore) {
-      setActiveFacility(facilityFromUrl);
-      return;
-    }
-
-    // If only in store, set URL value
-    if (!facilityFromUrl?.id && facilityInStore?.id) {
-      setFacilityProp(facilityInStore.id);
-      return;
-    }
-
-    // If only one facility in org, use that one
-    if (shouldSetOnlyFacility) {
-      setActiveFacility(facilities[0]);
-    }
-  }, [
-    shouldSetOnlyFacility,
-    setActiveFacility,
-    facilities,
-    facilityFromUrl,
-    facilityInStore,
-    setFacilityProp,
-  ]);
-
-  if (!dataLoaded || shouldSetOnlyFacility || shouldSetFacilityFromUrl) {
+  if (!dataLoaded) {
     return <Loading />;
   }
 
-  if (isAdmin && facilities.length === 0) {
-    // site admin without an organization
+  if (selectedFacility || (isAdmin && facilities.length === 0)) {
     return <>{children}</>;
   }
 
@@ -133,14 +73,10 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     );
   }
 
-  if (facilityFromUrl?.id && facilityInStore?.id) {
-    return <>{children}</>;
-  }
-
   return (
     <FacilitySelect
       facilities={facilities}
-      setActiveFacility={setActiveFacility}
+      setActiveFacility={setSelectedFacility}
     />
   );
 };

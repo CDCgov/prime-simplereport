@@ -1,16 +1,14 @@
-import React from "react";
-import { useSelector } from "react-redux";
-
+import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { useDocumentTitle } from "../utils/hooks";
 
 import TestQueue from "./TestQueue";
 
 const TestQueueContainer = () => {
   useDocumentTitle("Conduct test");
-  const activeFacilityId = useSelector(
-    (state) => (state as any).facility.id as string
-  );
-  return !activeFacilityId.length ? (
+  const [facility] = useSelectedFacility();
+  const activeFacilityId = facility?.id;
+
+  return !activeFacilityId?.length ? (
     <div>"No facility selected"</div>
   ) : (
     <TestQueue activeFacilityId={activeFacilityId} />

@@ -16,11 +16,7 @@ const initialState = {
   organization: {
     name: "",
   },
-  facilities: [],
-  facility: {
-    id: "",
-    name: "",
-  },
+  facilities: [] as Facility[],
   user: {
     id: "",
     firstName: "",
@@ -61,14 +57,6 @@ const reducers = (state = initialState, action: any) => {
         ...state,
         organization: {
           ...state.organization,
-          ...action.payload,
-        },
-      };
-    case UPDATE_FACILITY:
-      return {
-        ...state,
-        facility: {
-          ...state.facility,
           ...action.payload,
         },
       };
