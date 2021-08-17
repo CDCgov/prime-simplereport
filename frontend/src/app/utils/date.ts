@@ -17,7 +17,7 @@ export function formatDate(date: string | undefined | null | Date) {
   }
 
   return moment(date).format("YYYY-MM-DD") as ISODate;
-};
+}
 
 export const isValidDate = (date: string): boolean => {
   return (

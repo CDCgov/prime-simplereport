@@ -79,11 +79,11 @@ describe("areValidPhoneNumbers", () => {
 
 describe("isValidBirthdate", () => {
   let testContext: TestContext;
-  
+
   beforeEach(() => {
-      testContext = {
-      createError: jest.fn()
-    } as any as TestContext;
+    testContext = ({
+      createError: jest.fn(),
+    } as any) as TestContext;
   });
 
   it("returns false for undefined", () => {
@@ -95,23 +95,28 @@ describe("isValidBirthdate", () => {
   });
 
   it("returns false for dates in the future", () => {
-    expect(isValidBirthdate.call(testContext, (moment().add(1, "days").format("L")))).toBeFalsy();
+    expect(
+      isValidBirthdate.call(testContext, moment().add(1, "days").format("L"))
+    ).toBeFalsy();
   });
 
   it("returns false for dates farrr in the past", () => {
     expect(
-      isValidBirthdate.call(testContext, moment("08/02/1776", "MM/DD/YYYY").format("L"))
+      isValidBirthdate.call(
+        testContext,
+        moment("08/02/1776", "MM/DD/YYYY").format("L")
+      )
     ).toBeFalsy();
   });
 
   it("returns true for valid birthdates", () => {
-    expect(isValidBirthdate.call(testContext, ("1/2/1923"))).toBeTruthy();
-    expect(isValidBirthdate.call(testContext, ("01/02/1923"))).toBeTruthy();
-    expect(isValidBirthdate.call(testContext, ("1-2-1923"))).toBeTruthy();
-    expect(isValidBirthdate.call(testContext, ("01-02-1923"))).toBeTruthy();
+    expect(isValidBirthdate.call(testContext, "1/2/1923")).toBeTruthy();
+    expect(isValidBirthdate.call(testContext, "01/02/1923")).toBeTruthy();
+    expect(isValidBirthdate.call(testContext, "1-2-1923")).toBeTruthy();
+    expect(isValidBirthdate.call(testContext, "01-02-1923")).toBeTruthy();
   });
 
   it("returns false for two-digit years", () => {
-    expect(isValidBirthdate("1/2/23")).toBeFalsy();
+    expect(isValidBirthdate.call(testContext, "1/2/23")).toBeFalsy();
   });
 });
