@@ -84,14 +84,21 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
       body: csvPayload,
     });
 
-    if(postResult.ok) {
+    if (postResult.ok) {
       // Delete all dequeued messages
-      for(const message of messages) {
-        const deleteResponse = await queueClient.deleteMessage(message.messageId, message.popReceipt);
-        context.log(`Message ${message.messageId} deleted with service id ${deleteResponse}`);
-      } 
+      for (const message of messages) {
+        const deleteResponse = await queueClient.deleteMessage(
+          message.messageId,
+          message.popReceipt
+        );
+        context.log(
+          `Message ${message.messageId} deleted with service id ${deleteResponse}`
+        );
+      }
     } else {
-      context.log(`Upload to ReportStream failed with error code ${postResult.status}`);
+      context.log(
+        `Upload to ReportStream failed with error code ${postResult.status}`
+      );
       context.log(`Response body: ${await postResult.text()}`);
     }
   }
