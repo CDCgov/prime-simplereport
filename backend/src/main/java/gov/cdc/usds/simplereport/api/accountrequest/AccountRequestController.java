@@ -211,7 +211,7 @@ public class AccountRequestController {
       throws IOException {
 
     // verify that the organization doesn't already exist
-    checkForDuplicateOrg(request.getOrganizationName());
+    checkForDuplicateOrg(request.getName());
 
     List<DeviceType> devices = _dts.fetchDeviceTypes();
     Map<String, String> deviceNamesToIds =
@@ -277,11 +277,11 @@ public class AccountRequestController {
         Translators.consolidateNameArguments(
             null, request.getOpFirstName(), null, request.getOpLastName(), null, true);
 
-    String orgExternalId = getOrgExternalId(request.getOrganizationName(), request.getState());
+    String orgExternalId = getOrgExternalId(request.getName(), request.getState());
 
     return _os.createOrganizationAndFacility(
-        request.getOrganizationName(),
-        getOrganizationTypeFromLabelOrValue(request.getOrganizationType()),
+        request.getName(),
+        getTypeFromLabelOrValue(request.getType()),
         orgExternalId,
         request.getFacilityName(),
         request.getCliaNumber(),
@@ -296,14 +296,14 @@ public class AccountRequestController {
   }
 
   private Organization checkAccountRequestAndCreateOrg(OrganizationAccountRequest request) {
-    String organizationName = request.getOrganizationName();
+    String organizationName = request.getName();
 
     // verify that the organization doesn't already exist
     checkForDuplicateOrg(organizationName);
 
     String orgExternalId = getOrgExternalId(organizationName, request.getState());
 
-    String organizationType = getOrganizationTypeFromLabelOrValue(request.getOrganizationType());
+    String organizationType = getTypeFromLabelOrValue(request.getType());
     return _os.createOrganization(organizationName, organizationType, orgExternalId);
   }
 
@@ -329,7 +329,7 @@ public class AccountRequestController {
   // This is for temporary compatibility so the request can contain either the type label (old way)
   // or the type name (new way).  Once the request is updated, then we only need to validate the
   // type with `parseOrganizationType`
-  private String getOrganizationTypeFromLabelOrValue(String labelOrValue) {
+  private String getTypeFromLabelOrValue(String labelOrValue) {
     try {
       return Translators.parseOrganizationTypeFromName(labelOrValue);
     } catch (IllegalGraphqlArgumentException e) {

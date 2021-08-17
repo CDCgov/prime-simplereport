@@ -75,8 +75,8 @@ public class AccountRequestDynamicsData {
     variableMap.put(BAH_EMAILADDRESS_TEXT, organizationAccountRequest.getEmail());
     variableMap.put(BAH_WORKPHONENUMBER_TEXT, organizationAccountRequest.getWorkPhoneNumber());
     // variableMap.put("bah_state_text", accountRequest.getState()); // need mapping to dynamics
-    variableMap.put(BAH_ORGANIZATIONNAME_TEXT, organizationAccountRequest.getOrganizationName());
-    variableMap.put(BAH_OTHERTESTINGSITE_TEXT, organizationAccountRequest.getOrganizationType());
+    variableMap.put(BAH_ORGANIZATIONNAME_TEXT, organizationAccountRequest.getName());
+    variableMap.put(BAH_OTHERTESTINGSITE_TEXT, organizationAccountRequest.getType());
   }
 
   private void populateAccountRequestFields(Map<String, Object> variableMap) {
@@ -96,8 +96,8 @@ public class AccountRequestDynamicsData {
     variableMap.put(BAH_COUNTY_TEXT, accountRequest.getCounty());
     variableMap.put(
         BAH_TESTINGSITETYPE_CODE, DynamicsValueMapping.convertToCode(Prefix.TST, "other"));
-    variableMap.put(BAH_ORGANIZATIONNAME_TEXT, accountRequest.getOrganizationName());
-    variableMap.put(BAH_OTHERTESTINGSITE_TEXT, accountRequest.getOrganizationType());
+    variableMap.put(BAH_ORGANIZATIONNAME_TEXT, accountRequest.getName());
+    variableMap.put(BAH_OTHERTESTINGSITE_TEXT, accountRequest.getType());
     variableMap.put(BAH_TESTINGSITENAME_TEXT, accountRequest.getFacilityName());
     variableMap.put(BAH_CLIANUMBER_NUM, accountRequest.getCliaNumber());
     variableMap.put(
