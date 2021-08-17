@@ -2,11 +2,15 @@
   .usa-hint {
     font-size: 14px;
   }
+
+  .usa-input--error {
+    height: auto;
+  }
 }
 
 .usa-text-with-tooltip {
   .usa-tooltip__body {
     margin-left: -240px !important;
-    margin-top: -68px !important;
+    margin-top: -60px !important;
   }
 }

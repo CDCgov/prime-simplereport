@@ -16,7 +16,8 @@ import {
   initOrg,
   initOrgErrors,
   organizationFields,
-  organzationSchema as schema,
+  OrganizationTypeEnum,
+  organizationSchema as schema,
 } from "./utils";
 
 import "./OrganizationForm.scss";
@@ -30,6 +31,10 @@ export interface OrganizationCreateRequest {
   lastName: string;
   email: string;
   workPhoneNumber: string;
+}
+
+export interface OrganizationCreateResponse {
+  orgExternalId: string;
 }
 
 type OrganizationFormErrors = Record<keyof OrganizationCreateRequest, string>;
@@ -67,6 +72,7 @@ const OrganizationForm = () => {
       schema,
     });
     if (validation.valid) {
+      //make api call
       setErrors(initOrgErrors());
       setSubmitted(true);
       return;
@@ -108,6 +114,25 @@ const OrganizationForm = () => {
             }}
             validationStatus={getValidationStatus("state")}
             errorMessage={errors.state}
+            required
+          />
+        );
+      case "type":
+        return (
+          <Select
+            label={label}
+            name="type"
+            value={organization.type || ""}
+            options={Object.entries(
+              OrganizationTypeEnum
+            ).map(([key, value]) => ({ label: value, value: key }))}
+            defaultSelect
+            onChange={onDetailChange("type")}
+            onBlur={() => {
+              validateField("type");
+            }}
+            validationStatus={getValidationStatus("type")}
+            errorMessage={errors.type}
             required
           />
         );
@@ -165,7 +190,7 @@ const OrganizationForm = () => {
           )}
         </div>
         <Button
-          className="width-full"
+          className="width-full margin-top-2"
           disabled={saving || !formChanged}
           onClick={onSave}
           label={saving ? "Saving..." : "Submit"}

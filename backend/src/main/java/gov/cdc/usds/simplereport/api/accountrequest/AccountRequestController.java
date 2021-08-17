@@ -10,10 +10,7 @@ import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.accountrequest.errors.AccountRequestFailureException;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
-import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
-import gov.cdc.usds.simplereport.api.model.accountrequest.AccountResponse;
-import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
-import gov.cdc.usds.simplereport.api.model.accountrequest.WaitlistRequest;
+import gov.cdc.usds.simplereport.api.model.accountrequest.*;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -129,7 +126,7 @@ public class AccountRequestController {
   @SuppressWarnings("checkstyle:illegalcatch")
   @PostMapping("/without-facility-with-emails")
   @Transactional(readOnly = false)
-  public void submitAccountRequestWithoutFacility(
+  public OrganizationAccountResponse submitAccountRequestWithoutFacility(
       @Valid @RequestBody OrganizationAccountRequest request) throws IOException {
     try {
       logOrganizationAccountRequest(request);
@@ -146,6 +143,7 @@ public class AccountRequestController {
       createAdminUser(
           request.getFirstName(), request.getLastName(), request.getEmail(), org.getExternalId());
       _crm.submitOrganizationAccountRequestData(request);
+      return new OrganizationAccountResponse(org.getExternalId());
     } catch (ResourceException | BadRequestException e) {
       // The `ResourceException` is thrown when an account is requested with an existing user email
       // address

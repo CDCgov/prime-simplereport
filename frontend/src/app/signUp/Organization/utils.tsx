@@ -1,30 +1,32 @@
 import * as yup from "yup";
 
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
+import { phoneNumberIsValid } from "../../patients/personSchema";
+import { liveJurisdictions } from "../../../config/constants";
 
 import { OrganizationCreateRequest } from "./OrganizationForm";
 
-enum OrganizationTypeEnum {
-  k12 = "k12",
-  university = "university",
-  correctional_facility = "correctional_facility",
-  airport = "airport",
-  shelter = "shelter",
-  fqhc = "fqhc",
-  primary_care = "primary_care",
-  assisted_living = "assisted_living",
-  hospital = "hospital",
-  urgent_care = "urgent_care",
-  nursing_home = "nursing_home",
-  treatment_center = "treatment_center",
-  hospice = "hospice",
-  pharmacy = "pharmacy",
-  employer = "employer",
-  government_agency = "government_agency",
-  camp = "camp",
-  lab = "lab",
-  other = "other",
-}
+export const OrganizationTypeEnum = {
+  airport: "Airport/Transit station",
+  assisted_living: "Assisted living facility",
+  camp: "Camp",
+  university: "College/University",
+  correctional_facility: "Correctional facility",
+  employer: "Employer",
+  fqhc: "Federally Qualified Health Center (FQHC)",
+  government_agency: "Government agency",
+  shelter: "Homeless shelter",
+  hospice: "Hospice",
+  hospital: "Hospital or clinic",
+  k12: "K-12 school",
+  lab: "Lab",
+  nursing_home: "Nursing home",
+  other: "Other",
+  pharmacy: "Pharmacy",
+  primary_care: "Primary care / Mental health outpatient",
+  treatment_center: "Substance abuse treatment center",
+  urgent_care: "Urgent care",
+};
 
 export const organizationFields = [
   [
@@ -42,7 +44,7 @@ export const organizationFields = [
   ],
   ["state", "Organization state", true, null],
   ["type", "Organization type", true, null],
-  ["type", "Organization administrator", false, null],
+  ["banner", "Organization administrator", false, null],
   ["firstName", "First name", true, null],
   ["middleName", "Middle name", false, null],
   ["lastName", "Last name", true, null],
@@ -82,18 +84,40 @@ export const initOrgErrors = (): Record<
   workPhoneNumber: "",
 });
 
-export const organzationSchema: yup.SchemaOf<OrganizationCreateRequest> = yup
+const getStateErrorMessage = (param: any) =>
+  param.value !== "" ? (
+    <>
+      SimpleReport isn't available yet in your state. For more information, view{" "}
+      <a href="https://simplereport.gov/using-simplereport/manage-facility-info/find-supported-jurisdictions">
+        supported jurisdictions
+      </a>
+      .
+    </>
+  ) : (
+    "Organization state is required"
+  );
+
+export const organizationSchema: yup.SchemaOf<OrganizationCreateRequest> = yup
   .object()
   .shape({
-    name: yup.string().required("Name is required"),
+    name: yup.string().required("Organization name is required"),
     type: yup
       .mixed()
-      .oneOf(Object.keys(OrganizationTypeEnum))
-      .required("Type is required"),
-    state: yup.string().required("State is required"),
+      .oneOf(Object.keys(OrganizationTypeEnum), "Organization type is required")
+      .required(),
+    state: yup
+      .mixed()
+      .oneOf(liveJurisdictions, getStateErrorMessage)
+      .required(),
     firstName: yup.string().required("First name is required"),
     middleName: yup.string().nullable(),
     lastName: yup.string().required("Last name is required"),
-    email: yup.string().email().required("Email is required"),
-    workPhoneNumber: yup.string().required("Phone number is required"),
+    email: yup
+      .string()
+      .email("A valid email address is required")
+      .required("A valid email address is required"),
+    workPhoneNumber: yup
+      .mixed()
+      .test("", "A valid phone number is required", phoneNumberIsValid)
+      .required(),
   });
