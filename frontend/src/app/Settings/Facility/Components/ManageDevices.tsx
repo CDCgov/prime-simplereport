@@ -9,7 +9,7 @@ import { ValidateField } from "../FacilityForm";
 
 interface Props {
   deviceTypes: string[];
-  defaultDevice: string | null;
+  defaultDevice: string;
   updateDeviceTypes: (deviceTypes: string[]) => void;
   updateDefaultDevice: (defaultDevice: string) => void;
   deviceOptions: DeviceType[];
