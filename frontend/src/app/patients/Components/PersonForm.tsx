@@ -122,7 +122,8 @@ const PersonForm = (props: Props) => {
     if (schema !== selfRegistrationSchema) {
       i18n.changeLanguage("en");
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const clearError = useCallback(
     (field: keyof PersonErrors) => {
