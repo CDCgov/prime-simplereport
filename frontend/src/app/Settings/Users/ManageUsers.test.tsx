@@ -235,6 +235,7 @@ describe("ManageUsers", () => {
               deleteUser={deleteUser}
               getUsers={getUsers}
               reactivateUser={reactivateUser}
+              resetUserPassword={() => Promise.resolve()}
             />
           </TestContainer>
         );
@@ -419,6 +420,7 @@ describe("ManageUsers", () => {
               deleteUser={deleteUser}
               getUsers={getUsers}
               reactivateUser={reactivateUser}
+              resetUserPassword={() => Promise.resolve()}
             />
           </TestContainer>
         );
@@ -473,6 +475,7 @@ describe("ManageUsers", () => {
               deleteUser={deleteUser}
               getUsers={getUsers}
               reactivateUser={reactivateUser}
+              resetUserPassword={() => Promise.resolve()}
             />
           </TestContainer>
         );
@@ -565,6 +568,7 @@ describe("ManageUsers", () => {
                 deleteUser={deleteUser}
                 getUsers={getUsers}
                 reactivateUser={reactivateUser}
+                resetUserPassword={() => Promise.resolve()}
               />
             </MockedProvider>
           </Provider>

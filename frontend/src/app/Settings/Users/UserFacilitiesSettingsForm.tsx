@@ -228,7 +228,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
           <Button
             className="height-5 margin-left-2"
             variant="outline"
-            disabled={hasAllFacilityAccess}
+            disabled={hasAllFacilityAccess || !selectedFacility}
             onClick={(e) => {
               e.preventDefault();
               const facility = facilityLookup[selectedFacility];
