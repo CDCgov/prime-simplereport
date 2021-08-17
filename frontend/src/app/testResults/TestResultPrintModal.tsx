@@ -194,7 +194,7 @@ export const DetachedTestResultPrintModal = ({
             </ul>
           </section>
           <section className="sr-result-section sr-result-next-steps">
-            <h2>Notes</h2>
+            <h2>{t("testResult.note")}</h2>
             {data.testResult.result !== "POSITIVE" && (
               <>
                 <p>{t("testResult.notes.meaning")}</p>
@@ -221,10 +221,7 @@ export const DetachedTestResultPrintModal = ({
                   <li>{t("testResult.notes.positive.guidelines.li4")}</li>
                   <li>{t("testResult.notes.positive.guidelines.li5")}</li>
                 </ul>
-                <p>
-                  More information is available at
-                  https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/
-                </p>
+                <p>{t("testResult.notes.positive.moreInformation")}</p>
                 <Trans
                   t={t}
                   parent="p"
@@ -249,7 +246,9 @@ export const DetachedTestResultPrintModal = ({
           </section>
         </main>
         <footer>
-          <p>Test result printed {new Date().toLocaleString()}</p>
+          <p>
+            {t("testResult.printed")} {new Date().toLocaleString()}
+          </p>
         </footer>
       </div>
       {buttonGroup}

@@ -162,7 +162,7 @@ export const es: LanguageConfig = {
         },
         errors: {
           unsaved:
-            "“¡Sus cambios aún no están guardados!Haga clic en OK para descartar cambios, Cancelar para continuar con la edición.",
+            "“¡Sus cambios aún no están guardados! Haga clic en OK para descartar cambios, Cancelar para continuar con la edición.",
           validationMsg: "Corrija antes de enviar",
           firstName: "Se requiere primer nombre",
           middleName: "El segundo nombre tiene un formato incorrecto",
@@ -229,6 +229,8 @@ export const es: LanguageConfig = {
       information:
         "Para obtener más información, visite el <0>sitio web de los Centros para el Control y la Prevención de Enfermedades (CDC)</0> o comuníquese con su departamento de " +
         "salud local.",
+      note: "Notas",
+      printed: "Resultado de la prueba impreso",
       testingFacility: {
         details: "Detalles del centro de pruebas",
         name: "Nombre del centro de pruebas",
@@ -281,6 +283,8 @@ export const es: LanguageConfig = {
           difficultNewsLink:
             "Obtener un resultado positivo en la prueba de COVID-19 puede ser una noticia difícil, por lo que es importante tomar <0> medidas para sobrellevar el estrés </0> " +
             "durante este periodo. Comuníquese con su sistema de apoyo y programe una cita por teléfono o video con un profesional de salud mental si es necesario.",
+          moreInformation:
+            "Para más información: https://espanol.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/index.html",
         },
         negative: {
           p0:

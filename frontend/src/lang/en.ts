@@ -145,7 +145,7 @@ export const en = {
         other: {
           heading: "Other",
           congregateLiving: {
-            heading: "Are you a resident in a congregate living setggggting?",
+            heading: "Are you a resident in a congregate living setting?",
             helpText:
               "For example: nursing home, group home, prison, jail, or military",
           },
@@ -219,6 +219,8 @@ export const en = {
       meaning: "What does my result mean?",
       information:
         "For more information, please visit the <0>Centers for Disease Control and Prevention (CDC) website</0> or contact your local health department.",
+      note: "Notes",
+      printed: "Test result printed",
       testingFacility: {
         details: "Testing facility details",
         name: "Testing facility name",
@@ -265,6 +267,8 @@ export const en = {
             "Call 911 or call ahead to your local emergency room: Notify the operator that you are seeking care for someone who has or may have COVID-19.",
           difficultNewsLink:
             "Getting a positive COVID-19 test result can be difficult news, so it’s important to <0> take steps to cope with stress </0> during this time. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.",
+          moreInformation:
+            "More information is available at https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/",
         },
         negative: {
           p0:
