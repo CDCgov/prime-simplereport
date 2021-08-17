@@ -4,6 +4,8 @@ export function getConfigurationFromEnvironment() {
     TEST_EVENT_QUEUE_NAME: "storage queue resource name for Test Events",
     REPORT_STREAM_URL: "ReportStream URL to which tests should be reported",
     REPORT_STREAM_TOKEN: "ReportStream API key",
+    REPORT_STREAM_BATCH_MINIMUM: "minimum # of messages to read from the queue",
+    REPORT_STREAM_BATCH_MAXIMUM: "maximum # of messages to send to ReportStream"
   };
   return Object.entries(CONFIG_VALUES).reduce((acc, cur) => {
     const [configName, description] = [

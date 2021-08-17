@@ -10,10 +10,10 @@ const {
   TEST_EVENT_QUEUE_NAME,
   REPORT_STREAM_URL,
   REPORT_STREAM_TOKEN,
+  REPORT_STREAM_BATCH_MINIMUM,
+  REPORT_STREAM_BATCH_MAXIMUM,
 } = getConfigurationFromEnvironment();
 
-const REPORT_STREAM_BATCH_MINIMUM = 100;
-const REPORT_STREAM_BATCH_MAXIMUM = 1000;
 const DEQUEUE_BATCH_SIZE = 25;
 const uploaderVersion = "2021-08-17";
 
@@ -37,7 +37,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     return;
   }
 
-  if (approxMessageCount < REPORT_STREAM_BATCH_MINIMUM) {
+  if (approxMessageCount < parseInt(REPORT_STREAM_BATCH_MINIMUM, 10)) {
     context.log(
       `Queue message count of ${approxMessageCount} was < ${REPORT_STREAM_BATCH_MINIMUM} minimum; aborting`
     );
@@ -48,7 +48,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   const messages: DequeuedMessageItem[] = [];
   for (
     let messagesDequeued = 0;
-    messagesDequeued < REPORT_STREAM_BATCH_MAXIMUM;
+    messagesDequeued < parseInt(REPORT_STREAM_BATCH_MAXIMUM, 10);
     messagesDequeued += DEQUEUE_BATCH_SIZE
   ) {
     const dequeueResponse = await queueClient.receiveMessages({
@@ -61,7 +61,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
       );
     } else {
       // There are no more messages on the queue
-      context.log('Done receiving messages');
+      context.log("Done receiving messages");
       break;
     }
   }
@@ -83,7 +83,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   });
 
   if (postResult.ok) {
-    context.log('Upload succeeded; deleting messages');
+    context.log("Upload succeeded; deleting messages");
     // Delete all dequeued messages
     for (const message of messages) {
       const deleteResponse = await queueClient.deleteMessage(
@@ -94,7 +94,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
         `Message ${message.messageId} deleted with service id ${deleteResponse}`
       );
     }
-    context.log('Deletion complete');
+    context.log("Deletion complete");
   } else {
     context.log(
       `Upload to ReportStream failed with error code ${postResult.status}`
