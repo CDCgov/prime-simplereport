@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { stateCodes } from "../../../config/constants";
 import getLanguages from "../../utils/languages";
+import i18n from "../../../i18n";
 import {
   TRIBAL_AFFILIATION_VALUES,
   useTranslatedConstants,
@@ -31,7 +32,6 @@ import ComboBox from "../../commonComponents/ComboBox";
 
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
-import "../../../i18n";
 
 export type ValidateField = (field: keyof PersonErrors) => Promise<void>;
 
@@ -115,6 +115,14 @@ const PersonForm = (props: Props) => {
   };
 
   const schema = schemata[view];
+
+  // Language settings may persist into a non-i18nized view, so explicitly revert back to the
+  // default language in such cases
+  useEffect(() => {
+    if (schema !== selfRegistrationSchema) {
+      i18n.changeLanguage("en");
+    }
+  });
 
   const clearError = useCallback(
     (field: keyof PersonErrors) => {
