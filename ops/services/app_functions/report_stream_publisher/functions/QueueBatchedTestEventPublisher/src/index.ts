@@ -1,20 +1,17 @@
 import { DefaultAzureCredential } from "@azure/identity";
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
-import { DequeuedMessageItem, QueueServiceClient } from "@azure/storage-queue";
-import csvStringify from "csv-stringify/lib/sync";
+import { QueueServiceClient } from "@azure/storage-queue";
 import fetch, { Headers } from "node-fetch";
-import { getConfigurationFromEnvironment } from "./config";
+import { ENV } from "./config";
+import { convertToCsv, deleteSuccessfullyParsedMessages, dequeueMessages, minimumMessagesAvailable } from "./lib";
 
 const {
   AZ_QUEUE_SERVICE_URL,
   TEST_EVENT_QUEUE_NAME,
   REPORT_STREAM_URL,
   REPORT_STREAM_TOKEN,
-  REPORT_STREAM_BATCH_MINIMUM,
-  REPORT_STREAM_BATCH_MAXIMUM,
-} = getConfigurationFromEnvironment();
+} = ENV;
 
-const DEQUEUE_BATCH_SIZE = 25;
 const uploaderVersion = "2021-08-17";
 
 const QueueBatchedTestEventPublisher: AzureFunction = async function (
@@ -27,56 +24,17 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     credential
   );
   const queueClient = queueServiceClient.getQueueClient(TEST_EVENT_QUEUE_NAME);
-  const queueProperties = await queueClient.getProperties();
 
-  // Check that REPORT_STREAM_BATCH_SIZE messages are on the queue
-  const approxMessageCount = queueProperties.approximateMessagesCount;
-  if (approxMessageCount === undefined) {
-    context.log("Queue message count is undefined; aborting");
-    return;
-  }
-  if (approxMessageCount < parseInt(REPORT_STREAM_BATCH_MINIMUM, 10)) {
-    context.log(
-      `Queue message count of ${approxMessageCount} was < ${REPORT_STREAM_BATCH_MINIMUM} minimum; aborting`
-    );
+  if (!(await minimumMessagesAvailable(context, queueClient))) {
     return;
   }
 
-  context.log("Receiving messages");
-  const messages: DequeuedMessageItem[] = [];
-  for (
-    let messagesDequeued = 0;
-    messagesDequeued < parseInt(REPORT_STREAM_BATCH_MAXIMUM, 10);
-    messagesDequeued += DEQUEUE_BATCH_SIZE
-  ) {
-    const dequeueResponse = await queueClient.receiveMessages({
-      numberOfMessages: DEQUEUE_BATCH_SIZE,
-    });
-    if (dequeueResponse.receivedMessageItems.length) {
-      messages.push(...dequeueResponse.receivedMessageItems);
-      context.log(
-        `Dequeued ${dequeueResponse.receivedMessageItems.length} messages`
-      );
-    } else {
-      // There are no more messages on the queue
-      context.log("Done receiving messages");
-      break;
-    }
-  }
+  const messages = await dequeueMessages(context, queueClient);
 
-  // Convert to CSV
-  const parseFailure: {[k:string]: boolean} = {};
-  const messageTexts = messages.map((m) => {
-    try { 
-      return JSON.parse(m.messageText)
-    } catch(e) {
-      parseFailure[m.messageId] = true;
-      return undefined;
-    }
-  }).filter(m => m !== undefined); 
-  const csvPayload = csvStringify(messageTexts, { header: true });
+  const { csvPayload, parseFailure, parseSuccessCount } =
+    convertToCsv(messages);
 
-  context.log(`Uploading ${messageTexts.length} TestEvents to ReportStream`);
+  context.log(`Uploading ${parseSuccessCount} TestEvents to ReportStream`);
   const postResult = await fetch(REPORT_STREAM_URL, {
     method: "POST",
     headers: new Headers({
@@ -90,20 +48,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
 
   if (postResult.ok) {
     context.log("Upload succeeded; deleting messages");
-    for (const message of messages) {
-      if(parseFailure[message.messageId]) {
-        context.log(`Message ${message.messageId} failed to parse; skipping deletion`)
-        continue;
-      }
-      const deleteResponse = await queueClient.deleteMessage(
-        message.messageId,
-        message.popReceipt
-      );
-      context.log(
-        `Message ${message.messageId} deleted with service id ${deleteResponse}`
-      );
-    }
-    context.log("Deletion complete");
+    await deleteSuccessfullyParsedMessages(context, queueClient, messages, parseFailure);
   } else {
     context.log(
       `Upload to ReportStream failed with error code ${postResult.status}`
@@ -111,5 +56,6 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     context.log(`Response body: ${await postResult.text()}`);
   }
 };
+
 
 export default QueueBatchedTestEventPublisher;

@@ -1,4 +1,4 @@
-export function getConfigurationFromEnvironment() {
+export const ENV = (() => {
   const CONFIG_VALUES = {
     AZ_QUEUE_SERVICE_URL: "Azure Storage Queue service URL",
     TEST_EVENT_QUEUE_NAME: "storage queue resource name for Test Events",
@@ -15,7 +15,7 @@ export function getConfigurationFromEnvironment() {
     acc[configName] = fetchFromEnvironmentOrThrow(configName, description);
     return acc;
   }, {} as { [k in keyof typeof CONFIG_VALUES]: string });
-}
+})();
 
 export function fetchFromEnvironmentOrThrow(
   variableName: string,
