@@ -73,7 +73,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
       parseFailure[m.messageId] = true;
       return undefined;
     }
-  }).filter(m => !!m!== undefined); 
+  }).filter(m => m !== undefined); 
   const csvPayload = csvStringify(messageTexts, { header: true });
 
   context.log(`Uploading ${messageTexts.length} TestEvents to ReportStream`);
