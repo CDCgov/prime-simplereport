@@ -204,6 +204,9 @@ describe("EditPatient", () => {
     });
 
     it("matches screenshot", () => {
+      jest
+        .useFakeTimers("modern")
+        .setSystemTime(new Date("2021-08-01").getTime());
       expect(component).toMatchSnapshot();
     });
 
