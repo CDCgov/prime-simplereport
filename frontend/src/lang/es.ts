@@ -231,6 +231,8 @@ export const es: LanguageConfig = {
         "salud local.",
       note: "Notas",
       printed: "Resultado de la prueba impreso",
+      print: "Imprimir",
+      close: "Cerrar",
       testingFacility: {
         details: "Detalles del centro de pruebas",
         name: "Nombre del centro de pruebas",

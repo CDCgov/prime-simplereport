@@ -65,10 +65,16 @@ export const DetachedTestResultPrintModal = ({
   data,
   closeModal,
 }: Props) => {
+  const { t } = useTranslation();
+
   const buttonGroup = (
     <div className="sr-result-print-buttons">
-      <Button variant="unstyled" label="Close" onClick={closeModal} />
-      <Button label="Print" onClick={() => window.print()} />
+      <Button
+        variant="unstyled"
+        label={t("testResult.close")}
+        onClick={closeModal}
+      />
+      <Button label={t("testResult.print")} onClick={() => window.print()} />
     </div>
   );
   const {
@@ -78,8 +84,6 @@ export const DetachedTestResultPrintModal = ({
     testPerformed,
     correctionStatus,
   } = data.testResult;
-
-  const { t } = useTranslation();
 
   return (
     <Modal

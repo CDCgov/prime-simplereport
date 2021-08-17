@@ -221,6 +221,8 @@ export const en = {
         "For more information, please visit the <0>Centers for Disease Control and Prevention (CDC) website</0> or contact your local health department.",
       note: "Notes",
       printed: "Test result printed",
+      print: "Print",
+      close: "Close",
       testingFacility: {
         details: "Testing facility details",
         name: "Testing facility name",
