@@ -99,29 +99,33 @@ export function areValidPhoneNumbers(phoneNumbers: any) {
   });
 }
 
-export function isValidBirthdate(this: TestContext, date: string | undefined) {
-  if (date === undefined) {
-    return false;
-  }
-  if (date.split("/").length === 3 && date.split("/")[2].length < 4) {
-    return false;
-  }
-  const parsedDate = moment(date);
-  if (!parsedDate.isValid()) {
-    return false;
-  }
-  if (parsedDate.year() < 1900) {
-    // TODO: translations
-    return this.createError({
-      message: "The year you have entered is too far in the past",
-    });
-  }
-  if (parsedDate.isAfter(moment())) {
-    return this.createError({
-      message: "Birthdates can't be in the future",
-    });
-  }
-  return true;
+export function isValidBirthdate18n(t: TFunction) {
+  return function isValidBirthdate(
+    this: TestContext,
+    date: string | undefined
+  ) {
+    if (date === undefined) {
+      return false;
+    }
+    if (date.split("/").length === 3 && date.split("/")[2].length < 4) {
+      return false;
+    }
+    const parsedDate = moment(date);
+    if (!parsedDate.isValid()) {
+      return false;
+    }
+    if (parsedDate.year() < 1900) {
+      return this.createError({
+        message: t("patient.form.errors.birthDate.past"),
+      });
+    }
+    if (parsedDate.isAfter(moment())) {
+      return this.createError({
+        message: t("patient.form.errors.birthDate.future"),
+      });
+    }
+    return true;
+  };
 }
 
 const updateFieldSchemata: (
@@ -219,7 +223,11 @@ const translatePersonSchema: TranslatedSchema<RequiredPersonFields> = (t) =>
     lastName: yup.string().required(t("patient.form.errors.lastName")),
     birthDate: yup
       .string()
-      .test("birth-date", t("patient.form.errors.birthDate"), isValidBirthdate)
+      .test(
+        "birth-date",
+        t("patient.form.errors.birthDate"),
+        isValidBirthdate18n(t)
+      )
       .required(t("patient.form.errors.birthDate")),
     facilityId: yup
       .string()
@@ -237,7 +245,11 @@ const translateSelfRegistrationSchema: TranslatedSchema<SelfRegistationFields> =
     lastName: yup.string().required(t("patient.form.errors.lastName")),
     birthDate: yup
       .string()
-      .test("birth-date", t("patient.form.errors.birthDate"), isValidBirthdate)
+      .test(
+        "birth-date",
+        t("patient.form.errors.birthDate.base"),
+        isValidBirthdate18n(t)
+      )
       .required(t("patient.form.errors.birthDate")),
     ...updateFieldSchemata(t),
   });

@@ -1,11 +1,15 @@
 import moment from "moment";
 import { TestContext } from "yup";
 
+import i18n from "../../i18n";
+
 import {
   phoneNumberIsValid,
   areValidPhoneNumbers,
-  isValidBirthdate,
+  isValidBirthdate18n,
 } from "./personSchema";
+
+const t = i18n.t.bind(i18n);
 
 describe("phoneNumberIsValid", () => {
   it("returns false on null input", () => {
@@ -77,7 +81,7 @@ describe("areValidPhoneNumbers", () => {
   });
 });
 
-describe("isValidBirthdate", () => {
+describe("isValidBirthdate18n", () => {
   let testContext: TestContext;
 
   beforeEach(() => {
@@ -87,36 +91,41 @@ describe("isValidBirthdate", () => {
   });
 
   it("returns false for undefined", () => {
-    expect(isValidBirthdate.call(testContext, undefined)).toBeFalsy();
+    expect(isValidBirthdate18n(t).call(testContext, undefined)).toBeFalsy();
   });
 
   it("returns false for invalid dates", () => {
-    expect(isValidBirthdate.call(testContext, "abcdefg")).toBeFalsy();
+    expect(isValidBirthdate18n(t).call(testContext, "abcdefg")).toBeFalsy();
   });
 
   it("returns false for dates in the future", () => {
     expect(
-      isValidBirthdate.call(testContext, moment().add(1, "days").format("L"))
+      isValidBirthdate18n(t).call(
+        testContext,
+        moment().add(1, "days").format("L")
+      )
     ).toBeFalsy();
+    expect(testContext.createError).toHaveBeenCalled();
   });
 
   it("returns false for dates farrr in the past", () => {
     expect(
-      isValidBirthdate.call(
+      isValidBirthdate18n(t).call(
         testContext,
         moment("08/02/1776", "MM/DD/YYYY").format("L")
       )
     ).toBeFalsy();
+    expect(testContext.createError).toHaveBeenCalled();
   });
 
   it("returns true for valid birthdates", () => {
-    expect(isValidBirthdate.call(testContext, "1/2/1923")).toBeTruthy();
-    expect(isValidBirthdate.call(testContext, "01/02/1923")).toBeTruthy();
-    expect(isValidBirthdate.call(testContext, "1-2-1923")).toBeTruthy();
-    expect(isValidBirthdate.call(testContext, "01-02-1923")).toBeTruthy();
+    expect(isValidBirthdate18n(t).call(testContext, "1/2/1923")).toBeTruthy();
+    expect(isValidBirthdate18n(t).call(testContext, "01/02/1923")).toBeTruthy();
+    expect(isValidBirthdate18n(t).call(testContext, "1-2-1923")).toBeTruthy();
+    expect(isValidBirthdate18n(t).call(testContext, "01-02-1923")).toBeTruthy();
   });
 
   it("returns false for two-digit years", () => {
-    expect(isValidBirthdate.call(testContext, "1/2/23")).toBeFalsy();
+    expect(isValidBirthdate18n(t).call(testContext, "1/2/23")).toBeFalsy();
   });
 });

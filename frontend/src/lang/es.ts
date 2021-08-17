@@ -170,8 +170,12 @@ export const es: LanguageConfig = {
           lookupId: "Identificación del estudiante tiene un formato incorrecto",
           role: "Rol tiene un formato incorrecto",
           facilityId: "Se requiere centro de pruebas",
-          birthDate:
-            "Se requiere fecha de nacimiento, formateada correctamente (MM/DD/AAAA) y en el pasado",
+          birthDate: {
+            base:
+              "Se requiere la fecha de nacimiento, debe estar en formato MM/DD/AA, y en el pasado",
+            past: "La fecha de nacimiento está demasiado lejos en el pasado",
+            future: "La fecha de nacimiento no puede ser futura",
+          },
           telephone: "Falta el número de teléfono o no es válido",
           phoneNumbers: "Faltan los números de teléfono o no son válidos",
           email: "Falta el correo electrónico o tiene un formato incorrecto",
