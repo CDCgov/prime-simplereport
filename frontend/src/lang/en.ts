@@ -164,8 +164,12 @@ export const en = {
           lookupId: "Student ID is incorrectly formatted",
           role: "Role is incorrectly formatted",
           facilityId: "Testing facility is required",
-          birthDate:
-            "Date of birth must be present, correctly formatted (MM/DD/YYYY), and in the past",
+          birthDate: {
+            base:
+              "Date of birth is required, must be in MM/DD/YY format, and in the past",
+            past: "Date of birth is too far in the past",
+            future: "Date of birth can’t be in the future",
+          },
           telephone: "Phone number is missing or invalid",
           phoneNumbers: "Phone numbers are missing or invalid",
           email: "Email is missing or incorrectly formatted",

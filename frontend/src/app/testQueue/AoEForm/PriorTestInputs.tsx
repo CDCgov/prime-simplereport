@@ -41,7 +41,7 @@ const PriorTestInputs: React.FC<Props> = ({
   setPriorTestType,
   lastTest,
 }) => {
-  const recentDate = (lastTest?.dateTested || "").split("T")[0];
+  const recentDate = formatDate(lastTest?.dateTested);
   const filledPriorTest =
     priorTestDate &&
     recentDate === priorTestDate &&
@@ -69,7 +69,7 @@ const PriorTestInputs: React.FC<Props> = ({
           name="prior_test_date"
           defaultValue={priorTestDate || undefined}
           minDate="2020-02-01"
-          maxDate={new Date().toISOString().split("T")[0]}
+          maxDate={formatDate(new Date())}
           disabled={!lastTestDateKnown}
           onChange={setFormattedPriorTestDate}
         />

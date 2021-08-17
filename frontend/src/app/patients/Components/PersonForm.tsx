@@ -28,9 +28,11 @@ import {
 } from "../../utils/smartyStreets";
 import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
 import ComboBox from "../../commonComponents/ComboBox";
+import { formatDate } from "../../utils/date";
 
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
+
 import "../../../i18n";
 
 export type ValidateField = (field: keyof PersonErrors) => Promise<void>;
@@ -355,6 +357,8 @@ const PersonForm = (props: Props) => {
             type="date"
             required={view !== PersonFormView.PXP}
             disabled={view === PersonFormView.PXP}
+            min={formatDate(new Date("Jan 1, 1900"))}
+            max={formatDate(new Date())}
           />
         </div>
       </FormGroup>
