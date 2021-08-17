@@ -18,6 +18,8 @@ import { languages } from "../../config/constants";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
+const MAX_LENGTH = 256;
+
 type TranslatedSchema<T> = (t: TFunction) => yup.SchemaOf<T>;
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -137,13 +139,32 @@ const updateFieldSchemata: (
       areValidPhoneNumbers
     )
     .required(),
-  email: yup.string().email(t("patient.form.errors.email")).nullable(),
-  street: yup.string().required(t("patient.form.errors.street")),
-  streetTwo: yup.string().nullable(),
-  city: yup.string().nullable(),
-  county: yup.string().nullable(),
+  email: yup
+    .string()
+    .email(t("patient.form.errors.email"))
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
+    .nullable(),
+  street: yup
+    .string()
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
+    .required(t("patient.form.errors.street")),
+  streetTwo: yup
+    .string()
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
+    .nullable(),
+  city: yup
+    .string()
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
+    .nullable(),
+  county: yup
+    .string()
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
+    .nullable(),
   state: yup.string().required(t("patient.form.errors.state")),
-  zipCode: yup.string().required(t("patient.form.errors.zipCode")),
+  zipCode: yup
+    .string()
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
+    .required(t("patient.form.errors.zipCode")),
   race: yup
     .mixed()
     .oneOf(
@@ -189,6 +210,7 @@ const updatePhoneNumberSchemata: (
 ) => Record<keyof PhoneNumber, yup.AnySchema> = (t) => ({
   number: yup
     .string()
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
     .test(
       "phone-number",
       t("patient.form.errors.telephone"),
@@ -226,9 +248,18 @@ const translateSelfRegistrationSchema: TranslatedSchema<SelfRegistationFields> =
   t
 ) =>
   yup.object({
-    firstName: yup.string().required(t("patient.form.errors.firstName")),
-    middleName: yup.string().nullable(),
-    lastName: yup.string().required(t("patient.form.errors.lastName")),
+    firstName: yup
+      .string()
+      .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
+      .required(t("patient.form.errors.firstName")),
+    middleName: yup
+      .string()
+      .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
+      .nullable(),
+    lastName: yup
+      .string()
+      .required(t("patient.form.errors.lastName"))
+      .max(MAX_LENGTH, t("patient.form.errors.fieldLength")),
     birthDate: yup
       .string()
       .test("birth-date", t("patient.form.errors.birthDate"), isValidBirthdate)

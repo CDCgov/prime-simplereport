@@ -158,6 +158,7 @@ export const en = {
             "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing.",
           validationMsg: "Please correct before submitting",
           firstName: "First name is required",
+          fieldLength: "This answer is too long",
           middleName: "Middle name is incorrectly formatted",
           lastName: "Last name is required",
           lookupId: "Student ID is incorrectly formatted",
