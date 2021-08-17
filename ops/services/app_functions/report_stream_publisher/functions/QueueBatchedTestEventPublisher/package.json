@@ -11,7 +11,9 @@
   "dependencies": {
     "@azure/functions": "^1.2.3",
     "@azure/identity": "^1.5.1",
-    "@azure/storage-queue": "^12.6.0"
+    "@azure/storage-queue": "^12.6.0",
+    "csv-stringify": "^5.6.2",
+    "fetch": "^1.1.0"
   },
   "devDependencies": {
     "typescript": "^4.3.5"
