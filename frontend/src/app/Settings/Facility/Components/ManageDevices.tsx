@@ -9,7 +9,7 @@ import { ValidateField } from "../FacilityForm";
 
 interface Props {
   deviceTypes: string[];
-  defaultDevice: string;
+  defaultDevice: string | null;
   updateDeviceTypes: (deviceTypes: string[]) => void;
   updateDefaultDevice: (defaultDevice: string) => void;
   deviceOptions: DeviceType[];
@@ -44,6 +44,10 @@ const ManageDevices: React.FC<Props> = ({
     const newDeviceTypes = Array.from(deviceTypes);
     newDeviceTypes.splice(newDeviceTypes.indexOf(id), 1);
     updateDeviceTypes(newDeviceTypes);
+    // Unset default device if ID matches
+    if (defaultDevice === id) {
+      updateDefaultDevice("");
+    }
   };
 
   // returns a list of deviceIds that have *not* been selected so far
