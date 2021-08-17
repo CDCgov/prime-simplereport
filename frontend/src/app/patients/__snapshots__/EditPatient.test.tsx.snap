@@ -1755,7 +1755,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       id="50"
-                      max="2021-08-17"
+                      max="2021-08-01"
                       min="1900-01-01"
                       name="birthDate"
                       type="date"
