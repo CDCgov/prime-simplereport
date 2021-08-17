@@ -220,7 +220,7 @@ describe("AddPatient", () => {
             "Would you like to receive your results via text message": {
               label: "Yes",
               value: "SMS",
-              exact: true,
+              exact: false,
             },
           }
         );

@@ -276,6 +276,11 @@ exports[`PatientFormContainer snapshot 1`] = `
             >
               Contact information
             </legend>
+            <p
+              className="usa-hint maxw-prose"
+            >
+              You're responsible for entering the correct contact information, following applicable federal and state laws.
+            </p>
             <div
               className="usa-form"
             >

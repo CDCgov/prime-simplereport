@@ -123,14 +123,16 @@ export const es: LanguageConfig = {
         },
         contact: {
           heading: "Información de contacto",
+          helpText:
+            "Usted es responsable de ingresar la información de contacto correcta, siguiendo las leyes federales y estatales aplicables.",
           primaryPhoneNumber: "Número de teléfono principal",
           additionalPhoneNumber: "Número de teléfono adicional",
+          receiveTextMessageResults:
+            "Sí, envíe un mensaje de texto a todos los números registrados de teléfonos móviles.",
           phoneType: "Tipo de teléfono",
           addNumber: "Agregar otro número",
           testResultDelivery:
             "¿Le gustaría recibir sus resultados por mensaje de texto?",
-          testResultDeliveryHint:
-            "Enviaremos un mensaje de texto a todos los números de teléfono móviles registrados",
           email: "Dirección de correo electrónico",
           street1: "Dirección 1",
           street2: "Dirección 2",
