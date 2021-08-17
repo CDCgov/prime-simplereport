@@ -589,7 +589,7 @@ interface PersonUpdate extends Address {
   gender: Gender;
   residentCongregateSetting: boolean | null | undefined;
   employedInHealthcare: boolean | null | undefined;
-  tribalAffiliation: TribalAffiliation;
+  tribalAffiliation: TribalAffiliation | undefined;
   telephone: string;
   phoneNumbers: PhoneNumber[] | null;
   county: string;

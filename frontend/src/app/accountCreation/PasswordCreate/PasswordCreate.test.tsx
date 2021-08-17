@@ -23,6 +23,11 @@ jest.mock("../AccountCreationApiService", () => ({
         }
       });
     },
+    enrollSecurityKeyMfa: () => {
+      return new Promise((res) => {
+        res({ activation: { challenge: "challenge", user: { id: "userId" } } });
+      });
+    },
   },
 }));
 

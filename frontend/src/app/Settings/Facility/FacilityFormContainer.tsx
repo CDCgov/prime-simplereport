@@ -189,10 +189,9 @@ const FacilityFormContainer: any = (props: Props) => {
   if (data === undefined) {
     return <p>Error: facility not found</p>;
   }
-
   if (saveSuccess) {
     if (props.newOrg) {
-      window.location.pathname = process.env.REACT_APP_BASE_URL || "";
+      window.location.pathname = process.env.PUBLIC_URL || "";
     }
     return <Redirect push to={{ pathname: "/settings/facilities" }} />;
   }

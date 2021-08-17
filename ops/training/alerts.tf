@@ -11,6 +11,9 @@ module "metric_alerts" {
   http_response_time_aggregation = "Minimum"
   failed_http_2xx_threshold      = 14
   skip_on_weekends               = true
+  disabled_alerts = [
+    "frontend_error_boundary",
+  ]
 
   action_group_ids = [
     data.terraform_remote_state.global.outputs.pagerduty_demo_action_id

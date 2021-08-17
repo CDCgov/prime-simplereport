@@ -198,7 +198,9 @@ const mocks = [
         patientId: "31d42f7a-0a14-46b7-bc8a-38b3b1e78659",
       },
     },
-    result: {},
+    result: {
+      data: { removePatientFromQueue: null },
+    },
   },
   {
     request: {

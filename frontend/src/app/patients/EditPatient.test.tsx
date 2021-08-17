@@ -91,6 +91,7 @@ describe("EditPatient", () => {
                 employedInHealthcare: true,
                 facility: null,
                 testResultDelivery: null,
+                tribalAffiliation: [null],
               },
             },
           },
@@ -172,6 +173,7 @@ describe("EditPatient", () => {
                 employedInHealthcare: true,
                 facility: null,
                 testResultDelivery: null,
+                tribalAffiliation: [null],
               },
             },
           },
@@ -264,6 +266,7 @@ describe("EditPatient", () => {
             employedInHealthcare: null,
             facility: null,
             testResultDelivery: null,
+            tribalAffiliation: [null],
           },
         },
       },
@@ -347,6 +350,31 @@ describe("EditPatient", () => {
         expect(
           screen.queryByText("First name is required")
         ).not.toBeInTheDocument();
+      });
+    });
+  });
+  describe("tribal tribal Affiliation null", () => {
+    beforeEach(async () => {
+      const mocksWithNull = [...mocks];
+      (mocksWithNull[0].result.data.patient as any).tribalAffiliation = null;
+      render(
+        <MemoryRouter>
+          <Provider store={store}>
+            <MockedProvider mocks={mocksWithNull} addTypename={false}>
+              <EditPatient
+                facilityId={mockFacilityID}
+                patientId={mockPatientID}
+              />
+            </MockedProvider>
+          </Provider>
+        </MemoryRouter>
+      );
+    });
+    it("renders", async () => {
+      await waitFor(() => {
+        expect(
+          screen.queryByText("Franecki, Eugenia", { exact: false })
+        ).toBeInTheDocument();
       });
     });
   });

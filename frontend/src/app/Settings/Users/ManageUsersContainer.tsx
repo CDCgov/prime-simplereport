@@ -91,6 +91,14 @@ const UPDATE_USER_PRIVILEGES = gql`
   }
 `;
 
+const RESET_USER_PASSWORD = gql`
+  mutation ResetUserPassword($id: ID!) {
+    resetUserPassword(id: $id) {
+      id
+    }
+  }
+`;
+
 const DELETE_USER = gql`
   mutation SetUserIsDeleted($id: ID!, $deleted: Boolean!) {
     setUserIsDeleted(id: $id, deleted: $deleted) {
@@ -160,6 +168,7 @@ const ManageUsersContainer: any = () => {
   const [deleteUser] = useMutation(DELETE_USER);
   const [reactivateUser] = useMutation(REACTIVATE_USER);
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
+  const [resetPassword] = useMutation(RESET_USER_PASSWORD);
 
   const { data, loading, error, refetch: getUsers } = useQuery<UserData, {}>(
     GET_USERS,
@@ -200,6 +209,7 @@ const ManageUsersContainer: any = () => {
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}
       addUserToOrg={addUserToOrg}
+      resetUserPassword={resetPassword}
       deleteUser={deleteUser}
       reactivateUser={reactivateUser}
       getUsers={getUsers}

@@ -135,7 +135,9 @@ describe("AddPatient", () => {
           },
           result: {
             data: {
-              internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
+              addPatient: {
+                internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
+              },
             },
           },
         },

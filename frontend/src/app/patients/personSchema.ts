@@ -53,7 +53,8 @@ export type PersonUpdateFields = PartialBy<
 
 export type SelfRegistationFields = Omit<RequiredPersonFields, "facilityId">;
 
-const getValues = (options: Option[]) => options.map(({ value }) => value);
+export const getValues = (options: Option[]) =>
+  options.map(({ value }) => value);
 
 export function phoneNumberIsValid(input: any) {
   if (!input) {

@@ -18,6 +18,7 @@ import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName, displayFullNameInOrder } from "../utils";
+import { isValidDate } from "../utils/date";
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
@@ -30,7 +31,6 @@ import {
   COVID_RESULTS,
   ROLE_VALUES,
   TEST_RESULT_DESCRIPTIONS,
-  DATE_FORMAT_MM_DD_YYYY,
 } from "../constants";
 import "./TestResultsList.scss";
 import Button from "../commonComponents/Button/Button";
@@ -246,6 +246,7 @@ export const DetachedTestResultsList: any = ({
   const [endDateEntry, setEndDateEntry] = useState<string>();
   const [startDateError, setStartDateError] = useState<string | undefined>();
   const [endDateError, setEndDateError] = useState<string | undefined>();
+  const [resetCount, setResetCount] = useState<number>(0);
 
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
@@ -328,21 +329,21 @@ export const DetachedTestResultsList: any = ({
   function processDates() {
     var validStart = false;
     if (startDateEntry) {
-      if (!startDateEntry.match(DATE_FORMAT_MM_DD_YYYY)) {
-        setStartDateError("Date must be in format MM/DD/YYYY or MM-DD-YYYY");
+      if (!isValidDate(startDateEntry)) {
+        setStartDateError("Date must be in format MM/DD/YYYY");
         setStartDateFilter("");
       } else {
         validStart = true;
-        const startDate = moment(startDateEntry).startOf("day");
+        const startDate = moment(startDateEntry, "MM/DD/YYYY").startOf("day");
         setStartDateError(undefined);
         setStartDateFilter(startDate.toISOString());
       }
     }
     if (endDateEntry) {
-      if (!endDateEntry.match(DATE_FORMAT_MM_DD_YYYY)) {
-        setEndDateError("Date must be in format MM/DD/YYYY or MM-DD-YYYY");
+      if (!isValidDate(endDateEntry)) {
+        setEndDateError("Date must be in format MM/DD/YYYY");
       } else {
-        const endDate = moment(endDateEntry).endOf("day");
+        const endDate = moment(endDateEntry, "MM/DD/YYYY").endOf("day");
         if (validStart && endDate.isBefore(moment(startDateFilter))) {
           setEndDateError("End date cannot be before start date");
           setEndDateFilter("");
@@ -390,6 +391,15 @@ export const DetachedTestResultsList: any = ({
                     setRoleFilter("");
                     setStartDateFilter("");
                     setEndDateFilter("");
+                    setStartDateEntry("");
+                    setEndDateEntry("");
+
+                    // The DatePicker component contains bits of state that represent the selected date
+                    // as represented internally to the component and displayed externally to the DOM. Directly
+                    // changing the value of the date via props does not cause the internal state to be updated.
+                    // This hack forces the DatePicker component to be fully re-mounted whenever the filters are
+                    // cleared, therefore resetting the external date display.
+                    setResetCount(resetCount + 1);
                   }}
                 >
                   Clear filters
@@ -431,6 +441,7 @@ export const DetachedTestResultsList: any = ({
                   )}
                   <DatePicker
                     id="start-date"
+                    key={resetCount}
                     name="start-date"
                     data-testid="start-date"
                     value={startDateEntry}
@@ -450,6 +461,7 @@ export const DetachedTestResultsList: any = ({
                   )}
                   <DatePicker
                     id="end-date"
+                    key={resetCount + 1}
                     name="end-date"
                     data-testid="end-date"
                     value={endDateEntry}
