@@ -67,7 +67,14 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   }
 
   // Convert to CSV
-  const messageTexts = messages.map((m) => JSON.parse(m.messageText)); // TODO: harden against individual parse failure
+  const parseFailures: {[k:string]: boolean} = {};
+  const messageTexts = messages.map((m) => {
+    try { 
+      return JSON.parse(m.messageText)
+    } catch(e) {
+      parseFailures[m.messageId] = true;
+    }
+  }); 
   const csvPayload = csvStringify(messageTexts, { header: true });
 
   // POST to ReportStream
@@ -86,6 +93,10 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     context.log("Upload succeeded; deleting messages");
     // Delete all dequeued messages
     for (const message of messages) {
+      if(parseFailures[message.messageId]) {
+        context.log(`Message ${message.messageId} failed to parse; skipping deletion`)
+        continue;
+      }
       const deleteResponse = await queueClient.deleteMessage(
         message.messageId,
         message.popReceipt
