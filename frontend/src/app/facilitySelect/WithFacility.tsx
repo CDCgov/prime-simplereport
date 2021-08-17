@@ -60,17 +60,17 @@ const WithFacility: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     // No action if facility in store and URL exist and are equal
     if (
-      facilityFromUrl &&
-      facilityInStore &&
-      facilityFromUrl === facilityInStore
+      facilityFromUrl?.id &&
+      facilityInStore?.id &&
+      facilityFromUrl.id === facilityInStore.id
     ) {
       return;
     }
 
     // If both exist but are different, URL selection is correct
     if (
-      facilityFromUrl &&
-      facilityInStore &&
+      facilityFromUrl?.id &&
+      facilityInStore?.id &&
       facilityFromUrl.id !== facilityInStore.id
     ) {
       setActiveFacility(facilityFromUrl);
@@ -78,13 +78,13 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     }
 
     // If only in URL, set store value
-    if (facilityFromUrl && !facilityInStore) {
+    if (facilityFromUrl?.id && !facilityInStore) {
       setActiveFacility(facilityFromUrl);
       return;
     }
 
     // If only in store, set URL value
-    if (!facilityFromUrl && facilityInStore) {
+    if (!facilityFromUrl?.id && facilityInStore?.id) {
       setFacilityProp(facilityInStore.id);
       return;
     }
