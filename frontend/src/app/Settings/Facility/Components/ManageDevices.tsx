@@ -100,6 +100,7 @@ const ManageDevices: React.FC<Props> = ({
             <button
               className="usa-button--unstyled"
               onClick={() => onDeviceRemove(deviceId)}
+              aria-label="Delete device"
             >
               <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
             </button>

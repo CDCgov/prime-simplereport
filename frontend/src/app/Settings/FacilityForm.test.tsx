@@ -434,6 +434,33 @@ describe("FacilityForm", () => {
       });
     });
   });
+
+  describe("Device validation", () => {
+    it("warns about missing default device", async () => {
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceOptions={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+      // Delete default device
+      const deleteButtons = await screen.findAllByLabelText("Delete device");
+      await waitFor(() => {
+        fireEvent.click(deleteButtons[0]);
+      });
+      // Attempt save
+      const saveButtons = await screen.findAllByText("Save changes");
+      fireEvent.click(saveButtons[0]);
+      const warning = await screen.findByText(
+        "A default device must be selected",
+        { exact: false }
+      );
+      expect(warning).toBeInTheDocument();
+    });
+  });
 });
 
 async function validateAddress(
