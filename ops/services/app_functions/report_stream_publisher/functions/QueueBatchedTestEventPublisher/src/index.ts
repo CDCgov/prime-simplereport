@@ -3,7 +3,12 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { QueueServiceClient } from "@azure/storage-queue";
 import fetch, { Headers } from "node-fetch";
 import { ENV } from "./config";
-import { convertToCsv, deleteSuccessfullyParsedMessages, dequeueMessages, minimumMessagesAvailable } from "./lib";
+import {
+  convertToCsv,
+  deleteSuccessfullyParsedMessages,
+  dequeueMessages,
+  minimumMessagesAvailable,
+} from "./lib";
 
 const {
   AZ_QUEUE_SERVICE_URL,
@@ -48,7 +53,12 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
 
   if (postResult.ok) {
     context.log("Upload succeeded; deleting messages");
-    await deleteSuccessfullyParsedMessages(context, queueClient, messages, parseFailure);
+    await deleteSuccessfullyParsedMessages(
+      context,
+      queueClient,
+      messages,
+      parseFailure
+    );
   } else {
     context.log(
       `Upload to ReportStream failed with error code ${postResult.status}`
@@ -56,6 +66,5 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     context.log(`Response body: ${await postResult.text()}`);
   }
 };
-
 
 export default QueueBatchedTestEventPublisher;

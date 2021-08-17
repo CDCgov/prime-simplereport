@@ -1,17 +1,11 @@
 import { Context } from "@azure/functions";
-import {
-  DequeuedMessageItem,
-  QueueClient,
-} from "@azure/storage-queue";
+import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
 import csvStringify from "csv-stringify/lib/sync";
 import { ENV } from "./config";
 
 const { REPORT_STREAM_BATCH_MINIMUM, REPORT_STREAM_BATCH_MAXIMUM } = ENV;
 const DEQUEUE_BATCH_SIZE = 25;
 
-/**
- * Check that REPORT_STREAM_BATCH_SIZE messages are on the queue
- */
 export async function minimumMessagesAvailable(
   context: Context,
   queueClient: QueueClient
