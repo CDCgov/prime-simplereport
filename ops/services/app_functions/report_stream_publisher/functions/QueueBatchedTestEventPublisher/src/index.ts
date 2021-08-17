@@ -21,7 +21,6 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   context: Context,
   req: HttpRequest
 ): Promise<void> {
-  // Init services
   const credential = new DefaultAzureCredential();
   const queueServiceClient = new QueueServiceClient(
     AZ_QUEUE_SERVICE_URL,
@@ -36,7 +35,6 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     context.log("Queue message count is undefined; aborting");
     return;
   }
-
   if (approxMessageCount < parseInt(REPORT_STREAM_BATCH_MINIMUM, 10)) {
     context.log(
       `Queue message count of ${approxMessageCount} was < ${REPORT_STREAM_BATCH_MINIMUM} minimum; aborting`
@@ -44,7 +42,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     return;
   }
 
-  context.log("Beginning to dequeue messages");
+  context.log("Receiving messages");
   const messages: DequeuedMessageItem[] = [];
   for (
     let messagesDequeued = 0;
@@ -67,17 +65,18 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   }
 
   // Convert to CSV
-  const parseFailures: {[k:string]: boolean} = {};
+  const parseFailure: {[k:string]: boolean} = {};
   const messageTexts = messages.map((m) => {
     try { 
       return JSON.parse(m.messageText)
     } catch(e) {
-      parseFailures[m.messageId] = true;
+      parseFailure[m.messageId] = true;
+      return undefined;
     }
-  }); 
+  }).filter(m => !!m!== undefined); 
   const csvPayload = csvStringify(messageTexts, { header: true });
 
-  // POST to ReportStream
+  context.log(`Uploading ${messageTexts.length} TestEvents to ReportStream`);
   const postResult = await fetch(REPORT_STREAM_URL, {
     method: "POST",
     headers: new Headers({
@@ -91,9 +90,8 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
 
   if (postResult.ok) {
     context.log("Upload succeeded; deleting messages");
-    // Delete all dequeued messages
     for (const message of messages) {
-      if(parseFailures[message.messageId]) {
+      if(parseFailure[message.messageId]) {
         context.log(`Message ${message.messageId} failed to parse; skipping deletion`)
         continue;
       }
