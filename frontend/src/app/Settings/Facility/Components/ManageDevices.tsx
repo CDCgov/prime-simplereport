@@ -44,6 +44,10 @@ const ManageDevices: React.FC<Props> = ({
     const newDeviceTypes = Array.from(deviceTypes);
     newDeviceTypes.splice(newDeviceTypes.indexOf(id), 1);
     updateDeviceTypes(newDeviceTypes);
+    // Unset default device if ID matches
+    if (defaultDevice === id) {
+      updateDefaultDevice("");
+    }
   };
 
   // returns a list of deviceIds that have *not* been selected so far
@@ -96,6 +100,7 @@ const ManageDevices: React.FC<Props> = ({
             <button
               className="usa-button--unstyled"
               onClick={() => onDeviceRemove(deviceId)}
+              aria-label="Delete device"
             >
               <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
             </button>
