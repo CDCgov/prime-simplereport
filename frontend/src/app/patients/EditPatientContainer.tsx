@@ -10,7 +10,7 @@ interface Props {
 
 const EditPatientContainer: React.FC<Props> = ({ patientId }) => {
   const [facility] = useSelectedFacility();
-  const activeFacilityId = facility?.id || "";
+  const activeFacilityId = facility!.id;
 
   if (activeFacilityId.length < 1) {
     return <div>"No facility selected"</div>;

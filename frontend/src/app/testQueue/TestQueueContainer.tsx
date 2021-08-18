@@ -6,7 +6,7 @@ import TestQueue from "./TestQueue";
 const TestQueueContainer = () => {
   useDocumentTitle("Conduct test");
   const [facility] = useSelectedFacility();
-  const activeFacilityId = facility?.id;
+  const activeFacilityId = facility!.id;
 
   return !activeFacilityId?.length ? (
     <div>"No facility selected"</div>

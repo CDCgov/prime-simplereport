@@ -115,8 +115,9 @@ const AddPatient = () => {
     AddPatientResponse,
     AddPatientParams
   >(ADD_PATIENT);
+
   const [activeFacility] = useSelectedFacility();
-  const activeFacilityId = activeFacility?.id || "";
+  const activeFacilityId = activeFacility!.id;
 
   const personPath = `/patients/?facility=${activeFacilityId}`;
   const [redirect, setRedirect] = useState<string | undefined>(undefined);

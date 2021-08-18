@@ -580,7 +580,7 @@ const TestResultsList = (props: TestResultsListProps) => {
   useDocumentTitle("Results");
 
   const [facility] = useSelectedFacility();
-  const activeFacilityId = facility?.id || "";
+  const activeFacilityId = facility!.id;
 
   const [selectedPatientId, setSelectedPatientId] = useState<string>("");
   const [resultFilter, setResultFilter] = useState<string>("");
