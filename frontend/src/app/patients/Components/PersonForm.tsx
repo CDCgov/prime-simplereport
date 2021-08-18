@@ -119,11 +119,10 @@ const PersonForm = (props: Props) => {
   // Language settings may persist into a non-i18nized view, so explicitly revert back to the
   // default language in such cases
   useEffect(() => {
-    if (schema !== selfRegistrationSchema) {
+    if (i18n.language !== "en" && schema !== selfRegistrationSchema) {
       i18n.changeLanguage("en");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [schema, selfRegistrationSchema]);
 
   const clearError = useCallback(
     (field: keyof PersonErrors) => {
