@@ -1,18 +1,18 @@
 import { useSelector } from "react-redux";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 
 import { RootState } from "../store";
-import { getFacilityIdFromUrl } from "../utils/url";
 
-export const useSelectedFacility = () => {
+export function useSelectedFacility() {
   const history = useHistory();
-  const facility = getFacilityIdFromUrl();
+  const facilityId = useQuery().get("facility");
+
   const selectedFacility = useSelector<RootState, Facility | undefined>(
-    (state) => state.facilities.find((f) => f.id === facility)
+    (state) => state.facilities.find((f) => f.id === facilityId)
   );
 
   const setSelectedFacility = (selected: Facility) => {
-    if (facility) {
+    if (facilityId) {
       window.location.href = `${
         window.location.pathname
       }?facility=${encodeURIComponent(selected.id)}`;
@@ -22,4 +22,8 @@ export const useSelectedFacility = () => {
   };
 
   return [selectedFacility, setSelectedFacility] as const;
-};
+}
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
