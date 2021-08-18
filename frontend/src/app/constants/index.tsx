@@ -1,3 +1,6 @@
+import { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
+
 import { TestResult } from "../testQueue/QueueItem";
 import i18n from "../../i18n";
 
@@ -11,67 +14,100 @@ export const COVID_RESULTS: { [key: string]: TestResult } = {
   UNKNOWN: "UNKNOWN",
 };
 
-export const TEST_RESULT_DESCRIPTIONS: Record<TestResult, string> = {
-  NEGATIVE: i18n.t("constants.testResults.NEGATIVE"),
-  POSITIVE: i18n.t("constants.testResults.POSITIVE"),
-  UNDETERMINED: i18n.t("constants.testResults.UNDETERMINED"),
-  UNKNOWN: i18n.t("constants.testResults.UNKNOWN"),
+const testResultDescriptions = (t: TFunction): Record<TestResult, string> => {
+  return {
+    NEGATIVE: i18n.t("constants.testResults.NEGATIVE"),
+    POSITIVE: i18n.t("constants.testResults.POSITIVE"),
+    UNDETERMINED: i18n.t("constants.testResults.UNDETERMINED"),
+    UNKNOWN: i18n.t("constants.testResults.UNKNOWN"),
+  };
 };
 
-export const RACE_VALUES: { value: Race; label: string }[] = [
-  { value: "native", label: i18n.t("constants.race.native") },
-  { value: "asian", label: i18n.t("constants.race.asian") },
-  { value: "black", label: i18n.t("constants.race.black") },
-  { value: "pacific", label: i18n.t("constants.race.pacific") },
-  { value: "white", label: i18n.t("constants.race.white") },
-  { value: "other", label: i18n.t("constants.race.other") },
-  { value: "refused", label: i18n.t("constants.race.refused") },
-];
+const raceValues = (t: TFunction): { value: Race; label: string }[] => {
+  return [
+    { value: "native", label: i18n.t("constants.race.native") },
+    { value: "asian", label: i18n.t("constants.race.asian") },
+    { value: "black", label: i18n.t("constants.race.black") },
+    { value: "pacific", label: i18n.t("constants.race.pacific") },
+    { value: "white", label: i18n.t("constants.race.white") },
+    { value: "other", label: i18n.t("constants.race.other") },
+    { value: "refused", label: i18n.t("constants.race.refused") },
+  ];
+};
 
-export const ROLE_VALUES: { value: Role; label: string }[] = [
-  { label: i18n.t("constants.role.STAFF"), value: "STAFF" },
-  { label: i18n.t("constants.role.RESIDENT"), value: "RESIDENT" },
-  { label: i18n.t("constants.role.STUDENT"), value: "STUDENT" },
-  { label: i18n.t("constants.role.VISITOR"), value: "VISITOR" },
-];
+const roleValues = (t: TFunction): { value: Role; label: string }[] => {
+  return [
+    { label: i18n.t("constants.role.STAFF"), value: "STAFF" },
+    { label: i18n.t("constants.role.RESIDENT"), value: "RESIDENT" },
+    { label: i18n.t("constants.role.STUDENT"), value: "STUDENT" },
+    { label: i18n.t("constants.role.VISITOR"), value: "VISITOR" },
+  ];
+};
 
-export const ETHNICITY_VALUES: { value: Ethnicity; label: string }[] = [
-  { label: i18n.t("constants.ethnicity.hispanic"), value: "hispanic" },
-  { label: i18n.t("constants.ethnicity.not_hispanic"), value: "not_hispanic" },
-  { label: i18n.t("constants.ethnicity.refused"), value: "refused" },
-];
-export const GENDER_VALUES: { value: Gender; label: string }[] = [
-  { label: i18n.t("constants.gender.female"), value: "female" },
-  { label: i18n.t("constants.gender.male"), value: "male" },
-  { label: i18n.t("constants.gender.other"), value: "other" },
-  { label: i18n.t("constants.gender.refused"), value: "refused" },
-];
+const ethnicityValues = (
+  t: TFunction
+): { value: Ethnicity; label: string }[] => {
+  return [
+    { label: i18n.t("constants.ethnicity.hispanic"), value: "hispanic" },
+    {
+      label: i18n.t("constants.ethnicity.not_hispanic"),
+      value: "not_hispanic",
+    },
+    { label: i18n.t("constants.ethnicity.refused"), value: "refused" },
+  ];
+};
 
-export const YES_NO_VALUES: { value: YesNo; label: string }[] = [
-  { label: i18n.t("constants.yesNoUnk.YES"), value: "YES" },
-  { label: i18n.t("constants.yesNoUnk.NO"), value: "NO" },
-];
+const genderValues = (t: TFunction): { value: Gender; label: string }[] => {
+  return [
+    { label: i18n.t("constants.gender.female"), value: "female" },
+    { label: i18n.t("constants.gender.male"), value: "male" },
+    { label: i18n.t("constants.gender.other"), value: "other" },
+    { label: i18n.t("constants.gender.refused"), value: "refused" },
+  ];
+};
 
-export const PHONE_TYPE_VALUES: { value: PhoneType; label: string }[] = [
-  { label: i18n.t("constants.phoneType.MOBILE"), value: "MOBILE" },
-  { label: i18n.t("constants.phoneType.LANDLINE"), value: "LANDLINE" },
-];
+const yesNoValues = (t: TFunction): { value: YesNo; label: string }[] => {
+  return [
+    { label: i18n.t("constants.yesNoUnk.YES"), value: "YES" },
+    { label: i18n.t("constants.yesNoUnk.NO"), value: "NO" },
+  ];
+};
 
-export const TEST_RESULT_DELIVERY_PREFERENCE_VALUES: {
+const phoneTypeValues = (
+  t: TFunction
+): { value: PhoneType; label: string }[] => {
+  return [
+    { label: i18n.t("constants.phoneType.MOBILE"), value: "MOBILE" },
+    { label: i18n.t("constants.phoneType.LANDLINE"), value: "LANDLINE" },
+  ];
+};
+
+const testResultDeliveryPreferenceValues = (
+  t: TFunction
+): {
   value: TestResultDeliveryPreference;
   label: string;
-}[] = [
-  { label: i18n.t("constants.yesNoUnk.YES"), value: "SMS" },
-  { label: i18n.t("constants.yesNoUnk.NO"), value: "NONE" },
-];
+}[] => {
+  return [
+    {
+      label: i18n.t("patient.form.contact.receiveTextMessageResults"),
+      value: "SMS",
+    },
+    { label: i18n.t("constants.yesNoUnk.NO"), value: "NONE" },
+  ];
+};
 
-export const YES_NO_UNKNOWN_VALUES: {
+const yesNoUnkownValues = (
+  t: TFunction
+): {
   value: YesNoUnknown;
   label: string;
-}[] = [
-  ...YES_NO_VALUES,
-  { value: "UNKNOWN", label: i18n.t("constants.yesNoUnk.UNKNOWN") },
-];
+}[] => {
+  return [
+    ...yesNoValues(i18n.t),
+    { value: "UNKNOWN", label: i18n.t("constants.yesNoUnk.UNKNOWN") },
+  ];
+};
 
 const fullTribalAffiliationValueSetMap: { [key: string]: TribalAffiliation } = {
   "Village of Afognak": "338",
@@ -671,3 +707,33 @@ export const AUTH_OR_IDENTITY_METHODS_BUTTONS: {
   label: e[1],
   value: e[0],
 }));
+
+export const TEST_RESULT_DESCRIPTIONS = testResultDescriptions(i18n.t);
+export const RACE_VALUES = raceValues(i18n.t);
+export const ROLE_VALUES = roleValues(i18n.t);
+export const ETHNICITY_VALUES = ethnicityValues(i18n.t);
+export const GENDER_VALUES = genderValues(i18n.t);
+export const YES_NO_VALUES = yesNoValues(i18n.t);
+export const PHONE_TYPE_VALUES = phoneTypeValues(i18n.t);
+export const TEST_RESULT_DELIVERY_PREFERENCE_VALUES = testResultDeliveryPreferenceValues(
+  i18n.t
+);
+export const YES_NO_UNKNOWN_VALUES = yesNoUnkownValues(i18n.t);
+
+export const useTranslatedConstants = () => {
+  const { t } = useTranslation();
+
+  return {
+    TEST_RESULT_DESCRIPTIONS: testResultDescriptions(t),
+    RACE_VALUES: raceValues(t),
+    ROLE_VALUES: roleValues(t),
+    ETHNICITY_VALUES: ethnicityValues(t),
+    GENDER_VALUES: genderValues(t),
+    TEST_RESULT_DELIVERY_PREFERENCE_VALUES: testResultDeliveryPreferenceValues(
+      t
+    ),
+    PHONE_TYPE_VALUES: phoneTypeValues(t),
+    YES_NO_VALUES: yesNoValues(t),
+    YES_NO_UNKNOWN_VALUES: yesNoUnkownValues(t),
+  };
+};

@@ -23,6 +23,7 @@ resource "okta_app_oauth" "app" {
   post_logout_redirect_uris = var.logout_redirect_uris
   hide_ios                  = false
   hide_web                  = false
+  login_mode                = "SPEC"
 
   lifecycle {
     ignore_changes = [

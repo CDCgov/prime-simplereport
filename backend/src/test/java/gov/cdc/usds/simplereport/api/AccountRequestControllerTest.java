@@ -24,6 +24,7 @@ import gov.cdc.usds.simplereport.api.accountrequest.errors.AccountRequestFailure
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
+import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
@@ -52,9 +53,12 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,6 +96,7 @@ class AccountRequestControllerTest {
   @MockBean private AuthorizationService authorizationService;
   @MockBean private IdentitySupplier identitySupplier;
   @MockBean private CurrentPatientContextHolder currentPatientContextHolder;
+  @MockBean private SmsWebhookContextHolder smsWebhookContextHolder;
   @MockBean private TenantDataAccessService tenantDataAccessService;
 
   @MockBean private OrganizationService orgService;
@@ -114,6 +119,7 @@ class AccountRequestControllerTest {
   @Captor private ArgumentCaptor<PersonName> nameCaptor;
   @Captor private ArgumentCaptor<StreetAddress> addressCaptor;
   @Captor private ArgumentCaptor<AccountRequest> accountRequestCaptor;
+  @Captor private ArgumentCaptor<OrganizationAccountRequest> organizationAccountRequestCaptor;
 
   private static final String FAKE_ORG_EXTERNAL_ID_PREFIX = "RI-Day-Hayes-Trading-";
   private static final String FAKE_ORG_EXTERNAL_ID =
@@ -166,13 +172,25 @@ class AccountRequestControllerTest {
     verifyNoInteractions(emailService);
   }
 
+  private static Stream<Arguments> getAccountRequestIsOkParameters() {
+    return Stream.of(
+        // using organization-type labels (old way)
+        Arguments.of(ResourceLinks.ACCOUNT_REQUEST, "Homeless Shelter"),
+        Arguments.of(
+            ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE_WITH_FACILITY, "Homeless Shelter"),
+        // using organization-type values (new way)
+        Arguments.of(ResourceLinks.ACCOUNT_REQUEST, "shelter"),
+        Arguments.of(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE_WITH_FACILITY, "shelter"));
+  }
+
   @ParameterizedTest
-  @ValueSource(
-      strings = {ResourceLinks.ACCOUNT_REQUEST, ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE})
-  void accountRequestIsOk(String resourceLink) throws Exception {
+  @MethodSource("getAccountRequestIsOkParameters")
+  void accountRequestIsOk(String resourceLink, String organizationType) throws Exception {
     // also need to add default devices and other
     String requestBody =
-        "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"email\":\"kyvuzoxy@mailinator.com\",\"work-phone-number\":\"+1 (969) 768-2863\",\"cell-phone-number\":\"+1 (319) 682-3114\",\"street-address1\":\"707 White Milton Extension\",\"street-address2\":\"Apt 3\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"organization-name\":\"Day Hayes Trading\",\"organization-type\":\"Homeless Shelter\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-street-address2\":\"UNAVAILABLE\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Abbott IDNow, BD Veritor, Cue, LumiraDX\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}";
+        String.format(
+            "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"email\":\"kyvuzoxy@mailinator.com\",\"work-phone-number\":\"+1 (969) 768-2863\",\"street-address1\":\"707 White Milton Extension\",\"street-address2\":\"Apt 3\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"organization-name\":\"Day Hayes Trading\",\"organization-type\":\"%s\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-street-address2\":\"UNAVAILABLE\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Abbott IDNow, BD Veritor, Cue, LumiraDX\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}",
+            organizationType);
 
     Organization organization = mock(Organization.class);
     ApiUser apiUser = mock(ApiUser.class);
@@ -186,7 +204,7 @@ class AccountRequestControllerTest {
     UUID deviceUuid3 = UUID.randomUUID();
     UUID deviceUuid4 = UUID.randomUUID();
     UUID acctRequestApiUserUuid = UUID.randomUUID();
-    when(orgService.createOrganization(
+    when(orgService.createOrganizationAndFacility(
             any(),
             any(),
             startsWith(FAKE_ORG_EXTERNAL_ID_PREFIX),
@@ -329,7 +347,7 @@ class AccountRequestControllerTest {
     assertThat(externalIdCaptor.getValue()).isEqualTo(FAKE_ORG_EXTERNAL_ID);
 
     verify(orgService, times(1))
-        .createOrganization(
+        .createOrganizationAndFacility(
             eq("Day Hayes Trading"),
             eq("shelter"),
             externalIdCaptor.capture(),
@@ -366,12 +384,137 @@ class AccountRequestControllerTest {
         .createUser(any(IdentityAttributes.class), eq(organization), anySet(), anySet(), eq(false));
   }
 
-  @ParameterizedTest
-  @ValueSource(
-      strings = {ResourceLinks.ACCOUNT_REQUEST, ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE})
+  @Test
+  @DisplayName("/account-request/organization-create-without-facility")
+  void organizationAccountRequestIsOk() throws Exception {
+    String resourceLink = ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE;
+    String requestBody =
+        "{\"first-name\": \"Mary\", \"last-name\": \"Lopez\", \"email\": \"kyvuzoxy@mailinator.com\", \"work-phone-number\": \"+1 (969) 768-2863\", \"state\": \"RI\", \"organization-name\": \"Day Hayes Trading\", \"organization-type\": \"Homeless Shelter\"}";
+
+    Organization organization = mock(Organization.class);
+    ApiUser apiUser = mock(ApiUser.class);
+    ApiUser acctRequestApiUser = mock(ApiUser.class);
+    UUID acctRequestApiUserUuid = UUID.randomUUID();
+    when(orgService.createOrganization(any(), any(), startsWith(FAKE_ORG_EXTERNAL_ID_PREFIX)))
+        .thenReturn(organization);
+    when(orgService.getOrganization(any())).thenReturn(organization);
+    when(organization.getExternalId()).thenReturn(FAKE_ORG_EXTERNAL_ID);
+    when(apiUserRepository.save(any())).thenReturn(apiUser);
+    when(apiUserRepository.findByLoginEmail("account-request-noreply@simplereport.gov"))
+        .thenReturn(Optional.of(acctRequestApiUser));
+    when(acctRequestApiUser.getInternalId()).thenReturn(acctRequestApiUserUuid);
+    when(contextHolder.isAccountRequest()).thenReturn(true);
+
+    MockHttpServletRequestBuilder builder =
+        post(resourceLink)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    this._mockMvc.perform(builder).andExpect(status().isOk());
+
+    // v2 account request does not send any emails
+    verify(emailService, times(0)).send(anyList(), anyString(), any());
+    verify(emailService, times(0)).sendWithProviderTemplate(anyString(), any());
+    verify(mockSendGrid, times(0)).send(any());
+
+    verify(crmService, times(1))
+        .submitOrganizationAccountRequestData(organizationAccountRequestCaptor.capture());
+    assertThat(organizationAccountRequestCaptor.getValue().getOrganizationName())
+        .isEqualTo("Day Hayes Trading");
+
+    verify(apiUserService, times(1))
+        .createUser(
+            eq("kyvuzoxy@mailinator.com"),
+            nameCaptor.capture(),
+            externalIdCaptor.capture(),
+            eq(Role.ADMIN));
+
+    assertThat(nameCaptor.getValue().getFirstName()).isEqualTo("Mary");
+    assertNull(nameCaptor.getValue().getMiddleName());
+    assertThat(nameCaptor.getValue().getLastName()).isEqualTo("Lopez");
+    assertNull(nameCaptor.getValue().getSuffix());
+    assertThat(externalIdCaptor.getValue()).isEqualTo(FAKE_ORG_EXTERNAL_ID);
+
+    verify(orgService, times(1))
+        .createOrganization(eq("Day Hayes Trading"), eq("shelter"), externalIdCaptor.capture());
+
+    assertThat(externalIdCaptor.getValue()).startsWith("RI-Day-Hayes-Trading-");
+
+    // new user should be disabled in okta
+    verify(oktaRepository)
+        .createUser(any(IdentityAttributes.class), eq(organization), anySet(), anySet(), eq(false));
+  }
+
+  @Test
+  @DisplayName("/account-request/without-facility-with-emails")
+  void accountRequestWithEmailsWithoutFacilityIsOk() throws Exception {
+    String resourceLink = ResourceLinks.ACCOUNT_REQUEST_WITHOUT_FACILITY_WITH_EMAILS;
+    String requestBody =
+        "{\"first-name\": \"Mary\", \"last-name\": \"Lopez\", \"email\": \"kyvuzoxy@mailinator.com\", \"work-phone-number\": \"+1 (969) 768-2863\", \"state\": \"RI\", \"organization-name\": \"Day Hayes Trading\", \"organization-type\": \"Homeless Shelter\"}";
+
+    Organization organization = mock(Organization.class);
+    ApiUser apiUser = mock(ApiUser.class);
+    ApiUser acctRequestApiUser = mock(ApiUser.class);
+    UUID acctRequestApiUserUuid = UUID.randomUUID();
+    when(orgService.createOrganization(any(), any(), startsWith(FAKE_ORG_EXTERNAL_ID_PREFIX)))
+        .thenReturn(organization);
+    when(orgService.getOrganization(any())).thenReturn(organization);
+    when(organization.getExternalId()).thenReturn(FAKE_ORG_EXTERNAL_ID);
+    when(apiUserRepository.save(any())).thenReturn(apiUser);
+    when(apiUserRepository.findByLoginEmail("account-request-noreply@simplereport.gov"))
+        .thenReturn(Optional.of(acctRequestApiUser));
+    when(acctRequestApiUser.getInternalId()).thenReturn(acctRequestApiUserUuid);
+    when(contextHolder.isAccountRequest()).thenReturn(true);
+
+    MockHttpServletRequestBuilder builder =
+        post(resourceLink)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    this._mockMvc.perform(builder).andExpect(status().isOk());
+
+    // v2 account request does not send any emails
+    verify(emailService, times(1)).send(anyList(), anyString(), any());
+    verify(emailService, times(1)).sendWithProviderTemplate(anyString(), any());
+    verify(mockSendGrid, times(2)).send(any());
+
+    verify(crmService, times(1))
+        .submitOrganizationAccountRequestData(organizationAccountRequestCaptor.capture());
+    assertThat(organizationAccountRequestCaptor.getValue().getOrganizationName())
+        .isEqualTo("Day Hayes Trading");
+
+    verify(apiUserService, times(1))
+        .createUser(
+            eq("kyvuzoxy@mailinator.com"),
+            nameCaptor.capture(),
+            externalIdCaptor.capture(),
+            eq(Role.ADMIN));
+
+    assertThat(nameCaptor.getValue().getFirstName()).isEqualTo("Mary");
+    assertNull(nameCaptor.getValue().getMiddleName());
+    assertThat(nameCaptor.getValue().getLastName()).isEqualTo("Lopez");
+    assertNull(nameCaptor.getValue().getSuffix());
+    assertThat(externalIdCaptor.getValue()).isEqualTo(FAKE_ORG_EXTERNAL_ID);
+
+    verify(orgService, times(1))
+        .createOrganization(eq("Day Hayes Trading"), eq("shelter"), externalIdCaptor.capture());
+
+    assertThat(externalIdCaptor.getValue()).startsWith("RI-Day-Hayes-Trading-");
+
+    // new user should be disabled in okta
+    verify(oktaRepository)
+        .createUser(any(IdentityAttributes.class), eq(organization), anySet(), anySet(), eq(false));
+  }
+
+  @DisplayName("Account request should have valid input")
+  @Test
   void accountRequestValidatesInput() throws Exception {
     String requestBody =
-        "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"work-phone-number\":\"+1 (969) 768-2863\",\"cell-phone-number\":\"+1 (319) 682-3114\",\"street-address1\":\"707 White Milton Extension\",\"apt-suite-other\":\"FL\",\"apt-floor-suite-no\":\"694\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"organization-name\":\"Day Hayes Trading\",\"organization-type\":\"Homeless Shelter\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-apt-suite-other\":\"UNAVAILABLE\",\"op-apt-floor-suite-no\":\"546\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Abbott IDNow, BD Veritor, LumiraDX\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}";
+        "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"work-phone-number\":\"+1 (969) 768-2863\",\"street-address1\":\"707 White Milton Extension\",\"apt-suite-other\":\"FL\",\"apt-floor-suite-no\":\"694\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"organization-name\":\"Day Hayes Trading\",\"organization-type\":\"Homeless Shelter\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-apt-suite-other\":\"UNAVAILABLE\",\"op-apt-floor-suite-no\":\"546\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Abbott IDNow, BD Veritor, LumiraDX\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}";
 
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.ACCOUNT_REQUEST)
@@ -388,12 +531,11 @@ class AccountRequestControllerTest {
     verifyNoInteractions(apiUserService);
   }
 
-  @ParameterizedTest
-  @ValueSource(
-      strings = {ResourceLinks.ACCOUNT_REQUEST, ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE})
+  @DisplayName("Account request should handle unregistered devices")
+  @Test
   void accountRequestSubmittedDeviceNotRegistered() throws Exception {
     String requestBody =
-        "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"email\":\"kyvuzoxy@mailinator.com\",\"work-phone-number\":\"+1 (969) 768-2863\",\"cell-phone-number\":\"+1 (319) 682-3114\",\"street-address1\":\"707 White Milton Extension\",\"street-address2\":\"Apt 3\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"organization-name\":\"Day Hayes Trading\",\"organization-type\":\"Homeless Shelter\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-street-address2\":\"UNAVAILABLE\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Invalid Device\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}";
+        "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"email\":\"kyvuzoxy@mailinator.com\",\"work-phone-number\":\"+1 (969) 768-2863\",\"street-address1\":\"707 White Milton Extension\",\"street-address2\":\"Apt 3\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"organization-name\":\"Day Hayes Trading\",\"organization-type\":\"Homeless Shelter\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-street-address2\":\"UNAVAILABLE\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Invalid Device\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}";
 
     DeviceType device1 = mock(DeviceType.class);
     UUID deviceUuid1 = UUID.randomUUID();

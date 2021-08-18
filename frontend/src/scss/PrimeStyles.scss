@@ -214,13 +214,13 @@
   position: relative;
 
   .prime-card-container {
-    border-left-width: 0.5em;
+    border-left-width: 0.5rem;
     border-left-style: solid;
     border-color: transparent;
   }
 
   .prime-test-name {
-    margin-left: -0.5em;
+    margin-left: -0.5rem;
   }
 
   .result-ready {
@@ -231,13 +231,24 @@
     margin-top: 0.5rem;
   }
 
+  &__error,
+  &__ready {
+    .prime-card-container .usa-card__header {
+      margin-left: 0;
+      padding-left: 0.75rem;
+    }
+  }
+
+  &__error {
+    border-color: color($theme-color-error);
+
+    .prime-card-container {
+      border-color: color($theme-color-error);
+    }
+  }
+
   &__ready {
     border-color: color($theme-color-warning);
-
-    .prime-test-name {
-      margin-left: 0;
-      padding-left: 1.5em;
-    }
 
     .prime-card-container {
       border-color: color($theme-color-warning);
@@ -592,6 +603,9 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 }
 
 // header and navbar customizations
+.patient-header {
+  justify-content: space-between;
+}
 
 .prime-nav {
   justify-content: left;

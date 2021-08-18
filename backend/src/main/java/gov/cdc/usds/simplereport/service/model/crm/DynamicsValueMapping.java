@@ -76,6 +76,10 @@ public enum DynamicsValueMapping {
     this.value = value;
   }
 
+  public static int getDefaultValue() {
+    return DEFAULT_VALUE;
+  }
+
   /**
    * Convert a comma-separated string of our values to a comma-separated string of dynamics values.
    * For example, the input string "Chrome, Firefox" might become "810050001,810050002" which can be

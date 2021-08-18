@@ -18,6 +18,7 @@ import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName, displayFullNameInOrder } from "../utils";
+import { isValidDate } from "../utils/date";
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
@@ -30,7 +31,6 @@ import {
   COVID_RESULTS,
   ROLE_VALUES,
   TEST_RESULT_DESCRIPTIONS,
-  DATE_FORMAT_MM_DD_YYYY,
 } from "../constants";
 import "./TestResultsList.scss";
 import Button from "../commonComponents/Button/Button";
@@ -241,12 +241,12 @@ export const DetachedTestResultsList: any = ({
   const [printModalId, setPrintModalId] = useState(undefined);
   const [markErrorId, setMarkErrorId] = useState(undefined);
   const [detailsModalId, setDetailsModalId] = useState<string>();
-  const [showFilters, setShowFilters] = useState(false);
   const [showSuggestion, setShowSuggestion] = useState(true);
   const [startDateEntry, setStartDateEntry] = useState<string>();
   const [endDateEntry, setEndDateEntry] = useState<string>();
   const [startDateError, setStartDateError] = useState<string | undefined>();
   const [endDateError, setEndDateError] = useState<string | undefined>();
+  const [resetCount, setResetCount] = useState<number>(0);
 
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
@@ -267,6 +267,9 @@ export const DetachedTestResultsList: any = ({
   }, [queryString, queryPatients]);
 
   const onInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    if (event.target.value === "") {
+      setSelectedPatientId("");
+    }
     setShowSuggestion(true);
     setDebounced(event.target.value);
   };
@@ -276,8 +279,10 @@ export const DetachedTestResultsList: any = ({
   };
 
   const onPatientSelect = (patient: Patient) => {
-    setDebounced("");
     setSelectedPatientId(patient.internalId);
+    setDebounced(
+      displayFullName(patient.firstName, patient.middleName, patient.lastName)
+    );
     setShowSuggestion(false);
   };
 
@@ -324,21 +329,21 @@ export const DetachedTestResultsList: any = ({
   function processDates() {
     var validStart = false;
     if (startDateEntry) {
-      if (!startDateEntry.match(DATE_FORMAT_MM_DD_YYYY)) {
-        setStartDateError("Date must be in format MM/DD/YYYY or MM-DD-YYYY");
+      if (!isValidDate(startDateEntry)) {
+        setStartDateError("Date must be in format MM/DD/YYYY");
         setStartDateFilter("");
       } else {
         validStart = true;
-        const startDate = moment(startDateEntry).startOf("day");
+        const startDate = moment(startDateEntry, "MM/DD/YYYY").startOf("day");
         setStartDateError(undefined);
         setStartDateFilter(startDate.toISOString());
       }
     }
     if (endDateEntry) {
-      if (!endDateEntry.match(DATE_FORMAT_MM_DD_YYYY)) {
-        setEndDateError("Date must be in format MM/DD/YYYY or MM-DD-YYYY");
+      if (!isValidDate(endDateEntry)) {
+        setEndDateError("Date must be in format MM/DD/YYYY");
       } else {
-        const endDate = moment(endDateEntry).endOf("day");
+        const endDate = moment(endDateEntry, "MM/DD/YYYY").endOf("day");
         if (validStart && endDate.isBefore(moment(startDateFilter))) {
           setEndDateError("End date cannot be before start date");
           setEndDateFilter("");
@@ -368,128 +373,135 @@ export const DetachedTestResultsList: any = ({
                 Test Results
                 {!loadingTotalResults && (
                   <span className="sr-showing-results-on-page">
-                    Showing {Math.min(entriesPerPage, totalEntries)} of{" "}
+                    Showing{" "}
+                    {totalEntries === 0 ? 0 : (page - 1) * entriesPerPage + 1}-
+                    {Math.min(entriesPerPage * page, totalEntries)} of{" "}
                     {totalEntries}
                   </span>
                 )}
               </h2>
               <div>
                 <Button
-                  variant={!showFilters ? "outline" : undefined}
-                  className={showFilters ? "sr-active-button" : undefined}
+                  className="sr-active-button"
                   icon={faSlidersH}
                   onClick={() => {
-                    if (showFilters) {
-                      setDebounced("");
-                      setSelectedPatientId("");
-                      setResultFilter("");
-                      setRoleFilter("");
-                      setStartDateFilter("");
-                      setEndDateFilter("");
-                    }
+                    setDebounced("");
+                    setSelectedPatientId("");
+                    setResultFilter("");
+                    setRoleFilter("");
+                    setStartDateFilter("");
+                    setEndDateFilter("");
+                    setStartDateEntry("");
+                    setEndDateEntry("");
 
-                    setShowFilters(!showFilters);
+                    // The DatePicker component contains bits of state that represent the selected date
+                    // as represented internally to the component and displayed externally to the DOM. Directly
+                    // changing the value of the date via props does not cause the internal state to be updated.
+                    // This hack forces the DatePicker component to be fully re-mounted whenever the filters are
+                    // cleared, therefore resetting the external date display.
+                    setResetCount(resetCount + 1);
                   }}
                 >
-                  {showFilters ? "Clear filters" : "Filter"}
+                  Clear filters
                 </Button>
               </div>
             </div>
-            {showFilters && (
-              <div
-                id="test-results-search-by-patient-input"
-                className="position-relative bg-base-lightest"
-              >
-                <div className="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2">
-                  <div className="person-search">
-                    <SearchInput
-                      onSearchClick={onSearchClick}
-                      onInputChange={onInputChange}
-                      queryString={debounced}
-                      disabled={!allowQuery}
-                      label={"Search by name"}
-                      placeholder={""}
-                      className="usa-form-group"
-                    />
-                    <SearchResults
-                      page="test-results"
-                      patients={patientData?.patients || []}
-                      onPatientSelect={onPatientSelect}
-                      shouldShowSuggestions={showDropdown}
-                      loading={debounced !== queryString}
-                      dropDownRef={dropDownRef}
-                    />
-                  </div>
-                  <div className="usa-form-group date-filter-group">
-                    <Label htmlFor="meeting-time">Date range (start)</Label>
-                    {startDateError && (
-                      <span className="usa-error-message" role="alert">
-                        <span className="usa-sr-only">Error: </span>
-                        {startDateError}
-                      </span>
-                    )}
-                    <DatePicker
-                      id="start-date"
-                      name="start-date"
-                      data-testid="start-date"
-                      value={startDateEntry}
-                      minDate="2000-01-01T00:00"
-                      maxDate={moment().format("YYYY-MM-DDThh:mm")}
-                      onChange={(v) => setStartDateEntry(v || "")}
-                      onBlur={processDates}
-                    />
-                  </div>
-                  <div className="usa-form-group date-filter-group">
-                    <Label htmlFor="meeting-time">Date range (end)</Label>
-                    {endDateError && (
-                      <span className="usa-error-message" role="alert">
-                        <span className="usa-sr-only">Error: </span>
-                        {endDateError}
-                      </span>
-                    )}
-                    <DatePicker
-                      id="end-date"
-                      name="end-date"
-                      data-testid="end-date"
-                      value={endDateEntry}
-                      minDate={startDateFilter || "2000-01-01T00:00"}
-                      maxDate={moment().format("YYYY-MM-DDThh:mm")}
-                      onChange={(v) => setEndDateEntry(v || "")}
-                      onBlur={processDates}
-                    />
-                  </div>
-                  <Select
-                    label="Result"
-                    name="result"
-                    value={resultFilter}
-                    options={[
-                      {
-                        value: COVID_RESULTS.POSITIVE,
-                        label: TEST_RESULT_DESCRIPTIONS.POSITIVE,
-                      },
-                      {
-                        value: COVID_RESULTS.NEGATIVE,
-                        label: TEST_RESULT_DESCRIPTIONS.NEGATIVE,
-                      },
-                      {
-                        value: COVID_RESULTS.INCONCLUSIVE,
-                        label: TEST_RESULT_DESCRIPTIONS.UNDETERMINED,
-                      },
-                    ]}
-                    defaultSelect
-                    onChange={setResultFilter}
+            <div
+              id="test-results-search-by-patient-input"
+              className="position-relative bg-base-lightest"
+            >
+              <div className="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2">
+                <div className="person-search">
+                  <SearchInput
+                    onSearchClick={onSearchClick}
+                    onInputChange={onInputChange}
+                    queryString={debounced}
+                    disabled={!allowQuery}
+                    label={"Search by name"}
+                    placeholder={""}
+                    className="usa-form-group search-input_without_submit_button"
+                    showSubmitButton={false}
                   />
-                  <Select
-                    label="Role"
-                    name="role"
-                    value={roleFilter}
-                    options={ROLE_VALUES}
-                    defaultSelect
-                    onChange={setRoleFilter}
+                  <SearchResults
+                    page="test-results"
+                    patients={patientData?.patients || []}
+                    onPatientSelect={onPatientSelect}
+                    shouldShowSuggestions={showDropdown}
+                    loading={debounced !== queryString}
+                    dropDownRef={dropDownRef}
                   />
                 </div>
+                <div className="usa-form-group date-filter-group">
+                  <Label htmlFor="meeting-time">Date range (start)</Label>
+                  {startDateError && (
+                    <span className="usa-error-message" role="alert">
+                      <span className="usa-sr-only">Error: </span>
+                      {startDateError}
+                    </span>
+                  )}
+                  <DatePicker
+                    id="start-date"
+                    key={resetCount}
+                    name="start-date"
+                    data-testid="start-date"
+                    value={startDateEntry}
+                    minDate="2000-01-01T00:00"
+                    maxDate={moment().format("YYYY-MM-DDThh:mm")}
+                    onChange={(v) => setStartDateEntry(v || "")}
+                    onBlur={processDates}
+                  />
+                </div>
+                <div className="usa-form-group date-filter-group">
+                  <Label htmlFor="meeting-time">Date range (end)</Label>
+                  {endDateError && (
+                    <span className="usa-error-message" role="alert">
+                      <span className="usa-sr-only">Error: </span>
+                      {endDateError}
+                    </span>
+                  )}
+                  <DatePicker
+                    id="end-date"
+                    key={resetCount + 1}
+                    name="end-date"
+                    data-testid="end-date"
+                    value={endDateEntry}
+                    minDate={startDateFilter || "2000-01-01T00:00"}
+                    maxDate={moment().format("YYYY-MM-DDThh:mm")}
+                    onChange={(v) => setEndDateEntry(v || "")}
+                    onBlur={processDates}
+                  />
+                </div>
+                <Select
+                  label="Result"
+                  name="result"
+                  value={resultFilter}
+                  options={[
+                    {
+                      value: COVID_RESULTS.POSITIVE,
+                      label: TEST_RESULT_DESCRIPTIONS.POSITIVE,
+                    },
+                    {
+                      value: COVID_RESULTS.NEGATIVE,
+                      label: TEST_RESULT_DESCRIPTIONS.NEGATIVE,
+                    },
+                    {
+                      value: COVID_RESULTS.INCONCLUSIVE,
+                      label: TEST_RESULT_DESCRIPTIONS.UNDETERMINED,
+                    },
+                  ]}
+                  defaultSelect
+                  onChange={setResultFilter}
+                />
+                <Select
+                  label="Role"
+                  name="role"
+                  value={roleFilter}
+                  options={ROLE_VALUES}
+                  defaultSelect
+                  onChange={setRoleFilter}
+                />
               </div>
-            )}
+            </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
                 <thead>

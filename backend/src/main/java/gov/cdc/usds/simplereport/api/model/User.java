@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.model;
 
+import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.model.facets.PersonWrapper;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
@@ -52,5 +53,9 @@ public class User extends WrappedEntity<UserInfo> implements PersonWrapper<UserI
 
   public Optional<Role> getRole() {
     return Role.fromOrganizationRoles(wrapped.getRoles());
+  }
+
+  public UserStatus getStatus() {
+    return wrapped.getUserStatus();
   }
 }

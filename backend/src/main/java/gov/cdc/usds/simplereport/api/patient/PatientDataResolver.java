@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.service.dataloader.DataLoaderRegistryBui
 import gov.cdc.usds.simplereport.api.InternalIdResolver;
 import gov.cdc.usds.simplereport.api.PersonNameResolver;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
+import gov.cdc.usds.simplereport.api.model.errors.NoDataLoaderFoundException;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.PatientPreferences;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -14,10 +15,14 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.service.dataloader.PatientLastTestDataLoader;
 import gov.cdc.usds.simplereport.service.dataloader.PatientPhoneNumbersDataLoader;
 import gov.cdc.usds.simplereport.service.dataloader.PatientPreferencesDataLoader;
+import gov.cdc.usds.simplereport.service.dataloader.PatientPrimaryPhoneDataLoader;
+import graphql.kickstart.execution.context.GraphQLContext;
 import graphql.kickstart.tools.GraphQLResolver;
 import graphql.schema.DataFetchingEnvironment;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import org.dataloader.DataLoader;
+import org.dataloader.DataLoaderRegistry;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -51,5 +56,15 @@ public class PatientDataResolver
   public CompletableFuture<List<PhoneNumber>> getPhoneNumbers(
       Person person, DataFetchingEnvironment dfe) {
     return loadFuture(person, dfe, PatientPhoneNumbersDataLoader.KEY);
+  }
+
+  public CompletableFuture<String> getTelephone(Person person, DataFetchingEnvironment dfe) {
+    DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
+    DataLoader<Person, PhoneNumber> loader =
+        registry.getDataLoader(PatientPrimaryPhoneDataLoader.KEY);
+    if (loader == null) {
+      throw new NoDataLoaderFoundException(PatientPrimaryPhoneDataLoader.KEY);
+    }
+    return loader.load(person).thenApply(PhoneNumber::getNumber);
   }
 }

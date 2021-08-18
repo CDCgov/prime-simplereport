@@ -6,7 +6,10 @@ import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+<<<<<<< HEAD
 
+=======
+>>>>>>> aw/add-get-primary-telephone-dataloader
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Component;
 public class QueueResolver implements GraphQLQueryResolver {
 
   private static final Logger LOG = LoggerFactory.getLogger(QueueResolver.class);
+
   private final TestOrderService _testOrderService;
 
   public QueueResolver(TestOrderService testOrderService) {

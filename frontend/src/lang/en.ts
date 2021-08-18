@@ -7,6 +7,16 @@ const UNKNOWN = "Unknown";
 export const en = {
   translation: {
     header: "COVID-19 Testing Portal",
+    banner: {
+      dotGov: "The .gov means it’s official.",
+      dotGovHelper:
+        "Federal government websites often end in .gov or .mil. Before sharing sensitive information, make sure you’re on a federal government site.",
+      secure: "The site is secure.",
+      secureHelper:
+        "The <0>https://</0> ensures that you are connecting to the official website and that any information you provide is encrypted and transmitted securely.",
+      officialWebsite: "An official website of the United States government",
+      howYouKnow: "Here’s how you know",
+    },
     constants: {
       testResults: {
         POSITIVE: "Positive",
@@ -50,11 +60,17 @@ export const en = {
         UNKNOWN,
       },
     },
+    languages: {
+      English: "English",
+      Spanish: "Spanish",
+    },
     common: {
       required: "Required fields are marked with an asterisk",
       defaultDropdownOption: "- Select -",
       button: {
         submit: "Submit",
+        save: "Save changes",
+        saving: "Saving",
       },
       pageNotFound: {
         heading: "Page not found",
@@ -80,8 +96,8 @@ export const en = {
     },
     facility: {
       form: {
-        heading: "Facility",
-        allFacilities: "All facilities",
+        heading: "Testing facility",
+        allFacilities: "All testing facilities",
       },
     },
     patient: {
@@ -96,16 +112,19 @@ export const en = {
           studentId: "Student ID",
           preferredLanguage: "Preferred language",
           dob: "Date of birth",
+          dobFormat: "mm/dd/yyyy",
         },
         contact: {
           heading: "Contact information",
+          helpText:
+            "You're responsible for entering the correct contact information, following applicable federal and state laws.",
           primaryPhoneNumber: "Primary phone number",
           additionalPhoneNumber: "Additional phone number",
+          receiveTextMessageResults: "Yes, text all mobile numbers on file.",
           phoneType: "Phone type",
           addNumber: "Add another number",
           testResultDelivery:
             "Would you like to receive your results via text message?",
-          testResultDeliveryHint: "We'll text all mobile numbers on file",
           email: "Email address",
           street1: "Street address 1",
           street2: "Street address 2",
@@ -121,7 +140,9 @@ export const en = {
           race: "Race",
           tribalAffiliation: "Tribal affiliation",
           ethnicity: "Are you Hispanic or Latino?",
-          gender: "Biological sex",
+          gender: "Sex assigned at birth",
+          genderHelpText:
+            "This is usually the gender that is written on your original birth certificate.",
         },
         other: {
           heading: "Other",
@@ -137,26 +158,32 @@ export const en = {
             "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing.",
           validationMsg: "Please correct before submitting",
           firstName: "First name is required",
+          fieldLength: "This answer is too long",
           middleName: "Middle name is incorrectly formatted",
           lastName: "Last name is required",
-          lookupId: "Lookup ID is incorrectly formatted",
+          lookupId: "Student ID is incorrectly formatted",
           role: "Role is incorrectly formatted",
-          facilityId: "Facility is required",
-          birthDate:
-            "Date of birth must be present, correctly formatted (MM/DD/YYYY), and in the past",
+          facilityId: "Testing facility is required",
+          birthDate: {
+            base:
+              "Date of birth is required, must be in MM/DD/YY format, and in the past",
+            past: "Date of birth is too far in the past",
+            future: "Date of birth can’t be in the future",
+          },
           telephone: "Phone number is missing or invalid",
-          phoneNumbers: "Phone number is missing or invalid",
+          phoneNumbers: "Phone numbers are missing or invalid",
+          phoneNumbersDuplicate: "Duplicate phone number entered",
           email: "Email is missing or incorrectly formatted",
           street: "Street is missing",
-          streetTwo: "Street Two is incorrectly formatted",
-          zipCode: "Zip code is missing or incorrectly formatted",
+          streetTwo: "Street 2 is incorrectly formatted",
+          zipCode: "ZIP code is missing or incorrectly formatted",
           state: "State is missing or incorrectly formatted",
           city: "City is incorrectly formatted",
           county: "County is incorrectly formatted",
           race: "Race is incorrectly formatted",
-          tribalAffiliation: "Tribal Affiliation is incorrectly formatted",
+          tribalAffiliation: "Tribal affiliation is incorrectly formatted",
           ethnicity: "Ethnicity is incorrectly formatted",
-          gender: "Biological Sex is incorrectly formatted",
+          gender: "Sex assigned at birth is incorrectly formatted",
           residentCongregateSetting:
             "Are you a resident in a congregate living setting? is required",
           employedInHealthcare: "Are you a health care worker? is required",
@@ -179,7 +206,7 @@ export const en = {
         registered:
           "<0>{{personName}}</0>, thanks for completing your patient profile at {{entityName}}.",
         checkIn:
-          "When you arrive for your test, check in by providing your first and last name.",
+          "When you arrive for your test, check in by giving your first and last name.",
       },
     },
     testResult: {
@@ -463,10 +490,12 @@ export const en = {
         enterDOB: "Enter your date of birth",
         enterDOB2:
           "Enter your date of birth to access your COVID-19 Testing Portal.",
+        format: "MM/DD/YYYY or MMDDYYYY",
         error:
-          "No patient link with the supplied ID was found, or the birth date provided was incorrect.",
+          "Test result not found, or the birth date provided is incorrect.",
         validating: "Validating birth date...",
-        linkExpired: "This link has expired. Please contact your provider.",
+        linkExpired:
+          "This link has expired. Please contact your test provider.",
         submit: "Continue",
       },
     },

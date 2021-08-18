@@ -1,5 +1,5 @@
-import renderer, { act } from "react-test-renderer";
 import { MockedProvider } from "@apollo/client/testing";
+import { render, RenderResult, screen } from "@testing-library/react";
 import MockDate from "mockdate";
 import ReactDOM from "react-dom";
 
@@ -30,7 +30,7 @@ const mocks = [
 ];
 
 describe("AoEModalForm", () => {
-  let component: renderer.ReactTestRenderer;
+  let component: RenderResult["container"];
 
   beforeAll(() => {
     ReactDOM.createPortal = jest.fn((element, node) => {
@@ -40,7 +40,7 @@ describe("AoEModalForm", () => {
 
   beforeEach(() => {
     MockDate.set("2021-02-06");
-    component = renderer.create(
+    component = render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <AoEModalForm
           onClose={jest.fn()}
@@ -63,19 +63,17 @@ describe("AoEModalForm", () => {
           saveCallback={jest.fn()}
         />
       </MockedProvider>
-    );
+    ).container;
   });
 
   describe("on data loaded", () => {
     beforeEach(async () => {
       // load data
-      await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 0));
-      });
+      await screen.findByText("Test questionnaire");
     });
 
     it("renders", async () => {
-      expect(component.toJSON()).toMatchSnapshot();
+      expect(component).toMatchSnapshot();
     });
   });
 });

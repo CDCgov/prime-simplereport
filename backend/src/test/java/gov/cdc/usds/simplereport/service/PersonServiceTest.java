@@ -5,11 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
@@ -18,6 +22,7 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -234,6 +239,45 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 false,
                 "English",
                 null));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void addPatient_duplicatePhoneNumber_failure() {
+    makeFacilities();
+
+    List<PhoneNumber> phoneNumbers = new ArrayList<>();
+    phoneNumbers.add(new PhoneNumber(PhoneType.MOBILE, "2342342344"));
+    phoneNumbers.add(new PhoneNumber(PhoneType.LANDLINE, "2342342344"));
+
+    LocalDate birthDate = LocalDate.of(1865, 12, 25);
+    StreetAddress address = _dataFactory.getAddress();
+
+    IllegalGraphqlArgumentException e =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () ->
+                _service.addPatient(
+                    (UUID) null,
+                    "FOO",
+                    "Fred",
+                    null,
+                    "Fosbury",
+                    "Sr.",
+                    birthDate,
+                    address,
+                    phoneNumbers,
+                    PersonRole.STAFF,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    false,
+                    false,
+                    "English",
+                    null));
+    assertEquals("Duplicate phone number entered", e.getMessage());
   }
 
   @Test

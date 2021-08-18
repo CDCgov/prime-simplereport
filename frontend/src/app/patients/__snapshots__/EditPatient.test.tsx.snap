@@ -284,6 +284,8 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         id="50"
+                        max="2021-08-01"
+                        min="1900-01-01"
                         name="birthDate"
                         type="date"
                         value="1939-10-11"
@@ -303,6 +305,11 @@ Object {
                   >
                     Contact information
                   </legend>
+                  <p
+                    class="usa-hint maxw-prose"
+                  >
+                    You're responsible for entering the correct contact information, following applicable federal and state laws.
+                  </p>
                   <div
                     class="usa-form"
                   >
@@ -430,11 +437,6 @@ Object {
                         >
                           Would you like to receive your results via text message?
                         </legend>
-                        <span
-                          class="usa-hint"
-                        >
-                          We'll text all mobile numbers on file
-                        </span>
                         <div
                           class=""
                         >
@@ -453,7 +455,7 @@ Object {
                               class="usa-radio__label"
                               for="53-val-SMS"
                             >
-                              Yes
+                              Yes, text all mobile numbers on file.
                             </label>
                           </div>
                           <div
@@ -1203,8 +1205,13 @@ Object {
                       <legend
                         class="usa-legend"
                       >
-                        Biological sex
+                        Sex assigned at birth
                       </legend>
+                      <span
+                        class="usa-hint"
+                      >
+                        This is usually the gender that is written on your original birth certificate.
+                      </span>
                       <div
                         class=""
                       >
@@ -1306,13 +1313,6 @@ Object {
                         class="usa-legend"
                       >
                         Are you a resident in a congregate living setting?
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                           
-                          *
-                        </abbr>
                       </legend>
                       <span
                         class="usa-hint"
@@ -1328,7 +1328,7 @@ Object {
                           <input
                             checked=""
                             class="usa-radio__input"
-                            data-required="true"
+                            data-required="false"
                             id="64-val-YES"
                             name="residentCongregateSetting"
                             type="radio"
@@ -1346,7 +1346,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="true"
+                            data-required="false"
                             id="64-val-NO"
                             name="residentCongregateSetting"
                             type="radio"
@@ -1364,7 +1364,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="true"
+                            data-required="false"
                             id="64-val-UNKNOWN"
                             name="residentCongregateSetting"
                             type="radio"
@@ -1390,13 +1390,6 @@ Object {
                         class="usa-legend"
                       >
                         Are you a health care worker?
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                           
-                          *
-                        </abbr>
                       </legend>
                       <div
                         class=""
@@ -1407,7 +1400,7 @@ Object {
                           <input
                             checked=""
                             class="usa-radio__input"
-                            data-required="true"
+                            data-required="false"
                             id="65-val-YES"
                             name="employedInHealthcare"
                             type="radio"
@@ -1425,7 +1418,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="true"
+                            data-required="false"
                             id="65-val-NO"
                             name="employedInHealthcare"
                             type="radio"
@@ -1443,7 +1436,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="true"
+                            data-required="false"
                             id="65-val-UNKNOWN"
                             name="employedInHealthcare"
                             type="radio"
@@ -1762,6 +1755,8 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       id="50"
+                      max="2021-08-01"
+                      min="1900-01-01"
                       name="birthDate"
                       type="date"
                       value="1939-10-11"
@@ -1781,6 +1776,11 @@ Object {
                 >
                   Contact information
                 </legend>
+                <p
+                  class="usa-hint maxw-prose"
+                >
+                  You're responsible for entering the correct contact information, following applicable federal and state laws.
+                </p>
                 <div
                   class="usa-form"
                 >
@@ -1908,11 +1908,6 @@ Object {
                       >
                         Would you like to receive your results via text message?
                       </legend>
-                      <span
-                        class="usa-hint"
-                      >
-                        We'll text all mobile numbers on file
-                      </span>
                       <div
                         class=""
                       >
@@ -1931,7 +1926,7 @@ Object {
                             class="usa-radio__label"
                             for="53-val-SMS"
                           >
-                            Yes
+                            Yes, text all mobile numbers on file.
                           </label>
                         </div>
                         <div
@@ -2681,8 +2676,13 @@ Object {
                     <legend
                       class="usa-legend"
                     >
-                      Biological sex
+                      Sex assigned at birth
                     </legend>
+                    <span
+                      class="usa-hint"
+                    >
+                      This is usually the gender that is written on your original birth certificate.
+                    </span>
                     <div
                       class=""
                     >
@@ -2784,13 +2784,6 @@ Object {
                       class="usa-legend"
                     >
                       Are you a resident in a congregate living setting?
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
                     </legend>
                     <span
                       class="usa-hint"
@@ -2806,7 +2799,7 @@ Object {
                         <input
                           checked=""
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="64-val-YES"
                           name="residentCongregateSetting"
                           type="radio"
@@ -2824,7 +2817,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="64-val-NO"
                           name="residentCongregateSetting"
                           type="radio"
@@ -2842,7 +2835,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="64-val-UNKNOWN"
                           name="residentCongregateSetting"
                           type="radio"
@@ -2868,13 +2861,6 @@ Object {
                       class="usa-legend"
                     >
                       Are you a health care worker?
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
                     </legend>
                     <div
                       class=""
@@ -2885,7 +2871,7 @@ Object {
                         <input
                           checked=""
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="65-val-YES"
                           name="employedInHealthcare"
                           type="radio"
@@ -2903,7 +2889,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="65-val-NO"
                           name="employedInHealthcare"
                           type="radio"
@@ -2921,7 +2907,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="65-val-UNKNOWN"
                           name="employedInHealthcare"
                           type="radio"

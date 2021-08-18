@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
@@ -51,7 +52,13 @@ public class TestEvent extends BaseTestInfo {
       TestOrder order) {
     super(patient, facility, deviceType, result);
     // store a link, and *also* store the object as JSON
-    this.patientData = getPatient();
+    // force load the lazy-loaded phone numbers so values are available to the object mapper
+    // when serializing `patientData` (phoneNumbers is default lazy-loaded because of `OneToMany`)
+    Hibernate.initialize(patient.getPrimaryPhone());
+    Hibernate.initialize(patient.getTelephone());
+    Hibernate.initialize(patient.getPhoneNumbers());
+
+    this.patientData = patient;
     this.providerData = getFacility().getOrderingProvider();
     this.order = order;
     setDateTestedBackdate(order.getDateTestedBackdate());

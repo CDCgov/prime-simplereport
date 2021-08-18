@@ -410,6 +410,12 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
             >
               John Arthur
             </h2>
+            <button
+              class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+              type="button"
+            >
+              Reset password
+            </button>
           </div>
           <div
             class="user-content"
@@ -587,7 +593,8 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
                 </div>
               </div>
               <button
-                class="usa-button usa-button--outline height-5 margin-left-2"
+                class="usa-button usa-button--outline usa-button-disabled height-5 margin-left-2"
+                disabled=""
                 type="button"
               >
                 Add

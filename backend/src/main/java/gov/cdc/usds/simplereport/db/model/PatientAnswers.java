@@ -4,17 +4,21 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Entity
 public class PatientAnswers extends AuditedEntity {
+    private static final Logger LOG = LoggerFactory.getLogger(PatientAnswers.class);
 
   @Column
   @Type(type = "jsonb")
   private AskOnEntrySurvey askOnEntry;
 
-  @OneToOne(mappedBy = "askOnEntrySurvey")
+  @OneToOne(mappedBy = "askOnEntrySurvey", fetch = FetchType.LAZY)
   private TestOrder testOrder;
 
   protected PatientAnswers() {
@@ -31,9 +35,5 @@ public class PatientAnswers extends AuditedEntity {
 
   public void setSurvey(AskOnEntrySurvey askOnEntry) {
     this.askOnEntry = askOnEntry;
-  }
-
-  public UUID getTestOrderId() {
-    return testOrder.getInternalId();
   }
 }

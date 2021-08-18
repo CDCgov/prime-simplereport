@@ -1,7 +1,9 @@
-import React from "react";
-import { useDispatch, useSelector, connect } from "react-redux";
+import React, { useCallback, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
+import { appPermissions } from "../permissions";
+import FacilityFormContainer from "../Settings/Facility/FacilityFormContainer";
 import { RootState, updateFacility } from "../store";
 import { getFacilityIdFromUrl } from "../utils/url";
 
@@ -18,6 +20,11 @@ const WithFacility: React.FC<Props> = ({ children }) => {
   const isAdmin = useSelector<RootState, boolean>(
     (state) => state.user.isAdmin
   );
+  const canViewSettings = useSelector<RootState, boolean>((state) =>
+    appPermissions.settings.canView.every((requiredPermission) =>
+      state.user.permissions.includes(requiredPermission)
+    )
+  );
   const dataLoaded = useSelector<RootState, boolean>(
     (state) => state.dataLoaded
   );
@@ -31,22 +38,88 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     (f) => f.id === getFacilityIdFromUrl()
   );
 
-  const setFacilityProp = (facilityId: string) => {
-    history.push({ search: `?facility=${facilityId}` });
-  };
+  const setFacilityProp = useCallback(
+    (facilityId: string) => {
+      history.push({ search: `?facility=${facilityId}` });
+    },
+    [history]
+  );
 
-  const setActiveFacility = (facility: Facility) => {
-    dispatch(updateFacility(facility));
-    setFacilityProp(facility.id);
-  };
+  const setActiveFacility = useCallback(
+    (facility: Facility) => {
+      dispatch(updateFacility(facility));
+      setFacilityProp(facility.id);
+    },
+    [dispatch, setFacilityProp]
+  );
 
-  if (!dataLoaded) {
+  const shouldSetOnlyFacility = facilities.length === 1 && !facilityInStore?.id;
+
+  const shouldSetFacilityFromUrl = facilityFromUrl?.id && !facilityInStore?.id;
+
+  useEffect(() => {
+    // No action if facility in store and URL exist and are equal
+    if (
+      facilityFromUrl?.id &&
+      facilityInStore?.id &&
+      facilityFromUrl.id === facilityInStore.id
+    ) {
+      return;
+    }
+
+    // If both exist but are different, URL selection is correct
+    if (
+      facilityFromUrl?.id &&
+      facilityInStore?.id &&
+      facilityFromUrl.id !== facilityInStore.id
+    ) {
+      setActiveFacility(facilityFromUrl);
+      return;
+    }
+
+    // If only in URL, set store value
+    if (facilityFromUrl?.id && !facilityInStore) {
+      setActiveFacility(facilityFromUrl);
+      return;
+    }
+
+    // If only in store, set URL value
+    if (!facilityFromUrl?.id && facilityInStore?.id) {
+      setFacilityProp(facilityInStore.id);
+      return;
+    }
+
+    // If only one facility in org, use that one
+    if (shouldSetOnlyFacility) {
+      setActiveFacility(facilities[0]);
+    }
+  }, [
+    shouldSetOnlyFacility,
+    setActiveFacility,
+    facilities,
+    facilityFromUrl,
+    facilityInStore,
+    setFacilityProp,
+  ]);
+
+  if (!dataLoaded || shouldSetOnlyFacility || shouldSetFacilityFromUrl) {
     return <Loading />;
   }
 
   if (isAdmin && facilities.length === 0) {
     // site admin without an organization
     return <>{children}</>;
+  }
+
+  if (canViewSettings && facilities.length === 0) {
+    // new org needs to create a facility
+    return (
+      <main className="prime-home">
+        <div className="grid-container">
+          <FacilityFormContainer newOrg={true} />
+        </div>
+      </main>
+    );
   }
 
   if (facilities.length === 0) {
@@ -58,19 +131,6 @@ const WithFacility: React.FC<Props> = ({ children }) => {
         </p>
       </FacilityPopup>
     );
-  }
-
-  if (
-    facilities.length === 1 &&
-    (!facilityFromUrl?.id || !facilityInStore?.id)
-  ) {
-    setActiveFacility(facilities[0]);
-    return <Loading />;
-  }
-
-  if (facilityFromUrl?.id && !facilityInStore?.id) {
-    setActiveFacility(facilityFromUrl);
-    return <Loading />;
   }
 
   if (facilityFromUrl?.id && facilityInStore?.id) {
@@ -85,4 +145,4 @@ const WithFacility: React.FC<Props> = ({ children }) => {
   );
 };
 
-export default connect()(WithFacility);
+export default WithFacility;

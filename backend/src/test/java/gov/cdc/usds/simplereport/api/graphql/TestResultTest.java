@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -62,6 +63,7 @@ class TestResultTest extends BaseGraphqlTest {
     assertEquals(
         "SARS-CoV+SARS-CoV-2 Ag Resp Ql IA.rapid",
         testResults.get(0).get("testPerformed").get("name").asText());
+    assertNotNull(testResults.get(0).get("patientLink"));
   }
 
   @Test

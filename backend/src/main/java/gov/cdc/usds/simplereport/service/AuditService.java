@@ -92,4 +92,18 @@ public class AuditService {
     ApiUser anonymousUser = _userService.getAnonymousApiUser();
     _repo.save(new ApiAuditEvent(requestId, reqDetails, responseCode, userId, anonymousUser));
   }
+
+  @Transactional(readOnly = false)
+  public void logSmsWebhookRestEvent(
+      String requestId, HttpServletRequest request, int responseCode) {
+    LOG.trace("Saving SMS webhook REST audit event for {}", requestId);
+    HttpRequestDetails reqDetails = new HttpRequestDetails(request);
+    Object userIdObj = request.getSession(true).getAttribute("userId");
+    JsonNode userId =
+        (userIdObj == null)
+            ? null
+            : JsonNodeFactory.instance.objectNode().put("userId", userIdObj.toString());
+    ApiUser webhookUser = _userService.getSmsWebhookApiUser();
+    _repo.save(new ApiAuditEvent(requestId, reqDetails, responseCode, userId, webhookUser));
+  }
 }

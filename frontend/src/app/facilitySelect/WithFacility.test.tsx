@@ -2,18 +2,50 @@ import React from "react";
 import { Provider } from "react-redux";
 import renderer from "react-test-renderer";
 import configureStore from "redux-mock-store";
+import { act, render, screen } from "@testing-library/react";
+import { MockedProvider } from "@apollo/client/testing";
 
+import { appPermissions } from "../permissions";
 import { updateFacility } from "../store";
+import { GET_FACILITY_QUERY } from "../Settings/Facility/FacilityFormContainer";
 
 import WithFacility from "./WithFacility";
 
 const mockStore = configureStore([]);
 const mockHistoryPush = jest.fn();
 jest.mock("react-router-dom", () => ({
+  Prompt: (props: any) => <></>,
   useHistory: () => ({
     push: mockHistoryPush,
   }),
 }));
+
+jest.mock("../utils/url", () => ({
+  ...jest.requireActual("../utils/url"),
+  getFacilityIdFromUrl: () => "4",
+}));
+
+const mocks = [
+  {
+    request: {
+      query: GET_FACILITY_QUERY,
+    },
+    result: {
+      data: {
+        organization: {
+          internalId: "30b1d934-a877-4b1d-9565-575afd4d797e",
+          testingFacility: [],
+        },
+        deviceType: [
+          {
+            internalId: "a9bd36fe-0df1-4256-93e8-9e503cabdc8b",
+            name: "Abbott IDNow",
+          },
+        ],
+      },
+    },
+  },
+];
 
 describe("WithFacility", () => {
   let store: any;
@@ -32,6 +64,7 @@ describe("WithFacility", () => {
         user: {
           firstName: "Kim",
           lastName: "Mendoza",
+          permissions: [],
         },
         facilities: [],
       });
@@ -58,11 +91,12 @@ describe("WithFacility", () => {
         user: {
           firstName: "Kim",
           lastName: "Mendoza",
+          permissions: [],
         },
         facilities: [{ id: "1", name: "Facility 1" }],
       });
       store.dispatch = jest.fn();
-      component = renderer.create(
+      component = render(
         <Provider store={store}>
           <WithFacility>App</WithFacility>
         </Provider>
@@ -70,7 +104,7 @@ describe("WithFacility", () => {
     });
 
     it("should render with a value", () => {
-      expect(component.toJSON()).toMatchSnapshot();
+      expect(component.container.firstChild).toMatchSnapshot();
     });
     it("should select a facility once", () => {
       expect(store.dispatch).toHaveBeenCalledTimes(1);
@@ -98,6 +132,7 @@ describe("WithFacility", () => {
         user: {
           firstName: "Kim",
           lastName: "Mendoza",
+          permissions: [],
         },
         facilities: [
           { id: "1", name: "Facility 1" },
@@ -136,6 +171,74 @@ describe("WithFacility", () => {
       it("should set the facility id search param", () => {
         expect(mockHistoryPush).toHaveBeenCalledWith({ search: "?facility=1" });
       });
+    });
+  });
+  describe("Facility ID from URL", () => {
+    beforeEach(() => {
+      store = mockStore({
+        dataLoaded: true,
+        organization: {
+          name: "Organization Name",
+        },
+        user: {
+          firstName: "Kim",
+          lastName: "Mendoza",
+          permissions: [],
+        },
+        facilities: [
+          { id: "1", name: "Facility 1" },
+          { id: "4", name: "Facility 4" },
+        ],
+      });
+      store.dispatch = jest.fn();
+      render(
+        <Provider store={store}>
+          <WithFacility>App</WithFacility>
+        </Provider>
+      );
+    });
+    it("sets facility in state", () => {
+      expect(store.dispatch).toHaveBeenCalledWith(
+        updateFacility({
+          id: "4",
+          name: "Facility 4",
+        })
+      );
+    });
+  });
+  describe("A new org", () => {
+    beforeEach(async () => {
+      store = mockStore({
+        dataLoaded: true,
+        organization: {
+          name: "Organization Name",
+        },
+        user: {
+          firstName: "Kim",
+          lastName: "Mendoza",
+          permissions: appPermissions.settings.canView,
+        },
+        facilities: [],
+      });
+      store.dispatch = jest.fn();
+      render(
+        <Provider store={store}>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <WithFacility>App</WithFacility>
+          </MockedProvider>
+        </Provider>
+      );
+      await act(async () => {
+        await screen.findAllByText("Welcome to SimpleReport", { exact: false });
+      });
+    });
+
+    it("should render the facility form", async () => {
+      expect(
+        await screen.getByText("To get started, add a testing facility", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
     });
   });
 });
