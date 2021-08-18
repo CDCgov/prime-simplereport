@@ -12,13 +12,7 @@ export function useSelectedFacility() {
   );
 
   const setSelectedFacility = (selected: Facility) => {
-    if (facilityId) {
-      window.location.href = `${
-        window.location.pathname
-      }?facility=${encodeURIComponent(selected.id)}`;
-    } else {
-      history.push({ search: `?facility=${encodeURIComponent(selected.id)}` });
-    }
+    history.push({ search: `?facility=${encodeURIComponent(selected.id)}` });
   };
 
   return [selectedFacility, setSelectedFacility] as const;
