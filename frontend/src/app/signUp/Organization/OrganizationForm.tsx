@@ -21,6 +21,7 @@ import {
   OrganizationTypeEnum,
   organizationSchema as schema,
 } from "./utils";
+import { Thanks } from "./Thanks";
 
 import "./OrganizationForm.scss";
 
@@ -101,7 +102,7 @@ const OrganizationForm = () => {
   };
 
   if (submitted) {
-    document.location.pathname = "/sign-up/thanks";
+    return <Thanks />;
   }
 
   if (loading) {
@@ -209,7 +210,7 @@ const OrganizationForm = () => {
           <a href="/terms-of-service">terms of service</a>.
         </p>
         <Button
-          className="width-full margin-top-2"
+          className="width-full margin-top-2 submit-button"
           disabled={loading || !formChanged}
           onClick={onSave}
           label={loading ? "Saving..." : "Submit"}
