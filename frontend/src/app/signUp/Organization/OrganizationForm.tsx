@@ -211,8 +211,9 @@ const OrganizationForm = () => {
         </p>
         <Button
           className="width-full margin-top-2 submit-button"
-          disabled={loading || !formChanged}
+          disabled={!formChanged}
           onClick={onSave}
+          label={"Submit"}
         />
       </Card>
     </CardBackground>
