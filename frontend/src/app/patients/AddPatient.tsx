@@ -156,7 +156,6 @@ const AddPatient = () => {
       <div className={"grid-container margin-bottom-4"}>
         <PersonForm
           patient={EMPTY_PERSON}
-          activeFacilityId={activeFacilityId}
           savePerson={savePerson}
           getHeader={(_, onSave, formChanged) => (
             <div className="display-flex flex-justify">

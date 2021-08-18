@@ -95,7 +95,6 @@ describe("WithFacility", () => {
         },
         facilities: [{ id: "1", name: "Facility 1" }],
       });
-      store.dispatch = jest.fn();
       component = render(
         <Provider store={store}>
           <WithFacility>App</WithFacility>
