@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.model.WrappedEntity;
@@ -15,10 +14,6 @@ public class ApiTestOrder extends WrappedEntity<TestOrder> {
 
   public Date getDateAdded() {
     return wrapped.getCreatedAt();
-  }
-
-  public DeviceType getDeviceType() {
-    return wrapped.getDeviceType();
   }
 
   public String getResult() {

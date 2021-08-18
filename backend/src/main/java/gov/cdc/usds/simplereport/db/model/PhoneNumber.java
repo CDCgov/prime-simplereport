@@ -46,11 +46,6 @@ public class PhoneNumber extends AuditedEntity {
   }
 
   @JsonIgnore
-  public Person getPerson() {
-    return person;
-  }
-
-  @JsonIgnore
   public UUID getPersonInternalID() {
     return person.getInternalId();
   }
