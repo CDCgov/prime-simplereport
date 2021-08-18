@@ -35,6 +35,12 @@ jest.mock("@microsoft/applicationinsights-react-js", () => ({
   useTrackEvent: jest.fn(),
 }));
 
+const WithRouter: React.FC = ({ children }) => (
+  <MemoryRouter initialEntries={[{ search: "?facility=1" }]}>
+    {children}
+  </MemoryRouter>
+);
+
 // Data copied from Chrome network window
 const testResults = [
   {
@@ -718,14 +724,14 @@ const mocks = [
 describe("TestResultsList", () => {
   it("should render a list of tests", async () => {
     const { container, getByText } = render(
-      <MemoryRouter>
+      <WithRouter>
         <DetachedTestResultsList
           data={{ testResults }}
           page={1}
           entriesPerPage={20}
           totalEntries={testResults.length}
         />
-      </MemoryRouter>
+      </WithRouter>
     );
     expect(getByText("Test Results", { exact: false })).toBeInTheDocument();
     expect(getByText("Cragell, Barb Whitaker")).toBeInTheDocument();
@@ -733,13 +739,13 @@ describe("TestResultsList", () => {
   });
   it("should call appropriate gql endpoints for pagination", async () => {
     render(
-      <MemoryRouter>
+      <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <TestResultsList page={1} />
           </MockedProvider>
         </Provider>
-      </MemoryRouter>
+      </WithRouter>
     );
     expect(
       await screen.findByText("Test Results", { exact: false })
@@ -750,13 +756,13 @@ describe("TestResultsList", () => {
   });
   it("should be able to filter by patient", async () => {
     render(
-      <MemoryRouter>
+      <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <TestResultsList page={1} />
           </MockedProvider>
         </Provider>
-      </MemoryRouter>
+      </WithRouter>
     );
     expect(
       await screen.findByText("Test Results", { exact: false })
@@ -779,13 +785,13 @@ describe("TestResultsList", () => {
   });
   it("should be able to filter by result value", async () => {
     render(
-      <MemoryRouter>
+      <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <TestResultsList page={1} />
           </MockedProvider>
         </Provider>
-      </MemoryRouter>
+      </WithRouter>
     );
     expect(
       await screen.findByText("Test Results", { exact: false })
@@ -805,13 +811,13 @@ describe("TestResultsList", () => {
   });
   it("should be able to filter by role", async () => {
     render(
-      <MemoryRouter>
+      <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <TestResultsList page={1} />
           </MockedProvider>
         </Provider>
-      </MemoryRouter>
+      </WithRouter>
     );
     expect(
       await screen.findByText("Test Results", { exact: false })
@@ -831,13 +837,13 @@ describe("TestResultsList", () => {
   });
   it("should be able to filter by date", async () => {
     render(
-      <MemoryRouter>
+      <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <TestResultsList page={1} />
           </MockedProvider>
         </Provider>
-      </MemoryRouter>
+      </WithRouter>
     );
     expect(
       await screen.findByText("Test Results", { exact: false })
@@ -872,13 +878,13 @@ describe("TestResultsList", () => {
   });
   it("should be able to clear patient filter", async () => {
     render(
-      <MemoryRouter>
+      <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <TestResultsList page={1} />
           </MockedProvider>
         </Provider>
-      </MemoryRouter>
+      </WithRouter>
     );
 
     expect(
@@ -904,13 +910,13 @@ describe("TestResultsList", () => {
 
   it("should be able to clear date filters", async () => {
     render(
-      <MemoryRouter>
+      <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <TestResultsList page={1} />
           </MockedProvider>
         </Provider>
-      </MemoryRouter>
+      </WithRouter>
     );
 
     // Apply filter
@@ -952,13 +958,13 @@ describe("TestResultsList", () => {
 
   it("opens the test detail view", async () => {
     render(
-      <MemoryRouter>
+      <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <TestResultsList page={1} />
           </MockedProvider>
         </Provider>
-      </MemoryRouter>
+      </WithRouter>
     );
     await screen.findByText("Test Results", { exact: false });
     const moreActions = within(screen.getByRole("table")).getAllByRole(
