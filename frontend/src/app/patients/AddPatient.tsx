@@ -117,7 +117,7 @@ const AddPatient = () => {
   >(ADD_PATIENT);
 
   const [activeFacility] = useSelectedFacility();
-  const activeFacilityId = activeFacility!.id;
+  const activeFacilityId = activeFacility?.id;
 
   const personPath = `/patients/?facility=${activeFacilityId}`;
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
@@ -126,7 +126,7 @@ const AddPatient = () => {
     return <Redirect to={redirect} />;
   }
 
-  if (activeFacilityId.length < 1) {
+  if (!activeFacilityId) {
     return <div>No facility selected</div>;
   }
 

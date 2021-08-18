@@ -89,7 +89,7 @@ describe("AddPatient", () => {
     });
     it("shows a 'No facility selected' message", async () => {
       expect(
-        await screen.getByText("No facility selected", {
+        screen.getByText("No facility selected", {
           exact: false,
         })
       ).toBeInTheDocument();
