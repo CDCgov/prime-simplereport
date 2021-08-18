@@ -372,9 +372,6 @@ class AccountRequestControllerTest {
     assertThat(addressCaptor.getValue().getPostalCode()).isEqualTo("43675");
     assertThat(addressCaptor.getValue().getCounty()).isEqualTo("Asperiores illum in");
 
-    // assertThat(accountRequestCaptor.getValue().getOrganizationName())
-    //     .isEqualTo("Day Hayes Trading");
-
     // new user should be disabled in okta
     verify(oktaRepository)
         .createUser(any(IdentityAttributes.class), eq(organization), anySet(), anySet(), eq(false));
@@ -414,9 +411,6 @@ class AccountRequestControllerTest {
     verify(emailService, times(0)).send(anyList(), anyString(), any());
     verify(emailService, times(0)).sendWithProviderTemplate(anyString(), any());
     verify(mockSendGrid, times(0)).send(any());
-
-    // assertThat(organizationAccountRequestCaptor.getValue().getOrganizationName())
-    //     .isEqualTo("Day Hayes Trading");
 
     verify(apiUserService, times(1))
         .createUser(
@@ -475,9 +469,6 @@ class AccountRequestControllerTest {
     verify(emailService, times(1)).send(anyList(), anyString(), any());
     verify(emailService, times(1)).sendWithProviderTemplate(anyString(), any());
     verify(mockSendGrid, times(2)).send(any());
-
-    // assertThat(organizationAccountRequestCaptor.getValue().getOrganizationName())
-    //     .isEqualTo("Day Hayes Trading");
 
     verify(apiUserService, times(1))
         .createUser(
