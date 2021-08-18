@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -23,6 +24,9 @@ public class TestOrder extends BaseTestInfo {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "patient_answers_id")
   private PatientAnswers askOnEntrySurvey;
+
+  @Column(name = "patient_answers_id", insertable = false, updatable = false)
+  private UUID patientAnswersId;
 
   @Column private LocalDate dateTested; // REMOVE THIS COLUMN
 
@@ -137,5 +141,9 @@ public class TestOrder extends BaseTestInfo {
   @Override
   public void setReasonForCorrection(String reasonForCorrection) {
     super.setReasonForCorrection(reasonForCorrection);
+  }
+
+  public UUID getPatientAnswersId() {
+    return patientAnswersId;
   }
 }

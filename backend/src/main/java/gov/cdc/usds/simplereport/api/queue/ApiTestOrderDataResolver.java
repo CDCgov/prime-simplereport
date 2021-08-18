@@ -17,6 +17,7 @@ import graphql.kickstart.execution.context.GraphQLContext;
 import graphql.kickstart.tools.GraphQLResolver;
 import graphql.schema.DataFetchingEnvironment;
 import java.time.LocalDate;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
@@ -26,9 +27,12 @@ import org.springframework.stereotype.Component;
 public class ApiTestOrderDataResolver implements GraphQLResolver<ApiTestOrder> {
   private CompletableFuture<AskOnEntrySurvey> getSurvey(
       ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    CompletableFuture<PatientAnswers> answers =
-        loadFuture(apiTestOrder.getWrapped(), dfe, PatientAnswersDataLoader.KEY);
-    return answers.thenApply(PatientAnswers::getSurvey);
+    DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
+    DataLoader<TestOrder, PatientAnswers> loader = registry.getDataLoader(PatientAnswersDataLoader.KEY);
+    if (loader == null) {
+      throw new NoDataLoaderFoundException(PatientAnswersDataLoader.KEY);
+    }
+    return loader.load(apiTestOrder.getWrapped()).thenApply(PatientAnswers::getSurvey);
   }
 
   public CompletableFuture<Person> getPatient(
