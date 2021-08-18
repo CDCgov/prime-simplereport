@@ -19,7 +19,7 @@ export class SignUpApi {
     return api.request("/identity-verification/submit-answers", request);
   }
 
-  static async createOrganization(
+  static createOrganization(
     request: OrganizationCreateRequest
   ): Promise<OrganizationCreateResponse> {
     return api.request(

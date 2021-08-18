@@ -21,6 +21,7 @@ import {
 } from "./utils";
 
 import "./OrganizationForm.scss";
+import { SignUpApi } from "../SignUpApi";
 
 export interface OrganizationCreateRequest {
   name: string;
@@ -72,7 +73,7 @@ const OrganizationForm = () => {
       schema,
     });
     if (validation.valid) {
-      //make api call
+      const response = await SignUpApi.createOrganization(organization);
       setErrors(initOrgErrors());
       setSubmitted(true);
       return;
