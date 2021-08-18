@@ -224,10 +224,10 @@ export const en = {
       print: "Print",
       close: "Close",
       testingFacility: {
-        details: "Testing facility details",
-        name: "Testing facility name",
-        phone: "Testing facility phone",
-        address: "Testing facility address",
+        details: "Facility details",
+        name: "Facility name",
+        phone: "Facility phone",
+        address: "Facility address",
         clia: "CLIA number",
         orderingProvider: "Ordering provider",
         npi: "NPI",
@@ -270,7 +270,7 @@ export const en = {
           difficultNewsLink:
             "Getting a positive COVID-19 test result can be difficult news, so it’s important to <0> take steps to cope with stress </0> during this time. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.",
           moreInformation:
-            "More information is available at https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/",
+            "More information is available at https://cdc.gov/coronavirus/2019-ncov/if-you-are-sick",
         },
         negative: {
           p0:
