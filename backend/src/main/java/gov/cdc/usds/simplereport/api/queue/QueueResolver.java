@@ -6,10 +6,6 @@ import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-<<<<<<< HEAD
-
-=======
->>>>>>> aw/add-get-primary-telephone-dataloader
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
