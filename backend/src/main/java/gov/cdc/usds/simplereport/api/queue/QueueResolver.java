@@ -22,9 +22,10 @@ public class QueueResolver implements GraphQLQueryResolver {
   }
 
   public List<ApiTestOrder> getQueue(UUID facilityId) {
-    var queue = _testOrderService.getQueue(facilityId).stream()
-        .map(ApiTestOrder::new)
-        .collect(Collectors.toList());
+    var queue =
+        _testOrderService.getQueue(facilityId).stream()
+            .map(ApiTestOrder::new)
+            .collect(Collectors.toList());
     LOG.trace("getQueue({}): Returning {} items", facilityId, queue.size());
     return queue;
   }

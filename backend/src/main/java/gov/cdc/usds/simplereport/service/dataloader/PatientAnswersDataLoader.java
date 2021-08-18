@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.service.dataloader;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
-
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -25,7 +24,11 @@ public class PatientAnswersDataLoader extends KeyedDataLoaderFactory<TestOrder, 
         testOrders ->
             CompletableFuture.supplyAsync(
                 () -> {
-                    List<UUID> testOrderIds = testOrders.stream().map(TestOrder::getInternalId).collect(Collectors.toList());;
+                  List<UUID> testOrderIds =
+                      testOrders.stream()
+                          .map(TestOrder::getInternalId)
+                          .collect(Collectors.toList());
+                  ;
                   Map<UUID, PatientAnswers> found =
                       patientAnswersRepository.findAllByTestOrderInternalIdIn(testOrderIds).stream()
                           .collect(Collectors.toMap(PatientAnswers::getInternalId, s -> s));
