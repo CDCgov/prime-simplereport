@@ -975,4 +975,19 @@ describe("TestResultsList", () => {
     fireEvent.click(viewDetails);
     expect(screen.queryAllByText("Test details").length).toBe(2);
   });
+
+  it("doesn't display anything if no facility is selected", async () => {
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks}>
+            <TestResultsList page={1} />
+          </MockedProvider>
+        </Provider>
+      </MemoryRouter>
+    );
+    expect(
+      await screen.findByText("No facility selected", { exact: false })
+    ).toBeInTheDocument();
+  });
 });
