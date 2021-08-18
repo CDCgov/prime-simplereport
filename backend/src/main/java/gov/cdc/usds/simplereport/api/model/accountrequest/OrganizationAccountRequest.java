@@ -1,8 +1,6 @@
 package gov.cdc.usds.simplereport.api.model.accountrequest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +8,6 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
-@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
 public class OrganizationAccountRequest implements TemplateVariablesProvider {
 
   private static final String TEMPLATE_NAME = "organization-account-request";

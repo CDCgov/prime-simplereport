@@ -11,7 +11,6 @@ import { SignUpApi } from "../SignUpApi";
 
 import OrganizationForm from "./OrganizationForm";
 
-
 const getOrgNameInput = () =>
   screen.getByRole("textbox", {
     name:
@@ -22,7 +21,7 @@ const getOrgTypeDropdown = () => screen.getByLabelText("Organization type *");
 const getFirstNameInput = () => screen.getByLabelText("First name *");
 const getMiddleNameInput = () => screen.getByLabelText("Middle name");
 const getLastNameInput = () => screen.getByLabelText("Last name *");
-const getEmailInput = () => screen.getByLabelText("Email *");
+const getEmailInput = () => screen.getByLabelText("Email address *");
 const getPhoneInput = () => screen.getByLabelText("Work phone number *");
 const getSubmitButton = () => screen.getByText("Submit");
 const fillIn = (input: any, text: string) =>

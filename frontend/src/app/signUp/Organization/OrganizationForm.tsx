@@ -11,6 +11,8 @@ import Input from "../../commonComponents/Input";
 import { stateCodes } from "../../../config/constants";
 import Select from "../../commonComponents/Select";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
+import { SignUpApi } from "../SignUpApi";
+import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 import {
   initOrg,
@@ -21,7 +23,6 @@ import {
 } from "./utils";
 
 import "./OrganizationForm.scss";
-import { SignUpApi } from "../SignUpApi";
 
 export interface OrganizationCreateRequest {
   name: string;
@@ -46,7 +47,7 @@ const OrganizationForm = () => {
   );
   const [errors, setErrors] = useState<OrganizationFormErrors>(initOrgErrors());
 
-  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formChanged, setFormChanged] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -67,13 +68,22 @@ const OrganizationForm = () => {
     errors[field] ? "error" : undefined;
 
   const onSave = async () => {
-    setSaving(true);
+    setLoading(true);
     const validation = await isFormValid({
       data: organization,
       schema,
     });
     if (validation.valid) {
-      const response = await SignUpApi.createOrganization(organization);
+      try {
+        await SignUpApi.createOrganization(organization);
+      } catch (error) {
+        const alert = (
+          <Alert type="error" title="Submission Error" body={error} />
+        );
+        showNotification(toast, alert);
+        setLoading(false);
+        return;
+      }
       setErrors(initOrgErrors());
       setSubmitted(true);
       return;
@@ -87,11 +97,15 @@ const OrganizationForm = () => {
       />
     );
     showNotification(toast, alert);
-    setSaving(false);
+    setLoading(false);
   };
 
   if (submitted) {
-    return <p>success dude</p>;
+    document.location.pathname = "/sign-up/thanks";
+  }
+
+  if (loading) {
+    return <LoadingCard message="Creating organization" />;
   }
 
   const getFormElement = (
@@ -190,11 +204,15 @@ const OrganizationForm = () => {
             }
           )}
         </div>
+        <p>
+          By submitting this form, you agree to our{" "}
+          <a href="/terms-of-service">terms of service</a>.
+        </p>
         <Button
           className="width-full margin-top-2"
-          disabled={saving || !formChanged}
+          disabled={loading || !formChanged}
           onClick={onSave}
-          label={saving ? "Saving..." : "Submit"}
+          label={loading ? "Saving..." : "Submit"}
         />
       </Card>
     </CardBackground>
