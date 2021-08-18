@@ -1,0 +1,20 @@
+{
+  "compressionLevel": 9,
+  "dereferenceLinks": true,
+  "entries": [
+    "."
+  ],
+  "force": true,
+  "ignoreEntries": [
+    ".terraform",
+    "build",
+    "*.zip",
+    "*.map",
+    "terraform.*",
+    "*.tf"
+  ],
+  "mode": "add",
+  "outputEntry": "build/queue-uploader.zip",
+  "quiet": false,
+  "verbose": false
+}
