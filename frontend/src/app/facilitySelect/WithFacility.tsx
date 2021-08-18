@@ -39,7 +39,6 @@ const WithFacility: React.FC<Props> = ({ children }) => {
 
     if (facilities.length === 1) {
       setSelectedFacility(facilities[0]);
-      return;
     }
   }, [facilities, selectedFacility, dataLoaded, setSelectedFacility]);
 

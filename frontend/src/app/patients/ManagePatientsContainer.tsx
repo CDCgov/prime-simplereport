@@ -10,7 +10,7 @@ import ManagePatients from "./ManagePatients";
 const ManagePatientsContainer = (props: { page?: number }) => {
   useDocumentTitle("People");
   const [facility] = useSelectedFacility();
-  const activeFacilityId = facility!.id || "";
+  const activeFacilityId = facility?.id || "";
   const user = useSelector<RootState, User>((state) => state.user);
   const isAdmin = useSelector<RootState, boolean>(
     (state) => state.user.isAdmin
