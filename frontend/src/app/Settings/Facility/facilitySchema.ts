@@ -97,7 +97,12 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
     .of(yup.string().required())
     .min(1, "There must be at least one device")
     .required("There must be at least one device"),
-  defaultDevice: yup.string().required("A default device must be selected"),
+  defaultDevice: yup.mixed().test(function (input) {
+    if (!input) {
+      return this.createError({ message: "A default device must be selected" });
+    }
+    return true;
+  }),
   orderingProvider: providerSchema.nullable(),
   phone: yup
     .string()

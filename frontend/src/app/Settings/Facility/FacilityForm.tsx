@@ -134,7 +134,7 @@ const FacilityForm: React.FC<Props> = (props) => {
     AddressSuggestionConfig<AddressOptions>[]
   >([]);
 
-  const updateForm = (data: Facility) => {
+  const updateForm: typeof updateFormData = (data) => {
     updateFormData(data);
     updateFormChanged(true);
   };
@@ -151,16 +151,16 @@ const FacilityForm: React.FC<Props> = (props) => {
     });
   };
   const updateDeviceTypes = (deviceTypes: string[]) => {
-    updateForm({
+    updateForm((facility) => ({
       ...facility,
       deviceTypes,
-    });
+    }));
   };
   const updateDefaultDevice = (defaultDevice: string) => {
-    updateForm({
+    updateForm((facility) => ({
       ...facility,
       defaultDevice,
-    });
+    }));
   };
 
   const { errors, validateField, validateFacility } = useFacilityValidation(

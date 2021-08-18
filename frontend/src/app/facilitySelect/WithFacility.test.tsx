@@ -20,6 +20,11 @@ jest.mock("react-router-dom", () => ({
   }),
 }));
 
+jest.mock("../utils/url", () => ({
+  ...jest.requireActual("../utils/url"),
+  getFacilityIdFromUrl: () => "4",
+}));
+
 const mocks = [
   {
     request: {
@@ -91,7 +96,7 @@ describe("WithFacility", () => {
         facilities: [{ id: "1", name: "Facility 1" }],
       });
       store.dispatch = jest.fn();
-      component = renderer.create(
+      component = render(
         <Provider store={store}>
           <WithFacility>App</WithFacility>
         </Provider>
@@ -99,7 +104,7 @@ describe("WithFacility", () => {
     });
 
     it("should render with a value", () => {
-      expect(component.toJSON()).toMatchSnapshot();
+      expect(component.container.firstChild).toMatchSnapshot();
     });
     it("should select a facility once", () => {
       expect(store.dispatch).toHaveBeenCalledTimes(1);
@@ -166,6 +171,39 @@ describe("WithFacility", () => {
       it("should set the facility id search param", () => {
         expect(mockHistoryPush).toHaveBeenCalledWith({ search: "?facility=1" });
       });
+    });
+  });
+  describe("Facility ID from URL", () => {
+    beforeEach(() => {
+      store = mockStore({
+        dataLoaded: true,
+        organization: {
+          name: "Organization Name",
+        },
+        user: {
+          firstName: "Kim",
+          lastName: "Mendoza",
+          permissions: [],
+        },
+        facilities: [
+          { id: "1", name: "Facility 1" },
+          { id: "4", name: "Facility 4" },
+        ],
+      });
+      store.dispatch = jest.fn();
+      render(
+        <Provider store={store}>
+          <WithFacility>App</WithFacility>
+        </Provider>
+      );
+    });
+    it("sets facility in state", () => {
+      expect(store.dispatch).toHaveBeenCalledWith(
+        updateFacility({
+          id: "4",
+          name: "Facility 4",
+        })
+      );
     });
   });
   describe("A new org", () => {

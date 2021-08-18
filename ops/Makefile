@@ -43,11 +43,11 @@ api.tfvars: /dev/null
 	echo "deploy_actor=\"$(GITHUB_ACTOR)\"" >> $@;
 
 init-%: .valid-env-%
-	echo terraform -chdir=$* init
+	terraform -chdir=$* init
 	terraform -chdir=$*/persistent init
 
 deploy-%: .valid-env-% api.tfvars
-	echo terraform -chdir=$* apply -auto-approve -var-file=../api.tfvars
+	terraform -chdir=$* apply -auto-approve -var-file=../api.tfvars
 	terraform -chdir=$*/persistent apply -auto-approve
 
 promote-%: .be-logged-in .valid-env-%

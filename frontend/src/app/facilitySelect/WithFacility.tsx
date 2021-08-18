@@ -1,5 +1,5 @@
-import React from "react";
-import { useDispatch, useSelector, connect } from "react-redux";
+import React, { useCallback, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
 import { appPermissions } from "../permissions";
@@ -38,16 +38,71 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     (f) => f.id === getFacilityIdFromUrl()
   );
 
-  const setFacilityProp = (facilityId: string) => {
-    history.push({ search: `?facility=${facilityId}` });
-  };
+  const setFacilityProp = useCallback(
+    (facilityId: string) => {
+      history.push({ search: `?facility=${facilityId}` });
+    },
+    [history]
+  );
 
-  const setActiveFacility = (facility: Facility) => {
-    dispatch(updateFacility(facility));
-    setFacilityProp(facility.id);
-  };
+  const setActiveFacility = useCallback(
+    (facility: Facility) => {
+      dispatch(updateFacility(facility));
+      setFacilityProp(facility.id);
+    },
+    [dispatch, setFacilityProp]
+  );
 
-  if (!dataLoaded) {
+  const shouldSetOnlyFacility = facilities.length === 1 && !facilityInStore?.id;
+
+  const shouldSetFacilityFromUrl = facilityFromUrl?.id && !facilityInStore?.id;
+
+  useEffect(() => {
+    // No action if facility in store and URL exist and are equal
+    if (
+      facilityFromUrl?.id &&
+      facilityInStore?.id &&
+      facilityFromUrl.id === facilityInStore.id
+    ) {
+      return;
+    }
+
+    // If both exist but are different, URL selection is correct
+    if (
+      facilityFromUrl?.id &&
+      facilityInStore?.id &&
+      facilityFromUrl.id !== facilityInStore.id
+    ) {
+      setActiveFacility(facilityFromUrl);
+      return;
+    }
+
+    // If only in URL, set store value
+    if (facilityFromUrl?.id && !facilityInStore) {
+      setActiveFacility(facilityFromUrl);
+      return;
+    }
+
+    // If only in store, set URL value
+    if (!facilityFromUrl?.id && facilityInStore?.id) {
+      setFacilityProp(facilityInStore.id);
+      return;
+    }
+
+    // If only one facility in org, use that one
+    if (shouldSetOnlyFacility) {
+      setActiveFacility(facilities[0]);
+    }
+  }, [
+    shouldSetOnlyFacility,
+    setActiveFacility,
+    facilities,
+    facilityFromUrl,
+    facilityInStore,
+    setFacilityProp,
+  ]);
+
+  if (!dataLoaded || shouldSetOnlyFacility || shouldSetFacilityFromUrl) {
     return <Loading />;
   }
 
@@ -78,19 +133,6 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     );
   }
 
-  if (
-    facilities.length === 1 &&
-    (!facilityFromUrl?.id || !facilityInStore?.id)
-  ) {
-    setActiveFacility(facilities[0]);
-    return <Loading />;
-  }
-
-  if (facilityFromUrl?.id && !facilityInStore?.id) {
-    setActiveFacility(facilityFromUrl);
-    return <Loading />;
-  }
-
   if (facilityFromUrl?.id && facilityInStore?.id) {
     return <>{children}</>;
   }
@@ -103,4 +145,4 @@ const WithFacility: React.FC<Props> = ({ children }) => {
   );
 };
 
-export default connect()(WithFacility);
+export default WithFacility;

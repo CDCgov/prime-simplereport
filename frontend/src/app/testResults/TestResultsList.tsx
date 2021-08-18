@@ -330,20 +330,20 @@ export const DetachedTestResultsList: any = ({
     var validStart = false;
     if (startDateEntry) {
       if (!isValidDate(startDateEntry)) {
-        setStartDateError("Date must be in format MM/DD/YYYY or MM-DD-YYYY");
+        setStartDateError("Date must be in format MM/DD/YYYY");
         setStartDateFilter("");
       } else {
         validStart = true;
-        const startDate = moment(startDateEntry).startOf("day");
+        const startDate = moment(startDateEntry, "MM/DD/YYYY").startOf("day");
         setStartDateError(undefined);
         setStartDateFilter(startDate.toISOString());
       }
     }
     if (endDateEntry) {
       if (!isValidDate(endDateEntry)) {
-        setEndDateError("Date must be in format MM/DD/YYYY or MM-DD-YYYY");
+        setEndDateError("Date must be in format MM/DD/YYYY");
       } else {
-        const endDate = moment(endDateEntry).endOf("day");
+        const endDate = moment(endDateEntry, "MM/DD/YYYY").endOf("day");
         if (validStart && endDate.isBefore(moment(startDateFilter))) {
           setEndDateError("End date cannot be before start date");
           setEndDateFilter("");

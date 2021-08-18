@@ -11,24 +11,12 @@ describe("PersonalDetailsForm", () => {
           { pathname: "/identity-verification", search: "?orgExternalId=foo" },
         ]}
       >
-        <PersonalDetailsForm />
+        <PersonalDetailsForm orgExternalId="foo" />
       </MemoryRouter>
     );
   });
   it("initializes with the submit button disabled", () => {
     expect(screen.getByText("Submit")).toHaveAttribute("disabled");
-  });
-  it("initializes to an error page if no org id is passed", () => {
-    render(
-      <MemoryRouter>
-        <PersonalDetailsForm />
-      </MemoryRouter>
-    );
-    expect(
-      screen.getByText("We weren't able to find your affiliated organization", {
-        exact: false,
-      })
-    ).toBeInTheDocument();
   });
   describe("Filling out the form", () => {
     beforeEach(() => {

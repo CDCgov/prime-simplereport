@@ -13,7 +13,11 @@ describe("SignUpApp", () => {
     ));
 
     render(
-      <MemoryRouter initialEntries={["/identity-verification"]}>
+      <MemoryRouter
+        initialEntries={[
+          { pathname: "/identity-verification", search: "?orgExternalId=foo" },
+        ]}
+      >
         <SignUpApp
           match={{ path: "" } as any}
           location={{} as any}
@@ -23,6 +27,8 @@ describe("SignUpApp", () => {
     );
   });
   it("renders", () => {
-    expect(screen.getByText("personal details form")).toBeInTheDocument();
+    expect(
+      screen.getByText("Identity verification consent")
+    ).toBeInTheDocument();
   });
 });

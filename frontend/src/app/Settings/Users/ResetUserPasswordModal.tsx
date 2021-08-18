@@ -10,13 +10,13 @@ import "./ManageUsers.scss";
 
 interface Props {
   onClose: () => void;
-  onReactivateUser: (userId: string) => void;
+  onResetPassword: (userId: string) => void;
   user: SettingsUser;
 }
 
-const ReactivateUserModal: React.FC<Props> = ({
+const ResetUserPasswordModal: React.FC<Props> = ({
   onClose,
-  onReactivateUser,
+  onResetPassword,
   user,
 }) => {
   return (
@@ -36,8 +36,9 @@ const ReactivateUserModal: React.FC<Props> = ({
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">
           <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-            Reactivate account:{" "}
-            {displayFullName(user.firstName, user.middleName, user.lastName)}
+            Reset{" "}
+            {displayFullName(user.firstName, user.middleName, user.lastName)}'s
+            password
           </h1>
           <button onClick={onClose} className="close-button" aria-label="Close">
             <span className="fa-layers">
@@ -49,19 +50,17 @@ const ReactivateUserModal: React.FC<Props> = ({
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
         <div className="grid-row grid-gap">
           <p>
+            Are you sure you want to reset the password for{" "}
             <strong>
               {displayFullName(user.firstName, user.middleName, user.lastName)}
             </strong>
-            's SimpleReport account is currently inactive. They can't log in
-            until their account is reactivated.
+            ?
           </p>
           <p>
-            <strong>
-              Please note: Users will have 24 hours to log back in to
-              SimpleReport.
-            </strong>
+            {" "}
+            Doing so will email this person a link to reset their password. The
+            link will expire in 24 hours.
           </p>
-          <p>Are you sure you want to reactivate this account?</p>
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
           <div className="display-flex flex-justify-end">
@@ -73,8 +72,8 @@ const ReactivateUserModal: React.FC<Props> = ({
             />
             <Button
               className="margin-right-205"
-              onClick={() => onReactivateUser(user.id)}
-              label="Yes, reactivate"
+              onClick={() => onResetPassword(user.id)}
+              label="Yes, I'm sure"
             />
           </div>
         </div>
@@ -83,4 +82,4 @@ const ReactivateUserModal: React.FC<Props> = ({
   );
 };
 
-export default ReactivateUserModal;
+export default ResetUserPasswordModal;

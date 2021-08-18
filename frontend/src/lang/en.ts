@@ -116,13 +116,15 @@ export const en = {
         },
         contact: {
           heading: "Contact information",
+          helpText:
+            "You're responsible for entering the correct contact information, following applicable federal and state laws.",
           primaryPhoneNumber: "Primary phone number",
           additionalPhoneNumber: "Additional phone number",
+          receiveTextMessageResults: "Yes, text all mobile numbers on file.",
           phoneType: "Phone type",
           addNumber: "Add another number",
           testResultDelivery:
             "Would you like to receive your results via text message?",
-          testResultDeliveryHint: "We'll text all mobile numbers on file",
           email: "Email address",
           street1: "Street address 1",
           street2: "Street address 2",
@@ -156,15 +158,21 @@ export const en = {
             "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing.",
           validationMsg: "Please correct before submitting",
           firstName: "First name is required",
+          fieldLength: "This answer is too long",
           middleName: "Middle name is incorrectly formatted",
           lastName: "Last name is required",
           lookupId: "Student ID is incorrectly formatted",
           role: "Role is incorrectly formatted",
           facilityId: "Testing facility is required",
-          birthDate:
-            "Date of birth must be present, correctly formatted (MM/DD/YYYY), and in the past",
+          birthDate: {
+            base:
+              "Date of birth is required, must be in MM/DD/YY format, and in the past",
+            past: "Date of birth is too far in the past",
+            future: "Date of birth can’t be in the future",
+          },
           telephone: "Phone number is missing or invalid",
           phoneNumbers: "Phone numbers are missing or invalid",
+          phoneNumbersDuplicate: "Duplicate phone number entered",
           email: "Email is missing or incorrectly formatted",
           street: "Street is missing",
           streetTwo: "Street 2 is incorrectly formatted",

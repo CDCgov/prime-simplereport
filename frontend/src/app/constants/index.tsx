@@ -89,7 +89,10 @@ const testResultDeliveryPreferenceValues = (
   label: string;
 }[] => {
   return [
-    { label: i18n.t("constants.yesNoUnk.YES"), value: "SMS" },
+    {
+      label: i18n.t("patient.form.contact.receiveTextMessageResults"),
+      value: "SMS",
+    },
     { label: i18n.t("constants.yesNoUnk.NO"), value: "NONE" },
   ];
 };

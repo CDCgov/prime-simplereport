@@ -123,14 +123,16 @@ export const es: LanguageConfig = {
         },
         contact: {
           heading: "Información de contacto",
+          helpText:
+            "Usted es responsable de ingresar la información de contacto correcta, siguiendo las leyes federales y estatales aplicables.",
           primaryPhoneNumber: "Número de teléfono principal",
           additionalPhoneNumber: "Número de teléfono adicional",
+          receiveTextMessageResults:
+            "Sí, envíe un mensaje de texto a todos los números registrados de teléfonos móviles.",
           phoneType: "Tipo de teléfono",
           addNumber: "Agregar otro número",
           testResultDelivery:
             "¿Le gustaría recibir sus resultados por mensaje de texto?",
-          testResultDeliveryHint:
-            "Enviaremos un mensaje de texto a todos los números de teléfono móviles registrados",
           email: "Dirección de correo electrónico",
           street1: "Dirección 1",
           street2: "Dirección 2",
@@ -164,16 +166,22 @@ export const es: LanguageConfig = {
           unsaved:
             "“¡Sus cambios aún no están guardados! Haga clic en OK para descartar cambios, Cancelar para continuar con la edición.",
           validationMsg: "Corrija antes de enviar",
+          fieldLength: "Esta respuesta es demasiado larga",
           firstName: "Se requiere primer nombre",
           middleName: "El segundo nombre tiene un formato incorrecto",
           lastName: "Se requiere apellido",
           lookupId: "Identificación del estudiante tiene un formato incorrecto",
           role: "Rol tiene un formato incorrecto",
           facilityId: "Se requiere centro de pruebas",
-          birthDate:
-            "Se requiere fecha de nacimiento, formateada correctamente (MM/DD/AAAA) y en el pasado",
+          birthDate: {
+            base:
+              "Se requiere la fecha de nacimiento, debe estar en formato MM/DD/AA, y en el pasado",
+            past: "La fecha de nacimiento está demasiado lejos en el pasado",
+            future: "La fecha de nacimiento no puede ser futura",
+          },
           telephone: "Falta el número de teléfono o no es válido",
           phoneNumbers: "Faltan los números de teléfono o no son válidos",
+          phoneNumbersDuplicate: "Número de teléfono duplicado ingresado",
           email: "Falta el correo electrónico o tiene un formato incorrecto",
           street: "Falta el nombre de la calle",
           streetTwo: "Calle 2 tiene un formato incorrecto",

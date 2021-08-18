@@ -29,6 +29,7 @@ import {
 } from "../../utils/smartyStreets";
 import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
 import ComboBox from "../../commonComponents/ComboBox";
+import { formatDate } from "../../utils/date";
 
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
@@ -168,6 +169,9 @@ const PersonForm = (props: Props) => {
   const onPersonChange = <K extends keyof PersonFormData>(field: K) => (
     value: PersonFormData[K]
   ) => {
+    if (value === patient[field]) {
+      return;
+    }
     setFormChanged(true);
     setPatient({ ...patient, [field]: value });
   };
@@ -360,10 +364,15 @@ const PersonForm = (props: Props) => {
             type="date"
             required={view !== PersonFormView.PXP}
             disabled={view === PersonFormView.PXP}
+            min={formatDate(new Date("Jan 1, 1900"))}
+            max={formatDate(new Date())}
           />
         </div>
       </FormGroup>
       <FormGroup title={t("patient.form.contact.heading")}>
+        <p className="usa-hint maxw-prose">
+          {t("patient.form.contact.helpText")}
+        </p>
         <ManagePhoneNumbers
           phoneNumbers={patient.phoneNumbers || []}
           testResultDelivery={patient.testResultDelivery}
@@ -457,7 +466,7 @@ const PersonForm = (props: Props) => {
             onChange={
               onPersonChange("tribalAffiliation") as (value?: string) => void
             }
-            defaultValue={String(patient.tribalAffiliation)}
+            defaultValue={patient.tribalAffiliation || undefined}
           />
         </div>
         <RadioGroup
