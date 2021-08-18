@@ -172,6 +172,7 @@ export const en = {
           },
           telephone: "Phone number is missing or invalid",
           phoneNumbers: "Phone numbers are missing or invalid",
+          phoneNumbersDuplicate: "Duplicate phone number entered",
           email: "Email is missing or incorrectly formatted",
           street: "Street is missing",
           streetTwo: "Street 2 is incorrectly formatted",

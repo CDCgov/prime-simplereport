@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { PhoneNumberUtil } from "google-libphonenumber";
+import { PhoneNumberUtil, PhoneNumberFormat } from "google-libphonenumber";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 import { TFunction } from "i18next";
@@ -67,6 +67,21 @@ export function phoneNumberIsValid(input: any) {
     const number = phoneUtil.parseAndKeepRawInput(input, "US");
     return phoneUtil.isValidNumber(number);
   } catch (e) {
+    return false;
+  }
+}
+
+export function areUniquePhoneNumbers(phoneNumbers: any) {
+  try {
+    const phoneNumbersSeen = new Set(
+      phoneNumbers.map((p: { number: string }) => {
+        const parsedNumber = phoneUtil.parse(p.number, "US");
+        return phoneUtil.format(parsedNumber, PhoneNumberFormat.E164);
+      })
+    );
+    return phoneNumbersSeen.size === phoneNumbers.length;
+  } catch (e) {
+    // parsing number can fail
     return false;
   }
 }
@@ -147,6 +162,11 @@ const updateFieldSchemata: (
       "phone-numbers",
       t("patient.form.errors.phoneNumbers"),
       areValidPhoneNumbers
+    )
+    .test(
+      "phone-numbers",
+      t("patient.form.errors.phoneNumbersDuplicate"),
+      areUniquePhoneNumbers
     )
     .required(),
   email: yup
