@@ -142,10 +142,12 @@ export const DetachedTestResultPrintModal = ({
               </li>
               <li>
                 <b>{t("testResult.testingFacility.address")}</b>
-                <div>{facility.street}</div>
-                {facility.streetTwo && <div>{facility.streetTwo}</div>}
-                <div>
-                  {facility.city}, {facility.state} {facility.zipCode}
+                <div className="sr-result-facility-details-address">
+                  <span>{facility.street}</span>
+                  {facility.streetTwo && <span>{facility.streetTwo}</span>}
+                  <span>
+                    {facility.city}, {facility.state} {facility.zipCode}
+                  </span>
                 </div>
               </li>
               <li>
