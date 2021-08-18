@@ -43,6 +43,7 @@ dependencies {
     implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.0.0"
     implementation 'org.json:json:20201115'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Okta dependencies

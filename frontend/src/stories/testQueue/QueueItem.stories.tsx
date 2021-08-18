@@ -11,7 +11,7 @@ export default {
     layout: "fullscreen",
     msw: getMocks(
       "EditQueueItem",
-      "SubmitTestResults",
+      "SubmitTestResult",
       "GetPatientsLastResult",
       "SendPatientLinkSms",
       "UpdateAOE",
@@ -95,6 +95,18 @@ FilledOut.args = {
   dateTestedProp: "2021-03-03T14:40:00Z",
 };
 
+export const ReadyIndicator = Template.bind({});
+ReadyIndicator.args = {
+  ...defaultProps,
+  internalId: "completed-timer",
+  askOnEntry: {
+    noSymptoms: true,
+    firstTest: true,
+    pregnancy: "no",
+    symptoms: "{}",
+  } as any,
+};
+
 export const CompletedIndicator = Template.bind({});
 CompletedIndicator.args = {
   ...defaultProps,
@@ -106,4 +118,21 @@ CompletedIndicator.args = {
     symptoms: "{}",
   } as any,
   selectedTestResult: "NEGATIVE",
+};
+
+export const FailOnSubmit = Template.bind({});
+FailOnSubmit.args = {
+  ...defaultProps,
+  internalId: "completed_timer",
+  askOnEntry: {
+    noSymptoms: true,
+    firstTest: true,
+    pregnancy: "no",
+    symptoms: "{}",
+  } as any,
+  selectedTestResult: "NEGATIVE",
+  patient: {
+    ...defaultProps.patient,
+    internalId: "this-should-fail",
+  },
 };

@@ -3,7 +3,7 @@ import { Route, RouteComponentProps } from "react-router-dom";
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import Page from "../commonComponents/Page/Page";
 
-import PersonalDetailsForm from "./IdentityVerification/PersonalDetailsForm";
+import Consent from "./IdentityVerification/Consent";
 
 const SignUpApp: React.FC<RouteComponentProps> = ({ match: { path } }) => {
   return (
@@ -12,7 +12,7 @@ const SignUpApp: React.FC<RouteComponentProps> = ({ match: { path } }) => {
         <Route
           path={`${path}/identity-verification`}
           exact
-          component={PersonalDetailsForm}
+          component={Consent}
         />
       </Page>
     </PrimeErrorBoundary>

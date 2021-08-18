@@ -3,6 +3,7 @@ import { gql, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM_CAP } from "../../config/constants";
@@ -17,9 +18,9 @@ import PersonForm from "./Components/PersonForm";
 
 export const EMPTY_PERSON: Nullable<PersonFormData> = {
   facilityId: "",
-  firstName: null,
+  firstName: "",
   middleName: null,
-  lastName: null,
+  lastName: "",
   lookupId: null,
   role: null,
   race: null,
@@ -27,17 +28,17 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   gender: null,
   residentCongregateSetting: undefined,
   employedInHealthcare: undefined,
-  tribalAffiliation: null,
-  birthDate: null,
+  tribalAffiliation: undefined,
+  birthDate: "",
   telephone: null,
   phoneNumbers: null,
   county: null,
   email: null,
-  street: null,
+  street: "",
   streetTwo: null,
   city: null,
-  state: null,
-  zipCode: null,
+  state: "",
+  zipCode: "",
   preferredLanguage: null,
   testResultDelivery: null,
 };
@@ -108,6 +109,8 @@ interface AddPatientResponse {
 
 const AddPatient = () => {
   useDocumentTitle("Add Patient");
+
+  const { t } = useTranslation();
 
   const [addPatient, { loading }] = useMutation<
     AddPatientResponse,
@@ -184,7 +187,9 @@ const AddPatient = () => {
                   disabled={loading || !formChanged}
                   onClick={onSave}
                 >
-                  {loading ? "Saving..." : "Save changes"}
+                  {loading
+                    ? `${t("common.button.saving")}...`
+                    : t("common.button.save")}
                 </button>
               </div>
             </div>
@@ -196,7 +201,11 @@ const AddPatient = () => {
                 className="prime-save-patient-changes"
                 disabled={loading || !formChanged}
                 onClick={onSave}
-                label={loading ? "Saving..." : "Save changes"}
+                label={
+                  loading
+                    ? `${t("common.button.saving")}...`
+                    : t("common.button.save")
+                }
               />
             </div>
           )}

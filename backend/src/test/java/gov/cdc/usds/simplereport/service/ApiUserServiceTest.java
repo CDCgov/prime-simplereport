@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 
 class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
+
   @Autowired ApiUserRepository _apiUserRepo;
   @Autowired OktaRepository _oktaRepo;
 
@@ -190,6 +191,19 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
                 _service.createUserInCurrentOrg("captain@pirate.com", personName, Role.USER, true));
 
     assertEquals("Unable to add user.", caught.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void resetUserPassword_orgAdmin_success() {
+    initSampleData();
+
+    final String email = "allfacilities@example.com"; // member of DIS_ORG
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+
+    UserInfo userInfo = _service.resetUserPassword(apiUser.getInternalId());
+
+    assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
   }
 
   private void roleCheck(final UserInfo userInfo, final Set<OrganizationRole> expected) {

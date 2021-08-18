@@ -1,28 +1,23 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { Prompt } from "react-router-dom";
 import { toast } from "react-toastify";
 import { SchemaOf } from "yup";
 import { useTranslation } from "react-i18next";
 
-import { languages, stateCodes } from "../../../config/constants";
+import { stateCodes } from "../../../config/constants";
+import getLanguages from "../../utils/languages";
 import {
-  RACE_VALUES,
-  ETHNICITY_VALUES,
-  GENDER_VALUES,
-  ROLE_VALUES,
   TRIBAL_AFFILIATION_VALUES,
+  useTranslatedConstants,
 } from "../../constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { showError } from "../../utils";
 import FormGroup from "../../commonComponents/FormGroup";
 import {
-  allPersonErrors,
-  personSchema,
   PersonErrors,
-  personUpdateSchema,
-  selfRegistrationSchema,
   PersonUpdateFields,
+  usePersonSchemata,
 } from "../personSchema";
 import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
 import Input from "../../commonComponents/Input";
@@ -33,9 +28,11 @@ import {
 } from "../../utils/smartyStreets";
 import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
 import ComboBox from "../../commonComponents/ComboBox";
+import { formatDate } from "../../utils/date";
 
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
+
 import "../../../i18n";
 
 export type ValidateField = (field: keyof PersonErrors) => Promise<void>;
@@ -91,12 +88,6 @@ interface Props {
   view?: PersonFormView;
 }
 
-const schemata: Record<PersonFormView, SchemaOf<PersonUpdateFields>> = {
-  [PersonFormView.APP]: personSchema,
-  [PersonFormView.PXP]: personUpdateSchema,
-  [PersonFormView.SELF_REGISTRATION]: selfRegistrationSchema,
-};
-
 const PersonForm = (props: Props) => {
   const [formChanged, setFormChanged] = useState(false);
   const [patient, setPatient] = useState(props.patient);
@@ -105,10 +96,27 @@ const PersonForm = (props: Props) => {
   const [addressSuggestion, setAddressSuggestion] = useState<
     AddressWithMetaData | undefined
   >();
+  const languages = getLanguages();
+
   const { view = PersonFormView.APP } = props;
-  const schema = schemata[view];
 
   const { t } = useTranslation();
+
+  const {
+    personSchema,
+    personUpdateSchema,
+    selfRegistrationSchema,
+    defaultValidationError,
+    getValidationError,
+  } = usePersonSchemata();
+
+  const schemata: Record<PersonFormView, SchemaOf<PersonUpdateFields>> = {
+    [PersonFormView.APP]: personSchema,
+    [PersonFormView.PXP]: personUpdateSchema,
+    [PersonFormView.SELF_REGISTRATION]: selfRegistrationSchema,
+  };
+
+  const schema = schemata[view];
 
   const clearError = useCallback(
     (field: keyof PersonErrors) => {
@@ -122,21 +130,41 @@ const PersonForm = (props: Props) => {
   const validateField = useCallback(
     async (field: keyof PersonErrors) => {
       try {
-        clearError(field);
         await schema.validateAt(field, patient);
+        clearError(field);
       } catch (e) {
         setErrors((existingErrors) => ({
           ...existingErrors,
-          [field]: allPersonErrors[field],
+          [field]: getValidationError(e),
         }));
       }
     },
-    [patient, clearError, schema]
+    [patient, clearError, schema, getValidationError]
   );
+
+  // Make sure all existing errors are up-to-date (including translations)
+  useEffect(() => {
+    Object.entries(errors).forEach(async ([field, message]) => {
+      try {
+        await schema.validateAt(field, patient);
+      } catch (e) {
+        const error = getValidationError(e);
+        if (message && error !== message) {
+          setErrors((existing) => ({
+            ...existing,
+            [field]: error,
+          }));
+        }
+      }
+    });
+  }, [validateField, errors, schema, patient, getValidationError]);
 
   const onPersonChange = <K extends keyof PersonFormData>(field: K) => (
     value: PersonFormData[K]
   ) => {
+    if (value === patient[field]) {
+      return;
+    }
     setFormChanged(true);
     setPatient({ ...patient, [field]: value });
   };
@@ -182,7 +210,7 @@ const PersonForm = (props: Props) => {
           acc: PersonErrors,
           el: { path: keyof PersonErrors; message: string }
         ) => {
-          acc[el.path] = allPersonErrors[el.path];
+          acc[el.path] = el?.message || defaultValidationError;
           return acc;
         },
         {} as PersonErrors
@@ -226,6 +254,13 @@ const PersonForm = (props: Props) => {
     getValidationStatus: validationStatus,
     errors: errors,
   };
+
+  const {
+    RACE_VALUES,
+    ETHNICITY_VALUES,
+    GENDER_VALUES,
+    ROLE_VALUES,
+  } = useTranslatedConstants();
 
   return (
     <>
@@ -313,14 +348,24 @@ const PersonForm = (props: Props) => {
           <Input
             {...commonInputProps}
             field="birthDate"
-            label={t("patient.form.general.dob") + " (mm/dd/yyyy)"}
+            label={
+              t("patient.form.general.dob") +
+              " (" +
+              t("patient.form.general.dobFormat") +
+              ")"
+            }
             type="date"
             required={view !== PersonFormView.PXP}
             disabled={view === PersonFormView.PXP}
+            min={formatDate(new Date("Jan 1, 1900"))}
+            max={formatDate(new Date())}
           />
         </div>
       </FormGroup>
       <FormGroup title={t("patient.form.contact.heading")}>
+        <p className="usa-hint maxw-prose">
+          {t("patient.form.contact.helpText")}
+        </p>
         <ManagePhoneNumbers
           phoneNumbers={patient.phoneNumbers || []}
           testResultDelivery={patient.testResultDelivery}
@@ -414,7 +459,7 @@ const PersonForm = (props: Props) => {
             onChange={
               onPersonChange("tribalAffiliation") as (value?: string) => void
             }
-            defaultValue={String(patient.tribalAffiliation)}
+            defaultValue={patient.tribalAffiliation || undefined}
           />
         </div>
         <RadioGroup
@@ -426,6 +471,7 @@ const PersonForm = (props: Props) => {
         />
         <RadioGroup
           legend={t("patient.form.demographics.gender")}
+          hintText={t("patient.form.demographics.genderHelpText")}
           name="gender"
           buttons={GENDER_VALUES}
           selectedRadio={patient.gender}
@@ -446,7 +492,6 @@ const PersonForm = (props: Props) => {
           }}
           validationStatus={validationStatus("residentCongregateSetting")}
           errorMessage={errors.residentCongregateSetting}
-          required
         />
         <YesNoRadioGroup
           legend={t("patient.form.other.healthcareWorker")}
@@ -460,7 +505,6 @@ const PersonForm = (props: Props) => {
           }}
           validationStatus={validationStatus("employedInHealthcare")}
           errorMessage={errors.employedInHealthcare}
-          required
         />
       </FormGroup>
       {props.getFooter && props.getFooter(validateForm, formChanged)}

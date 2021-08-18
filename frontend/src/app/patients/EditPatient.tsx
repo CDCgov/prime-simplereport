@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM_CAP } from "../../config/constants";
@@ -48,6 +49,41 @@ export const GET_PATIENT = gql`
     }
   }
 `;
+
+interface GetPatientParams {
+  id: string;
+}
+
+interface GetPatientResponse {
+  patient: {
+    firstName: string;
+    middleName: string | null;
+    lastName: string;
+    birthDate: string;
+    street: string;
+    streetTwo: string | null;
+    city: string | null;
+    state: string;
+    zipCode: string;
+    telephone: string;
+    phoneNumbers: PhoneNumber[];
+    role: Role | null;
+    lookupId: string | null;
+    email: string | null;
+    county: string | null;
+    race: Race | null;
+    ethnicity: Ethnicity | null;
+    tribalAffiliation: (TribalAffiliation | null)[] | null;
+    gender: Gender | null;
+    residentCongregateSetting: boolean | null;
+    employedInHealthcare: boolean | null;
+    preferredLanguage: Language | null;
+    facility: {
+      id: string;
+    } | null;
+    testResultDelivery: TestResultDeliveryPreference | null;
+  };
+}
 
 const UPDATE_PATIENT = gql`
   mutation UpdatePatient(
@@ -124,7 +160,13 @@ interface EditPatientResponse {
 
 const EditPatient = (props: Props) => {
   useDocumentTitle("Edit Patient");
-  const { data, loading, error } = useQuery(GET_PATIENT, {
+
+  const { t } = useTranslation();
+
+  const { data, loading, error } = useQuery<
+    GetPatientResponse,
+    GetPatientParams
+  >(GET_PATIENT, {
     variables: { id: props.patientId || "" },
     fetchPolicy: "no-cache",
   });
@@ -142,7 +184,7 @@ const EditPatient = (props: Props) => {
   if (loading) {
     return <p>Loading...</p>;
   }
-  if (error) {
+  if (error || data === undefined) {
     return <p>error loading patient with id {props.patientId}...</p>;
   }
 
@@ -189,6 +231,8 @@ const EditPatient = (props: Props) => {
             <PersonForm
               patient={{
                 ...data.patient,
+                tribalAffiliation:
+                  data.patient.tribalAffiliation?.[0] || undefined,
                 phoneNumbers: data.patient.phoneNumbers.sort(function (
                   x: PhoneNumber,
                   y: PhoneNumber
@@ -241,7 +285,9 @@ const EditPatient = (props: Props) => {
                       disabled={editPersonLoading || !formChanged}
                       onClick={onSave}
                     >
-                      {editPersonLoading ? "Saving..." : "Save changes"}
+                      {editPersonLoading
+                        ? `${t("common.button.saving")}...`
+                        : t("common.button.save")}
                     </button>
                   </div>
                 </div>
@@ -253,7 +299,11 @@ const EditPatient = (props: Props) => {
                     className="prime-save-patient-changes"
                     disabled={editPersonLoading || !formChanged}
                     onClick={onSave}
-                    label={editPersonLoading ? "Saving..." : "Save changes"}
+                    label={
+                      editPersonLoading
+                        ? `${t("common.button.saving")}...`
+                        : t("common.button.save")
+                    }
                   />
                 </div>
               )}

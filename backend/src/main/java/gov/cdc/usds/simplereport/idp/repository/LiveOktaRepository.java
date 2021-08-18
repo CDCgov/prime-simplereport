@@ -343,6 +343,16 @@ public class LiveOktaRepository implements OktaRepository {
     return getOrganizationRoleClaimsForUser(user);
   }
 
+  public void resetUserPassword(String username) {
+    UserList users = _client.listUsers(username, null, null, null, null);
+    if (users.stream().count() == 0) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot reset password for Okta user with unrecognized username");
+    }
+    User user = users.single();
+    user.resetPassword(true);
+  }
+
   public void setUserIsActive(String username, Boolean active) {
     UserList users = _client.listUsers(username, null, null, null, null);
     if (users.stream().count() == 0) {
@@ -356,6 +366,26 @@ public class LiveOktaRepository implements OktaRepository {
     } else if (!active && user.getStatus() != UserStatus.SUSPENDED) {
       user.suspend();
     }
+  }
+
+  public UserStatus getUserStatus(String username) {
+    UserList users = _client.listUsers(username, null, null, null, null);
+    if (users.stream().count() == 0) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot retrieve Okta user's status with unrecognized username");
+    }
+    User user = users.single();
+    return user.getStatus();
+  }
+
+  public void reactivateUser(String username) {
+    UserList users = _client.listUsers(username, null, null, null, null);
+    if (users.stream().count() == 0) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot reactivate Okta user with unrecognized username");
+    }
+    User user = users.single();
+    user.unsuspend();
   }
 
   /**

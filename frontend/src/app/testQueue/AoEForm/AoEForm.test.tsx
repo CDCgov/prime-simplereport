@@ -1,7 +1,5 @@
-import renderer from "react-test-renderer";
 import { MockedProvider } from "@apollo/client/testing";
 import { render, screen } from "@testing-library/react";
-import React from "react";
 
 import AoEModalForm, { LAST_TEST_QUERY } from "./AoEModalForm";
 import AoEForm from "./AoEForm";
@@ -66,9 +64,7 @@ describe("AoEForm", () => {
   });
 
   it("renders correctly", () => {
-    let component: renderer.ReactTestRenderer;
-
-    component = renderer.create(
+    const component = render(
       <MockedProvider mocks={mocks}>
         <AoEForm
           saveButtonText="save"
@@ -110,7 +106,7 @@ describe("AoEForm", () => {
       </MockedProvider>
     );
 
-    expect(component.toJSON()).toMatchSnapshot();
+    expect(component.container.firstChild).toMatchSnapshot();
   });
 
   describe("Test result delivery options", () => {
@@ -161,9 +157,9 @@ describe("AoEForm", () => {
 
       expect((await screen.findAllByLabelText("Yes"))[0]).toBeInTheDocument();
       expect((await screen.findAllByLabelText("Yes"))[0]).not.toBeDisabled();
-      phoneNumbers.forEach(async ({ number }) => {
+      for (const { number } of phoneNumbers) {
         expect(await screen.findByText(number)).toBeInTheDocument();
-      });
+      }
     });
 
     it("disables the SMS delivery option when patient has no mobile phone numbers", async () => {
@@ -200,7 +196,7 @@ describe("AoEForm", () => {
       );
       const smsDeliveryRadio = screen.getByRole("radio", {
         name:
-          "Yes (There are no mobile phone numbers listed in your patient profile.)",
+          "Yes, text all mobile numbers on file. (There are no mobile phone numbers listed in your patient profile.)",
       });
 
       expect(smsDeliveryRadio).toBeInTheDocument();

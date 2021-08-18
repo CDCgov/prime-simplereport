@@ -11,8 +11,12 @@ public final class ResourceLinks {
 
   public static final String WAITLIST_REQUEST = "/account-request/waitlist";
   public static final String ACCOUNT_REQUEST = "/account-request";
-  public static final String ACCOUNT_REQUEST_ORGANIZATION_CREATE =
+  public static final String ACCOUNT_REQUEST_WITHOUT_FACILITY_WITH_EMAILS =
+      "/account-request/without-facility-with-emails";
+  public static final String ACCOUNT_REQUEST_ORGANIZATION_CREATE_WITH_FACILITY =
       "/account-request/organization-create";
+  public static final String ACCOUNT_REQUEST_ORGANIZATION_CREATE =
+      "/account-request/organization-create-without-facility";
   public static final String USER_ACCOUNT_REQUEST = "/user-account";
   public static final String USER_GET_STATUS = "/user-account/user-status";
   public static final String USER_ACTIVATE_ACCOUNT_REQUEST = "/user-account/initialize";
@@ -32,4 +36,6 @@ public final class ResourceLinks {
   public static final String ID_VERIFICATION_GET_QUESTIONS = "/identity-verification/get-questions";
   public static final String ID_VERIFICATION_SUBMIT_ANSWERS =
       "/identity-verification/submit-answers";
+
+  public static final String TWILIO_CALLBACK = "/pxp/callback";
 }

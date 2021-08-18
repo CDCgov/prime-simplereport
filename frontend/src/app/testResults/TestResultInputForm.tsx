@@ -26,7 +26,8 @@ const TestResultInputForm: React.FC<Props> = ({
     }
   };
 
-  const allowSubmit = testResultValue && !isSubmitDisabled;
+  const allowSubmit =
+    testResultValue && testResultValue !== "UNKNOWN" && !isSubmitDisabled;
 
   const onResultSubmit = (event: React.FormEvent<HTMLButtonElement>) => {
     event.preventDefault();

@@ -22,6 +22,9 @@ describe("PatientFormContainer", () => {
   afterEach(cleanup);
 
   it("snapshot", () => {
+    jest
+      .useFakeTimers("modern")
+      .setSystemTime(new Date("2021-08-01").getTime());
     const store = mockStore({
       patient: {
         residentCongregateSetting: true,

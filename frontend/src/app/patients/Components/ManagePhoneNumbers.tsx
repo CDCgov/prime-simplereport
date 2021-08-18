@@ -1,19 +1,12 @@
-import React, { useCallback, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTranslation } from "react-i18next";
 
-import {
-  PHONE_TYPE_VALUES,
-  TEST_RESULT_DELIVERY_PREFERENCE_VALUES,
-} from "../../constants";
 import Button from "../../commonComponents/Button/Button";
 import Input from "../../commonComponents/Input";
 import RadioGroup from "../../commonComponents/RadioGroup";
-import {
-  PhoneNumberErrors,
-  allPhoneNumberErrors,
-  phoneNumberUpdateSchema,
-} from "../personSchema";
+import { PhoneNumberErrors, usePersonSchemata } from "../personSchema";
+import { useTranslatedConstants } from "../../constants";
 
 interface Props {
   phoneNumbers: PhoneNumber[];
@@ -33,6 +26,12 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   const [errors, setErrors] = useState<PhoneNumberErrors[]>([]);
 
   const { t } = useTranslation();
+  const { phoneNumberUpdateSchema, getValidationError } = usePersonSchemata();
+
+  const {
+    PHONE_TYPE_VALUES,
+    TEST_RESULT_DELIVERY_PREFERENCE_VALUES,
+  } = useTranslatedConstants();
 
   const phoneNumbersOrDefault = useMemo(
     () =>
@@ -71,25 +70,63 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   const validateField = useCallback(
     async (idx: number, field: keyof PhoneNumber) => {
       try {
-        clearError(idx, field);
         await phoneNumberUpdateSchema.validateAt(
           field,
           phoneNumbersOrDefault[idx]
         );
+        clearError(idx, field);
       } catch (e) {
         setErrors((existingErrors) => {
           const newErrors = [...existingErrors];
           newErrors[idx] = {
             ...newErrors[idx],
-            [field]: allPhoneNumberErrors[field],
+            [field]: getValidationError(e),
           };
 
           return newErrors;
         });
       }
     },
-    [phoneNumbersOrDefault, clearError]
+    [
+      phoneNumbersOrDefault,
+      clearError,
+      phoneNumberUpdateSchema,
+      getValidationError,
+    ]
   );
+
+  // Make sure all existing errors are up-to-date (including translations)
+  useEffect(() => {
+    errors.forEach((phone, idx) => {
+      Object.entries(phone || {}).forEach(async ([field, message]) => {
+        try {
+          await phoneNumberUpdateSchema.validateAt(
+            field,
+            phoneNumbersOrDefault[idx]
+          );
+        } catch (e) {
+          const error = getValidationError(e);
+          if (message && error !== message) {
+            setErrors((existingErrors) => {
+              const newErrors = [...existingErrors];
+              newErrors[idx] = {
+                ...newErrors[idx],
+                [field]: getValidationError(e),
+              };
+
+              return newErrors;
+            });
+          }
+        }
+      });
+    });
+  }, [
+    validateField,
+    errors,
+    phoneNumberUpdateSchema,
+    phoneNumbersOrDefault,
+    getValidationError,
+  ]);
 
   const onPhoneTypeChange = (index: number, newPhoneType: string) => {
     const newPhoneNumbers = Array.from(phoneNumbersOrDefault);
@@ -155,6 +192,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
                 <button
                   className="usa-button--unstyled padding-105 height-5"
                   onClick={() => onPhoneNumberRemove(idx)}
+                  aria-label={`Delete phone number ${phoneNumber.number}`.trim()}
                 >
                   <FontAwesomeIcon icon={"trash"} className={"text-error"} />
                 </button>
@@ -189,7 +227,6 @@ const ManagePhoneNumbers: React.FC<Props> = ({
         <RadioGroup
           legend={t("patient.form.contact.testResultDelivery")}
           name="testResultDelivery"
-          hintText={t("patient.form.contact.testResultDeliveryHint")}
           buttons={TEST_RESULT_DELIVERY_PREFERENCE_VALUES}
           onChange={updateTestResultDelivery}
           selectedRadio={testResultDelivery}

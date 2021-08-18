@@ -4,6 +4,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.model.WrappedEntity;
+
 import java.util.Date;
 
 public class ApiTestOrder extends WrappedEntity<TestOrder> {

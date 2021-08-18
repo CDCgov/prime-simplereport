@@ -12,10 +12,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserMutationResolver implements GraphQLMutationResolver {
+
+  private static final Logger LOG = LoggerFactory.getLogger(UserMutationResolver.class);
 
   private final ApiUserService _us;
 
@@ -74,8 +78,18 @@ public class UserMutationResolver implements GraphQLMutationResolver {
     return new User(user);
   }
 
+  public User resetUserPassword(UUID id) {
+    UserInfo user = _us.resetUserPassword(id);
+    return new User(user);
+  }
+
   public User setUserIsDeleted(UUID id, boolean deleted) {
     UserInfo user = _us.setIsDeleted(id, deleted);
+    return new User(user);
+  }
+
+  public User reactivateUser(UUID id) {
+    UserInfo user = _us.reactivateUser(id);
     return new User(user);
   }
 

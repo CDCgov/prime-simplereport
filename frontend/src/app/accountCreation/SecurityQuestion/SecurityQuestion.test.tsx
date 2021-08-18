@@ -17,6 +17,7 @@ jest.mock("../AccountCreationApiService", () => ({
         }
       });
     },
+    enrollSecurityKeyMfa: () => Promise.resolve(),
   },
 }));
 

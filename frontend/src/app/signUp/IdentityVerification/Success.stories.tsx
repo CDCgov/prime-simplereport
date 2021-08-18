@@ -3,7 +3,7 @@ import { Story, Meta } from "@storybook/react";
 import Success from "./Success";
 
 export default {
-  title: "App/Identity Verification/Step 3: Success",
+  title: "App/Identity Verification/Step 4: Success",
   component: Success,
   argTypes: {},
   args: {
