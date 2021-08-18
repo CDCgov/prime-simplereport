@@ -389,7 +389,7 @@ class AccountRequestControllerTest {
   void organizationAccountRequestIsOk() throws Exception {
     String resourceLink = ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE;
     String requestBody =
-        "{\"first-name\": \"Mary\", \"last-name\": \"Lopez\", \"email\": \"kyvuzoxy@mailinator.com\", \"work-phone-number\": \"+1 (969) 768-2863\", \"state\": \"RI\", \"name\": \"Day Hayes Trading\", \"type\": \"Homeless Shelter\"}";
+        "{\"firstName\": \"Mary\", \"lastName\": \"Lopez\", \"email\": \"kyvuzoxy@mailinator.com\", \"workPhoneNumber\": \"+1 (969) 768-2863\", \"state\": \"RI\", \"name\": \"Day Hayes Trading\", \"type\": \"Homeless Shelter\"}";
 
     Organization organization = mock(Organization.class);
     ApiUser apiUser = mock(ApiUser.class);
@@ -452,7 +452,7 @@ class AccountRequestControllerTest {
   void accountRequestWithEmailsWithoutFacilityIsOk() throws Exception {
     String resourceLink = ResourceLinks.ACCOUNT_REQUEST_WITHOUT_FACILITY_WITH_EMAILS;
     String requestBody =
-        "{\"first-name\": \"Mary\", \"last-name\": \"Lopez\", \"email\": \"kyvuzoxy@mailinator.com\", \"work-phone-number\": \"+1 (969) 768-2863\", \"state\": \"RI\", \"name\": \"Day Hayes Trading\", \"type\": \"Homeless Shelter\"}";
+        "{\"firstName\": \"Mary\", \"lastName\": \"Lopez\", \"email\": \"kyvuzoxy@mailinator.com\", \"workPhoneNumber\": \"+1 (969) 768-2863\", \"state\": \"RI\", \"name\": \"Day Hayes Trading\", \"type\": \"Homeless Shelter\"}";
 
     Organization organization = mock(Organization.class);
     ApiUser apiUser = mock(ApiUser.class);

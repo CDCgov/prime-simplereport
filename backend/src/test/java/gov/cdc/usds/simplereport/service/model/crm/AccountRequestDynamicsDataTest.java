@@ -31,7 +31,7 @@ class AccountRequestDynamicsDataTest {
         .containsEntry(AccountRequestDynamicsData.BAH_FIRSTNAME_TEXT, "Betty")
         .containsEntry(AccountRequestDynamicsData.BAH_LASTNAME_TEXT, "Edwards")
         .containsEntry(AccountRequestDynamicsData.BAH_EMAILADDRESS_TEXT, "betty@mailinator.com")
-        .containsEntry(AccountRequestDynamicsData.BAH_ORGANIZATIONNAME_TEXT, "DFW")
+        .containsEntry(AccountRequestDynamicsData.BAH_NAME_TEXT, "DFW")
         .containsEntry(
             AccountRequestDynamicsData.BAH_OTHERTESTINGSITE_TEXT, "airport/Transit Station")
         // example Missing data required by dynamics
@@ -55,9 +55,7 @@ class AccountRequestDynamicsDataTest {
         .containsEntry(AccountRequestDynamicsData.BAH_FIRSTNAME_TEXT, "Adrian")
         .containsEntry(AccountRequestDynamicsData.BAH_LASTNAME_TEXT, "Wilson")
         .containsEntry(AccountRequestDynamicsData.BAH_EMAILADDRESS_TEXT, "adrian@mailinator.com")
-        .containsEntry(
-            AccountRequestDynamicsData.BAH_ORGANIZATIONNAME_TEXT,
-            "University of Texas at Arlington")
+        .containsEntry(AccountRequestDynamicsData.BAH_NAME_TEXT, "University of Texas at Arlington")
         .containsEntry(AccountRequestDynamicsData.BAH_OTHERTESTINGSITE_TEXT, "College/University")
         .containsEntry(AccountRequestDynamicsData.BAH_ORDERINGPROVIDERFIRSTNAME_TEXT, "Sawyer")
         .containsEntry(AccountRequestDynamicsData.BAH_ORDERINGPROVIDERLASTNAME_TEXT, "Sears")
