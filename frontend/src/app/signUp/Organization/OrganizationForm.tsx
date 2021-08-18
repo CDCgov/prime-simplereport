@@ -213,7 +213,6 @@ const OrganizationForm = () => {
           className="width-full margin-top-2 submit-button"
           disabled={loading || !formChanged}
           onClick={onSave}
-          label={loading ? "Saving..." : "Submit"}
         />
       </Card>
     </CardBackground>
