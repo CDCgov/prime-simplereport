@@ -39,7 +39,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   @JoinColumn(name = "default_device_specimen_type_id")
   private DeviceSpecimenType defaultDeviceSpecimen;
 
-  @ManyToMany(fetch = FetchType.LAZY)
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
       name = "facility_device_specimen_type",
       joinColumns = @JoinColumn(name = "facility_id"),
