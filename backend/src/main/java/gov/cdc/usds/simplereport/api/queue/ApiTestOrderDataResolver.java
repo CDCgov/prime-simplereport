@@ -20,12 +20,17 @@ import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ApiTestOrderDataResolver implements GraphQLResolver<ApiTestOrder> {
+    private static final Logger LOG = LoggerFactory.getLogger(ApiTestOrderDataResolver.class);
+
   private CompletableFuture<AskOnEntrySurvey> getSurvey(
       ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
+      LOG.trace("getSurvey({})", apiTestOrder.getInternalId());
     DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
     DataLoader<TestOrder, PatientAnswers> loader =
         registry.getDataLoader(PatientAnswersDataLoader.KEY);

@@ -8,11 +8,15 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PatientAnswersDataLoader extends KeyedDataLoaderFactory<TestOrder, PatientAnswers> {
   public static final String KEY = "testOrder[*].patientAnswers";
+  private static final Logger LOG = LoggerFactory.getLogger(PatientAnswersDataLoader.class);
 
   @Override
   public String getKey() {
@@ -28,7 +32,7 @@ public class PatientAnswersDataLoader extends KeyedDataLoaderFactory<TestOrder, 
                       testOrders.stream()
                           .map(TestOrder::getInternalId)
                           .collect(Collectors.toList());
-                  ;
+                  LOG.trace("Loading PatientAnswers for TestOrders = {}", testOrderIds);
                   Map<UUID, PatientAnswers> found =
                       patientAnswersRepository.findAllByTestOrderInternalIdIn(testOrderIds).stream()
                           .collect(Collectors.toMap(PatientAnswers::getInternalId, s -> s));
