@@ -14,7 +14,7 @@ export interface Option {
 
 interface Props {
   options: Option[];
-  label?: string;
+  label?: string | React.ReactNode;
   name?: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   selectedValue: string;

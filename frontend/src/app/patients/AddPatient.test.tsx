@@ -13,7 +13,17 @@ import { MemoryRouter, Route } from "react-router";
 
 import AddPatient, { ADD_PATIENT } from "./AddPatient";
 
+const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
 const mockStore = configureStore([]);
+const store = mockStore({
+  facilities: [{ id: mockFacilityID, name: "123" }],
+});
+
+const RouterWithFacility: React.FC = ({ children }) => (
+  <MemoryRouter initialEntries={[`/add-patient?facility=${mockFacilityID}`]}>
+    {children}
+  </MemoryRouter>
+);
 
 jest.mock("../utils/smartyStreets", () => ({
   getBestSuggestion: jest.fn(),
@@ -60,11 +70,6 @@ describe("AddPatient", () => {
   afterEach(cleanup);
   describe("No facility selected", () => {
     beforeEach(() => {
-      const store = mockStore({
-        facility: {
-          id: "",
-        },
-      });
       render(
         <MemoryRouter>
           <Provider store={store}>
@@ -84,7 +89,7 @@ describe("AddPatient", () => {
     });
     it("shows a 'No facility selected' message", async () => {
       expect(
-        await screen.getByText("No facility selected", {
+        screen.getByText("No facility selected", {
           exact: false,
         })
       ).toBeInTheDocument();
@@ -92,13 +97,6 @@ describe("AddPatient", () => {
   });
 
   describe("Facility selected", () => {
-    const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
-    const store = mockStore({
-      facility: {
-        id: mockFacilityID,
-      },
-      facilities: [{ id: mockFacilityID, name: "123" }],
-    });
     beforeEach(() => {
       const mocks = [
         {
@@ -183,17 +181,17 @@ describe("AddPatient", () => {
       render(
         <Provider store={store}>
           <MockedProvider mocks={mocks} addTypename={false}>
-            <MemoryRouter initialEntries={["/add-patient/"]}>
+            <RouterWithFacility>
               <Route component={AddPatient} path={"/add-patient/"} />
               <Route path={"/patients"} render={() => <p>Patients!</p>} />
-            </MemoryRouter>
+            </RouterWithFacility>
           </MockedProvider>
         </Provider>
       );
     });
     it("shows the form title", async () => {
       expect(
-        await screen.queryAllByText("Add New Person", { exact: false })[0]
+        screen.queryAllByText("Add New Person", { exact: false })[0]
       ).toBeInTheDocument();
     });
 

@@ -252,7 +252,6 @@ const EditPatient = (props: Props) => {
                     : data.patient.facility?.id,
               }}
               patientId={props.patientId}
-              activeFacilityId={props.facilityId}
               savePerson={savePerson}
               getHeader={(person, onSave, formChanged) => (
                 <div className="display-flex flex-justify">
