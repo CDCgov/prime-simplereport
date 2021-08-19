@@ -17,6 +17,7 @@ public class PatientAnswers extends AuditedEntity {
   @Type(type = "jsonb")
   private AskOnEntrySurvey askOnEntry;
 
+  /** This relationship is necessary for PatientAnswersRepository.findAllByTestOrderInternalIdIn */
   @OneToOne(mappedBy = "askOnEntrySurvey", fetch = FetchType.LAZY)
   private TestOrder testOrder;
 
