@@ -315,7 +315,7 @@ const QueueItem: any = ({
       let deliveryFailureAlert = (
         <Alert
           type="error"
-          title={`Unable to text result to ${patientFullNameLastFirst}`}
+          title={`Unable to text result to ${patientFullName}`}
           body="The phone number provided may not be valid or may not be able to accept text messages"
         />
       );
@@ -508,13 +508,11 @@ const QueueItem: any = ({
     value: device.internalId,
   }));
 
-  const patientFullNameLastFirst = displayFullName(
+  const patientFullName = displayFullName(
     patient.firstName,
     patient.middleName,
     patient.lastName
   );
-
-  const patientFullName = patientFullNameLastFirst;
 
   const closeButton = (
     <button
@@ -619,7 +617,7 @@ const QueueItem: any = ({
                 className="grid-row prime-test-name usa-card__header"
                 id="patient-name-header"
               >
-                <h2>{patientFullNameLastFirst}</h2>
+                <h2>{patientFullName}</h2>
                 <TestTimerWidget timer={timer} />
               </div>
               <div className="margin-top-2 margin-left-2 margin-bottom-2">
