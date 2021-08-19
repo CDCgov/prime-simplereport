@@ -1,6 +1,8 @@
 import { Tooltip } from "@trussworks/react-uswds";
 import React from "react";
 
+import "./TextWithTooltip.scss";
+
 type CustomButtonProps = React.PropsWithChildren<{
   className?: string;
 }> &
