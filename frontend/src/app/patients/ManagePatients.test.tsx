@@ -5,12 +5,15 @@ import {
   screen,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
+import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router";
+import createMockStore from "redux-mock-store";
 
 import ManagePatients, {
   patientQuery,
   patientsCountQuery,
 } from "./ManagePatients";
+import ManagePatientsContainer from "./ManagePatientsContainer";
 
 const TestContainer: React.FC = ({ children }) => (
   <MemoryRouter>
@@ -58,6 +61,25 @@ describe("ManagePatients", () => {
     );
     expect(await screen.findByText(patients[1].lastName, { exact: false }));
     expect(await screen.findByText(patients[2].lastName, { exact: false }));
+  });
+  describe("ManagePatientsContainer", () => {
+    it("Doesn't render if no facility is selected", async () => {
+      render(
+        <MemoryRouter>
+          <Provider
+            store={createMockStore()({
+              facilities: [],
+              user: { isAdmin: false },
+            })}
+          >
+            <ManagePatientsContainer />
+          </Provider>
+        </MemoryRouter>
+      );
+      expect(
+        await screen.findByText("No facility selected", { exact: false })
+      ).toBeInTheDocument();
+    });
   });
 });
 

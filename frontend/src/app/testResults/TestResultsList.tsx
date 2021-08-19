@@ -10,7 +10,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useSelector } from "react-redux";
 import moment from "moment";
 import classnames from "classnames";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
@@ -44,6 +43,7 @@ import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 import { Patient } from "../patients/ManagePatients";
 import SearchResults from "../testQueue/addToQueue/SearchResults";
 import Select from "../commonComponents/Select";
+import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
@@ -579,9 +579,8 @@ type TestResultsListProps = Omit<Props, OmittedProps>;
 const TestResultsList = (props: TestResultsListProps) => {
   useDocumentTitle("Results");
 
-  const activeFacilityId = useSelector(
-    (state) => (state as any).facility.id as string
-  );
+  const [facility] = useSelectedFacility();
+  const activeFacilityId = facility?.id || "";
 
   const [selectedPatientId, setSelectedPatientId] = useState<string>("");
   const [resultFilter, setResultFilter] = useState<string>("");
@@ -651,7 +650,7 @@ const TestResultsList = (props: TestResultsListProps) => {
     fetchPolicy: "no-cache",
   });
 
-  if (activeFacilityId.length < 1) {
+  if (!activeFacilityId) {
     return <div>"No facility selected"</div>;
   }
 

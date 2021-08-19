@@ -17,7 +17,6 @@ const PatientFormContainer = () => {
   const history = useHistory();
   const [nextPage, setNextPage] = useState(false);
   const patient = useSelector((state: any) => state.patient);
-  const facility = useSelector((state: any) => state.facility);
 
   const dispatch = useDispatch();
 
@@ -91,7 +90,6 @@ const PatientFormContainer = () => {
               facilityId:
                 patient.facility === null ? null : patient.facility?.id,
             }}
-            activeFacilityId={facility.id}
             patientId={patient.internalId}
             hideFacilitySelect={true}
             savePerson={savePerson}
