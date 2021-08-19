@@ -28,15 +28,15 @@ public class PatientAnswersDataLoader extends KeyedDataLoaderFactory<TestOrder, 
         testOrders ->
             CompletableFuture.supplyAsync(
                 () -> {
-                  List<UUID> testOrderIds =
+                  List<UUID> patientAnswerIds =
                       testOrders.stream()
-                          .map(TestOrder::getInternalId)
+                          .map(TestOrder::getPatientAnswersId)
                           .collect(Collectors.toList());
 
-                  LOG.trace("Loading PatientAnswers for TestOrders = {}", testOrderIds);
+                  LOG.trace("Loading PatientAnswers for TestOrders = {}", patientAnswerIds);
 
                   Map<UUID, PatientAnswers> found =
-                      patientAnswersRepository.findAllByTestOrderInternalIdIn(testOrderIds).stream()
+                      patientAnswersRepository.findAllByInternalIdIn(patientAnswerIds).stream()
                           .collect(
                               Collectors.toMap(PatientAnswers::getInternalId, Function.identity()));
 

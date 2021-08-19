@@ -6,5 +6,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PatientAnswersRepository extends DeletableEntityRepository<PatientAnswers> {
-  List<PatientAnswers> findAllByTestOrderInternalIdIn(Collection<UUID> testOrderInternalId);
+  List<PatientAnswers> findAllByInternalIdIn(Collection<UUID> internalId);
 }
