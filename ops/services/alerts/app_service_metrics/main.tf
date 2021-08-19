@@ -179,3 +179,59 @@ ${local.skip_on_weekends}
     action_group = var.action_group_ids
   }
 }
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "db_query_duration" {
+  name                = "${var.env}-db-query-duration"
+  description         = "${local.env_title} DB query durations >= 10s"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+  severity            = var.severity
+  frequency           = 5
+  time_window         = 5
+  enabled             = contains(var.disabled_alerts, "db_query_duration") ? false : true
+
+  data_source_id = var.app_insights_id
+
+  query = <<-QUERY
+dependencies
+${local.skip_on_weekends}
+| where timestamp >= ago(5m) and name has "SQL:" and duration >= 10000
+  QUERY
+
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 0
+  }
+
+  action {
+    action_group = var.action_group_ids
+  }
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "db_query_duration_over_time_window" {
+  name                = "${var.env}-db-query-duration-over-time-window"
+  description         = "${local.env_title} >= 5 DB queries with durations >= 1s over time window"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+  severity            = var.severity
+  frequency           = 5
+  time_window         = 5
+  enabled             = contains(var.disabled_alerts, "db_query_duration_over_time_window") ? false : true
+
+  data_source_id = var.app_insights_id
+
+  query = <<-QUERY
+dependencies
+${local.skip_on_weekends}
+| where timestamp >= ago(5m) and name has "SQL:" and duration >= 1000
+  QUERY
+
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 4
+  }
+
+  action {
+    action_group = var.action_group_ids
+  }
+}
