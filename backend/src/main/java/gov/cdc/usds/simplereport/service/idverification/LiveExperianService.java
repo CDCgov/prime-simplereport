@@ -186,6 +186,7 @@ public class LiveExperianService
     final JsonNode fetchedNode = responseEntity.at(path);
     if (fetchedNode.isMissingNode()) {
       LOG.error("EXPERIAN_NULL_NODE: {}", path);
+      LOG.error("EXPERIAN_NULL_NODE_RESPONSE: {}", responseEntity);
       throw new ExperianNullNodeException("Could not find data in response from Experian");
     }
     return fetchedNode;
