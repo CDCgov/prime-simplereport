@@ -8,9 +8,13 @@ import { EMPTY_PERSON } from "../../app/patients/AddPatient";
 import PersonForm, {
   PersonFormView,
 } from "../../app/patients/Components/PersonForm";
+import { PxpApi } from "../PxpApiService";
 
 type Props = {
   savePerson: (data: any) => void;
+  onDuplicate: (person: Pick<PersonFormData, "firstName" | "lastName">) => void;
+  entityName: string;
+  registrationLink: string;
 };
 
 type IdentifyingData = {
@@ -20,12 +24,17 @@ type IdentifyingData = {
   birthDate: moment.Moment;
 };
 
-export const SelfRegistrationForm = ({ savePerson }: Props) => {
+export const SelfRegistrationForm = ({
+  savePerson,
+  onDuplicate,
+  entityName,
+  registrationLink,
+}: Props) => {
   const { t } = useTranslation();
-  const [identifyData, setIdentifyingData] = useState<
+  const [identifyingData, setIdentifyingData] = useState<
     Nullable<IdentifyingData>
   >({ firstName: null, lastName: null, zipCode: null, birthDate: null });
-  const [isDuplicate, setIsDuplicate] = useState<boolean>(true);
+  const [isDuplicate, setIsDuplicate] = useState<boolean>();
 
   const onBlur = ({
     firstName,
@@ -34,10 +43,10 @@ export const SelfRegistrationForm = ({ savePerson }: Props) => {
     birthDate,
   }: Nullable<PersonFormData>) => {
     if (
-      firstName !== identifyData.firstName ||
-      lastName !== identifyData.lastName ||
-      zipCode !== identifyData.zipCode ||
-      !moment(birthDate).isSame(identifyData.birthDate)
+      firstName !== identifyingData.firstName ||
+      lastName !== identifyingData.lastName ||
+      zipCode !== identifyingData.zipCode ||
+      !moment(birthDate).isSame(identifyingData.birthDate)
     ) {
       setIdentifyingData({
         firstName,
@@ -49,22 +58,43 @@ export const SelfRegistrationForm = ({ savePerson }: Props) => {
   };
 
   useEffect(() => {
-    const { firstName, lastName, zipCode, birthDate } = identifyData;
-    async function checkForDuplicates() {
-      setIsDuplicate(true);
+    async function checkForDuplicates(data: IdentifyingData) {
+      const { firstName, lastName, zipCode } = data;
+      const birthDate = moment(data.birthDate).format("YYYY-MM-DD") as ISODate;
+      try {
+        const { unique } = await PxpApi.checkDuplicateRegistrant({
+          firstName,
+          lastName,
+          birthDate,
+          zipCode,
+          registrationLink,
+        });
+        setIsDuplicate(!unique);
+      } catch (e) {
+        // A failure to check duplicate shouldn't disrupt registration
+        console.error(e);
+      }
     }
 
+    const { firstName, lastName, zipCode, birthDate } = identifyingData;
     if (firstName && lastName && zipCode && birthDate?.isValid()) {
-      checkForDuplicates();
+      checkForDuplicates({ firstName, lastName, zipCode, birthDate });
     }
-  }, [identifyData]);
+  }, [identifyingData, registrationLink]);
 
   return (
     <div
       id="registration-container"
       className="grid-container maxw-tablet padding-y-3"
     >
-      <DuplicateModal showModal={!!isDuplicate} />
+      <DuplicateModal
+        showModal={!!isDuplicate}
+        onDuplicate={() => {
+          const { firstName, lastName } = identifyingData;
+          onDuplicate({ firstName: firstName || "", lastName: lastName || "" });
+        }}
+        entityName={entityName}
+      />
       <PersonForm
         patient={EMPTY_PERSON}
         savePerson={savePerson}
@@ -85,9 +115,15 @@ export const SelfRegistrationForm = ({ savePerson }: Props) => {
 
 type DuplicateModalProps = {
   showModal: boolean;
+  onDuplicate: () => void;
+  entityName: string;
 };
 
-const DuplicateModal: React.FC<DuplicateModalProps> = ({ showModal }) => {
+const DuplicateModal: React.FC<DuplicateModalProps> = ({
+  showModal,
+  onDuplicate,
+  entityName,
+}) => {
   return (
     <Modal
       onClose={() => {}}
@@ -95,13 +131,21 @@ const DuplicateModal: React.FC<DuplicateModalProps> = ({ showModal }) => {
       showClose={false}
       variant="warning"
     >
-      <Modal.Header>You already have a profile at [Facility].</Modal.Header>
+      <Modal.Header>You already have a profile at {entityName}.</Modal.Header>
       <p>
         Our records show someone has registered with the same name, date of
         birth, and ZIP code. Please check in with your testing site staff. You
         do not need to register again.
       </p>
-      <Button className="margin-right-auto">Exit sign up</Button>
+      <Modal.Footer>
+        <Button
+          onClick={() => {
+            onDuplicate();
+          }}
+        >
+          Exit sign up
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 };

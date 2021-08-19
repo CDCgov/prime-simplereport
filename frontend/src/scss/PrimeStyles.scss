@@ -514,7 +514,23 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
   .modal__variant {
     h3 {
-      margin-top: 0;
+      margin: 0.3125rem 0 0 0;
+      font-size: 1.375rem;
+      line-height: 1.62rem;
+    }
+
+    .modal__content {
+      padding: 2rem 1.875rem;
+
+      p {
+        margin: 0.75rem 0 0 0;
+      }
+    }
+
+    .modal__footer {
+      display: flex;
+      justify-content: flex-start;
+      margin: 1.125rem 0 0 0;
     }
   }
 

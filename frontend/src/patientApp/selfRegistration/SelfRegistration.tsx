@@ -73,6 +73,19 @@ export const SelfRegistration = () => {
     }
   };
 
+  const onDuplicate = (
+    person: Pick<PersonFormData, "firstName" | "lastName">
+  ) => {
+    setStep(RegistrationStep.FINISHED);
+    setPersonName(
+      formatFullName({
+        firstName: person.firstName,
+        lastName: person.lastName,
+        middleName: "",
+      }) || ""
+    );
+  };
+
   return (
     <div className="bg-base-lightest minh-viewport">
       <div className="bg-white">
@@ -103,7 +116,12 @@ export const SelfRegistration = () => {
             />
           )}
           {step === RegistrationStep.FORM && (
-            <SelfRegistrationForm savePerson={savePerson} />
+            <SelfRegistrationForm
+              savePerson={savePerson}
+              onDuplicate={onDuplicate}
+              entityName={entityName}
+              registrationLink={registrationLink}
+            />
           )}
           {step === RegistrationStep.FINISHED && (
             <Confirmation personName={personName} entityName={entityName} />
