@@ -238,10 +238,8 @@ export const DetachedTestResultPrintModal = ({
                   parent="p"
                   i18nKey="testResult.notes.positive.p2"
                   components={[
-                    <a href="https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html">
-                      Watch for symptoms and learn when to seek emergency
-                      medical attention
-                    </a>,
+                    "learn when to seek emergency medical attention: " +
+                      "cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html",
                   ]}
                 />
                 <ul>
