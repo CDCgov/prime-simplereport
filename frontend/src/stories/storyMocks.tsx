@@ -91,6 +91,27 @@ const mocks = {
       );
     }
   ),
+  getEntityName: rest.get(
+    "http://localhost:8080/pxp/register/entity-name*",
+    (_, res, ctx) => {
+      return res(ctx.status(200), ctx.text("Shady Oaks"));
+    }
+  ),
+  duplicateRegistration: rest.post(
+    "http://localhost:8080/pxp/register/check-duplicate",
+    (_, rest, ctx) => {
+      return rest(ctx.status(200), ctx.json({ unique: false }));
+    }
+  ),
+  uniqueRegistration: rest.post(
+    "http://localhost:8080/pxp/register/check-duplicate",
+    (_, rest, ctx) => {
+      return rest(ctx.status(200), ctx.json({ unique: true }));
+    }
+  ),
+  register: rest.post("http://localhost:8080/pxp/register", (_, rest, ctx) => {
+    return rest(ctx.status(200));
+  }),
 };
 
 export const getMocks = (

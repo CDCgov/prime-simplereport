@@ -49,6 +49,13 @@ const Modal: React.FC<Props> & SubComponents = ({
     variant === "warning" && "border-gold"
   );
 
+  const variantStyles = variant
+    ? {
+        padding: 0,
+        borderRadius: 0,
+      }
+    : {};
+
   return (
     <ReactModal
       portalClassName="modal--basic"
@@ -56,10 +63,9 @@ const Modal: React.FC<Props> & SubComponents = ({
       onRequestClose={onClose}
       style={{
         content: {
-          padding: 0,
           position: "initial",
-          borderRadius: 0,
           border: 0,
+          ...variantStyles,
         },
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
@@ -75,7 +81,7 @@ const Modal: React.FC<Props> & SubComponents = ({
             <img className="modal__close-img" src={iconClose} alt="Close" />
           </button>
         )}
-        <div className="modal__content padding-205 grid-row">
+        <div className="modal__content grid-row">
           {variant && (
             <div className="grid-col flex-auto margin-right-2">
               <FontAwesomeIcon icon={variantIcons[variant]} size="2x" />
