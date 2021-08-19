@@ -1,6 +1,6 @@
-import React from "react";
 import { useSelector } from "react-redux";
 
+import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { hasPermission, appPermissions } from "../permissions";
 import { RootState } from "../store";
 import { useDocumentTitle } from "../utils/hooks";
@@ -9,9 +9,8 @@ import ManagePatients from "./ManagePatients";
 
 const ManagePatientsContainer = (props: { page?: number }) => {
   useDocumentTitle("People");
-  const activeFacilityId = useSelector(
-    (state) => (state as any).facility.id as string
-  );
+  const [facility] = useSelectedFacility();
+  const activeFacilityId = facility?.id || "";
   const user = useSelector<RootState, User>((state) => state.user);
   const isAdmin = useSelector<RootState, boolean>(
     (state) => state.user.isAdmin

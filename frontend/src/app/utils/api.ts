@@ -20,10 +20,10 @@ function joinAbsoluteUrlPath(...args: string[]) {
   return args.map((pathPart) => pathPart.replace(/(^\/|\/$)/g, "")).join("/");
 }
 class FetchClient {
-  basePath: string;
+  basePath: string | undefined;
   defaultOptions: RequestInit | undefined;
 
-  constructor(basePath: string, defaultOptions?: RequestInit) {
+  constructor(basePath?: string, defaultOptions?: RequestInit) {
     this.basePath = basePath;
     this.defaultOptions = defaultOptions;
   }
@@ -33,11 +33,13 @@ class FetchClient {
       throw Error("process.env.REACT_APP_BACKEND_URL is falsy");
     }
     return new URL(
-      joinAbsoluteUrlPath(
-        process.env.REACT_APP_BACKEND_URL,
-        this.basePath,
-        path
-      )
+      this.basePath
+        ? joinAbsoluteUrlPath(
+            process.env.REACT_APP_BACKEND_URL,
+            this.basePath,
+            path
+          )
+        : joinAbsoluteUrlPath(process.env.REACT_APP_BACKEND_URL, path)
     ).href;
   };
 

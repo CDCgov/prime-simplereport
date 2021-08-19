@@ -550,7 +550,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <a
                     aria-label="Page 1"
                     class="is-active"
-                    href="/results/1"
+                    href="/results/1?facility=1"
                   >
                     <span>
                       1

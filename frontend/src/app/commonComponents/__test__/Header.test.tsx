@@ -7,6 +7,7 @@ import { useTrackEvent } from "@microsoft/applicationinsights-react-js";
 import { TRAINING_PURPOSES_ONLY } from "../TrainingNotification";
 import Header from "../Header";
 import "../../../i18n";
+import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 
 const mockStore = createMockStore([]);
 
@@ -41,10 +42,11 @@ describe("Header.tsx", () => {
     process.env = OLD_ENV;
   });
 
-  const WrappedHeader: React.FC = () => (
+  const WrappedHeader: React.FC = ({ children }) => (
     <MemoryRouter>
       <Provider store={store}>
         <Header />
+        {children}
       </Provider>
     </MemoryRouter>
   );
@@ -86,4 +88,27 @@ describe("Header.tsx", () => {
       screen.queryByText("Login as", { exact: false })
     ).not.toBeInTheDocument();
   });
+  describe("Facility dropdown", () => {
+    it("Switches facilities", async () => {
+      render(
+        <WrappedHeader>
+          <FacilityViewer />
+        </WrappedHeader>
+      );
+      const dropdown = await screen.findAllByRole("option");
+      await waitFor(() => {
+        fireEvent.change(dropdown[1].closest("select")!, {
+          target: { value: "2" },
+        });
+      });
+      expect(
+        await screen.findByText("Facility 2 is selected")
+      ).toBeInTheDocument();
+    });
+  });
 });
+
+function FacilityViewer() {
+  const [selectedFacility] = useSelectedFacility();
+  return <>{selectedFacility?.name} is selected</>;
+}

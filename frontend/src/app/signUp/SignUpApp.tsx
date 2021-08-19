@@ -4,11 +4,13 @@ import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import Page from "../commonComponents/Page/Page";
 
 import Consent from "./IdentityVerification/Consent";
+import OrganizationForm from "./Organization/OrganizationForm";
 
 const SignUpApp: React.FC<RouteComponentProps> = ({ match: { path } }) => {
   return (
     <PrimeErrorBoundary>
       <Page>
+        <Route path={`${path}`} exact component={OrganizationForm} />
         <Route
           path={`${path}/identity-verification`}
           exact
