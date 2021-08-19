@@ -60,7 +60,7 @@ exports[`TestQueue should render the test queue 1`] = `
             class="margin-top-6 margin-bottom-5"
           >
             Submitting test data for 
-            John A Doe
+            Doe, John A
             ...
           </h4>
           <img
@@ -378,7 +378,7 @@ exports[`TestQueue should render the test queue 1`] = `
             class="margin-top-6 margin-bottom-5"
           >
             Submitting test data for 
-            Jane Smith
+            Smith, Jane
             ...
           </h4>
           <img

@@ -4,11 +4,7 @@ import { useLazyQuery } from "@apollo/client";
 
 import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button/Button";
-import {
-  showNotification,
-  displayFullNameInOrder,
-  displayFullName,
-} from "../../utils";
+import { showNotification, displayFullName } from "../../utils";
 import reload from "../../utils/reload";
 
 import CreateUserModal from "./CreateUserModal";
@@ -180,7 +176,7 @@ const ManageUsers: React.FC<Props> = ({
       .then(() => {
         getUsers();
         updateIsUserEdited(false);
-        const fullName = displayFullNameInOrder(
+        const fullName = displayFullName(
           userWithPermissions?.firstName,
           userWithPermissions?.middleName,
           userWithPermissions?.lastName
@@ -228,7 +224,7 @@ const ManageUsers: React.FC<Props> = ({
       });
 
       await getUsers();
-      const fullName = displayFullNameInOrder(firstName, "", lastName);
+      const fullName = displayFullName(firstName, "", lastName);
       showNotification(
         toast,
         <Alert
@@ -252,7 +248,7 @@ const ManageUsers: React.FC<Props> = ({
           id: userId,
         },
       });
-      const fullName = displayFullNameInOrder(
+      const fullName = displayFullName(
         userWithPermissions?.firstName,
         userWithPermissions?.middleName,
         userWithPermissions?.lastName
@@ -275,7 +271,7 @@ const ManageUsers: React.FC<Props> = ({
           deleted: true,
         },
       });
-      const fullName = displayFullNameInOrder(
+      const fullName = displayFullName(
         userWithPermissions?.firstName,
         userWithPermissions?.middleName,
         userWithPermissions?.lastName
@@ -299,7 +295,7 @@ const ManageUsers: React.FC<Props> = ({
           id: userId,
         },
       });
-      const fullName = displayFullNameInOrder(
+      const fullName = displayFullName(
         userWithPermissions?.firstName,
         userWithPermissions?.middleName,
         userWithPermissions?.lastName
@@ -359,7 +355,7 @@ const ManageUsers: React.FC<Props> = ({
   return (
     <div className="prime-container card-container">
       <div className="usa-card__header">
-        <h2>Manage Users</h2>
+        <h2>Manage users</h2>
         {process.env.REACT_APP_ADD_NEW_USER_ENABLED === "true" ? (
           <Button
             variant="outline"

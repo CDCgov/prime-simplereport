@@ -7,6 +7,7 @@ import Alert from "./Alert";
 import Button from "./Button/Button";
 
 const SESSION_IDENTIFIER = "trainingAcknowledged";
+export const TRAINING_PURPOSES_ONLY = 'This is a training site with sample data for training purposes only.';
 
 const initialAcknowledged = !!sessionStorage.getItem(SESSION_IDENTIFIER);
 
@@ -23,8 +24,7 @@ export const TrainingNotification: React.FC = () => {
     <>
       <div className="usa-site-alert usa-site-alert--info usa-site-alert--slim border-top border-base-lighter">
         <Alert type="info" role="alert">
-          This is a training site with fake data to be used for training
-          purposes only
+          {TRAINING_PURPOSES_ONLY}
         </Alert>
       </div>
       <Modal
@@ -56,12 +56,11 @@ export const TrainingNotification: React.FC = () => {
               </h2>
               <ul>
                 <li>
-                  This is a training site with fake data to be used for training
-                  purposes only.
+                  {TRAINING_PURPOSES_ONLY}
                 </li>
                 <li>
-                  Do not use personally identifiable information (PII) or
-                  protected health information (PHI).
+                  Don't enter personally identifiable information (PII) or
+                  protected health information (PHI) on this site.
                 </li>
                 <li>
                   Results entered on this training site will not be reported.

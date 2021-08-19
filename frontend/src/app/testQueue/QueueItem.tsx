@@ -514,12 +514,7 @@ const QueueItem: any = ({
     patient.lastName
   );
 
-  const patientFullName = displayFullName(
-    patient.firstName,
-    patient.middleName,
-    patient.lastName,
-    false
-  );
+  const patientFullName = patientFullNameLastFirst;
 
   const closeButton = (
     <button

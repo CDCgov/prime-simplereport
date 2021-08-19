@@ -17,7 +17,7 @@ import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
-import { displayFullName, displayFullNameInOrder } from "../utils";
+import { displayFullName } from "../utils";
 import { isValidDate } from "../utils/date";
 import {
   InjectedQueryWrapperProps,
@@ -205,7 +205,7 @@ function testResultRows(
         <td>{r.deviceType.name}</td>
         <td>{hasSymptoms(r.noSymptoms, r.symptoms)}</td>
         <td>
-          {displayFullNameInOrder(
+          {displayFullName(
             r.createdBy.nameInfo.firstName,
             r.createdBy.nameInfo.middleName,
             r.createdBy.nameInfo.lastName

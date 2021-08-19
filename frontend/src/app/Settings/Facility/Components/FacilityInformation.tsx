@@ -28,7 +28,7 @@ const FacilityInformation: React.FC<Props> = ({
   return (
     <div className="usa-form usa-form--large">
       <h2 className="font-heading-lg" style={{ margin: 0 }}>
-        Facility information
+        Testing facility information
       </h2>
       <TextInput
         label="Testing facility name"
@@ -103,7 +103,7 @@ const FacilityInformation: React.FC<Props> = ({
         onChange={onChange}
       />
       <TextInput
-        label="Zip code"
+        label="ZIP code"
         name="zipCode"
         value={facility.zipCode}
         required
