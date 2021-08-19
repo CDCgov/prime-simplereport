@@ -98,8 +98,12 @@ public class Translators {
     return value;
   }
 
-  public static String parseString(String value) {
-    return parseStringNoTrim(value).trim();
+  public static String parseString(String v) {
+    String value = parseStringNoTrim(v);
+    if (value == null) {
+      return null;
+    }
+    return value.trim();
   }
 
   public static UUID parseUUID(String uuid) {
