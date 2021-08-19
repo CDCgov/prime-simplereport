@@ -16,7 +16,7 @@ public class PatientPreferences extends AuditedEntity {
   public static final PatientPreferences DEFAULT = new PatientPreferences();
 
   @MapsId
-  @OneToOne(fetch= FetchType.LAZY)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "internal_id")
   private Person person;
 

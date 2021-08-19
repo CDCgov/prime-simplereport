@@ -3,15 +3,9 @@ package gov.cdc.usds.simplereport.db.model;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToOne;
-
-import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.UUID;
 
 @Entity
 public class PatientAnswers extends AuditedEntity {
