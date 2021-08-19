@@ -370,7 +370,7 @@ export const DetachedTestResultsList: any = ({
           <div className="prime-container card-container sr-test-results-list">
             <div className="usa-card__header">
               <h2>
-                Test Results
+                Test results
                 {!loadingTotalResults && (
                   <span className="sr-showing-results-on-page">
                     Showing{" "}

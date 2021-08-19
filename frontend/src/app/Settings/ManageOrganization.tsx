@@ -10,6 +10,7 @@ import { showNotification } from "../utils";
 
 import { EditableOrganization } from "./ManageOrganizationContainer";
 
+// TODO: Use OrganizationTypeEnum from #2346
 const organizationTypes: { value: OrganizationType; label: string }[] = [
   { value: "k12", label: "K-12 School" },
   { value: "camp", label: "Camp" },
@@ -107,7 +108,7 @@ const ManageOrganization: React.FC<Props> = (props) => {
     <div className="grid-row position-relative">
       <div className="prime-container card-container">
         <div className="usa-card__header">
-          <h2>Manage Organization</h2>
+          <h2>Manage organization</h2>
           <Button
             onClick={validateAndSave}
             label="Save settings"
