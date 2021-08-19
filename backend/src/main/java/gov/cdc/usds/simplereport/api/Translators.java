@@ -87,7 +87,7 @@ public class Translators {
     }
   }
 
-  public static String parseString(String value) {
+  public static String parseStringNoTrim(String value) {
     if (value == null || "".equals(value)) {
       return null;
     }
@@ -95,7 +95,11 @@ public class Translators {
       throw new IllegalGraphqlArgumentException(
           "Value received exceeds field length limit of " + MAX_STRING_LENGTH + " characters");
     }
-    return value.trim();
+    return value;
+  }
+
+  public static String parseString(String value) {
+    return parseStringNoTrim(value).trim();
   }
 
   public static UUID parseUUID(String uuid) {
