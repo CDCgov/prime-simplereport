@@ -114,16 +114,14 @@ const UserDetail: React.FC<Props> = ({
         ) : null}
       </div>
       <div className="usa-card__footer display-flex flex-justify margin-top-5 padding-x-0">
-        {process.env.REACT_APP_DELETE_USER_ENABLED === "true" ? (
-          <Button
-            variant="outline"
-            icon="trash"
-            className="flex-align-self-start display-inline-block"
-            onClick={() => updateShowDeleteUserModal(true)}
-            label="Remove user"
-            disabled={loggedInUser.id === user.id || isUpdating}
-          />
-        ) : null}
+        <Button
+          variant="outline"
+          icon="trash"
+          className="flex-align-self-start display-inline-block"
+          onClick={() => updateShowDeleteUserModal(true)}
+          label="Remove user"
+          disabled={loggedInUser.id === user.id || isUpdating}
+        />
         <Button
           type="button"
           onClick={() => handleUpdateUser()}
@@ -152,8 +150,7 @@ const UserDetail: React.FC<Props> = ({
           message="You have unsaved changes. Do you want to continue?"
         />
       ) : null}
-      {showDeleteUserModal &&
-      process.env.REACT_APP_DELETE_USER_ENABLED === "true" ? (
+      {showDeleteUserModal ? (
         <DeleteUserModal
           user={user}
           onClose={() => updateShowDeleteUserModal(false)}
