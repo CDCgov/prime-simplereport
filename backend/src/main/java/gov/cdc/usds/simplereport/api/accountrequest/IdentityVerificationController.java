@@ -17,6 +17,8 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.errors.ExperianGetQuestionsException;
+import gov.cdc.usds.simplereport.service.errors.ExperianKbaResultException;
+import gov.cdc.usds.simplereport.service.errors.ExperianNullNodeException;
 import gov.cdc.usds.simplereport.service.errors.ExperianPersonMatchException;
 import gov.cdc.usds.simplereport.service.errors.ExperianSubmitAnswersException;
 import gov.cdc.usds.simplereport.service.idverification.ExperianService;
@@ -75,6 +77,16 @@ public class IdentityVerificationController {
 
   @ExceptionHandler(ExperianSubmitAnswersException.class)
   public ResponseEntity<String> handleException(ExperianSubmitAnswersException e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+  }
+
+  @ExceptionHandler(ExperianKbaResultException.class)
+  public ResponseEntity<String> handleException(ExperianKbaResultException e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+  }
+
+  @ExceptionHandler(ExperianNullNodeException.class)
+  public ResponseEntity<String> handleException(ExperianNullNodeException e) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
   }
 
