@@ -74,8 +74,7 @@ const UserDetail: React.FC<Props> = ({
             YOU
           </span>
         ) : null}
-        {process.env.REACT_APP_EDIT_USER_ROLE === "true" &&
-        user.status === "SUSPENDED" ? (
+        {user.status === "SUSPENDED" ? (
           <Button
             variant="secondary"
             className="margin-left-auto margin-bottom-1"
@@ -84,9 +83,7 @@ const UserDetail: React.FC<Props> = ({
             disabled={isUpdating}
           />
         ) : null}
-        {process.env.REACT_APP_EDIT_USER_ROLE === "true" &&
-        user.status !== "SUSPENDED" &&
-        user?.id !== loggedInUser.id ? (
+        {user.status !== "SUSPENDED" && user?.id !== loggedInUser.id ? (
           <Button
             variant="outline"
             className="margin-left-auto margin-bottom-1"
@@ -163,8 +160,7 @@ const UserDetail: React.FC<Props> = ({
           onDeleteUser={handleDeleteUser}
         />
       ) : null}
-      {showReactivateUserModal &&
-      process.env.REACT_APP_EDIT_USER_ROLE === "true" ? (
+      {showReactivateUserModal ? (
         <ReactivateUserModal
           user={user}
           onClose={() => updateShowReactivateUserModal(false)}
