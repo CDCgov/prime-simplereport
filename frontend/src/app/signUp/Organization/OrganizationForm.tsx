@@ -109,6 +109,9 @@ const OrganizationForm = () => {
     return <LoadingCard message="Creating organization" />;
   }
 
+  // This function is just a simple switch statement
+  // that returns the appropriate component for each
+  // form field. Reduces duplication.
   const getFormElement = (
     field: keyof OrganizationCreateRequest,
     label: string | React.ReactNode,
@@ -194,6 +197,8 @@ const OrganizationForm = () => {
     <CardBackground>
       <Card logo bodyKicker="Sign up for SimpleReport">
         <div className="margin-bottom-2 organization-form">
+          {/* By mapping over organizationFields (found in utils.tsx), we reduce */}
+          {/* duplication of input fields in JSX */}
           {Object.entries(organizationFields).map(
             ([key, { label, required, subheader }]) => {
               const field = key as keyof OrganizationCreateRequest;

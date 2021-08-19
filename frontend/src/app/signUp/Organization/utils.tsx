@@ -28,6 +28,11 @@ export const OrganizationTypeEnum = {
   urgent_care: "Urgent care",
 };
 
+// This object contains a map of all the fields in the form
+// It also contains the input labels, whether the input is required,
+// and an option subheader (hint text) for the input
+// The object is iterated over in OrganizationForm.tsx using
+// Object.entries() to generate the form
 export const organizationFields = [
   [
     "name",
