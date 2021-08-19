@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { Redirect } from "react-router";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -50,7 +51,7 @@ const OrganizationForm = () => {
 
   const [loading, setLoading] = useState(false);
   const [formChanged, setFormChanged] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [orgExternalId, setOrgExternalId] = useState("");
 
   const onDetailChange = (field: keyof OrganizationCreateRequest) => (
     value: OrganizationCreateRequest[typeof field]
@@ -76,7 +77,8 @@ const OrganizationForm = () => {
     });
     if (validation.valid) {
       try {
-        await SignUpApi.createOrganization(organization);
+        const res = await SignUpApi.createOrganization(organization);
+        setOrgExternalId(res.orgExternalId);
       } catch (error) {
         const alert = (
           <Alert type="error" title="Submission Error" body={error} />
@@ -86,7 +88,6 @@ const OrganizationForm = () => {
         return;
       }
       setErrors(initOrgErrors());
-      setSubmitted(true);
       return;
     }
     setErrors(validation.errors);
@@ -101,8 +102,15 @@ const OrganizationForm = () => {
     setLoading(false);
   };
 
-  if (submitted) {
-    return <Thanks />;
+  if (orgExternalId) {
+    return (
+      <Redirect
+        to={{
+          pathname: "/sign-up/identity-verification",
+          search: `?orgExternalId=${orgExternalId}`,
+        }}
+      />
+    );
   }
 
   if (loading) {
