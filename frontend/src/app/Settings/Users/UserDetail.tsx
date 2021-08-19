@@ -98,20 +98,17 @@ const UserDetail: React.FC<Props> = ({
           Admins have full access to conduct tests, manage results and profiles,
           and manage settings and users
         </p>
-        {
-          <UserRoleSettingsForm
-            activeUser={user}
-            loggedInUser={loggedInUser}
-            onUpdateUser={updateUser}
-          />
-        }
-        {process.env.REACT_APP_VIEW_USER_FACILITIES === "true" ? (
-          <UserFacilitiesSettingsForm
-            activeUser={user}
-            allFacilities={allFacilities}
-            onUpdateUser={updateUser}
-          />
-        ) : null}
+        <UserRoleSettingsForm
+          activeUser={user}
+          loggedInUser={loggedInUser}
+          onUpdateUser={updateUser}
+        />
+
+        <UserFacilitiesSettingsForm
+          activeUser={user}
+          allFacilities={allFacilities}
+          onUpdateUser={updateUser}
+        />
       </div>
       <div className="usa-card__footer display-flex flex-justify margin-top-5 padding-x-0">
         <Button
