@@ -8,7 +8,7 @@ import Button from "./Button/Button";
 
 const SESSION_IDENTIFIER = "trainingAcknowledged";
 export const TRAINING_PURPOSES_ONLY =
-  "This is a training site with sample data for training purposes only.";
+  "This is a training site with sample data for demonstration purposes only.";
 
 const initialAcknowledged = !!sessionStorage.getItem(SESSION_IDENTIFIER);
 
