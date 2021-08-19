@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "../../app/commonComponents/Button/Button";
+import Modal from "../../app/commonComponents/Modal";
 import { EMPTY_PERSON } from "../../app/patients/AddPatient";
 import PersonForm, {
   PersonFormView,
@@ -24,8 +25,9 @@ export const SelfRegistrationForm = ({ savePerson }: Props) => {
   const [identifyData, setIdentifyingData] = useState<
     Nullable<IdentifyingData>
   >({ firstName: null, lastName: null, zipCode: null, birthDate: null });
+  const [isDuplicate, setIsDuplicate] = useState<boolean>(true);
 
-  const onBlur = async ({
+  const onBlur = ({
     firstName,
     lastName,
     zipCode,
@@ -48,10 +50,13 @@ export const SelfRegistrationForm = ({ savePerson }: Props) => {
 
   useEffect(() => {
     const { firstName, lastName, zipCode, birthDate } = identifyData;
-    if (!firstName || !lastName || !zipCode || !birthDate?.isValid()) {
-      return;
+    async function checkForDuplicates() {
+      setIsDuplicate(true);
     }
-    console.log("check for unique");
+
+    if (firstName && lastName && zipCode && birthDate?.isValid()) {
+      checkForDuplicates();
+    }
   }, [identifyData]);
 
   return (
@@ -59,6 +64,7 @@ export const SelfRegistrationForm = ({ savePerson }: Props) => {
       id="registration-container"
       className="grid-container maxw-tablet padding-y-3"
     >
+      <DuplicateModal showModal={!!isDuplicate} />
       <PersonForm
         patient={EMPTY_PERSON}
         savePerson={savePerson}
@@ -74,5 +80,28 @@ export const SelfRegistrationForm = ({ savePerson }: Props) => {
         onBlur={onBlur}
       />
     </div>
+  );
+};
+
+type DuplicateModalProps = {
+  showModal: boolean;
+};
+
+const DuplicateModal: React.FC<DuplicateModalProps> = ({ showModal }) => {
+  return (
+    <Modal
+      onClose={() => {}}
+      showModal={showModal}
+      showClose={false}
+      variant="warning"
+    >
+      <Modal.Header>You already have a profile at [Facility].</Modal.Header>
+      <p>
+        Our records show someone has registered with the same name, date of
+        birth, and ZIP code. Please check in with your testing site staff. You
+        do not need to register again.
+      </p>
+      <Button className="margin-right-auto">Exit sign up</Button>
+    </Modal>
   );
 };
