@@ -54,7 +54,7 @@ export const testQuery = gql`
   }
 `;
 
-interface Props {
+export interface TestResultPrintModalProps {
   data: any; // testQuery result
   testResultId: string | undefined;
   closeModal: () => void;
@@ -64,7 +64,7 @@ export const DetachedTestResultPrintModal = ({
   testResultId,
   data,
   closeModal,
-}: Props) => {
+}: TestResultPrintModalProps) => {
   const { t } = useTranslation();
 
   const buttonGroup = (
@@ -267,8 +267,10 @@ export const DetachedTestResultPrintModal = ({
   );
 };
 
-const TestResultPrintModal = (props: Omit<Props, "data">) => (
-  <QueryWrapper<Props>
+const TestResultPrintModal = (
+  props: Omit<TestResultPrintModalProps, "data">
+) => (
+  <QueryWrapper<TestResultPrintModalProps>
     query={testQuery}
     queryOptions={{ variables: { id: props.testResultId } }}
     Component={DetachedTestResultPrintModal}
