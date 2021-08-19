@@ -31,6 +31,7 @@ export const Thanks = () => {
         <p>
           Didn’t get the email? Check your spam folder then contact{" "}
           <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>
+          .
         </p>
         <div className="margin-top-4 border-top border-base-lighter margin-x-neg-4"></div>
         <div className="margin-top-4 usa-prose">

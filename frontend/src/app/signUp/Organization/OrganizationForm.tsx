@@ -115,8 +115,7 @@ const OrganizationForm = () => {
   const getFormElement = (
     field: keyof OrganizationCreateRequest,
     label: string | React.ReactNode,
-    required: boolean,
-    subheader: string | null
+    required: boolean
   ) => {
     switch (field) {
       case "state":
@@ -163,7 +162,7 @@ const OrganizationForm = () => {
               <label className="usa-label margin-top-3">
                 <strong>{label}</strong>
                 <TextWithTooltip
-                  tooltip="Can be anyone that works at your organization. Adds testing facility locations and manages the organization account."
+                  tooltip="Can be anyone that works at your organization. Adds testing facility locations; manages the account and user access."
                   text="What's an organization administrator?"
                 />
               </label>
@@ -176,7 +175,6 @@ const OrganizationForm = () => {
         }
         return (
           <Input
-            className={subheader ? "margin-top-0" : ""}
             label={label}
             type={"text"}
             field={field}
@@ -187,7 +185,6 @@ const OrganizationForm = () => {
             validate={validateField}
             getValidationStatus={getValidationStatus}
             required={required}
-            hintText={subheader ? subheader : undefined}
           />
         );
     }
@@ -195,17 +192,16 @@ const OrganizationForm = () => {
 
   return (
     <CardBackground>
-      <Card logo bodyKicker="Sign up for SimpleReport">
+      <Card logo>
         <div className="margin-bottom-2 organization-form">
+          <h2>Sign up for SimpleReport</h2>
           {/* By mapping over organizationFields (found in utils.tsx), we reduce */}
           {/* duplication of input fields in JSX */}
           {Object.entries(organizationFields).map(
-            ([key, { label, required, subheader }]) => {
+            ([key, { label, required }]) => {
               const field = key as keyof OrganizationCreateRequest;
               return (
-                <div key={field}>
-                  {getFormElement(field, label, required, subheader)}
-                </div>
+                <div key={field}>{getFormElement(field, label, required)}</div>
               );
             }
           )}

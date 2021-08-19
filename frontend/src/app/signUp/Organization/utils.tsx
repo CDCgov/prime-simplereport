@@ -29,8 +29,7 @@ export const OrganizationTypeEnum = {
 };
 
 // This object contains a map of all the fields in the form
-// It also contains the input labels, whether the input is required,
-// and an option subheader (hint text) for the input
+// It also contains the input labels and whether the input is required
 // The object is iterated over in OrganizationForm.tsx using
 // Object.entries() to generate the form
 export const organizationFields = [
@@ -45,24 +44,22 @@ export const organizationFields = [
       />
     </span>,
     true,
-    "If you have only one location, enter that name for both your organization name and testing facility name.",
   ],
-  ["state", "Organization state", true, null],
-  ["type", "Organization type", true, null],
-  ["banner", "Organization administrator", false, null],
-  ["firstName", "First name", true, null],
-  ["middleName", "Middle name", false, null],
-  ["lastName", "Last name", true, null],
-  ["email", "Email address", true, null],
-  ["workPhoneNumber", "Work phone number", true, null],
+  ["state", "Organization state", true],
+  ["type", "Organization type", true],
+  ["banner", "Organization administrator", false],
+  ["firstName", "First name", true],
+  ["middleName", "Middle name", false],
+  ["lastName", "Last name", true],
+  ["email", "Email address", true],
+  ["workPhoneNumber", "Work phone number", true],
 ].reduce((fields, field) => {
   fields[field[0] as keyof OrganizationCreateRequest] = {
     label: field[1] as string | React.ReactNode,
     required: field[2] as boolean,
-    subheader: field[3] as string | null,
   };
   return fields;
-}, {} as { [key: string]: { label: string | React.ReactNode; required: boolean; subheader: string | null } });
+}, {} as { [key: string]: { label: string | React.ReactNode; required: boolean } });
 
 export const initOrg = (): OrganizationCreateRequest => ({
   name: "",
