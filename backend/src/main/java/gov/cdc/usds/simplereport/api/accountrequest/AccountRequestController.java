@@ -195,9 +195,13 @@ public class AccountRequestController {
           request.getFirstName(), request.getLastName(), request.getEmail(), org.getExternalId());
       return new AccountResponse(org.getExternalId());
     } catch (ResourceException e) {
-      // The `ResourceException` is thrown when an account is requested with an existing org
-      // name. This happens quite frequently and is expected behavior of the current form
-      throw new BadRequestException("This email address is already associated with a SimpleReport user.");
+      // The `ResourceException` is thrown when a user requests an account with an email address
+      // that's already in Okta.
+      // This happens fairly frequently and is the expected behavior of the current form.
+      // We rethrow this as a BadRequestException so that users get at toast on the frontend
+      // informing them of the error.
+      throw new BadRequestException(
+          "This email address is already associated with a SimpleReport user.");
     } catch (IOException | RuntimeException e) {
       throw new AccountRequestFailureException(e);
     }
