@@ -3,8 +3,8 @@ import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router";
 import createMockStore from "redux-mock-store";
 import { useTrackEvent } from "@microsoft/applicationinsights-react-js";
-import { TRAINING_PURPOSES_ONLY } from "../TrainingNotification";
 
+import { TRAINING_PURPOSES_ONLY } from "../TrainingNotification";
 import Header from "../Header";
 import "../../../i18n";
 

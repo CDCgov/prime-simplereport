@@ -7,7 +7,8 @@ import Alert from "./Alert";
 import Button from "./Button/Button";
 
 const SESSION_IDENTIFIER = "trainingAcknowledged";
-export const TRAINING_PURPOSES_ONLY = 'This is a training site with sample data for training purposes only.';
+export const TRAINING_PURPOSES_ONLY =
+  "This is a training site with sample data for training purposes only.";
 
 const initialAcknowledged = !!sessionStorage.getItem(SESSION_IDENTIFIER);
 
@@ -55,9 +56,7 @@ export const TrainingNotification: React.FC = () => {
                 A few important reminders:
               </h2>
               <ul>
-                <li>
-                  {TRAINING_PURPOSES_ONLY}
-                </li>
+                <li>{TRAINING_PURPOSES_ONLY}</li>
                 <li>
                   Don't enter personally identifiable information (PII) or
                   protected health information (PHI) on this site.
