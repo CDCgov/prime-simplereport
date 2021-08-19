@@ -29,12 +29,9 @@ public class DeviceType extends EternalAuditedEntity {
   @Column(nullable = false)
   private int testLength;
 
+  /** This relationship is necessary for DeviceTypeRepository.findAllByTestOrdersInternalIdIn */
   @OneToMany(mappedBy = "deviceType", fetch= FetchType.LAZY)
   List<TestOrder> testOrders;
-
-  public List<TestOrder> getTestOrders() {
-    return testOrders;
-  }
 
   protected DeviceType() {
     /* no-op for hibernate */
