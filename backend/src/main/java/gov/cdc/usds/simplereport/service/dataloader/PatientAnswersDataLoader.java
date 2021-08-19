@@ -9,8 +9,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -39,11 +37,13 @@ public class PatientAnswersDataLoader extends KeyedDataLoaderFactory<TestOrder, 
 
                   Map<UUID, PatientAnswers> found =
                       patientAnswersRepository.findAllByTestOrderInternalIdIn(testOrderIds).stream()
-                          .collect(Collectors.toMap(PatientAnswers::getInternalId, Function.identity()));
+                          .collect(
+                              Collectors.toMap(PatientAnswers::getInternalId, Function.identity()));
 
-                  var result = testOrders.stream()
-                      .map(to -> found.getOrDefault(to.getPatientAnswersId(), null))
-                      .collect(Collectors.toList());
+                  var result =
+                      testOrders.stream()
+                          .map(to -> found.getOrDefault(to.getPatientAnswersId(), null))
+                          .collect(Collectors.toList());
 
                   LOG.trace("Returning {} PatientAnswers", result.size());
 

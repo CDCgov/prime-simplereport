@@ -26,11 +26,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ApiTestOrderDataResolver implements GraphQLResolver<ApiTestOrder> {
-    private static final Logger LOG = LoggerFactory.getLogger(ApiTestOrderDataResolver.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ApiTestOrderDataResolver.class);
 
   private CompletableFuture<AskOnEntrySurvey> getSurvey(
       ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-      LOG.trace("getSurvey({})", apiTestOrder.getInternalId());
+    LOG.trace("getSurvey({})", apiTestOrder.getInternalId());
     DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
     DataLoader<TestOrder, PatientAnswers> loader =
         registry.getDataLoader(PatientAnswersDataLoader.KEY);

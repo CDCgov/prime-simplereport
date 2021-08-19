@@ -30,7 +30,7 @@ public class DeviceType extends EternalAuditedEntity {
   private int testLength;
 
   /** This relationship is necessary for DeviceTypeRepository.findAllByTestOrdersInternalIdIn */
-  @OneToMany(mappedBy = "deviceType", fetch= FetchType.LAZY)
+  @OneToMany(mappedBy = "deviceType", fetch = FetchType.LAZY)
   List<TestOrder> testOrders;
 
   protected DeviceType() {

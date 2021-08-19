@@ -26,9 +26,9 @@ public class TestOrder extends BaseTestInfo {
   private PatientAnswers askOnEntrySurvey;
 
   /**
-   * This field and its getter exist to ensure that Hibernate does not load each
-   * PatientAnswers for the TestOrders are streamed in PatientAnswersDataLoader.
-   * Sometimes, apparently, FetchType.LAZY isn't enough.
+   * This field and its getter exist to ensure that Hibernate does not load each PatientAnswers for
+   * the TestOrders are streamed in PatientAnswersDataLoader. Sometimes, apparently, FetchType.LAZY
+   * isn't enough.
    */
   @Column(name = "patient_answers_id", insertable = false, updatable = false)
   private UUID patientAnswersId;
