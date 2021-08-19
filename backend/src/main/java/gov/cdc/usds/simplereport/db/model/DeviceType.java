@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.model;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
@@ -28,7 +29,7 @@ public class DeviceType extends EternalAuditedEntity {
   @Column(nullable = false)
   private int testLength;
 
-  @OneToMany(mappedBy = "deviceType")
+  @OneToMany(mappedBy = "deviceType", fetch= FetchType.LAZY)
   List<TestOrder> testOrders;
 
   public List<TestOrder> getTestOrders() {
