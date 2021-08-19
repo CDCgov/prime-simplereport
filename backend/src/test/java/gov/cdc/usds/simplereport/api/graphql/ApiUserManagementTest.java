@@ -993,6 +993,40 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         ACCESS_ERROR);
   }
 
+  @Test
+  void setCurrentUserTenantDataAccess_externalIdTrailingSpace_success() {
+    TestUserIdentities.withUser(
+        TestUserIdentities.SITE_ADMIN_USER,
+        () -> {
+          useSuperUser();
+          _dataFactory.createValidOrg("The Mall", "k12", "dc-with-trailing-space ", true);
+
+          ObjectNode variables =
+              JsonNodeFactory.instance
+                  .objectNode()
+                  .put("organizationExternalId", "dc-with-trailing-space ")
+                  .put("justification", "This is my justification");
+          ObjectNode user =
+              (ObjectNode)
+                  runQuery(
+                          "set-current-user-tenant-data-access",
+                          "SetCurrentUserTenantDataAccessOp",
+                          variables,
+                          null)
+                      .get("setCurrentUserTenantDataAccess");
+          assertEquals("ruby@example.com", user.get("email").asText());
+          assertEquals(Role.ADMIN, Role.valueOf(user.get("role").asText()));
+          Set<UserPermission> allPermissions =
+              Arrays.stream(UserPermission.values()).collect(Collectors.toSet());
+          assertEquals(allPermissions, extractPermissionsFromUser(user));
+          assertLastAuditEntry("ruby@example.com", null, null);
+
+          // run query using tenant data access
+          runQuery("current-user-query").get("whoami");
+          assertLastAuditEntry("ruby@example.com", "dc-with-trailing-space ", allPermissions);
+        });
+  }
+
   private List<ObjectNode> toList(ArrayNode arr) {
     List<ObjectNode> list = new ArrayList<>();
     for (int i = 0; i < arr.size(); i++) {
