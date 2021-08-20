@@ -21,7 +21,6 @@ import {
   OrganizationTypeEnum,
   organizationSchema as schema,
 } from "./utils";
-
 import "./OrganizationForm.scss";
 import { Thanks } from "./Thanks";
 
