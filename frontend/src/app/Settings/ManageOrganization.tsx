@@ -7,31 +7,13 @@ import RequiredMessage from "../commonComponents/RequiredMessage";
 import Alert from "../commonComponents/Alert";
 import Select from "../commonComponents/Select";
 import { showNotification } from "../utils";
+import { OrganizationTypeEnum } from "../signUp/Organization/utils";
 
 import { EditableOrganization } from "./ManageOrganizationContainer";
 
-// TODO: Use OrganizationTypeEnum from #2346
-const organizationTypes: { value: OrganizationType; label: string }[] = [
-  { value: "k12", label: "K-12 School" },
-  { value: "camp", label: "Camp" },
-  { value: "university", label: "College/University" },
-  { value: "correctional_facility", label: "Correctional Facility" },
-  { value: "employer", label: "Employer" },
-  { value: "government_agency", label: "Government Agency" },
-  { value: "airport", label: "Airport/Transit Station" },
-  { value: "shelter", label: "Homeless Shelter" },
-  { value: "fqhc", label: "FQHC" },
-  { value: "primary_care", label: "Primary Care / Mental Health Outpatient" },
-  { value: "assisted_living", label: "Assisted Living Facility" },
-  { value: "hospital", label: "Hospital or Clinic" },
-  { value: "urgent_care", label: "Urgent Care" },
-  { value: "nursing_home", label: "Nursing Home" },
-  { value: "treatment_center", label: "Substance Abuse Treatment Center" },
-  { value: "hospice", label: "Hospice" },
-  { value: "pharmacy", label: "Pharmacy" },
-  { value: "lab", label: "Lab" },
-  { value: "other", label: "Other" },
-];
+const organizationTypes = Object.entries(
+  OrganizationTypeEnum
+).map(([key, value]) => ({ label: value, value: key }));
 
 interface Props {
   organization: EditableOrganization;
