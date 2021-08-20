@@ -2,7 +2,7 @@
 function enterInformation(browser) {
   this.expect
     .section("@enterInformation")
-    .to.contain.text("Manage Organization");
+    .to.contain.text("Manage organization");
   this.section.enterInformation.expect.element("@name").not.to.be.present;
   this.section.enterInformation.click("@emptySelection");
   this.section.enterInformation.click("@save");
@@ -12,7 +12,7 @@ function enterInformation(browser) {
   browser.refresh();
   this.section.enterInformation.click("@nursingHome");
   this.section.enterInformation.click("@save");
-  this.expect.section("@toast").to.contain.text("Updated Organization");
+  this.expect.section("@toast").to.contain.text("Updated organization");
 }
 
 module.exports = {

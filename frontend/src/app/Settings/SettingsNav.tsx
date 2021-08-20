@@ -8,17 +8,17 @@ const SettingsNav = () => {
       <ul className="usa-nav__secondary-links prime-nav">
         <li className="usa-nav__secondary-item">
           <LinkWithQuery to={`/settings`} activeClassName="active" exact={true}>
-            Manage Users
+            Manage users
           </LinkWithQuery>
         </li>
         <li className="usa-nav__secondary-item">
           <LinkWithQuery to={`/settings/facilities`} activeClassName="active">
-            Manage Facilities
+            Manage facilities
           </LinkWithQuery>
         </li>
         <li className="usa-nav__secondary-item">
           <LinkWithQuery to={`/settings/organization`} activeClassName="active">
-            Manage Organization
+            Manage organization
           </LinkWithQuery>
         </li>
         <li className="usa-nav__secondary-item">

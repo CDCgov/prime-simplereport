@@ -5,7 +5,7 @@ import { Redirect } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
-import { PATIENT_TERM_CAP } from "../../config/constants";
+import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
 import { showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
@@ -145,7 +145,7 @@ const AddPatient = () => {
       toast,
       <Alert
         type="success"
-        title={`${PATIENT_TERM_CAP} Record Created`}
+        title={`${PATIENT_TERM_CAP} record created`}
         body="New information record has been created."
       />
     );
@@ -176,7 +176,7 @@ const AddPatient = () => {
                 </div>
                 <div className="prime-edit-patient-heading margin-y-0">
                   <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
-                    Add New {PATIENT_TERM_CAP}
+                    Add new {PATIENT_TERM}
                   </h1>
                 </div>
               </div>

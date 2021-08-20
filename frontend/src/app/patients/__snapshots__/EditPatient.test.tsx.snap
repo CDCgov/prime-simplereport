@@ -933,7 +933,7 @@ Object {
                             class="usa-label"
                             for="60"
                           >
-                            Zip code
+                            ZIP code
                             <abbr
                               class="usa-hint usa-hint--required"
                               title="required"
@@ -2404,7 +2404,7 @@ Object {
                           class="usa-label"
                           for="60"
                         >
-                          Zip code
+                          ZIP code
                           <abbr
                             class="usa-hint usa-hint--required"
                             title="required"

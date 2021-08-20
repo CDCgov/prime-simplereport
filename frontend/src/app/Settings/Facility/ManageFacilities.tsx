@@ -11,7 +11,7 @@ const ManageFacilities: React.FC<Props> = ({ facilities }) => {
     <div className="grid-row">
       <div className="prime-container card-container">
         <div className="usa-card__header">
-          <h2>Manage Facilities</h2>
+          <h2>Manage facilities</h2>
           <LinkWithQuery
             className="usa-button usa-button--inverse"
             to="/settings/add-facility/"

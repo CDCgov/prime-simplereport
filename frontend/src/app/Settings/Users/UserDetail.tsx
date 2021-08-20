@@ -2,7 +2,7 @@ import React from "react";
 import { Prompt } from "react-router-dom";
 
 import { Role } from "../../permissions";
-import { displayFullNameInOrder } from "../../utils";
+import { displayFullName } from "../../utils";
 import Button from "../../commonComponents/Button/Button";
 
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
@@ -63,11 +63,7 @@ const UserDetail: React.FC<Props> = ({
     <div className="tablet:grid-col padding-left-2">
       <div className="user-header grid-row flex-row flex-align-center">
         <h2 className="display-inline-block margin-y-1">
-          {displayFullNameInOrder(
-            user.firstName,
-            user.middleName,
-            user.lastName
-          )}
+          {displayFullName(user.firstName, user.middleName, user.lastName)}
         </h2>
         {user?.id === loggedInUser.id ? (
           <span className="usa-tag margin-left-1 bg-base-lighter text-ink">

@@ -100,5 +100,5 @@ const filledForm = {
   "Primary phone number": "7038675309",
   "Street address 1": faker.address.streetAddress(),
   State: "MD",
-  "Zip code": "12345",
+  "ZIP code": "12345",
 };

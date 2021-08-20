@@ -45,7 +45,7 @@ const SymptomInputs: React.FC<Props> = ({
           name="no_symptoms"
           legend="Are you experiencing any of the following symptoms?"
           onChange={(e) => setNoSymptoms(e.target.checked)}
-          boxes={[{ value: "no", label: "No Symptoms", checked: noSymptoms }]}
+          boxes={[{ value: "no", label: "No symptoms", checked: noSymptoms }]}
           required
           errorMessage={symptomError}
           validationStatus={symptomError ? "error" : undefined}
