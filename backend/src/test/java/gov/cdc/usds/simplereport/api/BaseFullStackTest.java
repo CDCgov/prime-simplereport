@@ -28,7 +28,9 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
  * Base class for all tests that simulate fully-integrated API requests by either patients or
  * providers.
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+    webEnvironment = WebEnvironment.RANDOM_PORT,
+    properties = {"spring-hibernate-query-utils.n-plus-one-queries-detection.error-level=ERROR"})
 @AutoConfigureMockMvc
 public abstract class BaseFullStackTest {
 

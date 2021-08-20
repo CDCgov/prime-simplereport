@@ -35,6 +35,7 @@ import org.springframework.security.access.AccessDeniedException;
     properties = {
       "spring.main.web-application-type=NONE",
       "simple-report.authorization.role-prefix=" + TestUserIdentities.TEST_ROLE_PREFIX,
+      "spring-hibernate-query-utils.n-plus-one-queries-detection.error-level=ERROR"
     })
 @Import(SliceTestConfiguration.class)
 @WithSimpleReportStandardUser
