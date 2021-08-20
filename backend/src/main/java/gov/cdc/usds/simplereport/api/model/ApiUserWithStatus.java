@@ -1,16 +1,22 @@
 package gov.cdc.usds.simplereport.api.model;
 
+import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.model.facets.PersonWrapper;
-import gov.cdc.usds.simplereport.service.model.UserInfo;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.service.model.WrappedEntity;
 
-public class ApiUserWithStatus extends WrappedEntity<UserInfo> implements PersonWrapper<UserInfo> {
-    
-    // this might be the righr way to go, but I rather doubt it.
-    // I think the superclasses are off - might just need a PersonWrapper 
-    // but need to figure out the relationship to WrappedEntity
-    // also need to figure out the relationship between graphQL queries and the POJOs behind them
-    public ApiUserWithStatus(UserInfo user) {
-        super(user);
-    }
+/**
+ * A wrapper class around APIUser, to return Okta-specific status information to GraphQL.
+ */
+public class ApiUserWithStatus extends WrappedEntity<ApiUser> implements PersonWrapper<ApiUser> {
+  private UserStatus status;
+
+  public ApiUserWithStatus(ApiUser user, UserStatus status) {
+    super(user);
+    this.status = status;
+  }
+
+  public UserStatus getStatus() {
+    return status;
+  }
 }

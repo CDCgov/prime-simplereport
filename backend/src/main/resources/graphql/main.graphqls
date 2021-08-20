@@ -110,6 +110,19 @@ type ApiUser {
   email: String!
 }
 
+type ApiUserWithStatus {
+  id: ID
+  name: NameInnfo!
+  nameInfo: NameInfo
+    @deprecated(reason: "needless connection of type to field name")
+  firstName: String
+  middleName: String
+  lastName: String!
+  suffix: String
+  email: String!
+  status: String
+}
+
 # Patient and test types
 
 type Patient

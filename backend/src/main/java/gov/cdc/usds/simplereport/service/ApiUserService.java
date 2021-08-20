@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.SmsWebhookContextHolder;
+import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -24,7 +25,9 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -428,6 +431,23 @@ public class ApiUserService {
     Organization org = _orgService.getCurrentOrganization();
     final Set<String> orgUserEmails = _oktaRepo.getAllUsersForOrganization(org);
     return _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserEmails);
+  }
+
+  @AuthorizationConfiguration.RequirePermissionManageUsers
+  public List<ApiUserWithStatus> getUsersAndStatusInCurrentOrg() {
+    Organization org = _orgService.getCurrentOrganization();
+    // return some kind of map <email : status> here
+    //TODO(emmastephenson): return status along with emails here
+    final HashMap<String, UserStatus> emailsToStatus = _oktaRepo.getAllUsersAndStatusesForOrganization(org);
+    // final Set<String> orgUserEmails = _oktaRepo.getAllUsersForOrganization(org);
+    List<ApiUser> users = _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserEmails);
+    // note to self: we can probably do this via some fancy streaming/mapping
+    List<ApiUserWithStatus> statusUsers = new ArrayList<ApiUserWithStatus>();
+    for (ApiUser user : users) {
+      ApiUserWithStatus statusUser = new ApiUserWithStatus(user, UserStatus.ACTIVE);
+      statusUsers.add(statusUser);
+    }
+    return statusUsers;
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser

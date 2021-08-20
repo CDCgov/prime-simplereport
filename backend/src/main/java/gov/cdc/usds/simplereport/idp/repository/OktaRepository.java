@@ -6,6 +6,8 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
 
@@ -39,6 +41,8 @@ public interface OktaRepository {
   UserStatus getUserStatus(String username);
 
   Set<String> getAllUsersForOrganization(Organization org);
+
+  HashMap<String, UserStatus> getAllUsersAndStatusesForOrganization(Organization org);
 
   void createOrganization(Organization org);
 
