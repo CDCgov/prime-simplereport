@@ -47,8 +47,11 @@ public class LiveExperianService
       "/clientResponsePayload/decisionElements/0/otherData/json/fraudSolutions/response/products/preciseIDServer/kba/questionSet";
   private static final String PID_OVERALL_DECISION_PATH =
       "/responseHeader/overallResponse/decision";
+  private static final String PID_FINAL_DECISION_PATH =
+      "/clientResponsePayload/decisionElements/0/decisions/2/value";
 
   private static final String SUCCESS_DECISION = "ACCEPT";
+  private static final String SUCCESS_DECISION_SHORT = "ACC";
   private static final int KBA_SUCCESS_RESULT_CODE = 0;
   private static final int KBA_PERSON_NOT_FOUND_RESULT_CODE = 9;
 
@@ -114,9 +117,9 @@ public class LiveExperianService
               _experianProperties.getPreciseidClientReferenceId(),
               userData);
 
-      LOG.info("EXPERIAN_QUESTION_REQUEST_SUBMITTED: ", initialRequestBody);
+      LOG.info("EXPERIAN_QUESTION_REQUEST_SUBMITTED: {}", initialRequestBody);
       ObjectNode responseEntity = submitExperianRequest(initialRequestBody);
-      LOG.info("EXPERIAN_QUESTION_RESPONSE: ", responseEntity);
+      LOG.info("EXPERIAN_QUESTION_RESPONSE: {}", responseEntity);
 
       // KIQ response may a kbaresultCode that indicates failure, this seems to only be present
       // in unsuccessful requests to get questions (consumer not found, deceased, etc.)
@@ -146,9 +149,9 @@ public class LiveExperianService
               _experianProperties.getPreciseidTenantId(),
               _experianProperties.getPreciseidClientReferenceId(),
               answersRequest);
-      LOG.info("EXPERIAN_ANSWER_REQUEST_SUBMITTED: " + finalRequestBody);
+      LOG.info("EXPERIAN_ANSWER_REQUEST_SUBMITTED: {}", finalRequestBody);
       ObjectNode responseEntity = submitExperianRequest(finalRequestBody);
-      LOG.info("EXPERIAN_ANSWER_RESPONSE: " + responseEntity);
+      LOG.info("EXPERIAN_ANSWER_RESPONSE: {}", responseEntity);
 
       // look for errors in KIQ response ("CrossCore - PreciseId (Option 24).pdf" page 79)
       int kbaResultCode = findNodeInResponse(responseEntity, KBA_RESULT_CODE_PATH).asInt();
@@ -156,15 +159,23 @@ public class LiveExperianService
         handleKbaResultCodeFailure(kbaResultCode, responseEntity);
       }
 
-      // find overall decision ("CrossCore 2.x Technical Developer Guide.pdf" page 28-29)
-      String decision = findNodeInResponse(responseEntity, PID_OVERALL_DECISION_PATH).textValue();
-
-      // if experian responds with ACCEPT, we will consider the id verification successful
-      boolean passed = SUCCESS_DECISION.equals(decision);
+      boolean passed;
+      try {
+        // find overall decision ("CrossCore 2.x Technical Developer Guide.pdf" page 28-29)
+        String decision = findNodeInResponse(responseEntity, PID_OVERALL_DECISION_PATH).textValue();
+        // if experian responds with ACCEPT, we will consider the id verification successful
+        passed = SUCCESS_DECISION.equals(decision);
+      } catch (ExperianNullNodeException e) {
+        // Experian does not always return the overall decision. If this happens, check for the
+        // value of "final decision".
+        String finalDecision =
+            findNodeInResponse(responseEntity, PID_FINAL_DECISION_PATH).textValue();
+        passed = SUCCESS_DECISION_SHORT.equals(finalDecision);
+      }
 
       // Generate a searchable log message so we can monitor decisions from Experian
       String requestData = _objectMapper.writeValueAsString(answersRequest);
-      LOG.info("EXPERIAN_DECISION ({}): {}", decision, requestData);
+      LOG.info("EXPERIAN_DECISION ({}): {}, {}", passed, responseEntity, requestData);
 
       return new IdentityVerificationAnswersResponse(passed);
     } catch (RestClientException | JsonProcessingException e) {
