@@ -12,7 +12,14 @@ export default {
 const Template: Story = (args) => (
   <MemoryRouter
     initialEntries={[
-      { pathname: "/identity-verification", search: "?orgExternalId=foo" },
+      {
+        pathname: "/identity-verification",
+        state: {
+          firstName: "Harry",
+          lastName: "Potter",
+          orgExternalId: "Hogwarts",
+        },
+      },
     ]}
   >
     <Consent {...args} />

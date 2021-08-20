@@ -2,22 +2,11 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
 import SignUpApp from "./SignUpApp";
-import PersonalDetailsForm from "./IdentityVerification/PersonalDetailsForm";
-
-jest.mock("./IdentityVerification/PersonalDetailsForm");
 
 describe("SignUpApp", () => {
   beforeEach(() => {
-    (PersonalDetailsForm as any).mockImplementation(() => (
-      <div>personal details form</div>
-    ));
-
     render(
-      <MemoryRouter
-        initialEntries={[
-          { pathname: "/identity-verification", search: "?orgExternalId=foo" },
-        ]}
-      >
+      <MemoryRouter>
         <SignUpApp
           match={{ path: "" } as any}
           location={{} as any}
@@ -27,8 +16,6 @@ describe("SignUpApp", () => {
     );
   });
   it("renders", () => {
-    expect(
-      screen.getByText("Identity verification consent")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Sign up for SimpleReport")).toBeInTheDocument();
   });
 });

@@ -14,6 +14,7 @@ import Select from "../../commonComponents/Select";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 import { SignUpApi } from "../SignUpApi";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
+import { PersonalDetailsFormProps } from "../IdentityVerification/PersonalDetailsForm";
 
 import {
   initOrg,
@@ -106,7 +107,12 @@ const OrganizationForm = () => {
       <Redirect
         to={{
           pathname: "/sign-up/identity-verification",
-          search: `?orgExternalId=${orgExternalId}`,
+          state: {
+            orgExternalId: orgExternalId,
+            firstName: organization.firstName,
+            middleName: organization.middleName,
+            lastName: organization.lastName,
+          } as PersonalDetailsFormProps,
         }}
       />
     );
@@ -175,7 +181,7 @@ const OrganizationForm = () => {
               </label>
               <p className="usa-hint">
                 Only one person from an organization can be the administrator.
-                This person will submit information for identity verifcation.
+                This person will submit information for identity verification.
               </p>
             </>
           );
@@ -215,7 +221,10 @@ const OrganizationForm = () => {
         </div>
         <p>
           By submitting this form, you agree to our{" "}
-          <a href="/terms-of-service">terms of service</a>.
+          <a href="/terms-of-service" target="_blank" rel="noopener noreferrer">
+            terms of service
+          </a>
+          .
         </p>
         <Button
           className="width-full margin-top-2 submit-button"
