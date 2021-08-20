@@ -50,7 +50,7 @@ const OrganizationForm = () => {
 
   const [loading, setLoading] = useState(false);
   const [formChanged, setFormChanged] = useState(false);
-  const [orgExternalId, setOrgExternalId] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   const onDetailChange = (field: keyof OrganizationCreateRequest) => (
     value: OrganizationCreateRequest[typeof field]
@@ -76,8 +76,7 @@ const OrganizationForm = () => {
     });
     if (validation.valid) {
       try {
-        const res = await SignUpApi.createOrganization(organization);
-        setOrgExternalId(res.orgExternalId);
+        await SignUpApi.createOrganization(organization);
       } catch (error) {
         const alert = (
           <Alert type="error" title="Submission Error" body={error} />
@@ -87,6 +86,7 @@ const OrganizationForm = () => {
         return;
       }
       setErrors(initOrgErrors());
+      setSubmitted(true);
       return;
     }
     setErrors(validation.errors);
@@ -101,15 +101,8 @@ const OrganizationForm = () => {
     setLoading(false);
   };
 
-  if (orgExternalId) {
-    return (
-      <Redirect
-        to={{
-          pathname: "/sign-up/identity-verification",
-          search: `?orgExternalId=${orgExternalId}`,
-        }}
-      />
-    );
+  if (submitted) {
+    return <Thanks />;
   }
 
   if (loading) {

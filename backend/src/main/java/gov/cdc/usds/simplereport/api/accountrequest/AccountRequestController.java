@@ -144,9 +144,12 @@ public class AccountRequestController {
       createAdminUser(
           request.getFirstName(), request.getLastName(), request.getEmail(), org.getExternalId());
       return new OrganizationAccountResponse(org.getExternalId());
-    } catch (ResourceException | BadRequestException e) {
+    } catch (ResourceException e) {
       // The `ResourceException` is thrown when an account is requested with an existing user email
       // address
+      throw new BadRequestException(
+          "This email address is already associated with a SimpleReport user.");
+    } catch (BadRequestException e) {
       // The `BadRequestException` is thrown when an account is requested with an existing org
       // name. This happens quite frequently and is expected behavior of the current form
       throw e;

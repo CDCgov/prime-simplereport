@@ -23,7 +23,9 @@ function createOrg() {
   this.section.app.setValue("@workPhoneNumberInput", "530-867-5309");
   this.section.app.click("@submitButton");
   this.expect.section("@app").not.to.contain.text("Sign up for SimpleReport");
-  this.expect.section("@app").to.contain.text("Identity verification consent");
+  this.expect
+    .section("@app")
+    .to.contain.text("You’re on your way to simpler reporting!");
   return this;
 }
 
