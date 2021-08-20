@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { Redirect } from "react-router";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -24,6 +23,7 @@ import {
 } from "./utils";
 
 import "./OrganizationForm.scss";
+import { Thanks } from "./Thanks";
 
 export interface OrganizationCreateRequest {
   name: string;
