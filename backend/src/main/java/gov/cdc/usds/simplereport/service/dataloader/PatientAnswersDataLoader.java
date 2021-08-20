@@ -35,12 +35,9 @@ public class PatientAnswersDataLoader extends KeyedDataLoaderFactory<TestOrder, 
                           .collect(
                               Collectors.toMap(PatientAnswers::getInternalId, Function.identity()));
 
-                  var result =
-                      testOrders.stream()
-                          .map(to -> found.getOrDefault(to.getPatientAnswersId(), null))
-                          .collect(Collectors.toList());
-
-                  return result;
+                  return testOrders.stream()
+                      .map(to -> found.getOrDefault(to.getPatientAnswersId(), null))
+                      .collect(Collectors.toList());
                 }));
   }
 }

@@ -13,14 +13,10 @@ import graphql.kickstart.tools.GraphQLResolver;
 import graphql.schema.DataFetchingEnvironment;
 import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ApiTestOrderDataResolver implements GraphQLResolver<ApiTestOrder> {
-  private static final Logger LOG = LoggerFactory.getLogger(ApiTestOrderDataResolver.class);
-
   private final TestOrderPatientDataLoader _testOrderPatientDataLoader;
   private final TestOrderDeviceTypeDataLoader _testOrderDeviceTypeDataLoader;
   private final PatientAnswersDataLoader _patientAnswersDataLoader;
