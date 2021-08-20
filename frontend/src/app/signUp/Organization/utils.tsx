@@ -23,8 +23,8 @@ export const OrganizationTypeEnum: { [key in OrganizationType]: string } = {
   nursing_home: "Nursing home",
   other: "Other",
   pharmacy: "Pharmacy",
-  primary_care: "Primary care / Mental health outpatient",
-  treatment_center: "Substance abuse treatment center",
+  primary_care: "Primary care/Mental health outpatient",
+  treatment_center: "Substance use disorder treatment center",
   urgent_care: "Urgent care",
 };
 
