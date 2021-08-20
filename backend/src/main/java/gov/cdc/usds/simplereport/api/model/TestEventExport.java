@@ -216,6 +216,24 @@ public class TestEventExport {
     return patient.map(Person::getRole).map(PersonRole::toString).orElse("");
   }
 
+  @JsonProperty("Patient_tribal_affiliation")
+  public String getPatientTribalAffiliation() {
+    return patient
+        .map(Person::getTribalAffiliation)
+        .map(
+            affiliationList -> {
+              if (affiliationList.isEmpty()) {
+                return "";
+              }
+              var affiliation = affiliationList.get(0);
+              if (affiliation == null) {
+                return "";
+              }
+              return affiliation;
+            })
+        .orElse("");
+  }
+
   @JsonProperty("Employed_in_healthcare")
   public String getPatientEmployedInHealthcare() {
     return boolToYesNoUnk(patient.map(Person::getEmployedInHealthcare));
