@@ -360,16 +360,13 @@ const ManageUsers: React.FC<Props> = ({
     <div className="prime-container card-container">
       <div className="usa-card__header">
         <h2>Manage Users</h2>
-        {process.env.REACT_APP_ADD_NEW_USER_ENABLED === "true" ? (
-          <Button
-            variant="outline"
-            onClick={() => updateShowAddUserModal(true)}
-            label="+ New user"
-          />
-        ) : null}
+        <Button
+          variant="outline"
+          onClick={() => updateShowAddUserModal(true)}
+          label="+ New user"
+        />
       </div>
-      {showAddUserModal &&
-      process.env.REACT_APP_ADD_NEW_USER_ENABLED === "true" ? (
+      {showAddUserModal ? (
         <CreateUserModal
           isUpdating={isUpdating}
           onClose={() => updateShowAddUserModal(false)}

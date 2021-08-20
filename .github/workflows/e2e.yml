@@ -12,7 +12,6 @@ env:
   JAVA_VERSION: 11
   FIREFOX_VERSION: latest
   PROJECT_ROOT: /home/runner/work/prime-simplereport/prime-simplereport # Hardcoding this here because env.WORKSPACE_ROOT gets overridden by one of the steps downstream. We only need this for Sonar.
-  REACT_APP_QR_CODE_ENABLED: true
   REACT_APP_TEST_TRIBAL_AFFILIATION_BYPASS: true
   SIMPLE_REPORT_TWILIO_ENABLED: false
   TWILIO_ACCOUNT_SID: ${{secrets.TWILIO_TEST_ACCOUNT_SID }}
