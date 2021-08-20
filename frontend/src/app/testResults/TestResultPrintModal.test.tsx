@@ -1,4 +1,5 @@
-import { act, fireEvent, render } from "@testing-library/react";
+import { act, fireEvent, render, RenderResult } from "@testing-library/react";
+import ReactDOM from "react-dom";
 import { MemoryRouter } from "react-router";
 
 import { DetachedTestResultPrintModal } from "./TestResultPrintModal";
@@ -40,9 +41,23 @@ const testResult = {
 
 describe("TestResultPrintModal", () => {
   let printSpy: jest.SpyInstance;
+  let component: RenderResult;
+  let container: RenderResult["container"];
 
   beforeAll(() => {
+    ReactDOM.createPortal = jest.fn((element, node) => {
+      return element;
+    }) as any;
+
     printSpy = jest.spyOn(window, "print");
+    component = render(
+      <DetachedTestResultPrintModal
+        data={{ testResult }}
+        testResultId="id"
+        closeModal={() => {}}
+      />
+    );
+    container = component.container;
   });
 
   afterAll(() => {
@@ -50,19 +65,10 @@ describe("TestResultPrintModal", () => {
   });
 
   it("should render the test result print view", async () => {
-    const { container, getAllByRole } = render(
-      <MemoryRouter>
-        <DetachedTestResultPrintModal
-          data={{ testResult }}
-          testResultId="id"
-          closeModal={() => {}}
-        />
-      </MemoryRouter>
-    );
     expect(container).toMatchSnapshot();
 
     await act(async () => {
-      await fireEvent.click(getAllByRole("button")[2]);
+      await fireEvent.click(component.getAllByRole("button")[2]);
     });
 
     expect(printSpy).toBeCalled();
