@@ -11,18 +11,6 @@ import { OrganizationTypeEnum } from "../signUp/Organization/utils";
 
 import { EditableOrganization } from "./ManageOrganizationContainer";
 
-const organizationTypes = Object.entries(
-  OrganizationTypeEnum
-).map(([key, value]) => ({ label: value, value: key })) as {
-  value: OrganizationType;
-  label: string;
-}[];
-interface Props {
-  organization: EditableOrganization;
-  onSave: (organization: EditableOrganization) => void;
-  canEditOrganizationName: boolean;
-}
-
 const ManageOrganization: React.FC<Props> = (props) => {
   const [organization, setOrganization] = useState(props.organization);
   const [errors, setErrors] = useState<
@@ -124,7 +112,15 @@ const ManageOrganization: React.FC<Props> = (props) => {
           )}
           <Select
             name="type"
-            options={organizationTypes}
+            options={
+              Object.entries(OrganizationTypeEnum).map(([key, value]) => ({
+                label: value,
+                value: key,
+              })) as {
+                value: OrganizationType;
+                label: string;
+              }[]
+            }
             label="Organization type"
             onChange={onChange("type")}
             value={organization.type}
