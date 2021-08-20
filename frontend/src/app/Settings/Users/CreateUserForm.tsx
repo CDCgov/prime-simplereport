@@ -127,7 +127,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
       <div className="grid-row">
         <Dropdown
           options={ROLE_OPTIONS}
-          label="Access Level"
+          label="Access level"
           name="role"
           selectedValue={newUser.role as string}
           className="grid-col"

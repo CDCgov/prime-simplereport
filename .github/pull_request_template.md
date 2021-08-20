@@ -38,4 +38,4 @@
 
 ## Cloud
 - [ ] DevOps team has been notified if PR requires ops support
-- [ ] If there are changes that cannot be tested locally, this has been deployed to our Azure `test` environment for verification
+- [ ] If there are changes that cannot be tested locally, this has been deployed to our Azure `test`, `dev`, or `pentest` environment for verification

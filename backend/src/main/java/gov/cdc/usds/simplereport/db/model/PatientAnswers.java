@@ -7,7 +7,6 @@ import org.hibernate.annotations.Type;
 
 @Entity
 public class PatientAnswers extends AuditedEntity {
-
   @Column
   @Type(type = "jsonb")
   private AskOnEntrySurvey askOnEntry;

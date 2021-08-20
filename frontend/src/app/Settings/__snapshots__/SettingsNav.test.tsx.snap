@@ -15,7 +15,7 @@ exports[`SettingsNav displays the nav order correctly and defaults to 'Manage Us
         <a
           href="/settings"
         >
-          Manage Users
+          Manage users
         </a>
       </li>
       <li
@@ -24,7 +24,7 @@ exports[`SettingsNav displays the nav order correctly and defaults to 'Manage Us
         <a
           href="/settings/facilities"
         >
-          Manage Facilities
+          Manage facilities
         </a>
       </li>
       <li
@@ -33,7 +33,7 @@ exports[`SettingsNav displays the nav order correctly and defaults to 'Manage Us
         <a
           href="/settings/organization"
         >
-          Manage Organization
+          Manage organization
         </a>
       </li>
       <li
@@ -43,7 +43,6 @@ exports[`SettingsNav displays the nav order correctly and defaults to 'Manage Us
           href="/settings/self-registration"
         >
           Patient self-registration
-           
         </a>
       </li>
     </ul>

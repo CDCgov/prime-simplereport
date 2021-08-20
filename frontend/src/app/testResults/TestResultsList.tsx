@@ -10,14 +10,13 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useSelector } from "react-redux";
 import moment from "moment";
 import classnames from "classnames";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
-import { displayFullName, displayFullNameInOrder } from "../utils";
+import { displayFullName } from "../utils";
 import { isValidDate } from "../utils/date";
 import {
   InjectedQueryWrapperProps,
@@ -44,6 +43,7 @@ import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 import { Patient } from "../patients/ManagePatients";
 import SearchResults from "../testQueue/addToQueue/SearchResults";
 import Select from "../commonComponents/Select";
+import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
@@ -205,7 +205,7 @@ function testResultRows(
         <td>{r.deviceType.name}</td>
         <td>{hasSymptoms(r.noSymptoms, r.symptoms)}</td>
         <td>
-          {displayFullNameInOrder(
+          {displayFullName(
             r.createdBy.nameInfo.firstName,
             r.createdBy.nameInfo.middleName,
             r.createdBy.nameInfo.lastName
@@ -370,7 +370,7 @@ export const DetachedTestResultsList: any = ({
           <div className="prime-container card-container sr-test-results-list">
             <div className="usa-card__header">
               <h2>
-                Test Results
+                Test results
                 {!loadingTotalResults && (
                   <span className="sr-showing-results-on-page">
                     Showing{" "}
@@ -579,9 +579,8 @@ type TestResultsListProps = Omit<Props, OmittedProps>;
 const TestResultsList = (props: TestResultsListProps) => {
   useDocumentTitle("Results");
 
-  const activeFacilityId = useSelector(
-    (state) => (state as any).facility.id as string
-  );
+  const [facility] = useSelectedFacility();
+  const activeFacilityId = facility?.id || "";
 
   const [selectedPatientId, setSelectedPatientId] = useState<string>("");
   const [resultFilter, setResultFilter] = useState<string>("");
@@ -651,7 +650,7 @@ const TestResultsList = (props: TestResultsListProps) => {
     fetchPolicy: "no-cache",
   });
 
-  if (activeFacilityId.length < 1) {
+  if (!activeFacilityId) {
     return <div>"No facility selected"</div>;
   }
 

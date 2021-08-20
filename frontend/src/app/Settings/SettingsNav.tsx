@@ -1,31 +1,24 @@
 import React from "react";
 
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
-import { NewFeatureTag } from "../commonComponents/NewFeatureTag";
 
 const SettingsNav = () => {
   return (
     <nav className="prime-secondary-nav" aria-label="Secondary navigation">
       <ul className="usa-nav__secondary-links prime-nav">
-        {process.env.REACT_APP_USER_SETTINGS_ENABLED === "true" ? (
-          <li className="usa-nav__secondary-item">
-            <LinkWithQuery
-              to={`/settings`}
-              activeClassName="active"
-              exact={true}
-            >
-              Manage Users
-            </LinkWithQuery>
-          </li>
-        ) : null}
+        <li className="usa-nav__secondary-item">
+          <LinkWithQuery to={`/settings`} activeClassName="active" exact={true}>
+            Manage users
+          </LinkWithQuery>
+        </li>
         <li className="usa-nav__secondary-item">
           <LinkWithQuery to={`/settings/facilities`} activeClassName="active">
-            Manage Facilities
+            Manage facilities
           </LinkWithQuery>
         </li>
         <li className="usa-nav__secondary-item">
           <LinkWithQuery to={`/settings/organization`} activeClassName="active">
-            Manage Organization
+            Manage organization
           </LinkWithQuery>
         </li>
         <li className="usa-nav__secondary-item">
@@ -33,8 +26,7 @@ const SettingsNav = () => {
             to={`/settings/self-registration`}
             activeClassName="active"
           >
-            Patient self-registration{" "}
-            <NewFeatureTag feature="selfRegistration" />
+            Patient self-registration
           </LinkWithQuery>
         </li>
       </ul>

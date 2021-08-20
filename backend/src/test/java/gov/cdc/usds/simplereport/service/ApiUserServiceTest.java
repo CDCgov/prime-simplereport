@@ -19,7 +19,9 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Autowired ApiUserRepository _apiUserRepo;

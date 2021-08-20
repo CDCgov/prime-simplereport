@@ -75,7 +75,6 @@ const yesNoUnknownToBool = (
 interface Props {
   patient: Nullable<PersonFormData>;
   patientId?: string;
-  activeFacilityId: string;
   savePerson: (person: Nullable<PersonFormData>) => void;
   hideFacilitySelect?: boolean;
   getHeader?: (
