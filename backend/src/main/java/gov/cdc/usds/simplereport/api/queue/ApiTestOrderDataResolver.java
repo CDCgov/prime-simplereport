@@ -1,25 +1,18 @@
 package gov.cdc.usds.simplereport.api.queue;
 
-import static gov.cdc.usds.simplereport.service.dataloader.DataLoaderRegistryBuilder.loadFuture;
-
 import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
-import gov.cdc.usds.simplereport.api.model.errors.NoDataLoaderFoundException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.dataloader.PatientAnswersDataLoader;
 import gov.cdc.usds.simplereport.service.dataloader.TestOrderDeviceTypeDataLoader;
 import gov.cdc.usds.simplereport.service.dataloader.TestOrderPatientDataLoader;
-import graphql.kickstart.execution.context.GraphQLContext;
 import graphql.kickstart.tools.GraphQLResolver;
 import graphql.schema.DataFetchingEnvironment;
 import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
-import org.dataloader.DataLoader;
-import org.dataloader.DataLoaderRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -28,21 +21,32 @@ import org.springframework.stereotype.Component;
 public class ApiTestOrderDataResolver implements GraphQLResolver<ApiTestOrder> {
   private static final Logger LOG = LoggerFactory.getLogger(ApiTestOrderDataResolver.class);
 
+  private final TestOrderPatientDataLoader _testOrderPatientDataLoader;
+  private final TestOrderDeviceTypeDataLoader _testOrderDeviceTypeDataLoader;
+  private final PatientAnswersDataLoader _patientAnswersDataLoader;
+
+  public ApiTestOrderDataResolver(
+      TestOrderPatientDataLoader testOrderPatientDataLoader,
+      TestOrderDeviceTypeDataLoader testOrderDeviceTypeDataLoader,
+      PatientAnswersDataLoader patientAnswersDataLoader) {
+    _testOrderPatientDataLoader = testOrderPatientDataLoader;
+    _testOrderDeviceTypeDataLoader = testOrderDeviceTypeDataLoader;
+    _patientAnswersDataLoader = patientAnswersDataLoader;
+  }
+
   private CompletableFuture<AskOnEntrySurvey> getSurvey(
       ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    LOG.trace("getSurvey({})", apiTestOrder.getInternalId());
-    DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
-    DataLoader<TestOrder, PatientAnswers> loader =
-        registry.getDataLoader(PatientAnswersDataLoader.KEY);
-    if (loader == null) {
-      throw new NoDataLoaderFoundException(PatientAnswersDataLoader.KEY);
-    }
-    return loader.load(apiTestOrder.getWrapped()).thenApply(PatientAnswers::getSurvey);
+    return _patientAnswersDataLoader
+        .load(apiTestOrder.getWrapped(), dfe)
+        .thenApply(PatientAnswers::getSurvey);
   }
 
   public CompletableFuture<Person> getPatient(
       ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return loadFuture(apiTestOrder.getWrapped().getPatient(), dfe, TestOrderPatientDataLoader.KEY);
+    // why this doesn't cause Hibernate to eagerly load when other very similar logic doesn't is
+    // beyond me
+    return _testOrderPatientDataLoader.load(
+        apiTestOrder.getWrapped().getPatient().getInternalId(), dfe);
   }
 
   public CompletableFuture<String> getPregnancy(
@@ -87,12 +91,6 @@ public class ApiTestOrderDataResolver implements GraphQLResolver<ApiTestOrder> {
 
   public CompletableFuture<DeviceType> getDeviceType(
       ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
-    DataLoader<TestOrder, DeviceType> loader =
-        registry.getDataLoader(TestOrderDeviceTypeDataLoader.KEY);
-    if (loader == null) {
-      throw new NoDataLoaderFoundException(TestOrderDeviceTypeDataLoader.KEY);
-    }
-    return loader.load(apiTestOrder.getWrapped());
+    return _testOrderDeviceTypeDataLoader.load(apiTestOrder.getWrapped(), dfe);
   }
 }
