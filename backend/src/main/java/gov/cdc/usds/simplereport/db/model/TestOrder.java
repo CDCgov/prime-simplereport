@@ -5,7 +5,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.Map;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,7 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
-import org.json.JSONObject;
 
 @Entity
 public class TestOrder extends BaseTestInfo {
