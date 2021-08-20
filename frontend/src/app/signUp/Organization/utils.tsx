@@ -6,7 +6,7 @@ import { liveJurisdictions } from "../../../config/constants";
 
 import { OrganizationCreateRequest } from "./OrganizationForm";
 
-export const OrganizationTypeEnum = {
+export const OrganizationTypeEnum: { [key in OrganizationType]: string } = {
   airport: "Airport/Transit station",
   assisted_living: "Assisted living facility",
   camp: "Camp",
@@ -23,8 +23,8 @@ export const OrganizationTypeEnum = {
   nursing_home: "Nursing home",
   other: "Other",
   pharmacy: "Pharmacy",
-  primary_care: "Primary care / Mental health outpatient",
-  treatment_center: "Substance abuse treatment center",
+  primary_care: "Primary care/Mental health outpatient",
+  treatment_center: "Substance use disorder treatment center",
   urgent_care: "Urgent care",
 };
 

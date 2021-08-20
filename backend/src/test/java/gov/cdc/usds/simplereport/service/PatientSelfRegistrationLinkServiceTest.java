@@ -20,7 +20,9 @@ import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class PatientSelfRegistrationLinkServiceTest
     extends BaseServiceTest<PatientSelfRegistrationLinkService> {
 

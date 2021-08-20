@@ -20,7 +20,9 @@ import java.util.Date;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class DataHubUploaderServiceTest extends BaseServiceTest<DataHubUploaderService> {
   @Autowired private TestDataFactory _dataFactory;
 

@@ -16,7 +16,7 @@ import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
-import { displayFullName, displayFullNameInOrder } from "../utils";
+import { displayFullName } from "../utils";
 import { isValidDate } from "../utils/date";
 import {
   InjectedQueryWrapperProps,
@@ -205,7 +205,7 @@ function testResultRows(
         <td>{r.deviceType.name}</td>
         <td>{hasSymptoms(r.noSymptoms, r.symptoms)}</td>
         <td>
-          {displayFullNameInOrder(
+          {displayFullName(
             r.createdBy.nameInfo.firstName,
             r.createdBy.nameInfo.middleName,
             r.createdBy.nameInfo.lastName
@@ -370,7 +370,7 @@ export const DetachedTestResultsList: any = ({
           <div className="prime-container card-container sr-test-results-list">
             <div className="usa-card__header">
               <h2>
-                Test Results
+                Test results
                 {!loadingTotalResults && (
                   <span className="sr-showing-results-on-page">
                     Showing{" "}

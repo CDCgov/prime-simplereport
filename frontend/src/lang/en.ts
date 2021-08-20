@@ -131,7 +131,7 @@ export const en = {
           county: "County",
           city: "City",
           state: "State",
-          zip: "Zip code",
+          zip: "ZIP code",
         },
         demographics: {
           heading: "Demographics",

@@ -9,7 +9,7 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
       class="usa-card__header"
     >
       <h2>
-        Manage Users
+        Manage users
       </h2>
       <button
         class="usa-button usa-button--outline"
@@ -84,7 +84,7 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
             <h2
               class="display-inline-block margin-y-1"
             >
-              Bob Bobberoo
+              Bobberoo, Bob
             </h2>
             <span
               class="usa-tag margin-left-1 bg-base-lighter text-ink"
@@ -333,7 +333,7 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
       class="usa-card__header"
     >
       <h2>
-        Manage Users
+        Manage users
       </h2>
       <button
         class="usa-button usa-button--outline"
@@ -408,7 +408,7 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
             <h2
               class="display-inline-block margin-y-1"
             >
-              John Arthur
+              Arthur, John
             </h2>
             <button
               class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
