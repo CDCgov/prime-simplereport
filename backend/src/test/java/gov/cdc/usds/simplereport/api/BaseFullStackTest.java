@@ -30,7 +30,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
  */
 @SpringBootTest(
     webEnvironment = WebEnvironment.RANDOM_PORT,
-    properties = {"spring-hibernate-query-utils.n-plus-one-queries-detection.error-level=ERROR"})
+    properties = {"hibernate.query.interceptor.error-level=EXCEPTION"})
 @AutoConfigureMockMvc
 public abstract class BaseFullStackTest {
 
