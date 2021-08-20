@@ -1,12 +1,12 @@
-FROM openjdk:11 AS build
+FROM adoptopenjdk/openjdk11:alpine-jre AS build
 WORKDIR /home/schemaspy
 
-RUN apt update && apt install -y graphviz
+RUN apk update && apk add graphviz curl
 RUN curl -H "Accept: application/zip" -L https://github.com/schemaspy/schemaspy/releases/download/v6.1.0/schemaspy-6.1.0.jar > schemaspy.jar
 RUN curl -H "Accept: application/zip" https://jdbc.postgresql.org/download/postgresql-42.2.18.jar > postgresql.jar
-
 RUN java -jar schemaspy.jar -debug -t pgsql -db simple_report -u postgres -p admin_password_for_local_dev_is_not_very_secure -host db:5432 -o output -s "simple_report" -dp postgresql.jar || true
-FROM nginx:latest
+
+FROM nginx:alpine
 EXPOSE 80
 COPY --from=build /home/schemaspy/output /output
 COPY ./schemaspy.conf /etc/nginx/nginx.conf 

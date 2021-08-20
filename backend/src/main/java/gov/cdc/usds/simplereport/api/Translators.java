@@ -87,13 +87,21 @@ public class Translators {
     }
   }
 
-  public static String parseString(String value) {
+  public static String parseStringNoTrim(String value) {
     if (value == null || "".equals(value)) {
       return null;
     }
     if (value.length() >= MAX_STRING_LENGTH) {
       throw new IllegalGraphqlArgumentException(
           "Value received exceeds field length limit of " + MAX_STRING_LENGTH + " characters");
+    }
+    return value;
+  }
+
+  public static String parseString(String v) {
+    String value = parseStringNoTrim(v);
+    if (value == null) {
+      return null;
     }
     return value.trim();
   }

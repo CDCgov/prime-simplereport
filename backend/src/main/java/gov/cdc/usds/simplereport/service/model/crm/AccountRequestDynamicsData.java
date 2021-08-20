@@ -13,7 +13,7 @@ public class AccountRequestDynamicsData {
   static final String BAH_EMAILADDRESS_TEXT = "bah_emailaddress_text";
   static final String BAH_WORKPHONENUMBER_TEXT = "bah_workphonenumber_text";
   static final String BAH_CELLPHONENUMBER_TEXT = "bah_cellphonenumber_text";
-  static final String BAH_ORGANIZATIONNAME_TEXT = "bah_organizationname_text";
+  static final String BAH_NAME_TEXT = "bah_name_text";
   static final String BAH_OTHERTESTINGSITE_TEXT = "bah_othertestingsite_text";
   static final String BAH_STREETADDRESS_TEXT = "bah_streetaddress_text";
   static final String BAH_STREETADDRESS_2_TEXT = "bah_streetaddress2_text";
@@ -75,8 +75,8 @@ public class AccountRequestDynamicsData {
     variableMap.put(BAH_EMAILADDRESS_TEXT, organizationAccountRequest.getEmail());
     variableMap.put(BAH_WORKPHONENUMBER_TEXT, organizationAccountRequest.getWorkPhoneNumber());
     // variableMap.put("bah_state_text", accountRequest.getState()); // need mapping to dynamics
-    variableMap.put(BAH_ORGANIZATIONNAME_TEXT, organizationAccountRequest.getOrganizationName());
-    variableMap.put(BAH_OTHERTESTINGSITE_TEXT, organizationAccountRequest.getOrganizationType());
+    variableMap.put(BAH_NAME_TEXT, organizationAccountRequest.getName());
+    variableMap.put(BAH_OTHERTESTINGSITE_TEXT, organizationAccountRequest.getType());
   }
 
   private void populateAccountRequestFields(Map<String, Object> variableMap) {
@@ -96,8 +96,8 @@ public class AccountRequestDynamicsData {
     variableMap.put(BAH_COUNTY_TEXT, accountRequest.getCounty());
     variableMap.put(
         BAH_TESTINGSITETYPE_CODE, DynamicsValueMapping.convertToCode(Prefix.TST, "other"));
-    variableMap.put(BAH_ORGANIZATIONNAME_TEXT, accountRequest.getOrganizationName());
-    variableMap.put(BAH_OTHERTESTINGSITE_TEXT, accountRequest.getOrganizationType());
+    variableMap.put(BAH_NAME_TEXT, accountRequest.getName());
+    variableMap.put(BAH_OTHERTESTINGSITE_TEXT, accountRequest.getType());
     variableMap.put(BAH_TESTINGSITENAME_TEXT, accountRequest.getFacilityName());
     variableMap.put(BAH_CLIANUMBER_NUM, accountRequest.getCliaNumber());
     variableMap.put(
@@ -156,7 +156,7 @@ public class AccountRequestDynamicsData {
     variableMap.put(BAH_ZIPCODE_TEXT, DynamicsValueMapping.getDefaultValue());
     variableMap.put(BAH_COUNTY_TEXT, DynamicsValueMapping.getDefaultValue());
     variableMap.put(BAH_TESTINGSITETYPE_CODE, DynamicsValueMapping.getDefaultValue());
-    variableMap.put(BAH_ORGANIZATIONNAME_TEXT, DynamicsValueMapping.getDefaultValue());
+    variableMap.put(BAH_NAME_TEXT, DynamicsValueMapping.getDefaultValue());
     variableMap.put(BAH_OTHERTESTINGSITE_TEXT, DynamicsValueMapping.getDefaultValue());
     variableMap.put(BAH_TESTINGSITENAME_TEXT, DynamicsValueMapping.getDefaultValue());
     variableMap.put(BAH_CLIANUMBER_NUM, DynamicsValueMapping.getDefaultValue());

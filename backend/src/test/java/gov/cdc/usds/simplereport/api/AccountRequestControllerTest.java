@@ -23,8 +23,6 @@ import gov.cdc.usds.simplereport.api.accountrequest.AccountRequestController;
 import gov.cdc.usds.simplereport.api.accountrequest.errors.AccountRequestFailureException;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
-import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
-import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
@@ -69,6 +67,7 @@ import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
@@ -116,8 +115,6 @@ class AccountRequestControllerTest {
   @Captor private ArgumentCaptor<String> externalIdCaptor;
   @Captor private ArgumentCaptor<PersonName> nameCaptor;
   @Captor private ArgumentCaptor<StreetAddress> addressCaptor;
-  @Captor private ArgumentCaptor<AccountRequest> accountRequestCaptor;
-  @Captor private ArgumentCaptor<OrganizationAccountRequest> organizationAccountRequestCaptor;
 
   private static final String FAKE_ORG_EXTERNAL_ID_PREFIX = "RI-Day-Hayes-Trading-";
   private static final String FAKE_ORG_EXTERNAL_ID =
@@ -187,7 +184,7 @@ class AccountRequestControllerTest {
     // also need to add default devices and other
     String requestBody =
         String.format(
-            "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"email\":\"kyvuzoxy@mailinator.com\",\"work-phone-number\":\"+1 (969) 768-2863\",\"street-address1\":\"707 White Milton Extension\",\"street-address2\":\"Apt 3\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"organization-name\":\"Day Hayes Trading\",\"organization-type\":\"%s\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-street-address2\":\"UNAVAILABLE\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Abbott IDNow, BD Veritor, Cue, LumiraDX\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}",
+            "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"email\":\"kyvuzoxy@mailinator.com\",\"work-phone-number\":\"+1 (969) 768-2863\",\"street-address1\":\"707 White Milton Extension\",\"street-address2\":\"Apt 3\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"name\":\"Day Hayes Trading\",\"type\":\"%s\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-street-address2\":\"UNAVAILABLE\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Abbott IDNow, BD Veritor, Cue, LumiraDX\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}",
             organizationType);
 
     Organization organization = mock(Organization.class);
@@ -382,7 +379,7 @@ class AccountRequestControllerTest {
   void organizationAccountRequestIsOk() throws Exception {
     String resourceLink = ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE;
     String requestBody =
-        "{\"first-name\": \"Mary\", \"last-name\": \"Lopez\", \"email\": \"kyvuzoxy@mailinator.com\", \"work-phone-number\": \"+1 (969) 768-2863\", \"state\": \"RI\", \"organization-name\": \"Day Hayes Trading\", \"organization-type\": \"Homeless Shelter\"}";
+        "{\"firstName\": \"Mary\", \"lastName\": \"Lopez\", \"email\": \"kyvuzoxy@mailinator.com\", \"workPhoneNumber\": \"+1 (969) 768-2863\", \"state\": \"RI\", \"name\": \"Day Hayes Trading\", \"type\": \"Homeless Shelter\"}";
 
     Organization organization = mock(Organization.class);
     ApiUser apiUser = mock(ApiUser.class);
@@ -440,7 +437,7 @@ class AccountRequestControllerTest {
   void accountRequestWithEmailsWithoutFacilityIsOk() throws Exception {
     String resourceLink = ResourceLinks.ACCOUNT_REQUEST_WITHOUT_FACILITY_WITH_EMAILS;
     String requestBody =
-        "{\"first-name\": \"Mary\", \"last-name\": \"Lopez\", \"email\": \"kyvuzoxy@mailinator.com\", \"work-phone-number\": \"+1 (969) 768-2863\", \"state\": \"RI\", \"organization-name\": \"Day Hayes Trading\", \"organization-type\": \"Homeless Shelter\"}";
+        "{\"firstName\": \"Mary\", \"lastName\": \"Lopez\", \"email\": \"kyvuzoxy@mailinator.com\", \"workPhoneNumber\": \"+1 (969) 768-2863\", \"state\": \"RI\", \"name\": \"Day Hayes Trading\", \"type\": \"Homeless Shelter\"}";
 
     Organization organization = mock(Organization.class);
     ApiUser apiUser = mock(ApiUser.class);
@@ -463,7 +460,10 @@ class AccountRequestControllerTest {
             .characterEncoding("UTF-8")
             .content(requestBody);
 
-    this._mockMvc.perform(builder).andExpect(status().isOk());
+    MvcResult mvcResult = this._mockMvc.perform(builder).andExpect(status().isOk()).andReturn();
+
+    assertThat(mvcResult.getResponse().getContentAsString())
+        .contains("{\"orgExternalId\":\"" + FAKE_ORG_EXTERNAL_ID + "\"}");
 
     // v2 account request does not send any emails
     verify(emailService, times(1)).send(anyList(), anyString(), any());
@@ -497,7 +497,7 @@ class AccountRequestControllerTest {
   @Test
   void accountRequestValidatesInput() throws Exception {
     String requestBody =
-        "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"work-phone-number\":\"+1 (969) 768-2863\",\"street-address1\":\"707 White Milton Extension\",\"apt-suite-other\":\"FL\",\"apt-floor-suite-no\":\"694\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"organization-name\":\"Day Hayes Trading\",\"organization-type\":\"Homeless Shelter\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-apt-suite-other\":\"UNAVAILABLE\",\"op-apt-floor-suite-no\":\"546\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Abbott IDNow, BD Veritor, LumiraDX\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}";
+        "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"work-phone-number\":\"+1 (969) 768-2863\",\"street-address1\":\"707 White Milton Extension\",\"apt-suite-other\":\"FL\",\"apt-floor-suite-no\":\"694\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"name\":\"Day Hayes Trading\",\"type\":\"Homeless Shelter\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-apt-suite-other\":\"UNAVAILABLE\",\"op-apt-floor-suite-no\":\"546\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Abbott IDNow, BD Veritor, LumiraDX\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}";
 
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.ACCOUNT_REQUEST)
@@ -518,7 +518,7 @@ class AccountRequestControllerTest {
   @Test
   void accountRequestSubmittedDeviceNotRegistered() throws Exception {
     String requestBody =
-        "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"email\":\"kyvuzoxy@mailinator.com\",\"work-phone-number\":\"+1 (969) 768-2863\",\"street-address1\":\"707 White Milton Extension\",\"street-address2\":\"Apt 3\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"organization-name\":\"Day Hayes Trading\",\"organization-type\":\"Homeless Shelter\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-street-address2\":\"UNAVAILABLE\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Invalid Device\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}";
+        "{\"first-name\":\"Mary\",\"last-name\":\"Lopez\",\"email\":\"kyvuzoxy@mailinator.com\",\"work-phone-number\":\"+1 (969) 768-2863\",\"street-address1\":\"707 White Milton Extension\",\"street-address2\":\"Apt 3\",\"city\":\"Reprehenderit nostr\",\"state\":\"RI\",\"zip\":\"13046\",\"county\":\"Et consectetur sunt\",\"name\":\"Day Hayes Trading\",\"type\":\"Homeless Shelter\",\"facility-name\":\"Fiona Payne\",\"facility-phone-number\":\"800-888-8888\",\"clia-number\":\"474\",\"workflow\":\"Aut ipsum aute aute\",\"op-first-name\":\"Sawyer\",\"op-last-name\":\"Sears\",\"npi\":\"Quis sit eiusmod Nam\",\"op-phone-number\":\"+1 (583) 883-4172\",\"op-street-address1\":\"290 East Rocky Second Street\",\"op-street-address2\":\"UNAVAILABLE\",\"op-city\":\"Dicta cumque sit ip\",\"op-state\":\"AR\",\"op-zip\":\"43675\",\"op-county\":\"Asperiores illum in\",\"records-test-results\":\"No\",\"process-time\":\"15–30 minutes\",\"submitting-results-time\":\"Less than 30 minutes\",\"browsers\":\"Other\",\"testing-devices\":\"Invalid Device\",\"default-testing-device\":\"LumiraDX\",\"access-devices\":\"Smartphone\"}";
 
     DeviceType device1 = mock(DeviceType.class);
     UUID deviceUuid1 = UUID.randomUUID();

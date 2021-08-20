@@ -27,9 +27,8 @@ https://simplereport.gov/
     - [Frontend-Setup](#frontend-setup)
     - [Linters](#linters)
     - [Storybook and Chromatic](#storybook-and-chromatic)
+  - [Cloud Environments](#cloud-environments)
   - [Deploy](#deploy)
-    - [Cloud Environments](#cloud-environments)
-    - [Deploy With Release](#deploy-with-release)
     - [Revert to a Previous Release](#revert-to-a-previous-release)
     - [Deploy With Action](#deploy-with-action)
 
@@ -332,36 +331,21 @@ any branch.  The changes are automatically accepted on merge to `main`.
 
 View the [SimpleReport Storybook](https://main--60a556a7c807cc0039ec6786.chromatic.com/)
 
+## Cloud Environments
+
+**Name**|**Frontend**|**API**|**Deployment**|**Intended Use**
+:-----:|:-----:|:-----:|:-----:|:-----:
+prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|Dispatched on success of `stg` deploy| Used by end users
+demo|[/app/static/commit.txt](https://demo.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://demo.simplereport.gov/api/actuator/info)|Worflow on success of `stg` deploy| Used internally to demo the application to potential end users
+training|[/app/static/commit.txt](https://training.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://training.simplereport.gov/api/actuator/info)|Dispatched on success of `stg` deploy| Used externally by potential users to get a better uderstanding of the product
+stg|[/app/static/commit.txt](https://stg.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://stg.simplereport.gov/api/actuator/info)|Push to `main`| To validate the application work in the cloud and works with prod like data
+dev|[/app/static/commit.txt](https://dev.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://dev.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action)| To validate PRs before merging to main
+test|[/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://test.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action)| To validate PRs before merging to main
+pentest|[/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action)| To validate PRs before merging to main
+
 ## Deploy
-
-### Cloud Environments
-
-**Type**|**Frontend**|**API**|**Deployment**
-:-----:|:-----:|:-----:|:-----:
-Prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|[Release](#deploy-with-release)
-Demo|[/app/static/commit.txt](https://demo.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://demo.simplereport.gov/api/actuator/info)|[Release](#deploy-with-release) & [Action](#deploy-with-action)
-Training|[/app/static/commit.txt](https://training.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://training.simplereport.gov/api/actuator/info)|[Release](#deploy-with-release) & [Action](#deploy-with-action)
-Staging|[/app/static/commit.txt](https://stg.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://stg.simplereport.gov/api/actuator/info)|Push to `main`
-Dev|[/app/static/commit.txt](https://dev.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://dev.simplereport.gov/api/actuator/info)|Push to `main`
-Test|[/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://test.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action)
-Pentest|[/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action)
-
-### Deploy With Release
-
-Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/releases/new) page
-
-![full-dialog](https://user-images.githubusercontent.com/28784751/121424756-b31bd380-c93f-11eb-987d-38934f0570ae.png)
-
-1. <img align="right" width="517" alt="select-commit" src="https://user-images.githubusercontent.com/28784751/121423065-df365500-c93d-11eb-9b95-a63130d602e6.png">
-   Select the last commit on `main`. Selecting
-   the commit explicitly ensures that you do not accidentally release changes that somebody else is in the
-   process of merging.<br clear="right" />
-2. <img align="right" width="399" alt="new-release-name" src="https://user-images.githubusercontent.com/28784751/121423127-f07f6180-c93d-11eb-9e76-53aa5187a633.png">
-   Add a version tag. If the release was `v1` then this release should be `v2` 
-3. Add a release title summarizing the changes
-4. If applicable describe some of the changes in detail in the description
-5. Click publish release
-6. Verify that the changes are live in `prod`, `demo` and `training`.
+SimpleReport uses a continuous deployment deployment (CD) process
+![deployment-1](https://user-images.githubusercontent.com/53869143/130135128-e4cf1b7a-2903-4f20-bd3f-a98daea15fd1.png)
 
 ### Revert to a Previous Release
 

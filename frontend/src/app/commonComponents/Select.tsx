@@ -10,7 +10,7 @@ type Option<T> = {
 
 interface Props<T> {
   options: Option<T>[];
-  label?: string;
+  label?: string | React.ReactNode;
   name?: string;
   value: T;
   onChange: (value: T) => void;

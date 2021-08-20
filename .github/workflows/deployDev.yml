@@ -2,9 +2,6 @@ name: Deploy Dev
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 env:
   DEPLOY_ENV: dev
