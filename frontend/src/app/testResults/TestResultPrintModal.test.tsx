@@ -1,6 +1,6 @@
 import { act, fireEvent, render, RenderResult } from "@testing-library/react";
+import MockDate from "mockdate";
 import ReactDOM from "react-dom";
-import { MemoryRouter } from "react-router";
 
 import { DetachedTestResultPrintModal } from "./TestResultPrintModal";
 
@@ -50,6 +50,8 @@ describe("TestResultPrintModal", () => {
     }) as any;
 
     printSpy = jest.spyOn(window, "print");
+
+    MockDate.set("2021/01/01");
     component = render(
       <DetachedTestResultPrintModal
         data={{ testResult }}

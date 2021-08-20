@@ -263,7 +263,7 @@ exports[`TestResultPrintModal should render the test result print view 1`] = `
           <p>
             Test result printed
              
-            8/20/2021, 8:09:09 PM
+            1/1/2021, 12:00:00 AM
           </p>
         </footer>
       </div>
