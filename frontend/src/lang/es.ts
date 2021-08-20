@@ -295,7 +295,9 @@ export const es: LanguageConfig = {
             "Llame al 911 o llame primero a su sala de emergencias local: dígale al operador que necesita atención para alguien que tiene o podría tener COVID-19.",
           difficultNewsLink:
             "Obtener un resultado positivo en la prueba de COVID-19 puede ser una noticia difícil, por lo que es importante tomar <0> medidas para sobrellevar el estrés </0> " +
-            "durante este periodo. Comuníquese con su sistema de apoyo y programe una cita por teléfono o video con un profesional de salud mental si es necesario.",
+            "durante este periodo<1></1>. Comuníquese con su sistema de apoyo y programe una cita por teléfono o video con un profesional de salud mental si es necesario.",
+          difficultNewsURL:
+            "espanol.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html",
           moreInformation:
             "Para más información: espanol.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/index.html",
         },

@@ -279,7 +279,9 @@ export const en = {
           p3:
             "Call 911 or call ahead to your local emergency room: Notify the operator that you are seeking care for someone who has or may have COVID-19.",
           difficultNewsLink:
-            "Getting a positive COVID-19 test result can be difficult news, so it’s important to <0> take steps to cope with stress </0> during this time. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.",
+            "Getting a positive COVID-19 test result can be difficult news, so it’s important to <0> take steps to cope with stress </0> during this time<1></1>. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.",
+          difficultNewsURL:
+            "cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html",
           moreInformation:
             "More information is available at cdc.gov/coronavirus/2019-ncov/if-you-are-sick",
         },

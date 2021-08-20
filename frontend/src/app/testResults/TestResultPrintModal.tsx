@@ -256,9 +256,8 @@ export const DetachedTestResultPrintModal = ({
                   parent="p"
                   i18nKey="testResult.notes.positive.difficultNewsLink"
                   components={[
-                    <a href="https://www.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html">
-                      take steps to cope with stress
-                    </a>,
+                    null,
+                    `: ${t("testResult.notes.positive.difficultNewsURL")}`,
                   ]}
                 />
               </>
