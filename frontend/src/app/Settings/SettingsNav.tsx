@@ -1,7 +1,6 @@
 import React from "react";
 
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
-import { NewFeatureTag } from "../commonComponents/NewFeatureTag";
 
 const SettingsNav = () => {
   return (
@@ -33,8 +32,7 @@ const SettingsNav = () => {
             to={`/settings/self-registration`}
             activeClassName="active"
           >
-            Patient self-registration{" "}
-            <NewFeatureTag feature="selfRegistration" />
+            Patient self-registration
           </LinkWithQuery>
         </li>
       </ul>
