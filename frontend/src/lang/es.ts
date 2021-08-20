@@ -279,8 +279,10 @@ export const es: LanguageConfig = {
               "casa.",
           },
           p2:
-            "Esté atento a los síntomas y <0> sepa cuándo buscar atención médica de emergencia</0>: espanol.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html. Si alguien presenta alguno de estos síntomas, busque atención médica de " +
+            "Esté atento a los síntomas y <0> sepa cuándo buscar atención médica de emergencia</0>. Si alguien presenta alguno de estos síntomas, busque atención médica de " +
             "emergencia de inmediato:",
+          symptomsLink:
+            "espanol.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html",
           emergency: {
             li0: "Dificultad para respirar",
             li1: "Dolor o presión persistente en el pecho",
