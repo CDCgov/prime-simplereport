@@ -70,8 +70,7 @@ const UserDetail: React.FC<Props> = ({
             YOU
           </span>
         ) : null}
-        {process.env.REACT_APP_EDIT_USER_ROLE === "true" &&
-        user.status === "SUSPENDED" ? (
+        {user.status === "SUSPENDED" ? (
           <Button
             variant="secondary"
             className="margin-left-auto margin-bottom-1"
@@ -80,9 +79,7 @@ const UserDetail: React.FC<Props> = ({
             disabled={isUpdating}
           />
         ) : null}
-        {process.env.REACT_APP_EDIT_USER_ROLE === "true" &&
-        user.status !== "SUSPENDED" &&
-        user?.id !== loggedInUser.id ? (
+        {user.status !== "SUSPENDED" && user?.id !== loggedInUser.id ? (
           <Button
             variant="outline"
             className="margin-left-auto margin-bottom-1"
@@ -97,32 +94,27 @@ const UserDetail: React.FC<Props> = ({
           Admins have full access to conduct tests, manage results and profiles,
           and manage settings and users
         </p>
-        {
-          <UserRoleSettingsForm
-            activeUser={user}
-            loggedInUser={loggedInUser}
-            onUpdateUser={updateUser}
-          />
-        }
-        {process.env.REACT_APP_VIEW_USER_FACILITIES === "true" ? (
-          <UserFacilitiesSettingsForm
-            activeUser={user}
-            allFacilities={allFacilities}
-            onUpdateUser={updateUser}
-          />
-        ) : null}
+        <UserRoleSettingsForm
+          activeUser={user}
+          loggedInUser={loggedInUser}
+          onUpdateUser={updateUser}
+        />
+
+        <UserFacilitiesSettingsForm
+          activeUser={user}
+          allFacilities={allFacilities}
+          onUpdateUser={updateUser}
+        />
       </div>
       <div className="usa-card__footer display-flex flex-justify margin-top-5 padding-x-0">
-        {process.env.REACT_APP_DELETE_USER_ENABLED === "true" ? (
-          <Button
-            variant="outline"
-            icon="trash"
-            className="flex-align-self-start display-inline-block"
-            onClick={() => updateShowDeleteUserModal(true)}
-            label="Remove user"
-            disabled={loggedInUser.id === user.id || isUpdating}
-          />
-        ) : null}
+        <Button
+          variant="outline"
+          icon="trash"
+          className="flex-align-self-start display-inline-block"
+          onClick={() => updateShowDeleteUserModal(true)}
+          label="Remove user"
+          disabled={loggedInUser.id === user.id || isUpdating}
+        />
         <Button
           type="button"
           onClick={() => handleUpdateUser()}
@@ -151,16 +143,14 @@ const UserDetail: React.FC<Props> = ({
           message="You have unsaved changes. Do you want to continue?"
         />
       ) : null}
-      {showDeleteUserModal &&
-      process.env.REACT_APP_DELETE_USER_ENABLED === "true" ? (
+      {showDeleteUserModal ? (
         <DeleteUserModal
           user={user}
           onClose={() => updateShowDeleteUserModal(false)}
           onDeleteUser={handleDeleteUser}
         />
       ) : null}
-      {showReactivateUserModal &&
-      process.env.REACT_APP_EDIT_USER_ROLE === "true" ? (
+      {showReactivateUserModal ? (
         <ReactivateUserModal
           user={user}
           onClose={() => updateShowReactivateUserModal(false)}

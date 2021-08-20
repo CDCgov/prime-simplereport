@@ -6,17 +6,11 @@ const SettingsNav = () => {
   return (
     <nav className="prime-secondary-nav" aria-label="Secondary navigation">
       <ul className="usa-nav__secondary-links prime-nav">
-        {process.env.REACT_APP_USER_SETTINGS_ENABLED === "true" ? (
-          <li className="usa-nav__secondary-item">
-            <LinkWithQuery
-              to={`/settings`}
-              activeClassName="active"
-              exact={true}
-            >
-              Manage users
-            </LinkWithQuery>
-          </li>
-        ) : null}
+        <li className="usa-nav__secondary-item">
+          <LinkWithQuery to={`/settings`} activeClassName="active" exact={true}>
+            Manage users
+          </LinkWithQuery>
+        </li>
         <li className="usa-nav__secondary-item">
           <LinkWithQuery to={`/settings/facilities`} activeClassName="active">
             Manage facilities
