@@ -281,6 +281,7 @@ export const es: LanguageConfig = {
           p2:
             "Esté atento a los síntomas y <0> sepa cuándo buscar atención médica de emergencia</0>. Si alguien presenta alguno de estos síntomas, busque atención médica de " +
             "emergencia de inmediato:",
+          whenToSeek: "sepa cuándo buscar atención médica de emergencia",
           symptomsLink:
             "espanol.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html",
           emergency: {

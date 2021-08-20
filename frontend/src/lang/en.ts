@@ -266,6 +266,7 @@ export const en = {
           },
           p2:
             "Watch for symptoms and <0>learn when to seek emergency medical attention</0>. If someone is showing any of these signs, seek emergency medical care immediately:",
+          whenToSeek: "learn when to seek emergency medical attention",
           symptomsLink:
             "cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html",
           emergency: {

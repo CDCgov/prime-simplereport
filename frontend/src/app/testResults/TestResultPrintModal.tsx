@@ -238,7 +238,8 @@ export const DetachedTestResultPrintModal = ({
                   parent="p"
                   i18nKey="testResult.notes.positive.p2"
                   components={[
-                    "learn when to seek emergency medical attention: " +
+                    t("testResult.notes.positive.whenToSeek") +
+                      ": " +
                       t("testResult.notes.positive.symptomsLink"),
                   ]}
                 />
@@ -250,6 +251,16 @@ export const DetachedTestResultPrintModal = ({
                   <li>{t("testResult.notes.positive.emergency.li4")}</li>
                 </ul>
                 <p>{t("testResult.notes.positive.p3")}</p>
+                <Trans
+                  t={t}
+                  parent="p"
+                  i18nKey="testResult.notes.positive.difficultNewsLink"
+                  components={[
+                    <a href="https://www.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html">
+                      take steps to cope with stress
+                    </a>,
+                  ]}
+                />
               </>
             )}
           </section>
