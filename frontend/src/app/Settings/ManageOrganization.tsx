@@ -11,6 +11,12 @@ import { OrganizationTypeEnum } from "../signUp/Organization/utils";
 
 import { EditableOrganization } from "./ManageOrganizationContainer";
 
+interface Props {
+  organization: EditableOrganization;
+  onSave: (organization: EditableOrganization) => void;
+  canEditOrganizationName: boolean;
+}
+
 const ManageOrganization: React.FC<Props> = (props) => {
   const [organization, setOrganization] = useState(props.organization);
   const [errors, setErrors] = useState<
