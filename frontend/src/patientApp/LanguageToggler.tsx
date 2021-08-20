@@ -6,9 +6,9 @@ export default function LanguageToggler() {
     <Button
       icon={"globe"}
       className="usa-button--unstyled"
-      onClick={async () => {
+      onClick={() => {
         const displayLanguage = i18n.language === "en" ? "es" : "en";
-        await i18n.changeLanguage(displayLanguage);
+        i18n.changeLanguage(displayLanguage);
       }}
     >
       {i18n.language === "en" ? "Español" : "English"}

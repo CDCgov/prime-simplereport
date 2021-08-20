@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { act, fireEvent, render } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
 import { DetachedTestResultPrintModal } from "./TestResultPrintModal";
@@ -39,8 +39,18 @@ const testResult = {
 };
 
 describe("TestResultPrintModal", () => {
-  it("should render a list of tests", async () => {
-    const { container } = render(
+  let printSpy: jest.SpyInstance;
+
+  beforeAll(() => {
+    printSpy = jest.spyOn(window, "print");
+  });
+
+  afterAll(() => {
+    printSpy.mockRestore();
+  });
+
+  it("should render the test result print view", async () => {
+    const { container, getAllByRole } = render(
       <MemoryRouter>
         <DetachedTestResultPrintModal
           data={{ testResult }}
@@ -50,5 +60,11 @@ describe("TestResultPrintModal", () => {
       </MemoryRouter>
     );
     expect(container).toMatchSnapshot();
+
+    await act(async () => {
+      await fireEvent.click(getAllByRole("button")[2]);
+    });
+
+    expect(printSpy).toBeCalled();
   });
 });

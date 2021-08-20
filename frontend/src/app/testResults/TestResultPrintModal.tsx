@@ -92,10 +92,7 @@ export const DetachedTestResultPrintModal = ({
       overlayClassName="sr-test-results-modal-overlay"
       contentLabel="Printable test result"
     >
-      <div
-        className="display-flex flex-align-center maxw-tablet grid-container patient-header"
-        style={{ paddingLeft: "0rem", paddingRight: "0rem" }}
-      >
+      <div className="display-flex flex-align-center maxw-tablet grid-container patient-header padding-x-0">
         <LanguageToggler />
         {buttonGroup}
       </div>
