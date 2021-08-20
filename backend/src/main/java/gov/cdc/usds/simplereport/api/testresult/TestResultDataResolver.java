@@ -48,12 +48,7 @@ public class TestResultDataResolver
   }
 
   public String getSymptoms(TestEvent testEvent) {
-    Map<String, Boolean> s = getSurvey(testEvent).getSymptoms();
-    JSONObject obj = new JSONObject();
-    for (Map.Entry<String, Boolean> entry : s.entrySet()) {
-      obj.put(entry.getKey(), entry.getValue().toString());
-    }
-    return obj.toString();
+    return getSurvey(testEvent).getSymptomsJSON();
   }
 
   public LocalDate getSymptomOnset(TestEvent testEvent) {

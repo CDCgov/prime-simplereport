@@ -103,12 +103,7 @@ public class TestOrder extends BaseTestInfo {
   }
 
   public String getSymptoms() {
-    Map<String, Boolean> s = askOnEntrySurvey.getSurvey().getSymptoms();
-    JSONObject obj = new JSONObject();
-    for (Map.Entry<String, Boolean> entry : s.entrySet()) {
-      obj.put(entry.getKey(), entry.getValue().toString());
-    }
-    return obj.toString();
+    return askOnEntrySurvey.getSurvey().getSymptomsJSON();
   }
 
   public Boolean getFirstTest() {
