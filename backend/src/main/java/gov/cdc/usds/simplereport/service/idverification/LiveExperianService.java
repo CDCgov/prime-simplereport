@@ -113,7 +113,10 @@ public class LiveExperianService
               _experianProperties.getPreciseidTenantId(),
               _experianProperties.getPreciseidClientReferenceId(),
               userData);
+
+      LOG.info("EXPERIAN_QUESTION_REQUEST_SUBMITTED: ", initialRequestBody);
       ObjectNode responseEntity = submitExperianRequest(initialRequestBody);
+      LOG.info("EXPERIAN_QUESTION_RESPONSE: ", responseEntity);
 
       // KIQ response may a kbaresultCode that indicates failure, this seems to only be present
       // in unsuccessful requests to get questions (consumer not found, deceased, etc.)
@@ -143,7 +146,9 @@ public class LiveExperianService
               _experianProperties.getPreciseidTenantId(),
               _experianProperties.getPreciseidClientReferenceId(),
               answersRequest);
+      LOG.info("EXPERIAN_ANSWER_REQUEST_SUBMITTED: " + finalRequestBody);
       ObjectNode responseEntity = submitExperianRequest(finalRequestBody);
+      LOG.info("EXPERIAN_ANSWER_RESPONSE: " + responseEntity);
 
       // look for errors in KIQ response ("CrossCore - PreciseId (Option 24).pdf" page 79)
       int kbaResultCode = findNodeInResponse(responseEntity, KBA_RESULT_CODE_PATH).asInt();

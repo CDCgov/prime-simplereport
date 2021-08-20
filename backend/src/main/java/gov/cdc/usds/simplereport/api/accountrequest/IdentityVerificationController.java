@@ -103,7 +103,9 @@ public class IdentityVerificationController {
 
     try {
       return _experianService.getQuestions(requestBody);
-    } catch (ExperianPersonMatchException | ExperianGetQuestionsException e) {
+    } catch (ExperianPersonMatchException
+        | ExperianGetQuestionsException
+        | ExperianNullNodeException e) {
       // could not match a person with the details in the request or general experian error
       sendIdentityVerificationFailedEmails(org.getExternalId(), orgAdminEmail);
       throw e;
@@ -135,7 +137,7 @@ public class IdentityVerificationController {
       }
 
       return verificationResponse;
-    } catch (ExperianSubmitAnswersException e) {
+    } catch (ExperianSubmitAnswersException | ExperianNullNodeException e) {
       // a general error with experian occurred
       sendIdentityVerificationFailedEmails(org.getExternalId(), orgAdminEmail);
       throw e;
