@@ -23,7 +23,7 @@ export class SignUpApi {
     request: OrganizationCreateRequest
   ): Promise<OrganizationCreateResponse> {
     return api.request(
-      "/account-request//without-facility-with-emails",
+      "/account-request/without-facility-with-emails",
       request
     );
   }
