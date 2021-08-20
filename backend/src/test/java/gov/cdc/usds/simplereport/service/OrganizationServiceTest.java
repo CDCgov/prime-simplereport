@@ -26,7 +26,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Autowired private TestDataFactory _dataFactory;

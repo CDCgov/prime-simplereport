@@ -43,6 +43,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 
 /**
  * Tests around edges of audit logging.
@@ -55,6 +56,7 @@ import org.springframework.http.ResponseEntity;
  * Since MockMvc does not wrap error handling, this uses TestRestTemplate for PXP requests (this is
  * in any case what the graphql tests use, so there is no additional cost).
  */
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class AuditLoggingFailuresTest extends BaseGraphqlTest {
 
   private static final Logger LOG = LoggerFactory.getLogger(AuditLoggingFailuresTest.class);

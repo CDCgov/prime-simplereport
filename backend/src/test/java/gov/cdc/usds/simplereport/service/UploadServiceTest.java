@@ -23,10 +23,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 
 @WithMockUser(
     username = TestUserIdentities.SITE_ADMIN_USER,
     authorities = {Role.SITE_ADMIN, Role.DEFAULT_ORG_ADMIN})
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class UploadServiceTest extends BaseServiceTest<UploadService> {
   public static final int PATIENT_PAGEOFFSET = 0;
   public static final int PATIENT_PAGESIZE = 1000;
