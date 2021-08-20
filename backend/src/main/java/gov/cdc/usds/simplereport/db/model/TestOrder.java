@@ -26,8 +26,8 @@ public class TestOrder extends BaseTestInfo {
   private PatientAnswers askOnEntrySurvey;
 
   /**
-   * This field and its getter exist to ensure that Hibernate doesn't load each PatientAnswers
-   * for the TestOrders as they're streamed in PatientAnswersDataLoader. Sometimes, apparently,
+   * This field and its getter exist to ensure that Hibernate doesn't load each PatientAnswers for
+   * the TestOrders as they're streamed in PatientAnswersDataLoader. Sometimes, apparently,
    * FetchType.LAZY isn't enough.
    */
   @Column(name = "patient_answers_id", insertable = false, updatable = false)
