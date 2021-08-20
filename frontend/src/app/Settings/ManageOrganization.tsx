@@ -13,8 +13,10 @@ import { EditableOrganization } from "./ManageOrganizationContainer";
 
 const organizationTypes = Object.entries(
   OrganizationTypeEnum
-).map(([key, value]) => ({ label: value, value: key }));
-
+).map(([key, value]) => ({ label: value, value: key })) as {
+  value: OrganizationType;
+  label: string;
+}[];
 interface Props {
   organization: EditableOrganization;
   onSave: (organization: EditableOrganization) => void;
@@ -45,11 +47,7 @@ const ManageOrganization: React.FC<Props> = (props) => {
       }
     }
     if (field === "type") {
-      if (
-        !organizationTypes
-          .map(({ value }) => value)
-          .includes(organization[field])
-      ) {
+      if (!Object.keys(OrganizationTypeEnum).includes(organization[field])) {
         setErrors({
           ...errors,
           [field]: "An organization type must be selected",
