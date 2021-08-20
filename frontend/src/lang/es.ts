@@ -299,7 +299,7 @@ export const es: LanguageConfig = {
           difficultNewsURL:
             "espanol.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html",
           moreInformation:
-            "Para más información: espanol.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/index.html",
+            "Para más información: espanol.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/index.html.",
         },
         negative: {
           p0:
