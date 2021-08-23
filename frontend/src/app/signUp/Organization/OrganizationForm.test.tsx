@@ -31,7 +31,12 @@ const fillInDropDown = (input: any, text: string) =>
   });
 
 jest.mock("../SignUpApi", () => ({
-  SignUpApi: { createOrganization: jest.fn() },
+  SignUpApi: {
+    createOrganization: jest.fn((request: OrganizationCreateRequest) => {
+      console.log("createOrganization", request);
+      return { orgExternalId: "foo" };
+    }),
+  },
 }));
 
 describe("OrganizationForm", () => {
