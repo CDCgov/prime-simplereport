@@ -202,6 +202,8 @@ public class AccountRequestController {
       // informing them of the error.
       throw new BadRequestException(
           "This email address is already associated with a SimpleReport user.");
+    } catch (BadRequestException e) {
+      throw e;
     } catch (IOException | RuntimeException e) {
       throw new AccountRequestFailureException(e);
     }
