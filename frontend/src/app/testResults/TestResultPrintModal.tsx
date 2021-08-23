@@ -3,12 +3,14 @@ import { gql } from "@apollo/client";
 import Modal from "react-modal";
 import moment from "moment";
 import classnames from "classnames";
+import { Trans, useTranslation } from "react-i18next";
 
 import Button from "../commonComponents/Button/Button";
 import { displayFullName } from "../utils";
 import "./TestResultPrintModal.scss";
 import logo from "../../img/simplereport-logo-black.svg";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
+import LanguageToggler from "../../patientApp/LanguageToggler";
 
 const formatDate = (date: string | undefined) =>
   moment(date)?.format("MM/DD/yyyy");
@@ -52,7 +54,7 @@ export const testQuery = gql`
   }
 `;
 
-interface Props {
+export interface TestResultPrintModalProps {
   data: any; // testQuery result
   testResultId: string | undefined;
   closeModal: () => void;
@@ -62,11 +64,17 @@ export const DetachedTestResultPrintModal = ({
   testResultId,
   data,
   closeModal,
-}: Props) => {
+}: TestResultPrintModalProps) => {
+  const { t } = useTranslation();
+
   const buttonGroup = (
     <div className="sr-result-print-buttons">
-      <Button variant="unstyled" label="Close" onClick={closeModal} />
-      <Button label="Print" onClick={() => window.print()} />
+      <Button
+        variant="unstyled"
+        label={t("testResult.close")}
+        onClick={closeModal}
+      />
+      <Button label={t("testResult.print")} onClick={() => window.print()} />
     </div>
   );
   const {
@@ -84,7 +92,10 @@ export const DetachedTestResultPrintModal = ({
       overlayClassName="sr-test-results-modal-overlay"
       contentLabel="Printable test result"
     >
-      {buttonGroup}
+      <div className="display-flex flex-align-center maxw-tablet grid-container patient-header padding-x-0">
+        <LanguageToggler />
+        {buttonGroup}
+      </div>
       <div
         className={classnames(
           "sr-test-result-report",
@@ -93,14 +104,14 @@ export const DetachedTestResultPrintModal = ({
       >
         <header>
           <img alt="SimpleReport logo" src={logo} className="sr-print-logo" />
-          <h1>SARS-CoV-2 Result</h1>
+          <h1>{t("testResult.result")}</h1>
         </header>
         <main>
           <section className="sr-result-section sr-result-patient-details">
-            <h2>Patient Details</h2>
+            <h2>{t("testResult.patientDetails")}</h2>
             <ul className="sr-details-list">
               <li>
-                <b>Name</b>
+                <b>{t("testResult.name")}</b>
                 <div>
                   {displayFullName(
                     patient.firstName,
@@ -110,36 +121,38 @@ export const DetachedTestResultPrintModal = ({
                 </div>
               </li>
               <li>
-                <b>Date of Birth</b>
+                <b>{t("testResult.dob.dateOfBirth")}</b>
                 <div>{formatDate(patient.birthDate)}</div>
               </li>
             </ul>
           </section>
           <section className="sr-result-section sr-result-facility-details">
-            <h2>Facility Details</h2>
+            <h2>{t("testResult.testingFacility.details")}</h2>
             <ul className="sr-details-list">
               <li>
-                <b>Facility Name</b>
+                <b>{t("testResult.testingFacility.name")}</b>
                 <div>{facility.name}</div>
               </li>
               <li>
-                <b>Facility Phone</b>
+                <b>{t("testResult.testingFacility.phone")}</b>
                 <div>{facility.phone}</div>
               </li>
               <li>
-                <b>Facility Address</b>
-                <div>{facility.street}</div>
-                {facility.streetTwo && <div>{facility.streetTwo}</div>}
-                <div>
-                  {facility.city}, {facility.state} {facility.zipCode}
+                <b>{t("testResult.testingFacility.address")}</b>
+                <div className="sr-result-facility-details-address">
+                  <span>{facility.street}</span>
+                  {facility.streetTwo && <span>{facility.streetTwo}</span>}
+                  <span>
+                    {facility.city}, {facility.state} {facility.zipCode}
+                  </span>
                 </div>
               </li>
               <li>
-                <b>CLIA Number</b>
+                <b>{t("testResult.testingFacility.clia")}</b>
                 <div>{facility.cliaNumber}</div>
               </li>
               <li>
-                <b>Ordering Provider</b>
+                <b>{t("testResult.testingFacility.orderingProvider")}</b>
                 <div>
                   {displayFullName(
                     facility.orderingProvider.firstName,
@@ -149,127 +162,109 @@ export const DetachedTestResultPrintModal = ({
                 </div>
               </li>
               <li>
-                <b>NPI</b>
+                <b>{t("testResult.testingFacility.npi")}</b>
                 <div>{facility.orderingProvider.NPI}</div>
               </li>
             </ul>
           </section>
           <section className="sr-result-section sr-result-test-details">
-            <h2>Test Details</h2>
+            <h2>{t("testResult.testDetails")}</h2>
             <ul className="sr-details-list">
               <li>
-                <b>Specimen ID</b>
+                <b>{t("testResult.specimen")}</b>
                 <div>{testResultId}</div>
               </li>
               <li>
-                <b>Test Name</b>
+                <b>{t("testResult.testName")}</b>
                 <div>{testPerformed.name}</div>
               </li>
               <li>
-                <b>Test Device</b>
+                <b>{t("testResult.testDevice")}</b>
                 <div>{deviceType.name}</div>
               </li>
               <li>
-                <b>Test Date</b>
+                <b>{t("testResult.testDate")}</b>
                 <div>{formatDate(data.testResult.dateTested)}</div>
               </li>
               <li>
-                <b>Test Result</b>
+                <b>{t("testResult.testResult")}</b>
                 <div>
-                  <strong>{data.testResult.result}</strong>
+                  <strong>
+                    {data.testResult.result === "POSITIVE" &&
+                      t("constants.testResults.POSITIVE")}
+                    {data.testResult.result === "NEGATIVE" &&
+                      t("constants.testResults.NEGATIVE")}
+                    {data.testResult.result === "UNDETERMINED" &&
+                      t("constants.testResults.UNDETERMINED")}
+                  </strong>
                 </div>
               </li>
             </ul>
           </section>
           <section className="sr-result-section sr-result-next-steps">
-            <h2>Notes</h2>
+            <h2>{t("testResult.note")}</h2>
             {data.testResult.result !== "POSITIVE" && (
               <>
-                <p>
-                  Antigen tests can return inaccurate or false results and
-                  follow up testing may be needed. Continue social distancing
-                  and wearing a mask. Contact your healthcare provider to
-                  determine if additional testing is needed especially if you
-                  experience any of these COVID-19 symptoms.
-                </p>
+                <p>{t("testResult.notes.meaning")}</p>
                 <ul className="sr-multi-column">
-                  <li>Fever or chills</li>
-                  <li>Cough</li>
-                  <li>Shortness of breath or difficulty breathing</li>
-                  <li>Fatigue</li>
-                  <li>Muscle or body aches</li>
-                  <li>Headache</li>
-                  <li>New loss of taste or smell</li>
-                  <li>Sore throat</li>
-                  <li>Congestion or runny nose</li>
-                  <li>Nausea or vomiting</li>
-                  <li>Diarrhea</li>
+                  <li>{t("testResult.notes.negative.symptoms.li2")}</li>
+                  <li>{t("testResult.notes.negative.symptoms.li3")}</li>
+                  <li>{t("testResult.notes.negative.symptoms.li4")}</li>
+                  <li>{t("testResult.notes.negative.symptoms.li5")}</li>
+                  <li>{t("testResult.notes.negative.symptoms.li6")}</li>
+                  <li>{t("testResult.notes.negative.symptoms.li7")}</li>
+                  <li>{t("testResult.notes.negative.symptoms.li8")}</li>
+                  <li>{t("testResult.notes.negative.symptoms.li9")}</li>
+                  <li>{t("testResult.notes.negative.symptoms.li10")}</li>
                 </ul>
               </>
             )}
             {data.testResult.result === "POSITIVE" && (
               <>
-                <p>
-                  Most people who get COVID-19 will be able to recover at home.
-                  CDC has directions for people who are recovering at home and
-                  their caregivers, including:
-                </p>
                 <ul>
-                  <li>
-                    Stay home when you are sick, except to get medical care.
-                  </li>
-                  <li>
-                    Use a separate room and bathroom for sick household members
-                    (if possible). Clean the sick room and bathroom, as needed,
-                    to avoid unnecessary contact with the sick person.
-                  </li>
-                  <li>
-                    Wash your hands often with soap and water for at least 20
-                    seconds, especially after blowing your nose, coughing, or
-                    sneezing; going to the bathroom; and before eating or
-                    preparing food.
-                  </li>
-                  <li>
-                    If soap and water are not available, use an alcohol-based
-                    hand sanitizer with at least 60% alcohol.
-                  </li>
-                  <li>
-                    Provide your sick household member with clean disposable
-                    facemasks to wear at home. Everyone else should wear masks
-                    at home.
-                  </li>
+                  <li>{t("testResult.notes.positive.guidelines.li0")}</li>
+                  <li>{t("testResult.notes.positive.guidelines.li1")}</li>
+                  <li>{t("testResult.notes.positive.guidelines.li2")}</li>
+                  <li>{t("testResult.notes.positive.guidelines.li3")}</li>
+                  <li>{t("testResult.notes.positive.guidelines.li4")}</li>
+                  <li>{t("testResult.notes.positive.guidelines.li5")}</li>
                 </ul>
-                <p>
-                  More information is available at
-                  https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/
-                </p>
-                <p>
-                  Watch for symptoms and learn when to seek emergency medical
-                  attention here:
-                  https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html
-                </p>
-                <p>
-                  If someone is showing any of these signs, seek emergency
-                  medical care immediately:
-                </p>
-                <ul className="sr-multi-column" style={{ height: "5ex" }}>
-                  <li>Trouble breathing</li>
-                  <li>Persistent chest pain/pressure</li>
-                  <li>New confusion</li>
-                  <li>Inability to wake or stay awake</li>
-                  <li>Bluish lips or face</li>
+                <p>{t("testResult.notes.positive.moreInformation")}</p>
+                <Trans
+                  t={t}
+                  parent="p"
+                  i18nKey="testResult.notes.positive.p2"
+                  components={[
+                    t("testResult.notes.positive.whenToSeek") +
+                      ": " +
+                      t("testResult.notes.positive.symptomsLink"),
+                  ]}
+                />
+                <ul>
+                  <li>{t("testResult.notes.positive.emergency.li0")}</li>
+                  <li>{t("testResult.notes.positive.emergency.li1")}</li>
+                  <li>{t("testResult.notes.positive.emergency.li2")}</li>
+                  <li>{t("testResult.notes.positive.emergency.li3")}</li>
+                  <li>{t("testResult.notes.positive.emergency.li4")}</li>
                 </ul>
-                <p>
-                  Call 911 or call ahead to your local emergency facility:
-                  Notify the operator that you are seeking care for someone who
-                  has or may have COVID-19.
-                </p>
+                <p>{t("testResult.notes.positive.p3")}</p>
+                <Trans
+                  t={t}
+                  parent="p"
+                  i18nKey="testResult.notes.positive.difficultNewsLink"
+                  components={[
+                    null,
+                    `: ${t("testResult.notes.positive.difficultNewsURL")}`,
+                  ]}
+                />
               </>
             )}
           </section>
         </main>
         <footer>
-          <p>Test result printed {new Date().toLocaleString()}</p>
+          <p>
+            {t("testResult.printed")} {new Date().toLocaleString()}
+          </p>
         </footer>
       </div>
       {buttonGroup}
@@ -277,8 +272,10 @@ export const DetachedTestResultPrintModal = ({
   );
 };
 
-const TestResultPrintModal = (props: Omit<Props, "data">) => (
-  <QueryWrapper<Props>
+const TestResultPrintModal = (
+  props: Omit<TestResultPrintModalProps, "data">
+) => (
+  <QueryWrapper<TestResultPrintModalProps>
     query={testQuery}
     queryOptions={{ variables: { id: props.testResultId } }}
     Component={DetachedTestResultPrintModal}
