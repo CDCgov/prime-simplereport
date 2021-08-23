@@ -5,7 +5,7 @@ import ReactDOM from "react-dom";
 import { DetachedTestResultPrintModal } from "./TestResultPrintModal";
 
 const testResult = {
-  dateTested: new Date(),
+  dateTested: new Date("2021-08-20"),
   result: "NEGATIVE",
   correctionStatus: null,
   deviceType: {

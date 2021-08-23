@@ -3,12 +3,23 @@ import { MemoryRouter } from "react-router";
 
 import Consent from "./Consent";
 
+jest.mock("react-router-dom", () => ({
+  Redirect: (props: any) => `Redirected to ${props.to.pathname}`,
+}));
+
 describe("Consent", () => {
   beforeEach(() => {
     render(
       <MemoryRouter
         initialEntries={[
-          { pathname: "/identity-verification", search: "?orgExternalId=foo" },
+          {
+            pathname: "/identity-verification",
+            state: {
+              firstName: "Harry",
+              lastName: "Potter",
+              orgExternalId: "Hogwarts",
+            },
+          },
         ]}
       >
         <Consent />
@@ -18,16 +29,14 @@ describe("Consent", () => {
   it("initializes with the submit button enabled", () => {
     expect(screen.getByText("I agree")).not.toHaveAttribute("disabled");
   });
-  it("initializes to an error page if no org id is passed", () => {
+
+  it("redirects to sign-up page when it doesnt get org id and user info", () => {
     render(
       <MemoryRouter>
         <Consent />
       </MemoryRouter>
     );
-    expect(
-      screen.getByText("We weren't able to find your affiliated organization", {
-        exact: false,
-      })
-    ).toBeInTheDocument();
+
+    expect(screen.getByText("Redirected to /sign-up")).toBeInTheDocument();
   });
 });
