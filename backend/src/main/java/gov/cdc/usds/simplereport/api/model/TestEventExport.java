@@ -20,6 +20,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -225,13 +226,14 @@ public class TestEventExport {
               if (affiliationList.isEmpty()) {
                 return "";
               }
-              var affiliation = affiliationList.get(0);
-              if (affiliation == null) {
-                return "";
-              }
-              return affiliation;
+              return Objects.requireNonNullElse(affiliationList.get(0), "");
             })
         .orElse("");
+  }
+
+  @JsonProperty("Patient_preferred_language")
+  public String getPatientPreferredLanguage() {
+    return patient.map(Person::getPreferredLanguage).orElse("");
   }
 
   @JsonProperty("Employed_in_healthcare")

@@ -17,6 +17,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
@@ -39,6 +40,11 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @JoinColumn(name = "facility_id")
   @JsonIgnore // do not serialize to TestEvents
   private Facility facility;
+
+  @MapsId
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "internal_id")
+  private PatientPreferences preferences;
 
   @Column private String lookupId;
 
@@ -72,7 +78,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @OneToOne(fetch = FetchType.LAZY)
   private PhoneNumber primaryPhone;
 
-  @OneToMany(mappedBy = "person")
+  @OneToMany(mappedBy = "person", fetch = FetchType.LAZY)
   private List<PhoneNumber> phoneNumbers;
 
   @Column private String email;
@@ -251,6 +257,14 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   public List<String> getTribalAffiliation() {
     return tribalAffiliation;
+  }
+
+  public PatientPreferences getPreferences() {
+    return preferences;
+  }
+
+  public String getPreferredLanguage() {
+    return preferences.getPreferredLanguage();
   }
 
   public String getGender() {
