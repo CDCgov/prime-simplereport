@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import { toast } from "react-toastify";
 import { Redirect } from "react-router";
 
@@ -22,6 +22,7 @@ import {
   organizationFields,
   OrganizationTypeEnum,
   organizationSchema as schema,
+  organizationBackendErrors,
 } from "./utils";
 
 import "./OrganizationForm.scss";
@@ -48,6 +49,7 @@ const OrganizationForm = () => {
     initOrg()
   );
   const [errors, setErrors] = useState<OrganizationFormErrors>(initOrgErrors());
+  const [backendError, setBackendError] = useState<ReactElement>();
 
   const [loading, setLoading] = useState(false);
   const [formChanged, setFormChanged] = useState(false);
@@ -80,10 +82,7 @@ const OrganizationForm = () => {
         const res = await SignUpApi.createOrganization(organization);
         setOrgExternalId(res.orgExternalId);
       } catch (error) {
-        const alert = (
-          <Alert type="error" title="Submission Error" body={error} />
-        );
-        showNotification(toast, alert);
+        setBackendError(organizationBackendErrors(error));
         setLoading(false);
         return;
       }
@@ -208,6 +207,7 @@ const OrganizationForm = () => {
       <Card logo>
         <div className="margin-bottom-2 organization-form">
           <h2>Sign up for SimpleReport</h2>
+          {backendError ? backendError : null}
           {/* By mapping over organizationFields (found in utils.tsx), we reduce */}
           {/* duplication of input fields in JSX */}
           {Object.entries(organizationFields).map(
