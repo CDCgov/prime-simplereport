@@ -1,8 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { SignUpApi } from "../SignUpApi";
-
 import OrganizationForm, {
   OrganizationCreateRequest,
 } from "./OrganizationForm";
@@ -31,8 +29,30 @@ const fillInDropDown = (input: any, text: string) =>
   });
 
 jest.mock("../SignUpApi", () => ({
-  SignUpApi: { createOrganization: jest.fn() },
+  SignUpApi: {
+    createOrganization: (request: OrganizationCreateRequest) => {
+      if (request.name === "Drake") {
+        return Promise.resolve({ orgExternalId: "foo" });
+      } else if (request.name === "Duplicate") {
+        throw new Error(
+          "This organization has already registered with SimpleReport."
+        );
+      } else if (request.email === "duplicate@test.com") {
+        throw new Error(
+          "This email address is already associated with a SimpleReport user."
+        );
+      } else {
+        throw new Error("This is an error.");
+      }
+    },
+  },
 }));
+
+jest.mock("react-router", () => ({
+  Redirect: (props: any) => `Redirected to ${props.to.pathname}`,
+}));
+
+window.scrollTo = jest.fn();
 
 describe("OrganizationForm", () => {
   beforeEach(() => {
@@ -51,7 +71,28 @@ describe("OrganizationForm", () => {
     expect(getSubmitButton()).toHaveAttribute("disabled");
   });
 
-  it("calls the create org endpoint when submitting", async () => {
+  it("displays form errors when submitting invalid input", async () => {
+    fillInDropDown(getOrgStateDropdown(), "AK");
+    await act(async () => {
+      await getSubmitButton().click();
+    });
+
+    expect(
+      screen.getByText("Organization name is required")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Organization type is required")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("SimpleReport isn't available yet in your state.", {
+        exact: false,
+      })
+    ).toBeInTheDocument();
+  });
+
+  it("redirects to identity verification when submitting valid input", async () => {
     fillIn(getOrgNameInput(), "Drake");
     fillInDropDown(getOrgStateDropdown(), "TX");
     fillInDropDown(getOrgTypeDropdown(), "Employer");
@@ -64,15 +105,50 @@ describe("OrganizationForm", () => {
       await getSubmitButton().click();
     });
 
-    expect(SignUpApi.createOrganization).toHaveBeenCalledWith({
-      name: "Drake",
-      type: "employer",
-      state: "TX",
-      firstName: "Greatest",
-      middleName: "OG",
-      lastName: "Ever",
-      email: "ever@greatest.com",
-      workPhoneNumber: "8008675309",
-    } as OrganizationCreateRequest);
+    expect(
+      screen.getByText("Redirected to /sign-up/identity-verification")
+    ).toBeInTheDocument();
+  });
+
+  it("displays a duplicate org error when submitting a duplicate org", async () => {
+    fillIn(getOrgNameInput(), "Duplicate");
+    fillInDropDown(getOrgStateDropdown(), "TX");
+    fillInDropDown(getOrgTypeDropdown(), "Employer");
+    fillIn(getFirstNameInput(), "Greatest");
+    fillIn(getMiddleNameInput(), "OG");
+    fillIn(getLastNameInput(), "Ever");
+    fillIn(getEmailInput(), "ever@greatest.com");
+    fillIn(getPhoneInput(), "8008675309");
+    await act(async () => {
+      await getSubmitButton().click();
+    });
+
+    expect(
+      screen.getByText(
+        "This organization has already registered with SimpleReport.",
+        { exact: false }
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("displays a duplicate email error when submitting a duplicate email", async () => {
+    fillIn(getOrgNameInput(), "Foo");
+    fillInDropDown(getOrgStateDropdown(), "TX");
+    fillInDropDown(getOrgTypeDropdown(), "Employer");
+    fillIn(getFirstNameInput(), "Greatest");
+    fillIn(getMiddleNameInput(), "OG");
+    fillIn(getLastNameInput(), "Ever");
+    fillIn(getEmailInput(), "duplicate@test.com");
+    fillIn(getPhoneInput(), "8008675309");
+    await act(async () => {
+      await getSubmitButton().click();
+    });
+
+    expect(
+      screen.getByText(
+        "This email address is already registered with SimpleReport.",
+        { exact: false }
+      )
+    ).toBeInTheDocument();
   });
 });
