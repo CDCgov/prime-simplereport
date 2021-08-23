@@ -84,6 +84,7 @@ const OrganizationForm = () => {
       } catch (error) {
         setBackendError(organizationBackendErrors(error));
         setLoading(false);
+        window.scrollTo(0, 0);
         return;
       }
       setErrors(initOrgErrors());
@@ -97,6 +98,7 @@ const OrganizationForm = () => {
         body="Please check the form to make sure you complete all of the required fields."
       />
     );
+    window.scrollTo(0, 0);
     showNotification(toast, alert);
     setLoading(false);
   };
