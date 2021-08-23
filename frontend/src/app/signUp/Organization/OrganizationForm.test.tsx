@@ -71,6 +71,27 @@ describe("OrganizationForm", () => {
     expect(getSubmitButton()).toHaveAttribute("disabled");
   });
 
+  it("displays form errors when submitting invalid input", async () => {
+    fillInDropDown(getOrgStateDropdown(), "AK");
+    await act(async () => {
+      await getSubmitButton().click();
+    });
+
+    expect(
+      screen.getByText("Organization name is required")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Organization type is required")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("SimpleReport isn't available yet in your state.", {
+        exact: false,
+      })
+    ).toBeInTheDocument();
+  });
+
   it("redirects to identity verification when submitting valid input", async () => {
     fillIn(getOrgNameInput(), "Drake");
     fillInDropDown(getOrgStateDropdown(), "TX");
