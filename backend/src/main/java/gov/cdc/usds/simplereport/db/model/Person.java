@@ -17,7 +17,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
@@ -41,9 +40,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @JsonIgnore // do not serialize to TestEvents
   private Facility facility;
 
-  @MapsId
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "internal_id")
+  @OneToOne(fetch = FetchType.LAZY, mappedBy = "person")
   private PatientPreferences preferences;
 
   @Column private String lookupId;
@@ -264,6 +261,9 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   }
 
   public String getPreferredLanguage() {
+    if (preferences == null) {
+      return null;
+    }
     return preferences.getPreferredLanguage();
   }
 

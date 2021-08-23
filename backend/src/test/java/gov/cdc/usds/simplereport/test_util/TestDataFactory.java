@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
+import gov.cdc.usds.simplereport.db.model.PatientPreferences;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person_;
@@ -28,6 +29,7 @@ import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
+import gov.cdc.usds.simplereport.db.repository.PatientPreferencesRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
@@ -70,6 +72,7 @@ public class TestDataFactory {
   @Autowired private TestEventRepository _testEventRepo;
   @Autowired private PatientAnswersRepository _patientAnswerRepo;
   @Autowired private PhoneNumberRepository _phoneNumberRepo;
+  @Autowired private PatientPreferencesRepository _patientPreferencesRepository;
   @Autowired private PatientLinkRepository _patientLinkRepository;
   @Autowired private PatientRegistrationLinkRepository _patientRegistrationLinkRepository;
   @Autowired private SpecimenTypeRepository _specimenRepo;
@@ -153,6 +156,8 @@ public class TestDataFactory {
     PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, "503-867-5309");
     _phoneNumberRepo.save(pn);
     p.setPrimaryPhone(pn);
+    PatientPreferences pp = new PatientPreferences(p);
+    _patientPreferencesRepository.save(pp);
     return _personRepo.save(p);
   }
 
@@ -187,6 +192,8 @@ public class TestDataFactory {
     PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, telephone);
     _phoneNumberRepo.save(pn);
     p.setPrimaryPhone(pn);
+    PatientPreferences pp = new PatientPreferences(p);
+    _patientPreferencesRepository.save(pp);
     return _personRepo.save(p);
   }
 
