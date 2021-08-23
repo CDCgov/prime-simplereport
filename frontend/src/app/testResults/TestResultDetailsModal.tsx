@@ -188,7 +188,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
           <DetailsRow
             label="Symptoms"
             value={
-              symptomList.length > 0 ? symptomList.join(", ") : "No Symptoms"
+              symptomList.length > 0 ? symptomList.join(", ") : "No symptoms"
             }
             removed={removed}
           />

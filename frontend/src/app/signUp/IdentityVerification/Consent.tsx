@@ -1,31 +1,34 @@
 import { useState } from "react";
+import { useLocation } from "react-router";
+import { Redirect } from "react-router-dom";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button/Button";
-import { useSearchParam } from "../../utils/url";
 
-import PersonalDetailsForm from "./PersonalDetailsForm";
+import PersonalDetailsForm, {
+  PersonalDetailsFormProps,
+} from "./PersonalDetailsForm";
 
 const Consent = () => {
-  // Get organization ID from URL
-  const orgExternalId = useSearchParam("orgExternalId");
+  // Get person name & org id from route state
+  const { orgExternalId, firstName, middleName, lastName } =
+    useLocation<PersonalDetailsFormProps>().state || {};
   const [submitted, setSubmitted] = useState(false);
 
-  if (orgExternalId === null) {
-    return (
-      <CardBackground>
-        <Card logo bodyKicker={"Invalid request"} bodyKickerCentered={true}>
-          <p className="text-center">
-            We weren't able to find your affiliated organization
-          </p>
-        </Card>
-      </CardBackground>
-    );
+  if (!orgExternalId || !firstName || !lastName) {
+    return <Redirect to={{ pathname: "/sign-up" }} />;
   }
 
   if (submitted) {
-    return <PersonalDetailsForm orgExternalId={orgExternalId} />;
+    return (
+      <PersonalDetailsForm
+        orgExternalId={orgExternalId}
+        firstName={firstName}
+        middleName={middleName}
+        lastName={lastName}
+      />
+    );
   }
 
   return (

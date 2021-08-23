@@ -212,7 +212,7 @@ const EditPatient = (props: Props) => {
       toast,
       <Alert
         type="success"
-        title={`${PATIENT_TERM_CAP} Record Saved`}
+        title={`${PATIENT_TERM_CAP} record saved`}
         body="Information record has been updated."
       />
     );

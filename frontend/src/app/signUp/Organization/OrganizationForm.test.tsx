@@ -3,7 +3,9 @@ import userEvent from "@testing-library/user-event";
 
 import { SignUpApi } from "../SignUpApi";
 
-import OrganizationForm from "./OrganizationForm";
+import OrganizationForm, {
+  OrganizationCreateRequest,
+} from "./OrganizationForm";
 
 const getOrgNameInput = () =>
   screen.getByRole("textbox", {
@@ -54,6 +56,7 @@ describe("OrganizationForm", () => {
     fillInDropDown(getOrgStateDropdown(), "TX");
     fillInDropDown(getOrgTypeDropdown(), "Employer");
     fillIn(getFirstNameInput(), "Greatest");
+    fillIn(getMiddleNameInput(), "OG");
     fillIn(getLastNameInput(), "Ever");
     fillIn(getEmailInput(), "ever@greatest.com");
     fillIn(getPhoneInput(), "8008675309");
@@ -61,6 +64,15 @@ describe("OrganizationForm", () => {
       await getSubmitButton().click();
     });
 
-    expect(SignUpApi.createOrganization).toHaveBeenCalled();
+    expect(SignUpApi.createOrganization).toHaveBeenCalledWith({
+      name: "Drake",
+      type: "employer",
+      state: "TX",
+      firstName: "Greatest",
+      middleName: "OG",
+      lastName: "Ever",
+      email: "ever@greatest.com",
+      workPhoneNumber: "8008675309",
+    } as OrganizationCreateRequest);
   });
 });

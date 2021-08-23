@@ -1,14 +1,19 @@
 import { Story, Meta } from "@storybook/react";
 
-import PersonalDetailsForm from "./PersonalDetailsForm";
+import PersonalDetailsForm, {
+  PersonalDetailsFormProps,
+} from "./PersonalDetailsForm";
 
 export default {
   title: "App/Identity Verification/Step 2: Personal Details",
   component: PersonalDetailsForm,
   argTypes: {},
   args: {
-    orgExternalId: "foo",
-  },
+    firstName: "Harry",
+    middleName: "James",
+    lastName: "Potter",
+    orgExternalId: "Hogwarts",
+  } as PersonalDetailsFormProps,
 } as Meta;
 
 type Props = React.ComponentProps<typeof PersonalDetailsForm>;

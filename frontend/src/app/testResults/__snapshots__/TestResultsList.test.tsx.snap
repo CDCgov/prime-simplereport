@@ -18,7 +18,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
             class="usa-card__header"
           >
             <h2>
-              Test Results
+              Test results
               <span
                 class="sr-showing-results-on-page"
               >
@@ -371,7 +371,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     Yes
                   </td>
                   <td>
-                    Ethan Entry
+                    Entry, Ethan
                   </td>
                   <td>
                     <button
@@ -435,7 +435,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     Unknown
                   </td>
                   <td>
-                    Ursula User
+                    User, Ursula
                   </td>
                   <td>
                     <button
@@ -499,7 +499,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     No
                   </td>
                   <td>
-                    Arthur A Admin
+                    Admin, Arthur A
                   </td>
                   <td>
                     <button

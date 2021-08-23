@@ -82,7 +82,7 @@ describe("AddPatient", () => {
     });
     it("does not show the form title", () => {
       expect(
-        screen.queryByText("Add New Person", {
+        screen.queryByText("Add new person", {
           exact: false,
         })
       ).toBeNull();
@@ -191,7 +191,7 @@ describe("AddPatient", () => {
     });
     it("shows the form title", async () => {
       expect(
-        screen.queryAllByText("Add New Person", { exact: false })[0]
+        await screen.queryAllByText("Add new person", { exact: false })[0]
       ).toBeInTheDocument();
     });
 
@@ -207,7 +207,7 @@ describe("AddPatient", () => {
             "Street address 1": "25 Shattuck St",
             City: "Boston",
             State: "MA",
-            "Zip code": "02115",
+            "ZIP code": "02115",
           },
           {
             "Phone type": {
@@ -296,7 +296,7 @@ describe("AddPatient", () => {
             "Street address 1": "25 Shattuck St",
             City: "Boston",
             State: "MA",
-            "Zip code": "02115",
+            "ZIP code": "02115",
           },
           {
             "Phone type": {

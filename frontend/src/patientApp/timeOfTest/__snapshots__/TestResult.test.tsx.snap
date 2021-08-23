@@ -256,7 +256,8 @@ exports[`TestResult should show a positive result 1`] = `
           >
              take steps to cope with stress 
           </a>
-           during this time. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.
+           during this time
+          . Reach out to your support system and make a phone or video appointment with a mental health professional if needed.
         </p>
         <p>
           For more information, please visit the 

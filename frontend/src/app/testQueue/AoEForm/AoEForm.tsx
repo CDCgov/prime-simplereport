@@ -340,7 +340,7 @@ const AoEForm: React.FC<Props> = ({
         {patient.gender?.toLowerCase() !== "male" && (
           <FormGroup title="Pregnancy">
             <RadioGroup
-              legend="Currently pregnant?"
+              legend="Are you currently pregnant?"
               name="pregnancy"
               onChange={setPregnancyResponse}
               buttons={pregnancyResponses}

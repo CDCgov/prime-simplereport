@@ -160,7 +160,7 @@ exports[`AoEForm renders correctly 1`] = `
                   class="usa-checkbox__label"
                   for="9-val-0"
                 >
-                  No Symptoms
+                  No symptoms
                 </label>
               </div>
             </div>
