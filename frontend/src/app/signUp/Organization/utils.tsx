@@ -51,7 +51,7 @@ export const organizationFields = [
   ["firstName", "First name", true],
   ["middleName", "Middle name", false],
   ["lastName", "Last name", true],
-  ["email", "Email address", true],
+  ["email", "Work email", true],
   ["workPhoneNumber", "Work phone number", true],
 ].reduce((fields, field) => {
   fields[field[0] as keyof OrganizationCreateRequest] = {

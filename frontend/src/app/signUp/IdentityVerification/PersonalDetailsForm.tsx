@@ -143,7 +143,7 @@ const PersonalDetailsForm = ({
           <>
             <Label
               htmlFor="dateOfBirth"
-              className="font-ui-sm text-bold margin-top-2 margin-bottom-0"
+              className="font-ui-sm margin-top-2 margin-bottom-0"
             >
               Date of birth
             </Label>
@@ -195,8 +195,15 @@ const PersonalDetailsForm = ({
         <div className="margin-bottom-2">
           <p className="font-ui-2xs text-base">
             To create your account, we’ll need information to verify your
-            identity directly with Experian. SimpleReport doesn’t access
-            identity verification details.
+            identity directly with{" "}
+            <a
+              href="https://www.experian.com/decision-analytics/identity-proofing"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Experian
+            </a>
+            . SimpleReport doesn’t access identity verification details.
           </p>
           <p className="font-ui-2sm margin-bottom-0">
             Why we verify your identity
