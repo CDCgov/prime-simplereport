@@ -2718,7 +2718,7 @@ databaseChangeLog:
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
   - changeSet:
-      id: denormalize-patient-preferences-1
+      id: denormalize-patient_preferences-1
       author: adam@skylight.digital
       comment: This is part 1 of denormalizing the patient_preference table on-row into person
       changes:
