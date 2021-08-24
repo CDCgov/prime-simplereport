@@ -102,7 +102,9 @@ class DataHubUploaderServiceTest extends BaseServiceTest<DataHubUploaderService>
             + "\",\"986543321\",\"000111222\",\"UNK\",\""
             + date
             + "\",\"260415000\",\"F\",\"123456\",\"Washington\",\"Washington\",\"Imaginary Site\",\"555-867-5309\",\"DC\",\"736 Jackson PI NW\",\"\",\"20503\"\n"
-            + "\"\",\""
+            + "\""
+            + te2.getPriorCorrectedTestEventId()
+            + "\",\""
             + date
             + "\",\"SFN\",\"Y\",\"UNK\",\"\",\""
             + instrumentId2
@@ -118,7 +120,7 @@ class DataHubUploaderServiceTest extends BaseServiceTest<DataHubUploaderService>
             + date
             + "\",\"986543321\",\"000111222\",\"UNK\",\""
             + date
-            + "\",\"260415000\",\"F\",\"123456\",\"Washington\",\"Washington\",\"Imaginary Site\",\"555-867-5309\",\"DC\",\"736 Jackson PI NW\",\"\",\"20503\"\n";
+            + "\",\"260415000\",\"C\",\"123456\",\"Washington\",\"Washington\",\"Imaginary Site\",\"555-867-5309\",\"DC\",\"736 Jackson PI NW\",\"\",\"20503\"\n";
 
     try {
       var fileContents = mapper.writer(schema).writeValueAsString(List.of(entry1, entry2));
