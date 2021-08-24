@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api.model.pxp;
 
-import gov.cdc.usds.simplereport.db.model.PatientPreferences;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -22,17 +21,11 @@ public class PxpVerifyResponse {
   private Person person;
   private OrderStatus orderStatus;
   private PxpTestEventWrapper testEventWrapper;
-  private PatientPreferences patientPreferences;
 
-  public PxpVerifyResponse(
-      Person person,
-      OrderStatus orderStatus,
-      TestEvent testEvent,
-      PatientPreferences patientPreferences) {
+  public PxpVerifyResponse(Person person, OrderStatus orderStatus, TestEvent testEvent) {
     this.person = person;
     this.orderStatus = orderStatus;
     this.testEventWrapper = testEvent != null ? new PxpTestEventWrapper(testEvent) : null;
-    this.patientPreferences = patientPreferences;
   }
 
   public String getLookupId() {
@@ -60,11 +53,11 @@ public class PxpVerifyResponse {
   }
 
   public String getPreferredLanguage() {
-    return patientPreferences.getPreferredLanguage();
+    return person.getPreferredLanguage();
   }
 
   public TestResultDeliveryPreference getTestResultDelivery() {
-    return patientPreferences.getTestResultDelivery();
+    return person.getTestResultDelivery();
   }
 
   public String getTelephone() {

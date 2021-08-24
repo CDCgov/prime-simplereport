@@ -22,6 +22,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
@@ -182,7 +183,9 @@ public class TestDataFactory {
             null,
             "male",
             false,
-            false);
+            false,
+            "English",
+            TestResultDeliveryPreference.SMS);
     _personRepo.save(p);
     PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, telephone);
     _phoneNumberRepo.save(pn);

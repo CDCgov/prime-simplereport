@@ -277,8 +277,7 @@ public class TestOrderService {
 
       _testEventReportingService.report(testEvent);
 
-      if (TestResultDeliveryPreference.SMS
-          == _ps.getPatientPreferences(person).getTestResultDelivery()) {
+      if (TestResultDeliveryPreference.SMS == savedOrder.getPatient().getTestResultDelivery()) {
         // After adding test result, create a new patient link and text it to the
         // patient
         PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
