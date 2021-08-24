@@ -38,7 +38,11 @@ const Consent = () => {
           <p className="font-ui-2xs text-base">
             To create an account, you’ll need to consent to identity
             verification by{" "}
-            <a href="https://www.experian.com/decision-analytics/identity-proofing">
+            <a
+              href="https://www.experian.com/decision-analytics/identity-proofing"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Experian
             </a>
             . SimpleReport doesn’t access your identity verification details.
@@ -61,7 +65,14 @@ const Consent = () => {
             companies to support your transactions and for fraud avoidance
             purposes. You can see a more detailed list of information
             potentially disclosed and how we use your data in our{" "}
-            <a href="https://www.cdc.gov/other/privacy.html">privacy policy</a>.
+            <a
+              href="https://www.cdc.gov/other/privacy.html"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              privacy policy
+            </a>
+            .
           </p>
         </div>
         <Button
