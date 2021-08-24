@@ -37,9 +37,28 @@ class DataHubUploaderServiceTest extends BaseServiceTest<DataHubUploaderService>
 
     Person p1 = _dataFactory.createFullPersonWithTelephone(o, "5168675309");
     Person p2 = _dataFactory.createFullPersonWithTelephone(o, "5168675309");
+    p2.updatePatient(
+        p2.getLookupId(),
+        p2.getFirstName(),
+        p2.getMiddleName(),
+        p2.getLastName(),
+        p2.getSuffix(),
+        p2.getBirthDate(),
+        p2.getAddress(),
+        p2.getRole(),
+        p2.getEmail(),
+        p2.getRace(),
+        p2.getEthnicity(),
+        List.of("123", "456"),
+        p2.getGender(),
+        p2.getResidentCongregateSetting(),
+        true,
+        "Spanish",
+        p2.getTestResultDelivery());
 
     TestEvent te1 = _dataFactory.createTestEvent(p1, f, s, r, d);
-    TestEvent te2 = _dataFactory.createTestEvent(p2, f, s, r, d);
+    TestEvent te2original = _dataFactory.createTestEvent(p2, f, s, r, d);
+    TestEvent te2 = _dataFactory.createTestEventCorrection(te2original);
 
     TestEventExport entry1 = new TestEventExport(te1);
     TestEventExport entry2 = new TestEventExport(te2);
@@ -85,13 +104,13 @@ class DataHubUploaderServiceTest extends BaseServiceTest<DataHubUploaderService>
             + "\",\"260415000\",\"F\",\"123456\",\"Washington\",\"Washington\",\"Imaginary Site\",\"555-867-5309\",\"DC\",\"736 Jackson PI NW\",\"\",\"20503\"\n"
             + "\"\",\""
             + date
-            + "\",\"SFN\",\"N\",\"UNK\",\"\",\""
+            + "\",\"SFN\",\"Y\",\"UNK\",\"\",\""
             + instrumentId2
             + "\",\""
             + date
             + "\",\"54321-BOOM\",\"Washington\",\"Washington\",\"facility@test.com\",\"Imaginary Site\",\"555-867-5309\",\"DC\",\"736 Jackson PI NW\",\"\",\"20503\",\"DOOOOOOM\",\"Washington\",\"Washington\",\"Doctor\",\"Doom\",\"800-555-1212\",\"DC\",\"736 Jackson PI NW\",\"\",\"20503\",\"The Mall\",\"18990510\",\""
             + patientId2
-            + "\",\"Washington\",\"Washington\",\"\",\"N\",\"Fred\",\"M\",\"Astaire\",\"\",\"5168675309\",\"English\",\"2106-3\",\"RESIDENT\",\"DC\",\"736 Jackson PI NW\",\"\",\"\",\"\",\"20503\",\"P\",\"N\",\"" // "\",\"\",\"\",\"\",\"U\",\"John\",\"U\",\"Boddie\",\"Brown\",\"503-867-5309\",\"UNK\",\"STAFF\",\"\",\"\",\"\",\"Jr.\",\"\",\"P\",\"UNK\",\""
+            + "\",\"Washington\",\"Washington\",\"\",\"N\",\"Fred\",\"M\",\"Astaire\",\"\",\"5168675309\",\"Spanish\",\"2106-3\",\"RESIDENT\",\"DC\",\"736 Jackson PI NW\",\"\",\"\",\"123\",\"20503\",\"P\",\"N\",\"" // "\",\"\",\"\",\"\",\"U\",\"John\",\"U\",\"Boddie\",\"Brown\",\"503-867-5309\",\"UNK\",\"STAFF\",\"\",\"\",\"\",\"Jr.\",\"\",\"P\",\"UNK\",\""
             + resultId2
             + "\",\""
             + siteOfCare2
