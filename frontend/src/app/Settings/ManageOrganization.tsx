@@ -7,30 +7,9 @@ import RequiredMessage from "../commonComponents/RequiredMessage";
 import Alert from "../commonComponents/Alert";
 import Select from "../commonComponents/Select";
 import { showNotification } from "../utils";
+import { OrganizationTypeEnum } from "../signUp/Organization/utils";
 
 import { EditableOrganization } from "./ManageOrganizationContainer";
-
-const organizationTypes: { value: OrganizationType; label: string }[] = [
-  { value: "k12", label: "K-12 School" },
-  { value: "camp", label: "Camp" },
-  { value: "university", label: "College/University" },
-  { value: "correctional_facility", label: "Correctional Facility" },
-  { value: "employer", label: "Employer" },
-  { value: "government_agency", label: "Government Agency" },
-  { value: "airport", label: "Airport/Transit Station" },
-  { value: "shelter", label: "Homeless Shelter" },
-  { value: "fqhc", label: "FQHC" },
-  { value: "primary_care", label: "Primary Care / Mental Health Outpatient" },
-  { value: "assisted_living", label: "Assisted Living Facility" },
-  { value: "hospital", label: "Hospital or Clinic" },
-  { value: "urgent_care", label: "Urgent Care" },
-  { value: "nursing_home", label: "Nursing Home" },
-  { value: "treatment_center", label: "Substance Abuse Treatment Center" },
-  { value: "hospice", label: "Hospice" },
-  { value: "pharmacy", label: "Pharmacy" },
-  { value: "lab", label: "Lab" },
-  { value: "other", label: "Other" },
-];
 
 interface Props {
   organization: EditableOrganization;
@@ -62,11 +41,7 @@ const ManageOrganization: React.FC<Props> = (props) => {
       }
     }
     if (field === "type") {
-      if (
-        !organizationTypes
-          .map(({ value }) => value)
-          .includes(organization[field])
-      ) {
+      if (!Object.keys(OrganizationTypeEnum).includes(organization[field])) {
         setErrors({
           ...errors,
           [field]: "An organization type must be selected",
@@ -107,7 +82,7 @@ const ManageOrganization: React.FC<Props> = (props) => {
     <div className="grid-row position-relative">
       <div className="prime-container card-container">
         <div className="usa-card__header">
-          <h2>Manage Organization</h2>
+          <h2>Manage organization</h2>
           <Button
             onClick={validateAndSave}
             label="Save settings"
@@ -143,7 +118,15 @@ const ManageOrganization: React.FC<Props> = (props) => {
           )}
           <Select
             name="type"
-            options={organizationTypes}
+            options={
+              Object.entries(OrganizationTypeEnum).map(([key, value]) => ({
+                label: value,
+                value: key,
+              })) as {
+                value: OrganizationType;
+                label: string;
+              }[]
+            }
             label="Organization type"
             onChange={onChange("type")}
             value={organization.type}

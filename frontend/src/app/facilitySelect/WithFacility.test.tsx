@@ -1,24 +1,24 @@
-import React from "react";
 import { Provider } from "react-redux";
 import renderer from "react-test-renderer";
 import configureStore from "redux-mock-store";
-import { act, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
+import { MemoryRouter as Router } from "react-router";
+import { I18nextProvider } from "react-i18next";
 
 import { appPermissions } from "../permissions";
-import { updateFacility } from "../store";
 import { GET_FACILITY_QUERY } from "../Settings/Facility/FacilityFormContainer";
+import i18n from "../../i18n";
 
 import WithFacility from "./WithFacility";
 
 const mockStore = configureStore([]);
-const mockHistoryPush = jest.fn();
-jest.mock("react-router-dom", () => ({
-  Prompt: (props: any) => <></>,
-  useHistory: () => ({
-    push: mockHistoryPush,
-  }),
-}));
 
 const mocks = [
   {
@@ -45,9 +45,6 @@ const mocks = [
 describe("WithFacility", () => {
   let store: any;
   let component: any;
-  beforeEach(() => {
-    mockHistoryPush.mockClear();
-  });
 
   describe("With zero facilities", () => {
     beforeEach(() => {
@@ -65,9 +62,11 @@ describe("WithFacility", () => {
       });
       store.dispatch = jest.fn();
       component = renderer.create(
-        <Provider store={store}>
-          <WithFacility>App</WithFacility>
-        </Provider>
+        <Router>
+          <Provider store={store}>
+            <WithFacility>App</WithFacility>
+          </Provider>
+        </Router>
       );
     });
 
@@ -90,30 +89,18 @@ describe("WithFacility", () => {
         },
         facilities: [{ id: "1", name: "Facility 1" }],
       });
-      store.dispatch = jest.fn();
       component = render(
-        <Provider store={store}>
-          <WithFacility>App</WithFacility>
-        </Provider>
+        <Router>
+          <Provider store={store}>
+            <WithFacility>App</WithFacility>
+          </Provider>
+        </Router>
       );
     });
 
-    it("should render with a value", () => {
-      expect(component.container.firstChild).toMatchSnapshot();
-    });
-    it("should select a facility once", () => {
-      expect(store.dispatch).toHaveBeenCalledTimes(1);
-    });
-    it("should select the first facility", () => {
-      expect(store.dispatch).toHaveBeenCalledWith(
-        updateFacility({ id: "1", name: "Facility 1" })
-      );
-    });
-    it("should push history once", () => {
-      expect(mockHistoryPush).toHaveBeenCalledTimes(1);
-    });
-    it("should set the facility id search param", () => {
-      expect(mockHistoryPush).toHaveBeenCalledWith({ search: "?facility=1" });
+    it("should bypass the facility selection screen", async () => {
+      const renderedApp = await screen.findByText("App");
+      expect(renderedApp).toBeInTheDocument();
     });
   });
 
@@ -134,38 +121,63 @@ describe("WithFacility", () => {
           { id: "2", name: "Facility 2" },
         ],
       });
-      store.dispatch = jest.fn();
-      component = renderer.create(
-        <Provider store={store}>
-          <WithFacility>App</WithFacility>
-        </Provider>
+      component = render(
+        <Router>
+          <Provider store={store}>
+            <WithFacility>App</WithFacility>
+          </Provider>
+        </Router>
       );
     });
 
-    it("should render with a value", () => {
-      expect(component.toJSON()).toMatchSnapshot();
+    it("should show the facility selection screen", () => {
+      expect(component.container.firstChild).toMatchSnapshot();
     });
 
     describe("On facility select", () => {
-      beforeEach(() => {
-        renderer.act(() => {
-          component.root.findAllByType("button")[0].props.onClick();
+      beforeEach(async () => {
+        const options = await screen.findAllByRole("button");
+        await waitFor(() => {
+          fireEvent.click(options[0]);
         });
       });
-      it("should select a facility once", () => {
-        expect(store.dispatch).toHaveBeenCalledTimes(1);
+      it("should show the app", async () => {
+        const renderedApp = await screen.findByText("App");
+        expect(renderedApp).toBeInTheDocument();
       });
-      it("should select the first facility", () => {
-        expect(store.dispatch).toHaveBeenCalledWith(
-          updateFacility({ id: "1", name: "Facility 1" })
-        );
+    });
+  });
+  describe("Facility ID from URL", () => {
+    beforeEach(() => {
+      store = mockStore({
+        dataLoaded: true,
+        organization: {
+          name: "Organization Name",
+        },
+        user: {
+          firstName: "Kim",
+          lastName: "Mendoza",
+          permissions: [],
+        },
+        facilities: [
+          { id: "1", name: "Facility 1" },
+          { id: "2", name: "Facility 2" },
+        ],
       });
-      it("should push history once", () => {
-        expect(mockHistoryPush).toHaveBeenCalledTimes(1);
-      });
-      it("should set the facility id search param", () => {
-        expect(mockHistoryPush).toHaveBeenCalledWith({ search: "?facility=1" });
-      });
+      render(
+        <Router
+          initialEntries={[{ pathname: "/", search: "?facility=2" }]}
+          initialIndex={0}
+        >
+          <Provider store={store}>
+            <WithFacility>App</WithFacility>
+          </Provider>
+        </Router>
+      );
+    });
+    it("loads facility directly from URL", async () => {
+      const renderedApp = await screen.findByText("App");
+      expect(renderedApp).toBeInTheDocument();
     });
   });
   describe("A new org", () => {
@@ -182,13 +194,16 @@ describe("WithFacility", () => {
         },
         facilities: [],
       });
-      store.dispatch = jest.fn();
       render(
-        <Provider store={store}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <WithFacility>App</WithFacility>
-          </MockedProvider>
-        </Provider>
+        <I18nextProvider i18n={i18n}>
+          <Router>
+            <Provider store={store}>
+              <MockedProvider mocks={mocks} addTypename={false}>
+                <WithFacility>App</WithFacility>
+              </MockedProvider>
+            </Provider>
+          </Router>
+        </I18nextProvider>
       );
       await act(async () => {
         await screen.findAllByText("Welcome to SimpleReport", { exact: false });
@@ -197,7 +212,7 @@ describe("WithFacility", () => {
 
     it("should render the facility form", async () => {
       expect(
-        await screen.getByText("To get started, add a testing facility", {
+        await screen.findByText("To get started, add a testing facility", {
           exact: false,
         })
       ).toBeInTheDocument();

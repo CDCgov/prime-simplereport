@@ -13,6 +13,7 @@ import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router";
 
 import EditPatient, { GET_PATIENT } from "./EditPatient";
+import EditPatientContainer from "./EditPatientContainer";
 
 jest.mock("../commonComponents/ComboBox", () => () => <></>);
 const mockStore = configureStore([]);
@@ -136,6 +137,9 @@ describe("EditPatient", () => {
   describe("facility select input", () => {
     let component: any;
     beforeEach(async () => {
+      jest
+        .useFakeTimers("modern")
+        .setSystemTime(new Date("2021-08-01").getTime());
       const mocks = [
         {
           request: {
@@ -376,6 +380,20 @@ describe("EditPatient", () => {
           screen.queryByText("Franecki, Eugenia", { exact: false })
         ).toBeInTheDocument();
       });
+    });
+  });
+  describe("EditPatientContainer", () => {
+    it("doesn't render if no facility is provided", async () => {
+      render(
+        <MemoryRouter>
+          <Provider store={configureStore()({ facilities: [] })}>
+            <EditPatientContainer patientId="5" />
+          </Provider>
+        </MemoryRouter>
+      );
+      expect(
+        await screen.findByText("No facility selected", { exact: false })
+      ).toBeInTheDocument();
     });
   });
 });

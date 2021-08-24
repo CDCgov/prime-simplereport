@@ -284,6 +284,8 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         id="50"
+                        max="2021-08-01"
+                        min="1900-01-01"
                         name="birthDate"
                         type="date"
                         value="1939-10-11"
@@ -303,6 +305,11 @@ Object {
                   >
                     Contact information
                   </legend>
+                  <p
+                    class="usa-hint maxw-prose"
+                  >
+                    You're responsible for entering the correct contact information, following applicable federal and state laws.
+                  </p>
                   <div
                     class="usa-form"
                   >
@@ -430,11 +437,6 @@ Object {
                         >
                           Would you like to receive your results via text message?
                         </legend>
-                        <span
-                          class="usa-hint"
-                        >
-                          We'll text all mobile numbers on file
-                        </span>
                         <div
                           class=""
                         >
@@ -453,7 +455,7 @@ Object {
                               class="usa-radio__label"
                               for="53-val-SMS"
                             >
-                              Yes
+                              Yes, text all mobile numbers on file.
                             </label>
                           </div>
                           <div
@@ -931,7 +933,7 @@ Object {
                             class="usa-label"
                             for="60"
                           >
-                            Zip code
+                            ZIP code
                             <abbr
                               class="usa-hint usa-hint--required"
                               title="required"
@@ -1753,6 +1755,8 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       id="50"
+                      max="2021-08-01"
+                      min="1900-01-01"
                       name="birthDate"
                       type="date"
                       value="1939-10-11"
@@ -1772,6 +1776,11 @@ Object {
                 >
                   Contact information
                 </legend>
+                <p
+                  class="usa-hint maxw-prose"
+                >
+                  You're responsible for entering the correct contact information, following applicable federal and state laws.
+                </p>
                 <div
                   class="usa-form"
                 >
@@ -1899,11 +1908,6 @@ Object {
                       >
                         Would you like to receive your results via text message?
                       </legend>
-                      <span
-                        class="usa-hint"
-                      >
-                        We'll text all mobile numbers on file
-                      </span>
                       <div
                         class=""
                       >
@@ -1922,7 +1926,7 @@ Object {
                             class="usa-radio__label"
                             for="53-val-SMS"
                           >
-                            Yes
+                            Yes, text all mobile numbers on file.
                           </label>
                         </div>
                         <div
@@ -2400,7 +2404,7 @@ Object {
                           class="usa-label"
                           for="60"
                         >
-                          Zip code
+                          ZIP code
                           <abbr
                             class="usa-hint usa-hint--required"
                             title="required"

@@ -17,6 +17,8 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.errors.ExperianGetQuestionsException;
+import gov.cdc.usds.simplereport.service.errors.ExperianKbaResultException;
+import gov.cdc.usds.simplereport.service.errors.ExperianNullNodeException;
 import gov.cdc.usds.simplereport.service.errors.ExperianPersonMatchException;
 import gov.cdc.usds.simplereport.service.errors.ExperianSubmitAnswersException;
 import gov.cdc.usds.simplereport.service.idverification.ExperianService;
@@ -78,6 +80,16 @@ public class IdentityVerificationController {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
   }
 
+  @ExceptionHandler(ExperianKbaResultException.class)
+  public ResponseEntity<String> handleException(ExperianKbaResultException e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+  }
+
+  @ExceptionHandler(ExperianNullNodeException.class)
+  public ResponseEntity<String> handleException(ExperianNullNodeException e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+  }
+
   @ExceptionHandler(IllegalGraphqlArgumentException.class)
   public ResponseEntity<String> handleException(IllegalGraphqlArgumentException e) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -91,7 +103,9 @@ public class IdentityVerificationController {
 
     try {
       return _experianService.getQuestions(requestBody);
-    } catch (ExperianPersonMatchException | ExperianGetQuestionsException e) {
+    } catch (ExperianPersonMatchException
+        | ExperianGetQuestionsException
+        | ExperianNullNodeException e) {
       // could not match a person with the details in the request or general experian error
       sendIdentityVerificationFailedEmails(org.getExternalId(), orgAdminEmail);
       throw e;
@@ -123,7 +137,7 @@ public class IdentityVerificationController {
       }
 
       return verificationResponse;
-    } catch (ExperianSubmitAnswersException e) {
+    } catch (ExperianSubmitAnswersException | ExperianNullNodeException e) {
       // a general error with experian occurred
       sendIdentityVerificationFailedEmails(org.getExternalId(), orgAdminEmail);
       throw e;

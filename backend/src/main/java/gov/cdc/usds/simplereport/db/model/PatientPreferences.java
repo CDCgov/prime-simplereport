@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
@@ -15,7 +16,7 @@ public class PatientPreferences extends AuditedEntity {
   public static final PatientPreferences DEFAULT = new PatientPreferences();
 
   @MapsId
-  @OneToOne
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "internal_id")
   private Person person;
 

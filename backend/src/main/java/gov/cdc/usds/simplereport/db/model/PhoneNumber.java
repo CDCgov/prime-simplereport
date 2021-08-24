@@ -10,13 +10,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import org.hibernate.annotations.Type;
 
 @Entity
 public class PhoneNumber extends AuditedEntity {
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "person_internal_id")
   private Person person;
 
@@ -43,11 +44,6 @@ public class PhoneNumber extends AuditedEntity {
 
   public void setPerson(Person person) {
     this.person = person;
-  }
-
-  @JsonIgnore
-  public Person getPerson() {
-    return person;
   }
 
   @JsonIgnore

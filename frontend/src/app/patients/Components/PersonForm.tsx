@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { stateCodes } from "../../../config/constants";
 import getLanguages from "../../utils/languages";
+import i18n from "../../../i18n";
 import {
   TRIBAL_AFFILIATION_VALUES,
   useTranslatedConstants,
@@ -28,10 +29,10 @@ import {
 } from "../../utils/smartyStreets";
 import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
 import ComboBox from "../../commonComponents/ComboBox";
+import { formatDate } from "../../utils/date";
 
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
-import "../../../i18n";
 
 export type ValidateField = (field: keyof PersonErrors) => Promise<void>;
 
@@ -74,7 +75,6 @@ const yesNoUnknownToBool = (
 interface Props {
   patient: Nullable<PersonFormData>;
   patientId?: string;
-  activeFacilityId: string;
   savePerson: (person: Nullable<PersonFormData>) => void;
   hideFacilitySelect?: boolean;
   getHeader?: (
@@ -115,6 +115,14 @@ const PersonForm = (props: Props) => {
   };
 
   const schema = schemata[view];
+
+  // Language settings may persist into a non-i18nized view, so explicitly revert back to the
+  // default language in such cases
+  useEffect(() => {
+    if (i18n.language !== "en" && schema !== selfRegistrationSchema) {
+      i18n.changeLanguage("en");
+    }
+  }, [schema, selfRegistrationSchema]);
 
   const clearError = useCallback(
     (field: keyof PersonErrors) => {
@@ -355,10 +363,15 @@ const PersonForm = (props: Props) => {
             type="date"
             required={view !== PersonFormView.PXP}
             disabled={view === PersonFormView.PXP}
+            min={formatDate(new Date("Jan 1, 1900"))}
+            max={formatDate(new Date())}
           />
         </div>
       </FormGroup>
       <FormGroup title={t("patient.form.contact.heading")}>
+        <p className="usa-hint maxw-prose">
+          {t("patient.form.contact.helpText")}
+        </p>
         <ManagePhoneNumbers
           phoneNumbers={patient.phoneNumbers || []}
           testResultDelivery={patient.testResultDelivery}

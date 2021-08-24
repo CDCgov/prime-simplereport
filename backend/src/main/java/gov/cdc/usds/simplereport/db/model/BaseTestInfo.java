@@ -27,7 +27,7 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   @JoinColumn(name = "facility_id", updatable = false)
   private Facility facility;
 
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "device_specimen_type_id")
   private DeviceSpecimenType deviceSpecimen;
 

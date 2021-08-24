@@ -20,6 +20,7 @@ import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -35,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = false)
 public class PersonService {
+
   private final CurrentPatientContextHolder _patientContext;
   private final OrganizationService _os;
   private final PersonRepository _repo;
@@ -333,7 +335,17 @@ public class PersonService {
     if (incoming == null) {
       return;
     }
-    incoming.forEach(phoneNumber -> phoneNumber.setPerson(person));
+
+    // we don't want to allow a patient to have any duplicate phone numbers
+    Set<String> phoneNumbersSeen = new HashSet<>();
+    incoming.forEach(
+        phoneNumber -> {
+          phoneNumber.setPerson(person);
+          if (phoneNumbersSeen.contains(phoneNumber.getNumber())) {
+            throw new IllegalGraphqlArgumentException("Duplicate phone number entered");
+          }
+          phoneNumbersSeen.add(phoneNumber.getNumber());
+        });
 
     var existingNumbers = person.getPhoneNumbers();
 

@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountResponse;
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
+import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountResponse;
 import gov.cdc.usds.simplereport.api.model.accountrequest.WaitlistRequest;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -25,7 +26,6 @@ import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
-import gov.cdc.usds.simplereport.service.crm.CrmService;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
@@ -64,7 +64,6 @@ public class AccountRequestController {
   private final ApiUserService _aus;
   private final EmailService _es;
   private final SendGridProperties sendGridProperties;
-  private final CrmService _crm;
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   private static final Logger LOG = LoggerFactory.getLogger(AccountRequestController.class);
@@ -112,7 +111,6 @@ public class AccountRequestController {
       sendNewAccountRequestEmailToSrSupport(request.getEmail(), request);
       createAdminUser(
           request.getFirstName(), request.getLastName(), request.getEmail(), org.getExternalId());
-      _crm.submitAccountRequestData(request);
     } catch (ResourceException e) {
       // The `ResourceException` is thrown when an account is requested with an existing org
       // name. This happens quite frequently and is expected behavior of the current form
@@ -129,7 +127,7 @@ public class AccountRequestController {
   @SuppressWarnings("checkstyle:illegalcatch")
   @PostMapping("/without-facility-with-emails")
   @Transactional(readOnly = false)
-  public void submitAccountRequestWithoutFacility(
+  public OrganizationAccountResponse submitAccountRequestWithoutFacility(
       @Valid @RequestBody OrganizationAccountRequest request) throws IOException {
     try {
       logOrganizationAccountRequest(request);
@@ -145,7 +143,7 @@ public class AccountRequestController {
       sendNewAccountRequestEmailToSrSupport(request.getEmail(), request);
       createAdminUser(
           request.getFirstName(), request.getLastName(), request.getEmail(), org.getExternalId());
-      _crm.submitOrganizationAccountRequestData(request);
+      return new OrganizationAccountResponse(org.getExternalId());
     } catch (ResourceException | BadRequestException e) {
       // The `ResourceException` is thrown when an account is requested with an existing user email
       // address
@@ -172,7 +170,6 @@ public class AccountRequestController {
       Organization org = checkAccountRequestAndCreateOrgWithFacility(request);
       createAdminUser(
           request.getFirstName(), request.getLastName(), request.getEmail(), org.getExternalId());
-      _crm.submitAccountRequestData(request);
       return new AccountResponse(org.getExternalId());
     } catch (ResourceException | BadRequestException e) {
       // The `ResourceException` is thrown when an account is requested with an existing user email
@@ -196,12 +193,19 @@ public class AccountRequestController {
       Organization org = checkAccountRequestAndCreateOrg(request);
       createAdminUser(
           request.getFirstName(), request.getLastName(), request.getEmail(), org.getExternalId());
-      _crm.submitOrganizationAccountRequestData(request);
       return new AccountResponse(org.getExternalId());
     } catch (ResourceException e) {
-      // The `ResourceException` is thrown when an account is requested with an existing org
+      // The `ResourceException` is thrown when a user requests an account with an email address
+      // that's already in Okta.
+      // This happens fairly frequently and is the expected behavior of the current form.
+      // We rethrow this as a BadRequestException so that users get at toast on the frontend
+      // informing them of the error.
+      throw new BadRequestException(
+          "This email address is already associated with a SimpleReport user.");
+    } catch (BadRequestException e) {
+      // The `BadRequestException` is thrown when an account is requested with an existing org
       // name. This happens quite frequently and is expected behavior of the current form
-      throw e;
+      throw new BadRequestException("This organization has already registered with SimpleReport.");
     } catch (IOException | RuntimeException e) {
       throw new AccountRequestFailureException(e);
     }
@@ -211,7 +215,7 @@ public class AccountRequestController {
       throws IOException {
 
     // verify that the organization doesn't already exist
-    checkForDuplicateOrg(request.getOrganizationName());
+    checkForDuplicateOrg(request.getName());
 
     List<DeviceType> devices = _dts.fetchDeviceTypes();
     Map<String, String> deviceNamesToIds =
@@ -277,11 +281,11 @@ public class AccountRequestController {
         Translators.consolidateNameArguments(
             null, request.getOpFirstName(), null, request.getOpLastName(), null, true);
 
-    String orgExternalId = getOrgExternalId(request.getOrganizationName(), request.getState());
+    String orgExternalId = getOrgExternalId(request.getName(), request.getState());
 
     return _os.createOrganizationAndFacility(
-        request.getOrganizationName(),
-        getOrganizationTypeFromLabelOrValue(request.getOrganizationType()),
+        request.getName(),
+        getTypeFromLabelOrValue(request.getType()),
         orgExternalId,
         request.getFacilityName(),
         request.getCliaNumber(),
@@ -296,14 +300,14 @@ public class AccountRequestController {
   }
 
   private Organization checkAccountRequestAndCreateOrg(OrganizationAccountRequest request) {
-    String organizationName = request.getOrganizationName();
+    String organizationName = request.getName();
 
     // verify that the organization doesn't already exist
     checkForDuplicateOrg(organizationName);
 
     String orgExternalId = getOrgExternalId(organizationName, request.getState());
 
-    String organizationType = getOrganizationTypeFromLabelOrValue(request.getOrganizationType());
+    String organizationType = getTypeFromLabelOrValue(request.getType());
     return _os.createOrganization(organizationName, organizationType, orgExternalId);
   }
 
@@ -329,7 +333,7 @@ public class AccountRequestController {
   // This is for temporary compatibility so the request can contain either the type label (old way)
   // or the type name (new way).  Once the request is updated, then we only need to validate the
   // type with `parseOrganizationType`
-  private String getOrganizationTypeFromLabelOrValue(String labelOrValue) {
+  private String getTypeFromLabelOrValue(String labelOrValue) {
     try {
       return Translators.parseOrganizationTypeFromName(labelOrValue);
     } catch (IllegalGraphqlArgumentException e) {

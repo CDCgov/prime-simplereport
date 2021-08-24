@@ -39,7 +39,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class ApiUserManagementTest extends BaseGraphqlTest {
 
   private static final String NO_USER_ERROR = "Cannot find user.";
@@ -991,6 +993,40 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         "SetCurrentUserTenantDataAccessOp",
         variables,
         ACCESS_ERROR);
+  }
+
+  @Test
+  void setCurrentUserTenantDataAccess_externalIdTrailingSpace_success() {
+    TestUserIdentities.withUser(
+        TestUserIdentities.SITE_ADMIN_USER,
+        () -> {
+          useSuperUser();
+          _dataFactory.createValidOrg("The Mall", "k12", "dc-with-trailing-space ", true);
+
+          ObjectNode variables =
+              JsonNodeFactory.instance
+                  .objectNode()
+                  .put("organizationExternalId", "dc-with-trailing-space ")
+                  .put("justification", "This is my justification");
+          ObjectNode user =
+              (ObjectNode)
+                  runQuery(
+                          "set-current-user-tenant-data-access",
+                          "SetCurrentUserTenantDataAccessOp",
+                          variables,
+                          null)
+                      .get("setCurrentUserTenantDataAccess");
+          assertEquals("ruby@example.com", user.get("email").asText());
+          assertEquals(Role.ADMIN, Role.valueOf(user.get("role").asText()));
+          Set<UserPermission> allPermissions =
+              Arrays.stream(UserPermission.values()).collect(Collectors.toSet());
+          assertEquals(allPermissions, extractPermissionsFromUser(user));
+          assertLastAuditEntry("ruby@example.com", null, null);
+
+          // run query using tenant data access
+          runQuery("current-user-query").get("whoami");
+          assertLastAuditEntry("ruby@example.com", "dc-with-trailing-space ", allPermissions);
+        });
   }
 
   private List<ObjectNode> toList(ArrayNode arr) {

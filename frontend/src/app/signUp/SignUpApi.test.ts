@@ -20,6 +20,7 @@ describe("SignUpApi", () => {
         city: "Test City",
         state: "CA",
         zip: "TEST POSTCODE",
+        orgExternalId: "1123-12213",
       });
     });
     it("calls fetch with the correct data", () => {
@@ -27,7 +28,7 @@ describe("SignUpApi", () => {
         "http://localhost:8080/identity-verification/get-questions",
         {
           body:
-            '{"firstName":"John","lastName":"Doe","dateOfBirth":"08/30/1983","email":"john.doe@test.com","phoneNumber":"0123456789","streetAddress1":"Test Street","city":"Test City","state":"CA","zip":"TEST POSTCODE"}',
+            '{"firstName":"John","lastName":"Doe","dateOfBirth":"08/30/1983","email":"john.doe@test.com","phoneNumber":"0123456789","streetAddress1":"Test Street","city":"Test City","state":"CA","zip":"TEST POSTCODE","orgExternalId":"1123-12213"}',
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
@@ -52,6 +53,35 @@ describe("SignUpApi", () => {
         "http://localhost:8080/identity-verification/submit-answers",
         {
           body: '{"sessionId":"foo","orgExternalId":"bar","answers":[2,3,5]}',
+          headers: {
+            Accept: "application/json, text/plain",
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+        }
+      );
+    });
+  });
+
+  describe("createOrganization", () => {
+    beforeEach(async () => {
+      (fetch as FetchMock).mockResponseOnce(JSON.stringify({}));
+      await SignUpApi.createOrganization({
+        firstName: "Laslo",
+        lastName: "Dickens",
+        email: "laslo@shadow.corp",
+        name: "Shadow",
+        type: "treatment_center",
+        state: "NY",
+        workPhoneNumber: "665-452-5484",
+      });
+    });
+    it("calls fetch with the correct data", () => {
+      expect(fetch).toHaveBeenCalledWith(
+        "http://localhost:8080/account-request/organization-create-without-facility",
+        {
+          body:
+            '{"firstName":"Laslo","lastName":"Dickens","email":"laslo@shadow.corp","name":"Shadow","type":"treatment_center","state":"NY","workPhoneNumber":"665-452-5484"}',
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",

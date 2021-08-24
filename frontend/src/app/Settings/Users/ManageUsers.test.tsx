@@ -235,6 +235,7 @@ describe("ManageUsers", () => {
               deleteUser={deleteUser}
               getUsers={getUsers}
               reactivateUser={reactivateUser}
+              resetUserPassword={() => Promise.resolve()}
             />
           </TestContainer>
         );
@@ -275,7 +276,7 @@ describe("ManageUsers", () => {
 
       fireEvent.click(getByText("New User", { exact: false }));
       const [first, last, email] = await findAllByRole("textbox");
-      const select = getByLabelText("Access Level", { exact: false });
+      const select = getByLabelText("Access level", { exact: false });
       fireEvent.change(first, inputValue(newUser.firstName));
       fireEvent.change(last, inputValue(newUser.lastName));
       fireEvent.change(email, inputValue(newUser.email));
@@ -308,7 +309,7 @@ describe("ManageUsers", () => {
 
       fireEvent.click(getByText("New User", { exact: false }));
       const [first, last, email] = await findAllByRole("textbox");
-      const select = getByLabelText("Access Level", { exact: false });
+      const select = getByLabelText("Access level", { exact: false });
       fireEvent.change(first, inputValue(newUser.firstName));
       fireEvent.change(last, inputValue(newUser.lastName));
       fireEvent.change(email, inputValue(newUser.email));
@@ -419,6 +420,7 @@ describe("ManageUsers", () => {
               deleteUser={deleteUser}
               getUsers={getUsers}
               reactivateUser={reactivateUser}
+              resetUserPassword={() => Promise.resolve()}
             />
           </TestContainer>
         );
@@ -473,6 +475,7 @@ describe("ManageUsers", () => {
               deleteUser={deleteUser}
               getUsers={getUsers}
               reactivateUser={reactivateUser}
+              resetUserPassword={() => Promise.resolve()}
             />
           </TestContainer>
         );
@@ -565,6 +568,7 @@ describe("ManageUsers", () => {
                 deleteUser={deleteUser}
                 getUsers={getUsers}
                 reactivateUser={reactivateUser}
+                resetUserPassword={() => Promise.resolve()}
               />
             </MockedProvider>
           </Provider>

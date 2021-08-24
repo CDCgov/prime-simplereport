@@ -14,6 +14,8 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQu
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsResponse;
 import gov.cdc.usds.simplereport.properties.ExperianProperties;
 import gov.cdc.usds.simplereport.service.errors.ExperianGetQuestionsException;
+import gov.cdc.usds.simplereport.service.errors.ExperianKbaResultException;
+import gov.cdc.usds.simplereport.service.errors.ExperianNullNodeException;
 import gov.cdc.usds.simplereport.service.errors.ExperianPersonMatchException;
 import gov.cdc.usds.simplereport.service.errors.ExperianSubmitAnswersException;
 import java.util.UUID;
@@ -35,8 +37,23 @@ public class LiveExperianService
 
   private static final Logger LOG = LoggerFactory.getLogger(LiveExperianService.class);
 
+  private static final String KBA_RESULT_CODE_PATH =
+      "/clientResponsePayload/decisionElements/0/otherData/json/fraudSolutions/response/products/preciseIDServer/kbascore/general/kbaresultCode";
+  private static final String KBA_RESULT_CODE_DESCRIPTION_PATH =
+      "/clientResponsePayload/decisionElements/0/otherData/json/fraudSolutions/response/products/preciseIDServer/kbascore/general/kbaresultCodeDescription";
+  private static final String KBA_SESSION_ID_PATH =
+      "/clientResponsePayload/decisionElements/0/otherData/json/fraudSolutions/response/products/preciseIDServer/kba/general/sessionID";
+  private static final String KBA_QUESTIONS_PATH =
+      "/clientResponsePayload/decisionElements/0/otherData/json/fraudSolutions/response/products/preciseIDServer/kba/questionSet";
+  private static final String PID_OVERALL_DECISION_PATH =
+      "/responseHeader/overallResponse/decision";
+  private static final String PID_FINAL_DECISION_PATH =
+      "/clientResponsePayload/decisionElements/0/decisions/2/value";
+
   private static final String SUCCESS_DECISION = "ACCEPT";
+  private static final String SUCCESS_DECISION_SHORT = "ACC";
   private static final int KBA_SUCCESS_RESULT_CODE = 0;
+  private static final int KBA_PERSON_NOT_FOUND_RESULT_CODE = 9;
 
   private final ExperianProperties _experianProperties;
   private final ObjectMapper _objectMapper;
@@ -99,32 +116,21 @@ public class LiveExperianService
               _experianProperties.getPreciseidTenantId(),
               _experianProperties.getPreciseidClientReferenceId(),
               userData);
-      ObjectNode responseEntity = submitExperianRequest(initialRequestBody);
 
-      // look for errors in KIQ response ("CrossCore - PreciseId (Option 24).pdf" page 79)
-      int kbaResultCode =
-          responseEntity
-              .at(
-                  "/clientResponsePayload/decisionElements/0/otherData/json/fraudSolutions/response/products/preciseIDServer/kbascore/general/kbaresultCode")
-              .asInt();
-      if (kbaResultCode != KBA_SUCCESS_RESULT_CODE) {
-        String kbaResultCodeDescription =
-            responseEntity
-                .at(
-                    "/clientResponsePayload/decisionElements/0/otherData/json/fraudSolutions/response/products/preciseIDServer/kbascore/general/kbaresultCodeDescription")
-                .asText();
-        throw new ExperianPersonMatchException(kbaResultCodeDescription);
+      LOG.info("EXPERIAN_QUESTION_REQUEST_SUBMITTED: {}", initialRequestBody);
+      ObjectNode responseEntity = submitExperianRequest(initialRequestBody);
+      LOG.info("EXPERIAN_QUESTION_RESPONSE: {}", responseEntity);
+
+      // KIQ response may a kbaresultCode that indicates failure, this seems to only be present
+      // in unsuccessful requests to get questions (consumer not found, deceased, etc.)
+      JsonNode kbaResultCodeNode = responseEntity.at(KBA_RESULT_CODE_PATH);
+      if (!kbaResultCodeNode.isMissingNode()) {
+        handleKbaResultCodeFailure(kbaResultCodeNode.asInt(), responseEntity);
       }
 
       // return KIQ questions and session id
-      JsonNode questionsDataNode =
-          responseEntity.at(
-              "/clientResponsePayload/decisionElements/0/otherData/json/fraudSolutions/response/products/preciseIDServer/kba/questionSet");
-      String sessionId =
-          responseEntity
-              .at(
-                  "/clientResponsePayload/decisionElements/0/otherData/json/fraudSolutions/response/products/preciseIDServer/kba/general/sessionID")
-              .textValue();
+      JsonNode questionsDataNode = findNodeInResponse(responseEntity, KBA_QUESTIONS_PATH);
+      String sessionId = findNodeInResponse(responseEntity, KBA_SESSION_ID_PATH).asText();
 
       return new IdentityVerificationQuestionsResponse(sessionId, questionsDataNode);
     } catch (RestClientException | JsonProcessingException e) {
@@ -143,17 +149,33 @@ public class LiveExperianService
               _experianProperties.getPreciseidTenantId(),
               _experianProperties.getPreciseidClientReferenceId(),
               answersRequest);
+      LOG.info("EXPERIAN_ANSWER_REQUEST_SUBMITTED: {}", finalRequestBody);
       ObjectNode responseEntity = submitExperianRequest(finalRequestBody);
+      LOG.info("EXPERIAN_ANSWER_RESPONSE: {}", responseEntity);
 
-      // find overall decision ("CrossCore 2.x Technical Developer Guide.pdf" page 28-29)
-      String decision = responseEntity.at("/responseHeader/overallResponse/decision").textValue();
+      // look for errors in KIQ response ("CrossCore - PreciseId (Option 24).pdf" page 79)
+      int kbaResultCode = findNodeInResponse(responseEntity, KBA_RESULT_CODE_PATH).asInt();
+      if (kbaResultCode != KBA_SUCCESS_RESULT_CODE) {
+        handleKbaResultCodeFailure(kbaResultCode, responseEntity);
+      }
 
-      // if experian responds with ACCEPT, we will consider the id verification successful
-      boolean passed = SUCCESS_DECISION.equals(decision);
+      boolean passed;
+      try {
+        // find overall decision ("CrossCore 2.x Technical Developer Guide.pdf" page 28-29)
+        String decision = findNodeInResponse(responseEntity, PID_OVERALL_DECISION_PATH).textValue();
+        // if experian responds with ACCEPT, we will consider the id verification successful
+        passed = SUCCESS_DECISION.equals(decision);
+      } catch (ExperianNullNodeException e) {
+        // Experian does not always return the overall decision. If this happens, check for the
+        // value of "final decision".
+        String finalDecision =
+            findNodeInResponse(responseEntity, PID_FINAL_DECISION_PATH).textValue();
+        passed = SUCCESS_DECISION_SHORT.equals(finalDecision);
+      }
 
       // Generate a searchable log message so we can monitor decisions from Experian
       String requestData = _objectMapper.writeValueAsString(answersRequest);
-      LOG.info("EXPERIAN_DECISION ({}): {}", decision, requestData);
+      LOG.info("EXPERIAN_DECISION ({}): {}, {}", passed, responseEntity, requestData);
 
       return new IdentityVerificationAnswersResponse(passed);
     } catch (RestClientException | JsonProcessingException e) {
@@ -173,5 +195,28 @@ public class LiveExperianService
       throw new RestClientException("A request to Experian returned a null response.");
     }
     return responseBody;
+  }
+
+  // look for node at path and throw if nothing is found
+  private JsonNode findNodeInResponse(final JsonNode responseEntity, final String path) {
+    final JsonNode fetchedNode = responseEntity.at(path);
+    if (fetchedNode.isMissingNode()) {
+      LOG.error("EXPERIAN_NULL_NODE: {}", path);
+      LOG.error("EXPERIAN_NULL_NODE_RESPONSE: {}", responseEntity);
+      throw new ExperianNullNodeException("Could not find data in response from Experian");
+    }
+    return fetchedNode;
+  }
+
+  private void handleKbaResultCodeFailure(final int kbaResultCode, final JsonNode responseEntity) {
+    String kbaResultCodeDescription =
+        findNodeInResponse(responseEntity, KBA_RESULT_CODE_DESCRIPTION_PATH).asText();
+    if (kbaResultCode == KBA_PERSON_NOT_FOUND_RESULT_CODE) {
+      // specific code for consumer not found ("CrossCore - PreciseId (Option 24).pdf" page 89)
+      throw new ExperianPersonMatchException(kbaResultCodeDescription);
+    }
+
+    // any other non-success result
+    throw new ExperianKbaResultException(kbaResultCodeDescription);
   }
 }
