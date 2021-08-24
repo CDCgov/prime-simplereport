@@ -9,12 +9,16 @@ import { showNotification } from "../../utils";
 import Alert from "../../commonComponents/Alert";
 import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
 import Input from "../../commonComponents/Input";
-import { stateCodes } from "../../../config/constants";
+import {
+  organizationCreationSteps,
+  stateCodes,
+} from "../../../config/constants";
 import Select from "../../commonComponents/Select";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 import { SignUpApi } from "../SignUpApi";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { PersonalDetailsFormProps } from "../IdentityVerification/PersonalDetailsForm";
+import StepIndicator from "../../commonComponents/StepIndicator";
 
 import {
   initOrg,
@@ -209,7 +213,13 @@ const OrganizationForm = () => {
     <CardBackground>
       <Card logo>
         <div className="margin-bottom-2 organization-form">
-          <h2>Sign up for SimpleReport</h2>
+          <h4 className="margin-bottom-0">Sign up for SimpleReport</h4>
+          <StepIndicator
+            steps={organizationCreationSteps}
+            currentStepValue={"0"}
+            noLabels={true}
+            segmentIndicatorOnBottom={true}
+          />
           {backendError ? backendError : null}
           {/* By mapping over organizationFields (found in utils.tsx), we reduce */}
           {/* duplication of input fields in JSX */}
