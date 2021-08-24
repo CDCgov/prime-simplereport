@@ -20,6 +20,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -214,6 +215,25 @@ public class TestEventExport {
   @JsonProperty("Patient_role")
   public String getPatientRole() {
     return patient.map(Person::getRole).map(PersonRole::toString).orElse("");
+  }
+
+  @JsonProperty("Patient_tribal_affiliation")
+  public String getPatientTribalAffiliation() {
+    return patient
+        .map(Person::getTribalAffiliation)
+        .map(
+            affiliationList -> {
+              if (affiliationList.isEmpty()) {
+                return "";
+              }
+              return Objects.requireNonNullElse(affiliationList.get(0), "");
+            })
+        .orElse("");
+  }
+
+  @JsonProperty("Patient_preferred_language")
+  public String getPatientPreferredLanguage() {
+    return patient.map(Person::getPreferredLanguage).orElse("");
   }
 
   @JsonProperty("Employed_in_healthcare")

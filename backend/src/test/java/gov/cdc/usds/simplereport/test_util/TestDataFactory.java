@@ -21,6 +21,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
@@ -258,6 +259,18 @@ public class TestDataFactory {
     o.markComplete();
     _testOrderRepo.save(o);
     return e;
+  }
+
+  public TestEvent createTestEventCorrection(TestEvent te) {
+    TestOrder o = createTestOrder(te.getPatient(), te.getFacility());
+    o.setResult(te.getResult());
+
+    TestEvent te2 =
+        _testEventRepo.save(new TestEvent(te, TestCorrectionStatus.CORRECTED, "Corrected"));
+    o.setTestEventRef(te2);
+    o.markComplete();
+    _testOrderRepo.save(o);
+    return te2;
   }
 
   public TestEvent doTest(TestOrder order, TestResult result) {

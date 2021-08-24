@@ -73,7 +73,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @OneToOne(fetch = FetchType.LAZY)
   private PhoneNumber primaryPhone;
 
-  @OneToMany(mappedBy = "person")
+  @OneToMany(mappedBy = "person", fetch = FetchType.LAZY)
   private List<PhoneNumber> phoneNumbers;
 
   @Column private String email;
