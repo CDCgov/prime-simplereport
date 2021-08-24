@@ -6,7 +6,6 @@ import {
   useHistory,
 } from "react-router-dom";
 
-import PrimeErrorBoundary from "../PrimeErrorBoundary";
 import Page from "../commonComponents/Page/Page";
 import { getActivationTokenFromUrl } from "../utils/url";
 import { LoadingCard } from "../commonComponents/LoadingCard/LoadingCard";
@@ -88,33 +87,31 @@ const AccountCreationApp = () => {
   }
 
   return (
-    <PrimeErrorBoundary>
-      <Page>
-        <Router basename={`${process.env.PUBLIC_URL}/uac`}>
-          <Switch>
-            <Route path="/" exact component={PasswordForm} />
-            <Route path="/set-password" component={PasswordForm} />
-            <Route path="/set-recovery-question" component={SecurityQuestion} />
-            <Route path="/mfa-select" component={MfaSelect} />
-            <Route path="/mfa-sms/verify" component={MfaSmsVerify} />
-            <Route path="/mfa-sms" component={MfaSms} />
-            <Route path="/mfa-okta/verify" component={MfaOktaVerify} />
-            <Route path="/mfa-okta" component={MfaOkta} />
-            <Route
-              path="/mfa-google-auth/verify"
-              component={MfaGoogleAuthVerify}
-            />
-            <Route path="/mfa-google-auth" component={MfaGoogleAuth} />
-            <Route path="/mfa-security-key" component={MfaSecurityKey} />
-            <Route path="/mfa-phone/verify" component={MfaPhoneVerify} />
-            <Route path="/mfa-phone" component={MfaPhone} />
-            <Route path="/mfa-email/verify" component={MfaEmailVerify} />
-            <Route path="/success" component={MfaComplete} />
-            <Route path="/not-found" component={PageNotFound} />
-          </Switch>
-        </Router>
-      </Page>
-    </PrimeErrorBoundary>
+    <Page>
+      <Router basename={`${process.env.PUBLIC_URL}/uac`}>
+        <Switch>
+          <Route path="/" exact component={PasswordForm} />
+          <Route path="/set-password" component={PasswordForm} />
+          <Route path="/set-recovery-question" component={SecurityQuestion} />
+          <Route path="/mfa-select" component={MfaSelect} />
+          <Route path="/mfa-sms/verify" component={MfaSmsVerify} />
+          <Route path="/mfa-sms" component={MfaSms} />
+          <Route path="/mfa-okta/verify" component={MfaOktaVerify} />
+          <Route path="/mfa-okta" component={MfaOkta} />
+          <Route
+            path="/mfa-google-auth/verify"
+            component={MfaGoogleAuthVerify}
+          />
+          <Route path="/mfa-google-auth" component={MfaGoogleAuth} />
+          <Route path="/mfa-security-key" component={MfaSecurityKey} />
+          <Route path="/mfa-phone/verify" component={MfaPhoneVerify} />
+          <Route path="/mfa-phone" component={MfaPhone} />
+          <Route path="/mfa-email/verify" component={MfaEmailVerify} />
+          <Route path="/success" component={MfaComplete} />
+          <Route path="/not-found" component={PageNotFound} />
+        </Switch>
+      </Router>
+    </Page>
   );
 };
 
