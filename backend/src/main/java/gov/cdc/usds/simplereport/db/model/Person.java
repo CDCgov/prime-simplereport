@@ -190,7 +190,9 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.residentCongregateSetting = residentCongregateSetting;
     this.employedInHealthcare = employedInHealthcare;
     this.preferredLanguage = preferredLanguage;
-    this.testResultDeliveryPreference = testResultDeliveryPreference;
+    if (testResultDeliveryPreference != null) {
+      this.testResultDeliveryPreference = testResultDeliveryPreference;
+    }
   }
 
   public Facility getFacility() {
