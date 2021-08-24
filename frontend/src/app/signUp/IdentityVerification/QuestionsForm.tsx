@@ -8,6 +8,8 @@ import Button from "../../commonComponents/Button/Button";
 import { showNotification } from "../../utils";
 import Alert from "../../commonComponents/Alert";
 import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
+import StepIndicator from "../../commonComponents/StepIndicator";
+import { organizationCreationSteps } from "../../../config/constants";
 
 import { initAnswers, getAnswerKey, toOptions, buildSchema } from "./utils";
 
@@ -63,6 +65,13 @@ const QuestionsForm: React.FC<Props> = ({ questionSet, saving, onSubmit }) => {
   return (
     <CardBackground>
       <Card logo>
+        <h4 className="margin-bottom-0">Sign up for SimpleReport</h4>
+        <StepIndicator
+          steps={organizationCreationSteps}
+          currentStepValue={"2"}
+          noLabels={true}
+          segmentIndicatorOnBottom={true}
+        />
         <div className="usa-form">
           {questionSet.map((question, index) => {
             const key = getAnswerKey(index);
