@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -414,7 +413,7 @@ public class PersonService {
         residentCongregateSetting,
         employedInHealthcare,
         preferredLanguage,
-        Objects.requireNonNullElse(testResultDelivery, patientToUpdate.getTestResultDelivery()));
+        testResultDelivery);
     updatePhoneNumbers(patientToUpdate, phoneNumbers);
     updatePersonFacility(patientToUpdate, facilityId);
 
