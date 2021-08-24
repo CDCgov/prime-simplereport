@@ -57,8 +57,6 @@ public class TestEvent extends BaseTestInfo {
     Hibernate.initialize(patient.getPrimaryPhone());
     Hibernate.initialize(patient.getTelephone());
     Hibernate.initialize(patient.getPhoneNumbers());
-    Hibernate.initialize(patient.getPreferences());
-    Hibernate.initialize(patient.getPreferredLanguage());
 
     this.patientData = patient;
     this.providerData = getFacility().getOrderingProvider();

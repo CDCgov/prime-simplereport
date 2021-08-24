@@ -41,9 +41,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @JsonIgnore // do not serialize to TestEvents
   private Facility facility;
 
-  @OneToOne(fetch = FetchType.LAZY, mappedBy = "person")
-  private PatientPreferences preferences;
-
   @Column private String lookupId;
 
   @Column(nullable = false)
@@ -270,17 +267,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   public List<String> getTribalAffiliation() {
     return tribalAffiliation;
-  }
-
-  public PatientPreferences getPreferences() {
-    return preferences;
-  }
-
-  public String getPreferredLanguage() {
-    if (preferences == null) {
-      return null;
-    }
-    return preferences.getPreferredLanguage();
   }
 
   public String getGender() {
