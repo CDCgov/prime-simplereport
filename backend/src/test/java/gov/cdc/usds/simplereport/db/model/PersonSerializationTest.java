@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -123,7 +124,9 @@ class PersonSerializationTest {
             Arrays.asList("123"),
             "Male-ish",
             true,
-            false);
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE);
     PhoneNumber pn = new PhoneNumber(PhoneType.LANDLINE, "5555555555");
     p.setPrimaryPhone(pn);
     return p;
