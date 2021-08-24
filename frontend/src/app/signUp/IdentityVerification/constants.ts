@@ -16,7 +16,7 @@ export const exampleQuestionSet = [
   {
     questionType: 24,
     questionText:
-      "Which of the following professions do you currently or have If there is not a matched profession, please select 'NONE OF THE ABOVE'.",
+      "Which of the following professions do you currently have, or if there is not a matched profession, please select 'NONE OF THE ABOVE'.",
     questionSelect: {
       questionChoice: [
         "DENTIST / DENTAL HYGIENIST",

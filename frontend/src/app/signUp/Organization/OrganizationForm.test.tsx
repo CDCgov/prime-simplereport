@@ -15,7 +15,7 @@ const getOrgTypeDropdown = () => screen.getByLabelText("Organization type *");
 const getFirstNameInput = () => screen.getByLabelText("First name *");
 const getMiddleNameInput = () => screen.getByLabelText("Middle name");
 const getLastNameInput = () => screen.getByLabelText("Last name *");
-const getEmailInput = () => screen.getByLabelText("Email address *");
+const getEmailInput = () => screen.getByLabelText("Work email *");
 const getPhoneInput = () => screen.getByLabelText("Work phone number *");
 const getSubmitButton = () => screen.getByText("Submit");
 const fillIn = (input: any, text: string) =>

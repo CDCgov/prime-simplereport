@@ -212,3 +212,9 @@ export const accountCreationSteps = [
   { label: "Select your security question", value: "1", order: 1 },
   { label: "Set up authentication", value: "2", order: 2 },
 ];
+
+export const organizationCreationSteps = [
+  { label: "Organization information", value: "0", order: 0 },
+  { label: "Personal details", value: "1", order: 1 },
+  { label: "Experian identity verification", value: "2", order: 2 },
+];
