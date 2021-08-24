@@ -45,7 +45,13 @@ const FacilityInformation: React.FC<Props> = ({
       <TextInput
         label="CLIA number"
         hintText={
-          <a href="https://www.cdc.gov/clia/LabSearch.html#">Find my CLIA</a>
+          <a
+            href="https://www.cdc.gov/clia/LabSearch.html#"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Find my CLIA
+          </a>
         }
         name="cliaNumber"
         value={facility.cliaNumber}
