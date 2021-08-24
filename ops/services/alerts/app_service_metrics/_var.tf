@@ -55,7 +55,7 @@ variable "cpu_threshold" {
 }
 
 variable "cpu_window_size" {
-  default = 5
+  default = 15
 }
 
 variable "http_response_time_aggregation" {
