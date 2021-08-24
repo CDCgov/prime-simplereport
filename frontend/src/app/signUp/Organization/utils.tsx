@@ -94,8 +94,9 @@ const getStateErrorMessage = (param: any) =>
       SimpleReport isn't available yet in your state. For more information, view{" "}
       <a href="https://simplereport.gov/using-simplereport/manage-facility-info/find-supported-jurisdictions">
         supported jurisdictions
-      </a>
-      .
+      </a>{" "}
+      or sign up for our{" "}
+      <a href="https://simplereport.gov/waitlist">waitlist</a>.
     </>
   ) : (
     "Organization state is required"
