@@ -2733,7 +2733,7 @@ databaseChangeLog:
                   type: ${database.defaultSchemaName}.TEST_RESULT_DELIVERY
                   remarks: Tracks the individual's preference for receiving test results
   - changeSet:
-      id: denormalize-patient-preferences-2
+      id: denormalize-patient_preferences-2
       author: adam@skylight.digital
       comment: This copies the data from patient_preferences into the new columns
       changes:
