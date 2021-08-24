@@ -10,8 +10,12 @@ import { showNotification } from "../../utils";
 import Alert from "../../commonComponents/Alert";
 import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
 import Input from "../../commonComponents/Input";
-import { stateCodes } from "../../../config/constants";
+import {
+  organizationCreationSteps,
+  stateCodes,
+} from "../../../config/constants";
 import Select from "../../commonComponents/Select";
+import StepIndicator from "../../commonComponents/StepIndicator";
 
 import {
   initPersonalDetails,
@@ -143,7 +147,7 @@ const PersonalDetailsForm = ({
           <>
             <Label
               htmlFor="dateOfBirth"
-              className="font-ui-sm text-bold margin-top-2 margin-bottom-0"
+              className="font-ui-sm margin-top-2 margin-bottom-0"
             >
               Date of birth
             </Label>
@@ -191,12 +195,26 @@ const PersonalDetailsForm = ({
 
   return (
     <CardBackground>
-      <Card logo bodyKicker="Enter personal details">
+      <Card logo>
+        <h4 className="margin-bottom-0">Sign up for SimpleReport</h4>
+        <StepIndicator
+          steps={organizationCreationSteps}
+          currentStepValue={"1"}
+          noLabels={true}
+          segmentIndicatorOnBottom={true}
+        />
         <div className="margin-bottom-2">
           <p className="font-ui-2xs text-base">
             To create your account, we’ll need information to verify your
-            identity directly with Experian. SimpleReport doesn’t access
-            identity verification details.
+            identity directly with{" "}
+            <a
+              href="https://www.experian.com/decision-analytics/identity-proofing"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Experian
+            </a>
+            . SimpleReport doesn’t access identity verification details.
           </p>
           <p className="font-ui-2sm margin-bottom-0">
             Why we verify your identity
