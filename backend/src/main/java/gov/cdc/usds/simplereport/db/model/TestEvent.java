@@ -97,11 +97,11 @@ public class TestEvent extends BaseTestInfo {
     return getPatient().getInternalId();
   }
 
-  public final Person getPatientData() {
+  public Person getPatientData() {
     return patientData;
   }
 
-  public final AskOnEntrySurvey getSurveyData() {
+  public AskOnEntrySurvey getSurveyData() {
     return surveyData;
   }
 
@@ -113,11 +113,11 @@ public class TestEvent extends BaseTestInfo {
     }
   }
 
-  public final Provider getProviderData() {
+  public Provider getProviderData() {
     return providerData;
   }
 
-  public final TestOrder getTestOrder() {
+  public TestOrder getTestOrder() {
     return order;
   }
 
