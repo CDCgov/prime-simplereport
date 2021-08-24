@@ -1,8 +1,10 @@
 import * as yup from "yup";
+import { ReactElement } from "react";
 
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 import { phoneNumberIsValid } from "../../patients/personSchema";
 import { liveJurisdictions } from "../../../config/constants";
+import Alert from "../../commonComponents/Alert";
 
 import { OrganizationCreateRequest } from "./OrganizationForm";
 
@@ -123,3 +125,34 @@ export const organizationSchema: yup.SchemaOf<OrganizationCreateRequest> = yup
       .test("", "A valid phone number is required", phoneNumberIsValid)
       .required(),
   });
+
+export const organizationBackendErrors = (error: string): ReactElement => {
+  switch (error) {
+    case "This organization has already registered with SimpleReport.":
+      return (
+        <Alert type="error" title="Duplicate organization">
+          This organization has already registered with SimpleReport. Please
+          contact your organization administrator or{" "}
+          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
+          for help.
+        </Alert>
+      );
+    case "This email address is already associated with a SimpleReport user.":
+      return (
+        <Alert type="error" title="Email already registered">
+          This email address is already registered with SimpleReport. Please
+          contact your organization administrator or{" "}
+          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
+          for help.
+        </Alert>
+      );
+    default:
+      return (
+        <Alert type="error" title="Submission error">
+          {error} Please contact your organization administrator or{" "}
+          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
+          for help.
+        </Alert>
+      );
+  }
+};

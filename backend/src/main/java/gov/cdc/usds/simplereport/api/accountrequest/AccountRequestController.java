@@ -203,7 +203,9 @@ public class AccountRequestController {
       throw new BadRequestException(
           "This email address is already associated with a SimpleReport user.");
     } catch (BadRequestException e) {
-      throw e;
+      // The `BadRequestException` is thrown when an account is requested with an existing org
+      // name. This happens quite frequently and is expected behavior of the current form
+      throw new BadRequestException("This organization has already registered with SimpleReport.");
     } catch (IOException | RuntimeException e) {
       throw new AccountRequestFailureException(e);
     }
