@@ -293,12 +293,9 @@ These can also be set by environment variable if desired.
 The front end is a React app. The app uses [Apollo](https://www.apollographql.com/) to manage the graphql API. For styling the app leverages the [U.S. Web Design System (USWDS)](https://designsystem.digital.gov/)
 
 ### Frontend-Setup
-
-1. Install [nvm](https://github.com/nvm-sh/nvm)
 1. (optional) Install react developer tools extensions
 1. Install [yarn](https://classic.yarnpkg.com/en/docs/install)
-1. `cd frontend && nvm use && yarn install`
-1. `yarn start`
+1. `cd frontend && yarn install && docker-compose up`
 1. view site at http://localhost:3000
    - Note: frontend need the backend to be running to work
 
