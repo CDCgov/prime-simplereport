@@ -91,7 +91,8 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @Column(nullable = true)
   private String preferredLanguage;
 
-  @Column(nullable = true)
+  @Type(type = "pg_enum")
+  @Enumerated(EnumType.STRING)
   private TestResultDeliveryPreference testResultDeliveryPreference;
 
   protected Person() {
