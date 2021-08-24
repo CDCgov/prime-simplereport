@@ -112,7 +112,7 @@ class DataHubUploaderServiceTest extends BaseServiceTest<DataHubUploaderService>
             + date
             + "\",\"54321-BOOM\",\"Washington\",\"Washington\",\"facility@test.com\",\"Imaginary Site\",\"555-867-5309\",\"DC\",\"736 Jackson PI NW\",\"\",\"20503\",\"DOOOOOOM\",\"Washington\",\"Washington\",\"Doctor\",\"Doom\",\"800-555-1212\",\"DC\",\"736 Jackson PI NW\",\"\",\"20503\",\"The Mall\",\"18990510\",\""
             + patientId2
-            + "\",\"Washington\",\"Washington\",\"\",\"N\",\"Fred\",\"M\",\"Astaire\",\"\",\"5168675309\",\"Spanish\",\"2106-3\",\"RESIDENT\",\"DC\",\"736 Jackson PI NW\",\"\",\"\",\"123\",\"20503\",\"P\",\"N\",\"" // "\",\"\",\"\",\"\",\"U\",\"John\",\"U\",\"Boddie\",\"Brown\",\"503-867-5309\",\"UNK\",\"STAFF\",\"\",\"\",\"\",\"Jr.\",\"\",\"P\",\"UNK\",\""
+            + "\",\"Washington\",\"Washington\",\"\",\"N\",\"Fred\",\"M\",\"Astaire\",\"\",\"5168675309\",\"Spanish\",\"2106-3\",\"RESIDENT\",\"DC\",\"736 Jackson PI NW\",\"\",\"\",\"123\",\"20503\",\"P\",\"N\",\""
             + resultId2
             + "\",\""
             + siteOfCare2
