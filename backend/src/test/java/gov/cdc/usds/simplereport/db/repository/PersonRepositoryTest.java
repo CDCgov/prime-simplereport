@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person.SpecField;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
@@ -48,7 +49,9 @@ class PersonRepositoryTest extends BaseRepositoryTest {
             null,
             "",
             false,
-            false));
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE));
 
     List<Person> found =
         _repo.findAll(
