@@ -179,6 +179,17 @@ public class DemoOktaRepository implements OktaRepository {
         .collect(Collectors.toUnmodifiableSet());
   }
 
+  public HashMap<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org) {
+    if (!orgUsernamesMap.containsKey(org.getExternalId())) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot get Okta users from nonexistent organization.");
+    }
+    HashMap<String, UserStatus> emailToStatusMap = new HashMap<String, UserStatus>();
+    orgUsernamesMap.get(org.getExternalId()).stream()
+        .map(u -> emailToStatusMap.put(u, getUserStatus(u)));
+    return emailToStatusMap;
+  }
+
   // this method doesn't mean much in a demo env
   public void createOrganization(Organization org) {
     String externalId = org.getExternalId();

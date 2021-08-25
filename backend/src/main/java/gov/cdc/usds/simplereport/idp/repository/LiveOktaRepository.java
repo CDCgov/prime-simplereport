@@ -211,7 +211,7 @@ public class LiveOktaRepository implements OktaRepository {
         .collect(Collectors.toUnmodifiableSet());
   }
 
-  public HashMap<String, UserStatus> getAllUsersAndStatusesForOrganization(Organization org) {
+  public HashMap<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org) {
     final String orgDefaultGroupName =
         generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
     final GroupList oktaGroupList =
@@ -228,10 +228,10 @@ public class LiveOktaRepository implements OktaRepository {
 
     HashMap<String, UserStatus> emailToStatusMap = new HashMap<String, UserStatus>();
 
-    orgDefaultOktaGroup.listUsers().stream().map(u -> emailToStatusMap.put(u.getProfile().getEmail(), u.getStatus()));
+    orgDefaultOktaGroup.listUsers().stream()
+        .map(u -> emailToStatusMap.put(u.getProfile().getEmail(), u.getStatus()));
 
     return emailToStatusMap;
-
   }
 
   public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {

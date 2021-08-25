@@ -5,9 +5,7 @@ import gov.cdc.usds.simplereport.api.model.facets.PersonWrapper;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.service.model.WrappedEntity;
 
-/**
- * A wrapper class around APIUser, to return Okta-specific status information to GraphQL.
- */
+/** A wrapper class around APIUser, to return Okta-specific status information to GraphQL. */
 public class ApiUserWithStatus extends WrappedEntity<ApiUser> implements PersonWrapper<ApiUser> {
   private UserStatus status;
 
