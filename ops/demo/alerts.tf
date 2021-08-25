@@ -8,7 +8,7 @@ module "metric_alerts" {
   rg_name                        = data.azurerm_resource_group.rg.name
   tags                           = local.management_tags
   mem_threshold                  = 85
-  cpu_window_size                = 15
+  cpu_window_size                = "PT1H"
   http_response_time_aggregation = "Minimum"
   skip_on_weekends               = true
   disabled_alerts = [
