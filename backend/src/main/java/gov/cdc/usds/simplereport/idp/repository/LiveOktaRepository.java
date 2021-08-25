@@ -211,7 +211,7 @@ public class LiveOktaRepository implements OktaRepository {
         .collect(Collectors.toUnmodifiableSet());
   }
 
-  public HashMap<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org) {
+  public Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org) {
     final String orgDefaultGroupName =
         generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
     final GroupList oktaGroupList =
@@ -226,12 +226,8 @@ public class LiveOktaRepository implements OktaRepository {
                     new IllegalGraphqlArgumentException(
                         "Okta group not found for this organization"));
 
-    HashMap<String, UserStatus> emailToStatusMap = new HashMap<String, UserStatus>();
-
-    orgDefaultOktaGroup.listUsers().stream()
-        .map(u -> emailToStatusMap.put(u.getProfile().getEmail(), u.getStatus()));
-
-    return emailToStatusMap;
+    return orgDefaultOktaGroup.listUsers().stream()
+        .collect(Collectors.toMap(u -> u.getProfile().getEmail(), u -> u.getStatus()));
   }
 
   public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {

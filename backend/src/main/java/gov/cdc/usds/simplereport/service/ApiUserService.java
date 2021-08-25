@@ -25,9 +25,7 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -435,12 +433,22 @@ public class ApiUserService {
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
   public List<ApiUserWithStatus> getUsersAndStatusInCurrentOrg() {
+    System.out.println("fetching users and status in current org");
     Organization org = _orgService.getCurrentOrganization();
-    final HashMap<String, UserStatus> emailsToStatus =
+    System.out.println("org name: " + org.getOrganizationName());
+    final Map<String, UserStatus> emailsToStatus =
         _oktaRepo.getAllUsersWithStatusForOrganization(org);
+    System.out.println("emails to status size: " + emailsToStatus.size());
+    for (String username : emailsToStatus.keySet()) {
+      System.out.println("user and status: " + username + emailsToStatus.get(username));
+    }
     List<ApiUser> users = _apiUserRepo.findAllByLoginEmailInOrderByName(emailsToStatus.keySet());
-    List<ApiUserWithStatus> statusUsers = new ArrayList<ApiUserWithStatus>();
-    users.stream().map(u -> statusUsers.add(new ApiUserWithStatus(u, emailsToStatus.get(u.getLoginEmail()))));
+
+    List<ApiUserWithStatus> statusUsers =
+        users.stream()
+            .map(u -> new ApiUserWithStatus(u, emailsToStatus.get(u.getLoginEmail())))
+            .collect(Collectors.toList());
+    System.out.println("statusUsers size: " + statusUsers.size());
     return statusUsers;
   }
 

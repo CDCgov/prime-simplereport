@@ -12,7 +12,7 @@ import UsersSideNav from "./UsersSideNav";
 import UserDetail from "./UserDetail";
 import {
   SettingsUser,
-  LimitedUser,
+  LimitedStatusUser,
   UserFacilitySetting,
   SingleUserData,
   GET_USER,
@@ -20,7 +20,7 @@ import {
 import "./ManageUsers.scss";
 
 interface Props {
-  users: LimitedUser[];
+  users: LimitedStatusUser[];
   loggedInUser: User;
   allFacilities: UserFacilitySetting[];
   updateUserPrivileges: (variables: any) => Promise<any>;
@@ -28,10 +28,10 @@ interface Props {
   resetUserPassword: (variables: any) => Promise<any>;
   deleteUser: (variables: any) => Promise<any>;
   reactivateUser: (variables: any) => Promise<any>;
-  getUsers: () => Promise<any>;
+  getUsersWithStatus: () => Promise<any>;
 }
 
-export type LimitedUsers = { [id: string]: LimitedUser };
+export type LimitedUsers = { [id: string]: LimitedStatusUser };
 
 export type SettingsUsers = { [id: string]: SettingsUser };
 
@@ -61,8 +61,8 @@ const sortUsers = (users: LimitedUsers) =>
     return nameA > nameB ? 1 : -1;
   });
 
-const getLimitedUser = (users: LimitedUser[]) =>
-  users.reduce((acc: LimitedUsers, user: LimitedUser) => {
+const getLimitedUser = (users: LimitedStatusUser[]) =>
+  users.reduce((acc: LimitedUsers, user: LimitedStatusUser) => {
     acc[user.id] = user;
     return acc;
   }, {});
@@ -76,9 +76,9 @@ const ManageUsers: React.FC<Props> = ({
   resetUserPassword,
   deleteUser,
   reactivateUser,
-  getUsers,
+  getUsersWithStatus,
 }) => {
-  const [activeUser, updateActiveUser] = useState<LimitedUser>();
+  const [activeUser, updateActiveUser] = useState<LimitedStatusUser>();
   const [
     userWithPermissions,
     updateUserWithPermissions,
@@ -174,7 +174,7 @@ const ManageUsers: React.FC<Props> = ({
       },
     })
       .then(() => {
-        getUsers();
+        getUsersWithStatus();
         updateIsUserEdited(false);
         const fullName = displayFullName(
           userWithPermissions?.firstName,
@@ -223,7 +223,7 @@ const ManageUsers: React.FC<Props> = ({
         },
       });
 
-      await getUsers();
+      await getUsersWithStatus();
       const fullName = displayFullName(firstName, "", lastName);
       showNotification(
         toast,
@@ -282,7 +282,7 @@ const ManageUsers: React.FC<Props> = ({
         toast,
         <Alert type="success" title={`User account removed for ${fullName}`} />
       );
-      await getUsers();
+      await getUsersWithStatus();
     } catch (e) {
       setError(e);
     }
@@ -331,7 +331,7 @@ const ManageUsers: React.FC<Props> = ({
   // Navigate to correct user on user deletion (first sorted, unless the deleted user was first)
   useEffect(() => {
     if (deletedUserId) {
-      const nextUser: LimitedUser =
+      const nextUser: LimitedStatusUser =
         sortedUsers[0].id === deletedUserId && sortedUsers.length > 1
           ? sortedUsers[1]
           : sortedUsers[0];

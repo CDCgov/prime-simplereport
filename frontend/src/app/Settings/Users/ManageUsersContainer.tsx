@@ -6,14 +6,15 @@ import { UserRole, UserPermission, Role } from "../../permissions";
 
 import ManageUsers from "./ManageUsers";
 
-const GET_USERS = gql`
-  query GetUsers {
-    users {
+const GET_USERS_WITH_STATUS = gql`
+  query GetUsersAndStatus {
+    usersWithStatus {
       id
       firstName
       middleName
       lastName
       email
+      status
     }
   }
 `;
@@ -56,17 +57,18 @@ export interface SettingsUser {
   };
 }
 
-// structure for `getUsers` query
-export interface LimitedUser {
+// structure for `getUsersWithStatus` query
+export interface LimitedStatusUser {
   id: string;
   firstName: string;
   middleName: string;
   lastName: string;
   email: string;
+  status: string;
 }
 
-interface UserData {
-  users: LimitedUser[];
+interface UserStatusData {
+  usersWithStatus: LimitedStatusUser[];
 }
 
 export interface SingleUserData {
@@ -170,10 +172,12 @@ const ManageUsersContainer: any = () => {
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
   const [resetPassword] = useMutation(RESET_USER_PASSWORD);
 
-  const { data, loading, error, refetch: getUsers } = useQuery<UserData, {}>(
-    GET_USERS,
-    { fetchPolicy: "no-cache" }
-  );
+  const { data, loading, error, refetch: getUsersWithStatus } = useQuery<
+    UserStatusData,
+    {}
+  >(GET_USERS_WITH_STATUS, { fetchPolicy: "no-cache" });
+
+  console.log("users", data?.usersWithStatus);
 
   const {
     data: dataFacilities,
@@ -204,7 +208,7 @@ const ManageUsersContainer: any = () => {
 
   return (
     <ManageUsers
-      users={data.users}
+      users={data.usersWithStatus}
       loggedInUser={loggedInUser}
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}
@@ -212,7 +216,7 @@ const ManageUsersContainer: any = () => {
       resetUserPassword={resetPassword}
       deleteUser={deleteUser}
       reactivateUser={reactivateUser}
-      getUsers={getUsers}
+      getUsersWithStatus={getUsersWithStatus}
     />
   );
 };

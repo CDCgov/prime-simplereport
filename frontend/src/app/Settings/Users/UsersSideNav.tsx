@@ -1,15 +1,18 @@
 import React from "react";
 import classnames from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircle } from "@fortawesome/free-solid-svg-icons";
 
 import { displayFullName } from "../../utils";
+import { capitalizeText } from "../../utils/text";
 
-import { LimitedUser } from "./ManageUsersContainer";
+import { LimitedStatusUser } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
 
 interface Props {
   activeUserId: string;
-  users: LimitedUser[];
+  users: LimitedStatusUser[];
   onChangeActiveUser: (userId: string) => void;
 }
 
@@ -22,7 +25,7 @@ const UsersSideNav: React.FC<Props> = ({
     <div className="display-block users-sidenav">
       <h3>Users</h3>
       <ul className="usa-sidenav">
-        {users.map((user: LimitedUser) => {
+        {users.map((user: LimitedStatusUser) => {
           return (
             <li
               className="usa-sidenav__item users-sidenav-item"
@@ -45,9 +48,24 @@ const UsersSideNav: React.FC<Props> = ({
                     user.middleName,
                     user.lastName
                   )}
+                  {user.status !== "ACTIVE" ? (
+                    <span>
+                      {" "}
+                      <FontAwesomeIcon
+                        icon={faCircle}
+                        className={"prime-red-icon suspended-icon"}
+                      />
+                    </span>
+                  ) : null}
                 </span>
                 <br />
                 <span className="sidenav-user-email">{user.email}</span>
+                <br />
+                {user.status !== "ACTIVE" ? (
+                  <span className="sidenav-user-status">
+                    {capitalizeText(user.status)}
+                  </span>
+                ) : null}
               </button>
             </li>
           );

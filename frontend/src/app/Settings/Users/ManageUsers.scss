@@ -36,6 +36,22 @@
   font-size: 0.8em;
 }
 
+.sidenav-user-status {
+  font-weight: normal;
+  font-size: 0.8em;
+  font-style: italic;
+}
+
+.suspended-icon {
+  // margin-left: .5em;
+  width: 0.7em !important;
+}
+
+.top-user-status {
+  font-style: italic;
+  color: #71767a; // color($text-base)
+}
+
 .facility-list {
   td {
     border: 1px solid #dfe1e2;

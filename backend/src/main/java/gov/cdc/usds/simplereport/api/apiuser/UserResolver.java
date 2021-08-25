@@ -23,15 +23,11 @@ public class UserResolver implements GraphQLQueryResolver {
     return new User(_userService.getCurrentUserInfo());
   }
 
-  // don't want to touch this, to make sure it's backwards-compatible
   public List<ApiUser> getUsers() {
     return _userService.getUsersInCurrentOrg();
   }
 
-  // TODO: make a corresponding graphQL type and query for this
-  // the query will probably have to be written on the frontend - not sure where the mapping is
-  // there
-  public List<ApiUserWithStatus> getUsersAndStatus() {
+  public List<ApiUserWithStatus> getUsersWithStatus() {
     return _userService.getUsersAndStatusInCurrentOrg();
   }
 
