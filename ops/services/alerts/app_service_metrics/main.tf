@@ -62,7 +62,7 @@ resource "azurerm_monitor_metric_alert" "http_response_time" {
   resource_group_name = var.rg_name
   scopes              = [var.app_service_id]
   frequency           = "PT1M"
-  window_size         = "PT5M"
+  window_size         = "PT15M"
   severity            = var.severity
   enabled             = contains(var.disabled_alerts, "http_response_time") ? false : true
 
