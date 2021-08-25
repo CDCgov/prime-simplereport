@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import java.time.LocalDate;
 import java.util.List;
 import javax.persistence.Column;
@@ -72,7 +73,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @OneToOne(fetch = FetchType.LAZY)
   private PhoneNumber primaryPhone;
 
-  @OneToMany(mappedBy = "person")
+  @OneToMany(mappedBy = "person", fetch = FetchType.LAZY)
   private List<PhoneNumber> phoneNumbers;
 
   @Column private String email;
@@ -86,6 +87,13 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   @Column(nullable = true)
   private Boolean residentCongregateSetting;
+
+  @Column(nullable = true)
+  private String preferredLanguage;
+
+  @Type(type = "pg_enum")
+  @Enumerated(EnumType.STRING)
+  private TestResultDeliveryPreference testResultDeliveryPreference;
 
   protected Person() {
     /* for hibernate */
@@ -114,7 +122,9 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       List<String> tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Boolean employedInHealthcare,
+      String preferredLanguage,
+      TestResultDeliveryPreference testResultDeliveryPreference) {
     super(organization);
     this.lookupId = lookupId;
     this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
@@ -128,6 +138,8 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.gender = gender;
     this.residentCongregateSetting = residentCongregateSetting;
     this.employedInHealthcare = employedInHealthcare;
+    this.preferredLanguage = preferredLanguage;
+    this.testResultDeliveryPreference = testResultDeliveryPreference;
   }
 
   public Person(PersonName names, Organization org, Facility fac) {
@@ -159,7 +171,9 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       List<String> tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Boolean employedInHealthcare,
+      String preferredLanguage,
+      TestResultDeliveryPreference testResultDeliveryPreference) {
     this.lookupId = lookupId;
     this.nameInfo.setFirstName(firstName);
     this.nameInfo.setMiddleName(middleName);
@@ -175,6 +189,10 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.gender = gender;
     this.residentCongregateSetting = residentCongregateSetting;
     this.employedInHealthcare = employedInHealthcare;
+    this.preferredLanguage = preferredLanguage;
+    if (testResultDeliveryPreference != null) {
+      this.testResultDeliveryPreference = testResultDeliveryPreference;
+    }
   }
 
   public Facility getFacility() {
@@ -309,6 +327,22 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   public PersonRole getRole() {
     return role;
+  }
+
+  public String getPreferredLanguage() {
+    return preferredLanguage;
+  }
+
+  /**
+   * Note that this getter's name is used in the GraphQL schema, but the underlying field name
+   * differs for specificity
+   */
+  public TestResultDeliveryPreference getTestResultDelivery() {
+    return testResultDeliveryPreference;
+  }
+
+  public void setTestResultDelivery(TestResultDeliveryPreference testResultDeliveryPreference) {
+    this.testResultDeliveryPreference = testResultDeliveryPreference;
   }
 
   // these field names strings are used by Specification builders
