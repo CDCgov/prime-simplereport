@@ -13,8 +13,10 @@ import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PatientSelfRegistration;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
+import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PatientSelfRegistrationLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
+import gov.cdc.usds.simplereport.service.model.ExistingPatientCheckRequestBody;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -44,6 +46,7 @@ public class PatientSelfRegistrationController {
 
   public PatientSelfRegistrationController(
       PersonService personService,
+      OrganizationService orgService,
       PatientSelfRegistrationLinkService patientSelfRegistrationLinkService,
       CurrentPatientContextHolder currentPatientContextHolder) {
     _personService = personService;
@@ -87,6 +90,37 @@ public class PatientSelfRegistrationController {
 
     LOG.info(
         "Patient={} self-registered from link={}", p.getInternalId(), registrationLink.getLink());
+  }
+
+  @PostMapping("/existing-patient")
+  public boolean isExistingPatient(
+      @RequestParam String patientRegistrationLink,
+      @RequestBody ExistingPatientCheckRequestBody body,
+      HttpServletRequest request) {
+    PatientSelfRegistrationLink link =
+        _patientRegLinkService.getPatientRegistrationLink(patientRegistrationLink);
+
+    boolean isFacilityLink = false;
+
+    if (link.getFacility() != null) {
+      isFacilityLink = link.getFacility().getInternalId() != null;
+    }
+
+    if (isFacilityLink) {
+      return _personService.isPatientInFacility(
+          body.getFirstName(),
+          body.getLastName(),
+          body.getBirthDate(),
+          body.getPostalCode(),
+          link.getFacility().getInternalId());
+    }
+
+    return _personService.isPatientInOrg(
+        body.getFirstName(),
+        body.getLastName(),
+        body.getBirthDate(),
+        body.getPostalCode(),
+        link.getOrganization().getInternalId());
   }
 
   @GetMapping("/entity-name")

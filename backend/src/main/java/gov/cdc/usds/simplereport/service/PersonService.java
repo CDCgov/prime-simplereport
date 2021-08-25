@@ -89,6 +89,14 @@ public class PersonService {
             cb.isTrue(root.get(SpecField.FACILITY).get(SpecField.INTERNAL_ID).in(facilityUUIDs)));
   }
 
+  private Specification<Person> inOrganizationFilter(UUID orgId) {
+    return (root, query, cb) ->
+        cb.and(
+            cb.or(
+                cb.isNull(root.get(SpecField.ORGANIZATION)),
+                cb.equal(root.get(SpecField.ORGANIZATION).get(SpecField.INTERNAL_ID), orgId)));
+  }
+
   // Note: Patients with NULL facilityIds appear in ALL facilities.
   private Specification<Person> inFacilityFilter(UUID facilityId) {
     return (root, query, cb) ->
@@ -109,6 +117,20 @@ public class PersonService {
                 cb.lower(root.get(SpecField.PERSON_NAME).get(SpecField.MIDDLE_NAME)), likeString),
             cb.like(
                 cb.lower(root.get(SpecField.PERSON_NAME).get(SpecField.LAST_NAME)), likeString));
+  }
+
+  private Specification<Person> patientExistsFilter(
+      String firstName, String lastName, LocalDate birthDate, String postalCode) {
+    return (root, query, cb) ->
+        cb.and(
+            cb.equal(
+                cb.lower(root.get(SpecField.PERSON_NAME).get(SpecField.FIRST_NAME)),
+                firstName.toLowerCase()),
+            cb.equal(
+                cb.lower(root.get(SpecField.PERSON_NAME).get(SpecField.LAST_NAME)),
+                lastName.toLowerCase()),
+            cb.equal(root.get(SpecField.BIRTH_DATE), birthDate),
+            cb.equal(root.get(SpecField.ADDRESS).get(SpecField.POSTAL_CODE), postalCode));
   }
 
   private Specification<Person> isDeletedFilter(boolean isDeleted) {
@@ -134,6 +156,26 @@ public class PersonService {
 
     for (var prefixMatch : namePrefixMatchList) {
       filter = filter.and(nameMatchesFilter(prefixMatch));
+    }
+
+    return filter;
+  }
+
+  protected Specification<Person> buildPersonMatchFilter(
+      String firstName,
+      String lastName,
+      LocalDate birthDate,
+      String postalCode,
+      UUID facilityId,
+      UUID orgId) {
+    Specification<Person> filter = patientExistsFilter(firstName, lastName, birthDate, postalCode);
+
+    if (orgId != null) {
+      filter = filter.and(inOrganizationFilter(orgId));
+    }
+
+    if (facilityId != null) {
+      filter = filter.and(inFacilityFilter(facilityId));
     }
 
     return filter;
@@ -165,6 +207,26 @@ public class PersonService {
     return _repo.findAll(
         buildPersonSearchFilter(facilityId, isArchived, namePrefixMatch),
         PageRequest.of(pageOffset, pageSize, NAME_SORT));
+  }
+
+  public boolean isPatientInOrg(
+      String firstName, String lastName, LocalDate birthDate, String postalCode, UUID orgId) {
+    var patients =
+        _repo.findAll(
+            buildPersonMatchFilter(firstName, lastName, birthDate, postalCode, null, orgId),
+            PageRequest.of(0, 1, NAME_SORT));
+
+    return !patients.isEmpty();
+  }
+
+  public boolean isPatientInFacility(
+      String firstName, String lastName, LocalDate birthDate, String postalCode, UUID facilityId) {
+    var patients =
+        _repo.findAll(
+            buildPersonMatchFilter(firstName, lastName, birthDate, postalCode, facilityId, null),
+            PageRequest.of(0, 1, NAME_SORT));
+
+    return !patients.isEmpty();
   }
 
   @AuthorizationConfiguration.RequireSpecificPatientSearchPermission

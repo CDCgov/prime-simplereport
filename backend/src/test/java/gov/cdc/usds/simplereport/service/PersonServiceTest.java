@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -8,12 +9,14 @@ import static org.junit.jupiter.api.Assertions.fail;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
@@ -645,6 +648,156 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     assertThrows(
         AccessDeniedException.class,
         () -> _service.getPatients(site1Id, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, true, null));
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void isPatientInOrg_newPatient_returnsFalse() {
+    var result =
+        _service.isPatientInOrg(
+            "John",
+            "Doe",
+            LocalDate.parse("1990-01-01"),
+            "27601",
+            UUID.fromString("15438a9e-9b29-44dd-b74d-911b7d80e77e"));
+
+    assertFalse(result);
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void isPatientInOrg_existingPatient_returnsTrue() {
+    Organization org = _orgService.getCurrentOrganization();
+    String registrationLink = org.getPatientSelfRegistrationLink();
+
+    Person person =
+        _service.addPatient(
+            new PatientSelfRegistrationLink(org, registrationLink),
+            null,
+            "John",
+            null,
+            "Doe",
+            null,
+            LocalDate.of(1990, 01, 01),
+            _dataFactory.getAddress(),
+            TestDataFactory.getListOfOnePhoneNumber(),
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE);
+
+    var result =
+        _service.isPatientInOrg(
+            person.getFirstName(),
+            person.getLastName(),
+            person.getBirthDate(),
+            person.getAddress().getPostalCode(),
+            org.getInternalId());
+
+    assertTrue(result);
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void isPatientInFacility_newPatient_returnsFalse() {
+    var result =
+        _service.isPatientInFacility(
+            "John",
+            "Doe",
+            LocalDate.parse("1990-01-01"),
+            "27601",
+            UUID.fromString("15438a9e-9b29-44dd-b74d-911b7d80e77e"));
+
+    assertFalse(result);
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void isPatientInFacility_existingPatient_returnsTrue() {
+    Facility facility = _orgService.getFacilities(_orgService.getCurrentOrganization()).get(0);
+    String registrationLink = facility.getPatientSelfRegistrationLink();
+
+    Person person =
+        _service.addPatient(
+            new PatientSelfRegistrationLink(facility, registrationLink),
+            null,
+            "John",
+            null,
+            "Doe",
+            null,
+            LocalDate.of(1990, 01, 01),
+            _dataFactory.getAddress(),
+            TestDataFactory.getListOfOnePhoneNumber(),
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE);
+
+    var result =
+        _service.isPatientInFacility(
+            person.getFirstName(),
+            person.getLastName(),
+            person.getBirthDate(),
+            person.getAddress().getPostalCode(),
+            facility.getInternalId());
+
+    assertTrue(result);
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void isPatientInFacility_existsInSiblingOrgFacility_returnsFalse() {
+    // Ensure there are two facilities under the same org
+    Facility facility1 = _orgService.getFacilities(_orgService.getCurrentOrganization()).get(0);
+    Facility facility2 = _orgService.getFacilities(_orgService.getCurrentOrganization()).get(1);
+
+    String registrationLink = facility1.getPatientSelfRegistrationLink();
+
+    // Add patient to first facility
+    Person person =
+        _service.addPatient(
+            new PatientSelfRegistrationLink(facility1, registrationLink),
+            null,
+            "John",
+            null,
+            "Doe",
+            null,
+            LocalDate.of(1990, 01, 01),
+            _dataFactory.getAddress(),
+            TestDataFactory.getListOfOnePhoneNumber(),
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE);
+
+    // Check for existing user in second facility
+    var result =
+        _service.isPatientInFacility(
+            person.getFirstName(),
+            person.getLastName(),
+            person.getBirthDate(),
+            person.getAddress().getPostalCode(),
+            facility2.getInternalId());
+
+    assertFalse(result);
   }
 
   private void makedata(boolean extraPatients) {
