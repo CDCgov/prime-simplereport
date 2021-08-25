@@ -8,7 +8,5 @@ simple-report:
       - https://simple-report-api-stg.azurewebsites.net
       - https://simple-report-stg.azureedge.net
       - https://stg.simplereport.gov
-  dynamics:
-    enabled: true
   experian:
     enabled: true

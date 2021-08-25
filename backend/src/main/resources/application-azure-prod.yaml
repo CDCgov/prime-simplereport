@@ -15,8 +15,6 @@ simple-report:
       - https://simple-report-prod.azureedge.net
       - https://www.simplereport.gov
       - https://simplereport.gov
-  dynamics:
-    enabled: true
   experian:
     enabled: true
 twilio:
