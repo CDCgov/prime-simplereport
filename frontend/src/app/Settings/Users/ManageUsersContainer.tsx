@@ -58,7 +58,7 @@ export interface SettingsUser {
 }
 
 // structure for `getUsersWithStatus` query
-export interface LimitedStatusUser {
+export interface LimitedUser {
   id: string;
   firstName: string;
   middleName: string;
@@ -67,8 +67,8 @@ export interface LimitedStatusUser {
   status: string;
 }
 
-interface UserStatusData {
-  usersWithStatus: LimitedStatusUser[];
+interface UserData {
+  usersWithStatus: LimitedUser[];
 }
 
 export interface SingleUserData {
@@ -172,10 +172,10 @@ const ManageUsersContainer: any = () => {
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
   const [resetPassword] = useMutation(RESET_USER_PASSWORD);
 
-  const { data, loading, error, refetch: getUsersWithStatus } = useQuery<
-    UserStatusData,
-    {}
-  >(GET_USERS_WITH_STATUS, { fetchPolicy: "no-cache" });
+  const { data, loading, error, refetch: getUsers } = useQuery<UserData, {}>(
+    GET_USERS_WITH_STATUS,
+    { fetchPolicy: "no-cache" }
+  );
 
   console.log("users", data?.usersWithStatus);
 
@@ -216,7 +216,7 @@ const ManageUsersContainer: any = () => {
       resetUserPassword={resetPassword}
       deleteUser={deleteUser}
       reactivateUser={reactivateUser}
-      getUsersWithStatus={getUsersWithStatus}
+      getUsers={getUsers}
     />
   );
 };
