@@ -23,6 +23,8 @@ import gov.cdc.usds.simplereport.api.accountrequest.AccountRequestController;
 import gov.cdc.usds.simplereport.api.accountrequest.errors.AccountRequestFailureException;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
+import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
+import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
@@ -41,6 +43,7 @@ import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.TenantDataAccessService;
+import gov.cdc.usds.simplereport.service.crm.CrmService;
 import gov.cdc.usds.simplereport.service.email.EmailProvider;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
@@ -105,6 +108,7 @@ class AccountRequestControllerTest {
   @MockBean private CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder;
   @MockBean private TenantDataAuthenticationProvider tenantDataAuthProvider;
 
+  @MockBean private CrmService crmService;
   @MockBean private OktaRepository oktaRepository;
 
   @MockBean private EmailProvider mockSendGrid;
@@ -115,6 +119,8 @@ class AccountRequestControllerTest {
   @Captor private ArgumentCaptor<String> externalIdCaptor;
   @Captor private ArgumentCaptor<PersonName> nameCaptor;
   @Captor private ArgumentCaptor<StreetAddress> addressCaptor;
+  @Captor private ArgumentCaptor<AccountRequest> accountRequestCaptor;
+  @Captor private ArgumentCaptor<OrganizationAccountRequest> organizationAccountRequestCaptor;
 
   private static final String FAKE_ORG_EXTERNAL_ID_PREFIX = "RI-Day-Hayes-Trading-";
   private static final String FAKE_ORG_EXTERNAL_ID =
@@ -369,6 +375,10 @@ class AccountRequestControllerTest {
     assertThat(addressCaptor.getValue().getPostalCode()).isEqualTo("43675");
     assertThat(addressCaptor.getValue().getCounty()).isEqualTo("Asperiores illum in");
 
+    // make sure we passed the data along to our CRM
+    verify(crmService, times(1)).submitAccountRequestData(accountRequestCaptor.capture());
+    assertThat(accountRequestCaptor.getValue().getName()).isEqualTo("Day Hayes Trading");
+
     // new user should be disabled in okta
     verify(oktaRepository)
         .createUser(any(IdentityAttributes.class), eq(organization), anySet(), anySet(), eq(false));
@@ -408,6 +418,11 @@ class AccountRequestControllerTest {
     verify(emailService, times(0)).send(anyList(), anyString(), any());
     verify(emailService, times(0)).sendWithProviderTemplate(anyString(), any());
     verify(mockSendGrid, times(0)).send(any());
+
+    verify(crmService, times(1))
+        .submitOrganizationAccountRequestData(organizationAccountRequestCaptor.capture());
+    assertThat(organizationAccountRequestCaptor.getValue().getName())
+        .isEqualTo("Day Hayes Trading");
 
     verify(apiUserService, times(1))
         .createUser(
@@ -469,6 +484,11 @@ class AccountRequestControllerTest {
     verify(emailService, times(1)).send(anyList(), anyString(), any());
     verify(emailService, times(1)).sendWithProviderTemplate(anyString(), any());
     verify(mockSendGrid, times(2)).send(any());
+
+    verify(crmService, times(1))
+        .submitOrganizationAccountRequestData(organizationAccountRequestCaptor.capture());
+    assertThat(organizationAccountRequestCaptor.getValue().getName())
+        .isEqualTo("Day Hayes Trading");
 
     verify(apiUserService, times(1))
         .createUser(
