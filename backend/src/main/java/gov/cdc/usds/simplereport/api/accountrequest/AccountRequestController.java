@@ -26,7 +26,6 @@ import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
-import gov.cdc.usds.simplereport.service.crm.CrmService;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
@@ -65,7 +64,6 @@ public class AccountRequestController {
   private final ApiUserService _aus;
   private final EmailService _es;
   private final SendGridProperties sendGridProperties;
-  private final CrmService _crm;
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   private static final Logger LOG = LoggerFactory.getLogger(AccountRequestController.class);
@@ -113,7 +111,6 @@ public class AccountRequestController {
       sendNewAccountRequestEmailToSrSupport(request.getEmail(), request);
       createAdminUser(
           request.getFirstName(), request.getLastName(), request.getEmail(), org.getExternalId());
-      _crm.submitAccountRequestData(request);
     } catch (ResourceException e) {
       // The `ResourceException` is thrown when an account is requested with an existing org
       // name. This happens quite frequently and is expected behavior of the current form
@@ -146,7 +143,6 @@ public class AccountRequestController {
       sendNewAccountRequestEmailToSrSupport(request.getEmail(), request);
       createAdminUser(
           request.getFirstName(), request.getLastName(), request.getEmail(), org.getExternalId());
-      _crm.submitOrganizationAccountRequestData(request);
       return new OrganizationAccountResponse(org.getExternalId());
     } catch (ResourceException | BadRequestException e) {
       // The `ResourceException` is thrown when an account is requested with an existing user email
@@ -174,7 +170,6 @@ public class AccountRequestController {
       Organization org = checkAccountRequestAndCreateOrgWithFacility(request);
       createAdminUser(
           request.getFirstName(), request.getLastName(), request.getEmail(), org.getExternalId());
-      _crm.submitAccountRequestData(request);
       return new AccountResponse(org.getExternalId());
     } catch (ResourceException | BadRequestException e) {
       // The `ResourceException` is thrown when an account is requested with an existing user email
@@ -198,7 +193,6 @@ public class AccountRequestController {
       Organization org = checkAccountRequestAndCreateOrg(request);
       createAdminUser(
           request.getFirstName(), request.getLastName(), request.getEmail(), org.getExternalId());
-      _crm.submitOrganizationAccountRequestData(request);
       return new AccountResponse(org.getExternalId());
     } catch (ResourceException e) {
       // The `ResourceException` is thrown when a user requests an account with an email address
