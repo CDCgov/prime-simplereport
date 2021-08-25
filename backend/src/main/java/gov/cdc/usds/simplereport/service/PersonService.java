@@ -234,6 +234,21 @@ public class PersonService {
     return !patients.isEmpty();
   }
 
+  public boolean isDuplicatePatient(
+      String firstName,
+      String lastName,
+      LocalDate birthDate,
+      String postalCode,
+      Organization org,
+      Facility facility) {
+    if (facility == null) {
+      return isPatientInOrg(firstName, lastName, birthDate, postalCode, org.getInternalId());
+    }
+
+    return isPatientInFacility(
+        firstName, lastName, birthDate, postalCode, facility.getInternalId());
+  }
+
   @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
   public long getPatientsCount(UUID facilityId, boolean isArchived, String namePrefixMatch) {
     if (namePrefixMatch != null && namePrefixMatch.trim().length() < MINIMUM_CHAR_FOR_SEARCH) {

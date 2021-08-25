@@ -100,27 +100,13 @@ public class PatientSelfRegistrationController {
     PatientSelfRegistrationLink link =
         _patientRegLinkService.getPatientRegistrationLink(patientRegistrationLink);
 
-    boolean isFacilityLink = false;
-
-    if (link.getFacility() != null) {
-      isFacilityLink = link.getFacility().getInternalId() != null;
-    }
-
-    if (isFacilityLink) {
-      return _personService.isPatientInFacility(
-          body.getFirstName(),
-          body.getLastName(),
-          body.getBirthDate(),
-          body.getPostalCode(),
-          link.getFacility().getInternalId());
-    }
-
-    return _personService.isPatientInOrg(
+    return _personService.isDuplicatePatient(
         body.getFirstName(),
         body.getLastName(),
         body.getBirthDate(),
         body.getPostalCode(),
-        link.getOrganization().getInternalId());
+        link.getOrganization(),
+        link.getFacility());
   }
 
   @GetMapping("/entity-name")
