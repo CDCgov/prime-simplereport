@@ -34,6 +34,7 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
       setIdentificationVerified(false);
     }
     setLoading(false);
+    window.scrollTo(0, 0);
   };
 
   useEffect(() => {
