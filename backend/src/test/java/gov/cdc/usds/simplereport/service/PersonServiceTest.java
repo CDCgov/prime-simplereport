@@ -800,6 +800,49 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     assertFalse(result);
   }
 
+  @Test
+  @WithSimpleReportStandardUser
+  void isPatientInFacility_existsInParentOrg_returnsTrue() {
+    Organization organization = _orgService.getCurrentOrganization();
+    Facility facility = _orgService.getFacilities(organization).get(0);
+
+    String registrationLink = organization.getPatientSelfRegistrationLink();
+
+    // Register patient at org level
+    Person person =
+        _service.addPatient(
+            new PatientSelfRegistrationLink(organization, registrationLink),
+            null,
+            "John",
+            null,
+            "Doe",
+            null,
+            LocalDate.of(1990, 01, 01),
+            _dataFactory.getAddress(),
+            TestDataFactory.getListOfOnePhoneNumber(),
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE);
+
+    // Check if patient exists in constituent facility
+    var result =
+        _service.isPatientInFacility(
+            person.getFirstName(),
+            person.getLastName(),
+            person.getBirthDate(),
+            person.getAddress().getPostalCode(),
+            facility.getInternalId());
+
+    assertTrue(result);
+  }
+
   private void makedata(boolean extraPatients) {
     makeFacilities();
     _org = _orgService.getCurrentOrganization();
