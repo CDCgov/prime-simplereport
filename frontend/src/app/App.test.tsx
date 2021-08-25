@@ -6,6 +6,7 @@ import { render, screen } from "@testing-library/react";
 
 import App, { WHOAMI_QUERY } from "./App";
 import { queueQuery } from "./testQueue/TestQueue";
+import PrimeErrorBoundary from "./PrimeErrorBoundary";
 
 jest.mock("uuid");
 jest.mock("./VersionService", () => ({
@@ -158,13 +159,15 @@ const renderApp = (
   queryMocks: MockedResponse[]
 ) => {
   return render(
-    <Provider store={newStore}>
-      <MockedProvider mocks={queryMocks} addTypename={false}>
-        <Router>
-          <Route path="/" component={App} />
-        </Router>
-      </MockedProvider>
-    </Provider>
+    <PrimeErrorBoundary>
+      <Provider store={newStore}>
+        <MockedProvider mocks={queryMocks} addTypename={false}>
+          <Router>
+            <Route path="/" component={App} />
+          </Router>
+        </MockedProvider>
+      </Provider>
+    </PrimeErrorBoundary>
   );
 };
 
