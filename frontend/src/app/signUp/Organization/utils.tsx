@@ -92,11 +92,22 @@ const getStateErrorMessage = (param: any) =>
   param.value !== "" ? (
     <>
       SimpleReport isn't available yet in your state. View{" "}
-      <a href="https://simplereport.gov/using-simplereport/manage-facility-info/find-supported-jurisdictions">
+      <a
+        href="https://simplereport.gov/using-simplereport/manage-facility-info/find-supported-jurisdictions"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         supported jurisdictions
       </a>{" "}
       or sign up for our{" "}
-      <a href="https://simplereport.gov/waitlist">waitlist</a>.
+      <a
+        href="https://simplereport.gov/waitlist"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        waitlist
+      </a>
+      .
     </>
   ) : (
     "Organization state is required"
