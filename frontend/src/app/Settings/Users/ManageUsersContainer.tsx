@@ -177,8 +177,6 @@ const ManageUsersContainer: any = () => {
     { fetchPolicy: "no-cache" }
   );
 
-  console.log("users", data?.usersWithStatus);
-
   const {
     data: dataFacilities,
     loading: loadingFacilities,

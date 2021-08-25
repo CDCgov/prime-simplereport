@@ -433,23 +433,13 @@ public class ApiUserService {
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
   public List<ApiUserWithStatus> getUsersAndStatusInCurrentOrg() {
-    System.out.println("fetching users and status in current org");
     Organization org = _orgService.getCurrentOrganization();
-    System.out.println("org name: " + org.getOrganizationName());
     final Map<String, UserStatus> emailsToStatus =
         _oktaRepo.getAllUsersWithStatusForOrganization(org);
-    System.out.println("emails to status size: " + emailsToStatus.size());
-    for (String username : emailsToStatus.keySet()) {
-      System.out.println("user and status: " + username + emailsToStatus.get(username));
-    }
     List<ApiUser> users = _apiUserRepo.findAllByLoginEmailInOrderByName(emailsToStatus.keySet());
-
-    List<ApiUserWithStatus> statusUsers =
-        users.stream()
-            .map(u -> new ApiUserWithStatus(u, emailsToStatus.get(u.getLoginEmail())))
-            .collect(Collectors.toList());
-    System.out.println("statusUsers size: " + statusUsers.size());
-    return statusUsers;
+    return users.stream()
+        .map(u -> new ApiUserWithStatus(u, emailsToStatus.get(u.getLoginEmail())))
+        .collect(Collectors.toList());
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser

@@ -184,9 +184,8 @@ public class DemoOktaRepository implements OktaRepository {
       throw new IllegalGraphqlArgumentException(
           "Cannot get Okta users from nonexistent organization.");
     }
-    return orgUsernamesMap.get(org.getExternalId()).stream().collect(
-      Collectors.toMap(u -> u, u -> getUserStatus(u)
-    ));
+    return orgUsernamesMap.get(org.getExternalId()).stream()
+        .collect(Collectors.toMap(u -> u, u -> getUserStatus(u)));
   }
 
   // this method doesn't mean much in a demo env
