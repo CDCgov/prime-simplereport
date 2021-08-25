@@ -707,6 +707,46 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
   @Test
   @WithSimpleReportStandardUser
+  void isPatientInOrg_existingPatientInChildFacility_returnsFalse() {
+    Organization org = _orgService.getCurrentOrganization();
+    Facility facility = _orgService.getFacilities(org).get(0);
+    String registrationLink = facility.getPatientSelfRegistrationLink();
+
+    Person person =
+        _service.addPatient(
+            new PatientSelfRegistrationLink(facility, registrationLink),
+            null,
+            "John",
+            null,
+            "Doe",
+            null,
+            LocalDate.of(1990, 01, 01),
+            _dataFactory.getAddress(),
+            TestDataFactory.getListOfOnePhoneNumber(),
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE);
+
+    var result =
+        _service.isPatientInOrg(
+            person.getFirstName(),
+            person.getLastName(),
+            person.getBirthDate(),
+            person.getAddress().getPostalCode(),
+            org.getInternalId());
+
+    assertFalse(result);
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
   void isPatientInFacility_newPatient_returnsFalse() {
     var result =
         _service.isPatientInFacility(

@@ -166,11 +166,21 @@ public class PersonService {
     Specification<Person> filter = patientExistsFilter(firstName, lastName, birthDate, postalCode);
 
     if (orgId != null) {
-      filter = filter.and(inOrganizationFilter(orgId));
+      filter = filter.and(inOrganizationFilter(orgId)).and(inFacilityFilter(null));
     }
 
     if (facilityId != null) {
       filter = filter.and(inFacilityFilter(facilityId));
+
+      var facilityOrganization = _os.getOrganizationByFacilityId(facilityId);
+
+      // Additionally check if patient has already registered with an org link
+      if (facilityOrganization != null) {
+        filter =
+            filter.or(
+                inOrganizationFilter(facilityOrganization.getInternalId())
+                    .and(inFacilityFilter(null)));
+      }
     }
 
     return filter;
