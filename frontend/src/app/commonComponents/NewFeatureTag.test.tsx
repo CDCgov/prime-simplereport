@@ -18,9 +18,9 @@ describe("NewFeatureTag", () => {
     });
     describe("is tomorrow", () => {
       beforeEach(() => {
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() + 1);
-        render(<NewFeatureTag customEndDate={yesterday.toDateString()} />);
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        render(<NewFeatureTag customEndDate={tomorrow.toDateString()} />);
       });
       it("renders the new tag", () => {
         expect(screen.queryByText("New", { exact: false })).toBeInTheDocument();
