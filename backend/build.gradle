@@ -212,5 +212,6 @@ test {
     systemProperty "test-db-port", testDbPort
     if (System.getenv("CI") == null) {
         dependsOn testDbStart
+        finalizedBy testDbStop
     }
 }

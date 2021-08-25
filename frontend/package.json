@@ -61,6 +61,7 @@
   "scripts": {
     "prestart": "rm -rf .eslintcache && yarn",
     "start": "REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) npm-run-all -p watch-css start-js",
+    "soft-start": "REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) npm-run-all -p watch-css start-js",
     "start-js": "craco start",
     "prebuild": "yarn compile-scss",
     "build": "INLINE_RUNTIME_CHUNK=false REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) craco build",

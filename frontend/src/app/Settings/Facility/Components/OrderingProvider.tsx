@@ -122,7 +122,7 @@ const OrderingProvider: React.FC<Props> = ({
           onChange={onChange}
         />
         <TextInput
-          label="Zip code"
+          label="ZIP code"
           name="zipCode"
           value={provider.zipCode || ""}
           onChange={onChange}

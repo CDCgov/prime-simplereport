@@ -13,7 +13,7 @@ exports[`QueueItem correctly renders the test queue 1`] = `
         class="margin-top-6 margin-bottom-5"
       >
         Submitting test data for 
-        Harry James Potter
+        Potter, Harry James
         ...
       </h4>
       <img

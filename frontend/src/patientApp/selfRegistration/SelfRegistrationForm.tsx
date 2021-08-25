@@ -19,7 +19,6 @@ export const SelfRegistrationForm = ({ savePerson }: Props) => {
       className="grid-container maxw-tablet padding-y-3"
     >
       <PersonForm
-        activeFacilityId=""
         patient={EMPTY_PERSON}
         savePerson={savePerson}
         getFooter={(onSave) => (

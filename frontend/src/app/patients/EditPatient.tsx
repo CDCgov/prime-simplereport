@@ -212,7 +212,7 @@ const EditPatient = (props: Props) => {
       toast,
       <Alert
         type="success"
-        title={`${PATIENT_TERM_CAP} Record Saved`}
+        title={`${PATIENT_TERM_CAP} record saved`}
         body="Information record has been updated."
       />
     );
@@ -252,7 +252,6 @@ const EditPatient = (props: Props) => {
                     : data.patient.facility?.id,
               }}
               patientId={props.patientId}
-              activeFacilityId={props.facilityId}
               savePerson={savePerson}
               getHeader={(person, onSave, formChanged) => (
                 <div className="display-flex flex-justify">

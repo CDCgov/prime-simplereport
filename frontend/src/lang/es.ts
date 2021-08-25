@@ -164,7 +164,7 @@ export const es: LanguageConfig = {
         },
         errors: {
           unsaved:
-            "“¡Sus cambios aún no están guardados!Haga clic en OK para descartar cambios, Cancelar para continuar con la edición.",
+            "“¡Sus cambios aún no están guardados! Haga clic en OK para descartar cambios, Cancelar para continuar con la edición.",
           validationMsg: "Corrija antes de enviar",
           fieldLength: "Esta respuesta es demasiado larga",
           firstName: "Se requiere primer nombre",
@@ -221,6 +221,10 @@ export const es: LanguageConfig = {
     testResult: {
       result: "Resultado de SARS-CoV-2",
       patient: "Paciente",
+      patientDetails: "Detalles del paciente",
+      name: "Nombre",
+      testDetails: "Detalles de la prueba",
+      testName: "Nombre de la prueba",
       testResult: "Resultado de la prueba",
       testDate: "Fecha de la prueba",
       positive: POSITIVE,
@@ -228,11 +232,31 @@ export const es: LanguageConfig = {
       undetermined: UNDETERMINED,
       unknown: UNKNOWN,
       testDevice: "Dispositivo de prueba",
+      specimen: "Identificación de la muestra",
       meaning: "¿Qué significa mi resultado?",
       information:
         "Para obtener más información, visite el <0>sitio web de los Centros para el Control y la Prevención de Enfermedades (CDC)</0> o comuníquese con su departamento de " +
         "salud local.",
+      note: "Notas",
+      printed: "Resultado de la prueba impreso",
+      print: "Imprimir",
+      close: "Cerrar",
+      testingFacility: {
+        details: "Detalles del centro de pruebas",
+        name: "Nombre del centro",
+        phone: "Teléfono del centro",
+        address: "Dirección del centro",
+        clia:
+          "Número de Enmiendas para Mejoras de Laboratorios Clínicos (CLIA)",
+        orderingProvider: "Solicitado por",
+        npi: "Identificador de Proveedor Nacional (NPI)",
+      },
       notes: {
+        meaning:
+          "Las pruebas de antígenos de COVID-19 a veces pueden arrojar resultados inexactos o falsos, y es posible que se " +
+          "necesiten pruebas de seguimiento. Continúe practicando el distanciamiento social y usando mascarilla. Comuníquese " +
+          "con su proveedor de atención médica para determinar si es necesario realizar pruebas adicionales, especialmente si " +
+          "tiene alguno de estos síntomas.",
         positive: {
           p1:
             "La mayoría de las personas que contraen COVID-19 pueden recuperarse en casa.  Asegúrese de seguir las directrices de los CDC para las personas que se están " +
@@ -257,6 +281,9 @@ export const es: LanguageConfig = {
           p2:
             "Esté atento a los síntomas y <0> sepa cuándo buscar atención médica de emergencia</0>. Si alguien presenta alguno de estos síntomas, busque atención médica de " +
             "emergencia de inmediato:",
+          whenToSeek: "sepa cuándo buscar atención médica de emergencia",
+          symptomsLink:
+            "espanol.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html",
           emergency: {
             li0: "Dificultad para respirar",
             li1: "Dolor o presión persistente en el pecho",
@@ -268,7 +295,11 @@ export const es: LanguageConfig = {
             "Llame al 911 o llame primero a su sala de emergencias local: dígale al operador que necesita atención para alguien que tiene o podría tener COVID-19.",
           difficultNewsLink:
             "Obtener un resultado positivo en la prueba de COVID-19 puede ser una noticia difícil, por lo que es importante tomar <0> medidas para sobrellevar el estrés </0> " +
-            "durante este periodo. Comuníquese con su sistema de apoyo y programe una cita por teléfono o video con un profesional de salud mental si es necesario.",
+            "durante este periodo<1></1>. Comuníquese con su sistema de apoyo y programe una cita por teléfono o video con un profesional de salud mental si es necesario.",
+          difficultNewsURL:
+            "espanol.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html",
+          moreInformation:
+            "Para más información: espanol.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/index.html.",
         },
         negative: {
           p0:

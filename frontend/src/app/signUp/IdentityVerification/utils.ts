@@ -34,9 +34,6 @@ export const answersToArray = (answers: Answers): number[] =>
     .map((key) => parseInt(answers[key]));
 
 export const personalDetailsFields = [
-  ["firstName", "First name", true, "Legal name"],
-  ["middleName", "Middle name", false, null],
-  ["lastName", "Last name", true, null],
   ["dateOfBirth", "Date of birth", true, null],
   ["email", "Email", true, "Personal contact information"],
   ["phoneNumber", "Phone number", true, null],
@@ -55,10 +52,14 @@ export const personalDetailsFields = [
 }, {} as { [key: string]: { label: string; required: boolean; preheader: string | null } });
 
 export const initPersonalDetails = (
-  orgExternalId = ""
+  orgExternalId: string,
+  firstName: string,
+  middleName: string,
+  lastName: string
 ): IdentityVerificationRequest => ({
-  firstName: "",
-  lastName: "",
+  firstName,
+  middleName,
+  lastName,
   dateOfBirth: "",
   email: "",
   phoneNumber: "",

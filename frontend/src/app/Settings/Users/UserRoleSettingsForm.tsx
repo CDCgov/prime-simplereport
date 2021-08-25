@@ -51,10 +51,7 @@ const UserRoleSettingsForm: React.FC<Props> = ({
         buttons={ROLES}
         selectedRadio={activeUser.role}
         onChange={updateRole}
-        disabled={
-          activeUser.id === loggedInUser.id ||
-          process.env.REACT_APP_EDIT_USER_ROLE === "false"
-        }
+        disabled={activeUser.id === loggedInUser.id}
       />
     </React.Fragment>
   );

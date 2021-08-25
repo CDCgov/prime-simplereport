@@ -31,7 +31,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   @Column private String cliaNumber;
 
-  @OneToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "ordering_provider_id", nullable = false)
   private Provider orderingProvider;
 
@@ -46,7 +46,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
       inverseJoinColumns = @JoinColumn(name = "device_specimen_type_id"))
   private Set<DeviceSpecimenType> configuredDeviceSpecimenTypes = new HashSet<>();
 
-  @OneToOne(mappedBy = "facility")
+  @OneToOne(mappedBy = "facility", fetch = FetchType.LAZY)
   private PatientSelfRegistrationLink patientSelfRegistrationLink;
 
   protected Facility() {
