@@ -26,6 +26,8 @@ variable "disabled_alerts" {
       "first_error_in_a_week",
       "account_request_failures",
       "frontend_error_boundary",
+      "db_query_duration",
+      "db_query_duration_over_time_window",
     ])) == 0
     error_message = "One or more disabled_alert values are invalid."
   }
