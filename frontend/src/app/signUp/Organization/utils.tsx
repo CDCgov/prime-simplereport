@@ -91,7 +91,7 @@ export const initOrgErrors = (): Record<
 const getStateErrorMessage = (param: any) =>
   param.value !== "" ? (
     <>
-      SimpleReport isn't available yet in your state. For more information, view{" "}
+      SimpleReport isn't available yet in your state. View{" "}
       <a href="https://simplereport.gov/using-simplereport/manage-facility-info/find-supported-jurisdictions">
         supported jurisdictions
       </a>{" "}
