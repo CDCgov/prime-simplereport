@@ -417,7 +417,7 @@ public class LiveOktaRepository implements OktaRepository {
     _app.update();
   }
 
-  public void activateOrganization(Organization org) {
+  private UserList getOrgAdminUsers(Organization org) {
     String externalId = org.getExternalId();
     String roleGroupName = generateRoleGroupName(externalId, OrganizationRole.ADMIN);
     GroupList groups = _client.listGroups(roleGroupName, null, null);
@@ -425,32 +425,12 @@ public class LiveOktaRepository implements OktaRepository {
       throw new IllegalGraphqlArgumentException("Cannot activate nonexistent Okta organization");
     }
     Group group = groups.single();
-    UserList users = group.listUsers();
-    for (User u : users) {
-      // reactivates user and sends them an Okta email to reactivate their account
-      if (u.getStatus() == UserStatus.PROVISIONED) {
-        u.reactivate(true);
-      } else if (u.getStatus() == UserStatus.STAGED) {
-        u.activate(true);
-      } else {
-        throw new IllegalGraphqlArgumentException(
-            "Cannot activate Okta organization whose users have status=" + u.getStatus().name());
-      }
-    }
+    return group.listUsers();
   }
 
-  public String activateOrganizationWithSingleUser(Organization org) {
-    String externalId = org.getExternalId();
-    String roleGroupName = generateRoleGroupName(externalId, OrganizationRole.ADMIN);
-    GroupList groups = _client.listGroups(roleGroupName, null, null);
-    if (groups.stream().count() == 0) {
-      throw new IllegalGraphqlArgumentException("Cannot activate nonexistent Okta organization");
-    }
-    Group group = groups.single();
-    UserList users = group.listUsers();
-    User user = users.single();
-    // reactivates user and sends them an Okta email to reactivate their account
+  private String activateUser(User user) {
     if (user.getStatus() == UserStatus.PROVISIONED) {
+      // reactivates user and sends them an Okta email to reactivate their account
       return user.reactivate(true).getActivationToken();
     } else if (user.getStatus() == UserStatus.STAGED) {
       return user.activate(true).getActivationToken();
@@ -458,6 +438,18 @@ public class LiveOktaRepository implements OktaRepository {
       throw new IllegalGraphqlArgumentException(
           "Cannot activate Okta organization whose users have status=" + user.getStatus().name());
     }
+  }
+
+  public void activateOrganization(Organization org) {
+    UserList users = getOrgAdminUsers(org);
+    for (User u : users) {
+      activateUser(u);
+    }
+  }
+
+  public String activateOrganizationWithSingleUser(Organization org) {
+    User user = getOrgAdminUsers(org).single();
+    return activateUser(user);
   }
 
   public void createFacility(Facility facility) {
