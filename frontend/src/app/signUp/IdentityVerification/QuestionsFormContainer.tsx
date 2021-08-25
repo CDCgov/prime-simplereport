@@ -21,6 +21,7 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
   const [questionSet, setQuestionSet] = useState<Question[] | undefined>();
   const [sessionId, setSessionId] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+  const [activationToken, setActivationToken] = useState<string>("");
 
   const getQuestionSet = async (request: IdentityVerificationRequest) => {
     try {
@@ -53,6 +54,7 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
       const response = await SignUpApi.submitAnswers(request);
       setIdentificationVerified(response.passed);
       setEmail(response.email);
+      setActivationToken(response.activationToken);
     } catch (error) {
       setIdentificationVerified(false);
     }
@@ -76,8 +78,8 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
     );
   }
 
-  if (identificationVerified) {
-    return <Success email={email} />;
+  if (identificationVerified && email && activationToken) {
+    return <Success email={email} activationToken={activationToken} />;
   } else {
     return <NextSteps />;
   }

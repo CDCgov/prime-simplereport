@@ -311,14 +311,14 @@ public class OrganizationService {
    * workflow this should be removed.
    */
   @Transactional(readOnly = false)
-  public void verifyOrganizationNoPermissions(String externalId) {
+  public String verifyOrganizationNoPermissions(String externalId) {
     Organization org = getOrganization(externalId);
     if (org.getIdentityVerified()) {
       throw new IllegalStateException("Organization is already verified.");
     }
     org.setIdentityVerified(true);
     _repo.save(org);
-    _oktaRepo.activateOrganization(org);
+    return _oktaRepo.activateOrganizationWithSingleUser(org);
   }
 
   @Transactional(readOnly = false)

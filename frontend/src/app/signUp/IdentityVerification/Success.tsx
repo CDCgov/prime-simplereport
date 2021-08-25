@@ -4,9 +4,12 @@ import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 
 interface Props {
   email: string;
+  activationToken: string;
 }
 
-const Success: React.FC<Props> = ({ email }) => {
+const Success: React.FC<Props> = ({ email, activationToken }) => {
+  const activationLink = `${process.env.PUBLIC_URL}/uac/?activationToken=${activationToken}`;
+
   return (
     <CardBackground>
       <Card logo>
@@ -25,8 +28,8 @@ const Success: React.FC<Props> = ({ email }) => {
         </h1>
         <p className="margin-bottom-2">
           Congratulations, your identity has been verified successfully. Please
-          check your organization administrator email ({email}) for a link to
-          access your SimpleReport account.
+          click the button below to begin setting up your SimpleReport account.
+          A link will also be sent to your email ({email}).
         </p>
         <p className="margin-bottom-0">
           Didn’t get the email? Check your spam folder. If you’re unable to find
@@ -36,6 +39,9 @@ const Success: React.FC<Props> = ({ email }) => {
           </a>
           .
         </p>
+        <a className="usa-button width-full margin-top-3" href={activationLink}>
+          Set up your account
+        </a>
       </Card>
     </CardBackground>
   );
