@@ -1,31 +1,34 @@
 import { useState } from "react";
+import { useLocation } from "react-router";
+import { Redirect } from "react-router-dom";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button/Button";
-import { useSearchParam } from "../../utils/url";
 
-import PersonalDetailsForm from "./PersonalDetailsForm";
+import PersonalDetailsForm, {
+  PersonalDetailsFormProps,
+} from "./PersonalDetailsForm";
 
 const Consent = () => {
-  // Get organization ID from URL
-  const orgExternalId = useSearchParam("orgExternalId");
+  // Get person name & org id from route state
+  const { orgExternalId, firstName, middleName, lastName } =
+    useLocation<PersonalDetailsFormProps>().state || {};
   const [submitted, setSubmitted] = useState(false);
 
-  if (orgExternalId === null) {
-    return (
-      <CardBackground>
-        <Card logo bodyKicker={"Invalid request"} bodyKickerCentered={true}>
-          <p className="text-center">
-            We weren't able to find your affiliated organization
-          </p>
-        </Card>
-      </CardBackground>
-    );
+  if (!orgExternalId || !firstName || !lastName) {
+    return <Redirect to={{ pathname: "/sign-up" }} />;
   }
 
   if (submitted) {
-    return <PersonalDetailsForm orgExternalId={orgExternalId} />;
+    return (
+      <PersonalDetailsForm
+        orgExternalId={orgExternalId}
+        firstName={firstName}
+        middleName={middleName}
+        lastName={lastName}
+      />
+    );
   }
 
   return (
@@ -35,7 +38,11 @@ const Consent = () => {
           <p className="font-ui-2xs text-base">
             To create an account, you’ll need to consent to identity
             verification by{" "}
-            <a href="https://www.experian.com/decision-analytics/identity-proofing">
+            <a
+              href="https://www.experian.com/decision-analytics/identity-proofing"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Experian
             </a>
             . SimpleReport doesn’t access your identity verification details.
@@ -58,7 +65,14 @@ const Consent = () => {
             companies to support your transactions and for fraud avoidance
             purposes. You can see a more detailed list of information
             potentially disclosed and how we use your data in our{" "}
-            <a href="https://www.cdc.gov/other/privacy.html">privacy policy</a>.
+            <a
+              href="https://www.cdc.gov/other/privacy.html"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              privacy policy
+            </a>
+            .
           </p>
         </div>
         <Button

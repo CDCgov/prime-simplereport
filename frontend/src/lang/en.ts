@@ -131,7 +131,7 @@ export const en = {
           county: "County",
           city: "City",
           state: "State",
-          zip: "Zip code",
+          zip: "ZIP code",
         },
         demographics: {
           heading: "Demographics",
@@ -212,6 +212,10 @@ export const en = {
     testResult: {
       result: "SARS-CoV-2 result",
       patient: "Patient",
+      patientDetails: "Patient details",
+      name: "Name",
+      testDetails: "Test details",
+      testName: "Test name",
       testResult: "Test result",
       testDate: "Test date",
       positive: "Positive",
@@ -219,10 +223,28 @@ export const en = {
       undetermined: "Inconclusive",
       unknown: "Unknown",
       testDevice: "Test device",
+      specimen: "Specimen ID",
       meaning: "What does my result mean?",
       information:
         "For more information, please visit the <0>Centers for Disease Control and Prevention (CDC) website</0> or contact your local health department.",
+      note: "Notes",
+      printed: "Test result printed",
+      print: "Print",
+      close: "Close",
+      testingFacility: {
+        details: "Testing facility details",
+        name: "Facility name",
+        phone: "Facility phone",
+        address: "Facility address",
+        clia: "CLIA number",
+        orderingProvider: "Ordering provider",
+        npi: "NPI",
+      },
       notes: {
+        meaning:
+          "COVID-19 antigen tests can sometimes provid inaccurate or false results and follow up testing may be needed. Continue " +
+          "social distancing and wearing a mask. Contact your health care provider to determine if additional " +
+          "testing is needed especially if you experience any of these  symptoms.",
         positive: {
           p1:
             "Most people who get COVID-19 will be able to recover at home. Make sure to follow CDC guidelines for people who are recovering at " +
@@ -244,6 +266,9 @@ export const en = {
           },
           p2:
             "Watch for symptoms and <0>learn when to seek emergency medical attention</0>. If someone is showing any of these signs, seek emergency medical care immediately:",
+          whenToSeek: "learn when to seek emergency medical attention",
+          symptomsLink:
+            "cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html",
           emergency: {
             li0: "Trouble breathing",
             li1: "Persistent chest pain/pressure",
@@ -254,7 +279,11 @@ export const en = {
           p3:
             "Call 911 or call ahead to your local emergency room: Notify the operator that you are seeking care for someone who has or may have COVID-19.",
           difficultNewsLink:
-            "Getting a positive COVID-19 test result can be difficult news, so it’s important to <0> take steps to cope with stress </0> during this time. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.",
+            "Getting a positive COVID-19 test result can be difficult news, so it’s important to <0> take steps to cope with stress </0> during this time<1></1>. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.",
+          difficultNewsURL:
+            "cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html",
+          moreInformation:
+            "More information is available at cdc.gov/coronavirus/2019-ncov/if-you-are-sick.",
         },
         negative: {
           p0:

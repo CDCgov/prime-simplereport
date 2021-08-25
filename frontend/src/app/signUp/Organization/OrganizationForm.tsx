@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import { toast } from "react-toastify";
 import { Redirect } from "react-router";
 
@@ -9,11 +9,16 @@ import { showNotification } from "../../utils";
 import Alert from "../../commonComponents/Alert";
 import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
 import Input from "../../commonComponents/Input";
-import { stateCodes } from "../../../config/constants";
+import {
+  organizationCreationSteps,
+  stateCodes,
+} from "../../../config/constants";
 import Select from "../../commonComponents/Select";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 import { SignUpApi } from "../SignUpApi";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
+import { PersonalDetailsFormProps } from "../IdentityVerification/PersonalDetailsForm";
+import StepIndicator from "../../commonComponents/StepIndicator";
 
 import {
   initOrg,
@@ -21,6 +26,7 @@ import {
   organizationFields,
   OrganizationTypeEnum,
   organizationSchema as schema,
+  organizationBackendErrors,
 } from "./utils";
 
 import "./OrganizationForm.scss";
@@ -47,6 +53,7 @@ const OrganizationForm = () => {
     initOrg()
   );
   const [errors, setErrors] = useState<OrganizationFormErrors>(initOrgErrors());
+  const [backendError, setBackendError] = useState<ReactElement>();
 
   const [loading, setLoading] = useState(false);
   const [formChanged, setFormChanged] = useState(false);
@@ -79,11 +86,10 @@ const OrganizationForm = () => {
         const res = await SignUpApi.createOrganization(organization);
         setOrgExternalId(res.orgExternalId);
       } catch (error) {
-        const alert = (
-          <Alert type="error" title="Submission Error" body={error} />
-        );
-        showNotification(toast, alert);
+        const message = error.message || error;
+        setBackendError(organizationBackendErrors(message));
         setLoading(false);
+        window.scrollTo(0, 0);
         return;
       }
       setErrors(initOrgErrors());
@@ -97,6 +103,7 @@ const OrganizationForm = () => {
         body="Please check the form to make sure you complete all of the required fields."
       />
     );
+    window.scrollTo(0, 0);
     showNotification(toast, alert);
     setLoading(false);
   };
@@ -106,7 +113,12 @@ const OrganizationForm = () => {
       <Redirect
         to={{
           pathname: "/sign-up/identity-verification",
-          search: `?orgExternalId=${orgExternalId}`,
+          state: {
+            orgExternalId: orgExternalId,
+            firstName: organization.firstName,
+            middleName: organization.middleName,
+            lastName: organization.lastName,
+          } as PersonalDetailsFormProps,
         }}
       />
     );
@@ -175,7 +187,7 @@ const OrganizationForm = () => {
               </label>
               <p className="usa-hint">
                 Only one person from an organization can be the administrator.
-                This person will submit information for identity verifcation.
+                This person will submit information for identity verification.
               </p>
             </>
           );
@@ -201,7 +213,14 @@ const OrganizationForm = () => {
     <CardBackground>
       <Card logo>
         <div className="margin-bottom-2 organization-form">
-          <h2>Sign up for SimpleReport</h2>
+          <h4 className="margin-bottom-0">Sign up for SimpleReport</h4>
+          <StepIndicator
+            steps={organizationCreationSteps}
+            currentStepValue={"0"}
+            noLabels={true}
+            segmentIndicatorOnBottom={true}
+          />
+          {backendError ? backendError : null}
           {/* By mapping over organizationFields (found in utils.tsx), we reduce */}
           {/* duplication of input fields in JSX */}
           {Object.entries(organizationFields).map(
@@ -215,7 +234,10 @@ const OrganizationForm = () => {
         </div>
         <p>
           By submitting this form, you agree to our{" "}
-          <a href="/terms-of-service">terms of service</a>.
+          <a href="/terms-of-service" target="_blank" rel="noopener noreferrer">
+            terms of service
+          </a>
+          .
         </p>
         <Button
           className="width-full margin-top-2 submit-button"

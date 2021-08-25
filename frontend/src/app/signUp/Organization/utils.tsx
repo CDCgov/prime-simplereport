@@ -1,12 +1,14 @@
 import * as yup from "yup";
+import { ReactElement } from "react";
 
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 import { phoneNumberIsValid } from "../../patients/personSchema";
 import { liveJurisdictions } from "../../../config/constants";
+import Alert from "../../commonComponents/Alert";
 
 import { OrganizationCreateRequest } from "./OrganizationForm";
 
-export const OrganizationTypeEnum = {
+export const OrganizationTypeEnum: { [key in OrganizationType]: string } = {
   airport: "Airport/Transit station",
   assisted_living: "Assisted living facility",
   camp: "Camp",
@@ -23,8 +25,8 @@ export const OrganizationTypeEnum = {
   nursing_home: "Nursing home",
   other: "Other",
   pharmacy: "Pharmacy",
-  primary_care: "Primary care / Mental health outpatient",
-  treatment_center: "Substance abuse treatment center",
+  primary_care: "Primary care/Mental health outpatient",
+  treatment_center: "Substance use disorder treatment center",
   urgent_care: "Urgent care",
 };
 
@@ -51,7 +53,7 @@ export const organizationFields = [
   ["firstName", "First name", true],
   ["middleName", "Middle name", false],
   ["lastName", "Last name", true],
-  ["email", "Email address", true],
+  ["email", "Work email", true],
   ["workPhoneNumber", "Work phone number", true],
 ].reduce((fields, field) => {
   fields[field[0] as keyof OrganizationCreateRequest] = {
@@ -89,9 +91,21 @@ export const initOrgErrors = (): Record<
 const getStateErrorMessage = (param: any) =>
   param.value !== "" ? (
     <>
-      SimpleReport isn't available yet in your state. For more information, view{" "}
-      <a href="https://simplereport.gov/using-simplereport/manage-facility-info/find-supported-jurisdictions">
+      SimpleReport isn't available yet in your state. View{" "}
+      <a
+        href="https://simplereport.gov/using-simplereport/manage-facility-info/find-supported-jurisdictions"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         supported jurisdictions
+      </a>{" "}
+      or sign up for our{" "}
+      <a
+        href="https://simplereport.gov/waitlist"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        waitlist
       </a>
       .
     </>
@@ -123,3 +137,34 @@ export const organizationSchema: yup.SchemaOf<OrganizationCreateRequest> = yup
       .test("", "A valid phone number is required", phoneNumberIsValid)
       .required(),
   });
+
+export const organizationBackendErrors = (error: string): ReactElement => {
+  switch (error) {
+    case "This organization has already registered with SimpleReport.":
+      return (
+        <Alert type="error" title="Duplicate organization">
+          This organization has already registered with SimpleReport. Please
+          contact your organization administrator or{" "}
+          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
+          for help.
+        </Alert>
+      );
+    case "This email address is already associated with a SimpleReport user.":
+      return (
+        <Alert type="error" title="Email already registered">
+          This email address is already registered with SimpleReport. Please
+          contact your organization administrator or{" "}
+          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
+          for help.
+        </Alert>
+      );
+    default:
+      return (
+        <Alert type="error" title="Submission error">
+          {error} Please contact your organization administrator or{" "}
+          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
+          for help.
+        </Alert>
+      );
+  }
+};

@@ -34,7 +34,7 @@ interface Props {
   pattern?: string;
   inputMode?: string;
   ariaDescribedBy?: string;
-  hintText?: string;
+  hintText?: string | React.ReactNode;
   inputRef?: React.RefObject<HTMLInputElement>;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   format?: string;

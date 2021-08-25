@@ -15,12 +15,10 @@ import graphql.kickstart.tools.GraphQLResolver;
 import graphql.schema.DataFetchingEnvironment;
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
-import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -48,12 +46,7 @@ public class TestResultDataResolver
   }
 
   public String getSymptoms(TestEvent testEvent) {
-    Map<String, Boolean> s = getSurvey(testEvent).getSymptoms();
-    JSONObject obj = new JSONObject();
-    for (Map.Entry<String, Boolean> entry : s.entrySet()) {
-      obj.put(entry.getKey(), entry.getValue().toString());
-    }
-    return obj.toString();
+    return getSurvey(testEvent).getSymptomsJSON();
   }
 
   public LocalDate getSymptomOnset(TestEvent testEvent) {

@@ -9,7 +9,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
   >
     <div
       aria-label="progress"
-      className="usa-step-indicator  usa-step-indicator--counters-sm margin-y-205"
+      className="usa-step-indicator usa-step-indicator--counters-sm margin-y-205"
     >
       <ol
         className="usa-step-indicator__segments"
@@ -237,7 +237,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                       className="usa-checkbox__label"
                       htmlFor="2-val-0"
                     >
-                      No Symptoms
+                      No symptoms
                     </label>
                   </div>
                 </div>
@@ -778,7 +778,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
               <legend
                 className="usa-legend"
               >
-                Currently pregnant?
+                Are you currently pregnant?
               </legend>
               <div
                 className=""

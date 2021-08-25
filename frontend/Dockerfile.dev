@@ -1,17 +1,10 @@
-# Dockerfile for local development
-FROM node:14-alpine
+ARG NODE_VER
+ARG NODE_ENV
 
-RUN apk add g++ make python
+FROM node:${NODE_VER}-alpine
+ENV NODE_ENV=${NODE_ENV}
 
-# create directory on container
-WORKDIR /frontend/app 
+WORKDIR /frontend
+CMD ["yarn", "soft-start"]
 
-ENV PATH /app/node_modules/.bin:$PATH
-
-COPY package.json /frontend/app
-
-RUN yarn
-
-COPY . /frontend/app
-
-CMD ["yarn", "start"]
+EXPOSE 3000

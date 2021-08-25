@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
 import java.util.List;
@@ -54,7 +55,9 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
                 null,
                 "",
                 false,
-                false));
+                false,
+                "English",
+                TestResultDeliveryPreference.NONE));
     PhoneNumber pn = new PhoneNumber(PhoneType.LANDLINE, "5555555555");
     pn.setPerson(hoya);
     _phoneRepo.save(pn);
@@ -95,7 +98,9 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
                 null,
                 "",
                 false,
-                false));
+                false,
+                "English",
+                TestResultDeliveryPreference.NONE));
     PhoneNumber pn = new PhoneNumber(PhoneType.LANDLINE, "5555555555");
     pn.setPerson(hoya);
     _phoneRepo.save(pn);

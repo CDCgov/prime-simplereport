@@ -123,16 +123,21 @@
 
   li {
     margin: 0.5rem;
-  }
+    display: flex;
+    flex-direction: row;
 
-  b {
-    float: left;
-    clear: left;
-    width: 8rem;
-  }
+    b {
+      width: 8rem;
+      flex-shrink: 0;
+    }
 
-  div {
-    margin: 0.25rem 0 0.25rem 8rem;
+    .sr-result-facility-details-address span {
+      display: block;
+    }
+
+    div {
+      margin-left: 0.5rem;
+    }
   }
 
   div:empty::after {

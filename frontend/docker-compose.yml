@@ -1,0 +1,14 @@
+version: "3.5"
+services:
+  frontend:
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+      args: 
+        NODE_VER: 14
+        NODE_ENV: development
+    volumes:
+      - ./:/frontend/
+      - ../backend/src/main/resources/graphql:/backend/src/main/resources/graphql
+    ports:
+      - "3000:3000"
