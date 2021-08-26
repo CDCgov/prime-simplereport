@@ -80,6 +80,8 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
 
   if (identificationVerified && email && activationToken) {
     return <Success email={email} activationToken={activationToken} />;
+  } else if (identificationVerified) {
+    return <Success email={email} />;
   } else {
     return <NextSteps />;
   }

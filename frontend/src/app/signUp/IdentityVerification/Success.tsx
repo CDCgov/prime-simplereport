@@ -4,11 +4,13 @@ import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 
 interface Props {
   email: string;
-  activationToken: string;
+  activationToken?: string;
 }
 
 const Success: React.FC<Props> = ({ email, activationToken }) => {
-  const activationLink = `${process.env.PUBLIC_URL}/uac/?activationToken=${activationToken}`;
+  const activationLink = activationToken
+    ? `${process.env.PUBLIC_URL}/uac/?activationToken=${activationToken}`
+    : null;
 
   return (
     <CardBackground>
@@ -27,13 +29,21 @@ const Success: React.FC<Props> = ({ email, activationToken }) => {
           You’re ready to use SimpleReport
         </h1>
         <p className="margin-bottom-0">
-          Congratulations, your identity has been verified successfully. Please
-          click the button below to set up your SimpleReport account. (A link
-          will also be sent to {email}).
+          Congratulations, your identity has been verified successfully.{" "}
+          {activationLink
+            ? `Please click the button below to set up your SimpleReport account. 
+               (A link will also be sent to ${email}).`
+            : `Please check your organization administrator email (${email}) for
+               a link to access your SimpleReport account.`}
         </p>
-        <a className="usa-button width-full margin-top-3" href={activationLink}>
-          Set up your account
-        </a>
+        {activationLink ? (
+          <a
+            className="usa-button width-full margin-top-3"
+            href={activationLink}
+          >
+            Set up your account
+          </a>
+        ) : null}
         <p className="usa-hint font-ui-xs margin-top-3">
           Didn’t get the email? Check your spam folder. If you’re unable to find
           the email,{" "}
