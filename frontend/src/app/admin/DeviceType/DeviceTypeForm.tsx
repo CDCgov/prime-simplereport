@@ -58,6 +58,7 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType }) => {
                       <a
                         href="https://usds.slack.com/archives/C024MGSJZ38"
                         target="_blank"
+                        rel="noreferrer"
                       >
                         #prime-reportstream
                       </a>
@@ -68,6 +69,7 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType }) => {
                       <a
                         href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
                         target="_blank"
+                        rel="noreferrer"
                       >
                         https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html
                       </a>
