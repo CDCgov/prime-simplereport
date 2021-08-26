@@ -93,7 +93,7 @@ export function formatPhoneNumber(str: string) {
 }
 
 export function formatUserStatus(status: string) {
-  var userFriendlyStatus;
+  let userFriendlyStatus;
   if (status === "SUSPENDED") {
     userFriendlyStatus = "Account deactivated";
   } else if (status === "PROVISIONED") {

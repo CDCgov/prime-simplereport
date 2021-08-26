@@ -48,7 +48,7 @@ const UsersSideNav: React.FC<Props> = ({
                     user.middleName,
                     user.lastName
                   )}
-                  {user.status !== "ACTIVE" ? (
+                  {user.status !== "ACTIVE" && (
                     <span>
                       {" "}
                       <FontAwesomeIcon
@@ -56,7 +56,7 @@ const UsersSideNav: React.FC<Props> = ({
                         className={"prime-red-icon suspended-icon"}
                       />
                     </span>
-                  ) : null}
+                  )}
                 </span>
                 <br />
                 <span className="sidenav-user-email">{user.email}</span>
