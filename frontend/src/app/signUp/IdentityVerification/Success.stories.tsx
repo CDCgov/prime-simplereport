@@ -8,6 +8,7 @@ export default {
   argTypes: {},
   args: {
     email: "admin@foo.com",
+    activationToken: "1234567890",
   },
 } as Meta;
 
