@@ -91,3 +91,15 @@ export function formatPhoneNumber(str: string) {
   }
   return null;
 }
+
+export function formatUserStatus(status: string) {
+  var userFriendlyStatus;
+  if (status === "SUSPENDED") {
+    userFriendlyStatus = "Account deactivated";
+  } else if (status === "PROVISIONED") {
+    userFriendlyStatus = "Pending account set up";
+  } else {
+    userFriendlyStatus = capitalizeText(status);
+  }
+  return userFriendlyStatus;
+}

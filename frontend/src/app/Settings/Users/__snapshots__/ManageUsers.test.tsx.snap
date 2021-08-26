@@ -51,6 +51,7 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
                 >
                   john@arthur.org
                 </span>
+                <br />
               </button>
             </li>
             <li
@@ -71,6 +72,7 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
                 >
                   bob@bobberoo.org
                 </span>
+                <br />
               </button>
             </li>
           </ul>
@@ -81,11 +83,18 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
           <div
             class="user-header grid-row flex-row flex-align-center"
           >
-            <h2
-              class="display-inline-block margin-y-1"
-            >
-              Bobberoo, Bob
-            </h2>
+            <div>
+              <h2
+                class="display-inline-block margin-y-1"
+              >
+                Bobberoo, Bob
+              </h2>
+              <div>
+                <span
+                  class="top-user-status"
+                />
+              </div>
+            </div>
             <span
               class="usa-tag margin-left-1 bg-base-lighter text-ink"
             >
@@ -375,6 +384,7 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
                 >
                   john@arthur.org
                 </span>
+                <br />
               </button>
             </li>
             <li
@@ -395,6 +405,7 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
                 >
                   bob@bobberoo.org
                 </span>
+                <br />
               </button>
             </li>
           </ul>
@@ -405,11 +416,18 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
           <div
             class="user-header grid-row flex-row flex-align-center"
           >
-            <h2
-              class="display-inline-block margin-y-1"
-            >
-              Arthur, John
-            </h2>
+            <div>
+              <h2
+                class="display-inline-block margin-y-1"
+              >
+                Arthur, John
+              </h2>
+              <div>
+                <span
+                  class="top-user-status"
+                />
+              </div>
+            </div>
             <button
               class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
               type="button"

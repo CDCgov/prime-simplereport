@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
 
 import { displayFullName } from "../../utils";
-import { capitalizeText } from "../../utils/text";
+import { formatUserStatus } from "../../utils/text";
 
 import { LimitedUser } from "./ManageUsersContainer";
 
@@ -63,7 +63,7 @@ const UsersSideNav: React.FC<Props> = ({
                 <br />
                 {user.status !== "ACTIVE" ? (
                   <span className="sidenav-user-status">
-                    {capitalizeText(user.status)}
+                    {formatUserStatus(user.status)}
                   </span>
                 ) : null}
               </button>

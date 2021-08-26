@@ -4,7 +4,7 @@ import { Prompt } from "react-router-dom";
 import { Role } from "../../permissions";
 import { displayFullName } from "../../utils";
 import Button from "../../commonComponents/Button/Button";
-import { capitalizeText } from "../../utils/text";
+import { formatUserStatus } from "../../utils/text";
 
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import { UpdateUser } from "./ManageUsers";
@@ -67,10 +67,10 @@ const UserDetail: React.FC<Props> = ({
           <h2 className="display-inline-block margin-y-1">
             {displayFullName(user.firstName, user.middleName, user.lastName)}
           </h2>
-          {user.status === "SUSPENDED" ? (
+          {user.status !== "ACTIVE" ? (
             <div>
               <span className="top-user-status">
-                {capitalizeText(user.status)}
+                {formatUserStatus(user.status)}
               </span>
             </div>
           ) : null}
