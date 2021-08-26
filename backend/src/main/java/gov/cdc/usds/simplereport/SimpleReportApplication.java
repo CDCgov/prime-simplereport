@@ -6,7 +6,6 @@ import gov.cdc.usds.simplereport.config.CorsProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
-import gov.cdc.usds.simplereport.properties.DynamicsProperties;
 import gov.cdc.usds.simplereport.properties.ExperianProperties;
 import gov.cdc.usds.simplereport.properties.OrderingProviderProperties;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
@@ -38,7 +37,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
   SmartyStreetsProperties.class,
   SendGridProperties.class,
   OrderingProviderProperties.class,
-  DynamicsProperties.class,
   CorsProperties.class
 })
 @EnableAsync
