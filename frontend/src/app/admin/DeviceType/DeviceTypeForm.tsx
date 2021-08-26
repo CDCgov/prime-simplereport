@@ -54,8 +54,25 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType }) => {
                   <div className="usa-alert__body">
                     <h4 className="usa-alert__heading">Reminder</h4>
                     <p className="usa-alert__text">
-                      Add the new device type to the Sign up form device
-                      options.
+                      Notify ReportStream of devices added in{" "}
+                      <a
+                        href="https://usds.slack.com/archives/C024MGSJZ38"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        #prime-reportstream
+                      </a>
+                    </p>
+                    <p>
+                      Device details can be found by downloading the excel file
+                      published at{" "}
+                      <a
+                        href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html
+                      </a>
                     </p>
                   </div>
                 </div>
@@ -101,7 +118,7 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType }) => {
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
                   <TextInput
-                    label="Swab Type"
+                    label="SNOMED code of Swab Type"
                     name="swabType"
                     value={device.swabType}
                     onChange={onChange}
