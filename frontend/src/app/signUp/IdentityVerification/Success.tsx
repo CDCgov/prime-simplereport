@@ -26,12 +26,15 @@ const Success: React.FC<Props> = ({ email, activationToken }) => {
         <h1 className="font-ui-lg margin-top-3 margin-bottom-4">
           You’re ready to use SimpleReport
         </h1>
-        <p className="margin-bottom-2">
-          Congratulations, your identity has been verified successfully. Please
-          click the button below to begin setting up your SimpleReport account.
-          A link will also be sent to your email ({email}).
-        </p>
         <p className="margin-bottom-0">
+          Congratulations, your identity has been verified successfully. Please
+          click the button below to set up your SimpleReport account. (A link
+          will also be sent to {email}).
+        </p>
+        <a className="usa-button width-full margin-top-3" href={activationLink}>
+          Set up your account
+        </a>
+        <p className="usa-hint font-ui-xs margin-top-3">
           Didn’t get the email? Check your spam folder. If you’re unable to find
           the email,{" "}
           <a href="mailto:support@simplereport.gov">
@@ -39,9 +42,6 @@ const Success: React.FC<Props> = ({ email, activationToken }) => {
           </a>
           .
         </p>
-        <a className="usa-button width-full margin-top-3" href={activationLink}>
-          Set up your account
-        </a>
       </Card>
     </CardBackground>
   );
