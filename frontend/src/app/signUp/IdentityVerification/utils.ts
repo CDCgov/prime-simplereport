@@ -1,5 +1,7 @@
 import * as yup from "yup";
 
+import { phoneNumberIsValid } from "../../patients/personSchema";
+
 export const getAnswerKey = (index: number) => `answer${index + 1}`;
 
 export const toOptions = (
@@ -95,8 +97,14 @@ export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = 
     middleName: yup.string().nullable(),
     lastName: yup.string().required("Last name is required"),
     dateOfBirth: yup.string().required("Birth date is required"),
-    email: yup.string().email().required("Email is required"),
-    phoneNumber: yup.string().required("Phone number is required"),
+    email: yup
+      .string()
+      .email("A valid email address is required")
+      .required("A valid email address is required"),
+    phoneNumber: yup
+      .mixed()
+      .test("", "A valid phone number is required", phoneNumberIsValid)
+      .required(),
     streetAddress1: yup.string().required("Street address is required"),
     streetAddress2: yup.string().nullable(),
     city: yup.string().required("City is required"),

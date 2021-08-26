@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { PhoneNumberUtil } from "google-libphonenumber";
 
 import { SignUpApi } from "../SignUpApi";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
@@ -24,6 +25,10 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
   const [activationToken, setActivationToken] = useState<string>("");
 
   const getQuestionSet = async (request: IdentityVerificationRequest) => {
+    // First, normalize the phone number and strip any extension
+    const phoneUtil = PhoneNumberUtil.getInstance();
+    const number = phoneUtil.parseAndKeepRawInput(request.phoneNumber, "US");
+    request.phoneNumber = `${number.getNationalNumber()}`;
     try {
       const response = await SignUpApi.getQuestions(request);
       if (!response.questionSet) {
