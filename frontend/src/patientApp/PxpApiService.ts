@@ -91,9 +91,16 @@ export class PxpApi {
     firstName: string;
     lastName: string;
     birthDate: ISODate;
-    zipCode: string;
+    postalCode: string;
     registrationLink: string;
-  }): Promise<{ unique: boolean }> => {
-    return api.request("/register/check-duplicate", person);
+  }): Promise<boolean> => {
+    const { registrationLink, ...body } = person;
+
+    return api.request(
+      "/register/existing-patient",
+      body,
+      "POST",
+      `?patientRegistrationLink=${registrationLink}`
+    );
   };
 }

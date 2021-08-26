@@ -98,13 +98,13 @@ const mocks = {
     }
   ),
   duplicateRegistration: rest.post(
-    "http://localhost:8080/pxp/register/check-duplicate",
+    "http://localhost:8080/pxp/register/existing-patient",
     (_, rest, ctx) => {
       return rest(ctx.status(200), ctx.json({ unique: false }));
     }
   ),
   uniqueRegistration: rest.post(
-    "http://localhost:8080/pxp/register/check-duplicate",
+    "http://localhost:8080/pxp/register/existing-patient",
     (_, rest, ctx) => {
       return rest(ctx.status(200), ctx.json({ unique: true }));
     }

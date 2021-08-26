@@ -62,14 +62,14 @@ export const SelfRegistrationForm = ({
       const { firstName, lastName, zipCode } = data;
       const birthDate = moment(data.birthDate).format("YYYY-MM-DD") as ISODate;
       try {
-        const { unique } = await PxpApi.checkDuplicateRegistrant({
+        const isDuplicate = await PxpApi.checkDuplicateRegistrant({
           firstName,
           lastName,
           birthDate,
-          zipCode,
+          postalCode: zipCode,
           registrationLink,
         });
-        setIsDuplicate(!unique);
+        setIsDuplicate(isDuplicate);
       } catch (e) {
         // A failure to check duplicate shouldn't disrupt registration
         console.error(e);

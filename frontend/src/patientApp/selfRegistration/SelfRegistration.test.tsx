@@ -26,9 +26,7 @@ jest.mock("../PxpApiService", () => ({
       return Promise.resolve();
     },
     checkDuplicateRegistrant: ({ firstName }: { firstName: string }) => {
-      return Promise.resolve({
-        unique: firstName === duplicatePersonFirstName ? false : true,
-      });
+      return Promise.resolve(firstName === duplicatePersonFirstName);
     },
   },
 }));
