@@ -45,12 +45,11 @@ const Success: React.FC<Props> = ({ email, activationToken }) => {
           </a>
         ) : null}
         <p className="usa-hint font-ui-3xs margin-top-3">
-          Didn’t get the email? Check your spam folder. If you’re unable to find
-          the email,{" "}
+          Didn’t get the email? Check your spam folder and{" "}
           <a href="mailto:support@simplereport.gov">
             contact SimpleReport support
-          </a>
-          .
+          </a>{" "}
+          if you need help.
         </p>
       </Card>
     </CardBackground>
