@@ -5,7 +5,6 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
-import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import Header from "./commonComponents/Header";
 import Page from "./commonComponents/Page/Page";
 import LoginView from "./LoginView";
@@ -91,7 +90,7 @@ const App = () => {
     return <p>Server connection error...</p>;
   }
   return (
-    <PrimeErrorBoundary>
+    <>
       <VersionEnforcer />
       <WithFacility>
         <Page>
@@ -161,7 +160,7 @@ const App = () => {
           </Switch>
         </Page>
       </WithFacility>
-    </PrimeErrorBoundary>
+    </>
   );
 };
 

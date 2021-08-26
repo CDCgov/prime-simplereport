@@ -131,7 +131,9 @@ public class IdentityVerificationController {
 
       if (verificationResponse.isPassed()) {
         // enable the organization and send account activation email (through okta)
-        _orgService.verifyOrganizationNoPermissions(requestBody.getOrgExternalId());
+        String activationToken =
+            _orgService.verifyOrganizationNoPermissions(requestBody.getOrgExternalId());
+        verificationResponse.setActivationToken(activationToken);
       } else {
         sendIdentityVerificationFailedEmails(org.getExternalId(), orgAdminEmail);
       }

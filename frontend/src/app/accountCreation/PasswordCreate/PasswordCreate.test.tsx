@@ -131,7 +131,6 @@ describe("PasswordCreate", () => {
       }
     );
     expect(screen.getByText(strengthLabel("Strong"))).toBeInTheDocument();
-    fireEvent.click(screen.getByText("Continue"));
     expect(screen.getByText("Passwords must match")).toBeInTheDocument();
   });
 

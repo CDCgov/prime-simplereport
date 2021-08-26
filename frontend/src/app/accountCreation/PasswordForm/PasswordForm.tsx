@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Redirect } from "react-router";
 
 import TextInput from "../../commonComponents/TextInput";
@@ -28,6 +28,19 @@ export const PasswordForm = () => {
   );
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  const validatePasswordConfirmation = useCallback((): boolean => {
+    let error = "";
+    if (password !== passwordConfirmation) {
+      error = "Passwords must match";
+    }
+    setPasswordConfirmationError(error);
+    return error === "";
+  }, [password, passwordConfirmation]);
+
+  useEffect(() => {
+    passwordConfirmation !== "" && validatePasswordConfirmation();
+  }, [passwordConfirmation, validatePasswordConfirmation]);
 
   // An array of functions that test for all of the password requirements
   const requirements = [hasLowerCase, hasUpperCase, hasNumber, isAtLeast8Chars];
@@ -92,15 +105,6 @@ export const PasswordForm = () => {
     const hint = buildHint(password);
     setPasswordError(hint);
     return hint === "";
-  };
-
-  const validatePasswordConfirmation = (): boolean => {
-    let error = "";
-    if (password !== passwordConfirmation) {
-      error = "Passwords must match";
-    }
-    setPasswordConfirmationError(error);
-    return error === "";
   };
 
   // Form submit handler

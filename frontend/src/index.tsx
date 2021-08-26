@@ -28,6 +28,7 @@ import TelemetryProvider from "./app/telemetry-provider";
 import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration";
 import "./i18n";
 import getNodeEnv from "./app/utils/getNodeEnv";
+import PrimeErrorBoundary from "./app/PrimeErrorBoundary";
 
 import "./styles/App.css";
 
@@ -112,18 +113,20 @@ export const ReactApp = (
       <Provider store={store}>
         <Router basename={process.env.PUBLIC_URL}>
           <TelemetryProvider>
-            <Switch>
-              <Route path="/health" component={HealthChecks} />
-              <Route path="/pxp" component={PatientApp} />
-              <Route path="/uac" component={AccountCreationApp} />
-              <Route path="/sign-up" component={SignUpApp} />
-              <Route
-                path="/register/:registrationLink"
-                component={SelfRegistration}
-              />
-              <Route path="/" component={App} />
-              <Route component={() => <>Page not found</>} />
-            </Switch>
+            <PrimeErrorBoundary>
+              <Switch>
+                <Route path="/health" component={HealthChecks} />
+                <Route path="/pxp" component={PatientApp} />
+                <Route path="/uac" component={AccountCreationApp} />
+                <Route path="/sign-up" component={SignUpApp} />
+                <Route
+                  path="/register/:registrationLink"
+                  component={SelfRegistration}
+                />
+                <Route path="/" component={App} />
+                <Route component={() => <>Page not found</>} />
+              </Switch>
+            </PrimeErrorBoundary>
           </TelemetryProvider>
         </Router>
       </Provider>

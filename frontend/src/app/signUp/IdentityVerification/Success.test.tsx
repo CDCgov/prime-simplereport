@@ -4,7 +4,7 @@ import Success from "./Success";
 
 describe("Success", () => {
   beforeEach(() => {
-    render(<Success email="test.user@example.com" />);
+    render(<Success email="test.user@example.com" activationToken="foo" />);
   });
   it("renders", () => {
     expect(

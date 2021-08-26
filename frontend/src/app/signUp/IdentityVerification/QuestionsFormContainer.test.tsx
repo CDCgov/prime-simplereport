@@ -23,7 +23,7 @@ jest.mock("../SignUpApi", () => {
         } else if (request.answers[0] === 3) {
           return { passed: false };
         }
-        return { passed: true, email: "foo@bar.com" };
+        return { passed: true, email: "foo@bar.com", activationToken: "foo" };
       },
     },
   };
@@ -34,7 +34,7 @@ describe("QuestionsFormContainer", () => {
     await act(async () => {
       render(
         <QuestionsFormContainer
-          personalDetails={initPersonalDetails("foo")}
+          personalDetails={initPersonalDetails("foo", "Bob", "Bill", "Buckley")}
           orgExternalId="foo"
         />
       );
@@ -43,7 +43,7 @@ describe("QuestionsFormContainer", () => {
   it("show the user that the page is loading", () => {
     render(
       <QuestionsFormContainer
-        personalDetails={initPersonalDetails("slow")}
+        personalDetails={initPersonalDetails("slow", "Bob", "Bill", "Buckley")}
         orgExternalId="slow"
       />
     );
