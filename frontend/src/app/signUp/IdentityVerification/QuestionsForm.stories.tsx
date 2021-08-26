@@ -12,7 +12,7 @@ export default {
   },
   argTypes: {},
   args: {
-    personalDetails: {},
+    personalDetails: { phoneNumber: "5308675309" },
   },
 } as Meta;
 
