@@ -16,6 +16,6 @@ public class IdentityVerificationAnswersResponse {
   private boolean passed;
   // email address of account requester
   private String email;
-  // link to start the account creation process
+  // token to start the account creation process
   private String activationToken;
 }

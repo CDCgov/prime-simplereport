@@ -32,7 +32,7 @@ const Success: React.FC<Props> = ({ email, activationToken }) => {
           Congratulations, your identity has been verified successfully.{" "}
           {activationLink
             ? `Please click the button below to set up your SimpleReport account. 
-               (A link will also be sent to ${email}).`
+               (A link will also be sent to ${email}.)`
             : `Please check your organization administrator email (${email}) for
                a link to access your SimpleReport account.`}
         </p>
@@ -44,7 +44,7 @@ const Success: React.FC<Props> = ({ email, activationToken }) => {
             Set up your account
           </a>
         ) : null}
-        <p className="usa-hint font-ui-xs margin-top-3">
+        <p className="usa-hint font-ui-3xs margin-top-3">
           Didn’t get the email? Check your spam folder. If you’re unable to find
           the email,{" "}
           <a href="mailto:support@simplereport.gov">
