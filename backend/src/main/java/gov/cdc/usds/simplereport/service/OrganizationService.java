@@ -174,6 +174,16 @@ public class OrganizationService {
         .orElseThrow(() -> new IllegalGraphqlArgumentException("facility could not be found"));
   }
 
+  public Organization getOrganizationByFacilityId(UUID facilityId) {
+    Facility facility = _facilityRepo.findById(facilityId).orElse(null);
+
+    if (facility == null) {
+      return null;
+    }
+
+    return facility.getOrganization();
+  }
+
   public void assertFacilityNameAvailable(String testingFacilityName) {
     Organization org = getCurrentOrganization();
     _facilityRepo

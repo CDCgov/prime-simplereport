@@ -348,6 +348,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   // these field names strings are used by Specification builders
   public static final class SpecField {
     public static final String PERSON_NAME = "nameInfo";
+    public static final String ADDRESS = "address";
     public static final String IS_DELETED = "isDeleted";
     public static final String FACILITY = "facility";
     public static final String ORGANIZATION = "organization";
@@ -355,6 +356,8 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     public static final String FIRST_NAME = "firstName";
     public static final String MIDDLE_NAME = "middleName";
     public static final String LAST_NAME = "lastName";
+    public static final String BIRTH_DATE = "birthDate";
+    public static final String POSTAL_CODE = "postalCode";
 
     private SpecField() {} // sonarcloud codesmell
   }
