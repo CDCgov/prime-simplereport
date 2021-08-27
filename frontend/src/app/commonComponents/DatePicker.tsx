@@ -15,7 +15,7 @@ interface Props {
   labelClassName?: string;
   required?: boolean;
   defaultValue?: string;
-  minDate?: string;
+  minDate?: string; // TODO: pass minDate and maxDate to yup object for validation
   maxDate?: string;
 }
 
