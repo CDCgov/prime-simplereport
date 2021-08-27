@@ -4,7 +4,14 @@ import PersonalDetailsForm from "./PersonalDetailsForm";
 
 window.scrollTo = jest.fn();
 
+const fillInText = (label: string, text: string) => {
+  fireEvent.change(screen.getByLabelText(label, { exact: false }), {
+    target: { value: text },
+  });
+};
+
 describe("PersonalDetailsForm", () => {
+
   beforeEach(() => {
     render(
       <PersonalDetailsForm
@@ -16,7 +23,7 @@ describe("PersonalDetailsForm", () => {
     );
   });
 
-  it("displays the users full name", function () {
+  it("displays the users full name", () => {
     expect(screen.getByText("Bob Rob Bobberton")).toBeInTheDocument();
   });
 
@@ -26,9 +33,7 @@ describe("PersonalDetailsForm", () => {
 
   describe("Filling out the form", () => {
     beforeEach(() => {
-      fireEvent.change(screen.getByLabelText("Email *", { exact: false }), {
-        target: { value: "bob@bob.bob" },
-      });
+      fillInText("Email *", "bob@bob.bob");
     });
 
     it("enables the submit button", () => {
@@ -54,18 +59,28 @@ describe("PersonalDetailsForm", () => {
     describe("On submitting with an invalid phone number", () => {
       beforeEach(async () => {
         await act(async () => {
-          fireEvent.change(
-            screen.getByLabelText("Phone number", { exact: false }),
-            {
-              target: { value: "123" },
-            }
-          );
+          fillInText("Phone number", "123");
           fireEvent.click(screen.getByText("Submit"));
         });
       });
       it("shows an error", () => {
         expect(
           screen.getByText("A valid phone number is required")
+        ).toBeInTheDocument();
+      });
+    });
+    describe("On submitting an invalid street address", () => {
+      beforeEach(async () => {
+        await act(async () => {
+          fillInText("Street address 1", "111 greendale dr,");
+        });
+        await act(async () => {
+          fireEvent.click(screen.getByText("Submit"));
+        });
+      });
+      it("shows an error", () => {
+        expect(
+          screen.getByText("A valid street address is required")
         ).toBeInTheDocument();
       });
     });
@@ -141,9 +156,7 @@ describe("PersonalDetailsForm", () => {
     describe("On submitting an incomplete form", () => {
       beforeEach(async () => {
         await act(async () => {
-          fireEvent.change(screen.getByLabelText("Email", { exact: false }), {
-            target: { value: "bob@bob.bob" },
-          });
+          fillInText("Email", "bob@bob.bob");
           fireEvent.click(screen.getByText("Submit"));
         });
       });
@@ -161,30 +174,12 @@ describe("PersonalDetailsForm", () => {
       const dateButton = screen.getByText("15");
       expect(dateButton).toHaveClass("usa-date-picker__calendar__date");
       fireEvent.click(dateButton);
-      fireEvent.change(screen.getByLabelText("Email", { exact: false }), {
-        target: { value: "bob@bob.bob" },
-      });
-      fireEvent.change(
-        screen.getByLabelText("Phone number", { exact: false }),
-        {
-          target: { value: "530-867-5309" },
-        }
-      );
-      fireEvent.change(
-        screen.getByLabelText("Street address 1", { exact: false }),
-        {
-          target: { value: "123 Bob St" },
-        }
-      );
-      fireEvent.change(screen.getByLabelText("City", { exact: false }), {
-        target: { value: "Bobtown" },
-      });
-      fireEvent.change(screen.getByLabelText("State", { exact: false }), {
-        target: { value: "CA" },
-      });
-      fireEvent.change(screen.getByLabelText("ZIP code", { exact: false }), {
-        target: { value: "74783" },
-      });
+      fillInText("Email", "bob@bob.bob");
+      fillInText("Phone number", "530-867-5309");
+      fillInText("Street address 1", "123 Bob St");
+      fillInText("City", "Bobtown");
+      fillInText("State", "CA");
+      fillInText("ZIP code", "74783");
     });
 
     describe("On submit", () => {
