@@ -36,19 +36,15 @@ export const DatePicker = ({
 }: Props) => {
   return (
     <div
-      className={classnames(
-        "usa-form-group",
-        className,
-        validationStatus === "error" && "usa-form-group--error"
-      )}
+      className={classnames("usa-form-group", className, {
+        "usa-form-group--error": validationStatus === "error",
+      })}
     >
       <label
-        className={classnames(
-          "usa-label",
-          labelSrOnly && "usa-sr-only",
-          validationStatus === "error" && "usa-label--error",
-          labelClassName
-        )}
+        className={classnames("usa-label", labelClassName, {
+          "usa-sr-only": labelSrOnly,
+          "usa-label--error": validationStatus === "error",
+        })}
         htmlFor={name}
       >
         {label}
