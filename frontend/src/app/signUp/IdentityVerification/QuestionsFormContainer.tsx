@@ -14,6 +14,12 @@ interface Props {
   orgExternalId: string;
 }
 
+// Experian doesn't accept names with accents, so we allow users to input them
+// but remove the accent before sending to the backend.
+function removeAccents(str: string) {
+  return str.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+}
+
 const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
   const [loading, setLoading] = useState(true);
   const [identificationVerified, setIdentificationVerified] = useState<
@@ -29,6 +35,11 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
     const phoneUtil = PhoneNumberUtil.getInstance();
     const number = phoneUtil.parseAndKeepRawInput(request.phoneNumber, "US");
     request.phoneNumber = `${number.getNationalNumber()}`;
+    request.firstName = removeAccents(request.firstName);
+    request.middleName = request.middleName
+      ? removeAccents(request.middleName)
+      : request.middleName;
+    request.lastName = removeAccents(request.lastName);
     try {
       const response = await SignUpApi.getQuestions(request);
       if (!response.questionSet) {
