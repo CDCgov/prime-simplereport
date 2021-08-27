@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.SmsWebhookContextHolder;
+import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -428,6 +429,17 @@ public class ApiUserService {
     Organization org = _orgService.getCurrentOrganization();
     final Set<String> orgUserEmails = _oktaRepo.getAllUsersForOrganization(org);
     return _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserEmails);
+  }
+
+  @AuthorizationConfiguration.RequirePermissionManageUsers
+  public List<ApiUserWithStatus> getUsersAndStatusInCurrentOrg() {
+    Organization org = _orgService.getCurrentOrganization();
+    final Map<String, UserStatus> emailsToStatus =
+        _oktaRepo.getAllUsersWithStatusForOrganization(org);
+    List<ApiUser> users = _apiUserRepo.findAllByLoginEmailInOrderByName(emailsToStatus.keySet());
+    return users.stream()
+        .map(u -> new ApiUserWithStatus(u, emailsToStatus.get(u.getLoginEmail())))
+        .collect(Collectors.toList());
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser

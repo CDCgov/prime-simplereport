@@ -4,6 +4,7 @@ import { Prompt } from "react-router-dom";
 import { Role } from "../../permissions";
 import { displayFullName } from "../../utils";
 import Button from "../../commonComponents/Button/Button";
+import { formatUserStatus } from "../../utils/text";
 
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import { UpdateUser } from "./ManageUsers";
@@ -62,9 +63,18 @@ const UserDetail: React.FC<Props> = ({
   return (
     <div className="tablet:grid-col padding-left-2">
       <div className="user-header grid-row flex-row flex-align-center">
-        <h2 className="display-inline-block margin-y-1">
-          {displayFullName(user.firstName, user.middleName, user.lastName)}
-        </h2>
+        <div>
+          <h2 className="display-inline-block margin-y-1">
+            {displayFullName(user.firstName, user.middleName, user.lastName)}
+          </h2>
+          {user.status !== "ACTIVE" && (
+            <div>
+              <span className="top-user-status">
+                {formatUserStatus(user.status)}
+              </span>
+            </div>
+          )}
+        </div>
         {user?.id === loggedInUser.id ? (
           <span className="usa-tag margin-left-1 bg-base-lighter text-ink">
             YOU

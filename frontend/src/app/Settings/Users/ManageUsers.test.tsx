@@ -493,6 +493,12 @@ describe("ManageUsers", () => {
         variables: { id: suspendedUsers[0].id },
       });
     });
+
+    it("only shows status for non-active users", async () => {
+      // status appears twice for each suspended user - once in the side nav, and once in the detail view.
+      // the suspendedUsers list only has two users, one active and one suspended.
+      expect(screen.queryAllByText("Account deactivated").length).toBe(2);
+    });
   });
 
   it("removes a facility", async () => {
