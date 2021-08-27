@@ -11,7 +11,6 @@ const fillInText = (label: string, text: string) => {
 };
 
 describe("PersonalDetailsForm", () => {
-
   beforeEach(() => {
     render(
       <PersonalDetailsForm
@@ -69,7 +68,7 @@ describe("PersonalDetailsForm", () => {
         ).toBeInTheDocument();
       });
     });
-    describe("On submitting an invalid street address", () => {
+    describe("On submitting an invalid street address 1", () => {
       beforeEach(async () => {
         await act(async () => {
           fillInText("Street address 1", "111 greendale dr,");
@@ -150,6 +149,21 @@ describe("PersonalDetailsForm", () => {
       it("shows an error", () => {
         expect(
           screen.getByText("A valid date of birth is required")
+        ).toBeInTheDocument();
+      });
+    });
+    describe("On submitting an invalid street address 2", () => {
+      beforeEach(async () => {
+        await act(async () => {
+          fillInText("Street address 2", "111 greendale dr,");
+        });
+        await act(async () => {
+          fireEvent.click(screen.getByText("Submit"));
+        });
+      });
+      it("shows an error", () => {
+        expect(
+          screen.getByText("A valid street address 2 is required")
         ).toBeInTheDocument();
       });
     });
