@@ -34,7 +34,7 @@ window.scrollTo = jest.fn();
 describe("QuestionsFormContainer", () => {
   let personalDetails: IdentityVerificationRequest;
   beforeEach(async () => {
-    personalDetails = initPersonalDetails("foo", "Bob", "Bill", "Buckley");
+    personalDetails = initPersonalDetails("foo", "Bob", "Bill", "Martínez");
     personalDetails.phoneNumber = "530/867/5309 ext. 222";
     await act(async () => {
       render(
@@ -59,6 +59,9 @@ describe("QuestionsFormContainer", () => {
   });
   it("should normalize the phone number to getQuestions", () => {
     expect(personalDetails.phoneNumber).toBe("5308675309");
+  });
+  it("should remove accents from name", () => {
+    expect(personalDetails.lastName).toBe("Martinez");
   });
   it("should render the questions form after getQuestions response arrives", () => {
     expect(
