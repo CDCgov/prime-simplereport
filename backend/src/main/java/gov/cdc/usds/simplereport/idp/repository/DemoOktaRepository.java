@@ -1,5 +1,8 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
+import com.okta.sdk.error.Error;
+import com.okta.sdk.error.ErrorCause;
+import com.okta.sdk.resource.ResourceException;
 import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -40,6 +43,7 @@ public class DemoOktaRepository implements OktaRepository {
   Map<String, Set<String>> orgUsernamesMap;
   Map<String, Set<UUID>> orgFacilitiesMap;
   Set<String> inactiveUsernames;
+  Set<String> allUsernames;
 
   public DemoOktaRepository(
       OrganizationExtractor extractor, CurrentTenantDataAccessContextHolder contextHolder) {
@@ -47,6 +51,7 @@ public class DemoOktaRepository implements OktaRepository {
     this.orgUsernamesMap = new HashMap<>();
     this.orgFacilitiesMap = new HashMap<>();
     this.inactiveUsernames = new HashSet<>();
+    this.allUsernames = new HashSet<>();
 
     this.organizationExtractor = extractor;
     this.tenantDataContextHolder = contextHolder;
@@ -60,6 +65,10 @@ public class DemoOktaRepository implements OktaRepository {
       Set<Facility> facilities,
       Set<OrganizationRole> roles,
       boolean active) {
+    if (allUsernames.contains(userIdentity.getUsername())) {
+      throw new ResourceException(new DuplicateUserError());
+    }
+
     String organizationExternalId = org.getExternalId();
     Set<OrganizationRole> rolesToCreate = EnumSet.of(OrganizationRole.getDefault());
     rolesToCreate.addAll(roles);
@@ -82,6 +91,7 @@ public class DemoOktaRepository implements OktaRepository {
     OrganizationRoleClaims orgRoles =
         new OrganizationRoleClaims(organizationExternalId, facilityUUIDs, rolesToCreate);
     usernameOrgRolesMap.put(userIdentity.getUsername(), orgRoles);
+    allUsernames.add(userIdentity.getUsername());
 
     orgUsernamesMap.get(organizationExternalId).add(userIdentity.getUsername());
 
@@ -277,5 +287,35 @@ public class DemoOktaRepository implements OktaRepository {
     orgUsernamesMap.clear();
     orgFacilitiesMap.clear();
     inactiveUsernames.clear();
+    allUsernames.clear();
+  }
+
+  // Dummy error for duplicate users.
+  // Status, code, and message taken from a real Okta exception.
+  private class DuplicateUserError implements Error {
+
+    public int getStatus() {
+      return 400;
+    }
+
+    public String getCode() {
+      return "E0000001";
+    }
+
+    public String getMessage() {
+      return "An object with this field already exists in the current organization";
+    }
+
+    public String getId() {
+      return "0";
+    }
+
+    public List<ErrorCause> getCauses() {
+      return List.of();
+    }
+
+    public Map<String, List<String>> getHeaders() {
+      return Map.of();
+    }
   }
 }

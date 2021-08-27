@@ -13,13 +13,10 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.AccountResponse;
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.WaitlistRequest;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
-import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
-import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import java.io.IOException;
@@ -47,8 +44,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AccountRequestController {
   private final OrganizationService _os;
-  private final DeviceTypeService _dts;
-  private final AddressValidationService _avs;
   private final ApiUserService _aus;
   private final EmailService _es;
   private final SendGridProperties sendGridProperties;
@@ -93,7 +88,7 @@ public class AccountRequestController {
       // The `ResourceException` is thrown when a user requests an account with an email address
       // that's already in Okta.
       // This happens fairly frequently and is the expected behavior of the current form.
-      // We rethrow this as a BadRequestException so that users get at toast on the frontend
+      // We rethrow this as a BadRequestException so that users get a toast on the frontend
       // informing them of the error.
       throw new BadRequestException(
           "This email address is already associated with a SimpleReport user.");
@@ -107,27 +102,28 @@ public class AccountRequestController {
   }
 
   private Organization checkAccountRequestAndCreateOrg(OrganizationAccountRequest request) {
-    String organizationName = request.getName();
-
     // verify that the organization doesn't already exist
-    checkForDuplicateOrg(organizationName, request.getState());
-
-    String orgExternalId = getOrgExternalId(organizationName, request.getState());
-
-    String organizationType = getTypeFromLabelOrValue(request.getType());
+    String organizationName = checkForDuplicateOrg(request.getName(), request.getState());
+    String orgExternalId = createOrgExternalId(organizationName, request.getState());
+    String organizationType = Translators.parseOrganizationType(request.getType());
     return _os.createOrganization(organizationName, organizationType, orgExternalId);
   }
 
-  private void checkForDuplicateOrg(String organizationName, String state) {
+  private String checkForDuplicateOrg(String organizationName, String state) {
     Optional<Organization> potentialDuplicateOrg = _os.getOrganizationByName(organizationName);
-    if (potentialDuplicateOrg.isPresent()
-        // potential duplicate orgs must be in the same state to be a true duplicate
-        && potentialDuplicateOrg.get().getExternalId().startsWith(state)) {
-      throw new BadRequestException("Organization is a duplicate.");
+    if (potentialDuplicateOrg.isPresent()) {
+      // potential duplicate orgs must be in the same state to be a true duplicate
+      if (potentialDuplicateOrg.get().getExternalId().startsWith(state)) {
+        throw new BadRequestException("Organization is a duplicate.");
+      } else {
+        return String.join("-", organizationName, state);
+      }
+    } else {
+      return organizationName;
     }
   }
 
-  private String getOrgExternalId(String organizationName, String state) {
+  private String createOrgExternalId(String organizationName, String state) {
     return String.format(
         "%s-%s-%s",
         state, organizationName.replace(' ', '-').replace(':', '-'), UUID.randomUUID().toString());
@@ -137,17 +133,6 @@ public class AccountRequestController {
     PersonName adminName =
         Translators.consolidateNameArguments(null, firstName, null, lastName, null);
     _aus.createUser(email, adminName, externalId, Role.ADMIN);
-  }
-
-  // This is for temporary compatibility so the request can contain either the type label (old way)
-  // or the type name (new way).  Once the request is updated, then we only need to validate the
-  // type with `parseOrganizationType`
-  private String getTypeFromLabelOrValue(String labelOrValue) {
-    try {
-      return Translators.parseOrganizationTypeFromName(labelOrValue);
-    } catch (IllegalGraphqlArgumentException e) {
-      return Translators.parseOrganizationType(labelOrValue);
-    }
   }
 
   private void logOrganizationAccountRequest(@RequestBody @Valid OrganizationAccountRequest request)
