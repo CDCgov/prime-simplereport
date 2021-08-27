@@ -1,8 +1,30 @@
+import moment from "moment";
 import * as yup from "yup";
 
 import { phoneNumberIsValid } from "../../patients/personSchema";
+import { isValidDate } from "../../utils/date";
 
 export const getAnswerKey = (index: number) => `answer${index + 1}`;
+
+export function isValidBirthdate(date: string | undefined) {
+  if (date === undefined || date === "") {
+    return false;
+  }
+  if (date.split("/").length === 3 && date.split("/")[2].length < 4) {
+    return false;
+  }
+  if (!isValidDate(date)) {
+    return false;
+  }
+  const parsedDate = moment(date);
+  if (parsedDate.year() < 1900) {
+    return false;
+  }
+  if (parsedDate.isAfter(moment())) {
+    return false;
+  }
+  return true;
+}
 
 export const toOptions = (
   choices: string[]
@@ -96,14 +118,21 @@ export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = 
     firstName: yup.string().required("First name is required"),
     middleName: yup.string().nullable(),
     lastName: yup.string().required("Last name is required"),
-    dateOfBirth: yup.string().required("Birth date is required"),
+    dateOfBirth: yup
+      .string()
+      .test("birth-date", "A valid date of birth is required", isValidBirthdate)
+      .required("A valid date of birth is required"),
     email: yup
       .string()
       .email("A valid email address is required")
       .required("A valid email address is required"),
     phoneNumber: yup
       .mixed()
-      .test("", "A valid phone number is required", phoneNumberIsValid)
+      .test(
+        "phone-number",
+        "A valid phone number is required",
+        phoneNumberIsValid
+      )
       .required(),
     streetAddress1: yup.string().required("Street address is required"),
     streetAddress2: yup.string().nullable(),

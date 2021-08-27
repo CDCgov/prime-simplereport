@@ -1,4 +1,10 @@
-import { getAnswerKey, toOptions, initAnswers, answersToArray } from "./utils";
+import {
+  getAnswerKey,
+  toOptions,
+  initAnswers,
+  answersToArray,
+  isValidBirthdate,
+} from "./utils";
 
 describe("utils", () => {
   describe("getAnswerKey", () => {
@@ -60,6 +66,20 @@ describe("utils", () => {
     });
     it("correctly sets the third value", () => {
       expect(answersArray[2]).toBe(parseInt(answers["answer3"]));
+    });
+  });
+  describe("isValidBirthdate", () => {
+    it("finds a date before 1900 invalid", () => {
+      expect(isValidBirthdate("08/07/1872")).toBe(false);
+    });
+    it("finds a date after today invalid", () => {
+      expect(isValidBirthdate("08/07/2172")).toBe(false);
+    });
+    it("finds 1/2 invalid", () => {
+      expect(isValidBirthdate("1/2/196")).toBe(false);
+    });
+    it("finds 13/13/2000 invalid", () => {
+      expect(isValidBirthdate("13/13/2000")).toBe(false);
     });
   });
 });
