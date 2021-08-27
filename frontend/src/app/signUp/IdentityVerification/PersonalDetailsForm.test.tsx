@@ -45,11 +45,29 @@ describe("PersonalDetailsForm", () => {
       });
       it("shows a single error", () => {
         expect(
-          screen.getByText("Phone number is required")
+          screen.getByText("A valid phone number is required")
         ).toBeInTheDocument();
       });
     });
-    describe("On submit", () => {
+    describe("On submitting with an invalid phone number", () => {
+      beforeEach(async () => {
+        await act(async () => {
+          fireEvent.change(
+            screen.getByLabelText("Phone number", { exact: false }),
+            {
+              target: { value: "123" },
+            }
+          );
+          fireEvent.click(screen.getByText("Submit"));
+        });
+      });
+      it("shows an error", () => {
+        expect(
+          screen.getByText("A valid phone number is required")
+        ).toBeInTheDocument();
+      });
+    });
+    describe("On submitting an incomplete form", () => {
       beforeEach(async () => {
         await act(async () => {
           fireEvent.change(screen.getByLabelText("Email", { exact: false }), {

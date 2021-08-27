@@ -29,27 +29,36 @@ jest.mock("../SignUpApi", () => {
   };
 });
 
+window.scrollTo = jest.fn();
+
 describe("QuestionsFormContainer", () => {
+  let personalDetails: IdentityVerificationRequest;
   beforeEach(async () => {
+    personalDetails = initPersonalDetails("foo", "Bob", "Bill", "Buckley");
+    personalDetails.phoneNumber = "530/867/5309 ext. 222";
     await act(async () => {
       render(
         <QuestionsFormContainer
-          personalDetails={initPersonalDetails("foo", "Bob", "Bill", "Buckley")}
+          personalDetails={personalDetails}
           orgExternalId="foo"
         />
       );
     });
   });
   it("show the user that the page is loading", () => {
+    personalDetails.orgExternalId = "slow";
     render(
       <QuestionsFormContainer
-        personalDetails={initPersonalDetails("slow", "Bob", "Bill", "Buckley")}
+        personalDetails={personalDetails}
         orgExternalId="slow"
       />
     );
     expect(
       screen.getByText("Submitting ID verification details", { exact: false })
     ).toBeInTheDocument();
+  });
+  it("should normalize the phone number to getQuestions", () => {
+    expect(personalDetails.phoneNumber).toBe("5308675309");
   });
   it("should render the questions form after getQuestions response arrives", () => {
     expect(
