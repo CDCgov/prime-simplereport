@@ -2,20 +2,21 @@ import moment from "moment";
 import * as yup from "yup";
 
 import { phoneNumberIsValid } from "../../patients/personSchema";
+import { isValidDate } from "../../utils/date";
 
 export const getAnswerKey = (index: number) => `answer${index + 1}`;
 
 export function isValidBirthdate(date: string | undefined) {
-  if (date === undefined) {
+  if (date === undefined || date === "") {
     return false;
   }
   if (date.split("/").length === 3 && date.split("/")[2].length < 4) {
     return false;
   }
-  const parsedDate = moment(date);
-  if (!parsedDate.isValid()) {
+  if (!isValidDate(date)) {
     return false;
   }
+  const parsedDate = moment(date);
   if (parsedDate.year() < 1900) {
     return false;
   }
