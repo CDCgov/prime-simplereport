@@ -20,6 +20,19 @@ function removeAccents(str: string) {
   return str.normalize("NFD").replace(/\p{Diacritic}/gu, "");
 }
 
+function normalizeIdentityVerificationRequest(
+  request: IdentityVerificationRequest
+) {
+  const phoneUtil = PhoneNumberUtil.getInstance();
+  const number = phoneUtil.parseAndKeepRawInput(request.phoneNumber, "US");
+  request.phoneNumber = `${number.getNationalNumber()}`;
+  request.firstName = removeAccents(request.firstName);
+  request.middleName = request.middleName
+    ? removeAccents(request.middleName)
+    : request.middleName;
+  request.lastName = removeAccents(request.lastName);
+}
+
 const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
   const [loading, setLoading] = useState(true);
   const [identificationVerified, setIdentificationVerified] = useState<
@@ -31,15 +44,7 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
   const [activationToken, setActivationToken] = useState<string>("");
 
   const getQuestionSet = async (request: IdentityVerificationRequest) => {
-    // First, normalize the phone number and strip any extension
-    const phoneUtil = PhoneNumberUtil.getInstance();
-    const number = phoneUtil.parseAndKeepRawInput(request.phoneNumber, "US");
-    request.phoneNumber = `${number.getNationalNumber()}`;
-    request.firstName = removeAccents(request.firstName);
-    request.middleName = request.middleName
-      ? removeAccents(request.middleName)
-      : request.middleName;
-    request.lastName = removeAccents(request.lastName);
+    normalizeIdentityVerificationRequest(request);
     try {
       const response = await SignUpApi.getQuestions(request);
       if (!response.questionSet) {
