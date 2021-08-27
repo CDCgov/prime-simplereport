@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 /** Handles all user/organization management in Okta */
@@ -295,7 +296,7 @@ public class DemoOktaRepository implements OktaRepository {
   private class DuplicateUserError implements Error {
 
     public int getStatus() {
-      return 400;
+      return HttpStatus.BAD_REQUEST.value();
     }
 
     public String getCode() {
