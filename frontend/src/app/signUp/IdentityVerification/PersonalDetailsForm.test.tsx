@@ -2,6 +2,8 @@ import { render, screen, fireEvent, act } from "@testing-library/react";
 
 import PersonalDetailsForm from "./PersonalDetailsForm";
 
+window.scrollTo = jest.fn();
+
 describe("PersonalDetailsForm", () => {
   beforeEach(() => {
     render(
@@ -67,6 +69,27 @@ describe("PersonalDetailsForm", () => {
         ).toBeInTheDocument();
       });
     });
+    describe("On submitting with an invalid date of birth", () => {
+      beforeEach(async () => {
+        fireEvent.click(screen.getByTestId("date-picker-button"));
+        const nextMonthButton = screen.getByTestId("next-month");
+        expect(nextMonthButton).toHaveClass(
+          "usa-date-picker__calendar__next-month"
+        );
+        fireEvent.click(nextMonthButton);
+        const dateButton = screen.getByText("15");
+        expect(dateButton).toHaveClass("usa-date-picker__calendar__date");
+        fireEvent.click(dateButton);
+        await act(async () => {
+          fireEvent.click(screen.getByText("Submit"));
+        });
+      });
+      it("shows an error", () => {
+        expect(
+          screen.getByText("A valid date of birth is required")
+        ).toBeInTheDocument();
+      });
+    });
     describe("On submitting an incomplete form", () => {
       beforeEach(async () => {
         await act(async () => {
@@ -79,7 +102,7 @@ describe("PersonalDetailsForm", () => {
       it("shows an error", () => {
         expect(
           screen.queryAllByText("is required", { exact: false }).length
-        ).toBe(5);
+        ).toBe(6);
       });
     });
   });

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { DatePicker, Label } from "@trussworks/react-uswds";
 import moment from "moment";
 
 import { Card } from "../../commonComponents/Card/Card";
@@ -16,6 +15,7 @@ import {
 } from "../../../config/constants";
 import Select from "../../commonComponents/Select";
 import StepIndicator from "../../commonComponents/StepIndicator";
+import { DatePicker } from "../../commonComponents/DatePicker";
 
 import {
   initPersonalDetails,
@@ -144,28 +144,25 @@ const PersonalDetailsForm = ({
       case "dateOfBirth":
         const now = moment();
         return (
-          <>
-            <Label
-              htmlFor="dateOfBirth"
-              className="font-ui-sm margin-top-2 margin-bottom-0"
-            >
-              Date of birth
-            </Label>
-            <span className="usa-hint">mm/dd/yyyy</span>
-            <DatePicker
-              id={field}
-              data-testid={field}
-              name={field}
-              onChange={(date) => {
-                if (date) {
-                  const newDate = moment(date, "MM/DD/YYYY")
-                    .hour(now.hours())
-                    .minute(now.minutes());
-                  onDetailChange("dateOfBirth")(newDate.format("YYYY-MM-DD"));
-                }
-              }}
-            />
-          </>
+          <DatePicker
+            name="dateOfBirth"
+            label="Date of birth"
+            labelClassName="font-ui-sm margin-top-2 margin-bottom-0"
+            onChange={(date) => {
+              if (date) {
+                const newDate = moment(date, "MM/DD/YYYY")
+                  .hour(now.hours())
+                  .minute(now.minutes());
+                onDetailChange("dateOfBirth")(newDate.format("YYYY-MM-DD"));
+              }
+            }}
+            onBlur={() => {
+              validateField("dateOfBirth");
+            }}
+            validationStatus={getValidationStatus("dateOfBirth")}
+            errorMessage={errors.dateOfBirth}
+            required
+          />
         );
       default:
         return (
