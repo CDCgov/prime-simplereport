@@ -2866,12 +2866,26 @@ databaseChangeLog:
               FROM ${database.defaultSchemaName}.person
               WHERE patient_preferences.internal_id = person.internal_id;
   - changeSet:
+      id: add-index-person-org-facility-deleted
+      author: adam@skylight.digital
+      changes:
+        - createIndex:
+            tableName: person
+            indexName: ix__person__organization_id-facility_id-is_deleted
+            columns:
+              - column:
+                  name: organization_id
+              - column:
+                  name: facility_id
+              - column:
+                  name: is_deleted
+  - changeSet:
       id: add-index-test_event-facility_id
       author: adam@skylight.digital
       changes:
         - createIndex:
-              tableName: test_event
-              indexName: ix__test_event__facility_id
-              columns:
-                - column:
-                    name: facility_id
+            tableName: test_event
+            indexName: ix__test_event__facility_id
+            columns:
+              - column:
+                  name: facility_id
