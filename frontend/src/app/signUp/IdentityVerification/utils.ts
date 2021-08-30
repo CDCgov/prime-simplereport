@@ -118,6 +118,9 @@ const experianStreetRegex = new RegExp(
   "m"
 );
 
+// this is the regex experian uses for zip validation
+const experianZipRegex = new RegExp("^([\\d]{5}([\\-]?[\\d]{4})?){1}$", "m");
+
 export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = yup
   .object()
   .shape({
@@ -154,6 +157,9 @@ export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = 
       }),
     city: yup.string().required("City is required"),
     state: yup.string().required("State is required"),
-    zip: yup.string().required("ZIP code is required"),
+    zip: yup
+      .string()
+      .matches(experianZipRegex, "A valid ZIP code is required")
+      .required("A valid ZIP code is required"),
     orgExternalId: yup.string().required("Organization ID is required"),
   });
