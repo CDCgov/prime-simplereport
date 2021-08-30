@@ -2865,3 +2865,13 @@ databaseChangeLog:
                   test_result_delivery = person.test_result_delivery_preference
               FROM ${database.defaultSchemaName}.person
               WHERE patient_preferences.internal_id = person.internal_id;
+  - changeSet:
+      id: add-index-test_event-facility_id
+      author: adam@skylight.digital
+      changes:
+        - createIndex:
+              tableName: test_event
+              indexName: ix__test_event__facility_id
+              columns:
+                - column:
+                    name: facility_id
