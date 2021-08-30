@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -92,7 +93,7 @@ public class AccountRequestController {
       // informing them of the error.
       throw new BadRequestException(
           "This email address is already associated with a SimpleReport user.");
-    } catch (BadRequestException e) {
+    } catch (BadRequestException | UnexpectedRollbackException e) {
       // The `BadRequestException` is thrown when an account is requested with an existing org
       // name. This happens quite frequently and is expected behavior of the current form
       throw new BadRequestException("This organization has already registered with SimpleReport.");
@@ -106,7 +107,7 @@ public class AccountRequestController {
     String organizationName = checkForDuplicateOrg(request.getName(), request.getState());
     String orgExternalId = createOrgExternalId(organizationName, request.getState());
     String organizationType = Translators.parseOrganizationType(request.getType());
-    return _os.createOrganization(organizationName, organizationType, orgExternalId);
+    return _os.createOrganization(organizationName, organizationType, orgExternalId); 
   }
 
   private String checkForDuplicateOrg(String organizationName, String state) {
