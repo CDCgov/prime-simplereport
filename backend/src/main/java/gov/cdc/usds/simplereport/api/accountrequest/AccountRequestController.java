@@ -107,7 +107,7 @@ public class AccountRequestController {
     String organizationName = checkForDuplicateOrg(request.getName(), request.getState());
     String orgExternalId = createOrgExternalId(organizationName, request.getState());
     String organizationType = Translators.parseOrganizationType(request.getType());
-    return _os.createOrganization(organizationName, organizationType, orgExternalId); 
+    return _os.createOrganization(organizationName, organizationType, orgExternalId);
   }
 
   private String checkForDuplicateOrg(String organizationName, String state) {

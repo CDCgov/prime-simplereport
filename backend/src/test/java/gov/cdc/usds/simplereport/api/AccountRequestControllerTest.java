@@ -137,7 +137,7 @@ class AccountRequestControllerTest extends BaseFullStackTest {
     // then
     Optional<Organization> org = _orgService.getOrganizationByName("Day Hayes Trading");
     assertThat(org).isPresent();
-    assertThat(org.get().getExternalId().startsWith("RI-Day-Hayes-Trading-"));
+    assertThat(org.get().getExternalId()).startsWith("RI-Day-Hayes-Trading-");
 
     assertThat(org.get().getIdentityVerified()).isFalse();
 
@@ -251,7 +251,7 @@ class AccountRequestControllerTest extends BaseFullStackTest {
     // then
     Optional<Organization> originalOrg = _orgService.getOrganizationByName("Central Schools");
     assertThat(originalOrg).isPresent();
-    assertThat(originalOrg.get().getExternalId().startsWith("AZ-Central-Schools"));
+    assertThat(originalOrg.get().getExternalId()).startsWith("AZ-Central-Schools");
 
     Optional<Organization> duplicateOrg = _orgService.getOrganizationByName("Central Schools-CA");
     assertThat(duplicateOrg).isPresent();
