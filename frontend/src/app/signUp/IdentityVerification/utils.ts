@@ -6,17 +6,18 @@ import { isValidDate } from "../../utils/date";
 
 export const getAnswerKey = (index: number) => `answer${index + 1}`;
 
+// Takes date in format YYYY-MM-DD
 export function isValidBirthdate(date: string | undefined) {
   if (date === undefined || date === "") {
     return false;
   }
-  if (date.split("/").length === 3 && date.split("/")[2].length < 4) {
+  if (date.split("-").length === 3 && date.split("-")[0].length < 4) {
     return false;
   }
   if (!isValidDate(date)) {
     return false;
   }
-  const parsedDate = moment(date);
+  const parsedDate = moment(date, "YYYY-MM-DD");
   if (parsedDate.year() < 1900) {
     return false;
   }
@@ -129,7 +130,7 @@ export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = 
     lastName: yup.string().required("Last name is required"),
     dateOfBirth: yup
       .string()
-      // .test("birth-date", "A valid date of birth is required", isValidBirthdate)
+      .test("birth-date", "A valid date of birth is required", isValidBirthdate)
       .required("A valid date of birth is required"),
     email: yup
       .string()

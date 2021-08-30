@@ -70,16 +70,19 @@ describe("utils", () => {
   });
   describe("isValidBirthdate", () => {
     it("finds a date before 1900 invalid", () => {
-      expect(isValidBirthdate("08/07/1872")).toBe(false);
+      expect(isValidBirthdate("1872-08-07")).toBe(false);
     });
     it("finds a date after today invalid", () => {
-      expect(isValidBirthdate("08/07/2172")).toBe(false);
+      expect(isValidBirthdate("2172-08-07")).toBe(false);
     });
     it("finds 1/2 invalid", () => {
-      expect(isValidBirthdate("1/2/196")).toBe(false);
+      expect(isValidBirthdate("196-01-02")).toBe(false);
     });
     it("finds 13/13/2000 invalid", () => {
-      expect(isValidBirthdate("13/13/2000")).toBe(false);
+      expect(isValidBirthdate("2000-13-13")).toBe(false);
+    });
+    it("finds 10/31/1957 valid", () => {
+      expect(isValidBirthdate("1957-10-31")).toBe(true);
     });
   });
 });
