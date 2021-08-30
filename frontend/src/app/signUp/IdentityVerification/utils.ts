@@ -112,6 +112,12 @@ export const initPersonalDetailsErrors = (): Record<
   orgExternalId: "",
 });
 
+// this is the regex experian uses for street validation
+const experianStreetRegex = new RegExp(
+  "^([a-zA-Z0-9# \\-'$ / \\.]{1,60}){1}$",
+  "m"
+);
+
 export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = yup
   .object()
   .shape({
@@ -134,8 +140,18 @@ export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = 
         phoneNumberIsValid
       )
       .required(),
-    streetAddress1: yup.string().required("Street address is required"),
-    streetAddress2: yup.string().nullable(),
+    streetAddress1: yup
+      .string()
+      .matches(experianStreetRegex, "A valid street address is required")
+      .required("A valid street address is required"),
+    streetAddress2: yup
+      .string()
+      .nullable()
+      .notRequired()
+      .matches(experianStreetRegex, {
+        message: "A valid street address 2 is required",
+        excludeEmptyString: true,
+      }),
     city: yup.string().required("City is required"),
     state: yup.string().required("State is required"),
     zip: yup.string().required("ZIP code is required"),
