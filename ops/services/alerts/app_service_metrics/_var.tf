@@ -57,7 +57,7 @@ variable "cpu_threshold" {
 }
 
 variable "cpu_window_size" {
-  default = 15
+  default = "PT30M"
 }
 
 variable "http_response_time_aggregation" {

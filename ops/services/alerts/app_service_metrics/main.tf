@@ -10,8 +10,8 @@ resource "azurerm_monitor_metric_alert" "cpu_util" {
   description         = "${local.env_title} CPU utilization is greater than ${var.cpu_threshold}%"
   resource_group_name = var.rg_name
   scopes              = [var.app_service_plan_id]
-  frequency           = "PT1M"
-  window_size         = "PT${var.cpu_window_size}M"
+  frequency           = "PT15M"
+  window_size         = var.cpu_window_size
   enabled             = contains(var.disabled_alerts, "cpu_util") ? false : true
 
   criteria {
