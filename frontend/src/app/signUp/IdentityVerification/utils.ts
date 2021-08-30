@@ -129,7 +129,7 @@ export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = 
     lastName: yup.string().required("Last name is required"),
     dateOfBirth: yup
       .string()
-      .test("birth-date", "A valid date of birth is required", isValidBirthdate)
+      // .test("birth-date", "A valid date of birth is required", isValidBirthdate)
       .required("A valid date of birth is required"),
     email: yup
       .string()
