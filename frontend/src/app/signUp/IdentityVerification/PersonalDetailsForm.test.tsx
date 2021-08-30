@@ -83,32 +83,17 @@ describe("PersonalDetailsForm", () => {
         ).toBeInTheDocument();
       });
     });
-    // describe("On clicking an invalid date of birth and submitting", () => {
-    //   beforeEach(async () => {
-    //     fireEvent.click(screen.getByTestId("date-picker-button"));
-    //     const nextMonthButton = screen.getByTestId("next-month");
-    //     expect(nextMonthButton).toHaveClass(
-    //       "usa-date-picker__calendar__next-month"
-    //     );
-    //     fireEvent.click(nextMonthButton);
-    //     const dateButton = screen.getByText("15");
-    //     expect(dateButton).toHaveClass("usa-date-picker__calendar__date");
-    //     fireEvent.click(dateButton);
-    //     await act(async () => {
-    //       fireEvent.click(screen.getByText("Submit"));
-    //     });
-    //   });
-    //   it("shows an error", () => {
-    //     expect(
-    //       screen.getByText("A valid date of birth is required")
-    //     ).toBeInTheDocument();
-    //   });
-    // });
-    describe("On typing an invalid date of birth format and submitting", () => {
+    describe("On clicking an invalid date of birth and submitting", () => {
       beforeEach(async () => {
-        fireEvent.change(screen.getByTestId("date-picker-external-input"), {
-          target: { value: "1/2" },
-        });
+        fireEvent.click(screen.getByTestId("date-picker-button"));
+        const nextMonthButton = screen.getByTestId("next-month");
+        expect(nextMonthButton).toHaveClass(
+          "usa-date-picker__calendar__next-month"
+        );
+        fireEvent.click(nextMonthButton);
+        const dateButton = screen.getByText("15");
+        expect(dateButton).toHaveClass("usa-date-picker__calendar__date");
+        fireEvent.click(dateButton);
         await act(async () => {
           fireEvent.click(screen.getByText("Submit"));
         });
@@ -119,37 +104,25 @@ describe("PersonalDetailsForm", () => {
         ).toBeInTheDocument();
       });
     });
-    describe("On typing a really old date and submitting", () => {
+    describe("On clicking a valid date of birth and submitting", () => {
       beforeEach(async () => {
-        fireEvent.change(screen.getByTestId("date-picker-external-input"), {
-          target: { value: "08/07/1872" },
-        });
+        fireEvent.click(screen.getByTestId("date-picker-button"));
+        const previousMonthButton = screen.getByTestId("previous-month");
+        expect(previousMonthButton).toHaveClass(
+          "usa-date-picker__calendar__previous-month"
+        );
+        fireEvent.click(previousMonthButton);
+        const dateButton = screen.getByText("15");
+        expect(dateButton).toHaveClass("usa-date-picker__calendar__date");
+        fireEvent.click(dateButton);
         await act(async () => {
           fireEvent.click(screen.getByText("Submit"));
         });
       });
       it("shows an error", () => {
         expect(
-          screen.getByText("A valid date of birth is required")
-        ).toBeInTheDocument();
-      });
-    });
-    describe("On typing a future date and submitting", () => {
-      beforeEach(async () => {
-        fireEvent.change(screen.getByTestId("date-picker-external-input"), {
-          target: { value: "08/07/2172" },
-        });
-        await act(async () => {
-          await screen
-            .getByLabelText("Phone number *", { exact: false })
-            .focus();
-          fireEvent.click(screen.getByText("Submit"));
-        });
-      });
-      it("shows an error", () => {
-        expect(
-          screen.getByText("A valid date of birth is required")
-        ).toBeInTheDocument();
+          screen.queryByText("A valid date of birth is required")
+        ).not.toBeInTheDocument();
       });
     });
     describe("On submitting an invalid street address 2", () => {
