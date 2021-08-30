@@ -134,7 +134,8 @@ const OrganizationForm = () => {
   const getFormElement = (
     field: keyof OrganizationCreateRequest,
     label: string | React.ReactNode,
-    required: boolean
+    required: boolean,
+    hintText: string
   ) => {
     switch (field) {
       case "state":
@@ -187,7 +188,9 @@ const OrganizationForm = () => {
               </label>
               <p className="usa-hint">
                 Only one person from an organization can be the administrator.
-                This person will submit information for identity verification.
+                This person will submit personal information for identity
+                verification. (SimpleReport doesn't access or keep personal
+                identity information.)
               </p>
             </>
           );
@@ -204,6 +207,7 @@ const OrganizationForm = () => {
             validate={validateField}
             getValidationStatus={getValidationStatus}
             required={required}
+            hintText={hintText}
           />
         );
     }
@@ -220,14 +224,23 @@ const OrganizationForm = () => {
             noLabels={true}
             segmentIndicatorOnBottom={true}
           />
+          <p className="usa-hint">
+            Learn more about our{" "}
+            <a href="https://simplereport.gov/getting-started/organizations-and-testing-facilities/onboard-your-organization/">
+              sign up and identity verification process
+            </a>
+            .
+          </p>
           {backendError ? backendError : null}
           {/* By mapping over organizationFields (found in utils.tsx), we reduce */}
           {/* duplication of input fields in JSX */}
           {Object.entries(organizationFields).map(
-            ([key, { label, required }]) => {
+            ([key, { label, required, hintText }]) => {
               const field = key as keyof OrganizationCreateRequest;
               return (
-                <div key={field}>{getFormElement(field, label, required)}</div>
+                <div key={field}>
+                  {getFormElement(field, label, required, hintText)}
+                </div>
               );
             }
           )}
