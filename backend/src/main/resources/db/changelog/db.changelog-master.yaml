@@ -2870,7 +2870,7 @@ databaseChangeLog:
       author: adam@skylight.digital
       changes:
         - createIndex:
-            tableName: test_event
+            tableName: person
             indexName: ix__person__organization_id-facility_id-is_deleted
             columns:
               - column:
