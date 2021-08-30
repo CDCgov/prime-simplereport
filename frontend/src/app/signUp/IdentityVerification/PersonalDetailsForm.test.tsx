@@ -167,6 +167,21 @@ describe("PersonalDetailsForm", () => {
         ).toBeInTheDocument();
       });
     });
+    describe("On submitting an invalid zip code", () => {
+      beforeEach(async () => {
+        await act(async () => {
+          fillInText("ZIP code", "1234");
+        });
+        await act(async () => {
+          fireEvent.click(screen.getByText("Submit"));
+        });
+      });
+      it("shows an error", () => {
+        expect(
+          screen.getByText("A valid ZIP code is required")
+        ).toBeInTheDocument();
+      });
+    });
     describe("On submitting an incomplete form", () => {
       beforeEach(async () => {
         await act(async () => {
