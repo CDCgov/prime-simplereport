@@ -17,3 +17,7 @@ output "private_dns_zone_id" {
 output "network" {
   value = azurerm_virtual_network.vn
 }
+
+output "network_profile_id" {
+  value = azurerm_network_profile.container_instances.id
+}
