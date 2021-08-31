@@ -2,12 +2,13 @@ package gov.cdc.usds.simplereport.db.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
 public class TextMessageStatus extends AuditedEntity {
-  @ManyToOne
+  @ManyToOne(optional = true, fetch = FetchType.LAZY)
   @JoinColumn(name = "text_message_sent_internal_id")
   private TextMessageSent textMessageSent;
 
