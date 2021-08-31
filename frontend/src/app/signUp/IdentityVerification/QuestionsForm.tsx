@@ -23,6 +23,7 @@ interface Props {
   saving: boolean;
   onSubmit: (answers: Answers) => void;
   onFail: () => void;
+  timeToComplete?: number;
 }
 
 type QuestionFormErrors = Record<keyof Answers, string>;
@@ -32,6 +33,7 @@ const QuestionsForm: React.FC<Props> = ({
   saving,
   onSubmit,
   onFail,
+  timeToComplete,
 }) => {
   const [answers, setAnswers] = useState<Nullable<Answers>>(
     initAnswers(questionSet)
@@ -43,14 +45,20 @@ const QuestionsForm: React.FC<Props> = ({
   // Experian only gives users 5 minutes (300 s) to answer the questions
   // so use this state to display a timer, then redirect to failure page
   // when time is up
-  const [timeLeft, setTimeLeft] = useState(300);
+  const [timeLeft, setTimeLeft] = useState(timeToComplete || 300);
   useEffect(() => {
+    let isCounting = true;
     if (timeLeft === 0) {
       onFail();
     }
     setTimeout(() => {
-      setTimeLeft(timeLeft - 1);
+      if (isCounting) {
+        setTimeLeft(timeLeft - 1);
+      }
     }, 1000);
+    return () => {
+      isCounting = false;
+    };
   }, [timeLeft, onFail]);
 
   const schema = buildSchema(questionSet);

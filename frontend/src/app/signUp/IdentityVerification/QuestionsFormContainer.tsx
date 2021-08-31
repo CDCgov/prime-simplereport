@@ -12,6 +12,7 @@ import { answersToArray } from "./utils";
 interface Props {
   personalDetails: IdentityVerificationRequest;
   orgExternalId: string;
+  timeToComplete?: number;
 }
 
 // Experian doesn't accept names with accents, so we allow users to input them
@@ -33,7 +34,11 @@ function normalizeIdentityVerificationRequest(
   request.lastName = removeAccents(request.lastName);
 }
 
-const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
+const QuestionsFormContainer = ({
+  personalDetails,
+  orgExternalId,
+  timeToComplete,
+}: Props) => {
   const [loading, setLoading] = useState(true);
   const [identificationVerified, setIdentificationVerified] = useState<
     boolean | undefined
@@ -96,6 +101,7 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
         saving={false}
         onSubmit={onSubmit}
         onFail={() => setIdentificationVerified(false)}
+        timeToComplete={timeToComplete}
       />
     );
   }

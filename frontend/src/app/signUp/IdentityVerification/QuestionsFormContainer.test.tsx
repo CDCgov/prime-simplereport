@@ -140,3 +140,35 @@ describe("QuestionsFormContainer", () => {
     });
   });
 });
+
+describe("QuestionsFormContainer countdown", () => {
+  let personalDetails: IdentityVerificationRequest;
+  beforeEach(async () => {
+    personalDetails = initPersonalDetails("foo", "Bob", "Bill", "Martínez");
+    personalDetails.phoneNumber = "530/867/5309 ext. 222";
+    await act(async () => {
+      render(
+        <QuestionsFormContainer
+          personalDetails={personalDetails}
+          orgExternalId="foo"
+          timeToComplete={1}
+        />
+      );
+    });
+  });
+  it("redirects to failure page when countdown runs out", async () => {
+    render(
+      <QuestionsFormContainer
+        personalDetails={personalDetails}
+        orgExternalId="foo"
+        timeToComplete={1}
+      />
+    );
+    expect(screen.getByText("0:01")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Experian was unable to verify your identity.", {
+        exact: false,
+      })
+    ).toBeInTheDocument();
+  });
+});
