@@ -59,22 +59,24 @@ export const answersToArray = (answers: Answers): number[] =>
     .map((key) => parseInt(answers[key]));
 
 export const personalDetailsFields = [
-  ["dateOfBirth", "Date of birth", true, null],
-  ["email", "Email", true, "Personal contact information"],
-  ["phoneNumber", "Phone number", true, null],
-  ["streetAddress1", "Street address 1", true, "Home address"],
-  ["streetAddress2", "Street address 2", false, null],
-  ["city", "City", true, null],
-  ["state", "State", true, null],
-  ["zip", "ZIP code", true, null],
+  ["dateOfBirth", "Date of birth", true, ""],
+  ["preheader1", "Personal contact information", false, ""],
+  ["email", "Email", true, "Enter your non-work email address."],
+  ["phoneNumber", "Phone number", true, "Enter your non-work phone number."],
+  ["preheader2", "Home address", false, ""],
+  ["streetAddress1", "Street address 1", true, ""],
+  ["streetAddress2", "Street address 2", false, ""],
+  ["city", "City", true, ""],
+  ["state", "State", true, ""],
+  ["zip", "ZIP code", true, ""],
 ].reduce((fields, field) => {
   fields[field[0] as keyof IdentityVerificationRequest] = {
     label: field[1] as string,
     required: field[2] as boolean,
-    preheader: field[3] as string | null,
+    hintText: field[3] as string,
   };
   return fields;
-}, {} as { [key: string]: { label: string; required: boolean; preheader: string | null } });
+}, {} as { [key: string]: { label: string; required: boolean; hintText: string } });
 
 export const initPersonalDetails = (
   orgExternalId: string,
