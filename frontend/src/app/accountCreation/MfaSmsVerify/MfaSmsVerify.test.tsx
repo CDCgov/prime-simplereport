@@ -61,7 +61,7 @@ describe("Verify SMS MFA", () => {
       screen.queryByText("Enter your security code")
     ).not.toBeInTheDocument();
     expect(
-      screen.getByText("To start using SimpleReport, log in to your account.")
+      screen.getByText("To start using SimpleReport, visit the website to log in to your account.")
     ).toBeInTheDocument();
   });
 
@@ -80,7 +80,7 @@ describe("Verify SMS MFA", () => {
     });
     expect(screen.getByText("incorrect code")).toBeInTheDocument();
     expect(
-      screen.queryByText("To start using SimpleReport, log in to your account.")
+      screen.queryByText("To start using SimpleReport, visit the website to log in to your account.")
     ).not.toBeInTheDocument();
   });
 
@@ -88,7 +88,7 @@ describe("Verify SMS MFA", () => {
     fireEvent.click(screen.getByText("Submit"));
     expect(screen.getByText("Enter your security code")).toBeInTheDocument();
     expect(
-      screen.queryByText("To start using SimpleReport, log in to your account.")
+      screen.queryByText("To start using SimpleReport, visit the website to log in to your account.")
     ).not.toBeInTheDocument();
   });
 });
