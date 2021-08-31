@@ -260,7 +260,7 @@ describe("ManageUsers", () => {
       expect(getByLabelText("user", { exact: false })).toHaveAttribute(
         "disabled"
       );
-      expect(getByLabelText("Entry only", { exact: false })).toHaveAttribute(
+      expect(getByLabelText("Testing only", { exact: false })).toHaveAttribute(
         "disabled"
       );
       expect(container).toMatchSnapshot();

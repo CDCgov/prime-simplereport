@@ -15,3 +15,16 @@ export const formatFullName = <T extends RequiredUserFields>(user: T) => {
   result += user.suffix ? `, ${user.suffix}` : "";
   return result;
 };
+
+export const formatRole = (role: String) => {
+  let result = "";
+  role = role.toLowerCase();
+  if (role.includes("admin")) {
+    result = "Admin";
+  } else if (role.includes("standard")) {
+    result = "Standard user";
+  } else {
+    result = "Testing only";
+  }
+  return result;
+};

@@ -9,7 +9,7 @@ import {
 } from "@microsoft/applicationinsights-react-js";
 
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
-import { formatFullName } from "../utils/user";
+import { formatFullName, formatRole } from "../utils/user";
 import siteLogo from "../../img/simplereport-logo-color.svg";
 import { hasPermission, appPermissions } from "../permissions";
 import { RootState } from "../store";
@@ -205,7 +205,7 @@ const Header: React.FC<{}> = () => {
                 <li className="usa-sidenav__item">
                   <span>
                     <strong>Role: </strong>
-                    {user.roleDescription}
+                    {formatRole(user.roleDescription)}
                   </span>
                 </li>
                 <li className="usa-sidenav__item">{facility.name}</li>
@@ -337,7 +337,7 @@ const Header: React.FC<{}> = () => {
                   <li className="usa-sidenav__item">
                     <span>
                       <strong>Role: </strong>
-                      {user.roleDescription}
+                      {formatRole(user.roleDescription)}
                     </span>
                   </li>
                   <li className="usa-sidenav__item">{facility.name}</li>

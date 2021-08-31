@@ -18,6 +18,7 @@ const store = mockStore({
   user: {
     firstName: "Kim",
     lastName: "Mendoza",
+    roleDescription: "Standard user"
   },
   facilities: [
     { id: "1", name: "Facility 1" },

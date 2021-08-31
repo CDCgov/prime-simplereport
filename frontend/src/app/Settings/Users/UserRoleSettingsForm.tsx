@@ -22,7 +22,7 @@ const ROLES: RoleButton[] = [
   },
   {
     value: "ENTRY_ONLY",
-    label: "Entry only (conduct tests)",
+    label: "Testing only (conduct tests)",
   },
 ];
 

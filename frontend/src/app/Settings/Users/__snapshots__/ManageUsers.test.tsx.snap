@@ -107,7 +107,7 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
             <p
               class="text-base"
             >
-              Admins have full access to conduct tests, manage results and profiles, and manage settings and users
+              Admins have full access to SimpleReport. They can conduct tests, manage test results and patient profiles, and also manage account settings, users, and testing facilities. Standard and testing only users have limited access for specific tasks, as described below.
             </p>
             <div
               class="usa-form-group"
@@ -178,7 +178,7 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
                       class="usa-radio__label text-base"
                       for="4-val-ENTRY_ONLY"
                     >
-                      Entry only (conduct tests)
+                      Testing only (conduct tests)
                     </label>
                   </div>
                 </div>
@@ -441,7 +441,7 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
             <p
               class="text-base"
             >
-              Admins have full access to conduct tests, manage results and profiles, and manage settings and users
+              Admins have full access to SimpleReport. They can conduct tests, manage test results and patient profiles, and also manage account settings, users, and testing facilities. Standard and testing only users have limited access for specific tasks, as described below.
             </p>
             <div
               class="usa-form-group"
@@ -509,7 +509,7 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
                       class="usa-radio__label"
                       for="1-val-ENTRY_ONLY"
                     >
-                      Entry only (conduct tests)
+                      Testing only (conduct tests)
                     </label>
                   </div>
                 </div>
