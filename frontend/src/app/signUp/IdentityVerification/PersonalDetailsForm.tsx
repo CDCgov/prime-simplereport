@@ -203,8 +203,8 @@ const PersonalDetailsForm = ({
           noLabels={true}
           segmentIndicatorOnBottom={true}
         />
-        <div className="margin-bottom-2">
-          <p className="font-ui-2xs text-base">
+        <div className="margin-bottom-2 organization-form">
+          <p className="margin-top-neg-2">
             To create your account, we’ll need information to verify your
             identity directly with{" "}
             <a
@@ -216,7 +216,7 @@ const PersonalDetailsForm = ({
             </a>
             . SimpleReport doesn’t access or keep identity verification details.
           </p>
-          <p className="font-ui-2sm margin-bottom-0">
+          <p className="font-ui-md margin-bottom-0">
             Why we verify your identity
           </p>
           <p className="font-ui-2xs text-base margin-top-1">

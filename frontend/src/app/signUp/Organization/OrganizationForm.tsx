@@ -224,7 +224,7 @@ const OrganizationForm = () => {
             noLabels={true}
             segmentIndicatorOnBottom={true}
           />
-          <p className="usa-hint">
+          <p className="margin-top-neg-2 margin-bottom-4">
             Learn more about our{" "}
             <a href="https://simplereport.gov/getting-started/organizations-and-testing-facilities/onboard-your-organization/">
               sign up and identity verification process
