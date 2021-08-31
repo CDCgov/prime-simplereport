@@ -6,7 +6,6 @@ import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
-import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -196,8 +195,8 @@ public class UserAuthorizationVerifier {
     if (currentOrgRoles.isEmpty()) {
       return false;
     } else {
-      Optional<Facility> facility = _facilityRepo.findById(facilityId);
-      return facility.isPresent() && currentOrgRoles.get().containsFacility(facility.get());
+      boolean facility = _facilityRepo.existsById(facilityId);
+      return facility && currentOrgRoles.get().containsFacility(facilityId);
     }
   }
 
