@@ -95,6 +95,7 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
         questionSet={questionSet}
         saving={false}
         onSubmit={onSubmit}
+        onFail={() => setIdentificationVerified(false)}
       />
     );
   }

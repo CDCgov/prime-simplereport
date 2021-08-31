@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStopwatch } from "@fortawesome/free-solid-svg-icons";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -10,24 +12,47 @@ import Alert from "../../commonComponents/Alert";
 import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { organizationCreationSteps } from "../../../config/constants";
+import { mmss } from "../../testQueue/TestTimer";
 
 import { initAnswers, getAnswerKey, toOptions, buildSchema } from "./utils";
+
+import "./QuestionsForm.scss";
 
 interface Props {
   questionSet: Question[];
   saving: boolean;
   onSubmit: (answers: Answers) => void;
+  onFail: () => void;
 }
 
 type QuestionFormErrors = Record<keyof Answers, string>;
 
-const QuestionsForm: React.FC<Props> = ({ questionSet, saving, onSubmit }) => {
+const QuestionsForm: React.FC<Props> = ({
+  questionSet,
+  saving,
+  onSubmit,
+  onFail,
+}) => {
   const [answers, setAnswers] = useState<Nullable<Answers>>(
     initAnswers(questionSet)
   );
   const [errors, setErrors] = useState<QuestionFormErrors>({});
 
   const [formChanged, setFormChanged] = useState(false);
+
+  // Experian only gives users 5 minutes (300 s) to answer the questions
+  // so use this state to display a timer, then redirect to failure page
+  // when time is up
+  const [timeLeft, setTimeLeft] = useState(300);
+  useEffect(() => {
+    if (timeLeft === 0) {
+      onFail();
+    }
+    setTimeout(() => {
+      setTimeLeft(timeLeft - 1);
+    }, 1000);
+  }, [timeLeft, onFail]);
+
   const schema = buildSchema(questionSet);
 
   const onAnswerChange = <K extends keyof Answers>(field: K) => (
@@ -65,13 +90,24 @@ const QuestionsForm: React.FC<Props> = ({ questionSet, saving, onSubmit }) => {
   return (
     <CardBackground>
       <Card logo>
-        <h4 className="margin-bottom-0">Sign up for SimpleReport</h4>
+        <div
+          className="grid-row prime-test-name usa-card__header"
+          id="experian-questions-header"
+        >
+          <h4 className="margin-left-0">Sign up for SimpleReport</h4>
+          <button className="timer-button timer-running" data-testid="timer">
+            <span>{mmss(timeLeft)}</span> <FontAwesomeIcon icon={faStopwatch} />
+          </button>
+        </div>
         <StepIndicator
           steps={organizationCreationSteps}
           currentStepValue={"2"}
           noLabels={true}
           segmentIndicatorOnBottom={true}
         />
+        <p className="margin-top-neg-1 margin-bottom-2">
+          You will only have 5 minutes to answer these questions.
+        </p>
         <div className="usa-form">
           {questionSet.map((question, index) => {
             const key = getAnswerKey(index);
