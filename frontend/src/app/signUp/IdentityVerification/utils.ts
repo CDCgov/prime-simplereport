@@ -155,7 +155,7 @@ export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = 
       .nullable()
       .notRequired()
       .matches(experianStreetRegex, {
-        message: "A valid street address 2 is required",
+        message: "Street 2 contains invalid symbols",
         excludeEmptyString: true,
       }),
     city: yup.string().required("City is required"),

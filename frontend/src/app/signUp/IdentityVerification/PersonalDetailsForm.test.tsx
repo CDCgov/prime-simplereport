@@ -136,7 +136,7 @@ describe("PersonalDetailsForm", () => {
       });
       it("shows an error", () => {
         expect(
-          screen.getByText("A valid street address 2 is required")
+          screen.getByText("Street 2 contains invalid symbols")
         ).toBeInTheDocument();
       });
     });
