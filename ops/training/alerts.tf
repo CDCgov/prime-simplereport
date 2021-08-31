@@ -16,6 +16,6 @@ module "metric_alerts" {
   ]
 
   action_group_ids = [
-    data.terraform_remote_state.global.outputs.pagerduty_demo_action_id
+    data.terraform_remote_state.global.outputs.pagerduty_non_prod_action_id
   ]
 }
