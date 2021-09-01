@@ -205,7 +205,7 @@ class AccountRequestControllerTest extends BaseFullStackTest {
 
   @Test
   @DisplayName("Duplicate org in same state with different letter casing fails")
-  void duplicateOrgInSameState() throws Exception {
+  void duplicateOrgInSameStateDifferentCasing() throws Exception {
     // given
     String originalRequestBody =
         createAccountRequest(
