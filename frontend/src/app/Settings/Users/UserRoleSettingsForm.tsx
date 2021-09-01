@@ -14,11 +14,11 @@ interface RoleButton {
 const ROLES: RoleButton[] = [
   {
     value: "ADMIN",
-    label: "Admin (full permissions)",
+    label: "Admin (full access)",
   },
   {
     value: "USER",
-    label: "Standard user (manage results and profiles)",
+    label: "Standard user (manage test results and patient profiles)",
   },
   {
     value: "ENTRY_ONLY",
