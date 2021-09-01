@@ -113,8 +113,12 @@ const QuestionsForm: React.FC<Props> = ({
           noLabels={true}
           segmentIndicatorOnBottom={true}
         />
-        <Alert type="warning" slim className="margin-bottom-neg-1">
-          You have 5 minutes to answer identify verification questions.
+        <Alert
+          type="warning"
+          slim
+          className="margin-bottom-neg-2 experian-countdown-alert"
+        >
+          You have 5 minutes to answer identity verification questions.
         </Alert>
         <div className="usa-form">
           {questionSet.map((question, index) => {
