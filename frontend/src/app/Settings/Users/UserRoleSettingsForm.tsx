@@ -18,7 +18,8 @@ const ROLES: RoleButton[] = [
   },
   {
     value: "USER",
-    label: "Standard user (manage test results and patient profiles)",
+    label:
+      "Standard user (conduct tests, manage test results and patient profiles)",
   },
   {
     value: "ENTRY_ONLY",

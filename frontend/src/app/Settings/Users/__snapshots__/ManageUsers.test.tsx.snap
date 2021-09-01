@@ -164,7 +164,7 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
                       class="usa-radio__label text-base"
                       for="4-val-USER"
                     >
-                      Standard user (manage test results and patient profiles)
+                      Standard user (conduct tests, manage test results and patient profiles)
                     </label>
                   </div>
                   <div
@@ -501,7 +501,7 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
                       class="usa-radio__label"
                       for="1-val-USER"
                     >
-                      Standard user (manage test results and patient profiles)
+                      Standard user (conduct tests, manage test results and patient profiles)
                     </label>
                   </div>
                   <div
