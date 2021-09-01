@@ -16,7 +16,7 @@ export const formatFullName = <T extends RequiredUserFields>(user: T) => {
   return result;
 };
 
-export const formatRole = (role: String) => {
+export const formatRole = (role: string) => {
   let result = "";
   role = role.toLowerCase();
   if (role.includes("admin")) {
