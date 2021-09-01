@@ -32,12 +32,22 @@ interface Props {
   body?: React.ReactNode;
   children?: React.ReactNode;
   slim?: boolean;
+  className?: string;
 }
-const Alert = ({ type, title, body, role, children, slim }: Props) => {
+const Alert = ({
+  type,
+  title,
+  body,
+  role,
+  children,
+  slim,
+  className,
+}: Props) => {
   const classes = classnames(
     "usa-alert",
     `usa-alert--${type}`,
-    slim && "usa-alert--slim"
+    slim && "usa-alert--slim",
+    className
   );
 
   return (

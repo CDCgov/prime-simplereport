@@ -113,9 +113,9 @@ const QuestionsForm: React.FC<Props> = ({
           noLabels={true}
           segmentIndicatorOnBottom={true}
         />
-        <p className="margin-top-neg-1 margin-bottom-2">
-          You will only have 5 minutes to answer these questions.
-        </p>
+        <Alert type="warning" slim className="margin-bottom-neg-1">
+          You have 5 minutes to answer identify verification questions.
+        </Alert>
         <div className="usa-form">
           {questionSet.map((question, index) => {
             const key = getAnswerKey(index);
