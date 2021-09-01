@@ -16,12 +16,12 @@ jest.mock("../SignUpApi", () => {
         return { questionSet: exampleQuestionSet, sessionId: "foo" };
       },
       submitAnswers: (request: IdentityVerificationAnswersRequest) => {
-        if (request.answers[0] === 2) {
+        if (!request.answers.length || request.answers[0] === 3) {
+          return { passed: false };
+        } else if (request.answers[0] === 2) {
           return setTimeout(() => {
             return { passed: false };
           }, 10000);
-        } else if (request.answers[0] === 3) {
-          return { passed: false };
         }
         return { passed: true, email: "foo@bar.com", activationToken: "foo" };
       },
@@ -138,5 +138,38 @@ describe("QuestionsFormContainer", () => {
         ).toBeInTheDocument();
       });
     });
+  });
+});
+
+describe("QuestionsFormContainer countdown", () => {
+  let personalDetails: IdentityVerificationRequest;
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+  it("redirects to failure page when countdown runs out", async () => {
+    personalDetails = initPersonalDetails("foo", "Bob", "Bill", "Martínez");
+    personalDetails.phoneNumber = "530/867/5309 ext. 222";
+    await act(async () => {
+      render(
+        <QuestionsFormContainer
+          personalDetails={personalDetails}
+          orgExternalId="foo"
+          timeToComplete={1}
+        />
+      );
+      expect(await screen.findByText("0:01")).toBeInTheDocument();
+      expect(
+        await screen.findByText(
+          "Experian was unable to verify your identity.",
+          {
+            exact: false,
+          }
+        )
+      ).toBeInTheDocument();
+    });
+  });
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
   });
 });
