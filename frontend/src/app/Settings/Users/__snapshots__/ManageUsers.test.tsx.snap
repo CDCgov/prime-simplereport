@@ -104,6 +104,11 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
           <div
             class="user-content"
           >
+            <h3
+              class="margin-bottom-0"
+            >
+              User roles
+            </h3>
             <p
               class="text-base"
             >
@@ -438,6 +443,11 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
           <div
             class="user-content"
           >
+            <h3
+              class="margin-bottom-0"
+            >
+              User roles
+            </h3>
             <p
               class="text-base"
             >
