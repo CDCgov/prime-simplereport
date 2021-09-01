@@ -100,7 +100,7 @@ const QuestionsFormContainer = ({
         questionSet={questionSet}
         saving={false}
         onSubmit={onSubmit}
-        onFail={() => setIdentificationVerified(false)}
+        onFail={() => onSubmit({})}
         timeToComplete={timeToComplete}
       />
     );
