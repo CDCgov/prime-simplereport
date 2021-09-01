@@ -168,9 +168,12 @@ public class OrganizationService {
   }
 
   public Facility getFacilityInCurrentOrg(UUID facilityId) {
-    Organization org = getCurrentOrganization();
-    return _facilityRepo
-        .findByOrganizationAndInternalId(org, facilityId)
+    return getCurrentOrganizationRoles()
+        .orElseThrow(MisconfiguredUserException::new)
+        .getFacilities()
+        .stream()
+        .filter(f -> f.getInternalId().equals(facilityId))
+        .findAny()
         .orElseThrow(() -> new IllegalGraphqlArgumentException("facility could not be found"));
   }
 
