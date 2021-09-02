@@ -100,9 +100,12 @@ const UserDetail: React.FC<Props> = ({
         ) : null}
       </div>
       <div className="user-content">
+        <h3 className="margin-bottom-0 padding-top-1">User roles</h3>
         <p className="text-base">
-          Admins have full access to conduct tests, manage results and profiles,
-          and manage settings and users
+          Admins have full access to SimpleReport. They can conduct tests,
+          manage test results and patient profiles, and also manage account
+          settings, users, and testing facilities. Standard and testing only
+          users have limited access for specific tasks, as described below.
         </p>
         <UserRoleSettingsForm
           activeUser={user}

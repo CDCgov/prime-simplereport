@@ -189,17 +189,18 @@ export const useTestTimer = (id: string, testLength: number) => {
   };
 };
 
+export const mmss = (t: number) => {
+  const mins = Math.floor(Math.abs(t) / 60);
+  const secs = Math.abs(t) % 60;
+  return `${mins}:${("0" + secs).slice(-2)}`;
+};
+
 type Props = {
   timer: ReturnType<typeof useTestTimer>;
 };
 
 export const TestTimerWidget = ({ timer }: Props) => {
   const { running, countdown, elapsed, start, reset } = timer;
-  const mmss = (t: number) => {
-    const mins = Math.floor(Math.abs(t) / 60);
-    const secs = Math.abs(t) % 60;
-    return `${mins}:${("0" + secs).slice(-2)}`;
-  };
   if (!running) {
     return (
       <button
