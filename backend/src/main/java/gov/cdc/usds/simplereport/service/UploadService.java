@@ -113,16 +113,13 @@ public class UploadService {
       rowNumber++;
       try {
         StreetAddress address =
-            // temporarily disable avs
-            //            _avs.getValidatedAddress(
-            new StreetAddress(
+            _avs.getValidatedAddress(
                 getRow(row, "Street", true),
                 getRow(row, "Street2", false),
                 getRow(row, "City", false),
                 getRow(row, "State", true),
                 getRow(row, "ZipCode", true),
-                "");
-        //                null);
+                null);
         _ps.addPatient(
             parseUUID(getRow(row, FACILITY_ID, false)),
             null, // lookupID
