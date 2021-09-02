@@ -6,14 +6,15 @@ import { UserRole, UserPermission, Role } from "../../permissions";
 
 import ManageUsers from "./ManageUsers";
 
-const GET_USERS = gql`
-  query GetUsers {
-    users {
+const GET_USERS_WITH_STATUS = gql`
+  query GetUsersAndStatus {
+    usersWithStatus {
       id
       firstName
       middleName
       lastName
       email
+      status
     }
   }
 `;
@@ -29,6 +30,7 @@ export const GET_USER = gql`
       role
       permissions
       email
+      status
       organization {
         testingFacility {
           id
@@ -49,22 +51,24 @@ export interface SettingsUser {
   role: Role;
   permissions: UserPermission[];
   email: string;
+  status: string;
   organization: {
     testingFacility: UserFacilitySetting[];
   };
 }
 
-// structure for `getUsers` query
+// structure for `getUsersWithStatus` query
 export interface LimitedUser {
   id: string;
   firstName: string;
   middleName: string;
   lastName: string;
   email: string;
+  status: string;
 }
 
 interface UserData {
-  users: LimitedUser[];
+  usersWithStatus: LimitedUser[];
 }
 
 export interface SingleUserData {
@@ -89,9 +93,25 @@ const UPDATE_USER_PRIVILEGES = gql`
   }
 `;
 
+const RESET_USER_PASSWORD = gql`
+  mutation ResetUserPassword($id: ID!) {
+    resetUserPassword(id: $id) {
+      id
+    }
+  }
+`;
+
 const DELETE_USER = gql`
   mutation SetUserIsDeleted($id: ID!, $deleted: Boolean!) {
     setUserIsDeleted(id: $id, deleted: $deleted) {
+      id
+    }
+  }
+`;
+
+const REACTIVATE_USER = gql`
+  mutation ReactivateUser($id: ID!) {
+    reactivateUser(id: $id) {
       id
     }
   }
@@ -148,10 +168,12 @@ const ManageUsersContainer: any = () => {
   const loggedInUser = useSelector((state) => (state as any).user as User);
   const [updateUserPrivileges] = useMutation(UPDATE_USER_PRIVILEGES);
   const [deleteUser] = useMutation(DELETE_USER);
+  const [reactivateUser] = useMutation(REACTIVATE_USER);
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
+  const [resetPassword] = useMutation(RESET_USER_PASSWORD);
 
   const { data, loading, error, refetch: getUsers } = useQuery<UserData, {}>(
-    GET_USERS,
+    GET_USERS_WITH_STATUS,
     { fetchPolicy: "no-cache" }
   );
 
@@ -184,12 +206,14 @@ const ManageUsersContainer: any = () => {
 
   return (
     <ManageUsers
-      users={data.users}
+      users={data.usersWithStatus}
       loggedInUser={loggedInUser}
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}
       addUserToOrg={addUserToOrg}
+      resetUserPassword={resetPassword}
       deleteUser={deleteUser}
+      reactivateUser={reactivateUser}
       getUsers={getUsers}
     />
   );

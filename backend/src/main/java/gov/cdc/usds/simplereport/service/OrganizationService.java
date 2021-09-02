@@ -138,6 +138,10 @@ public class OrganizationService {
                 "An organization with external_id=" + externalId + " does not exist"));
   }
 
+  public Optional<Organization> getOrganizationByName(String name) {
+    return _repo.findByName(name);
+  }
+
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<Organization> getOrganizations(Boolean identityVerified) {
     return identityVerified == null
@@ -164,10 +168,23 @@ public class OrganizationService {
   }
 
   public Facility getFacilityInCurrentOrg(UUID facilityId) {
-    Organization org = getCurrentOrganization();
-    return _facilityRepo
-        .findByOrganizationAndInternalId(org, facilityId)
+    return getCurrentOrganizationRoles()
+        .orElseThrow(MisconfiguredUserException::new)
+        .getFacilities()
+        .stream()
+        .filter(f -> f.getInternalId().equals(facilityId))
+        .findAny()
         .orElseThrow(() -> new IllegalGraphqlArgumentException("facility could not be found"));
+  }
+
+  public Organization getOrganizationByFacilityId(UUID facilityId) {
+    Facility facility = _facilityRepo.findById(facilityId).orElse(null);
+
+    if (facility == null) {
+      return null;
+    }
+
+    return facility.getOrganization();
   }
 
   public void assertFacilityNameAvailable(String testingFacilityName) {
@@ -231,7 +248,7 @@ public class OrganizationService {
   }
 
   @Transactional(readOnly = false)
-  public Organization createOrganization(
+  public Organization createOrganizationAndFacility(
       String name,
       String type,
       String externalId,
@@ -246,8 +263,7 @@ public class OrganizationService {
       String providerTelephone,
       String providerNPI) {
     // for now, all new organizations have identity_verified = false by default
-    Organization org = _repo.save(new Organization(name, type, externalId, false));
-    _oktaRepo.createOrganization(org);
+    Organization org = createOrganization(name, type, externalId);
     createFacilityNoPermissions(
         org,
         testingFacilityName,
@@ -260,6 +276,14 @@ public class OrganizationService {
         providerAddress,
         providerTelephone,
         providerNPI);
+    return org;
+  }
+
+  @Transactional(readOnly = false)
+  public Organization createOrganization(String name, String type, String externalId) {
+    // for now, all new organizations have identity_verified = false by default
+    Organization org = _repo.save(new Organization(name, type, externalId, false));
+    _oktaRepo.createOrganization(org);
     _psrlService.createRegistrationLink(org);
     return org;
   }
@@ -292,6 +316,22 @@ public class OrganizationService {
       _oktaRepo.activateOrganization(org);
     }
     return newStatus;
+  }
+
+  /**
+   * This method is for verifying an organization after the Experian identity verification process.
+   * It should not be used for any other purpose and once we move to the updated account request
+   * workflow this should be removed.
+   */
+  @Transactional(readOnly = false)
+  public String verifyOrganizationNoPermissions(String externalId) {
+    Organization org = getOrganization(externalId);
+    if (org.getIdentityVerified()) {
+      throw new IllegalStateException("Organization is already verified.");
+    }
+    org.setIdentityVerified(true);
+    _repo.save(org);
+    return _oktaRepo.activateOrganizationWithSingleUser(org);
   }
 
   @Transactional(readOnly = false)

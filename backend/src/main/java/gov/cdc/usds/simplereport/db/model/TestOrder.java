@@ -5,7 +5,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.Map;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,16 +13,23 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import org.hibernate.annotations.JoinFormula;
+import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
-import org.json.JSONObject;
 
 @Entity
 public class TestOrder extends BaseTestInfo {
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "patient_answers_id")
   private PatientAnswers askOnEntrySurvey;
+
+  /**
+   * This field and its getter exist to ensure that Hibernate doesn't load each PatientAnswers for
+   * the TestOrders as they're streamed in PatientAnswersDataLoader. Sometimes, apparently,
+   * FetchType.LAZY isn't enough.
+   */
+  @Column(name = "patient_answers_id", insertable = false, updatable = false)
+  private UUID patientAnswersId;
 
   @Column private LocalDate dateTested; // REMOVE THIS COLUMN
 
@@ -34,17 +41,6 @@ public class TestOrder extends BaseTestInfo {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "test_event_id")
   private TestEvent testEvent;
-
-  @ManyToOne
-  @JoinFormula(
-      "("
-          + "SELECT pl.internal_id "
-          + "FROM {h-schema}patient_link pl "
-          + "WHERE pl.test_order_id = internal_id "
-          + "ORDER BY pl.created_at DESC "
-          + "LIMIT 1"
-          + ")")
-  private PatientLink patientLink;
 
   protected TestOrder() {
     /* for hibernate */ }
@@ -105,12 +101,7 @@ public class TestOrder extends BaseTestInfo {
   }
 
   public String getSymptoms() {
-    Map<String, Boolean> s = askOnEntrySurvey.getSurvey().getSymptoms();
-    JSONObject obj = new JSONObject();
-    for (Map.Entry<String, Boolean> entry : s.entrySet()) {
-      obj.put(entry.getKey(), entry.getValue().toString());
-    }
-    return obj.toString();
+    return askOnEntrySurvey.getSurvey().getSymptomsJSON();
   }
 
   public Boolean getFirstTest() {
@@ -150,11 +141,7 @@ public class TestOrder extends BaseTestInfo {
     super.setReasonForCorrection(reasonForCorrection);
   }
 
-  public PatientLink getPatientLink() {
-    return patientLink;
-  }
-
-  public void setPatientLink(PatientLink patientLink) {
-    this.patientLink = patientLink;
+  public UUID getPatientAnswersId() {
+    return patientAnswersId;
   }
 }

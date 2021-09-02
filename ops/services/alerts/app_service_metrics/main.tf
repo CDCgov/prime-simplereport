@@ -1,5 +1,8 @@
 locals {
   env_title = title(var.env)
+
+  // If skip_on_weekends true, only run the query on weekdays
+  skip_on_weekends = var.skip_on_weekends ? "| where dayofweek(now()) between (time(1) .. time(5))" : ""
 }
 
 resource "azurerm_monitor_metric_alert" "cpu_util" {
@@ -7,8 +10,8 @@ resource "azurerm_monitor_metric_alert" "cpu_util" {
   description         = "${local.env_title} CPU utilization is greater than ${var.cpu_threshold}%"
   resource_group_name = var.rg_name
   scopes              = [var.app_service_plan_id]
-  frequency           = "PT1M"
-  window_size         = "PT${var.cpu_window_size}M"
+  frequency           = "PT15M"
+  window_size         = var.cpu_window_size
   enabled             = contains(var.disabled_alerts, "cpu_util") ? false : true
 
   criteria {
@@ -59,7 +62,7 @@ resource "azurerm_monitor_metric_alert" "http_response_time" {
   resource_group_name = var.rg_name
   scopes              = [var.app_service_id]
   frequency           = "PT1M"
-  window_size         = "PT5M"
+  window_size         = "PT15M"
   severity            = var.severity
   enabled             = contains(var.disabled_alerts, "http_response_time") ? false : true
 
@@ -107,6 +110,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "http_2xx_failed_requests
 
   query = <<-QUERY
 requests
+${local.skip_on_weekends}
 | where toint(resultCode) between (200 .. 299) and success == false and timestamp >= ago(5m)
   QUERY
 
@@ -117,32 +121,6 @@ requests
 
   action {
     action_group = var.action_group_ids
-  }
-}
-
-resource "azurerm_monitor_metric_alert" "http_5xx_errors" {
-  name                = "${var.env}-api-5xx-errors"
-  description         = "${local.env_title} HTTP Server 5xx Errors >= 10"
-  resource_group_name = var.rg_name
-  scopes              = [var.app_service_id]
-  frequency           = "PT1M"
-  window_size         = "PT5M"
-  severity            = var.severity
-  enabled             = contains(var.disabled_alerts, "http_5xx_errors") ? false : true
-
-  criteria {
-    aggregation      = "Count"
-    metric_name      = "Http5xx"
-    metric_namespace = "Microsoft.Web/sites"
-    operator         = "GreaterThanOrEqual"
-    threshold        = 10
-  }
-
-  dynamic "action" {
-    for_each = var.action_group_ids
-    content {
-      action_group_id = action.value
-    }
   }
 }
 
@@ -160,12 +138,97 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "http_4xx_errors" {
 
   query = <<-QUERY
 requests
+${local.skip_on_weekends}
 | where toint(resultCode) >= 400 and toint(resultCode) < 500 and toint(resultCode) != 401 and timestamp >= ago(5m)
   QUERY
 
   trigger {
     operator  = "GreaterThan"
+    threshold = 99
+  }
+
+  action {
+    action_group = var.action_group_ids
+  }
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "http_5xx_errors" {
+  name                = "${var.env}-api-5xx-errors"
+  description         = "${local.env_title} HTTP Server 5xx Errors >= 10"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+  severity            = var.severity
+  frequency           = 5
+  time_window         = 5
+  enabled             = contains(var.disabled_alerts, "http_5xx_errors") ? false : true
+
+  data_source_id = var.app_insights_id
+
+  query = <<-QUERY
+requests
+${local.skip_on_weekends}
+| where toint(resultCode) >= 500 and timestamp >= ago(5m)
+  QUERY
+
+  trigger {
+    operator  = "GreaterThan"
     threshold = 9
+  }
+
+  action {
+    action_group = var.action_group_ids
+  }
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "db_query_duration" {
+  name                = "${var.env}-db-query-duration"
+  description         = "${local.env_title} DB query durations >= 10s"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+  severity            = var.severity
+  frequency           = 5
+  time_window         = 5
+  enabled             = contains(var.disabled_alerts, "db_query_duration") ? false : true
+
+  data_source_id = var.app_insights_id
+
+  query = <<-QUERY
+dependencies
+${local.skip_on_weekends}
+| where timestamp >= ago(5m) and name has "SQL:" and duration >= 10000
+  QUERY
+
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 0
+  }
+
+  action {
+    action_group = var.action_group_ids
+  }
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "db_query_duration_over_time_window" {
+  name                = "${var.env}-db-query-duration-over-time-window"
+  description         = "10+ DB queries with durations over 1.25s in the past 5 minutes"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+  severity            = var.severity
+  frequency           = 5
+  time_window         = 5
+  enabled             = contains(var.disabled_alerts, "db_query_duration_over_time_window") ? false : true
+
+  data_source_id = var.app_insights_id
+
+  query = <<-QUERY
+dependencies
+${local.skip_on_weekends}
+| where timestamp >= ago(5m) and name has "SQL:" and duration > 1250
+  QUERY
+
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 10
   }
 
   action {

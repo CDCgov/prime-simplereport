@@ -45,7 +45,7 @@ const SymptomInputs: React.FC<Props> = ({
           name="no_symptoms"
           legend="Are you experiencing any of the following symptoms?"
           onChange={(e) => setNoSymptoms(e.target.checked)}
-          boxes={[{ value: "no", label: "No Symptoms", checked: noSymptoms }]}
+          boxes={[{ value: "no", label: "No symptoms", checked: noSymptoms }]}
           required
           errorMessage={symptomError}
           validationStatus={symptomError ? "error" : undefined}
@@ -90,7 +90,7 @@ const SymptomInputs: React.FC<Props> = ({
             name="symptom_onset"
             defaultValue={onsetDate || undefined}
             minDate="2020-02-01"
-            maxDate={new Date().toISOString().split("T")[0]}
+            maxDate={formatDate(new Date())}
             onChange={(date) => {
               if (date) {
                 setFormattedOnsetDate(date);

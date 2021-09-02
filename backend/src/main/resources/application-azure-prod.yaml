@@ -6,6 +6,7 @@ simple-report:
     upload-url: "https://prime-data-hub-prod.azurefd.net/api/reports?option=SkipInvalidItems"
     upload-schedule: "0 0 5-21/2 * * *"
   patient-link-url: https://simplereport.gov/app/pxp?plid=
+  twilio-callback-url: https://simplereport.gov/api/pxp/callback
   sendgrid:
     enabled: true
   cors:
@@ -14,7 +15,7 @@ simple-report:
       - https://simple-report-prod.azureedge.net
       - https://www.simplereport.gov
       - https://simplereport.gov
-  dynamics:
+  experian:
     enabled: true
 twilio:
   enabled: true

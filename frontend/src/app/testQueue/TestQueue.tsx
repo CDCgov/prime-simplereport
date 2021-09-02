@@ -7,7 +7,7 @@ import { showError } from "../utils";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
-import { AoEAnswers } from "./AoEForm/AoEForm";
+import { TestQueuePerson, AoEAnswers } from "./AoEForm/AoEForm";
 
 const pollInterval = 10_000;
 
@@ -67,12 +67,13 @@ export const queueQuery = gql`
         gender
         testResultDelivery
         preferredLanguage
+        phoneNumbers {
+          type
+          number
+        }
       }
       result
       dateTested
-      patientLink {
-        internalId
-      }
     }
     organization {
       testingFacility {
@@ -105,14 +106,9 @@ interface QueueItemData extends AoEAnswers {
     internalId: string;
     testLength: number;
   };
-  patient: {
-    internalId: string;
-  };
+  patient: TestQueuePerson;
   result: string;
   dateTested: string;
-  patientLink: {
-    internalId: string;
-  };
 }
 
 const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
@@ -164,7 +160,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
           patient,
           result,
           dateTested,
-          patientLink,
           ...questions
         }) => {
           return (
@@ -185,7 +180,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 refetchQueue={refetch}
                 facilityId={activeFacilityId}
                 dateTestedProp={dateTested}
-                patientLinkId={patientLink?.internalId || null}
               />
             </CSSTransition>
           );

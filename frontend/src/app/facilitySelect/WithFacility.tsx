@@ -1,52 +1,64 @@
-import React from "react";
-import { useDispatch, useSelector, connect } from "react-redux";
-import { useHistory } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-import { RootState, updateFacility } from "../store";
-import { getFacilityIdFromUrl } from "../utils/url";
+import { appPermissions } from "../permissions";
+import FacilityFormContainer from "../Settings/Facility/FacilityFormContainer";
+import { RootState } from "../store";
 
 import FacilityPopup from "./FacilityPopup";
 import FacilitySelect from "./FacilitySelect";
+import { useSelectedFacility } from "./useSelectedFacility";
 
 const Loading: React.FC<{}> = () => <p>Loading facility information...</p>;
 
 interface Props {}
 
 const WithFacility: React.FC<Props> = ({ children }) => {
-  const dispatch = useDispatch();
-  const history = useHistory();
   const isAdmin = useSelector<RootState, boolean>(
     (state) => state.user.isAdmin
   );
+  const canViewSettings = useSelector<RootState, boolean>((state) =>
+    appPermissions.settings.canView.every((requiredPermission) =>
+      state.user.permissions.includes(requiredPermission)
+    )
+  );
+
   const dataLoaded = useSelector<RootState, boolean>(
     (state) => state.dataLoaded
   );
   const facilities = useSelector<RootState, Facility[]>(
     (state) => state.facilities
   );
-  const facilityInStore = useSelector<RootState, Pick<Facility, "id" | "name">>(
-    (state) => state.facility
-  );
-  const facilityFromUrl = facilities.find(
-    (f) => f.id === getFacilityIdFromUrl()
-  );
 
-  const setFacilityProp = (facilityId: string) => {
-    history.push({ search: `?facility=${facilityId}` });
-  };
+  const [selectedFacility, setSelectedFacility] = useSelectedFacility();
 
-  const setActiveFacility = (facility: Facility) => {
-    dispatch(updateFacility(facility));
-    setFacilityProp(facility.id);
-  };
+  useEffect(() => {
+    if (selectedFacility || !dataLoaded) {
+      return;
+    }
+
+    if (facilities.length === 1) {
+      setSelectedFacility(facilities[0]);
+    }
+  }, [facilities, selectedFacility, dataLoaded, setSelectedFacility]);
 
   if (!dataLoaded) {
     return <Loading />;
   }
 
-  if (isAdmin && facilities.length === 0) {
-    // site admin without an organization
+  if (selectedFacility || (isAdmin && facilities.length === 0)) {
     return <>{children}</>;
+  }
+
+  if (canViewSettings && facilities.length === 0) {
+    // new org needs to create a facility
+    return (
+      <main className="prime-home">
+        <div className="grid-container">
+          <FacilityFormContainer newOrg={true} />
+        </div>
+      </main>
+    );
   }
 
   if (facilities.length === 0) {
@@ -60,29 +72,12 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     );
   }
 
-  if (
-    facilities.length === 1 &&
-    (!facilityFromUrl?.id || !facilityInStore?.id)
-  ) {
-    setActiveFacility(facilities[0]);
-    return <Loading />;
-  }
-
-  if (facilityFromUrl?.id && !facilityInStore?.id) {
-    setActiveFacility(facilityFromUrl);
-    return <Loading />;
-  }
-
-  if (facilityFromUrl?.id && facilityInStore?.id) {
-    return <>{children}</>;
-  }
-
   return (
     <FacilitySelect
       facilities={facilities}
-      setActiveFacility={setActiveFacility}
+      setActiveFacility={setSelectedFacility}
     />
   );
 };
 
-export default connect()(WithFacility);
+export default WithFacility;

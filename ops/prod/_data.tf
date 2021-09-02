@@ -139,23 +139,63 @@ data "azurerm_key_vault_secret" "smarty_auth_token" {
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
-data "azurerm_key_vault_secret" "dynamics_client_id" {
-  name         = "dynamics-client-id-prod"
+data "azurerm_key_vault_secret" "experian_token_endpoint" {
+  name         = "experian-token-endpoint-prod"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
-data "azurerm_key_vault_secret" "dynamics_client_secret" {
-  name         = "dynamics-client-secret-prod"
+data "azurerm_key_vault_secret" "experian_initial_request_endpoint" {
+  name         = "experian-initial-request-endpoint-prod"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
-data "azurerm_key_vault_secret" "dynamics_tenant_id" {
-  name         = "dynamics-tenant-id-prod"
+data "azurerm_key_vault_secret" "experian_domain" {
+  name         = "experian-domain-prod"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
-data "azurerm_key_vault_secret" "dynamics_resource_url" {
-  name         = "dynamics-resource-url-prod"
+data "azurerm_key_vault_secret" "experian_client_id" {
+  name         = "experian-client-id-prod"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "experian_client_secret" {
+  name         = "experian-client-secret-prod"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "experian_crosscore_subscriber_subcode" {
+  name         = "experian-crosscore-subscriber-subcode-prod"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "experian_crosscore_username" {
+  name         = "experian-crosscore-username-prod"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "experian_crosscore_password" {
+  name         = "experian-crosscore-password-prod"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "experian_preciseid_tenant_id" {
+  name         = "experian-preciseid-tenant-id-prod"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "experian_preciseid_client_reference_id" {
+  name         = "experian-preciseid-client-reference-id-prod"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "experian_preciseid_username" {
+  name         = "experian-preciseid-username-prod"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "experian_preciseid_password" {
+  name         = "experian-preciseid-password-prod"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 

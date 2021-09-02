@@ -1,5 +1,4 @@
-import { ChangeEvent, useState } from "react";
-import { useSelector } from "react-redux";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Redirect } from "react-router";
 
 import TextInput from "../../commonComponents/TextInput";
@@ -11,7 +10,6 @@ import {
   isAtLeast8Chars,
 } from "../../utils/text";
 import { AccountCreationApi } from "../AccountCreationApiService";
-import { RootState } from "../../store";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -31,10 +29,18 @@ export const PasswordForm = () => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  // Get activation token from store
-  const activationToken = useSelector<RootState, string>(
-    (state) => state.activationToken
-  );
+  const validatePasswordConfirmation = useCallback((): boolean => {
+    let error = "";
+    if (password !== passwordConfirmation) {
+      error = "Passwords must match";
+    }
+    setPasswordConfirmationError(error);
+    return error === "";
+  }, [password, passwordConfirmation]);
+
+  useEffect(() => {
+    passwordConfirmation !== "" && validatePasswordConfirmation();
+  }, [passwordConfirmation, validatePasswordConfirmation]);
 
   // An array of functions that test for all of the password requirements
   const requirements = [hasLowerCase, hasUpperCase, hasNumber, isAtLeast8Chars];
@@ -101,24 +107,17 @@ export const PasswordForm = () => {
     return hint === "";
   };
 
-  const validatePasswordConfirmation = (): boolean => {
-    let error = "";
-    if (password !== passwordConfirmation) {
-      error = "Passwords must match";
-    }
-    setPasswordConfirmationError(error);
-    return error === "";
-  };
-
   // Form submit handler
   const handleSubmit = async () => {
     if (validatePassword() && validatePasswordConfirmation()) {
       setLoading(true);
       try {
-        await AccountCreationApi.setPassword(activationToken, password);
+        await AccountCreationApi.setPassword(password);
         setSubmitted(true);
       } catch (error) {
-        setPasswordError(`API Error: ${error?.message}`);
+        setPasswordError(
+          error || "Unable to setup password, please try again later"
+        );
       } finally {
         setLoading(false);
       }
@@ -167,14 +166,7 @@ export const PasswordForm = () => {
   }
 
   if (submitted) {
-    return (
-      <Redirect
-        to={{
-          pathname: "/set-recovery-question",
-          search: `?activationToken=${activationToken}`,
-        }}
-      />
-    );
+    return <Redirect push to="/set-recovery-question" />;
   }
 
   return (

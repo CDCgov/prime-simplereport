@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
+import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.service.ApiUserService;
@@ -24,6 +25,10 @@ public class UserResolver implements GraphQLQueryResolver {
 
   public List<ApiUser> getUsers() {
     return _userService.getUsersInCurrentOrg();
+  }
+
+  public List<ApiUserWithStatus> getUsersWithStatus() {
+    return _userService.getUsersAndStatusInCurrentOrg();
   }
 
   public User getUser(UUID userId) {

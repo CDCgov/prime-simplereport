@@ -1,26 +1,33 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
 
-import QuestionsForm from "./QuestionsForm";
 import { exampleQuestionSet } from "./constants";
+import QuestionsForm from "./QuestionsForm";
 
 describe("QuestionsForm", () => {
   let onSubmit: jest.Mock;
+  let onFail: jest.Mock;
 
   beforeEach(() => {
     onSubmit = jest.fn();
+    onFail = jest.fn();
 
     render(
       <QuestionsForm
         questionSet={exampleQuestionSet}
         saving={false}
         onSubmit={onSubmit}
+        onFail={onFail}
       />
     );
   });
   it("initializes with the submit button disabled", () => {
     expect(screen.getByText("Submit")).toHaveAttribute("disabled");
   });
-  describe("One filed entered", () => {
+  it("initializes with a counter and starts counting down", async () => {
+    expect(screen.getByText("5:00")).toBeInTheDocument();
+    expect(await screen.findByText("4:59")).toBeInTheDocument();
+  });
+  describe("One field entered", () => {
     beforeEach(() => {
       fireEvent.click(screen.getByLabelText("2002", { exact: false }), {
         target: { value: "1" },
@@ -96,7 +103,7 @@ describe("QuestionsForm", () => {
           );
         });
       });
-      it("does not shows an error", () => {
+      it("does not show an error", () => {
         expect(screen.queryAllByText("This field is required").length).toBe(0);
       });
       it("calls the onSubmit callback", () => {

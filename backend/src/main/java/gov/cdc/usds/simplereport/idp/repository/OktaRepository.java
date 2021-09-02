@@ -1,10 +1,12 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
+import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -15,33 +17,43 @@ import java.util.Set;
  */
 public interface OktaRepository {
 
-  public Optional<OrganizationRoleClaims> createUser(
+  Optional<OrganizationRoleClaims> createUser(
       IdentityAttributes userIdentity,
       Organization org,
       Set<Facility> facilities,
       Set<OrganizationRole> roles,
       boolean active);
 
-  public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity);
+  Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity);
 
-  public void reprovisionUser(IdentityAttributes userIdentity);
+  void reprovisionUser(IdentityAttributes userIdentity);
 
-  public Optional<OrganizationRoleClaims> updateUserPrivileges(
+  Optional<OrganizationRoleClaims> updateUserPrivileges(
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles);
 
-  public void setUserIsActive(String username, Boolean active);
+  void resetUserPassword(String username);
 
-  public Set<String> getAllUsersForOrganization(Organization org);
+  void setUserIsActive(String username, Boolean active);
 
-  public void createOrganization(Organization org);
+  void reactivateUser(String username);
 
-  public void activateOrganization(Organization org);
+  UserStatus getUserStatus(String username);
 
-  public void createFacility(Facility facility);
+  Set<String> getAllUsersForOrganization(Organization org);
 
-  public void deleteOrganization(Organization org);
+  Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org);
 
-  public void deleteFacility(Facility facility);
+  void createOrganization(Organization org);
 
-  public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username);
+  void activateOrganization(Organization org);
+
+  String activateOrganizationWithSingleUser(Organization org);
+
+  void createFacility(Facility facility);
+
+  void deleteOrganization(Organization org);
+
+  void deleteFacility(Facility facility);
+
+  Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username);
 }

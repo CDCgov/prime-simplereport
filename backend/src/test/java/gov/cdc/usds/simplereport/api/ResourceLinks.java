@@ -7,12 +7,16 @@ public final class ResourceLinks {
   public static final String UPDATE_PATIENT = "/pxp/patient";
 
   public static final String SELF_REGISTER = "/pxp/register";
+  public static final String EXISTING_PATIENT = "/pxp/register/existing-patient";
   public static final String ENTITY_NAME = "/pxp/register/entity-name";
 
   public static final String WAITLIST_REQUEST = "/account-request/waitlist";
-  public static final String ACCOUNT_REQUEST = "/account-request";
+  public static final String ACCOUNT_REQUEST_ORGANIZATION_CREATE =
+      "/account-request/organization-create-without-facility";
   public static final String USER_ACCOUNT_REQUEST = "/user-account";
-  public static final String USER_SET_PASSWORD = "/user-account/initialize-and-set-password";
+  public static final String USER_GET_STATUS = "/user-account/user-status";
+  public static final String USER_ACTIVATE_ACCOUNT_REQUEST = "/user-account/initialize";
+  public static final String USER_SET_PASSWORD = "/user-account/set-password";
   public static final String USER_SET_RECOVERY_QUESTION = "/user-account/set-recovery-question";
   public static final String USER_ENROLL_SMS_MFA = "/user-account/enroll-sms-mfa";
   public static final String USER_ENROLL_VOICE_CALL_MFA = "/user-account/enroll-voice-call-mfa";
@@ -25,4 +29,9 @@ public final class ResourceLinks {
       "/user-account/verify-activation-passcode";
   public static final String USER_RESEND_ACTIVATION_PASSCODE =
       "/user-account/resend-activation-passcode";
+  public static final String ID_VERIFICATION_GET_QUESTIONS = "/identity-verification/get-questions";
+  public static final String ID_VERIFICATION_SUBMIT_ANSWERS =
+      "/identity-verification/submit-answers";
+
+  public static final String TWILIO_CALLBACK = "/pxp/callback";
 }

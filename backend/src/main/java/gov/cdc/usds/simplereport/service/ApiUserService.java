@@ -1,6 +1,9 @@
 package gov.cdc.usds.simplereport.service;
 
+import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
+import gov.cdc.usds.simplereport.api.SmsWebhookContextHolder;
+import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -58,6 +61,8 @@ public class ApiUserService {
   @Autowired private CurrentPatientContextHolder _patientContextHolder;
 
   @Autowired private CurrentAccountRequestContextHolder _accountRequestContextHolder;
+
+  @Autowired private SmsWebhookContextHolder _smsWebhookContextHolder;
 
   private static final Logger LOG = LoggerFactory.getLogger(ApiUserService.class);
 
@@ -192,6 +197,20 @@ public class ApiUserService {
     return user;
   }
 
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
+  public UserInfo resetUserPassword(UUID userId) {
+    ApiUser apiUser = getApiUser(userId);
+    String username = apiUser.getLoginEmail();
+    _oktaRepo.resetUserPassword(username);
+    OrganizationRoleClaims orgClaims =
+        _oktaRepo
+            .getOrganizationRoleClaimsForUser(username)
+            .orElseThrow(MisconfiguredUserException::new);
+    Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
+    OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
+    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
+  }
+
   @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
   public UserInfo setIsDeleted(UUID userId, boolean deleted) {
     ApiUser apiUser = getApiUser(userId, !deleted);
@@ -199,6 +218,21 @@ public class ApiUserService {
     apiUser = _apiUserRepo.save(apiUser);
     _oktaRepo.setUserIsActive(apiUser.getLoginEmail(), !deleted);
     return new UserInfo(apiUser, Optional.empty(), isAdmin(apiUser));
+  }
+
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
+  public UserInfo reactivateUser(UUID userId) {
+    ApiUser apiUser = getApiUser(userId);
+    String username = apiUser.getLoginEmail();
+    _oktaRepo.reactivateUser(username);
+    OrganizationRoleClaims orgClaims =
+        _oktaRepo
+            .getOrganizationRoleClaimsForUser(username)
+            .orElseThrow(MisconfiguredUserException::new);
+    Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
+    OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
+    UserInfo user = new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
+    return user;
   }
 
   private ApiUser getApiUser(UUID id) {
@@ -271,6 +305,8 @@ public class ApiUserService {
   private static final String PATIENT_SELF_REGISTRATION_EMAIL =
       "patient-self-registration" + NOREPLY;
   private static final String ACCOUNT_REQUEST_EMAIL = "account-request" + NOREPLY;
+  private static final String SMS_WEBHOOK_EMAIL = "sms-webhook" + NOREPLY;
+  private static final String ANONYMOUS_EMAIL = "anonymous-user" + NOREPLY;
 
   private String getPatientIdEmail(Person patient) {
     return patient.getInternalId() + NOREPLY;
@@ -313,6 +349,36 @@ public class ApiUserService {
         });
   }
 
+  /** The SMS Webhook API User should <em>always</em> exist. */
+  public ApiUser getSmsWebhookApiUser() {
+    Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(SMS_WEBHOOK_EMAIL);
+    return found.orElseGet(
+        () -> {
+          ApiUser magicUser =
+              new ApiUser(SMS_WEBHOOK_EMAIL, new PersonName("", "", "SMS Webhook User", ""));
+          _apiUserRepo.save(magicUser);
+          LOG.info(
+              "Magic account SMS webhook user not found. Created Person={}",
+              magicUser.getInternalId());
+          return magicUser;
+        });
+  }
+
+  /** Only used for audit logging. */
+  public ApiUser getAnonymousApiUser() {
+    Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(ANONYMOUS_EMAIL);
+    return found.orElseGet(
+        () -> {
+          ApiUser magicUser =
+              new ApiUser(ANONYMOUS_EMAIL, new PersonName("", "", "Anonymous User", ""));
+          _apiUserRepo.save(magicUser);
+          LOG.info(
+              "Magic account anonymous user not found. Created Person={}",
+              magicUser.getInternalId());
+          return magicUser;
+        });
+  }
+
   private ApiUser getCurrentApiUser() {
     IdentityAttributes userIdentity = _supplier.get();
     if (userIdentity == null) {
@@ -324,6 +390,9 @@ public class ApiUserService {
       }
       if (_accountRequestContextHolder.isAccountRequest()) {
         return getAccountRequestApiUser();
+      }
+      if (_smsWebhookContextHolder.isSmsWebhook()) {
+        return getSmsWebhookApiUser();
       }
       throw new UnidentifiedUserException();
     }
@@ -362,6 +431,17 @@ public class ApiUserService {
     return _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserEmails);
   }
 
+  @AuthorizationConfiguration.RequirePermissionManageUsers
+  public List<ApiUserWithStatus> getUsersAndStatusInCurrentOrg() {
+    Organization org = _orgService.getCurrentOrganization();
+    final Map<String, UserStatus> emailsToStatus =
+        _oktaRepo.getAllUsersWithStatusForOrganization(org);
+    List<ApiUser> users = _apiUserRepo.findAllByLoginEmailInOrderByName(emailsToStatus.keySet());
+    return users.stream()
+        .map(u -> new ApiUserWithStatus(u, emailsToStatus.get(u.getLoginEmail())))
+        .collect(Collectors.toList());
+  }
+
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
   public UserInfo getUser(final UUID userId) {
     final Optional<ApiUser> optApiUser = _apiUserRepo.findById(userId);
@@ -369,6 +449,8 @@ public class ApiUserService {
       throw new UnidentifiedUserException();
     }
     final ApiUser apiUser = optApiUser.get();
+
+    UserStatus status = _oktaRepo.getUserStatus(apiUser.getLoginEmail());
 
     Optional<OrganizationRoleClaims> optClaims =
         _oktaRepo.getOrganizationRoleClaimsForUser(apiUser.getLoginEmail());
@@ -394,7 +476,7 @@ public class ApiUserService {
                 .collect(Collectors.toSet());
     OrganizationRoles orgRoles =
         new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
-    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
+    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser), status);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser

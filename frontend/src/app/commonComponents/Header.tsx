@@ -9,16 +9,18 @@ import {
 } from "@microsoft/applicationinsights-react-js";
 
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
-import { formatFullName } from "../utils/user";
+import { formatFullName, formatRole } from "../utils/user";
 import siteLogo from "../../img/simplereport-logo-color.svg";
 import { hasPermission, appPermissions } from "../permissions";
 import { RootState } from "../store";
+import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 import Button from "./Button/Button";
 import Dropdown from "./Dropdown";
 import useComponentVisible from "./ComponentVisible";
 import { LinkWithQuery } from "./LinkWithQuery";
 import { TrainingNotification } from "./TrainingNotification";
+import ChangeUser from "./ChangeUser";
 
 const Header: React.FC<{}> = () => {
   const appInsights = useAppInsightsContext();
@@ -39,9 +41,9 @@ const Header: React.FC<{}> = () => {
   const facilities = useSelector(
     (state) => ((state as any).facilities as Facility[]) || []
   );
-  const facility = useSelector(
-    (state) => ((state as any).facility as Facility) || { id: "", name: "" }
-  );
+  const [selectedFacility, setSelectedFacility] = useSelectedFacility();
+  const facility = selectedFacility || { id: "", name: "" };
+
   const user = useSelector((state) => (state as any).user as User);
   const [menuVisible, setMenuVisible] = useState(false);
   const {
@@ -50,11 +52,11 @@ const Header: React.FC<{}> = () => {
     setIsComponentVisible: setStaffDetailsVisible,
   } = useComponentVisible(false);
 
-  const onFacilitySelect = (e: React.FormEvent<HTMLSelectElement>) => {
-    const id = (e.target as HTMLSelectElement).value;
-    window.location.href = `${
-      window.location.pathname
-    }?facility=${encodeURIComponent(id)}`;
+  const onFacilitySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = facilities.find((f) => f.id === e.target.value);
+    if (selected) {
+      setSelectedFacility(selected);
+    }
   };
 
   const canViewSettings = hasPermission(
@@ -152,7 +154,7 @@ const Header: React.FC<{}> = () => {
                     color: "white",
                   }}
                 >
-                  Conduct Tests
+                  Conduct tests
                 </LinkWithQuery>
               </li>
             ) : null}
@@ -203,7 +205,7 @@ const Header: React.FC<{}> = () => {
                 <li className="usa-sidenav__item">
                   <span>
                     <strong>Role: </strong>
-                    {user.roleDescription}
+                    {formatRole(user.roleDescription)}
                   </span>
                 </li>
                 <li className="usa-sidenav__item">{facility.name}</li>
@@ -220,6 +222,7 @@ const Header: React.FC<{}> = () => {
                 </a>
               </div>
               <Button variant="unstyled" label="Log out" onClick={logout} />
+              <ChangeUser />
             </div>
             {canViewSettings ? (
               <li className="usa-nav__primary-item prime-settings-hidden">
@@ -252,7 +255,7 @@ const Header: React.FC<{}> = () => {
                     color: "white",
                   }}
                 >
-                  Conduct Tests
+                  Conduct tests
                 </LinkWithQuery>
               </li>
             ) : null}
@@ -334,7 +337,7 @@ const Header: React.FC<{}> = () => {
                   <li className="usa-sidenav__item">
                     <span>
                       <strong>Role: </strong>
-                      {user.roleDescription}
+                      {formatRole(user.roleDescription)}
                     </span>
                   </li>
                   <li className="usa-sidenav__item">{facility.name}</li>
@@ -355,6 +358,7 @@ const Header: React.FC<{}> = () => {
                       onClick={logout}
                     />
                   </li>
+                  <ChangeUser />
                 </ul>
               </div>
             </li>

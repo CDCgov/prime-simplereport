@@ -9,7 +9,7 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
       class="usa-card__header"
     >
       <h2>
-        Manage Users
+        Manage users
       </h2>
       <button
         class="usa-button usa-button--outline"
@@ -51,6 +51,7 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
                 >
                   john@arthur.org
                 </span>
+                <br />
               </button>
             </li>
             <li
@@ -71,6 +72,7 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
                 >
                   bob@bobberoo.org
                 </span>
+                <br />
               </button>
             </li>
           </ul>
@@ -81,11 +83,18 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
           <div
             class="user-header grid-row flex-row flex-align-center"
           >
-            <h2
-              class="display-inline-block margin-y-1"
-            >
-              Bob Bobberoo
-            </h2>
+            <div>
+              <h2
+                class="display-inline-block margin-y-1"
+              >
+                Bobberoo, Bob
+              </h2>
+              <div>
+                <span
+                  class="top-user-status"
+                />
+              </div>
+            </div>
             <span
               class="usa-tag margin-left-1 bg-base-lighter text-ink"
             >
@@ -95,10 +104,15 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
           <div
             class="user-content"
           >
+            <h3
+              class="margin-bottom-0 padding-top-1"
+            >
+              User roles
+            </h3>
             <p
               class="text-base"
             >
-              Admins have full access to conduct tests, manage results and profiles, and manage settings and users
+              Admins have full access to SimpleReport. They can conduct tests, manage test results and patient profiles, and also manage account settings, users, and testing facilities. Standard and testing only users have limited access for specific tasks, as described below.
             </p>
             <div
               class="usa-form-group"
@@ -130,7 +144,7 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
                       class="usa-radio__label text-base"
                       for="4-val-ADMIN"
                     >
-                      Admin (full permissions)
+                      Admin (full access)
                     </label>
                   </div>
                   <div
@@ -150,7 +164,7 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
                       class="usa-radio__label text-base"
                       for="4-val-USER"
                     >
-                      Standard user (manage results and profiles)
+                      Standard user (conduct tests, manage test results and patient profiles)
                     </label>
                   </div>
                   <div
@@ -169,7 +183,7 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
                       class="usa-radio__label text-base"
                       for="4-val-ENTRY_ONLY"
                     >
-                      Entry only (conduct tests)
+                      Testing only (conduct tests)
                     </label>
                   </div>
                 </div>
@@ -333,7 +347,7 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
       class="usa-card__header"
     >
       <h2>
-        Manage Users
+        Manage users
       </h2>
       <button
         class="usa-button usa-button--outline"
@@ -375,6 +389,7 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
                 >
                   john@arthur.org
                 </span>
+                <br />
               </button>
             </li>
             <li
@@ -395,6 +410,7 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
                 >
                   bob@bobberoo.org
                 </span>
+                <br />
               </button>
             </li>
           </ul>
@@ -405,19 +421,37 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
           <div
             class="user-header grid-row flex-row flex-align-center"
           >
-            <h2
-              class="display-inline-block margin-y-1"
+            <div>
+              <h2
+                class="display-inline-block margin-y-1"
+              >
+                Arthur, John
+              </h2>
+              <div>
+                <span
+                  class="top-user-status"
+                />
+              </div>
+            </div>
+            <button
+              class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+              type="button"
             >
-              John Arthur
-            </h2>
+              Reset password
+            </button>
           </div>
           <div
             class="user-content"
           >
+            <h3
+              class="margin-bottom-0 padding-top-1"
+            >
+              User roles
+            </h3>
             <p
               class="text-base"
             >
-              Admins have full access to conduct tests, manage results and profiles, and manage settings and users
+              Admins have full access to SimpleReport. They can conduct tests, manage test results and patient profiles, and also manage account settings, users, and testing facilities. Standard and testing only users have limited access for specific tasks, as described below.
             </p>
             <div
               class="usa-form-group"
@@ -448,7 +482,7 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
                       class="usa-radio__label"
                       for="1-val-ADMIN"
                     >
-                      Admin (full permissions)
+                      Admin (full access)
                     </label>
                   </div>
                   <div
@@ -467,7 +501,7 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
                       class="usa-radio__label"
                       for="1-val-USER"
                     >
-                      Standard user (manage results and profiles)
+                      Standard user (conduct tests, manage test results and patient profiles)
                     </label>
                   </div>
                   <div
@@ -485,7 +519,7 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
                       class="usa-radio__label"
                       for="1-val-ENTRY_ONLY"
                     >
-                      Entry only (conduct tests)
+                      Testing only (conduct tests)
                     </label>
                   </div>
                 </div>
@@ -587,7 +621,8 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
                 </div>
               </div>
               <button
-                class="usa-button usa-button--outline height-5 margin-left-2"
+                class="usa-button usa-button--outline usa-button-disabled height-5 margin-left-2"
+                disabled=""
                 type="button"
               >
                 Add

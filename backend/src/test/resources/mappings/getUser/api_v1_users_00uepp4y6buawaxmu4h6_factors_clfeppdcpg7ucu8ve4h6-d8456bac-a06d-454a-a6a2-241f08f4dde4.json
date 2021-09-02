@@ -1,0 +1,40 @@
+{
+  "id" : "d8456bac-a06d-454a-a6a2-241f08f4dde4",
+  "name" : "api_v1_users_00uepp4y6buawaxmu4h6_factors_clfeppdcpg7ucu8ve4h6",
+  "request" : {
+    "url" : "/api/v1/users/00uepp4y6buAwAXmU4h6/factors/clfeppdcpg7ucu8vE4h6",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"id\":\"clfeppdcpg7ucu8vE4h6\",\"factorType\":\"call\",\"provider\":\"OKTA\",\"vendorName\":\"OKTA\",\"status\":\"PENDING_ACTIVATION\",\"created\":\"2021-07-01T22:14:27.000Z\",\"lastUpdated\":\"2021-07-01T22:14:27.000Z\",\"profile\":{\"phoneNumber\":\"+19999999999\"},\"_links\":{\"resend\":[{\"name\":\"call\",\"href\":\"https://hhs-prime.okta.com/api/v1/users/00uepp4y6buAwAXmU4h6/factors/clfeppdcpg7ucu8vE4h6/resend\",\"hints\":{\"allow\":[\"POST\"]}}],\"activate\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00uepp4y6buAwAXmU4h6/factors/clfeppdcpg7ucu8vE4h6/lifecycle/activate\",\"hints\":{\"allow\":[\"POST\"]}},\"self\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00uepp4y6buAwAXmU4h6/factors/clfeppdcpg7ucu8vE4h6\",\"hints\":{\"allow\":[\"GET\"]}},\"user\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00uepp4y6buAwAXmU4h6\",\"hints\":{\"allow\":[\"GET\"]}}}}",
+    "headers" : {
+      "Date" : "Thu, 01 Jul 2021 22:14:28 GMT",
+      "Content-Type" : "application/json",
+      "Server" : "nginx",
+      "Public-Key-Pins-Report-Only" : "pin-sha256=\"r5EfzZxQVvQpKo3AgYRaT7X2bDO/kj3ACwmxfdT2zt8=\"; pin-sha256=\"MaqlcUgk2mvY/RFSGeSwBRkI+rZ6/dxe/DuQfBT/vnQ=\"; pin-sha256=\"72G5IEvDEWn+EThf3qjR7/bQSWaS2ZSLqolhnO6iyJI=\"; pin-sha256=\"rrV6CLCCvqnk89gWibYT0JO6fNQ8cCit7GGoiVTjCOg=\"; max-age=60; report-uri=\"https://okta.report-uri.com/r/default/hpkp/reportOnly\"",
+      "Vary" : "Accept-Encoding",
+      "x-okta-request-id" : "YN4@RNy3Hnk9Ml5kD0KkxgAADtg",
+      "x-xss-protection" : "0",
+      "p3p" : "CP=\"HONK\"",
+      "x-rate-limit-limit" : "600",
+      "x-rate-limit-remaining" : "595",
+      "x-rate-limit-reset" : "1625177724",
+      "cache-control" : "no-cache, no-store",
+      "pragma" : "no-cache",
+      "expires" : "0",
+      "content-security-policy" : "default-src 'self' hhs-prime.okta.com *.oktacdn.com; connect-src 'self' hhs-prime.okta.com hhs-prime-admin.okta.com *.oktacdn.com *.mixpanel.com *.mapbox.com app.pendo.io data.pendo.io pendo-static-5634101834153984.storage.googleapis.com hhs-prime.kerberos.okta.com https://oinmanager.okta.com data:; script-src 'unsafe-inline' 'unsafe-eval' 'self' hhs-prime.okta.com *.oktacdn.com; style-src 'unsafe-inline' 'self' hhs-prime.okta.com *.oktacdn.com app.pendo.io cdn.pendo.io pendo-static-5634101834153984.storage.googleapis.com; frame-src 'self' hhs-prime.okta.com hhs-prime-admin.okta.com login.okta.com; img-src 'self' hhs-prime.okta.com *.oktacdn.com *.tiles.mapbox.com *.mapbox.com app.pendo.io data.pendo.io cdn.pendo.io pendo-static-5634101834153984.storage.googleapis.com data: blob:; font-src 'self' hhs-prime.okta.com data: *.oktacdn.com fonts.gstatic.com; report-uri https://okta.report-uri.com/r/d/csp/enforce; report-to csp-enforce",
+      "report-to" : "{\"group\":\"csp-enforce\",\"max_age\":31536000,\"endpoints\":[{\"url\":\"https://okta.report-uri.com/r/d/csp/enforce\"}],\"include_subdomains\":true}",
+      "expect-ct" : "report-uri=\"https://oktaexpectct.report-uri.com/r/t/ct/reportOnly\", max-age=0",
+      "x-content-type-options" : "nosniff",
+      "Strict-Transport-Security" : "max-age=315360000; includeSubDomains",
+      "set-cookie" : [ "sid=\"\"; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/", "JSESSIONID=21677F1B16DDBE614C4177C5DB39E9E8; Path=/; Secure; HttpOnly" ]
+    }
+  },
+  "uuid" : "d8456bac-a06d-454a-a6a2-241f08f4dde4",
+  "persistent" : true,
+  "scenarioName" : "scenario-3-api-v1-users-00uepp4y6buAwAXmU4h6-factors-clfeppdcpg7ucu8vE4h6",
+  "requiredScenarioState" : "Started",
+  "newScenarioState" : "scenario-3-api-v1-users-00uepp4y6buAwAXmU4h6-factors-clfeppdcpg7ucu8vE4h6-2",
+  "insertionIndex" : 966
+}

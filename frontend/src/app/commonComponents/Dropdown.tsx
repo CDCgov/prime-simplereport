@@ -14,7 +14,7 @@ export interface Option {
 
 interface Props {
   options: Option[];
-  label?: string;
+  label?: string | React.ReactNode;
   name?: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   selectedValue: string;
@@ -38,7 +38,7 @@ const Dropdown: React.FC<Props & SelectProps> = ({
   onChange,
   disabled,
   className,
-  defaultOption, // value of the default option
+  defaultOption = "- Select -", // value of the default option
   selectedValue,
   defaultSelect,
   required,
@@ -94,7 +94,7 @@ const Dropdown: React.FC<Props & SelectProps> = ({
             disabled={disabled}
             {...inputProps}
           >
-            {defaultSelect && <option value="">- Select -</option>}
+            {defaultSelect && <option value="">{defaultOption}</option>}
             {options.map(({ value, label, disabled }) => (
               <option key={value} value={value} disabled={disabled}>
                 {label}

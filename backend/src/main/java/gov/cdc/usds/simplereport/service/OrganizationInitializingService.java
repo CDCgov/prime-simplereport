@@ -166,18 +166,32 @@ public class OrganizationInitializingService {
             });
 
     for (ConfigPatientRegistrationLink p : _props.getPatientRegistrationLinks()) {
-      Optional<Organization> orgLookup = _orgRepo.findByExternalId(p.getOrganizationExternalId());
-      if (!orgLookup.isPresent()) {
-        continue;
-      }
-      Organization org = orgLookup.get();
-      Optional<PatientSelfRegistrationLink> link = _prlRepository.findByOrganization(org);
-      if (!link.isPresent()) {
-        LOG.info("Creating patient registration link {}", p.getLink());
-        PatientSelfRegistrationLink prl =
-            p.makePatientRegistrationLink(
-                orgsByExternalId.get(p.getOrganizationExternalId()), p.getLink());
-        _prlRepository.save(prl);
+      String orgExternalId = p.getOrganizationExternalId();
+      String facilityName = p.getFacilityName();
+      if (null != orgExternalId) {
+        Optional<Organization> orgLookup = _orgRepo.findByExternalId(orgExternalId);
+        if (!orgLookup.isPresent()) {
+          continue;
+        }
+        Organization org = orgLookup.get();
+        Optional<PatientSelfRegistrationLink> link = _prlRepository.findByOrganization(org);
+        if (!link.isPresent()) {
+          LOG.info("Creating patient registration link {}", p.getLink());
+          PatientSelfRegistrationLink prl =
+              p.makePatientRegistrationLink(orgsByExternalId.get(orgExternalId), p.getLink());
+          _prlRepository.save(prl);
+        }
+      } else if (null != p.getFacilityName()) {
+        Facility facility = facilitiesByName.get(facilityName);
+        if (null == facility) {
+          continue;
+        }
+        Optional<PatientSelfRegistrationLink> link = _prlRepository.findByFacility(facility);
+        if (!link.isPresent()) {
+          LOG.info("Creating patient registration link {}", p.getLink());
+          PatientSelfRegistrationLink prl = p.makePatientRegistrationLink(facility, p.getLink());
+          _prlRepository.save(prl);
+        }
       }
     }
 

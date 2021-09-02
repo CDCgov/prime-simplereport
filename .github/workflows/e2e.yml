@@ -12,7 +12,6 @@ env:
   JAVA_VERSION: 11
   FIREFOX_VERSION: latest
   PROJECT_ROOT: /home/runner/work/prime-simplereport/prime-simplereport # Hardcoding this here because env.WORKSPACE_ROOT gets overridden by one of the steps downstream. We only need this for Sonar.
-  REACT_APP_QR_CODE_ENABLED: true
   REACT_APP_TEST_TRIBAL_AFFILIATION_BYPASS: true
   SIMPLE_REPORT_TWILIO_ENABLED: false
   TWILIO_ACCOUNT_SID: ${{secrets.TWILIO_TEST_ACCOUNT_SID }}
@@ -20,6 +19,8 @@ env:
   SIMPLE_REPORT_SENDGRID_ENABLED: false
   SIMPLE_REPORT_SENDGRID_FROM_EMAIL: admin@simplereport.gov
   SIMPLE_REPORT_SENDGRID_ACCOUNT_REQUEST_RECIPIENT: usds@cdc.gov
+  REACT_APP_BASE_URL: http://localhost.simplereport.gov
+  REACT_APP_BACKEND_URL: http://localhost.simplereport.gov/api
 
 defaults:
   run:
@@ -66,6 +67,15 @@ jobs:
         run: |
           chmod 0600 $PGPASSFILE
           backend/db-setup/create-db.sh
+      - name: Set up nginx reverse proxy and application-local
+        run: |
+          sudo cp ./frontend/e2e/utils/nginx/localhost.simplereport.gov /etc/nginx/sites-available
+          sudo ln -s /etc/nginx/sites-available/localhost.simplereport.gov /etc/nginx/sites-enabled/localhost.simplereport.gov
+          echo "127.0.0.1 localhost.simplereport.gov" | sudo tee -a /etc/hosts
+          echo "server.servlet.session.cookie.domain: localhost.simplereport.gov" >> ./backend/src/main/resources/application-local.yaml
+          echo "okta.client.org-url: http://localhost:8088" >> ./backend/src/main/resources/application-local.yaml
+          echo "okta.client.token: foo" >> ./backend/src/main/resources/application-local.yaml
+          sudo systemctl start nginx
       - name: Run API
         env:
           OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
@@ -73,7 +83,7 @@ jobs:
           SMARTY_AUTH_ID: ${{ secrets.SMARTY_AUTH_ID }}
           SMARTY_AUTH_TOKEN: ${{ secrets.SMARTY_AUTH_TOKEN }}
         working-directory: ./backend
-        run: ./gradlew bootRun --args='--spring.profiles.active=dev' &> ../gradle-log.txt &
+        run: OKTA_TESTING_DISABLEHTTPSCHECK=true ./gradlew bootRun --args='--spring.profiles.active=e2e' &> ../gradle-log.txt &
       - name: Use Node.js ${{env.NODE_VERSION}}
         uses: actions/setup-node@v2.1.5
         with:

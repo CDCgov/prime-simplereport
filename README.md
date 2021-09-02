@@ -26,10 +26,9 @@ https://simplereport.gov/
   - [Frontend](#frontend)
     - [Frontend-Setup](#frontend-setup)
     - [Linters](#linters)
-    - [Storybook](#storybook)
+    - [Storybook and Chromatic](#storybook-and-chromatic)
+  - [Cloud Environments](#cloud-environments)
   - [Deploy](#deploy)
-    - [Cloud Environments](#cloud-environments)
-    - [Deploy With Release](#deploy-with-release)
     - [Revert to a Previous Release](#revert-to-a-previous-release)
     - [Deploy With Action](#deploy-with-action)
 
@@ -294,12 +293,9 @@ These can also be set by environment variable if desired.
 The front end is a React app. The app uses [Apollo](https://www.apollographql.com/) to manage the graphql API. For styling the app leverages the [U.S. Web Design System (USWDS)](https://designsystem.digital.gov/)
 
 ### Frontend-Setup
-
-1. Install [nvm](https://github.com/nvm-sh/nvm)
 1. (optional) Install react developer tools extensions
 1. Install [yarn](https://classic.yarnpkg.com/en/docs/install)
-1. `cd frontend && nvm use && yarn install`
-1. `yarn start`
+1. `cd frontend && yarn install && docker-compose up`
 1. view site at http://localhost:3000
    - Note: frontend need the backend to be running to work
 
@@ -332,52 +328,32 @@ any branch.  The changes are automatically accepted on merge to `main`.
 
 View the [SimpleReport Storybook](https://main--60a556a7c807cc0039ec6786.chromatic.com/)
 
+## Cloud Environments
+
+**Name**|**Frontend**|**API**|**Deployment**|**Intended Use**
+:-----:|:-----:|:-----:|:-----:|:-----:
+prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|Dispatched on success of `stg` deploy| Used by end users
+demo|[/app/static/commit.txt](https://demo.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://demo.simplereport.gov/api/actuator/info)|Worflow on success of `stg` deploy| Used internally to demo the application to potential end users
+training|[/app/static/commit.txt](https://training.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://training.simplereport.gov/api/actuator/info)|Dispatched on success of `stg` deploy| Used externally by potential users to get a better uderstanding of the product
+stg|[/app/static/commit.txt](https://stg.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://stg.simplereport.gov/api/actuator/info)|Push to `main`| To validate the application work in the cloud and works with prod like data
+dev|[/app/static/commit.txt](https://dev.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://dev.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action)| To validate PRs before merging to main
+test|[/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://test.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action)| To validate PRs before merging to main
+pentest|[/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action)| To validate PRs before merging to main
+
 ## Deploy
-
-### Cloud Environments
-
-**Type**|**Frontend**|**API**|**Deployment**
-:-----:|:-----:|:-----:|:-----:
-Prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|[Release](#deploy-with-release)
-Demo|[/app/static/commit.txt](https://demo.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://demo.simplereport.gov/api/actuator/info)|[Release](#deploy-with-release) & [Action](#deploy-with-action)
-Training|[/app/static/commit.txt](https://training.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://training.simplereport.gov/api/actuator/info)|[Release](#deploy-with-release) & [Action](#deploy-with-action)
-Staging|[/app/static/commit.txt](https://stg.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://stg.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action) & Daily cron
-Dev|[/app/static/commit.txt](https://dev.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://dev.simplereport.gov/api/actuator/info)|Push to `main`
-Test|[/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://test.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action)
-Pentest|[/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)|[Release](#deploy-with-release) & [Action](#deploy-with-action)
-
-### Deploy With Release
-
-Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/releases/new) page
-
-![full-dialog](https://user-images.githubusercontent.com/28784751/121424756-b31bd380-c93f-11eb-987d-38934f0570ae.png)
-
-1. <img align="right" width="517" alt="select-commit" src="https://user-images.githubusercontent.com/28784751/121423065-df365500-c93d-11eb-9b95-a63130d602e6.png">
-   Select the commit you want to release. This is likely to be the last commit on `main`, but select
-   the commit explicitly so that you do not accidentally release changes that somebody else is in the
-   process of merging.<br clear="right" />
-2. <img align="right" width="399" alt="new-release-name" src="https://user-images.githubusercontent.com/28784751/121423127-f07f6180-c93d-11eb-9e76-53aa5187a633.png">
-   Add a version tag. If the release was `v1` then this release should be `v2` 
-2. Add a release title summarizing the changes
-3. If applicable describe some of the changes in detail in the description
-3. Check the "This is a pre-release" box.
-4. Click publish release (this will trigger the release to `stg`)
-5. Verify the changes are live in `stg` by ensuring the deployed commit hash matches the commit hash on the release and the deployed release tag matches. This is done by going to `/app/static/commit.txt` and `/api/actuator/info`
-6. Return to the release page and select "Edit release"
-7. Un-check the "This is a pre-release" checkbox and click "Update release" (this will trigger the release to other environments)
-8. Verify that the changes are live in `prod`, `demo` and `training`.
+SimpleReport uses a continuous deployment deployment (CD) process
+![deployment-1](https://user-images.githubusercontent.com/53869143/130135128-e4cf1b7a-2903-4f20-bd3f-a98daea15fd1.png)
 
 ### Revert to a Previous Release
 
-1. Find the version tag for the release you want to revert to.
-2. Select that release from the list on the [release page](https://github.com/CDCgov/prime-simplereport/releases) (or navigate directly to `https://github.com/CDCgov/prime-simplereport/releases/tag/{TAG}`)
-3. Click "Edit Release"
-4. Check the "This is a pre-release" box
-5. Click "Update release"
-6. Verify that the original changes have been re-released successfully on `stg`
-7. Edit the release again, de-select the "This is a pre-release" box, and click "Update release."
-9. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done by going to `/app/static/commit.txt` and `/api/actuator/info`
+**Note:** A bad version can be rolled backed independent of the FE via the [rollback API actions](https://github.com/CDCgov/prime-simplereport/actions/workflows/rollbackProdAPI.yml)
 
+1. checkout `main`
+2. create a new branch (example: `tim-best/revert-feature-A`)
+3. Revert to the desired commit `git revert --no-commit 9999999..HEAD && git commit` where 9999999 is the commit you want to revert to
+    - This will revert everything from the HEAD back to the commit hash, meaning it will recreate that commit state in the working tree as if every commit after 9999999 had been walked back
+4. Create a PR with your branch, wait for tests to pass, get approval and merge
+5. Follow instructions in [deploy-with-release](#deploy-with-release)
 
 ### Deploy With Action
 

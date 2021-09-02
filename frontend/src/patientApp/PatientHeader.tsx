@@ -1,7 +1,11 @@
+import React from "react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 
 import siteLogo from "../img/simplereport-logomark-color.svg";
+import "../styles/fontAwesome";
+
+import LanguageToggler from "./LanguageToggler";
 
 const PatientHeader = () => {
   const organization = useSelector(
@@ -12,7 +16,7 @@ const PatientHeader = () => {
 
   return (
     <header className="border-bottom border-base-lighter">
-      <div className="display-flex flex-align-center maxw-tablet grid-container">
+      <div className="display-flex flex-align-center maxw-tablet grid-container patient-header">
         <div className="padding-y-1">
           <div className="margin-bottom-0" id="basic-logo">
             <div
@@ -35,6 +39,9 @@ const PatientHeader = () => {
               </div>
             </div>
           </div>
+        </div>
+        <div className="display-flex flex-align-end">
+          <LanguageToggler />
         </div>
       </div>
     </header>

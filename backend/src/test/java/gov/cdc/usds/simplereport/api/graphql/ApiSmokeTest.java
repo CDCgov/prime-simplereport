@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class ApiSmokeTest extends BaseGraphqlTest {
 
   @Test

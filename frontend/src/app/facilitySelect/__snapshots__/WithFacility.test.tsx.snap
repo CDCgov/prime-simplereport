@@ -1,63 +1,55 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`WithFacility With one facility should render with a value 1`] = `
-<p>
-  Loading facility information...
-</p>
-`;
-
-exports[`WithFacility With two facilities should render with a value 1`] = `
+exports[`WithFacility With two facilities should show the facility selection screen 1`] = `
 <main
-  className="prime-home"
+  class="prime-home"
   id="facility-select"
 >
   <div
-    className="grid-container"
+    class="grid-container"
   >
     <div
-      className="grid-row position-relative"
+      class="grid-row position-relative"
     >
       <div
-        className="prime-container card-container"
+        class="prime-container card-container"
       >
         <div
-          className="usa-card__header"
+          class="usa-card__header"
         >
           <div>
             <h2>
               SimpleReport
             </h2>
             <div
-              className="organization-name"
+              class="organization-name"
             >
               Organization Name
             </div>
           </div>
         </div>
         <div
-          className="usa-card__body"
+          class="usa-card__body"
         >
           <p
-            className="welcome"
+            class="welcome"
           >
             Welcome, 
             Kim Mendoza
           </p>
           <p
-            className="select-text"
+            class="select-text"
           >
             Please select the testing facility where you are working today.
           </p>
           <button
-            className="usa-button usa-button--outline"
-            onClick={[Function]}
+            class="usa-button usa-button--outline"
             type="button"
           >
             Facility 1
           </button>
           <button
-            className="usa-button usa-button--outline"
-            onClick={[Function]}
+            class="usa-button usa-button--outline"
             type="button"
           >
             Facility 2

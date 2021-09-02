@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -25,6 +25,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
@@ -35,6 +36,7 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -47,7 +49,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 @SuppressWarnings("checkstyle:MagicNumber")
 class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
@@ -101,7 +105,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             false,
             false,
-            "English");
+            "English",
+            null);
 
     _service.addPatientToQueue(
         facility.getInternalId(),
@@ -163,7 +168,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             false,
             false,
-            "Spanish");
+            "Spanish",
+            null);
 
     _service.addPatientToQueue(
         facility.getInternalId(),
@@ -205,7 +211,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             false,
             false,
-            "German");
+            "German",
+            null);
 
     assertThrows(
         AccessDeniedException.class,
@@ -267,7 +274,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             false,
             false,
-            "French");
+            "French",
+            null);
     _personService.updateTestResultDeliveryPreference(
         p.getInternalId(), TestResultDeliveryPreference.SMS);
     _service.addPatientToQueue(
@@ -316,7 +324,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             false,
             false,
-            "Spanish");
+            "Spanish",
+            null);
     _service.addPatientToQueue(
         facility.getInternalId(),
         p,
@@ -368,7 +377,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             false,
             false,
-            "English");
+            "English",
+            null);
     Person p2 =
         _personService.addPatient(
             facility1.getInternalId(),
@@ -388,7 +398,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             false,
             false,
-            "Spanish");
+            "Spanish",
+            null);
 
     _service.addPatientToQueue(
         facility1.getInternalId(),
@@ -525,7 +536,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         false);
     DeviceType devA = _dataFactory.getGenericDevice();
 
-    doThrow(NumberParseException.class).when(_smsService).sendToPatientLink(any(), any());
+    List<SmsAPICallResult> deliveryResults = new ArrayList<SmsAPICallResult>();
+    deliveryResults.add(new SmsAPICallResult("message-id", "id", false));
+
+    doReturn(deliveryResults).when(_smsService).sendToPatientLink(any(), any());
 
     AddTestResultResponse res =
         _service.addTestResult(
@@ -558,7 +572,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             false,
             false,
-            "English");
+            "English",
+            null);
     TestOrder o =
         _service.addPatientToQueue(
             facility.getInternalId(),
@@ -810,7 +825,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             false,
             false,
-            "Spanish");
+            "Spanish",
+            null);
 
     _service.addPatientToQueue(
         facilityId,
@@ -850,7 +866,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
               null,
               false,
               false,
-              "French");
+              "French",
+              null);
 
       _service.addPatientToQueue(
           facilityId,

@@ -3,9 +3,10 @@ spring:
 simple-report:
   data-hub:
     upload-enabled: true
-    upload-url: "https://staging.prime.cdc.gov/api/reports?option=SkipInvalidItems"
-    upload-schedule: "0 0 5-21/2 * * *"
+    upload-url: "https://staging.prime.cdc.gov/api/reports?option=SkipInvalidItems" # same destination as dev
+    upload-schedule: "0 0 5-21/2 * * *" # hourly on the :00 to differentiate from dev, which sends on the :30
   patient-link-url: https://test.simplereport.gov/app/pxp?plid=
+  twilio-callback-url: https://test.simplereport.gov/api/pxp/callback
   sendgrid:
     enabled: false
   cors:
@@ -13,7 +14,7 @@ simple-report:
       - https://simple-report-api-test.azurewebsites.net
       - https://simple-report-test.azureedge.net
       - https://test.simplereport.gov
-  dynamics:
+  experian:
     enabled: true
 twilio:
   enabled: true

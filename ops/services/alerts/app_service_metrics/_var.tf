@@ -14,6 +14,23 @@ variable "disabled_alerts" {
   default     = []
   description = "All alerts are enabled for an environment by default. You can disable alert(s) for an environment by including their resource name in this list. Example: [\"cpu_util\"] would disable the CPU utilization alert, since it matches the azurerm_monitor_metric_alert.cpu_util resource."
   type        = list(string)
+  validation {
+    // Set the list of valid disabled alerts to prevent misconfigured commits
+    condition = length(setsubtract(var.disabled_alerts, [
+      "cpu_util",
+      "mem_util",
+      "http_response_time",
+      "http_2xx_failed_requests",
+      "http_4xx_errors",
+      "http_5xx_errors",
+      "first_error_in_a_week",
+      "account_request_failures",
+      "frontend_error_boundary",
+      "db_query_duration",
+      "db_query_duration_over_time_window",
+    ])) == 0
+    error_message = "One or more disabled_alert values are invalid."
+  }
 }
 variable "rg_name" {
   description = "Name of resource group to deploy into"
@@ -40,7 +57,7 @@ variable "cpu_threshold" {
 }
 
 variable "cpu_window_size" {
-  default = 5
+  default = "PT30M"
 }
 
 variable "http_response_time_aggregation" {
@@ -50,4 +67,8 @@ variable "http_response_time_aggregation" {
 variable "failed_http_2xx_threshold" {
   // The resource that uses this value doesn't have a >= check, so we need n - 1 here
   default = 9
+}
+
+variable "skip_on_weekends" {
+  default = false
 }

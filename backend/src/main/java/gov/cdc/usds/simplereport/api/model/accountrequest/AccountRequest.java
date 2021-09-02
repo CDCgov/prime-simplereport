@@ -4,32 +4,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
-import java.util.HashMap;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
 @JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
-public class AccountRequest implements TemplateVariablesProvider {
+public class AccountRequest extends OrganizationAccountRequest
+    implements TemplateVariablesProvider {
 
   private static final String TEMPLATE_NAME = "account-request";
 
-  @JsonProperty @NotNull private String firstName;
-  @JsonProperty @NotNull private String lastName;
-  @JsonProperty @NotNull private String email;
-  @JsonProperty @NotNull private String workPhoneNumber;
-  @JsonProperty private String cellPhoneNumber;
   @JsonProperty @NotNull private String streetAddress1;
   @JsonProperty private String streetAddress2;
   @JsonProperty @NotNull private String city;
-  @JsonProperty @NotNull private String state;
   @JsonProperty @NotNull private String zip;
   @JsonProperty @NotNull private String county;
   @JsonProperty private String facilityType;
   @JsonProperty private String facilityTypeOther;
-  @JsonProperty private String organizationName;
-  @JsonProperty private String organizationType;
   @JsonProperty @NotNull private String facilityName;
   @JsonProperty @NotNull private String facilityPhoneNumber;
   @JsonProperty @NotNull private String cliaNumber;
@@ -61,21 +53,13 @@ public class AccountRequest implements TemplateVariablesProvider {
 
   @Override
   public Map<String, Object> toTemplateVariables() {
-    Map<String, Object> variableMap = new HashMap<>();
+    Map<String, Object> variableMap = super.toTemplateVariables();
 
-    variableMap.put("firstName", firstName);
-    variableMap.put("lastName", lastName);
-    variableMap.put("email", email);
-    variableMap.put("workPhoneNumber", workPhoneNumber);
-    variableMap.put("cellPhoneNumber", cellPhoneNumber);
     variableMap.put("streetAddress1", streetAddress1);
     variableMap.put("streetAddress2", streetAddress2);
     variableMap.put("city", city);
-    variableMap.put("state", state);
     variableMap.put("zip", zip);
     variableMap.put("county", county);
-    variableMap.put("organizationName", organizationName);
-    variableMap.put("organizationType", organizationType);
     variableMap.put("facilityName", facilityName);
     variableMap.put("facilityPhoneNumber", facilityPhoneNumber);
     variableMap.put("cliaNumber", cliaNumber);

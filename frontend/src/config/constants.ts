@@ -14,6 +14,7 @@ export const liveJurisdictions = [
   "GU",
   "LA",
   "MA",
+  "MD",
   "MS",
   "MT",
   "ND",
@@ -22,6 +23,9 @@ export const liveJurisdictions = [
   "PA",
   "TX",
   "VT",
+  "WA",
+  "WI",
+  "WY",
 ];
 
 // States which do not require a valid CLIA number for a facility
@@ -207,4 +211,10 @@ export const accountCreationSteps = [
   { label: "Create your password", value: "0", order: 0 },
   { label: "Select your security question", value: "1", order: 1 },
   { label: "Set up authentication", value: "2", order: 2 },
+];
+
+export const organizationCreationSteps = [
+  { label: "Organization information", value: "0", order: 0 },
+  { label: "Personal details", value: "1", order: 1 },
+  { label: "Experian identity verification", value: "2", order: 2 },
 ];

@@ -8,6 +8,7 @@ import { displayFullName } from "../../utils";
 
 import ManageUsers, { SettingsUsers } from "./ManageUsers";
 import { GET_USER } from "./ManageUsersContainer";
+import "../../../i18n";
 
 const organization = { testingFacility: [{ id: "a1", name: "Foo Org" }] };
 const allFacilities = [
@@ -51,6 +52,7 @@ const users: SettingsUsers[keyof SettingsUsers][] = [
     permissions: ["READ_PATIENT_LIST"],
     roleDescription: "user",
     role: "USER",
+    status: "ACTIVE",
   },
   {
     ...loggedInUser,
@@ -58,6 +60,30 @@ const users: SettingsUsers[keyof SettingsUsers][] = [
     organization,
     roleDescription: "admin",
     role: "ADMIN",
+    status: "ACTIVE",
+  },
+];
+
+const suspendedUsers: SettingsUsers[keyof SettingsUsers][] = [
+  {
+    firstName: "Sarah",
+    middleName: "",
+    lastName: "Abba",
+    id: "b234",
+    email: "sarah@abba.org",
+    organization: { testingFacility: [] },
+    permissions: ["READ_PATIENT_LIST"],
+    roleDescription: "user",
+    role: "USER",
+    status: "SUSPENDED",
+  },
+  {
+    ...loggedInUser,
+    permissions: [],
+    organization,
+    roleDescription: "admin",
+    role: "ADMIN",
+    status: "ACTIVE",
   },
 ];
 
@@ -108,12 +134,37 @@ const mocks = [
       },
     },
   },
+  {
+    request: {
+      query: GET_USER,
+      variables: {
+        id: "b234",
+      },
+    },
+    result: {
+      data: {
+        user: {
+          id: "b234",
+          firstName: "Sarah",
+          middleName: "",
+          lastName: "Abba",
+          roleDescription: "user",
+          role: "USER",
+          permissions: ["READ_PATIENT_LIST"],
+          email: "sarah@abba.com",
+          organization: { testingFacility: [] },
+          status: "SUSPENDED",
+        },
+      },
+    },
+  },
 ];
 
 let updateUserPrivileges: () => Promise<any>;
 let addUserToOrg: () => Promise<any>;
 let deleteUser: (obj: any) => Promise<any>;
 let getUsers: () => Promise<any>;
+let reactivateUser: (obj: any) => Promise<any>;
 
 let inputValue = (value: string) => ({ target: { value } });
 
@@ -128,6 +179,19 @@ const TestContainer: React.FC = ({ children }) => (
 );
 
 describe("ManageUsers", () => {
+  const { reload } = window.location;
+
+  beforeAll(() => {
+    Object.defineProperty(window, "location", {
+      writable: true,
+      value: { reload: jest.fn() },
+    });
+  });
+
+  afterAll(() => {
+    window.location.reload = reload;
+  });
+
   beforeEach(() => {
     updateUserPrivileges = jest.fn(() => Promise.resolve());
     addUserToOrg = jest.fn(() =>
@@ -139,6 +203,11 @@ describe("ManageUsers", () => {
       Promise.resolve({ data: { setUserIsDeleted: { id: obj.variables.id } } })
     );
     getUsers = jest.fn(() => Promise.resolve({ data: users }));
+    reactivateUser = jest.fn((obj) =>
+      Promise.resolve({
+        data: { setUserIsReactivated: { id: obj.variables.id } },
+      })
+    );
   });
 
   describe("regular list of users", () => {
@@ -165,6 +234,8 @@ describe("ManageUsers", () => {
               addUserToOrg={addUserToOrg}
               deleteUser={deleteUser}
               getUsers={getUsers}
+              reactivateUser={reactivateUser}
+              resetUserPassword={() => Promise.resolve()}
             />
           </TestContainer>
         );
@@ -189,7 +260,7 @@ describe("ManageUsers", () => {
       expect(getByLabelText("user", { exact: false })).toHaveAttribute(
         "disabled"
       );
-      expect(getByLabelText("Entry only", { exact: false })).toHaveAttribute(
+      expect(getByLabelText("Testing only", { exact: false })).toHaveAttribute(
         "disabled"
       );
       expect(container).toMatchSnapshot();
@@ -205,7 +276,7 @@ describe("ManageUsers", () => {
 
       fireEvent.click(getByText("New User", { exact: false }));
       const [first, last, email] = await findAllByRole("textbox");
-      const select = getByLabelText("Access Level", { exact: false });
+      const select = getByLabelText("Access level", { exact: false });
       fireEvent.change(first, inputValue(newUser.firstName));
       fireEvent.change(last, inputValue(newUser.lastName));
       fireEvent.change(email, inputValue(newUser.email));
@@ -226,6 +297,33 @@ describe("ManageUsers", () => {
           role: "USER",
         },
       });
+    });
+
+    it("fails with invalid email address", async () => {
+      const newUser = {
+        firstName: "Jane",
+        lastName: "Smith",
+        email: "jane",
+        role: "USER",
+      };
+
+      fireEvent.click(getByText("New User", { exact: false }));
+      const [first, last, email] = await findAllByRole("textbox");
+      const select = getByLabelText("Access level", { exact: false });
+      fireEvent.change(first, inputValue(newUser.firstName));
+      fireEvent.change(last, inputValue(newUser.lastName));
+      fireEvent.change(email, inputValue(newUser.email));
+      fireEvent.change(select, inputValue(newUser.role));
+      const sendButton = getByText("Send invite");
+      await waitFor(() => {
+        fireEvent.click(screen.getAllByRole("checkbox")[1]);
+        expect(sendButton).not.toBeDisabled();
+      });
+      fireEvent.click(sendButton);
+      await waitFor(() => expect(addUserToOrg).not.toBeCalled());
+      expect(
+        screen.queryAllByText("Email must be a valid email address").length
+      ).toBe(1);
     });
 
     it("passes user details to the addUserToOrg function without a role", async () => {
@@ -321,6 +419,8 @@ describe("ManageUsers", () => {
               addUserToOrg={addUserToOrg}
               deleteUser={deleteUser}
               getUsers={getUsers}
+              reactivateUser={reactivateUser}
+              resetUserPassword={() => Promise.resolve()}
             />
           </TestContainer>
         );
@@ -357,6 +457,47 @@ describe("ManageUsers", () => {
       expect(addUserToOrg).toBeCalledWith({
         variables: { ...newUser, role: "USER" },
       });
+    });
+  });
+
+  describe("suspended users", () => {
+    let findByText: any;
+    beforeEach(async () => {
+      await waitFor(() => {
+        const { findByText: findText } = render(
+          <TestContainer>
+            <ManageUsers
+              users={suspendedUsers}
+              loggedInUser={loggedInUser}
+              allFacilities={allFacilities}
+              updateUserPrivileges={updateUserPrivileges}
+              addUserToOrg={addUserToOrg}
+              deleteUser={deleteUser}
+              getUsers={getUsers}
+              reactivateUser={reactivateUser}
+              resetUserPassword={() => Promise.resolve()}
+            />
+          </TestContainer>
+        );
+        findByText = findText;
+      });
+    });
+
+    it("reactivates a suspended user", async () => {
+      const reactivateButton = await findByText("Reactivate", { exact: false });
+      fireEvent.click(reactivateButton);
+      const sureButton = await findByText("Yes", { exact: false });
+      fireEvent.click(sureButton);
+      await waitFor(() => expect(reactivateUser).toBeCalled());
+      expect(reactivateUser).toBeCalledWith({
+        variables: { id: suspendedUsers[0].id },
+      });
+    });
+
+    it("only shows status for non-active users", async () => {
+      // status appears twice for each suspended user - once in the side nav, and once in the detail view.
+      // the suspendedUsers list only has two users, one active and one suspended.
+      expect(screen.queryAllByText("Account deactivated").length).toBe(2);
     });
   });
 
@@ -432,6 +573,8 @@ describe("ManageUsers", () => {
                 addUserToOrg={addUserToOrg}
                 deleteUser={deleteUser}
                 getUsers={getUsers}
+                reactivateUser={reactivateUser}
+                resetUserPassword={() => Promise.resolve()}
               />
             </MockedProvider>
           </Provider>

@@ -5,17 +5,19 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import java.util.Objects;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import org.hibernate.annotations.Type;
 
 @Entity
 public class PhoneNumber extends AuditedEntity {
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "person_internal_id")
   private Person person;
 
@@ -45,8 +47,8 @@ public class PhoneNumber extends AuditedEntity {
   }
 
   @JsonIgnore
-  public Person getPerson() {
-    return person;
+  public UUID getPersonInternalID() {
+    return person.getInternalId();
   }
 
   public PhoneType getType() {

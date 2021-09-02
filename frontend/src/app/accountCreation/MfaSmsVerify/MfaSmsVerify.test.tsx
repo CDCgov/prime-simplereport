@@ -13,8 +13,13 @@ jest.mock("../AccountCreationApiService", () => ({
         if (code === "123456") {
           res("success");
         } else {
-          rej();
+          rej("incorrect code");
         }
+      });
+    },
+    enrollSecurityKeyMfa: () => {
+      return new Promise((res) => {
+        res({ activation: { challenge: "challenge", user: { id: "userId" } } });
       });
     },
   },
@@ -27,7 +32,7 @@ describe("Verify SMS MFA", () => {
         initialEntries={[
           {
             pathname: "/mfa-sms/verify",
-            state: { contact: "(530) 867-5309" },
+            state: { contact: "530-867-5309" },
           },
         ]}
       >
@@ -41,7 +46,7 @@ describe("Verify SMS MFA", () => {
 
   it("can submit a valid security code", async () => {
     expect(
-      screen.getByText("(530) 867-5309", { exact: false })
+      screen.getByText("530-867-5309", { exact: false })
     ).toBeInTheDocument();
     fireEvent.change(
       screen.getByLabelText("One-time security code", { exact: false }),
@@ -56,13 +61,15 @@ describe("Verify SMS MFA", () => {
       screen.queryByText("Enter your security code")
     ).not.toBeInTheDocument();
     expect(
-      screen.getByText("You’re ready to start using SimpleReport.")
+      screen.getByText(
+        "To start using SimpleReport, visit the website to log in to your account."
+      )
     ).toBeInTheDocument();
   });
 
   it("shows an error for an invalid security code", async () => {
     expect(
-      screen.getByText("(530) 867-5309", { exact: false })
+      screen.getByText("530-867-5309", { exact: false })
     ).toBeInTheDocument();
     fireEvent.change(
       screen.getByLabelText("One-time security code", { exact: false }),
@@ -73,11 +80,11 @@ describe("Verify SMS MFA", () => {
     await act(async () => {
       await fireEvent.click(screen.getByText("Submit"));
     });
+    expect(screen.getByText("incorrect code")).toBeInTheDocument();
     expect(
-      screen.getByText("API Error:", { exact: false })
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByText("You’re ready to start using SimpleReport.")
+      screen.queryByText(
+        "To start using SimpleReport, visit the website to log in to your account."
+      )
     ).not.toBeInTheDocument();
   });
 
@@ -85,7 +92,9 @@ describe("Verify SMS MFA", () => {
     fireEvent.click(screen.getByText("Submit"));
     expect(screen.getByText("Enter your security code")).toBeInTheDocument();
     expect(
-      screen.queryByText("You’re ready to start using SimpleReport.")
+      screen.queryByText(
+        "To start using SimpleReport, visit the website to log in to your account."
+      )
     ).not.toBeInTheDocument();
   });
 });

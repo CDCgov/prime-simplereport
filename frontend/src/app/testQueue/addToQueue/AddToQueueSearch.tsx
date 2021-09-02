@@ -37,7 +37,7 @@ export const QUERY_PATIENT = gql`
     patients(
       facilityId: $facilityId
       pageNumber: 0
-      pageSize: 20
+      pageSize: 100
       showDeleted: false
       namePrefixMatch: $namePrefixMatch
     ) {
@@ -48,6 +48,10 @@ export const QUERY_PATIENT = gql`
       birthDate
       gender
       telephone
+      phoneNumbers {
+        type
+        number
+      }
       testResultDelivery
     }
   }

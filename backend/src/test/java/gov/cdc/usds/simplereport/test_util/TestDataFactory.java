@@ -21,7 +21,9 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
@@ -118,14 +120,17 @@ public class TestDataFactory {
     return save;
   }
 
+  @Transactional
   public Person createMinimalPerson(Organization org) {
     return createMinimalPerson(org, null, "John", "Brown", "Boddie", "Jr.");
   }
 
+  @Transactional
   public Person createMinimalPerson(Organization org, Facility fac) {
     return createMinimalPerson(org, fac, "Rebecca", "Grey", "Green", "III");
   }
 
+  @Transactional
   public Person createMinimalPerson(
       Organization org,
       Facility fac,
@@ -137,10 +142,12 @@ public class TestDataFactory {
     return createMinimalPerson(org, fac, names);
   }
 
+  @Transactional
   public Person createMinimalPerson(Organization org, Facility fac, PersonName names) {
     return createMinimalPerson(org, fac, names, PersonRole.STAFF);
   }
 
+  @Transactional
   public Person createMinimalPerson(
       Organization org, Facility fac, PersonName names, PersonRole role) {
     Person p = new Person(names, org, fac, role);
@@ -151,10 +158,12 @@ public class TestDataFactory {
     return _personRepo.save(p);
   }
 
+  @Transactional
   public Person createFullPerson(Organization org) {
     return createFullPersonWithTelephone(org, "202-123-4567");
   }
 
+  @Transactional
   public Person createFullPersonWithTelephone(Organization org, String telephone) {
     // consts are to keep style check happy othewise it complains about
     // "magic numbers"
@@ -175,7 +184,9 @@ public class TestDataFactory {
             null,
             "male",
             false,
-            false);
+            false,
+            "English",
+            TestResultDeliveryPreference.SMS);
     _personRepo.save(p);
     PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, telephone);
     _phoneNumberRepo.save(pn);
@@ -202,6 +213,11 @@ public class TestDataFactory {
     return perple.get(0);
   }
 
+  public PhoneNumber addPhoneNumberToPerson(Person p, PhoneNumber pn) {
+    pn.setPerson(p);
+    return _phoneNumberRepo.save(pn);
+  }
+
   public TestOrder createTestOrder(Person p, Facility f) {
     AskOnEntrySurvey survey =
         new AskOnEntrySurvey(null, Collections.emptyMap(), null, null, null, null, null, null);
@@ -213,7 +229,9 @@ public class TestDataFactory {
     _patientAnswerRepo.save(answers);
     TestOrder o = new TestOrder(p, f);
     o.setAskOnEntrySurvey(answers);
-    return _testOrderRepo.save(o);
+    var savedOrder = _testOrderRepo.save(o);
+    _patientLinkRepository.save(new PatientLink(savedOrder));
+    return savedOrder;
   }
 
   public TestEvent createTestEvent(Person p, Facility f) {
@@ -241,6 +259,18 @@ public class TestDataFactory {
     o.markComplete();
     _testOrderRepo.save(o);
     return e;
+  }
+
+  public TestEvent createTestEventCorrection(TestEvent te) {
+    TestOrder o = createTestOrder(te.getPatient(), te.getFacility());
+    o.setResult(te.getResult());
+
+    TestEvent te2 =
+        _testEventRepo.save(new TestEvent(te, TestCorrectionStatus.CORRECTED, "Corrected"));
+    o.setTestEventRef(te2);
+    o.markComplete();
+    _testOrderRepo.save(o);
+    return te2;
   }
 
   public TestEvent doTest(TestOrder order, TestResult result) {

@@ -61,7 +61,7 @@ simple-report:
     # these are overridden by application-dev, -prod, -test, etc
     upload-enabled: false
     upload-url: ""
-    max-csv-rows: 999
+    max-csv-rows: 5000
     api-key: ${DATAHUB_API_KEY:MISSING}
     secret-slack-notify-webhook-url: ${SECRET_SLACK_NOTIFY_WEBHOOK_URL:MISSING}
     upload-schedule: "0 0 11 * * *" # Daily at 11:00 AM Eastern Time
@@ -79,8 +79,7 @@ simple-report:
     from-display-name: SimpleReport Support (CDC)
     account-request-recipient:
       - support@simplereport.gov
-      - Protect-ServiceDesk@hhs.gov
-    waitlist-recipient: 
+    waitlist-recipient:
       - support@simplereport.gov
     dynamic-templates:
       # The templates are added and edited at: https://mc.sendgrid.com/dynamic-templates
@@ -89,12 +88,21 @@ simple-report:
       # The values of the map are the GUID value for the Dynamic Template (also found in the SendGrid web
       # app).  New versions of the template do not change this value.
       ACCOUNT_REQUEST: d-7b0c7810ce5643f295e169f38b8db015
-  dynamics:
+      ID_VERIFICATION_FAILED: d-b629fce77d604a31a2872746674cf08e
+  experian:
     enabled: false
-    client-id: ${DYNAMICS_CLIENT_ID:MISSING}
-    client-secret: ${DYNAMICS_CLIENT_SECRET:MISSING}
-    tenant-id: ${DYNAMICS_TENANT_ID:MISSING}
-    resource-url: ${DYNAMICS_RESOURCE_URL:MISSING}
+    token-endpoint: ${EXPERIAN_TOKEN_ENDPOINT}
+    initial-request-endpoint: ${EXPERIAN_INITIAL_REQUEST_ENDPOINT}
+    domain: ${EXPERIAN_DOMAIN}
+    client-id: ${EXPERIAN_CLIENT_ID}
+    client-secret: ${EXPERIAN_CLIENT_SECRET}
+    crosscore-subscriber-subcode: ${EXPERIAN_CC_SUBSCRIBER_SUBCODE}
+    crosscore-username: ${EXPERIAN_CC_USERNAME}
+    crosscore-password: ${EXPERIAN_CC_PASSWORD}
+    preciseid-tenant-id: ${EXPERIAN_PID_TENANT_ID}
+    preciseid-client-reference-id: ${EXPERIAN_PID_CLIENT_REFERENCE_ID}
+    preciseid-username: ${EXPERIAN_PID_USERNAME}
+    preciseid-password: ${EXPERIAN_PID_PASSWORD}
   azure-reporting-queue:
     account-name: ${AZURE_REPORTING_QUEUE_ACCOUNT_NAME}
     sas-token: ${AZURE_REPORTING_QUEUE_SAS_TOKEN}
@@ -109,4 +117,4 @@ twilio:
 logging:
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} [Query: %X{graphql-query}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
-    
+hibernate.query.interceptor.error-level: ERROR

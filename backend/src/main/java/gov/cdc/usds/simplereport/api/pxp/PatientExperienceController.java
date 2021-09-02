@@ -12,7 +12,6 @@ import gov.cdc.usds.simplereport.api.model.PersonUpdate;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponse;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
-import gov.cdc.usds.simplereport.db.model.PatientPreferences;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
@@ -92,14 +91,13 @@ public class PatientExperienceController {
     PatientLink pl = _contextHolder.getPatientLink();
     OrderStatus os = _contextHolder.getLinkedOrder().getOrderStatus();
     Person p = _contextHolder.getPatient();
-    PatientPreferences pp = _ps.getPatientPreferences(p);
     TestEvent te =
         os == OrderStatus.COMPLETED
             ? _contextHolder.getLinkedOrder().getTestEvent()
             : _tes.getLastTestResultsForPatient(p);
     _tocs.storeTimeOfConsent(pl);
 
-    return new PxpVerifyResponse(p, os, te, pp);
+    return new PxpVerifyResponse(p, os, te);
   }
 
   @PostMapping("/patient")
@@ -123,9 +121,8 @@ public class PatientExperienceController {
     UUID plid = UUID.fromString(body.getPatientLinkId());
     PatientLink pl = _pls.getPatientLink(plid);
     OrderStatus os = pl.getTestOrder().getOrderStatus();
-    PatientPreferences pp = _ps.getPatientPreferences(updated);
     TestEvent te = _tes.getLastTestResultsForPatient(updated);
-    return new PxpVerifyResponse(updated, os, te, pp);
+    return new PxpVerifyResponse(updated, os, te);
   }
 
   @PostMapping("/questions")

@@ -26,8 +26,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UploadService {
   private static final String FACILITY_ID = "facilityId";
   private static final int MAX_LINE_LENGTH = 1024 * 6;
+  private static final Logger LOG = LoggerFactory.getLogger(UploadService.class);
 
   private final PersonService _ps;
   private final AddressValidationService _avs;
@@ -99,8 +104,11 @@ public class UploadService {
       throw new IllegalGraphqlArgumentException("Empty or invalid CSV submitted");
     }
 
+    Instant startTime = Instant.now();
+
     int rowNumber = 0;
     while (valueIterator.hasNext()) {
+      final Instant rowStartTime = Instant.now();
       final Map<String, String> row = getNextRow(valueIterator);
       rowNumber++;
       try {
@@ -133,12 +141,26 @@ public class UploadService {
             parseGender(getRow(row, "biologicalSex", false)),
             parseYesNo(getRow(row, "residentCongregateSetting", true)),
             parseYesNo(getRow(row, "employedInHealthcare", true)),
-            null); // Not including preferredLanguage for now
+            null, // Not including preferredLanguage for now
+            null); // Not including test result delivery preference for now
+
+        Duration rowElapsed = Duration.between(rowStartTime, Instant.now());
+        Duration totalElapsed = Duration.between(startTime, Instant.now());
+        LOG.debug(
+            "Processed row {} in {}ms; {} minutes total",
+            rowNumber,
+            rowElapsed.toMillis(),
+            totalElapsed.toMinutes());
       } catch (IllegalGraphqlArgumentException e) {
         throw new IllegalGraphqlArgumentException(
             "Error on row " + rowNumber + "; " + e.getMessage());
       }
     }
+
+    LOG.info(
+        "CSV Patient upload completed for {} records in {} minutes",
+        rowNumber,
+        Duration.between(startTime, Instant.now()).toMinutes());
     return "Successfully uploaded " + rowNumber + " record(s)";
   }
 

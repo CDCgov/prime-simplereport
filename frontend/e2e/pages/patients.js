@@ -23,7 +23,7 @@ function addPatient(dobFormat) {
   this.section.patientList.expect.element("@addPatient").to.be.visible;
   this.section.patientList.click("@addPatient");
   this.expect.section("@editPatient").to.be.visible;
-  this.expect.section("@editPatient").to.contain.text("Add New Person");
+  this.expect.section("@editPatient").to.contain.text("Add new person");
   this.section.editPatient.setValue("@firstName", firstName);
   this.section.editPatient.setValue("@dob", dobForInput);
   this.section.editPatient.setValue("@phone", phone);
@@ -38,9 +38,11 @@ function addPatient(dobFormat) {
   this.section.editPatient.click("@healthcareWorker");
   this.section.editPatient.click("@saveButton");
   this.expect.section("@editPatient").to.contain.text("Last name is required");
-  this.expect.section("@editPatient").to.contain.text("Facility is required");
+  this.expect
+    .section("@editPatient")
+    .to.contain.text("Testing facility is required");
   this.section.editPatient.setValue("@lastName", lastName);
-  this.section.editPatient.setValue("@facility", "All facilities");
+  this.section.editPatient.setValue("@facility", "All testing facilities");
   this.section.editPatient.click("@saveButton");
   this.section.confirmAddressModal.click("@addressSelect");
   this.section.confirmAddressModal.click("@save");

@@ -49,10 +49,10 @@ module "insights" {
   tags          = local.management_tags
 }
 
-module "pagerduty_demo" {
+module "pagerduty_non_prod" {
   source                  = "../services/pagerduty"
   resource_group_name     = data.azurerm_resource_group.rg.name
-  pagerduty_service_name  = "SimpleReport - Demo"
+  pagerduty_service_name  = "SimpleReport - Non-Prod"
   action_group_short_name = "SR-NonProd"
 }
 

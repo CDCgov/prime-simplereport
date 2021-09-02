@@ -2,24 +2,24 @@ import React, { useState } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
-import { PATIENT_TERM_CAP } from "../../config/constants";
+import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
 import { showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
-import { RootState } from "../store";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
+import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 import PersonForm from "./Components/PersonForm";
 
 export const EMPTY_PERSON: Nullable<PersonFormData> = {
   facilityId: "",
-  firstName: null,
+  firstName: "",
   middleName: null,
-  lastName: null,
+  lastName: "",
   lookupId: null,
   role: null,
   race: null,
@@ -27,18 +27,19 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   gender: null,
   residentCongregateSetting: undefined,
   employedInHealthcare: undefined,
-  tribalAffiliation: null,
-  birthDate: null,
+  tribalAffiliation: undefined,
+  birthDate: "",
   telephone: null,
   phoneNumbers: null,
   county: null,
   email: null,
-  street: null,
+  street: "",
   streetTwo: null,
   city: null,
-  state: null,
-  zipCode: null,
+  state: "",
+  zipCode: "",
   preferredLanguage: null,
+  testResultDelivery: null,
 };
 
 export const ADD_PATIENT = gql`
@@ -66,6 +67,7 @@ export const ADD_PATIENT = gql`
     $residentCongregateSetting: Boolean
     $employedInHealthcare: Boolean
     $preferredLanguage: String
+    $testResultDelivery: TestResultDeliveryPreference
   ) {
     addPatient(
       facilityId: $facilityId
@@ -91,6 +93,7 @@ export const ADD_PATIENT = gql`
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage
+      testResultDelivery: $testResultDelivery
     ) {
       internalId
     }
@@ -106,13 +109,16 @@ interface AddPatientResponse {
 const AddPatient = () => {
   useDocumentTitle("Add Patient");
 
+  const { t } = useTranslation();
+
   const [addPatient, { loading }] = useMutation<
     AddPatientResponse,
     AddPatientParams
   >(ADD_PATIENT);
-  const activeFacilityId: string = useSelector<RootState, string>(
-    (state) => state.facility.id
-  );
+
+  const [activeFacility] = useSelectedFacility();
+  const activeFacilityId = activeFacility?.id;
+
   const personPath = `/patients/?facility=${activeFacilityId}`;
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
 
@@ -120,7 +126,7 @@ const AddPatient = () => {
     return <Redirect to={redirect} />;
   }
 
-  if (activeFacilityId.length < 1) {
+  if (!activeFacilityId) {
     return <div>No facility selected</div>;
   }
 
@@ -139,7 +145,7 @@ const AddPatient = () => {
       toast,
       <Alert
         type="success"
-        title={`${PATIENT_TERM_CAP} Record Created`}
+        title={`${PATIENT_TERM_CAP} record created`}
         body="New information record has been created."
       />
     );
@@ -151,7 +157,6 @@ const AddPatient = () => {
       <div className={"grid-container margin-bottom-4"}>
         <PersonForm
           patient={EMPTY_PERSON}
-          activeFacilityId={activeFacilityId}
           savePerson={savePerson}
           getHeader={(_, onSave, formChanged) => (
             <div className="display-flex flex-justify">
@@ -171,7 +176,7 @@ const AddPatient = () => {
                 </div>
                 <div className="prime-edit-patient-heading margin-y-0">
                   <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
-                    Add New {PATIENT_TERM_CAP}
+                    Add new {PATIENT_TERM}
                   </h1>
                 </div>
               </div>
@@ -181,7 +186,9 @@ const AddPatient = () => {
                   disabled={loading || !formChanged}
                   onClick={onSave}
                 >
-                  {loading ? "Saving..." : "Save changes"}
+                  {loading
+                    ? `${t("common.button.saving")}...`
+                    : t("common.button.save")}
                 </button>
               </div>
             </div>
@@ -193,7 +200,11 @@ const AddPatient = () => {
                 className="prime-save-patient-changes"
                 disabled={loading || !formChanged}
                 onClick={onSave}
-                label={loading ? "Saving..." : "Save changes"}
+                label={
+                  loading
+                    ? `${t("common.button.saving")}...`
+                    : t("common.button.save")
+                }
               />
             </div>
           )}

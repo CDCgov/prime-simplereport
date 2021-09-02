@@ -1,8 +1,10 @@
 package gov.cdc.usds.simplereport.service.sms;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -13,25 +15,34 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TextMessageSent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.repository.TextMessageSentRepository;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
+import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class SmsServiceTest extends BaseServiceTest<SmsService> {
   @MockBean SmsProviderWrapper mockTwilio;
 
@@ -67,6 +78,8 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
   @Captor ArgumentCaptor<PhoneNumber> toNumber;
 
   @Captor ArgumentCaptor<String> message;
+
+  private OngoingStubbing<String> thenAnswer;
 
   @Test
   @WithSimpleReportEntryOnlyAllFacilitiesUser
@@ -124,12 +137,19 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     createTestOrderAndPatientLink(_person);
 
     // WHEN + THEN
-    assertThrows(
-        NumberParseException.class,
-        () -> {
-          _smsService.sendToPatientLink(
-              _patientLink.getInternalId(), "yup here we are, testing stuff");
-        });
+    when(mockTwilio.send(toNumber.capture(), fromNumber.capture(), message.capture()))
+        .thenReturn("some-twilio-id-20");
+    var sut =
+        _smsService.sendToPatientLink(
+            _patientLink.getInternalId(), "yup here we are, testing stuff");
+
+    List<SmsAPICallResult> failedDelivery =
+        sut.stream()
+            .filter(result -> result.getTelephone().equals("ABCD THIS ISN'T A PHONE NUMBER"))
+            .collect(Collectors.toList());
+
+    assertEquals(1, failedDelivery.size());
+    assertEquals(false, failedDelivery.get(0).getDeliverySuccess());
   }
 
   @Test
@@ -149,5 +169,84 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
 
     // THEN
     assertTrue(previousExpiry.before(updatedPatientLink.getExpiresAt()));
+  }
+
+  @Test
+  @WithSimpleReportStandardAllFacilitiesUser
+  void sendPatientLinkSms_returnsSmsDeliveryResults() throws NumberParseException {
+    // GIVEN
+    _person = _dataFactory.createFullPerson(_org);
+    createTestOrderAndPatientLink(_person);
+
+    // WHEN
+    when(mockTwilio.send(any(), fromNumber.capture(), message.capture()))
+        .thenReturn("some-twilio-id-10");
+
+    var sut = _smsService.sendToPatientLink(_patientLink.getInternalId(), "it's a test!");
+
+    // THEN
+    assertEquals(1, sut.size());
+    var result = sut.get(0);
+    assertEquals(_person.getPrimaryPhone().getNumber(), result.getTelephone());
+    assertEquals("some-twilio-id-10", result.getMessageId());
+    assertEquals(true, result.getDeliverySuccess());
+  }
+
+  @Test
+  @WithSimpleReportStandardAllFacilitiesUser
+  void sendPatientLinkSms_sendsToAllPatientMobileNumbers() throws NumberParseException {
+    // GIVEN
+    var pn = new gov.cdc.usds.simplereport.db.model.PhoneNumber(PhoneType.MOBILE, "2708675309");
+    _person = _dataFactory.createFullPerson(_org);
+    _dataFactory.addPhoneNumberToPerson(_person, pn);
+    createTestOrderAndPatientLink(_person);
+
+    // WHEN
+    when(mockTwilio.send(any(), fromNumber.capture(), message.capture()))
+        .thenAnswer(
+            new Answer() {
+              private int count = 0;
+
+              public Object answer(InvocationOnMock invocation) {
+                count++;
+
+                return String.format("some-twilio-id-%d", count);
+              }
+            });
+
+    var sut = _smsService.sendToPatientLink(_patientLink.getInternalId(), "it's a test!");
+
+    // THEN
+    assertEquals(2, sut.size());
+  }
+
+  @Test
+  @WithSimpleReportStandardAllFacilitiesUser
+  void sendPatientLinkSms_doesNotSendToPatientLandlineNumber() throws NumberParseException {
+    // GIVEN
+    _person = _dataFactory.createFullPerson(_org);
+    var pn = new gov.cdc.usds.simplereport.db.model.PhoneNumber(PhoneType.LANDLINE, "2708675309");
+    _dataFactory.addPhoneNumberToPerson(_person, pn);
+    createTestOrderAndPatientLink(_person);
+
+    // WHEN
+    when(mockTwilio.send(any(), fromNumber.capture(), message.capture()))
+        .thenAnswer(
+            new Answer() {
+              private int count = 0;
+
+              public Object answer(InvocationOnMock invocation) {
+                count++;
+
+                return String.format("some-twilio-id-%d", count);
+              }
+            });
+
+    List<SmsAPICallResult> sut =
+        _smsService.sendToPatientLink(_patientLink.getInternalId(), "it's a test!");
+    // THEN
+    assertEquals(1, sut.size());
+    // Should not have attempted delivery to the landline number
+    assertNotEquals("2708675309", sut.get(0).getTelephone());
   }
 }

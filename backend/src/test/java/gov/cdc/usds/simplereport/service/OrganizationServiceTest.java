@@ -26,7 +26,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Autowired private TestDataFactory _dataFactory;
@@ -45,11 +47,11 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  void createOrganization_standardUser_error() {
+  void createOrganizationAndFacility_standardUser_error() {
     DeviceSpecimenTypeHolder holder = getDeviceConfig();
     PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
     Organization org =
-        _service.createOrganization(
+        _service.createOrganizationAndFacility(
             "Tim's org",
             "k12",
             "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
@@ -92,11 +94,11 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void createOrganization_adminUser_success() {
+  void createOrganizationAndFacility_adminUser_success() {
     DeviceSpecimenTypeHolder holder = getDeviceConfig();
     PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
     Organization org =
-        _service.createOrganization(
+        _service.createOrganizationAndFacility(
             "Tim's org",
             "university",
             "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
@@ -130,13 +132,13 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void createOrganization_orderingProviderRequired_failure() {
+  void createOrganizationAndFacility_orderingProviderRequired_failure() {
     DeviceSpecimenTypeHolder holder = getDeviceConfig();
     PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
     assertThrows(
         OrderingProviderRequiredException.class,
         () -> {
-          _service.createOrganization(
+          _service.createOrganizationAndFacility(
               "Adam's org",
               "urgent_care",
               "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
@@ -155,7 +157,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void getOrganizations_filterByIdentityVerified_success() {
+  void getOrganizationsAndFacility_filterByIdentityVerified_success() {
     Organization verifiedOrg = _dataFactory.createValidOrg();
     Organization unverifiedOrg = _dataFactory.createUnverifiedOrg();
     List<Organization> allOrgs = _service.getOrganizations(null);
@@ -188,5 +190,26 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
         assertThrows(
             AccessDeniedException.class, () -> _service.updateOrganization("Foo org", "k12"));
     assertEquals("Access is denied", caught.getMessage());
+  }
+
+  @Test
+  void verifyOrganizationNoPermissions_noUser_success() {
+    Organization org = _dataFactory.createUnverifiedOrg();
+    _service.verifyOrganizationNoPermissions(org.getExternalId());
+
+    org = _service.getOrganization(org.getExternalId());
+    assertTrue(org.getIdentityVerified());
+  }
+
+  @Test
+  void verifyOrganizationNoPermissions_orgAlreadyVerified_failure() {
+    Organization org = _dataFactory.createValidOrg();
+    String orgExternalId = org.getExternalId();
+    IllegalStateException e =
+        assertThrows(
+            IllegalStateException.class,
+            () -> _service.verifyOrganizationNoPermissions(orgExternalId));
+
+    assertEquals("Organization is already verified.", e.getMessage());
   }
 }

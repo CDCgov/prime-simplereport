@@ -7,7 +7,7 @@ resource "azurerm_postgresql_server" "db" {
   sku_name                      = "GP_Gen5_4"
   version                       = "11"
   ssl_enforcement_enabled       = var.tls_enabled
-  public_network_access_enabled = var.public_access
+  public_network_access_enabled = false
 
   administrator_login          = var.administrator_login
   administrator_login_password = data.azurerm_key_vault_secret.db_password.value
@@ -39,13 +39,23 @@ resource "azurerm_postgresql_database" "simple_report" {
   server_name         = azurerm_postgresql_server.db.name
 }
 
-# These parameters and names need to be exact: https://github.com/MicrosoftDocs/azure-docs/issues/20758
-# It looks like this only works if we enable public access. Otherwise, we need to use virtual network rules.
-resource "azurerm_postgresql_firewall_rule" "allow_access_to_azure_services" {
-  count               = var.public_access ? 1 : 0
-  name                = "AllowAllAzureIps"
+resource "azurerm_postgresql_configuration" "log_autovacuum_min_duration" {
+  name                = "log_autovacuum_min_duration"
   resource_group_name = var.rg_name
   server_name         = azurerm_postgresql_server.db.name
-  start_ip_address    = "0.0.0.0"
-  end_ip_address      = "0.0.0.0"
+  value               = 250
+}
+
+resource "azurerm_postgresql_configuration" "pg_qs_query_capture_mode" {
+  name                = "pg_qs.query_capture_mode"
+  resource_group_name = var.rg_name
+  server_name         = azurerm_postgresql_server.db.name
+  value               = "TOP"
+}
+
+resource "azurerm_postgresql_configuration" "pgms_wait_sampling_query_capture_mode" {
+  name                = "pgms_wait_sampling.query_capture_mode"
+  resource_group_name = var.rg_name
+  server_name         = azurerm_postgresql_server.db.name
+  value               = "ALL"
 }

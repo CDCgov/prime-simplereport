@@ -20,7 +20,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class OrganizationFacilityTest extends BaseGraphqlTest {
 
   @Autowired private DeviceTypeService _deviceService;
@@ -92,6 +94,20 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
           verified = runQuery("set-organization-identity-verified", variables);
           assertTrue(verified.path("setOrganizationIdentityVerified").asBoolean());
         });
+  }
+
+  @Test
+  void getRegistrationLinks_success() {
+    ObjectNode org = (ObjectNode) runQuery("org-links-query").get("whoami");
+    String orgLink = org.get("organization").get("patientSelfRegistrationLink").asText();
+    assertEquals("dis-org", orgLink);
+    String facilityLink =
+        org.get("organization")
+            .get("facilities")
+            .get(0)
+            .get("patientSelfRegistrationLink")
+            .asText();
+    assertEquals("inj3ct", facilityLink);
   }
 
   private ObjectNode getDeviceArgs() {

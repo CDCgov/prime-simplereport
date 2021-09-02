@@ -27,6 +27,8 @@ import { getAppInsights, ai, withInsights } from "./app/TelemetryService";
 import TelemetryProvider from "./app/telemetry-provider";
 import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration";
 import "./i18n";
+import getNodeEnv from "./app/utils/getNodeEnv";
+import PrimeErrorBoundary from "./app/PrimeErrorBoundary";
 
 import "./styles/App.css";
 
@@ -35,7 +37,7 @@ ai.initialize();
 withInsights(console);
 
 // Define the root element for modals
-if (process.env.NODE_ENV !== "test") {
+if (getNodeEnv() !== "test") {
   Modal.setAppElement("#root");
 }
 
@@ -56,10 +58,9 @@ const httpLink = createUploadLink({
   uri: `${process.env.REACT_APP_BACKEND_URL}/graphql`,
 });
 
-const addHeadersMiddleware = new ApolloLink((operation, forward) => {
+const authMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext({
     headers: {
-      "X-SimpleReport-UI-Version": process.env.REACT_APP_CURRENT_COMMIT,
       "Access-Control-Request-Headers": "Authorization",
       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
     },
@@ -103,7 +104,7 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: logoutLink.concat(concat(addHeadersMiddleware, httpLink)),
+  link: logoutLink.concat(concat(authMiddleware, httpLink as any)),
 });
 
 export const ReactApp = (
@@ -112,18 +113,20 @@ export const ReactApp = (
       <Provider store={store}>
         <Router basename={process.env.PUBLIC_URL}>
           <TelemetryProvider>
-            <Switch>
-              <Route path="/health" component={HealthChecks} />
-              <Route path="/pxp" component={PatientApp} />
-              <Route path="/uac" component={AccountCreationApp} />
-              <Route path="/sign-up" component={SignUpApp} />
-              <Route
-                path="/register/:registrationLink"
-                component={SelfRegistration}
-              />
-              <Route path="/" component={App} />
-              <Route component={() => <>Page not found</>} />
-            </Switch>
+            <PrimeErrorBoundary>
+              <Switch>
+                <Route path="/health" component={HealthChecks} />
+                <Route path="/pxp" component={PatientApp} />
+                <Route path="/uac" component={AccountCreationApp} />
+                <Route path="/sign-up" component={SignUpApp} />
+                <Route
+                  path="/register/:registrationLink"
+                  component={SelfRegistration}
+                />
+                <Route path="/" component={App} />
+                <Route component={() => <>Page not found</>} />
+              </Switch>
+            </PrimeErrorBoundary>
           </TelemetryProvider>
         </Router>
       </Provider>

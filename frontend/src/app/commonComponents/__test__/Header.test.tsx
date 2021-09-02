@@ -4,7 +4,10 @@ import { MemoryRouter } from "react-router";
 import createMockStore from "redux-mock-store";
 import { useTrackEvent } from "@microsoft/applicationinsights-react-js";
 
+import { TRAINING_PURPOSES_ONLY } from "../TrainingNotification";
 import Header from "../Header";
+import "../../../i18n";
+import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 
 const mockStore = createMockStore([]);
 
@@ -15,6 +18,7 @@ const store = mockStore({
   user: {
     firstName: "Kim",
     lastName: "Mendoza",
+    roleDescription: "Standard user",
   },
   facilities: [
     { id: "1", name: "Facility 1" },
@@ -39,23 +43,21 @@ describe("Header.tsx", () => {
     process.env = OLD_ENV;
   });
 
-  const WrappedHeader: React.FC = () => (
+  const WrappedHeader: React.FC = ({ children }) => (
     <MemoryRouter>
       <Provider store={store}>
         <Header />
+        {children}
       </Provider>
     </MemoryRouter>
   );
-
-  const ALERT_TEXT =
-    "This is a training site with fake data to be used for training purposes only";
 
   const MODAL_TEXT = "Welcome to the SimpleReport";
 
   it("displays the training header and modal and dismisses the modal", async () => {
     process.env.REACT_APP_IS_TRAINING_SITE = "true";
     render(<WrappedHeader />);
-    expect(await screen.findByText(ALERT_TEXT)).toBeInTheDocument();
+    expect(await screen.findAllByText(TRAINING_PURPOSES_ONLY)).toHaveLength(2);
     const trainingWelcome = await screen.findByText(MODAL_TEXT, {
       exact: false,
     });
@@ -67,7 +69,7 @@ describe("Header.tsx", () => {
   });
   it("does not display training notifications outside the training environment", () => {
     process.env.REACT_APP_IS_TRAINING_SITE = "false";
-    expect(screen.queryByText(ALERT_TEXT)).not.toBeInTheDocument();
+    expect(screen.queryByText(TRAINING_PURPOSES_ONLY)).not.toBeInTheDocument();
     expect(screen.queryByText(MODAL_TEXT)).not.toBeInTheDocument();
   });
   it("displays the support link correctly", async () => {
@@ -82,4 +84,32 @@ describe("Header.tsx", () => {
     });
     expect(useTrackEvent).toHaveBeenCalledWith(undefined, "Support", {});
   });
+  it("it does not render login links", () => {
+    expect(
+      screen.queryByText("Login as", { exact: false })
+    ).not.toBeInTheDocument();
+  });
+  describe("Facility dropdown", () => {
+    it("Switches facilities", async () => {
+      render(
+        <WrappedHeader>
+          <FacilityViewer />
+        </WrappedHeader>
+      );
+      const dropdown = await screen.findAllByRole("option");
+      await waitFor(() => {
+        fireEvent.change(dropdown[1].closest("select")!, {
+          target: { value: "2" },
+        });
+      });
+      expect(
+        await screen.findByText("Facility 2 is selected")
+      ).toBeInTheDocument();
+    });
+  });
 });
+
+function FacilityViewer() {
+  const [selectedFacility] = useSelectedFacility();
+  return <>{selectedFacility?.name} is selected</>;
+}

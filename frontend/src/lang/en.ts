@@ -1,10 +1,221 @@
-/* eslint-disable no-useless-concat */
+const YES = "Yes";
+const NO = "No";
+const OTHER = "Other";
+const REFUSED = "Prefer not to answer";
+const UNKNOWN = "Unknown";
+
 export const en = {
   translation: {
     header: "COVID-19 Testing Portal",
+    banner: {
+      dotGov: "The .gov means it’s official.",
+      dotGovHelper:
+        "Federal government websites often end in .gov or .mil. Before sharing sensitive information, make sure you’re on a federal government site.",
+      secure: "The site is secure.",
+      secureHelper:
+        "The <0>https://</0> ensures that you are connecting to the official website and that any information you provide is encrypted and transmitted securely.",
+      officialWebsite: "An official website of the United States government",
+      howYouKnow: "Here’s how you know",
+    },
+    constants: {
+      testResults: {
+        POSITIVE: "Positive",
+        NEGATIVE: "Negative",
+        UNDETERMINED: "Inconclusive",
+        UNKNOWN: UNKNOWN,
+      },
+      role: {
+        STAFF: "Staff",
+        RESIDENT: "Resident",
+        STUDENT: "Student",
+        VISITOR: "Visitor",
+      },
+      race: {
+        native: "American Indian/Alaskan Native",
+        asian: "Asian",
+        black: "Black/African American",
+        pacific: "Native Hawaiian/other Pacific Islander",
+        white: "White",
+        other: OTHER,
+        refused: REFUSED,
+      },
+      gender: {
+        female: "Female",
+        male: "Male",
+        other: OTHER,
+        refused: REFUSED,
+      },
+      ethnicity: {
+        hispanic: YES,
+        not_hispanic: NO,
+        refused: REFUSED,
+      },
+      phoneType: {
+        MOBILE: "Mobile",
+        LANDLINE: "Landline",
+      },
+      yesNoUnk: {
+        YES,
+        NO,
+        UNKNOWN,
+      },
+    },
+    languages: {
+      English: "English",
+      Spanish: "Spanish",
+    },
+    common: {
+      required: "Required fields are marked with an asterisk",
+      defaultDropdownOption: "- Select -",
+      button: {
+        submit: "Submit",
+        save: "Save changes",
+        saving: "Saving",
+      },
+      pageNotFound: {
+        heading: "Page not found",
+        text:
+          "We're sorry, we can't find the page you're looking for. It might have been removed, had its name changed, or is otherwise unavailable.",
+        errorCode: "Error code: 404",
+      },
+    },
+    address: {
+      heading: "Address validation",
+      select: "Please select an option to continue:",
+      useAddress: "Use address as entered",
+      getSuggested: "Use suggested address",
+      noSuggestedFound: "No suggested address found",
+      goBack: "Go back to edit address",
+      goBack_plural: "Go back to edit addresses",
+      save: "Save changes",
+      errors: {
+        incomplete: "Please choose an address or go back to edit",
+        unverified: "The address you entered could not be verified",
+        unverified_plural: "The addresses you entered could not be verified",
+      },
+    },
+    facility: {
+      form: {
+        heading: "Testing facility",
+        allFacilities: "All testing facilities",
+      },
+    },
+    patient: {
+      form: {
+        general: {
+          heading: "General information",
+          helpText: "Required fields are marked with an asterisk",
+          firstName: "First name",
+          middleName: "Middle name",
+          lastName: "Last name",
+          role: "Role",
+          studentId: "Student ID",
+          preferredLanguage: "Preferred language",
+          dob: "Date of birth",
+          dobFormat: "mm/dd/yyyy",
+        },
+        contact: {
+          heading: "Contact information",
+          helpText:
+            "You're responsible for entering the correct contact information, following applicable federal and state laws.",
+          primaryPhoneNumber: "Primary phone number",
+          additionalPhoneNumber: "Additional phone number",
+          receiveTextMessageResults: "Yes, text all mobile numbers on file.",
+          phoneType: "Phone type",
+          addNumber: "Add another number",
+          testResultDelivery:
+            "Would you like to receive your results via text message?",
+          email: "Email address",
+          street1: "Street address 1",
+          street2: "Street address 2",
+          county: "County",
+          city: "City",
+          state: "State",
+          zip: "ZIP code",
+        },
+        demographics: {
+          heading: "Demographics",
+          helpText:
+            "This information is collected as part of public health efforts to recognize and address inequality in health outcomes.",
+          race: "Race",
+          tribalAffiliation: "Tribal affiliation",
+          ethnicity: "Are you Hispanic or Latino?",
+          gender: "Sex assigned at birth",
+          genderHelpText:
+            "This is usually the gender that is written on your original birth certificate.",
+        },
+        other: {
+          heading: "Other",
+          congregateLiving: {
+            heading: "Are you a resident in a congregate living setting?",
+            helpText:
+              "For example: nursing home, group home, prison, jail, or military",
+          },
+          healthcareWorker: "Are you a health care worker?",
+        },
+        errors: {
+          unsaved:
+            "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing.",
+          validationMsg: "Please correct before submitting",
+          firstName: "First name is required",
+          fieldLength: "This answer is too long",
+          middleName: "Middle name is incorrectly formatted",
+          lastName: "Last name is required",
+          lookupId: "Student ID is incorrectly formatted",
+          role: "Role is incorrectly formatted",
+          facilityId: "Testing facility is required",
+          birthDate: {
+            base:
+              "Date of birth is required, must be in MM/DD/YY format, and in the past",
+            past: "Date of birth is too far in the past",
+            future: "Date of birth can’t be in the future",
+          },
+          telephone: "Phone number is missing or invalid",
+          phoneNumbers: "Phone numbers are missing or invalid",
+          phoneNumbersDuplicate: "Duplicate phone number entered",
+          email: "Email is missing or incorrectly formatted",
+          street: "Street is missing",
+          streetTwo: "Street 2 is incorrectly formatted",
+          zipCode: "ZIP code is missing or incorrectly formatted",
+          state: "State is missing or incorrectly formatted",
+          city: "City is incorrectly formatted",
+          county: "County is incorrectly formatted",
+          race: "Race is incorrectly formatted",
+          tribalAffiliation: "Tribal affiliation is incorrectly formatted",
+          ethnicity: "Ethnicity is incorrectly formatted",
+          gender: "Sex assigned at birth is incorrectly formatted",
+          residentCongregateSetting:
+            "Are you a resident in a congregate living setting? is required",
+          employedInHealthcare: "Are you a health care worker? is required",
+          preferredLanguage: "Preferred language is incorrectly formatted",
+          testResultDelivery:
+            "Test result delivery preference is incorrectly formatted",
+        },
+      },
+    },
+    selfRegistration: {
+      form: {
+        complete: "Registration complete",
+        inProgress: "Register for your test",
+        error: {
+          heading: "Registration error",
+          text: "There was a registration error",
+        },
+      },
+      confirmation: {
+        registered:
+          "<0>{{personName}}</0>, thanks for completing your patient profile at {{entityName}}.",
+        checkIn:
+          "When you arrive for your test, check in by giving your first and last name.",
+      },
+    },
     testResult: {
       result: "SARS-CoV-2 result",
       patient: "Patient",
+      patientDetails: "Patient details",
+      name: "Name",
+      testDetails: "Test details",
+      testName: "Test name",
       testResult: "Test result",
       testDate: "Test date",
       positive: "Positive",
@@ -12,14 +223,29 @@ export const en = {
       undetermined: "Inconclusive",
       unknown: "Unknown",
       testDevice: "Test device",
+      specimen: "Specimen ID",
       meaning: "What does my result mean?",
       information:
         "For more information, please visit the <0>Centers for Disease Control and Prevention (CDC) website</0> or contact your local health department.",
+      note: "Notes",
+      printed: "Test result printed",
+      print: "Print",
+      close: "Close",
+      testingFacility: {
+        details: "Testing facility details",
+        name: "Facility name",
+        phone: "Facility phone",
+        address: "Facility address",
+        clia: "CLIA number",
+        orderingProvider: "Ordering provider",
+        npi: "NPI",
+      },
       notes: {
+        meaning:
+          "COVID-19 antigen tests can sometimes provid inaccurate or false results and follow up testing may be needed. Continue " +
+          "social distancing and wearing a mask. Contact your health care provider to determine if additional " +
+          "testing is needed especially if you experience any of these  symptoms.",
         positive: {
-          p0:
-            "Getting a positive COVID-19 test result can be difficult news, so it’s important to <0> take steps to cope with stress </0> during " +
-            "this time. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.",
           p1:
             "Most people who get COVID-19 will be able to recover at home. Make sure to follow CDC guidelines for people who are recovering at " +
             "home and their caregivers, including:",
@@ -39,9 +265,10 @@ export const en = {
               "Have a supply of clean, disposable face masks. Everyone, no matter their COVID-19 diagnosis, should wear face masks while in the home.",
           },
           p2:
-            "<0>Watch for symptoms and learn when to seek emergency medical attention</0>.",
-          p3:
-            "If someone is showing any of these signs, seek emergency medical care immediately:",
+            "Watch for symptoms and <0>learn when to seek emergency medical attention</0>. If someone is showing any of these signs, seek emergency medical care immediately:",
+          whenToSeek: "learn when to seek emergency medical attention",
+          symptomsLink:
+            "cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html",
           emergency: {
             li0: "Trouble breathing",
             li1: "Persistent chest pain/pressure",
@@ -49,14 +276,18 @@ export const en = {
             li3: "Inability to wake or stay awake",
             li4: "Bluish lips or face",
           },
-          p4:
+          p3:
             "Call 911 or call ahead to your local emergency room: Notify the operator that you are seeking care for someone who has or may have COVID-19.",
+          difficultNewsLink:
+            "Getting a positive COVID-19 test result can be difficult news, so it’s important to <0> take steps to cope with stress </0> during this time<1></1>. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.",
+          difficultNewsURL:
+            "cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html",
+          moreInformation:
+            "More information is available at cdc.gov/coronavirus/2019-ncov/if-you-are-sick.",
         },
         negative: {
           p0:
-            "COVID-19 antigen tests can sometimes provide inaccurate or false results and follow up testing may be needed. Continue social " +
-            "distancing and wearing a mask. Contact your health care provider to decide if additional testing is needed, especially if you " +
-            "experience any of these symptoms:",
+            "Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:",
           symptoms: {
             li0: "Fever or chills",
             li1: "Cough",
@@ -288,10 +519,12 @@ export const en = {
         enterDOB: "Enter your date of birth",
         enterDOB2:
           "Enter your date of birth to access your COVID-19 Testing Portal.",
+        format: "MM/DD/YYYY or MMDDYYYY",
         error:
-          "No patient link with the supplied ID was found, or the birth date provided was incorrect.",
+          "Test result not found, or the birth date provided is incorrect.",
         validating: "Validating birth date...",
-        linkExpired: "This link has expired. Please contact your provider.",
+        linkExpired:
+          "This link has expired. Please contact your test provider.",
         submit: "Continue",
       },
     },

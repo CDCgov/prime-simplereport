@@ -25,7 +25,10 @@ module.exports = {
   test_settings: {
     default: {
       disable_error_log: false,
-      launch_url: "http://localhost:3000",
+      // In order to get the account creation tests to work, you'll need to use localhost.simplereport.gov.
+      // Add an entry to /etc/hosts with the following:
+      // 127.0.0.1 localhost.simplereport.gov
+      launch_url: "http://localhost.simplereport.gov",
 
       screenshots: {
         enabled: false,
@@ -104,7 +107,7 @@ module.exports = {
       },
     },
 
-    brave: {
+    chromium: {
       desiredCapabilities: {
         browserName: "chrome",
         chromeOptions: {
@@ -117,7 +120,7 @@ module.exports = {
             "--allow-insecure-localhost",
             "--headless",
           ],
-          binary: "/usr/bin/brave",
+          binary: "/usr/bin/chromium",
         },
       },
 

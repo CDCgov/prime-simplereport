@@ -8,7 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
+import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.AuditService;
+import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.Date;
@@ -28,7 +30,9 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
  * Base class for all tests that simulate fully-integrated API requests by either patients or
  * providers.
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+    webEnvironment = WebEnvironment.RANDOM_PORT,
+    properties = {"hibernate.query.interceptor.error-level=EXCEPTION"})
 @AutoConfigureMockMvc
 public abstract class BaseFullStackTest {
 
@@ -36,6 +40,8 @@ public abstract class BaseFullStackTest {
   @Autowired private DbTruncator _truncator;
   @Autowired private AuditService _auditService;
   @Autowired protected TestDataFactory _dataFactory;
+  @Autowired protected OrganizationService _orgService;
+  @Autowired protected DemoOktaRepository _oktaRepo;
 
   protected Date _testStart;
 

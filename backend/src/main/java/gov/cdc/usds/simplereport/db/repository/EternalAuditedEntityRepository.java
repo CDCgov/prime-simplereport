@@ -16,16 +16,16 @@ import org.springframework.data.repository.NoRepositoryBean;
 public interface EternalAuditedEntityRepository<T extends EternalAuditedEntity>
     extends AuditedEntityRepository<T> {
 
-  public static final String BASE_QUERY = "from #{#entityName} e where e.isDeleted = false ";
-  public static final String BASE_ALLOW_DELETED_QUERY = "from #{#entityName} e where ";
+  String BASE_QUERY = "from #{#entityName} e where e.isDeleted = false ";
+  String BASE_ALLOW_DELETED_QUERY = "from #{#entityName} e where ";
 
   @Override
   @Query(BASE_QUERY)
-  public List<T> findAll();
+  List<T> findAll();
 
   @Override
   @Modifying // (flushAutomatically = true) // probably not? It's not clear when this would arise
   // actually
   @Query("update #{#entityName} e set e.isDeleted = true where e = :victim")
-  public void delete(T victim);
+  void delete(T victim);
 }

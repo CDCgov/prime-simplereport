@@ -9,7 +9,9 @@ describe("MfaComplete", () => {
 
   it("can render", () => {
     expect(
-      screen.getByText("You’re ready to start using SimpleReport.")
+      screen.getByText(
+        "To start using SimpleReport, visit the website to log in to your account."
+      )
     ).toBeInTheDocument();
   });
 });

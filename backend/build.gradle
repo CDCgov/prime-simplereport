@@ -43,22 +43,20 @@ dependencies {
     implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.0.0"
     implementation 'org.json:json:20201115'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Okta dependencies
     implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
-    implementation 'com.okta.sdk:okta-sdk-api:3.0.1'
-    runtimeOnly 'com.okta.sdk:okta-sdk-impl:3.0.1'
-    runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.1'
+    implementation 'com.okta.sdk:okta-sdk-api:3.0.2'
+    runtimeOnly 'com.okta.sdk:okta-sdk-impl:3.0.2'
+    runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.2'
 
     // SpringSession dependencies
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
 
     // App insights instrumentation
     implementation 'com.microsoft.azure:applicationinsights-core:2.6.3'
-
-    // Azure authentication library (for Dynamics 365)
-    implementation 'com.microsoft.azure:adal4j:1.6.7'
 
     // Twilio for SMS
     implementation group: "com.twilio.sdk", name: "twilio", version: "8.7.0"
@@ -86,6 +84,7 @@ dependencies {
     // used to autoconfigure WireMock for testing
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
     testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
+    testImplementation 'org.awaitility:awaitility:4.1.0'
 
     // dev tools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -98,10 +97,10 @@ dependencies {
     testCompile "com.github.tomakehurst:wiremock-jre8:2.28.1"
 
     // Forcing these version resolutions over the BOM of spring-cloud-dependencies below
-    runtimeOnly "com.azure:azure-core-http-netty:1.9.0"
+    runtimeOnly "com.azure:azure-core-http-netty:1.9.2"
     runtimeOnly "com.azure:azure-core:1.14.1"
-    runtimeOnly "com.azure:azure-storage-common:12.11.0-beta.2"
-    runtimeOnly "com.azure:azure-storage-queue:12.9.0-beta.2"
+    runtimeOnly "com.azure:azure-storage-common:12.11.1"
+    runtimeOnly "com.azure:azure-storage-queue:12.9.1"
     runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
     runtimeOnly "io.zipkin.brave:brave:5.13.2"
     runtimeOnly "io.zipkin.reporter2:zipkin-reporter-brave:2.16.3"
@@ -179,6 +178,7 @@ sonarqube {
         // In order to get both the frontend and backend code to report, we need to set the sonar project to the root directory.
         property "sonar.sources", "backend/src/main/java,frontend/src"
         property "sonar.exclusions", "frontend/src/**/*.test.*,frontend/src/stories/**/*,frontend/src/**/*.stories.tsx"
+        property "sonar.cpd.exclusions", "frontend/src/lang/*.ts"
         property "sonar.javascript.lcov.reportPaths", "frontend/coverage/lcov.info"
     }
 }
@@ -209,5 +209,6 @@ test {
     systemProperty "test-db-port", testDbPort
     if (System.getenv("CI") == null) {
         dependsOn testDbStart
+        finalizedBy testDbStop
     }
 }

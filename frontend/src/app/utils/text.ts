@@ -77,3 +77,29 @@ export function strToBin(str: string) {
     c.charCodeAt(0)
   );
 }
+
+/**
+ * Formats a US phone number to include dashes, i.e. 123-456-7890
+ * @param str a 10 digit phone number
+ * @returns formatted phone number
+ */
+export function formatPhoneNumber(str: string) {
+  var cleaned = ("" + str).replace(/\D/g, "");
+  var match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+  if (match) {
+    return match[1] + "-" + match[2] + "-" + match[3];
+  }
+  return null;
+}
+
+export function formatUserStatus(status: string) {
+  let userFriendlyStatus;
+  if (status === "SUSPENDED") {
+    userFriendlyStatus = "Account deactivated";
+  } else if (status === "PROVISIONED") {
+    userFriendlyStatus = "Pending account set up";
+  } else {
+    userFriendlyStatus = capitalizeText(status);
+  }
+  return userFriendlyStatus;
+}

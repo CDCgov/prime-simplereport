@@ -87,13 +87,21 @@ public class Translators {
     }
   }
 
-  public static String parseString(String value) {
+  public static String parseStringNoTrim(String value) {
     if (value == null || "".equals(value)) {
       return null;
     }
     if (value.length() >= MAX_STRING_LENGTH) {
       throw new IllegalGraphqlArgumentException(
           "Value received exceeds field length limit of " + MAX_STRING_LENGTH + " characters");
+    }
+    return value;
+  }
+
+  public static String parseString(String v) {
+    String value = parseStringNoTrim(v);
+    if (value == null) {
+      return null;
     }
     return value.trim();
   }
@@ -330,7 +338,7 @@ public class Translators {
           Map.entry("employer", "Employer"),
           Map.entry("government_agency", "Government Agency"),
           Map.entry("camp", "Camp"),
-          Map.entry("lab", "lab"),
+          Map.entry("lab", "Lab"),
           Map.entry("other", "Other"));
 
   private static final Set<String> ORGANIZATION_TYPE_KEYS = ORGANIZATION_TYPES.keySet();
@@ -342,15 +350,6 @@ public class Translators {
     }
     if (ORGANIZATION_TYPE_KEYS.contains(type)) {
       return type;
-    }
-    throw IllegalGraphqlArgumentException.invalidInput(t, "organization type");
-  }
-
-  public static String parseOrganizationTypeFromName(String t) {
-    for (Map.Entry<String, String> entry : ORGANIZATION_TYPES.entrySet()) {
-      if (entry.getValue().equals(t)) {
-        return entry.getKey();
-      }
     }
     throw IllegalGraphqlArgumentException.invalidInput(t, "organization type");
   }

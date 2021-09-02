@@ -1,17 +1,18 @@
 import React from "react";
+import { Trans, withTranslation } from "react-i18next";
 
+import i18n from "../../i18n";
 import iconDotGov from "../../../node_modules/uswds/dist/img/icon-dot-gov.svg";
 import usFlagSmall from "../../../node_modules/uswds/dist/img/us_flag_small.png";
 import iconHttps from "../../../node_modules/uswds/dist/img/icon-https.svg";
 
-export default class USAGovBanner extends React.Component {
+class USAGovBanner extends React.Component {
   constructor() {
     super();
     this.state = {
       contentVisible: false,
     };
   }
-
   // Toggles the visiblity of the content section.
   toggleDetails() {
     this.setState({ contentVisible: !this.state.contentVisible });
@@ -36,11 +37,9 @@ export default class USAGovBanner extends React.Component {
             />
             <div className="usa-media-block__body">
               <p>
-                <strong>The .gov means it’s official.</strong>
+                <strong>{i18n.t("banner.dotGov")}</strong>
                 <br />
-                Federal government websites often end in .gov or .mil. Before
-                sharing sensitive information, make sure you’re on a federal
-                government site.
+                {i18n.t("banner.dotGovHelper")}
               </p>
             </div>
           </div>
@@ -52,11 +51,12 @@ export default class USAGovBanner extends React.Component {
             />
             <div className="usa-media-block__body">
               <p>
-                <strong>The site is secure.</strong>
+                <strong>{i18n.t("banner.secure")}</strong>
                 <br />
-                The <strong>https://</strong> ensures that you are connecting to
-                the official website and that any information you provide is
-                encrypted and transmitted securely.
+                <Trans
+                  i18nKey="banner.secureHelper"
+                  components={[<strong>https://</strong>]}
+                />
               </p>
             </div>
           </div>
@@ -80,10 +80,10 @@ export default class USAGovBanner extends React.Component {
               </div>
               <div className="grid-col-fill tablet:grid-col-auto">
                 <p className="usa-banner__header-text">
-                  An official website of the United States government
+                  {i18n.t("banner.officialWebsite")}
                 </p>
                 <p className="usa-banner__header-action" aria-hidden="true">
-                  Here’s how you know
+                  {i18n.t("banner.howYouKnow")}
                 </p>
               </div>
               <button
@@ -93,7 +93,7 @@ export default class USAGovBanner extends React.Component {
                 onClick={this.toggleDetails.bind(this)}
               >
                 <span className="usa-banner__button-text">
-                  Here’s how you know
+                  {i18n.t("banner.howYouKnow")}
                 </span>
               </button>
             </div>
@@ -104,3 +104,5 @@ export default class USAGovBanner extends React.Component {
     );
   }
 }
+
+export default withTranslation()(USAGovBanner);

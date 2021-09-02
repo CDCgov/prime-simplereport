@@ -2,9 +2,10 @@ import { createStore } from "redux";
 
 import { COVID_RESULTS } from "../app/constants";
 
+import { UserPermission } from "./permissions";
+
 const SET_INITIAL_STATE = "SET_INITIAL_STATE";
 const UPDATE_ORGANIZATION = "UPDATE_ORGANIZATION";
-const UPDATE_FACILITY = "UPDATE_FACILITY";
 const SET_PATIENT = "SET_PATIENT";
 
 // this should be the default value for a brand new org
@@ -14,11 +15,7 @@ const initialState = {
   organization: {
     name: "",
   },
-  facilities: [],
-  facility: {
-    id: "",
-    name: "",
-  },
+  facilities: [] as Facility[],
   user: {
     id: "",
     firstName: "",
@@ -26,7 +23,7 @@ const initialState = {
     lastName: "",
     suffix: "",
     email: "",
-    permissions: [],
+    permissions: [] as UserPermission[],
     roleDescription: "",
     isAdmin: false,
   },
@@ -45,7 +42,6 @@ const initialState = {
       deviceTypeModel: "",
     },
   },
-  activationToken: "",
 };
 
 const reducers = (state = initialState, action: any) => {
@@ -60,14 +56,6 @@ const reducers = (state = initialState, action: any) => {
         ...state,
         organization: {
           ...state.organization,
-          ...action.payload,
-        },
-      };
-    case UPDATE_FACILITY:
-      return {
-        ...state,
-        facility: {
-          ...state.facility,
           ...action.payload,
         },
       };
@@ -94,13 +82,6 @@ export const updateOrganization = (organization: any) => {
   return {
     type: UPDATE_ORGANIZATION,
     payload: organization,
-  };
-};
-
-export const updateFacility = (facility: any) => {
-  return {
-    type: UPDATE_FACILITY,
-    payload: facility,
   };
 };
 

@@ -1,15 +1,22 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
@@ -18,13 +25,16 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 @SuppressWarnings("checkstyle:MagicNumber")
 class PersonServiceTest extends BaseServiceTest<PersonService> {
 
@@ -41,11 +51,11 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   private static final PersonName FRANK = new PersonName("Frank", "Mathew", "Bones", "3");
 
   // used for pagination and searching
-  private static final PersonName GALE = new PersonName("Gale", "Mary", "Vittorio", "PhD");
+  private static final PersonName GALE = new PersonName("Gale", "Mary", "Croger", "PhD");
   private static final PersonName HEINRICK = new PersonName("Heinrick", "Mark", "Silver", "III");
   private static final PersonName IAN = new PersonName("Ian", "Brou", "Rutter", null);
   private static final PersonName JANNELLE = new PersonName("Jannelle", "Martha", "Cromack", null);
-  private static final PersonName KACEY = new PersonName("Kacey", "L", "Mathie", null);
+  private static final PersonName KACEY = new PersonName("Kacey", "Cross", "Mathie", null);
   private static final PersonName LEELOO = new PersonName("Leeloo", "Dallas", "Multipass", null);
 
   @Autowired private OrganizationService _orgService;
@@ -82,7 +92,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         false,
         false,
-        "English");
+        "English",
+        null);
     _service.addPatient(
         _site1.getInternalId(),
         "BAR",
@@ -101,7 +112,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         false,
         false,
-        "Spanish");
+        "Spanish",
+        null);
     _service.addPatient(
         _site2.getInternalId(),
         "BAZ",
@@ -120,7 +132,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         false,
         false,
-        "French");
+        "French",
+        null);
     List<Person> all =
         _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null);
     assertEquals(3, all.size());
@@ -156,7 +169,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         false,
         false,
-        "English");
+        "English",
+        null);
 
     assertThrows(
         AccessDeniedException.class,
@@ -179,7 +193,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 null,
                 false,
                 false,
-                "English"));
+                "English",
+                null));
 
     TestUserIdentities.setFacilityAuthorities(fac);
     _service.addPatient(
@@ -200,7 +215,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         false,
         false,
-        "Spanish");
+        "Spanish",
+        null);
   }
 
   @Test
@@ -226,7 +242,47 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 null,
                 false,
                 false,
-                "English"));
+                "English",
+                null));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void addPatient_duplicatePhoneNumber_failure() {
+    makeFacilities();
+
+    List<PhoneNumber> phoneNumbers = new ArrayList<>();
+    phoneNumbers.add(new PhoneNumber(PhoneType.MOBILE, "2342342344"));
+    phoneNumbers.add(new PhoneNumber(PhoneType.LANDLINE, "2342342344"));
+
+    LocalDate birthDate = LocalDate.of(1865, 12, 25);
+    StreetAddress address = _dataFactory.getAddress();
+
+    IllegalGraphqlArgumentException e =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () ->
+                _service.addPatient(
+                    (UUID) null,
+                    "FOO",
+                    "Fred",
+                    null,
+                    "Fosbury",
+                    "Sr.",
+                    birthDate,
+                    address,
+                    phoneNumbers,
+                    PersonRole.STAFF,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    false,
+                    false,
+                    "English",
+                    null));
+    assertEquals("Duplicate phone number entered", e.getMessage());
   }
 
   @Test
@@ -255,7 +311,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             false,
             false,
-            "Spanish");
+            "Spanish",
+            null);
     TestUserIdentities.setFacilityAuthorities();
 
     assertThrows(AccessDeniedException.class, () -> _service.setIsDeleted(p.getInternalId(), true));
@@ -291,7 +348,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             false,
             false,
-            "English");
+            "English",
+            null);
 
     _service.setIsDeleted(p.getInternalId(), true);
     assertEquals(
@@ -336,7 +394,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             false,
             false,
-            "German");
+            "German",
+            null);
 
     assertEquals(
         1, _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null).size());
@@ -391,9 +450,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     List<Person> patients_org_page2 = _service.getPatients(null, 2, 5, false, null);
     List<Person> patients_org_page3 = _service.getPatients(null, 3, 5, false, null);
 
-    assertPatientList(patients_org_page0, CHARLES, FRANK, JANNELLE, BRAD, DEXTER);
-    assertPatientList(patients_org_page1, KACEY, ELIZABETH, LEELOO, AMOS, IAN);
-    assertPatientList(patients_org_page2, HEINRICK, GALE);
+    assertPatientList(patients_org_page0, CHARLES, FRANK, GALE, JANNELLE, BRAD);
+    assertPatientList(patients_org_page1, DEXTER, KACEY, ELIZABETH, LEELOO, AMOS);
+    assertPatientList(patients_org_page2, IAN, HEINRICK);
     assertEquals(0, patients_org_page3.size());
 
     List<Person> patients_site2_page0 =
@@ -426,7 +485,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     // all facilities, not deleted, "ma"
     List<Person> patients = _service.getPatients(null, 0, 100, false, "ma");
-    assertPatientList(patients, JANNELLE, KACEY, ELIZABETH, HEINRICK, GALE);
+    assertPatientList(patients, GALE, JANNELLE, KACEY, ELIZABETH, HEINRICK);
 
     // site2, not deleted, "ma"
     patients = _service.getPatients(site2Id, 0, 100, false, "ma");
@@ -438,7 +497,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     // all facilities, not deleted, "mar"
     patients = _service.getPatients(null, 0, 100, false, "mar");
-    assertPatientList(patients, JANNELLE, ELIZABETH, HEINRICK, GALE);
+    assertPatientList(patients, GALE, JANNELLE, ELIZABETH, HEINRICK);
 
     // all facilities, not deleted, "MARTHA"
     patients = _service.getPatients(null, 0, 100, false, "MARTHA");
@@ -446,6 +505,24 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     assertEquals(0, _service.getPatientsCount(null, false, "M"));
     assertEquals(0, _service.getPatientsCount(null, false, ""));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getPatients_search_with_spaces() {
+    makedata(true);
+
+    // "ma" returns a bunch of folks
+    List<Person> patients = _service.getPatients(null, 0, 100, false, "ma");
+    assertPatientList(patients, CHARLES, FRANK, GALE, JANNELLE, KACEY, ELIZABETH, HEINRICK);
+
+    // "ma cr" returns less folks, but not none!
+    List<Person> patients2 = _service.getPatients(null, 0, 100, false, "ma cr");
+    assertPatientList(patients2, GALE, JANNELLE, KACEY);
+
+    // "ma cr ja" returns just janelle
+    List<Person> patients3 = _service.getPatients(null, 0, 100, false, "ma cr ja");
+    assertPatientList(patients3, JANNELLE);
   }
 
   @Test
@@ -573,6 +650,239 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     assertThrows(
         AccessDeniedException.class,
         () -> _service.getPatients(site1Id, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, true, null));
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void isPatientInOrg_newPatient_returnsFalse() {
+    var result =
+        _service.isPatientInOrg(
+            "John",
+            "Doe",
+            LocalDate.parse("1990-01-01"),
+            "27601",
+            UUID.fromString("15438a9e-9b29-44dd-b74d-911b7d80e77e"));
+
+    assertFalse(result);
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void isPatientInOrg_existingPatient_returnsTrue() {
+    Organization org = _orgService.getCurrentOrganization();
+    String registrationLink = org.getPatientSelfRegistrationLink();
+
+    Person person =
+        _service.addPatient(
+            new PatientSelfRegistrationLink(org, registrationLink),
+            null,
+            "John",
+            null,
+            "Doe",
+            null,
+            LocalDate.of(1990, 01, 01),
+            _dataFactory.getAddress(),
+            TestDataFactory.getListOfOnePhoneNumber(),
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE);
+
+    var result =
+        _service.isPatientInOrg(
+            person.getFirstName(),
+            person.getLastName(),
+            person.getBirthDate(),
+            person.getAddress().getPostalCode(),
+            org.getInternalId());
+
+    assertTrue(result);
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void isPatientInOrg_existingPatientInChildFacility_returnsFalse() {
+    Organization org = _orgService.getCurrentOrganization();
+    Facility facility = _orgService.getFacilities(org).get(0);
+    String registrationLink = facility.getPatientSelfRegistrationLink();
+
+    Person person =
+        _service.addPatient(
+            new PatientSelfRegistrationLink(facility, registrationLink),
+            null,
+            "John",
+            null,
+            "Doe",
+            null,
+            LocalDate.of(1990, 01, 01),
+            _dataFactory.getAddress(),
+            TestDataFactory.getListOfOnePhoneNumber(),
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE);
+
+    var result =
+        _service.isPatientInOrg(
+            person.getFirstName(),
+            person.getLastName(),
+            person.getBirthDate(),
+            person.getAddress().getPostalCode(),
+            org.getInternalId());
+
+    assertFalse(result);
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void isPatientInFacility_newPatient_returnsFalse() {
+    var result =
+        _service.isPatientInFacility(
+            "John",
+            "Doe",
+            LocalDate.parse("1990-01-01"),
+            "27601",
+            UUID.fromString("15438a9e-9b29-44dd-b74d-911b7d80e77e"));
+
+    assertFalse(result);
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void isPatientInFacility_existingPatient_returnsTrue() {
+    Facility facility = _orgService.getFacilities(_orgService.getCurrentOrganization()).get(0);
+    String registrationLink = facility.getPatientSelfRegistrationLink();
+
+    Person person =
+        _service.addPatient(
+            new PatientSelfRegistrationLink(facility, registrationLink),
+            null,
+            "John",
+            null,
+            "Doe",
+            null,
+            LocalDate.of(1990, 01, 01),
+            _dataFactory.getAddress(),
+            TestDataFactory.getListOfOnePhoneNumber(),
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE);
+
+    var result =
+        _service.isPatientInFacility(
+            person.getFirstName(),
+            person.getLastName(),
+            person.getBirthDate(),
+            person.getAddress().getPostalCode(),
+            facility.getInternalId());
+
+    assertTrue(result);
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void isPatientInFacility_existsInSiblingOrgFacility_returnsFalse() {
+    // Ensure there are two facilities under the same org
+    Facility facility1 = _orgService.getFacilities(_orgService.getCurrentOrganization()).get(0);
+    Facility facility2 = _orgService.getFacilities(_orgService.getCurrentOrganization()).get(1);
+
+    String registrationLink = facility1.getPatientSelfRegistrationLink();
+
+    // Add patient to first facility
+    Person person =
+        _service.addPatient(
+            new PatientSelfRegistrationLink(facility1, registrationLink),
+            null,
+            "John",
+            null,
+            "Doe",
+            null,
+            LocalDate.of(1990, 01, 01),
+            _dataFactory.getAddress(),
+            TestDataFactory.getListOfOnePhoneNumber(),
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE);
+
+    // Check for existing user in second facility
+    var result =
+        _service.isPatientInFacility(
+            person.getFirstName(),
+            person.getLastName(),
+            person.getBirthDate(),
+            person.getAddress().getPostalCode(),
+            facility2.getInternalId());
+
+    assertFalse(result);
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void isPatientInFacility_existsInParentOrg_returnsTrue() {
+    Organization organization = _orgService.getCurrentOrganization();
+    Facility facility = _orgService.getFacilities(organization).get(0);
+
+    String registrationLink = organization.getPatientSelfRegistrationLink();
+
+    // Register patient at org level
+    Person person =
+        _service.addPatient(
+            new PatientSelfRegistrationLink(organization, registrationLink),
+            null,
+            "John",
+            null,
+            "Doe",
+            null,
+            LocalDate.of(1990, 01, 01),
+            _dataFactory.getAddress(),
+            TestDataFactory.getListOfOnePhoneNumber(),
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE);
+
+    // Check if patient exists in constituent facility
+    var result =
+        _service.isPatientInFacility(
+            person.getFirstName(),
+            person.getLastName(),
+            person.getBirthDate(),
+            person.getAddress().getPostalCode(),
+            facility.getInternalId());
+
+    assertTrue(result);
   }
 
   private void makedata(boolean extraPatients) {

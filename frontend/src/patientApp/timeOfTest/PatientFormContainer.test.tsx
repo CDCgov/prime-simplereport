@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 
 import PatientFormContainer from "./PatientFormContainer";
+import "../../i18n";
 
 jest.mock("../..//app/commonComponents/ComboBox", () => () => <></>);
 const mockStore = configureStore([]);
@@ -21,6 +22,9 @@ describe("PatientFormContainer", () => {
   afterEach(cleanup);
 
   it("snapshot", () => {
+    jest
+      .useFakeTimers("modern")
+      .setSystemTime(new Date("2021-08-01").getTime());
     const store = mockStore({
       patient: {
         residentCongregateSetting: true,

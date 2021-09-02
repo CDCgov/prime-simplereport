@@ -5,7 +5,7 @@ import TextInput, { HTMLInputElementType } from "./TextInput";
 interface Props<T> {
   field: keyof T;
   formObject: T;
-  label: string;
+  label: string | React.ReactNode;
   className?: string;
   onChange: (field: keyof T) => (value: string) => void;
   validate: (field: keyof T) => Promise<void>;
@@ -14,6 +14,9 @@ interface Props<T> {
   type?: HTMLInputElementType;
   required?: boolean;
   disabled?: boolean;
+  hintText?: string;
+  min?: number | string;
+  max?: number | string;
 }
 
 export const Input = <T extends { [key: string]: any }>({
@@ -28,6 +31,9 @@ export const Input = <T extends { [key: string]: any }>({
   type,
   required,
   disabled,
+  hintText,
+  min,
+  max,
 }: Props<T>): React.ReactElement => {
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(field)(e.target.value);
@@ -54,6 +60,9 @@ export const Input = <T extends { [key: string]: any }>({
       type={type}
       required={required}
       disabled={disabled}
+      min={min}
+      max={max}
+      hintText={hintText}
     />
   );
 };

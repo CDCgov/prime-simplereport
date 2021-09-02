@@ -81,7 +81,7 @@ const ManageOrganizationContainer: any = () => {
 
     const alertProps: ComponentProps<typeof Alert> = {
       type: "success",
-      title: "Updated Organization",
+      title: "Updated organization",
       body: "The settings for the organization have been updated",
     };
 
@@ -90,7 +90,7 @@ const ManageOrganizationContainer: any = () => {
       dispatch(updateOrganization({ name }));
     } catch (e) {
       alertProps.type = "error";
-      alertProps.title = "Error Updating Organization";
+      alertProps.title = "Error updating organization";
       alertProps.body =
         "There was an eroror updating the organization settings";
     }

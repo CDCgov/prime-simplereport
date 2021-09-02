@@ -8,12 +8,17 @@ import { MfaOktaVerify } from "./MfaOktaVerify";
 
 jest.mock("../AccountCreationApiService", () => ({
   AccountCreationApi: {
+    enrollSecurityKeyMfa: () => {
+      return new Promise((res) => {
+        res({ activation: { challenge: "challenge", user: { id: "userId" } } });
+      });
+    },
     verifyActivationPasscode: (code: string) => {
       return new Promise((res, rej) => {
         if (code === "123456") {
           res("success");
         } else {
-          rej();
+          rej("incorrect code");
         }
       });
     },
@@ -57,7 +62,9 @@ describe("Verify Okta MFA", () => {
       screen.queryByText("Enter your security code")
     ).not.toBeInTheDocument();
     expect(
-      screen.getByText("You’re ready to start using SimpleReport.")
+      screen.getByText(
+        "To start using SimpleReport, visit the website to log in to your account."
+      )
     ).toBeInTheDocument();
   });
 
@@ -76,11 +83,11 @@ describe("Verify Okta MFA", () => {
     await act(async () => {
       await fireEvent.click(screen.getByText("Submit"));
     });
+    expect(screen.getByText("incorrect code")).toBeInTheDocument();
     expect(
-      screen.getByText("API Error:", { exact: false })
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByText("You’re ready to start using SimpleReport.")
+      screen.queryByText(
+        "To start using SimpleReport, visit the website to log in to your account."
+      )
     ).not.toBeInTheDocument();
   });
 
@@ -88,7 +95,9 @@ describe("Verify Okta MFA", () => {
     fireEvent.click(screen.getByText("Submit"));
     expect(screen.getByText("Enter your security code")).toBeInTheDocument();
     expect(
-      screen.queryByText("You’re ready to start using SimpleReport.")
+      screen.queryByText(
+        "To start using SimpleReport, visit the website to log in to your account."
+      )
     ).not.toBeInTheDocument();
   });
 });

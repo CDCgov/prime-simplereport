@@ -22,11 +22,7 @@ import {
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
 import FacilityInformation from "./Components/FacilityInformation";
-import {
-  allFacilityErrors,
-  FacilityErrors,
-  facilitySchema,
-} from "./facilitySchema";
+import { FacilityErrors, facilitySchema } from "./facilitySchema";
 
 export type ValidateField = (field: keyof FacilityErrors) => Promise<void>;
 
@@ -52,7 +48,10 @@ export const useFacilityValidation = (facility: Facility) => {
           },
         });
       } catch (e) {
-        const errorMessage = createFieldError(field, facility);
+        const errorMessage =
+          field === "state" && stateCodes.includes(facility[field])
+            ? createStateError(facility.state)
+            : e.errors.join(", ");
         setErrors((existingErrors) => ({
           ...existingErrors,
           [field]: errorMessage,
@@ -77,7 +76,8 @@ export const useFacilityValidation = (facility: Facility) => {
           acc: FacilityErrors,
           el: { path: keyof FacilityErrors; message: string }
         ) => {
-          acc[el.path] = createFieldError(el.path, facility);
+          acc[el.path] =
+            el.path === "state" ? createStateError(facility.state) : el.message;
           return acc;
         },
         {} as FacilityErrors
@@ -98,29 +98,23 @@ export const useFacilityValidation = (facility: Facility) => {
   return { errors, validateField, validateFacility };
 };
 
-const createFieldError = (field: keyof FacilityErrors, facility: Facility) => {
-  // The `state` field may produce two different errors: one indicating
-  // that no option has been selected and the other indicating that
-  // SimpleReport has not gone live in that particular state.
-  if (field === "state" && stateCodes.includes(facility[field])) {
-    return (
-      <>
-        <span>
-          SimpleReport isn’t currently supported in{" "}
-          {getStateNameFromCode(facility.state)}.
-        </span>
-        <span className="display-block margin-top-05">
-          See a{" "}
-          <a href={urls.FACILITY_INFO}>
-            {" "}
-            list of states where SimpleReport is supported
-          </a>
-          .
-        </span>
-      </>
-    );
-  }
-  return allFacilityErrors[field];
+const createStateError = (stateCode: string | number) => {
+  return (
+    <>
+      <span>
+        SimpleReport isn’t currently supported in{" "}
+        {getStateNameFromCode(stateCode)}.
+      </span>
+      <span className="display-block margin-top-05">
+        See a{" "}
+        <a href={urls.FACILITY_INFO}>
+          {" "}
+          list of states where SimpleReport is supported
+        </a>
+        .
+      </span>
+    </>
+  );
 };
 
 type AddressOptions = "facility" | "provider";
@@ -129,6 +123,7 @@ export interface Props {
   facility: Facility;
   deviceOptions: DeviceType[];
   saveFacility: (facility: Facility) => void;
+  newOrg?: boolean;
 }
 
 const FacilityForm: React.FC<Props> = (props) => {
@@ -139,7 +134,7 @@ const FacilityForm: React.FC<Props> = (props) => {
     AddressSuggestionConfig<AddressOptions>[]
   >([]);
 
-  const updateForm = (data: Facility) => {
+  const updateForm: typeof updateFormData = (data) => {
     updateFormData(data);
     updateFormChanged(true);
   };
@@ -156,16 +151,16 @@ const FacilityForm: React.FC<Props> = (props) => {
     });
   };
   const updateDeviceTypes = (deviceTypes: string[]) => {
-    updateForm({
+    updateForm((facility) => ({
       ...facility,
       deviceTypes,
-    });
+    }));
   };
   const updateDefaultDevice = (defaultDevice: string) => {
-    updateForm({
+    updateForm((facility) => ({
       ...facility,
       defaultDevice,
-    });
+    }));
   };
 
   const { errors, validateField, validateFacility } = useFacilityValidation(
@@ -292,25 +287,31 @@ const FacilityForm: React.FC<Props> = (props) => {
           "\nYour changes are not saved yet!\n\nClick OK to delete your answers and leave, or Cancel to return and save your progress."
         }
       />
-      <div className="">
+      <div className="padding-bottom-2">
         <div className="prime-container card-container">
           <div className="usa-card__header">
             <div>
               <div className="display-flex flex-align-center">
-                <svg
-                  className="usa-icon text-base margin-left-neg-2px"
-                  aria-hidden="true"
-                  focusable="false"
-                  role="img"
-                >
-                  <use xlinkHref={iconSprite + "#arrow_back"}></use>
-                </svg>
-                <LinkWithQuery
-                  to={`/settings/facilities`}
-                  className="margin-left-05"
-                >
-                  All facilities
-                </LinkWithQuery>
+                {props.newOrg ? (
+                  <h2 className="margin-top-05">Welcome to SimpleReport!</h2>
+                ) : (
+                  <>
+                    <svg
+                      className="usa-icon text-base margin-left-neg-2px"
+                      aria-hidden="true"
+                      focusable="false"
+                      role="img"
+                    >
+                      <use xlinkHref={iconSprite + "#arrow_back"}></use>
+                    </svg>
+                    <LinkWithQuery
+                      to={`/settings/facilities`}
+                      className="margin-left-05"
+                    >
+                      All facilities
+                    </LinkWithQuery>
+                  </>
+                )}
               </div>
               <h1 className="font-heading-lg margin-y-0">{facility.name}</h1>
             </div>
@@ -331,6 +332,9 @@ const FacilityForm: React.FC<Props> = (props) => {
             </div>
           </div>
           <div className="usa-card__body padding-top-2">
+            {props.newOrg ? (
+              <h3>To get started, add a testing facility.</h3>
+            ) : null}
             <RequiredMessage />
             <FacilityInformation
               facility={facility}
@@ -355,7 +359,7 @@ const FacilityForm: React.FC<Props> = (props) => {
           errors={errors}
           validateField={validateField}
         />
-        <div className="float-right margin-bottom-4">
+        <div className="float-right margin-bottom-4 margin-top-4">
           <Button
             className="margin-right-0"
             type="button"

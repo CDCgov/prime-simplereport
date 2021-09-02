@@ -13,15 +13,20 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.service.dataloader.PatientLinkDataLoader;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 @SuppressWarnings("checkstyle:MagicNumber")
 class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
   @Autowired private OrganizationService _organizationService;
@@ -85,5 +90,16 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
     assertFalse(failToVerify.getAsBoolean());
     assertFalse(failToVerify.getAsBoolean());
     assertThrows(ExpiredPatientLinkException.class, () -> failToVerify.getAsBoolean());
+  }
+
+  @Test
+  void patientLinkDataLoaderReturnsMostRecent() {
+    List<PatientLink> links = new ArrayList<>();
+    links.add(_patientLink);
+    links.add(_dataFactory.createPatientLink(_testOrder));
+    links.add(_dataFactory.createPatientLink(_testOrder));
+    PatientLink mostRecent = _dataFactory.createPatientLink(_testOrder);
+    links.add(mostRecent);
+    assertEquals(mostRecent, PatientLinkDataLoader.getMostRecentPatientLink(links));
   }
 }

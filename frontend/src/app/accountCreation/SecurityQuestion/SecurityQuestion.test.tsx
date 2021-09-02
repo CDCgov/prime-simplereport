@@ -4,6 +4,7 @@ import { act } from "react-dom/test-utils";
 import { MemoryRouter, Route } from "react-router";
 
 import { SecurityQuestion } from "./SecurityQuestion";
+import "../../../i18n";
 
 jest.mock("../AccountCreationApiService", () => ({
   AccountCreationApi: {
@@ -12,10 +13,11 @@ jest.mock("../AccountCreationApiService", () => ({
         if (recoveryAnswer === "Valid answer") {
           res("success");
         } else {
-          rej({ message: "catastrophic failure" });
+          rej("catastrophic failure");
         }
       });
     },
+    enrollSecurityKeyMfa: () => Promise.resolve(),
   },
 }));
 
@@ -49,7 +51,7 @@ describe("SecurityQuestion", () => {
       target: { value: "New York" },
     });
     fireEvent.click(screen.getByText("Continue"));
-    expect(screen.getByText("Enter a security question")).toBeInTheDocument();
+    expect(screen.getByText("Select a security question")).toBeInTheDocument();
   });
 
   it("requires a security answer", () => {
@@ -58,7 +60,9 @@ describe("SecurityQuestion", () => {
       ["In what city or town was your first job?"]
     );
     fireEvent.click(screen.getByText("Continue"));
-    expect(screen.getByText("Enter your answer")).toBeInTheDocument();
+    expect(
+      screen.getByText("Answer must be at least 4 characters")
+    ).toBeInTheDocument();
   });
 
   it("succeeds on submit w/ valid responses", async () => {
@@ -88,8 +92,6 @@ describe("SecurityQuestion", () => {
     await act(async () => {
       await fireEvent.click(screen.getByText("Continue"));
     });
-    expect(
-      screen.getByText("API Error: catastrophic failure")
-    ).toBeInTheDocument();
+    expect(screen.getByText("catastrophic failure")).toBeInTheDocument();
   });
 });

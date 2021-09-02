@@ -9,7 +9,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
   >
     <div
       aria-label="progress"
-      className="usa-step-indicator  usa-step-indicator--counters-sm margin-y-205"
+      className="usa-step-indicator usa-step-indicator--counters-sm margin-y-205"
     >
       <ol
         className="usa-step-indicator__segments"
@@ -88,7 +88,8 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
       <p
         className="message--required"
       >
-        Required fields are marked with an asterisk (
+        Required fields are marked with an asterisk
+         (
         <abbr
           className="usa-hint usa-hint--required"
           title="required"
@@ -97,6 +98,94 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
         </abbr>
         ).
       </p>
+      <div
+        className="prime-formgroup"
+      >
+        <fieldset
+          className="usa-fieldset"
+        >
+          <legend
+            className="prime-formgroup-heading usa-legend"
+          >
+            Results
+          </legend>
+          <div
+            className="prime-formgroup__wrapper"
+          >
+            <div
+              className="usa-form-group margin-top-0"
+            >
+              <fieldset
+                className="usa-fieldset prime-radios"
+              >
+                <legend
+                  className="usa-legend"
+                >
+                  Would you like to receive a copy of your results via text message?
+                </legend>
+                <span
+                  className="usa-hint"
+                >
+                  You’re responsible for entering the correct contact information, following applicable federal and state laws.
+                </span>
+                <div
+                  className=""
+                >
+                  <div
+                    className="usa-radio"
+                  >
+                    <input
+                      checked={false}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={true}
+                      id="1-val-SMS"
+                      name="testResultDelivery"
+                      onChange={[Function]}
+                      type="radio"
+                      value="SMS"
+                    />
+                    <label
+                      className="usa-radio__label text-base"
+                      htmlFor="1-val-SMS"
+                    >
+                      Yes, text all mobile numbers on file.
+                      <span
+                        className="usa-checkbox__label-description"
+                      >
+                        <p>
+                          (There are no mobile phone numbers listed in your patient profile.)
+                        </p>
+                      </span>
+                    </label>
+                  </div>
+                  <div
+                    className="usa-radio"
+                  >
+                    <input
+                      checked={true}
+                      className="usa-radio__input"
+                      data-required="false"
+                      disabled={false}
+                      id="1-val-NONE"
+                      name="testResultDelivery"
+                      onChange={[Function]}
+                      type="radio"
+                      value="NONE"
+                    />
+                    <label
+                      className="usa-radio__label"
+                      htmlFor="1-val-NONE"
+                    >
+                      No
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </fieldset>
+      </div>
       <div
         className="prime-formgroup"
       >
@@ -138,7 +227,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="1-val-0"
+                      id="2-val-0"
                       name="no_symptoms"
                       onChange={[Function]}
                       type="checkbox"
@@ -146,9 +235,9 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="1-val-0"
+                      htmlFor="2-val-0"
                     >
-                      No Symptoms
+                      No symptoms
                     </label>
                   </div>
                 </div>
@@ -177,7 +266,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="2-val-0"
+                      id="3-val-0"
                       name="symptom_list"
                       onChange={[Function]}
                       type="checkbox"
@@ -185,7 +274,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="2-val-0"
+                      htmlFor="3-val-0"
                     >
                       Fever over 100.4F
                     </label>
@@ -196,7 +285,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="2-val-1"
+                      id="3-val-1"
                       name="symptom_list"
                       onChange={[Function]}
                       type="checkbox"
@@ -204,7 +293,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="2-val-1"
+                      htmlFor="3-val-1"
                     >
                       Feeling feverish
                     </label>
@@ -215,7 +304,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="2-val-2"
+                      id="3-val-2"
                       name="symptom_list"
                       onChange={[Function]}
                       type="checkbox"
@@ -223,7 +312,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="2-val-2"
+                      htmlFor="3-val-2"
                     >
                       Chills
                     </label>
@@ -234,7 +323,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="2-val-3"
+                      id="3-val-3"
                       name="symptom_list"
                       onChange={[Function]}
                       type="checkbox"
@@ -242,7 +331,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="2-val-3"
+                      htmlFor="3-val-3"
                     >
                       Cough
                     </label>
@@ -253,7 +342,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="2-val-4"
+                      id="3-val-4"
                       name="symptom_list"
                       onChange={[Function]}
                       type="checkbox"
@@ -261,7 +350,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="2-val-4"
+                      htmlFor="3-val-4"
                     >
                       Shortness of breath
                     </label>
@@ -272,7 +361,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="2-val-5"
+                      id="3-val-5"
                       name="symptom_list"
                       onChange={[Function]}
                       type="checkbox"
@@ -280,7 +369,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="2-val-5"
+                      htmlFor="3-val-5"
                     >
                       Difficulty breathing
                     </label>
@@ -291,7 +380,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="2-val-6"
+                      id="3-val-6"
                       name="symptom_list"
                       onChange={[Function]}
                       type="checkbox"
@@ -299,7 +388,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="2-val-6"
+                      htmlFor="3-val-6"
                     >
                       Fatigue
                     </label>
@@ -310,7 +399,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="2-val-7"
+                      id="3-val-7"
                       name="symptom_list"
                       onChange={[Function]}
                       type="checkbox"
@@ -318,7 +407,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="2-val-7"
+                      htmlFor="3-val-7"
                     >
                       Muscle or body aches
                     </label>
@@ -329,7 +418,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="2-val-8"
+                      id="3-val-8"
                       name="symptom_list"
                       onChange={[Function]}
                       type="checkbox"
@@ -337,7 +426,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="2-val-8"
+                      htmlFor="3-val-8"
                     >
                       Headache
                     </label>
@@ -348,7 +437,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="2-val-9"
+                      id="3-val-9"
                       name="symptom_list"
                       onChange={[Function]}
                       type="checkbox"
@@ -356,7 +445,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="2-val-9"
+                      htmlFor="3-val-9"
                     >
                       New loss of taste
                     </label>
@@ -367,7 +456,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="2-val-10"
+                      id="3-val-10"
                       name="symptom_list"
                       onChange={[Function]}
                       type="checkbox"
@@ -375,7 +464,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="2-val-10"
+                      htmlFor="3-val-10"
                     >
                       New loss of smell
                     </label>
@@ -386,7 +475,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="2-val-11"
+                      id="3-val-11"
                       name="symptom_list"
                       onChange={[Function]}
                       type="checkbox"
@@ -394,7 +483,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="2-val-11"
+                      htmlFor="3-val-11"
                     >
                       Sore throat
                     </label>
@@ -405,7 +494,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="2-val-12"
+                      id="3-val-12"
                       name="symptom_list"
                       onChange={[Function]}
                       type="checkbox"
@@ -413,7 +502,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="2-val-12"
+                      htmlFor="3-val-12"
                     >
                       Nasal congestion
                     </label>
@@ -424,7 +513,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="2-val-13"
+                      id="3-val-13"
                       name="symptom_list"
                       onChange={[Function]}
                       type="checkbox"
@@ -432,7 +521,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="2-val-13"
+                      htmlFor="3-val-13"
                     >
                       Runny nose
                     </label>
@@ -443,7 +532,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="2-val-14"
+                      id="3-val-14"
                       name="symptom_list"
                       onChange={[Function]}
                       type="checkbox"
@@ -451,7 +540,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="2-val-14"
+                      htmlFor="3-val-14"
                     >
                       Nausea
                     </label>
@@ -462,7 +551,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="2-val-15"
+                      id="3-val-15"
                       name="symptom_list"
                       onChange={[Function]}
                       type="checkbox"
@@ -470,7 +559,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="2-val-15"
+                      htmlFor="3-val-15"
                     >
                       Vomiting
                     </label>
@@ -481,7 +570,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-checkbox__input"
-                      id="2-val-16"
+                      id="3-val-16"
                       name="symptom_list"
                       onChange={[Function]}
                       type="checkbox"
@@ -489,7 +578,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-checkbox__label"
-                      htmlFor="2-val-16"
+                      htmlFor="3-val-16"
                     >
                       Diarrhea
                     </label>
@@ -629,7 +718,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="3-val-YES"
+                      id="4-val-YES"
                       name="prior_test_flag"
                       onChange={[Function]}
                       type="radio"
@@ -637,7 +726,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="3-val-YES"
+                      htmlFor="4-val-YES"
                     >
                       Yes
                     </label>
@@ -650,7 +739,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="3-val-NO"
+                      id="4-val-NO"
                       name="prior_test_flag"
                       onChange={[Function]}
                       type="radio"
@@ -658,7 +747,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="3-val-NO"
+                      htmlFor="4-val-NO"
                     >
                       No
                     </label>
@@ -689,7 +778,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
               <legend
                 className="usa-legend"
               >
-                Currently pregnant?
+                Are you currently pregnant?
               </legend>
               <div
                 className=""
@@ -702,7 +791,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     className="usa-radio__input"
                     data-required="false"
                     disabled={false}
-                    id="4-val-77386006"
+                    id="5-val-77386006"
                     name="pregnancy"
                     onChange={[Function]}
                     type="radio"
@@ -710,7 +799,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                   />
                   <label
                     className="usa-radio__label"
-                    htmlFor="4-val-77386006"
+                    htmlFor="5-val-77386006"
                   >
                     Yes
                   </label>
@@ -723,7 +812,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     className="usa-radio__input"
                     data-required="false"
                     disabled={false}
-                    id="4-val-60001007"
+                    id="5-val-60001007"
                     name="pregnancy"
                     onChange={[Function]}
                     type="radio"
@@ -731,7 +820,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                   />
                   <label
                     className="usa-radio__label"
-                    htmlFor="4-val-60001007"
+                    htmlFor="5-val-60001007"
                   >
                     No
                   </label>
@@ -744,7 +833,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     className="usa-radio__input"
                     data-required="false"
                     disabled={false}
-                    id="4-val-261665006"
+                    id="5-val-261665006"
                     name="pregnancy"
                     onChange={[Function]}
                     type="radio"
@@ -752,7 +841,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                   />
                   <label
                     className="usa-radio__label"
-                    htmlFor="4-val-261665006"
+                    htmlFor="5-val-261665006"
                   >
                     Prefer not to answer
                   </label>

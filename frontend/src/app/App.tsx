@@ -5,7 +5,6 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
-import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import Header from "./commonComponents/Header";
 import Page from "./commonComponents/Page/Page";
 import LoginView from "./LoginView";
@@ -20,6 +19,7 @@ import WithFacility from "./facilitySelect/WithFacility";
 import { appPermissions } from "./permissions";
 import Settings from "./Settings/Settings";
 import { getAppInsights } from "./TelemetryService";
+import VersionEnforcer from "./VersionEnforcer";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -90,7 +90,8 @@ const App = () => {
     return <p>Server connection error...</p>;
   }
   return (
-    <PrimeErrorBoundary>
+    <>
+      <VersionEnforcer />
       <WithFacility>
         <Page>
           <Header />
@@ -159,7 +160,7 @@ const App = () => {
           </Switch>
         </Page>
       </WithFacility>
-    </PrimeErrorBoundary>
+    </>
   );
 };
 

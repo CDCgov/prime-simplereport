@@ -7,7 +7,6 @@ import { showNotification } from "../../utils";
 import { camelToSentenceCase } from "../../utils/text";
 
 import {
-  allFacilityAdminErrors,
   FacilityAdminErrors,
   facilityAdminSchema,
 } from "./facilityAdminSchema";
@@ -32,7 +31,7 @@ export const useFacilityAdminValidation = (admin: FacilityAdmin) => {
       } catch (e) {
         setErrors((existingErrors) => ({
           ...existingErrors,
-          [field]: allFacilityAdminErrors[field],
+          [field]: e.errors?.join(", "),
         }));
       }
     },
@@ -49,7 +48,7 @@ export const useFacilityAdminValidation = (admin: FacilityAdmin) => {
           acc: FacilityAdminErrors,
           el: { path: keyof FacilityAdminErrors; message: string }
         ) => {
-          acc[el.path] = allFacilityAdminErrors[el.path];
+          acc[el.path] = el.message;
           return acc;
         },
         {} as FacilityAdminErrors

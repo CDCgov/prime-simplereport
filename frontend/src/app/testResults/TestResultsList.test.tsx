@@ -35,6 +35,12 @@ jest.mock("@microsoft/applicationinsights-react-js", () => ({
   useTrackEvent: jest.fn(),
 }));
 
+const WithRouter: React.FC = ({ children }) => (
+  <MemoryRouter initialEntries={[{ search: "?facility=1" }]}>
+    {children}
+  </MemoryRouter>
+);
+
 // Data copied from Chrome network window
 const testResults = [
   {
@@ -718,14 +724,14 @@ const mocks = [
 describe("TestResultsList", () => {
   it("should render a list of tests", async () => {
     const { container, getByText } = render(
-      <MemoryRouter>
+      <WithRouter>
         <DetachedTestResultsList
           data={{ testResults }}
           page={1}
           entriesPerPage={20}
           totalEntries={testResults.length}
         />
-      </MemoryRouter>
+      </WithRouter>
     );
     expect(getByText("Test Results", { exact: false })).toBeInTheDocument();
     expect(getByText("Cragell, Barb Whitaker")).toBeInTheDocument();
@@ -733,13 +739,13 @@ describe("TestResultsList", () => {
   });
   it("should call appropriate gql endpoints for pagination", async () => {
     render(
-      <MemoryRouter>
+      <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <TestResultsList page={1} />
           </MockedProvider>
         </Provider>
-      </MemoryRouter>
+      </WithRouter>
     );
     expect(
       await screen.findByText("Test Results", { exact: false })
@@ -750,13 +756,13 @@ describe("TestResultsList", () => {
   });
   it("should be able to filter by patient", async () => {
     render(
-      <MemoryRouter>
+      <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <TestResultsList page={1} />
           </MockedProvider>
         </Provider>
-      </MemoryRouter>
+      </WithRouter>
     );
     expect(
       await screen.findByText("Test Results", { exact: false })
@@ -765,7 +771,6 @@ describe("TestResultsList", () => {
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();
     expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-    userEvent.click(screen.getByText("Filter"));
     expect(await screen.findByText("Search by name")).toBeInTheDocument();
     userEvent.type(screen.getByRole("searchbox"), "Cragell");
     expect(await screen.findByText("Filter")).toBeInTheDocument();
@@ -774,16 +779,19 @@ describe("TestResultsList", () => {
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();
     expect(screen.queryByText("Colleer, Barde X")).not.toBeInTheDocument();
+    expect(screen.getByRole("searchbox").getAttribute("value")).toBe(
+      "Cragell, Barb Whitaker"
+    );
   });
   it("should be able to filter by result value", async () => {
     render(
-      <MemoryRouter>
+      <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <TestResultsList page={1} />
           </MockedProvider>
         </Provider>
-      </MemoryRouter>
+      </WithRouter>
     );
     expect(
       await screen.findByText("Test Results", { exact: false })
@@ -792,7 +800,6 @@ describe("TestResultsList", () => {
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();
     expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
-    userEvent.click(screen.getByText("Filter"));
     expect(
       await screen.findByRole("option", { name: "Negative" })
     ).toBeInTheDocument();
@@ -804,13 +811,13 @@ describe("TestResultsList", () => {
   });
   it("should be able to filter by role", async () => {
     render(
-      <MemoryRouter>
+      <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <TestResultsList page={1} />
           </MockedProvider>
         </Provider>
-      </MemoryRouter>
+      </WithRouter>
     );
     expect(
       await screen.findByText("Test Results", { exact: false })
@@ -819,7 +826,6 @@ describe("TestResultsList", () => {
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();
     expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-    userEvent.click(screen.getByText("Filter"));
     expect(
       await screen.findByRole("option", { name: "Resident" })
     ).toBeInTheDocument();
@@ -831,13 +837,13 @@ describe("TestResultsList", () => {
   });
   it("should be able to filter by date", async () => {
     render(
-      <MemoryRouter>
+      <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <TestResultsList page={1} />
           </MockedProvider>
         </Provider>
-      </MemoryRouter>
+      </WithRouter>
     );
     expect(
       await screen.findByText("Test Results", { exact: false })
@@ -847,7 +853,6 @@ describe("TestResultsList", () => {
     ).toBeInTheDocument();
     expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
     expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
-    userEvent.click(screen.getByText("Filter"));
     expect(await screen.findByText("Date range (start)")).toBeInTheDocument();
     expect(await screen.findByText("Date range (end)")).toBeInTheDocument();
     userEvent.type(
@@ -873,13 +878,13 @@ describe("TestResultsList", () => {
   });
   it("should be able to clear patient filter", async () => {
     render(
-      <MemoryRouter>
+      <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <TestResultsList page={1} />
           </MockedProvider>
         </Provider>
-      </MemoryRouter>
+      </WithRouter>
     );
 
     expect(
@@ -887,7 +892,6 @@ describe("TestResultsList", () => {
     ).toBeInTheDocument();
 
     // Apply filter
-    userEvent.click(screen.getByText("Filter"));
     expect(await screen.findByText("Search by name")).toBeInTheDocument();
     userEvent.type(screen.getByRole("searchbox"), "Cragell");
     expect(await screen.findByText("Filter")).toBeInTheDocument();
@@ -904,15 +908,63 @@ describe("TestResultsList", () => {
     expect(await screen.queryByText("Colleer, Barde X")).toBeInTheDocument();
   });
 
-  it("opens the test detail view", async () => {
+  it("should be able to clear date filters", async () => {
     render(
-      <MemoryRouter>
+      <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <TestResultsList page={1} />
           </MockedProvider>
         </Provider>
-      </MemoryRouter>
+      </WithRouter>
+    );
+
+    // Apply filter
+    userEvent.type(
+      screen.getAllByTestId("date-picker-external-input")[0],
+      "03/18/2021"
+    );
+
+    userEvent.tab();
+
+    // Filter applied
+    expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
+    expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Cragell, Barb Whitaker")
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen
+        .getAllByTestId("date-picker-external-input")[0]
+        .getAttribute("value")
+    ).toEqual("03/18/2021");
+    // Clear filter
+    expect(await screen.findByText("Clear filters")).toBeInTheDocument();
+    userEvent.click(screen.getByText("Clear filters"));
+
+    // Filter no longer applied
+    expect(
+      await screen.findByText("Cragell, Barb Whitaker")
+    ).toBeInTheDocument();
+
+    // Date picker no longer displays the selected date
+    expect(
+      screen
+        .getAllByTestId("date-picker-external-input")[0]
+        .getAttribute("value")
+    ).toEqual("");
+  });
+
+  it("opens the test detail view", async () => {
+    render(
+      <WithRouter>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks}>
+            <TestResultsList page={1} />
+          </MockedProvider>
+        </Provider>
+      </WithRouter>
     );
     await screen.findByText("Test Results", { exact: false });
     const moreActions = within(screen.getByRole("table")).getAllByRole(
@@ -922,5 +974,20 @@ describe("TestResultsList", () => {
     const viewDetails = await screen.findByText("View details");
     fireEvent.click(viewDetails);
     expect(screen.queryAllByText("Test details").length).toBe(2);
+  });
+
+  it("doesn't display anything if no facility is selected", async () => {
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks}>
+            <TestResultsList page={1} />
+          </MockedProvider>
+        </Provider>
+      </MemoryRouter>
+    );
+    expect(
+      await screen.findByText("No facility selected", { exact: false })
+    ).toBeInTheDocument();
   });
 });

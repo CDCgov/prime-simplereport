@@ -13,7 +13,17 @@ import { MemoryRouter, Route } from "react-router";
 
 import AddPatient, { ADD_PATIENT } from "./AddPatient";
 
+const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
 const mockStore = configureStore([]);
+const store = mockStore({
+  facilities: [{ id: mockFacilityID, name: "123" }],
+});
+
+const RouterWithFacility: React.FC = ({ children }) => (
+  <MemoryRouter initialEntries={[`/add-patient?facility=${mockFacilityID}`]}>
+    {children}
+  </MemoryRouter>
+);
 
 jest.mock("../utils/smartyStreets", () => ({
   getBestSuggestion: jest.fn(),
@@ -60,11 +70,6 @@ describe("AddPatient", () => {
   afterEach(cleanup);
   describe("No facility selected", () => {
     beforeEach(() => {
-      const store = mockStore({
-        facility: {
-          id: "",
-        },
-      });
       render(
         <MemoryRouter>
           <Provider store={store}>
@@ -77,14 +82,14 @@ describe("AddPatient", () => {
     });
     it("does not show the form title", () => {
       expect(
-        screen.queryByText("Add New Person", {
+        screen.queryByText("Add new person", {
           exact: false,
         })
       ).toBeNull();
     });
     it("shows a 'No facility selected' message", async () => {
       expect(
-        await screen.getByText("No facility selected", {
+        screen.getByText("No facility selected", {
           exact: false,
         })
       ).toBeInTheDocument();
@@ -92,13 +97,6 @@ describe("AddPatient", () => {
   });
 
   describe("Facility selected", () => {
-    const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
-    const store = mockStore({
-      facility: {
-        id: mockFacilityID,
-      },
-      facilities: [{ id: mockFacilityID, name: "123" }],
-    });
     beforeEach(() => {
       const mocks = [
         {
@@ -128,15 +126,16 @@ describe("AddPatient", () => {
               race: null,
               ethnicity: null,
               gender: null,
-              residentCongregateSetting: false,
-              employedInHealthcare: true,
               facilityId: mockFacilityID,
               preferredLanguage: null,
+              testResultDelivery: "SMS",
             },
           },
           result: {
             data: {
-              internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
+              addPatient: {
+                internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
+              },
             },
           },
         },
@@ -167,10 +166,9 @@ describe("AddPatient", () => {
               race: null,
               ethnicity: null,
               gender: null,
-              residentCongregateSetting: false,
-              employedInHealthcare: true,
               facilityId: mockFacilityID,
               preferredLanguage: null,
+              testResultDelivery: null,
             },
           },
           result: {
@@ -183,17 +181,17 @@ describe("AddPatient", () => {
       render(
         <Provider store={store}>
           <MockedProvider mocks={mocks} addTypename={false}>
-            <MemoryRouter initialEntries={["/add-patient/"]}>
+            <RouterWithFacility>
               <Route component={AddPatient} path={"/add-patient/"} />
               <Route path={"/patients"} render={() => <p>Patients!</p>} />
-            </MemoryRouter>
+            </RouterWithFacility>
           </MockedProvider>
         </Provider>
       );
     });
     it("shows the form title", async () => {
       expect(
-        await screen.queryAllByText("Add New Person", { exact: false })[0]
+        await screen.queryAllByText("Add new person", { exact: false })[0]
       ).toBeInTheDocument();
     });
 
@@ -209,7 +207,7 @@ describe("AddPatient", () => {
             "Street address 1": "25 Shattuck St",
             City: "Boston",
             State: "MA",
-            "Zip code": "02115",
+            "ZIP code": "02115",
           },
           {
             "Phone type": {
@@ -217,15 +215,10 @@ describe("AddPatient", () => {
               value: "MOBILE",
               exact: true,
             },
-            "Are you a resident in a congregate living setting": {
-              label: "No",
-              value: "No",
-              exact: true,
-            },
-            "Are you a health care worker": {
+            "Would you like to receive your results via text message": {
               label: "Yes",
-              value: "Yes",
-              exact: true,
+              value: "SMS",
+              exact: false,
             },
           }
         );
@@ -303,7 +296,7 @@ describe("AddPatient", () => {
             "Street address 1": "25 Shattuck St",
             City: "Boston",
             State: "MA",
-            "Zip code": "02115",
+            "ZIP code": "02115",
           },
           {
             "Phone type": {

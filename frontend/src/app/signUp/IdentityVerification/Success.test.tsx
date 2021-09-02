@@ -4,11 +4,14 @@ import Success from "./Success";
 
 describe("Success", () => {
   beforeEach(() => {
-    render(<Success email="test.user@example.com" />);
+    render(<Success email="test.user@example.com" activationToken="foo" />);
   });
   it("renders", () => {
     expect(
-      screen.getByText("Check your email", { exact: false })
+      screen.getByText(
+        "Congratulations, your identity has been verified successfully",
+        { exact: false }
+      )
     ).toBeInTheDocument();
   });
 });

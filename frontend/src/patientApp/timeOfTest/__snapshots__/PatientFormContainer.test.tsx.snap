@@ -9,7 +9,7 @@ exports[`PatientFormContainer snapshot 1`] = `
   >
     <div
       aria-label="progress"
-      className="usa-step-indicator  usa-step-indicator--counters-sm margin-y-205"
+      className="usa-step-indicator usa-step-indicator--counters-sm margin-y-205"
     >
       <ol
         className="usa-step-indicator__segments"
@@ -99,7 +99,8 @@ exports[`PatientFormContainer snapshot 1`] = `
             <p
               className="message--required"
             >
-              Required fields are marked with an asterisk (
+              Required fields are marked with an asterisk
+               (
               <abbr
                 className="usa-hint usa-hint--required"
                 title="required"
@@ -196,7 +197,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   id="4"
                   name="role"
                   onChange={[Function]}
-                  value=""
+                  value="- Select -"
                 >
                   <option
                     value=""
@@ -254,6 +255,8 @@ exports[`PatientFormContainer snapshot 1`] = `
                   className="usa-input"
                   disabled={true}
                   id="5"
+                  max="2021-08-01"
+                  min="1900-01-01"
                   name="birthDate"
                   onBlur={[Function]}
                   onChange={[Function]}
@@ -275,6 +278,11 @@ exports[`PatientFormContainer snapshot 1`] = `
             >
               Contact information
             </legend>
+            <p
+              className="usa-hint maxw-prose"
+            >
+              You're responsible for entering the correct contact information, following applicable federal and state laws.
+            </p>
             <div
               className="usa-form"
             >
@@ -553,7 +561,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       name="state"
                       onBlur={[Function]}
                       onChange={[Function]}
-                      value=""
+                      value="- Select -"
                     >
                       <option
                         value=""
@@ -868,7 +876,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-label"
                       htmlFor="14"
                     >
-                      Zip code
+                      ZIP code
                       <abbr
                         className="usa-hint usa-hint--required"
                         title="required"
@@ -1172,8 +1180,13 @@ exports[`PatientFormContainer snapshot 1`] = `
                 <legend
                   className="usa-legend"
                 >
-                  Biological sex
+                  Sex assigned at birth
                 </legend>
+                <span
+                  className="usa-hint"
+                >
+                  This is usually the gender that is written on your original birth certificate.
+                </span>
                 <div
                   className=""
                 >
@@ -1287,13 +1300,6 @@ exports[`PatientFormContainer snapshot 1`] = `
                   className="usa-legend"
                 >
                   Are you a resident in a congregate living setting?
-                  <abbr
-                    className="usa-hint usa-hint--required"
-                    title="required"
-                  >
-                     
-                    *
-                  </abbr>
                 </legend>
                 <span
                   className="usa-hint"
@@ -1309,7 +1315,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <input
                       checked={true}
                       className="usa-radio__input"
-                      data-required={true}
+                      data-required="false"
                       disabled={false}
                       id="18-val-YES"
                       name="residentCongregateSetting"
@@ -1331,7 +1337,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-radio__input"
-                      data-required={true}
+                      data-required="false"
                       disabled={false}
                       id="18-val-NO"
                       name="residentCongregateSetting"
@@ -1353,7 +1359,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-radio__input"
-                      data-required={true}
+                      data-required="false"
                       disabled={false}
                       id="18-val-UNKNOWN"
                       name="residentCongregateSetting"
@@ -1382,13 +1388,6 @@ exports[`PatientFormContainer snapshot 1`] = `
                   className="usa-legend"
                 >
                   Are you a health care worker?
-                  <abbr
-                    className="usa-hint usa-hint--required"
-                    title="required"
-                  >
-                     
-                    *
-                  </abbr>
                 </legend>
                 <div
                   className=""
@@ -1399,7 +1398,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <input
                       checked={true}
                       className="usa-radio__input"
-                      data-required={true}
+                      data-required="false"
                       disabled={false}
                       id="19-val-YES"
                       name="employedInHealthcare"
@@ -1421,7 +1420,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-radio__input"
-                      data-required={true}
+                      data-required="false"
                       disabled={false}
                       id="19-val-NO"
                       name="employedInHealthcare"
@@ -1443,7 +1442,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <input
                       checked={false}
                       className="usa-radio__input"
-                      data-required={true}
+                      data-required="false"
                       disabled={false}
                       id="19-val-UNKNOWN"
                       name="employedInHealthcare"

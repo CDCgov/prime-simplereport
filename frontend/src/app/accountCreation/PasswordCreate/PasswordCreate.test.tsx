@@ -14,13 +14,18 @@ const store = mockStore({
 
 jest.mock("../AccountCreationApiService", () => ({
   AccountCreationApi: {
-    setPassword: (activationToken: string, password: string) => {
+    setPassword: (password: string) => {
       return new Promise((res, rej) => {
         if (password === "validPASS123!") {
           res("success");
         } else {
-          rej({ message: "utter failure" });
+          rej("utter failure");
         }
+      });
+    },
+    enrollSecurityKeyMfa: () => {
+      return new Promise((res) => {
+        res({ activation: { challenge: "challenge", user: { id: "userId" } } });
       });
     },
   },
@@ -126,7 +131,6 @@ describe("PasswordCreate", () => {
       }
     );
     expect(screen.getByText(strengthLabel("Strong"))).toBeInTheDocument();
-    fireEvent.click(screen.getByText("Continue"));
     expect(screen.getByText("Passwords must match")).toBeInTheDocument();
   });
 
@@ -161,6 +165,6 @@ describe("PasswordCreate", () => {
     await act(async () => {
       await fireEvent.click(screen.getByText("Continue"));
     });
-    expect(screen.getByText("API Error: utter failure")).toBeInTheDocument();
+    expect(screen.getByText("utter failure")).toBeInTheDocument();
   });
 });

@@ -13,6 +13,7 @@ type Organization {
     @deprecated(reason: "Use the one that makes sense")
   facilities: [Facility!]!
   identityVerified: Boolean
+  patientSelfRegistrationLink: String
 }
 
 type Facility {
@@ -31,6 +32,7 @@ type Facility {
   deviceTypes: [DeviceType]
   defaultDeviceType: DeviceType
   orderingProvider: Provider
+  patientSelfRegistrationLink: String
 }
 
 type Provider {
@@ -93,6 +95,7 @@ type User {
   # for backward compatibility, currently maintaining both `role` and `roles`
   role: Role
   roles: [Role!]! @deprecated(reason: "Users have only one role now")
+  status: String
 }
 
 type ApiUser {
@@ -105,6 +108,17 @@ type ApiUser {
   lastName: String!
   suffix: String
   email: String!
+}
+
+type ApiUserWithStatus {
+  id: ID
+  name: NameInfo!
+  firstName: String
+  middleName: String
+  lastName: String!
+  suffix: String
+  email: String!
+  status: String
 }
 
 # Patient and test types
@@ -173,7 +187,6 @@ type TestOrder {
   dateTested: DateTime
   correctionStatus: String
   reasonForCorrection: String
-  patientLink: PatientLink
 }
 
 type TestResult {
@@ -246,7 +259,7 @@ type Query {
     role: String
     startDate: DateTime
     endDate: DateTime
-    pageNumber: Int 
+    pageNumber: Int
     pageSize: Int
   ): [TestResult] @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResultsCount(
@@ -260,6 +273,7 @@ type Query {
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
+  usersWithStatus: [ApiUserWithStatus] @requiredPermissions(allOf: ["MANAGE_USERS"])
   user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
 }
@@ -346,9 +360,16 @@ type Mutation {
     facilities: [ID!]
     role: Role!
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
+  resetUserPassword(id: ID!): User
+    @requiredPermissions(allOf: ["MANAGE_USERS"])
   setUserIsDeleted(id: ID!, deleted: Boolean!): User
     @requiredPermissions(allOf: ["MANAGE_USERS"])
-  setCurrentUserTenantDataAccess(organizationExternalId: String, justification: String): User
+  reactivateUser(id: ID!): User
+    @requiredPermissions(allOf: ["MANAGE_USERS"])
+  setCurrentUserTenantDataAccess(
+    organizationExternalId: String
+    justification: String
+  ): User
   addPatient(
     facilityId: ID
     lookupId: String
@@ -374,6 +395,7 @@ type Mutation {
     residentCongregateSetting: Boolean
     employedInHealthcare: Boolean
     preferredLanguage: String
+    testResultDelivery: TestResultDeliveryPreference
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   updatePatient(
     facilityId: ID @Size(min: 36, max: 36)
@@ -406,6 +428,7 @@ type Mutation {
     residentCongregateSetting: Boolean
     employedInHealthcare: Boolean
     preferredLanguage: String
+    testResultDelivery: TestResultDeliveryPreference
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   setPatientIsDeleted(id: ID!, deleted: Boolean!): Patient
     @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])

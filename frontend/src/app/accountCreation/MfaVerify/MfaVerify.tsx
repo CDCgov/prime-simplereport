@@ -38,7 +38,9 @@ export const MfaVerify = (props: Props) => {
       await AccountCreationApi.resendActivationPasscode();
       setCodeResendSuccess(true);
     } catch (error) {
-      setCodeError(`API Error: ${error?.message}`);
+      setCodeError(
+        error || "Unable to resend activation passcode, please try again later"
+      );
     }
   };
 
@@ -49,7 +51,7 @@ export const MfaVerify = (props: Props) => {
         await AccountCreationApi.verifyActivationPasscode(code);
         setSubmitted(true);
       } catch (error) {
-        setCodeError(`API Error: ${error?.message}`);
+        setCodeError(error || "Unable to verify code, please try again later");
       } finally {
         setLoading(false);
       }
@@ -61,7 +63,7 @@ export const MfaVerify = (props: Props) => {
   }
 
   if (submitted) {
-    return <Redirect to="/success" />;
+    return <Redirect push to="/success" />;
   }
 
   const input = (
@@ -134,9 +136,6 @@ export const MfaVerify = (props: Props) => {
           </>
         )}
       </Card>
-      <p className="margin-top-4">
-        <a href="#0">Return to previous step</a>
-      </p>
     </CardBackground>
   );
 };

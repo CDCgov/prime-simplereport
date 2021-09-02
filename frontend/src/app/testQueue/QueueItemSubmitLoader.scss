@@ -1,0 +1,33 @@
+.sr-queue-item-submit-loader {
+  background-color: rgba(255, 255, 255, 0.92);
+  display: none;
+
+  &-enter {
+    display: block;
+    opacity: 0;
+  }
+
+  &-enter-active {
+    display: block;
+    opacity: 1;
+    transition: opacity 300ms;
+  }
+
+  &-enter-done {
+    display: block;
+  }
+
+  &-exit {
+    display: block;
+    opacity: 1;
+  }
+
+  &-exit-active {
+    opacity: 0;
+    transition: opacity 300ms;
+  }
+
+  &-exit-done {
+    display: none;
+  }
+}
