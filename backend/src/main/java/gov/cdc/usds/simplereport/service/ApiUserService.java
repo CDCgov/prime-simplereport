@@ -42,6 +42,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
 
 @Service
 @Transactional(readOnly = false)
@@ -272,7 +273,9 @@ public class ApiUserService {
   // a non-Transactional version to be called from other methods in the same class
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public ApiUser getCurrentApiUserInContainedTransaction() {
-    return getCurrentApiUserNoCache();
+    return RequestContextHolder.getRequestAttributes() != null
+        ? getCurrentApiUser()
+        : getCurrentApiUserNoCache();
   }
 
   private ApiUser getPatientApiUser() {
