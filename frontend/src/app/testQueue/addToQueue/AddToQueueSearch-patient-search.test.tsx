@@ -1,6 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
+import { MemoryRouter } from "react-router-dom";
 
 import AddToQueueSearch, { QUERY_PATIENT } from "./AddToQueueSearch";
 
@@ -66,13 +67,15 @@ describe("AddToSearchQueue", () => {
     refetchQueueMock = jest.fn();
 
     render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <AddToQueueSearch
-          refetchQueue={refetchQueueMock}
-          facilityId={facilityId}
-          patientsInQueue={[patientInQueue.internalId]}
-        />
-      </MockedProvider>
+      <MemoryRouter>
+        <MockedProvider mocks={mocks} addTypename={false}>
+          <AddToQueueSearch
+            refetchQueue={refetchQueueMock}
+            facilityId={facilityId}
+            patientsInQueue={[patientInQueue.internalId]}
+          />
+        </MockedProvider>
+      </MemoryRouter>
     );
   });
 

@@ -96,7 +96,7 @@ describe("AddPatient", () => {
     });
   });
 
-  describe("Facility selected", () => {
+  describe("happy path", () => {
     beforeEach(() => {
       const mocks = [
         {
@@ -184,6 +184,7 @@ describe("AddPatient", () => {
             <RouterWithFacility>
               <Route component={AddPatient} path={"/add-patient/"} />
               <Route path={"/patients"} render={() => <p>Patients!</p>} />
+              <Route path={"/queue"} render={() => <p>Testing Queue!</p>} />
             </RouterWithFacility>
           </MockedProvider>
         </Provider>
@@ -224,7 +225,7 @@ describe("AddPatient", () => {
         );
         await act(async () => {
           fireEvent.click(
-            screen.queryAllByText("Save", {
+            screen.queryAllByText("Save Changes", {
               exact: false,
             })[0]
           );
@@ -321,6 +322,67 @@ describe("AddPatient", () => {
           target: { value: "STUDENT" },
         });
         expect(await screen.findByText("Student ID")).toBeInTheDocument();
+      });
+    });
+
+    describe("saving changes and starting a test", () => {
+      beforeEach(async () => {
+        fillOutForm(
+          {
+            "First Name": "Alice",
+            "Last Name": "Hamilton",
+            Facility: mockFacilityID,
+            "Date of birth": "1970-09-22",
+            "Primary phone number": "617-432-1000",
+            "Street address 1": "25 Shattuck St",
+            City: "Boston",
+            State: "MA",
+            "ZIP code": "02115",
+          },
+          {
+            "Phone type": {
+              label: "Mobile",
+              value: "MOBILE",
+              exact: true,
+            },
+            "Would you like to receive your results via text message": {
+              label: "Yes",
+              value: "SMS",
+              exact: false,
+            },
+          }
+        );
+        await act(async () => {
+          fireEvent.click(
+            screen.queryAllByText("Save and start test", {
+              exact: false,
+            })[0]
+          );
+        });
+
+        const modal = screen.getByRole("dialog", {
+          exact: false,
+        });
+
+        fireEvent.click(
+          within(modal).getByLabelText("Use address as entered", {
+            exact: false,
+          }),
+          {
+            target: { value: "userAddress" },
+          }
+        );
+        await act(async () => {
+          fireEvent.click(
+            within(modal).getByText("Save changes", {
+              exact: false,
+            })
+          );
+        });
+      });
+
+      it("redirects to the queue with a patient id in the query param", () => {
+        expect(screen.getByText("Testing Queue!")).toBeInTheDocument();
       });
     });
   });
