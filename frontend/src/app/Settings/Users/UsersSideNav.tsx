@@ -48,12 +48,21 @@ const UsersSideNav: React.FC<Props> = ({
                     user.middleName,
                     user.lastName
                   )}
-                  {user.status !== "ACTIVE" && (
+                  {user.status === "SUSPENDED" && (
                     <span>
                       {" "}
                       <FontAwesomeIcon
                         icon={faCircle}
                         className={"prime-red-icon suspended-icon"}
+                      />
+                    </span>
+                  )}
+                  {user.status === "PROVISIONED" && (
+                    <span>
+                      {" "}
+                      <FontAwesomeIcon
+                        icon={faCircle}
+                        className={"prime-orange-icon suspended-icon"}
                       />
                     </span>
                   )}

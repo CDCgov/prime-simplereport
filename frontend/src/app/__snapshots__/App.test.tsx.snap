@@ -194,7 +194,7 @@ exports[`App Render main screen 1`] = `
                       <strong>
                         Role: 
                       </strong>
-                      Admin user
+                      Admin
                     </span>
                   </li>
                   <li
@@ -355,7 +355,7 @@ exports[`App Render main screen 1`] = `
                         <strong>
                           Role: 
                         </strong>
-                        Admin user
+                        Admin
                       </span>
                     </li>
                     <li
