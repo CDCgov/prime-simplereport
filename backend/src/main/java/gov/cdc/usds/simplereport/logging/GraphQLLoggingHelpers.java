@@ -98,8 +98,9 @@ public class GraphQLLoggingHelpers {
           client2.getContext().getProperties().put("HELLO", "WORLD");
           client2.trackEvent("Hello world event");
           MDC.remove(LoggingConstants.REQUEST_ID_MDC_KEY);
-          client.trackRequest(request);
+          client2.trackRequest(request);
           client.flush();
+          client2.flush();
         });
   }
 }
