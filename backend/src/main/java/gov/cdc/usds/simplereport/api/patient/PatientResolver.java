@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.service.PersonService;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,7 +35,9 @@ public class PatientResolver implements GraphQLQueryResolver {
   public boolean patientExists(
       String firstName, String lastName, LocalDate birthDate, String zipCode, UUID facilityId) {
     Organization org = os.getCurrentOrganization();
-    Facility facility = os.getFacilityInCurrentOrg(facilityId);
+    Optional<Facility> facility =
+        facilityId == null ? Optional.empty() : Optional.of(os.getFacilityInCurrentOrg(facilityId));
+
     return ps.isDuplicatePatient(firstName, lastName, birthDate, zipCode, org, facility);
   }
 

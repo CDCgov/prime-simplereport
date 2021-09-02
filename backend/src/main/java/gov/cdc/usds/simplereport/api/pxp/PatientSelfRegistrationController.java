@@ -18,6 +18,7 @@ import gov.cdc.usds.simplereport.service.PatientSelfRegistrationLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.model.ExistingPatientCheckRequestBody;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,7 +107,7 @@ public class PatientSelfRegistrationController {
         body.getBirthDate(),
         body.getPostalCode(),
         link.getOrganization(),
-        link.getFacility());
+        Optional.of(link.getFacility()));
   }
 
   @GetMapping("/entity-name")

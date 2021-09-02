@@ -8,6 +8,10 @@ import { EMPTY_PERSON } from "../../app/patients/AddPatient";
 import PersonForm, {
   PersonFormView,
 } from "../../app/patients/Components/PersonForm";
+import {
+  DuplicatePatientModal,
+  IdentifyingData,
+} from "../../app/patients/Components/DuplicatePatientModal";
 import { PxpApi } from "../PxpApiService";
 
 type Props = {
@@ -15,13 +19,6 @@ type Props = {
   onDuplicate: (person: Pick<PersonFormData, "firstName" | "lastName">) => void;
   entityName: string;
   registrationLink: string;
-};
-
-type IdentifyingData = {
-  firstName: string;
-  lastName: string;
-  zipCode: string;
-  birthDate: moment.Moment;
 };
 
 export const SelfRegistrationForm = ({
@@ -87,13 +84,14 @@ export const SelfRegistrationForm = ({
       id="registration-container"
       className="grid-container maxw-tablet padding-y-3"
     >
-      <DuplicateModal
+      <DuplicatePatientModal
         showModal={!!isDuplicate}
         onDuplicate={() => {
           const { firstName, lastName } = identifyingData;
           onDuplicate({ firstName: firstName || "", lastName: lastName || "" });
         }}
         entityName={entityName}
+        canCreateAnyway={false}
       />
       <PersonForm
         patient={EMPTY_PERSON}
@@ -110,42 +108,5 @@ export const SelfRegistrationForm = ({
         onBlur={onBlur}
       />
     </div>
-  );
-};
-
-type DuplicateModalProps = {
-  showModal: boolean;
-  onDuplicate: () => void;
-  entityName: string;
-};
-
-const DuplicateModal: React.FC<DuplicateModalProps> = ({
-  showModal,
-  onDuplicate,
-  entityName,
-}) => {
-  return (
-    <Modal
-      onClose={() => {}}
-      showModal={showModal}
-      showClose={false}
-      variant="warning"
-    >
-      <Modal.Header>You already have a profile at {entityName}.</Modal.Header>
-      <p>
-        Our records show someone has registered with the same name, date of
-        birth, and ZIP code. Please check in with your testing site staff. You
-        do not need to register again.
-      </p>
-      <Modal.Footer>
-        <Button
-          onClick={() => {
-            onDuplicate();
-          }}
-        >
-          Exit sign up
-        </Button>
-      </Modal.Footer>
-    </Modal>
   );
 };

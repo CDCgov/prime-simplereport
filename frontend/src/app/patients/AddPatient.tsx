@@ -1,14 +1,19 @@
-import React, { useState } from "react";
-import { gql, useMutation } from "@apollo/client";
+import React, { useEffect, useState } from "react";
+import { gql, useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import moment from "moment";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
 import { showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
+import {
+  DuplicatePatientModal,
+  IdentifyingData,
+} from "../../app/patients/Components/DuplicatePatientModal";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
@@ -41,6 +46,24 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   preferredLanguage: null,
   testResultDelivery: null,
 };
+
+export const PATIENT_EXISTS = gql`
+  query PatientExists(
+    $firstName: String!
+    $lastName: String!
+    $birthDate: LocalDate!
+    $zipCode: String!
+    $facilityId: ID
+  ) {
+    patientExists(
+      firstName: $firstName
+      lastName: $lastName
+      birthDate: $birthDate
+      zipCode: $zipCode
+      facilityId: $facilityId
+    )
+  }
+`;
 
 export const ADD_PATIENT = gql`
   mutation AddPatient(
@@ -116,6 +139,83 @@ const AddPatient = () => {
     AddPatientParams
   >(ADD_PATIENT);
 
+  const [identifyingData, setIdentifyingData] = useState<
+    Nullable<IdentifyingData>
+  >({
+    firstName: null,
+    lastName: null,
+    zipCode: null,
+    birthDate: null,
+    facilityId: null,
+  });
+  //const [isDuplicate, setIsDuplicate] = useState<boolean>();
+
+  const [getPatientExists, { data, error }] = useLazyQuery(PATIENT_EXISTS, {
+    //variables: identifyingData
+    variables: {
+      ...identifyingData,
+      birthDate: moment(identifyingData.birthDate).format(
+        "YYYY-MM-DD"
+      ) as ISODate,
+    },
+  });
+
+  const onBlur = ({
+    firstName,
+    lastName,
+    zipCode,
+    birthDate,
+    facilityId,
+  }: Nullable<PersonFormData>) => {
+    if (
+      firstName !== identifyingData.firstName ||
+      lastName !== identifyingData.lastName ||
+      zipCode !== identifyingData.zipCode ||
+      !moment(birthDate).isSame(identifyingData.birthDate) ||
+      facilityId !== identifyingData.facilityId
+    ) {
+      setIdentifyingData({
+        firstName,
+        lastName,
+        zipCode,
+        birthDate: moment(birthDate),
+        facilityId,
+      });
+    }
+  };
+
+  useEffect(() => {
+    async function checkForDuplicates(idata: IdentifyingData) {
+      /*
+      const { firstName, lastName, zipCode, facilityId } = data;
+      const birthDate = moment(data.birthDate).format("YYYY-MM-DD") as ISODate;
+      */
+      try {
+        getPatientExists();
+        /*
+        const isDuplicate = await PxpApi.checkDuplicateRegistrant({
+          firstName,
+          lastName,
+          birthDate,
+          postalCode: zipCode,
+          registrationLink,
+        });
+        */
+
+        //setIsDuplicate(isDuplicate);
+        //setIsDuplicate(data?.patientExists);
+      } catch (e) {
+        // A failure to check duplicate shouldn't disrupt registration
+        console.error(e);
+      }
+    }
+
+    const { firstName, lastName, zipCode, birthDate } = identifyingData;
+    if (firstName && lastName && zipCode && birthDate?.isValid()) {
+      checkForDuplicates({ firstName, lastName, zipCode, birthDate });
+    }
+  }, [identifyingData, getPatientExists]);
+
   const [activeFacility] = useSelectedFacility();
   const activeFacilityId = activeFacility?.id;
 
@@ -155,9 +255,16 @@ const AddPatient = () => {
   return (
     <main className={"prime-edit-patient prime-home"}>
       <div className={"grid-container margin-bottom-4"}>
+        <DuplicatePatientModal
+          showModal={data?.patientExists}
+          onDuplicate={() => {}}
+          entityName={"fake"}
+          canCreateAnyway={true}
+        />
         <PersonForm
           patient={EMPTY_PERSON}
           savePerson={savePerson}
+          onBlur={onBlur}
           getHeader={(_, onSave, formChanged) => (
             <div className="display-flex flex-justify">
               <div>

@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -158,17 +159,13 @@ public class PersonService {
       String lastName,
       LocalDate birthDate,
       String postalCode,
-      UUID facilityId,
-      UUID orgId) {
+      Optional<Facility> facility,
+      Organization organization) {
     Specification<Person> filter =
         patientExistsFilter(firstName, lastName, birthDate, postalCode)
-            .and(inOrganizationFilter(orgId));
+            .and(inOrganizationFilter(organization.getInternalId()));
 
-    if (facilityId != null) {
-      return filter.and(inFacilityFilter(facilityId));
-    }
-
-    return filter;
+    return facility.map(f -> filter.and(inFacilityFilter(f.getInternalId()))).orElse(filter);
   }
 
   /**
@@ -205,16 +202,10 @@ public class PersonService {
       LocalDate birthDate,
       String postalCode,
       Organization org,
-      Facility facility) {
+      Optional<Facility> facility) {
     var patients =
         _repo.findAll(
-            buildPersonMatchFilter(
-                firstName,
-                lastName,
-                birthDate,
-                postalCode,
-                facility.getInternalId(),
-                org.getInternalId()),
+            buildPersonMatchFilter(firstName, lastName, birthDate, postalCode, facility, org),
             PageRequest.of(0, 1, NAME_SORT));
 
     return !patients.isEmpty();
