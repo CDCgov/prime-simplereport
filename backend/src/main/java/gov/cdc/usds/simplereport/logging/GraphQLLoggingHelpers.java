@@ -90,6 +90,13 @@ public class GraphQLLoggingHelpers {
           }
 
           // Clear the MDC context
+          var client2 = new TelemetryClient();
+          String instrumentationKey =
+              System.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING").split(";")[0].split("=")[1];
+          // System.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING");
+          client2.getContext().setInstrumentationKey(instrumentationKey);
+          client2.getContext().getProperties().put("HELLO", "WORLD");
+          client2.trackEvent("Hello world event");
           MDC.remove(LoggingConstants.REQUEST_ID_MDC_KEY);
           client.trackRequest(request);
           client.flush();

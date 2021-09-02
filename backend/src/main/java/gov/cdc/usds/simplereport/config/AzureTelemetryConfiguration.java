@@ -1,8 +1,6 @@
 package gov.cdc.usds.simplereport.config;
 
 import com.microsoft.applicationinsights.TelemetryClient;
-import com.microsoft.applicationinsights.TelemetryConfiguration;
-
 import gov.cdc.usds.simplereport.api.CurrentUIVersionContextHolder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,17 +17,20 @@ public class AzureTelemetryConfiguration {
 
   @Bean
   @Scope("singleton")
-  TelemetryClient getTelemetryClient() {
-     //TelemetryConfiguration config = new TelemetryConfiguration();
-     //config.setConnectionString(System.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"));
-    // config.getTelemetryInitializers().add(new AzureTelemetryInitializer(_currentUIVersionContextHolder));
-    //TelemetryClient client = new TelemetryClient(config);
+  public TelemetryClient getTelemetryClient() {
+    // TelemetryConfiguration config = new TelemetryConfiguration();
+    // config.setConnectionString(System.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"));
+    // config.getTelemetryInitializers().add(new
+    // AzureTelemetryInitializer(_currentUIVersionContextHolder));
+    // TelemetryClient client = new TelemetryClient(config);
+    // TelemetryConfiguration config = new TelemetryConfiguration();
     TelemetryClient client = new TelemetryClient();
-    String instrumentationKey = System
-      .getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")
-      .split(";")[0].split("=")[1];
+    String instrumentationKey =
+        System.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING").split(";")[0].split("=")[1];
+    // System.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING");
     client.getContext().setInstrumentationKey(instrumentationKey);
     client.getContext().getProperties().put("HELLO", "WORLD");
+    client.trackEvent("Hello world event");
     return client;
   }
 }
