@@ -423,27 +423,19 @@ public class ApiUserService {
   }
 
   private ApiUser getCurrentApiUser() {
-    IdentityAttributes userIdentity = _supplier.get();
-
-    Optional<ApiUser> anonymousUser = getCurrentNonOktaUser(userIdentity);
-    if (anonymousUser.isPresent()) {
-      return anonymousUser.get();
-    }
-
     if (_apiUserContextHolder.hasBeenPopulated()) {
       LOG.info("Retrieving user from request context");
       return _apiUserContextHolder.getCurrentApiUser();
     }
-
-    ApiUser user = getCurrentApiUserFromIdentity(userIdentity);
+    ApiUser user = getCurrentApiUserNoCache();
     _apiUserContextHolder.setCurrentApiUser(user);
     return user;
   }
 
   private ApiUser getCurrentApiUserNoCache() {
     IdentityAttributes userIdentity = _supplier.get();
-    Optional<ApiUser> anonymousUser = getCurrentNonOktaUser(userIdentity);
-    return anonymousUser.orElseGet(() -> getCurrentApiUserFromIdentity(userIdentity));
+    Optional<ApiUser> nonOktaUser = getCurrentNonOktaUser(userIdentity);
+    return nonOktaUser.orElseGet(() -> getCurrentApiUserFromIdentity(userIdentity));
   }
 
   public UserInfo getCurrentUserInfo() {
