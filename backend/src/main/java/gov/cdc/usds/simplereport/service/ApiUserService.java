@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import com.okta.sdk.resource.user.UserStatus;
+import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.SmsWebhookContextHolder;
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
@@ -63,6 +64,8 @@ public class ApiUserService {
   @Autowired private CurrentAccountRequestContextHolder _accountRequestContextHolder;
 
   @Autowired private SmsWebhookContextHolder _smsWebhookContextHolder;
+
+  @Autowired private ApiUserContextHolder _apiUserContextHolder;
 
   private static final Logger LOG = LoggerFactory.getLogger(ApiUserService.class);
 
@@ -269,7 +272,7 @@ public class ApiUserService {
   // a non-Transactional version to be called from other methods in the same class
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public ApiUser getCurrentApiUserInContainedTransaction() {
-    return getCurrentApiUser();
+    return getCurrentApiUserNoCache();
   }
 
   private ApiUser getPatientApiUser() {
@@ -379,24 +382,26 @@ public class ApiUserService {
         });
   }
 
-  private ApiUser getCurrentApiUser() {
-    IdentityAttributes userIdentity = _supplier.get();
+  private Optional<ApiUser> getCurrentAnonymousUser(IdentityAttributes userIdentity) {
     if (userIdentity == null) {
       if (_patientContextHolder.hasPatientLink()) {
-        return getPatientApiUser();
+        return Optional.of(getPatientApiUser());
       }
       if (_patientContextHolder.isPatientSelfRegistrationRequest()) {
-        return getPatientSelfRegistrationApiUser();
+        return Optional.of(getPatientSelfRegistrationApiUser());
       }
       if (_accountRequestContextHolder.isAccountRequest()) {
-        return getAccountRequestApiUser();
+        return Optional.of(getAccountRequestApiUser());
       }
       if (_smsWebhookContextHolder.isSmsWebhook()) {
-        return getSmsWebhookApiUser();
+        return Optional.of(getSmsWebhookApiUser());
       }
       throw new UnidentifiedUserException();
     }
+    return Optional.empty();
+  }
 
+  private ApiUser getCurrentApiUserFromIdentity(IdentityAttributes userIdentity) {
     Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(userIdentity.getUsername());
     if (found.isPresent()) {
       LOG.debug("User has logged in before: retrieving user record.");
@@ -415,6 +420,30 @@ public class ApiUserService {
 
       return user;
     }
+  }
+
+  private ApiUser getCurrentApiUser() {
+    IdentityAttributes userIdentity = _supplier.get();
+
+    Optional<ApiUser> anonymousUser = getCurrentAnonymousUser(userIdentity);
+    if (anonymousUser.isPresent()) {
+      return anonymousUser.get();
+    }
+
+    if (_apiUserContextHolder.hasBeenPopulated()) {
+      LOG.info("Retrieving user from request context");
+      return _apiUserContextHolder.getCurrentApiUser();
+    }
+
+    ApiUser user = getCurrentApiUserFromIdentity(userIdentity);
+    _apiUserContextHolder.setCurrentApiUser(user);
+    return user;
+  }
+
+  private ApiUser getCurrentApiUserNoCache() {
+    IdentityAttributes userIdentity = _supplier.get();
+    Optional<ApiUser> anonymousUser = getCurrentAnonymousUser(userIdentity);
+    return anonymousUser.orElseGet(() -> getCurrentApiUserFromIdentity(userIdentity));
   }
 
   public UserInfo getCurrentUserInfo() {

@@ -42,8 +42,7 @@ public class TenantDataAccessFilter implements Filter {
           Set<GrantedAuthority> grantedAuthorities =
               authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
 
-          String username =
-              _apiUserService.getCurrentApiUserInContainedTransaction().getLoginEmail();
+          String username = _apiUserService.getCurrentUserInfo().getEmail();
           _currentTenantDataAccessContextHolder.setTenantDataAccessAuthorities(
               username, authorities);
 
