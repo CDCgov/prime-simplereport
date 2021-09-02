@@ -382,7 +382,7 @@ public class ApiUserService {
         });
   }
 
-  private Optional<ApiUser> getCurrentAnonymousUser(IdentityAttributes userIdentity) {
+  private Optional<ApiUser> getCurrentNonOktaUser(IdentityAttributes userIdentity) {
     if (userIdentity == null) {
       if (_patientContextHolder.hasPatientLink()) {
         return Optional.of(getPatientApiUser());
@@ -425,7 +425,7 @@ public class ApiUserService {
   private ApiUser getCurrentApiUser() {
     IdentityAttributes userIdentity = _supplier.get();
 
-    Optional<ApiUser> anonymousUser = getCurrentAnonymousUser(userIdentity);
+    Optional<ApiUser> anonymousUser = getCurrentNonOktaUser(userIdentity);
     if (anonymousUser.isPresent()) {
       return anonymousUser.get();
     }
@@ -442,7 +442,7 @@ public class ApiUserService {
 
   private ApiUser getCurrentApiUserNoCache() {
     IdentityAttributes userIdentity = _supplier.get();
-    Optional<ApiUser> anonymousUser = getCurrentAnonymousUser(userIdentity);
+    Optional<ApiUser> anonymousUser = getCurrentNonOktaUser(userIdentity);
     return anonymousUser.orElseGet(() -> getCurrentApiUserFromIdentity(userIdentity));
   }
 
