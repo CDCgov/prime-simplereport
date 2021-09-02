@@ -424,7 +424,7 @@ public class ApiUserService {
 
   private ApiUser getCurrentApiUser() {
     if (_apiUserContextHolder.hasBeenPopulated()) {
-      LOG.info("Retrieving user from request context");
+      LOG.debug("Retrieving user from request context");
       return _apiUserContextHolder.getCurrentApiUser();
     }
     ApiUser user = getCurrentApiUserNoCache();
