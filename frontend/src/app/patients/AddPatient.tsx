@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { gql, useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { gql, useLazyQuery, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
-import { Redirect } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
+import { useSelector } from "react-redux";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
@@ -17,6 +18,7 @@ import {
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
+import { RootState } from "../store";
 
 import PersonForm from "./Components/PersonForm";
 
@@ -148,10 +150,9 @@ const AddPatient = () => {
     birthDate: null,
     facilityId: null,
   });
-  //const [isDuplicate, setIsDuplicate] = useState<boolean>();
+  const [preventModal, setPreventModal] = useState<boolean>(false);
 
-  const [getPatientExists, { data, error }] = useLazyQuery(PATIENT_EXISTS, {
-    //variables: identifyingData
+  const [getPatientExists, { data }] = useLazyQuery(PATIENT_EXISTS, {
     variables: {
       ...identifyingData,
       birthDate: moment(identifyingData.birthDate).format(
@@ -159,6 +160,16 @@ const AddPatient = () => {
       ) as ISODate,
     },
   });
+
+  const facilities = useSelector<RootState, Facility[]>(
+    (state) => state.facilities
+  );
+
+  const organization = useSelector<RootState, { name: string }>(
+    (state) => state.organization
+  );
+
+  const history = useHistory();
 
   const onBlur = ({
     firstName,
@@ -186,24 +197,8 @@ const AddPatient = () => {
 
   useEffect(() => {
     async function checkForDuplicates(idata: IdentifyingData) {
-      /*
-      const { firstName, lastName, zipCode, facilityId } = data;
-      const birthDate = moment(data.birthDate).format("YYYY-MM-DD") as ISODate;
-      */
       try {
         getPatientExists();
-        /*
-        const isDuplicate = await PxpApi.checkDuplicateRegistrant({
-          firstName,
-          lastName,
-          birthDate,
-          postalCode: zipCode,
-          registrationLink,
-        });
-        */
-
-        //setIsDuplicate(isDuplicate);
-        //setIsDuplicate(data?.patientExists);
       } catch (e) {
         // A failure to check duplicate shouldn't disrupt registration
         console.error(e);
@@ -221,9 +216,14 @@ const AddPatient = () => {
 
   const personPath = `/patients/?facility=${activeFacilityId}`;
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
+  const [goBack, setGoBack] = useState(false);
 
   if (redirect) {
     return <Redirect to={redirect} />;
+  }
+
+  if (goBack) {
+    history.goBack();
   }
 
   if (!activeFacilityId) {
@@ -256,10 +256,17 @@ const AddPatient = () => {
     <main className={"prime-edit-patient prime-home"}>
       <div className={"grid-container margin-bottom-4"}>
         <DuplicatePatientModal
-          showModal={data?.patientExists}
-          onDuplicate={() => {}}
-          entityName={"fake"}
-          canCreateAnyway={true}
+          showModal={data?.patientExists && preventModal === false}
+          onDuplicate={() => setGoBack(true)}
+          entityName={
+            identifyingData.facilityId
+              ? facilities.find((f) => f.id === identifyingData.facilityId)
+                  ?.name
+              : organization.name
+          }
+          onClose={() => {
+            setPreventModal(true);
+          }}
         />
         <PersonForm
           patient={EMPTY_PERSON}

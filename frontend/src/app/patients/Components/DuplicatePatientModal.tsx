@@ -6,8 +6,8 @@ import Modal from "../../commonComponents/Modal";
 export type DuplicateModalProps = {
   showModal: boolean;
   onDuplicate: () => void;
-  entityName: string;
-  canCreateAnyway: boolean;
+  entityName: string | undefined;
+  onClose?: () => void;
 };
 
 export type IdentifyingData = {
@@ -22,7 +22,7 @@ export const DuplicatePatientModal: React.FC<DuplicateModalProps> = ({
   showModal,
   onDuplicate,
   entityName,
-  canCreateAnyway,
+  onClose,
 }) => {
   return (
     <Modal
@@ -38,23 +38,8 @@ export const DuplicatePatientModal: React.FC<DuplicateModalProps> = ({
         do not need to register again.
       </p>
       <Modal.Footer>
-        <Button
-          onClick={() => {
-            onDuplicate();
-          }}
-        >
-          Exit sign up
-        </Button>
-        {canCreateAnyway && (
-          <Button
-            onClick={() => {
-              //onDuplicate();
-              //onRegister??
-            }}
-          >
-            Register anyway
-          </Button>
-        )}
+        <Button onClick={onDuplicate}>Exit sign up</Button>
+        {onClose && <Button onClick={onClose}>Register anyway</Button>}
       </Modal.Footer>
     </Modal>
   );

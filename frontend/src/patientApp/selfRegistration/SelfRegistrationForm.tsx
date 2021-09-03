@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "../../app/commonComponents/Button/Button";
-import Modal from "../../app/commonComponents/Modal";
 import { EMPTY_PERSON } from "../../app/patients/AddPatient";
 import PersonForm, {
   PersonFormView,
@@ -91,7 +90,6 @@ export const SelfRegistrationForm = ({
           onDuplicate({ firstName: firstName || "", lastName: lastName || "" });
         }}
         entityName={entityName}
-        canCreateAnyway={false}
       />
       <PersonForm
         patient={EMPTY_PERSON}
