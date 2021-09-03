@@ -10,7 +10,8 @@ export const ROLE_OPTIONS: { value: Role; label: string }[] = [
   },
   {
     value: "USER",
-    label: "Standard user (conduct tests, manage test results and patient profiles)",
+    label:
+      "Standard user (conduct tests, manage test results and patient profiles)",
   },
   {
     value: "ADMIN",
