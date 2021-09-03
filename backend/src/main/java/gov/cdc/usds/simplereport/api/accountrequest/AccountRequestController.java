@@ -27,6 +27,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -93,9 +94,17 @@ public class AccountRequestController {
       // informing them of the error.
       throw new BadRequestException(
           "This email address is already associated with a SimpleReport user.");
-    } catch (BadRequestException | UnexpectedRollbackException e) {
+    } catch (BadRequestException
+        | UnexpectedRollbackException
+        | IncorrectResultSizeDataAccessException e) {
       // The `BadRequestException` is thrown when an account is requested with an existing org
-      // name. This happens quite frequently and is expected behavior of the current form
+      // name. This happens quite frequently and is expected behavior of the current form.
+      // The UnexpectedRollback and IncorrectResultSizeDataAcccess exceptions are variations on the
+      // same issue.
+      // IncorrectResultSize happens with orgs that already have multiple duplicates in different
+      // cases.
+      // UnexpectedRollback is the catchall for attempting to write an org to the db that is already
+      // there.
       throw new BadRequestException("This organization has already registered with SimpleReport.");
     } catch (IOException | RuntimeException e) {
       throw new AccountRequestFailureException(e);
