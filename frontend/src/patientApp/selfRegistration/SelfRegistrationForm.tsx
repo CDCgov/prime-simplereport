@@ -124,6 +124,8 @@ const DuplicateModal: React.FC<DuplicateModalProps> = ({
   onDuplicate,
   entityName,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Modal
       onClose={() => {}}
@@ -131,19 +133,17 @@ const DuplicateModal: React.FC<DuplicateModalProps> = ({
       showClose={false}
       variant="warning"
     >
-      <Modal.Header>You already have a profile at {entityName}.</Modal.Header>
-      <p>
-        Our records show someone has registered with the same name, date of
-        birth, and ZIP code. Please check in with your testing site staff. You
-        do not need to register again.
-      </p>
+      <Modal.Header>
+        {t("selfRegistration.duplicate.heading") + " " + entityName}
+      </Modal.Header>
+      <p>{t("selfRegistration.duplicate.message")}</p>
       <Modal.Footer>
         <Button
           onClick={() => {
             onDuplicate();
           }}
         >
-          Exit sign up
+          {t("selfRegistration.duplicate.button")}
         </Button>
       </Modal.Footer>
     </Modal>
