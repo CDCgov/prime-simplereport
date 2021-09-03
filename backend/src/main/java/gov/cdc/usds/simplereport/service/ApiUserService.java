@@ -273,9 +273,7 @@ public class ApiUserService {
   // a non-Transactional version to be called from other methods in the same class
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public ApiUser getCurrentApiUserInContainedTransaction() {
-    return RequestContextHolder.getRequestAttributes() != null
-        ? getCurrentApiUser()
-        : getCurrentApiUserNoCache();
+    return getCurrentApiUser();
   }
 
   private ApiUser getPatientApiUser() {
@@ -426,6 +424,11 @@ public class ApiUserService {
   }
 
   private ApiUser getCurrentApiUser() {
+    if (RequestContextHolder.getRequestAttributes() == null) {
+      // short-circuit in the event this is called from outside a request
+      return getCurrentApiUserNoCache();
+    }
+
     if (_apiUserContextHolder.hasBeenPopulated()) {
       LOG.debug("Retrieving user from request context");
       return _apiUserContextHolder.getCurrentApiUser();
