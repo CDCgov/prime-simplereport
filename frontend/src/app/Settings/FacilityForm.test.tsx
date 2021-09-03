@@ -246,7 +246,7 @@ describe("FacilityForm", () => {
         });
 
         fireEvent.change(cliaInput, {
-          target: { value: "invalid-clia-number" },
+          target: { value: "12Z3456789" },
         });
         fireEvent.blur(cliaInput);
 
@@ -293,6 +293,47 @@ describe("FacilityForm", () => {
         });
         fireEvent.change(cliaInput, {
           target: { value: "invalid-clia-number" },
+        });
+        fireEvent.blur(cliaInput);
+
+        const saveButton = await screen.getAllByText("Save changes")[0];
+        fireEvent.click(saveButton);
+        await validateAddress(saveFacility);
+        expect(saveFacility).toBeCalledTimes(1);
+      });
+    });
+
+    describe("allows fake Z-CLIAs for permitted states", () => {
+      beforeEach(() => {
+        jest
+          .spyOn(clia, "stateRequiresCLIANumberValidation")
+          .mockReturnValue(true);
+      });
+
+      afterEach(() => {
+        jest.spyOn(clia, "stateRequiresCLIANumberValidation").mockRestore();
+      });
+
+      it("allows Z-CLIA for Washington state only", async () => {
+        const washingtonFacility: Facility = validFacility;
+        washingtonFacility.state = "WA";
+
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={washingtonFacility}
+              deviceOptions={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const cliaInput = screen.getByLabelText("CLIA number", {
+          exact: false,
+        });
+
+        fireEvent.change(cliaInput, {
+          target: { value: "12Z3456789" },
         });
         fireEvent.blur(cliaInput);
 
