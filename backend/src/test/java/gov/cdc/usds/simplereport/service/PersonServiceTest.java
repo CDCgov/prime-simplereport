@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
@@ -60,6 +61,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
   @Autowired private OrganizationService _orgService;
   @Autowired private TestDataFactory _dataFactory;
+  @Autowired private PatientRegistrationLinkRepository _patientRegistrationLinkRepository;
 
   private Organization _org;
   private Facility _site1;
@@ -670,7 +672,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   @WithSimpleReportStandardUser
   void isPatientInOrg_existingPatient_returnsTrue() {
     Organization org = _orgService.getCurrentOrganization();
-    String registrationLink = org.getPatientSelfRegistrationLink();
+    String registrationLink =
+        _patientRegistrationLinkRepository.findByOrganization(org).get().getLink();
 
     Person person =
         _service.addPatient(
@@ -710,7 +713,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   void isPatientInOrg_existingPatientInChildFacility_returnsFalse() {
     Organization org = _orgService.getCurrentOrganization();
     Facility facility = _orgService.getFacilities(org).get(0);
-    String registrationLink = facility.getPatientSelfRegistrationLink();
+    String registrationLink =
+        _patientRegistrationLinkRepository.findByOrganization(org).get().getLink();
 
     Person person =
         _service.addPatient(
@@ -763,7 +767,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   @WithSimpleReportStandardUser
   void isPatientInFacility_existingPatient_returnsTrue() {
     Facility facility = _orgService.getFacilities(_orgService.getCurrentOrganization()).get(0);
-    String registrationLink = facility.getPatientSelfRegistrationLink();
+    String registrationLink =
+        _patientRegistrationLinkRepository.findByFacility(facility).get().getLink();
 
     Person person =
         _service.addPatient(
@@ -805,7 +810,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     Facility facility1 = _orgService.getFacilities(_orgService.getCurrentOrganization()).get(0);
     Facility facility2 = _orgService.getFacilities(_orgService.getCurrentOrganization()).get(1);
 
-    String registrationLink = facility1.getPatientSelfRegistrationLink();
+    String registrationLink =
+        _patientRegistrationLinkRepository.findByFacility(facility1).get().getLink();
 
     // Add patient to first facility
     Person person =
@@ -848,7 +854,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     Organization organization = _orgService.getCurrentOrganization();
     Facility facility = _orgService.getFacilities(organization).get(0);
 
-    String registrationLink = organization.getPatientSelfRegistrationLink();
+    String registrationLink =
+        _patientRegistrationLinkRepository.findByOrganization(organization).get().getLink();
 
     // Register patient at org level
     Person person =

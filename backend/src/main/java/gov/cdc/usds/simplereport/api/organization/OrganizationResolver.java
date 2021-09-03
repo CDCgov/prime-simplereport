@@ -46,7 +46,7 @@ public class OrganizationResolver implements GraphQLQueryResolver {
     // Suggested implementation: get all (non-deleted) facilities (from non-deleted organizations),
     // and group them by their Organization attribute.
     return _organizationService.getOrganizations(identityVerified).stream()
-        .map(o -> new ApiOrganization(o, _organizationService.getFacilities(o)))
+        .map(o -> new ApiOrganization(o, List.of()))
         .collect(Collectors.toList());
   }
 }

@@ -53,6 +53,9 @@ const mocks = [
   {
     request: {
       query: GET_ORGANIZATIONS_QUERY,
+      variables: {
+        identityVerified: true,
+      },
     },
     result: {
       data: {
