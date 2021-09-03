@@ -9,7 +9,7 @@ export function stateRequiresCLIANumberValidation(
 export function isValidCLIANumber(input: string, state: string): boolean {
   let cliaNumberValidator;
   if (state === "WA") {
-    cliaNumberValidator = /^\d{2}[D, Z]\d{7}$/;
+    cliaNumberValidator = /^\d{2}[DZ]\d{7}$/;
   } else {
     cliaNumberValidator = /^\d{2}D\d{7}$/;
   }
