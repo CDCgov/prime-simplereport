@@ -6,8 +6,13 @@ export function stateRequiresCLIANumberValidation(
   return !noCLIAValidationStates.includes(state);
 }
 
-export function isValidCLIANumber(input: string): boolean {
-  const cliaNumberValidator = /^\d{2}D\d{7}$/;
+export function isValidCLIANumber(input: string, state: string): boolean {
+  let cliaNumberValidator;
+  if (state === "WA") {
+    cliaNumberValidator = /^\d{2}[D, Z]\d{7}$/;
+  } else {
+    cliaNumberValidator = /^\d{2}D\d{7}$/;
+  }
 
   return cliaNumberValidator.test(input);
 }
