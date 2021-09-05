@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.api.pxp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.cdc.usds.simplereport.api.SmsWebhookContextHolder;
+import gov.cdc.usds.simplereport.api.context.SmsWebhookContextHolder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.SmsStatusCallback;
 import gov.cdc.usds.simplereport.service.sms.TextMessageStatusService;
 import java.util.Arrays;

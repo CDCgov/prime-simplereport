@@ -2,9 +2,9 @@ package gov.cdc.usds.simplereport.service;
 
 import com.twilio.exception.ApiException;
 import com.twilio.exception.TwilioException;
+import gov.cdc.usds.simplereport.api.context.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
-import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.AuditedEntity_;
 import gov.cdc.usds.simplereport.db.model.BaseTestInfo_;

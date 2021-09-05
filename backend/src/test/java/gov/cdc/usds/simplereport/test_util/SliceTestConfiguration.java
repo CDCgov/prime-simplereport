@@ -1,11 +1,11 @@
 package gov.cdc.usds.simplereport.test_util;
 
-import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
-import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
-import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
-import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
-import gov.cdc.usds.simplereport.api.SmsWebhookContextHolder;
-import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
+import gov.cdc.usds.simplereport.api.context.ApiUserContextHolder;
+import gov.cdc.usds.simplereport.api.context.CurrentAccountRequestContextHolder;
+import gov.cdc.usds.simplereport.api.context.CurrentOrganizationRolesContextHolder;
+import gov.cdc.usds.simplereport.api.context.CurrentPatientContextHolder;
+import gov.cdc.usds.simplereport.api.context.CurrentTenantDataAccessContextHolder;
+import gov.cdc.usds.simplereport.api.context.SmsWebhookContextHolder;
 import gov.cdc.usds.simplereport.config.AuditingConfig;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;

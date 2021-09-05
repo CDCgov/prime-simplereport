@@ -1,9 +1,10 @@
 package gov.cdc.usds.simplereport.service;
 
 import com.okta.sdk.resource.user.UserStatus;
-import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
-import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
-import gov.cdc.usds.simplereport.api.SmsWebhookContextHolder;
+import gov.cdc.usds.simplereport.api.context.ApiUserContextHolder;
+import gov.cdc.usds.simplereport.api.context.CurrentAccountRequestContextHolder;
+import gov.cdc.usds.simplereport.api.context.CurrentPatientContextHolder;
+import gov.cdc.usds.simplereport.api.context.SmsWebhookContextHolder;
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
@@ -11,7 +12,6 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
-import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
@@ -531,7 +531,7 @@ public class ApiUserService {
   private UserInfo cancelCurrentUserTenantDataAccess() {
     ApiUser apiUser = getCurrentApiUser();
     _tenantService.removeAllTenantDataAccess(apiUser);
-    _orgService.resetOrganizationRolesContext();
+    _orgService.resetUserInfoContexts();
     return getCurrentUserInfo();
   }
 

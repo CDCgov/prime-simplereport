@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api.pxp;
+package gov.cdc.usds.simplereport.api.context;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;

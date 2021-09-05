@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api;
+package gov.cdc.usds.simplereport.api.context;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,7 +9,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 @Repository
 @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class CurrentTenantDataAccessContextHolder {
+public class CurrentTenantDataAccessContextHolder implements Resettable {
 
   private String username;
   private Set<String> authorities = new HashSet<>();

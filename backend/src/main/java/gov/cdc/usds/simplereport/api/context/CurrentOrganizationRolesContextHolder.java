@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api;
+package gov.cdc.usds.simplereport.api.context;
 
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import java.util.Optional;
@@ -9,7 +9,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 @Repository
 @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class CurrentOrganizationRolesContextHolder {
+public class CurrentOrganizationRolesContextHolder implements Resettable {
   private boolean hasBeenPopulated = false;
   private Optional<OrganizationRoles> organizationRoles = Optional.empty();
 
