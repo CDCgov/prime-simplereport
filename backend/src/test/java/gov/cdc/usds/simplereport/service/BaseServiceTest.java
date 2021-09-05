@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
+import gov.cdc.usds.simplereport.api.context.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.context.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.context.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.config.authorization.TenantDataAuthenticationProvider;
@@ -43,13 +44,14 @@ public abstract class BaseServiceTest<T> {
 
   @Autowired private DbTruncator _truncator;
   @Autowired private OrganizationInitializingService _initService;
-  @MockBean private CurrentTenantDataAccessContextHolder _currentTenantDataAccessContextHolder;
-  @MockBean private TenantDataAuthenticationProvider _tenantDataAuthProvider;
   @Autowired private DemoOktaRepository _oktaRepo;
   @Autowired protected TestDataFactory _dataFactory;
   @Autowired protected T _service;
   @Autowired protected HibernateQueryInterceptor _hibernateQueryInterceptor;
+  @MockBean private CurrentTenantDataAccessContextHolder _currentTenantDataAccessContextHolder;
+  @MockBean private TenantDataAuthenticationProvider _tenantDataAuthProvider;
   @MockBean private CurrentOrganizationRolesContextHolder _currentOrganizationRolesContextHolder;
+  @MockBean private ApiUserContextHolder _apiUserContextHolder;
 
   private static final String SPRING_SECURITY_DENIED = "Access is denied";
 
