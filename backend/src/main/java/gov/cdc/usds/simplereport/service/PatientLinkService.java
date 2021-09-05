@@ -1,8 +1,8 @@
 package gov.cdc.usds.simplereport.service;
 
-import gov.cdc.usds.simplereport.api.context.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.PatientLinkFailedAttempt;
 import gov.cdc.usds.simplereport.db.model.Person;

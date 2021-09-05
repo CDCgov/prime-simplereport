@@ -18,7 +18,6 @@ logging:
     # org.hibernate.type: TRACE
     # Always have our own debug logging turned on in dev environments:
     gov.cdc.usds: DEBUG
-
 simple-report:
   data-hub:
     upload-enabled: ${DATAHUB_UPLOAD_ENABLE:false}

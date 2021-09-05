@@ -4,7 +4,7 @@ import com.okta.sdk.error.Error;
 import com.okta.sdk.error.ErrorCause;
 import com.okta.sdk.resource.ResourceException;
 import com.okta.sdk.resource.user.UserStatus;
-import gov.cdc.usds.simplereport.api.context.CurrentTenantDataAccessContextHolder;
+import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;

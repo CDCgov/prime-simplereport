@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import gov.cdc.usds.simplereport.api.apiuser.UserAccountCreationController;
-import gov.cdc.usds.simplereport.api.context.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication;

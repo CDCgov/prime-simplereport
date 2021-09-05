@@ -1,8 +1,8 @@
 package gov.cdc.usds.simplereport.service;
 
 import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
-import gov.cdc.usds.simplereport.api.context.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;

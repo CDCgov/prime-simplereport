@@ -1,9 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
-import gov.cdc.usds.simplereport.api.context.ApiUserContextHolder;
-import gov.cdc.usds.simplereport.api.context.CurrentOrganizationRolesContextHolder;
-import gov.cdc.usds.simplereport.api.context.CurrentTenantDataAccessContextHolder;
-import gov.cdc.usds.simplereport.api.context.Resettable;
+import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
@@ -20,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,29 +27,14 @@ public class TenantDataAccessService {
 
   private static final int VALID_MINUTES = 60;
 
-  private final TenantDataAccessRepository _tenantDataAccessRepository;
-  private final Set<Resettable> _tenantInfoContextHolders = new HashSet<>();
-  private final AuthorizationProperties _authorizationProperties;
-  private final OrganizationExtractor _organizationExtractor;
-
-  public TenantDataAccessService(
-      TenantDataAccessRepository tenantDataAccessRepository,
-      CurrentTenantDataAccessContextHolder currentTenantDataAccessContextHolder,
-      CurrentOrganizationRolesContextHolder currentOrganizationRolesContextHolder,
-      ApiUserContextHolder apiUserContextHolder,
-      AuthorizationProperties authorizationProperties,
-      OrganizationExtractor organizationExtractor) {
-    _tenantDataAccessRepository = tenantDataAccessRepository;
-    _tenantInfoContextHolders.add(currentTenantDataAccessContextHolder);
-    _tenantInfoContextHolders.add(currentOrganizationRolesContextHolder);
-    _tenantInfoContextHolders.add(apiUserContextHolder);
-    _authorizationProperties = authorizationProperties;
-    _organizationExtractor = organizationExtractor;
-  }
+  @Autowired private TenantDataAccessRepository _repo;
+  @Autowired private CurrentTenantDataAccessContextHolder _contextHolder;
+  @Autowired private AuthorizationProperties _authProperties;
+  @Autowired private OrganizationExtractor _extractor;
 
   public Set<String> getTenantDataAccessAuthorities(ApiUser apiUser) {
     List<TenantDataAccess> tenantDataAccessList =
-        _tenantDataAccessRepository.findValidByApiUserId(apiUser.getInternalId());
+        _repo.findValidByApiUserId(apiUser.getInternalId());
     if (tenantDataAccessList.isEmpty()) {
       return new HashSet<>();
     } else if (tenantDataAccessList.size() != 1) {
@@ -71,11 +54,11 @@ public class TenantDataAccessService {
 
     Date expirationDate = Date.from(Instant.now().plus(Duration.ofMinutes(VALID_MINUTES)));
 
-    String prefix = _authorizationProperties.getRolePrefix();
+    String prefix = _authProperties.getRolePrefix();
     Set<String> authorities = new HashSet<>();
 
     // retain site admin privileges, in the future it may be nice to drop these
-    authorities.add(_authorizationProperties.getAdminGroupName());
+    authorities.add(_authProperties.getAdminGroupName());
 
     // authority names for the org being accessed (assume org-level admin in the tenant)
     authorities.add(prefix + org.getExternalId() + ":" + OrganizationRole.getDefault());
@@ -83,18 +66,15 @@ public class TenantDataAccessService {
 
     PermissionsData permissionsData = new PermissionsData(authorities);
 
-    _tenantDataAccessRepository.save(
-        new TenantDataAccess(apiUser, org, permissionsData, justification, expirationDate));
+    _repo.save(new TenantDataAccess(apiUser, org, permissionsData, justification, expirationDate));
 
     List<OrganizationRoleClaims> roleClaimsList =
-        _organizationExtractor.convertClaims(permissionsData.getAuthorities());
+        _extractor.convertClaims(permissionsData.getAuthorities());
     return Optional.of(roleClaimsList.get(0));
   }
 
   public void removeAllTenantDataAccess(ApiUser apiUser) {
-    _tenantDataAccessRepository
-        .findValidByApiUserId(apiUser.getInternalId())
-        .forEach(i -> i.setIsDeleted(true));
-    _tenantInfoContextHolders.forEach(Resettable::reset);
+    _repo.findValidByApiUserId(apiUser.getInternalId()).forEach(i -> i.setIsDeleted(true));
+    _contextHolder.reset();
   }
 }

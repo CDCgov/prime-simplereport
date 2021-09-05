@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
-import gov.cdc.usds.simplereport.api.context.ApiUserContextHolder;
-import gov.cdc.usds.simplereport.api.context.CurrentOrganizationRolesContextHolder;
+import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -42,7 +41,6 @@ public class OrganizationService {
   private AuthorizationService _authService;
   private OktaRepository _oktaRepo;
   private CurrentOrganizationRolesContextHolder _currentOrgRolesContextHolder;
-  private ApiUserContextHolder _apiUserContextHolder;
   private OrderingProviderRequiredValidator _orderingProviderRequiredValidator;
   private PatientSelfRegistrationLinkService _psrlService;
 
@@ -53,7 +51,6 @@ public class OrganizationService {
       ProviderRepository providerRepo,
       OktaRepository oktaRepo,
       CurrentOrganizationRolesContextHolder currentOrgRolesContextHolder,
-      ApiUserContextHolder apiUserContextHolder,
       OrderingProviderRequiredValidator orderingProviderRequiredValidator,
       PatientSelfRegistrationLinkService patientSelfRegistrationLinkService) {
     _repo = repo;
@@ -62,13 +59,11 @@ public class OrganizationService {
     _providerRepo = providerRepo;
     _oktaRepo = oktaRepo;
     _currentOrgRolesContextHolder = currentOrgRolesContextHolder;
-    _apiUserContextHolder = apiUserContextHolder;
     _orderingProviderRequiredValidator = orderingProviderRequiredValidator;
     _psrlService = patientSelfRegistrationLinkService;
   }
 
-  public void resetUserInfoContexts() {
-    _apiUserContextHolder.setCurrentApiUser(null);
+  public void resetOrganizationRolesContext() {
     _currentOrgRolesContextHolder.reset();
   }
 
