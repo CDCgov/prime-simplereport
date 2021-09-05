@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.config;
 
-import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
+import gov.cdc.usds.simplereport.api.context.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.config.authorization.TenantDataAuthenticationProvider;
 import gov.cdc.usds.simplereport.service.ApiUserService;
@@ -42,7 +42,8 @@ public class TenantDataAccessFilter implements Filter {
           Set<GrantedAuthority> grantedAuthorities =
               authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
 
-          String username = _apiUserService.getCurrentUserInfo().getEmail();
+          String username =
+              _apiUserService.getCurrentApiUserInContainedTransaction().getLoginEmail();
           _currentTenantDataAccessContextHolder.setTenantDataAccessAuthorities(
               username, authorities);
 
