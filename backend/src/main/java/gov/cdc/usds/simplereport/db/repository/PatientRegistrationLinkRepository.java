@@ -14,14 +14,14 @@ public interface PatientRegistrationLinkRepository
   Optional<PatientSelfRegistrationLink> findByPatientRegistrationLinkIgnoreCase(
       String patientRegistrationLink);
 
-  List<PatientSelfRegistrationLink> findAllByOrganizationInternalIdIn(Collection<UUID> orgIds);
-
-  List<PatientSelfRegistrationLink> findAllByFacilityInternalIdIn(Collection<UUID> facilityIds);
-
   Optional<PatientSelfRegistrationLink> findByPatientRegistrationLinkIgnoreCaseAndIsDeleted(
       String patientRegistrationLink, Boolean isDeleted);
 
+  List<PatientSelfRegistrationLink> findAllByOrganizationInternalIdIn(Collection<UUID> orgIds);
+
   Optional<PatientSelfRegistrationLink> findByOrganization(Organization org);
+
+  List<PatientSelfRegistrationLink> findAllByFacilityInternalIdIn(Collection<UUID> facilityIds);
 
   Optional<PatientSelfRegistrationLink> findByFacility(Facility fac);
 }

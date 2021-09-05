@@ -40,11 +40,15 @@ public class OrganizationResolver implements GraphQLQueryResolver {
    * @return a list of organizations
    */
   public List<ApiOrganization> getOrganizations(Boolean identityVerified) {
-    // this is N+1-ey right now, but it's no better than it was before through
-    // OrganizationDataResolver and this gets called _extremely_ rarely.
-    // Something to clean up in a future PR.
-    // Suggested implementation: get all (non-deleted) facilities (from non-deleted organizations),
-    // and group them by their Organization attribute.
+    // This is used to populate the list of organizations in a dropdown on some frontend admin
+    // pages (such as tenant data access).  The only uses of it so far query for the org name and
+    // external id.  To get around some n+1 problems, for now this will not return facilities even
+    // if they are included in the query.
+    //
+    // We really need a data loader for facilities, but it is non-trivial because the list of
+    // facilities is returned differently when querying permissions data vs listing facilities.
+    // Both use the same underlying classes, though.  A suggested fix is to add `allFacilities`
+    // for retrieving the list of facilities and continuing to use `facilities` for permissions.
     return _organizationService.getOrganizations(identityVerified).stream()
         .map(o -> new ApiOrganization(o, List.of()))
         .collect(Collectors.toList());
