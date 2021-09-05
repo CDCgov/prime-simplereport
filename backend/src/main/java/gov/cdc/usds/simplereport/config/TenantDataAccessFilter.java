@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.config;
 
-import gov.cdc.usds.simplereport.api.context.CurrentTenantDataAccessContextHolder;
+import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.config.authorization.TenantDataAuthenticationProvider;
 import gov.cdc.usds.simplereport.service.ApiUserService;
