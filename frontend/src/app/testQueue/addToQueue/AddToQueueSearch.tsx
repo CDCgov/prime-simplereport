@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from "react";
 import { toast } from "react-toastify";
-import { gql, useMutation, useLazyQuery } from "@apollo/client";
+import { gql, useMutation, useLazyQuery, useQuery } from "@apollo/client";
 import {
   useAppInsightsContext,
   useTrackEvent,
@@ -158,21 +158,6 @@ const AddToQueueSearchBox = ({
     {}
   );
 
-  const [selectedPatient, setSelectedPatient] = useState<Patient>();
-
-  const { patientId: patientIdParam } =
-    useLocation<StartTestProps>().state || {};
-  const [querySinglePatient] = useLazyQuery<{ patient: Patient }>(
-    QUERY_SINGLE_PATIENT,
-    {
-      fetchPolicy: "no-cache",
-      variables: { internalId: patientIdParam },
-      onCompleted: (response) => {
-        setSelectedPatient(response.patient);
-      },
-    }
-  );
-
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
     runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
@@ -185,6 +170,7 @@ const AddToQueueSearchBox = ({
 
   const [mutationError, updateMutationError] = useState(null);
   const [showSuggestion, setShowSuggestion] = useState(true);
+  const [selectedPatient, setSelectedPatient] = useState<Patient>();
 
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [updateAoe] = useMutation(UPDATE_AOE);
@@ -200,13 +186,19 @@ const AddToQueueSearchBox = ({
     setShowSuggestion(false);
   }, []);
 
-  useOutsideClick(dropDownRef, hideOnOutsideClick);
+  const { patientId: patientIdParam } =
+    useLocation<StartTestProps>().state || {};
 
-  useEffect(() => {
-    if (patientIdParam && patientIdParam.trim() !== "") {
-      querySinglePatient();
-    }
-  }, [patientIdParam, querySinglePatient]);
+  useQuery<{ patient: Patient }>(QUERY_SINGLE_PATIENT, {
+    fetchPolicy: "no-cache",
+    variables: { internalId: patientIdParam },
+    onCompleted: (response) => {
+      setSelectedPatient(response.patient);
+    },
+    skip: !patientIdParam,
+  });
+
+  useOutsideClick(dropDownRef, hideOnOutsideClick);
 
   useEffect(() => {
     if (queryString.trim() !== "") {
