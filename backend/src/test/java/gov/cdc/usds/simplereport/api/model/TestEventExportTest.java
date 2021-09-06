@@ -93,7 +93,7 @@ class TestEventExportTest {
   }
 
   @Test
-  void someFieldsIncludeTime() throws Exception {
+  void certainDateFieldsIncludeTime() {
     Organization o = _dataFactory.createValidOrg();
     Facility f = _dataFactory.createValidFacility(o);
     Person p = _dataFactory.createFullPerson(o);
