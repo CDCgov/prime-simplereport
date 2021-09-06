@@ -98,6 +98,9 @@ export const ADD_PATIENT = gql`
       testResultDelivery: $testResultDelivery
     ) {
       internalId
+      facility {
+        id
+      }
     }
   }
 `;
@@ -107,6 +110,9 @@ type AddPatientParams = Nullable<Omit<PersonFormData, "lookupId">>;
 interface AddPatientResponse {
   addPatient: {
     internalId: string;
+    facility: {
+      id: string;
+    };
   };
 }
 
@@ -158,9 +164,10 @@ const AddPatient = () => {
       />
     );
     if (startTest) {
+      const facility = data?.addPatient?.facility?.id || activeFacilityId;
       setRedirect({
         pathname: "/queue",
-        search: `?facility=${activeFacilityId}`,
+        search: `?facility=${facility}`,
         state: {
           patientId: data?.addPatient.internalId,
         } as StartTestProps,

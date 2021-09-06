@@ -135,6 +135,9 @@ describe("AddPatient", () => {
             data: {
               addPatient: {
                 internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
+                facility: {
+                  id: "facility-id-001",
+                },
               },
             },
           },
@@ -174,6 +177,9 @@ describe("AddPatient", () => {
           result: {
             data: {
               internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
+              facility: {
+                id: "facility-id-001",
+              },
             },
           },
         },
@@ -184,7 +190,10 @@ describe("AddPatient", () => {
             <RouterWithFacility>
               <Route component={AddPatient} path={"/add-patient/"} />
               <Route path={"/patients"} render={() => <p>Patients!</p>} />
-              <Route path={"/queue"} render={() => <p>Testing Queue!</p>} />
+              <Route
+                path={"/queue"}
+                render={(p) => <p>Testing Queue! {p.location.search}</p>}
+              />
             </RouterWithFacility>
           </MockedProvider>
         </Provider>
@@ -381,8 +390,13 @@ describe("AddPatient", () => {
         });
       });
 
-      it("redirects to the queue with a patient id in the query param", () => {
-        expect(screen.getByText("Testing Queue!")).toBeInTheDocument();
+      it("redirects to the queue with a patient id and selected facility id", () => {
+        expect(
+          screen.getByText("Testing Queue!", { exact: false })
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText("facility-id-001", { exact: false })
+        ).toBeInTheDocument();
       });
     });
   });
