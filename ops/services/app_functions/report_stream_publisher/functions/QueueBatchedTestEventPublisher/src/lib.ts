@@ -37,18 +37,22 @@ export async function dequeueMessages(
     messagesDequeued < parseInt(REPORT_STREAM_BATCH_MAXIMUM, 10);
     messagesDequeued += DEQUEUE_BATCH_SIZE
   ) {
-    const dequeueResponse = await queueClient.receiveMessages({
-      numberOfMessages: DEQUEUE_BATCH_SIZE,
-    });
-    if (dequeueResponse.receivedMessageItems.length) {
-      messages.push(...dequeueResponse.receivedMessageItems);
-      context.log(
-        `Dequeued ${dequeueResponse.receivedMessageItems.length} messages`
-      );
-    } else {
-      // There are no more messages on the queue
-      context.log("Done receiving messages");
-      break;
+    try {
+        const dequeueResponse = await queueClient.receiveMessages({
+          numberOfMessages: DEQUEUE_BATCH_SIZE,
+        });
+      if (dequeueResponse.receivedMessageItems.length) {
+        messages.push(...dequeueResponse.receivedMessageItems);
+        context.log(
+          `Dequeued ${dequeueResponse.receivedMessageItems.length} messages`
+        );
+      } else {
+        // There are no more messages on the queue
+        context.log("Done receiving messages");
+        break;
+      }
+    } catch(e) {
+      context.log("Failed to dequeue messages", e);
     }
   }
   return messages;
@@ -86,13 +90,17 @@ export async function deleteSuccessfullyParsedMessages(
       );
       continue;
     }
-    const deleteResponse = await queueClient.deleteMessage(
-      message.messageId,
-      message.popReceipt
-    );
-    context.log(
-      `Message ${message.messageId} deleted with service id ${deleteResponse}`
-    );
+    try {
+      const deleteResponse = await queueClient.deleteMessage(
+        message.messageId,
+        message.popReceipt
+      );
+      context.log(
+        `Message ${message.messageId} deleted with service id ${deleteResponse}`
+      );
+    } catch(e) {
+      context.log(`Failed to delete message ${message.messageId} from the queue:`, e);
+    }
   }
   context.log("Deletion complete");
 }
