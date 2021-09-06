@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.test_util;
 
+import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
@@ -88,6 +89,7 @@ import org.springframework.security.test.context.support.WithMockUser;
   OrganizationInitializingService.class,
   CurrentPatientContextHolder.class,
   CurrentAccountRequestContextHolder.class,
+  ApiUserContextHolder.class,
   CurrentOrganizationRolesContextHolder.class,
   OrderingProviderRequiredValidator.class,
   CurrentTenantDataAccessContextHolder.class,
