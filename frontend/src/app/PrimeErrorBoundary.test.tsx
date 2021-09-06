@@ -26,7 +26,7 @@ describe("PrimeErrorBoundary", () => {
     const { container } = render(
       <MemoryRouter>
         <PrimeErrorBoundary>
-          <ComponentOfDeath></ComponentOfDeath>
+          <ComponentOfDeath />
         </PrimeErrorBoundary>
       </MemoryRouter>
     );

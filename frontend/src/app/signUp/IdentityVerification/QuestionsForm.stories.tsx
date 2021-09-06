@@ -3,6 +3,10 @@ import { Story, Meta } from "@storybook/react";
 import { getMocks } from "../../../stories/storyMocks";
 
 import QuestionsFormContainer from "./QuestionsFormContainer";
+import { initPersonalDetails } from "./utils";
+
+let personalDetails = initPersonalDetails("foo", "Bob", "Bill", "Martínez");
+personalDetails.phoneNumber = "5308675309";
 
 export default {
   title: "App/Identity Verification/Step 3: Identity verification questions",
@@ -12,7 +16,8 @@ export default {
   },
   argTypes: {},
   args: {
-    personalDetails: {},
+    personalDetails,
+    orgExternalId: "foo",
   },
 } as Meta;
 

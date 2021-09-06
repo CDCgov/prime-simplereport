@@ -1,6 +1,31 @@
+import moment from "moment";
 import * as yup from "yup";
 
+import { phoneNumberIsValid } from "../../patients/personSchema";
+import { isValidDate } from "../../utils/date";
+
 export const getAnswerKey = (index: number) => `answer${index + 1}`;
+
+// Takes date in format YYYY-MM-DD
+export function isValidBirthdate(date: string | undefined) {
+  if (date === undefined || date === "") {
+    return false;
+  }
+  if (date.split("-").length === 3 && date.split("-")[0].length < 4) {
+    return false;
+  }
+  if (!isValidDate(date)) {
+    return false;
+  }
+  const parsedDate = moment(date, "YYYY-MM-DD");
+  if (parsedDate.year() < 1900) {
+    return false;
+  }
+  if (parsedDate.isAfter(moment())) {
+    return false;
+  }
+  return true;
+}
 
 export const toOptions = (
   choices: string[]
@@ -34,22 +59,24 @@ export const answersToArray = (answers: Answers): number[] =>
     .map((key) => parseInt(answers[key]));
 
 export const personalDetailsFields = [
-  ["dateOfBirth", "Date of birth", true, null],
-  ["email", "Email", true, "Personal contact information"],
-  ["phoneNumber", "Phone number", true, null],
-  ["streetAddress1", "Street address 1", true, "Home address"],
-  ["streetAddress2", "Street address 2", false, null],
-  ["city", "City", true, null],
-  ["state", "State", true, null],
-  ["zip", "ZIP code", true, null],
+  ["dateOfBirth", "Date of birth", true, ""],
+  ["preheader1", "Personal contact information", false, ""],
+  ["email", "Email", true, "Enter your non-work email address."],
+  ["phoneNumber", "Phone number", true, "Enter your non-work phone number."],
+  ["preheader2", "Home address", false, ""],
+  ["streetAddress1", "Street address 1", true, ""],
+  ["streetAddress2", "Street address 2", false, ""],
+  ["city", "City", true, ""],
+  ["state", "State", true, ""],
+  ["zip", "ZIP code", true, ""],
 ].reduce((fields, field) => {
   fields[field[0] as keyof IdentityVerificationRequest] = {
     label: field[1] as string,
     required: field[2] as boolean,
-    preheader: field[3] as string | null,
+    hintText: field[3] as string,
   };
   return fields;
-}, {} as { [key: string]: { label: string; required: boolean; preheader: string | null } });
+}, {} as { [key: string]: { label: string; required: boolean; hintText: string } });
 
 export const initPersonalDetails = (
   orgExternalId: string,
@@ -88,19 +115,54 @@ export const initPersonalDetailsErrors = (): Record<
   orgExternalId: "",
 });
 
+// this is the regex experian uses for street validation
+const experianStreetRegex = new RegExp(
+  "^([a-zA-Z0-9# \\-'$ / \\.]{1,60}){1}$",
+  "m"
+);
+
+// this is the regex experian uses for zip validation
+const experianZipRegex = new RegExp("^([\\d]{5}([\\-]?[\\d]{4})?){1}$", "m");
+
 export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = yup
   .object()
   .shape({
     firstName: yup.string().required("First name is required"),
     middleName: yup.string().nullable(),
     lastName: yup.string().required("Last name is required"),
-    dateOfBirth: yup.string().required("Birth date is required"),
-    email: yup.string().email().required("Email is required"),
-    phoneNumber: yup.string().required("Phone number is required"),
-    streetAddress1: yup.string().required("Street address is required"),
-    streetAddress2: yup.string().nullable(),
+    dateOfBirth: yup
+      .string()
+      .test("birth-date", "A valid date of birth is required", isValidBirthdate)
+      .required("A valid date of birth is required"),
+    email: yup
+      .string()
+      .email("A valid email address is required")
+      .required("A valid email address is required"),
+    phoneNumber: yup
+      .mixed()
+      .test(
+        "phone-number",
+        "A valid phone number is required",
+        phoneNumberIsValid
+      )
+      .required(),
+    streetAddress1: yup
+      .string()
+      .matches(experianStreetRegex, "A valid street address is required")
+      .required("A valid street address is required"),
+    streetAddress2: yup
+      .string()
+      .nullable()
+      .notRequired()
+      .matches(experianStreetRegex, {
+        message: "Street 2 contains invalid symbols",
+        excludeEmptyString: true,
+      }),
     city: yup.string().required("City is required"),
     state: yup.string().required("State is required"),
-    zip: yup.string().required("ZIP code is required"),
+    zip: yup
+      .string()
+      .matches(experianZipRegex, "A valid ZIP code is required")
+      .required("A valid ZIP code is required"),
     orgExternalId: yup.string().required("Organization ID is required"),
   });

@@ -87,7 +87,7 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
           return false;
         }
 
-        return isValidCLIANumber(input);
+        return isValidCLIANumber(input, facility.parent.state);
       }
     ),
   street: yup.string().required("Facility street is missing"),

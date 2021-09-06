@@ -168,10 +168,23 @@ public class OrganizationService {
   }
 
   public Facility getFacilityInCurrentOrg(UUID facilityId) {
-    Organization org = getCurrentOrganization();
-    return _facilityRepo
-        .findByOrganizationAndInternalId(org, facilityId)
+    return getCurrentOrganizationRoles()
+        .orElseThrow(MisconfiguredUserException::new)
+        .getFacilities()
+        .stream()
+        .filter(f -> f.getInternalId().equals(facilityId))
+        .findAny()
         .orElseThrow(() -> new IllegalGraphqlArgumentException("facility could not be found"));
+  }
+
+  public Organization getOrganizationByFacilityId(UUID facilityId) {
+    Facility facility = _facilityRepo.findById(facilityId).orElse(null);
+
+    if (facility == null) {
+      return null;
+    }
+
+    return facility.getOrganization();
   }
 
   public void assertFacilityNameAvailable(String testingFacilityName) {
@@ -311,14 +324,14 @@ public class OrganizationService {
    * workflow this should be removed.
    */
   @Transactional(readOnly = false)
-  public void verifyOrganizationNoPermissions(String externalId) {
+  public String verifyOrganizationNoPermissions(String externalId) {
     Organization org = getOrganization(externalId);
     if (org.getIdentityVerified()) {
       throw new IllegalStateException("Organization is already verified.");
     }
     org.setIdentityVerified(true);
     _repo.save(org);
-    _oktaRepo.activateOrganization(org);
+    return _oktaRepo.activateOrganizationWithSingleUser(org);
   }
 
   @Transactional(readOnly = false)

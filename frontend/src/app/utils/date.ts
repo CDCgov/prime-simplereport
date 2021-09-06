@@ -22,6 +22,7 @@ export function formatDate(date: string | undefined | null | Date) {
 export const isValidDate = (date: string): boolean => {
   return (
     moment(date, "MM-DD-YYYY", false).isValid() ||
-    moment(date, "MM/DD/YYYY", false).isValid()
+    moment(date, "MM/DD/YYYY", false).isValid() ||
+    moment(date, "YYYY-MM-DD", false).isValid()
   );
 };

@@ -58,12 +58,14 @@ export interface TestResultPrintModalProps {
   data: any; // testQuery result
   testResultId: string | undefined;
   closeModal: () => void;
+  hardcodedPrintDate?: string;
 }
 
 export const DetachedTestResultPrintModal = ({
   testResultId,
   data,
   closeModal,
+  hardcodedPrintDate,
 }: TestResultPrintModalProps) => {
   const { t } = useTranslation();
 
@@ -263,7 +265,8 @@ export const DetachedTestResultPrintModal = ({
         </main>
         <footer>
           <p>
-            {t("testResult.printed")} {new Date().toLocaleString()}
+            {t("testResult.printed")}{" "}
+            {hardcodedPrintDate || new Date().toLocaleString()}
           </p>
         </footer>
       </div>

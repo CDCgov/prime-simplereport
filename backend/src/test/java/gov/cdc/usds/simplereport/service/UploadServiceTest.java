@@ -23,7 +23,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 @WithMockUser(
     username = TestUserIdentities.SITE_ADMIN_USER,
     authorities = {Role.SITE_ADMIN, Role.DEFAULT_ORG_ADMIN})

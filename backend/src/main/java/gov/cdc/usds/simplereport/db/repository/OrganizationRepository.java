@@ -18,6 +18,7 @@ public interface OrganizationRepository extends EternalAuditedEntityRepository<O
   @Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.identityVerified = :identityVerified")
   List<Organization> findAllByIdentityVerified(boolean identityVerified);
 
-  @Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.organizationName = :name")
+  @Query(
+      EternalAuditedEntityRepository.BASE_QUERY + " and UPPER(e.organizationName) = UPPER(:name)")
   Optional<Organization> findByName(String name);
 }

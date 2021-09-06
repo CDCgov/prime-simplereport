@@ -6,7 +6,6 @@ import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.PatientPreferences;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person.SpecField;
@@ -14,7 +13,6 @@ import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
-import gov.cdc.usds.simplereport.db.repository.PatientPreferencesRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import java.time.LocalDate;
@@ -40,7 +38,6 @@ public class PersonService {
   private final CurrentPatientContextHolder _patientContext;
   private final OrganizationService _os;
   private final PersonRepository _repo;
-  private final PatientPreferencesRepository _prefRepo;
   private final PhoneNumberRepository _phoneRepo;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
@@ -53,13 +50,11 @@ public class PersonService {
   public PersonService(
       OrganizationService os,
       PersonRepository repo,
-      PatientPreferencesRepository prefRepo,
       CurrentPatientContextHolder patientContext,
       PhoneNumberRepository phoneRepo) {
     _patientContext = patientContext;
     _os = os;
     _repo = repo;
-    _prefRepo = prefRepo;
     _phoneRepo = phoneRepo;
   }
 
@@ -89,6 +84,14 @@ public class PersonService {
             cb.isTrue(root.get(SpecField.FACILITY).get(SpecField.INTERNAL_ID).in(facilityUUIDs)));
   }
 
+  private Specification<Person> inOrganizationFilter(UUID orgId) {
+    return (root, query, cb) ->
+        cb.and(
+            cb.or(
+                cb.isNull(root.get(SpecField.ORGANIZATION)),
+                cb.equal(root.get(SpecField.ORGANIZATION).get(SpecField.INTERNAL_ID), orgId)));
+  }
+
   // Note: Patients with NULL facilityIds appear in ALL facilities.
   private Specification<Person> inFacilityFilter(UUID facilityId) {
     return (root, query, cb) ->
@@ -109,6 +112,20 @@ public class PersonService {
                 cb.lower(root.get(SpecField.PERSON_NAME).get(SpecField.MIDDLE_NAME)), likeString),
             cb.like(
                 cb.lower(root.get(SpecField.PERSON_NAME).get(SpecField.LAST_NAME)), likeString));
+  }
+
+  private Specification<Person> patientExistsFilter(
+      String firstName, String lastName, LocalDate birthDate, String postalCode) {
+    return (root, query, cb) ->
+        cb.and(
+            cb.equal(
+                cb.lower(root.get(SpecField.PERSON_NAME).get(SpecField.FIRST_NAME)),
+                firstName.toLowerCase()),
+            cb.equal(
+                cb.lower(root.get(SpecField.PERSON_NAME).get(SpecField.LAST_NAME)),
+                lastName.toLowerCase()),
+            cb.equal(root.get(SpecField.BIRTH_DATE), birthDate),
+            cb.equal(root.get(SpecField.ADDRESS).get(SpecField.POSTAL_CODE), postalCode));
   }
 
   private Specification<Person> isDeletedFilter(boolean isDeleted) {
@@ -134,6 +151,36 @@ public class PersonService {
 
     for (var prefixMatch : namePrefixMatchList) {
       filter = filter.and(nameMatchesFilter(prefixMatch));
+    }
+
+    return filter;
+  }
+
+  protected Specification<Person> buildPersonMatchFilter(
+      String firstName,
+      String lastName,
+      LocalDate birthDate,
+      String postalCode,
+      UUID facilityId,
+      UUID orgId) {
+    Specification<Person> filter = patientExistsFilter(firstName, lastName, birthDate, postalCode);
+
+    if (orgId != null) {
+      filter = filter.and(inOrganizationFilter(orgId)).and(inFacilityFilter(null));
+    }
+
+    if (facilityId != null) {
+      filter = filter.and(inFacilityFilter(facilityId));
+
+      var facilityOrganization = _os.getOrganizationByFacilityId(facilityId);
+
+      // Additionally check if patient has already registered with an org link
+      if (facilityOrganization != null) {
+        filter =
+            filter.or(
+                inOrganizationFilter(facilityOrganization.getInternalId())
+                    .and(inFacilityFilter(null)));
+      }
     }
 
     return filter;
@@ -165,6 +212,41 @@ public class PersonService {
     return _repo.findAll(
         buildPersonSearchFilter(facilityId, isArchived, namePrefixMatch),
         PageRequest.of(pageOffset, pageSize, NAME_SORT));
+  }
+
+  public boolean isPatientInOrg(
+      String firstName, String lastName, LocalDate birthDate, String postalCode, UUID orgId) {
+    var patients =
+        _repo.findAll(
+            buildPersonMatchFilter(firstName, lastName, birthDate, postalCode, null, orgId),
+            PageRequest.of(0, 1, NAME_SORT));
+
+    return !patients.isEmpty();
+  }
+
+  public boolean isPatientInFacility(
+      String firstName, String lastName, LocalDate birthDate, String postalCode, UUID facilityId) {
+    var patients =
+        _repo.findAll(
+            buildPersonMatchFilter(firstName, lastName, birthDate, postalCode, facilityId, null),
+            PageRequest.of(0, 1, NAME_SORT));
+
+    return !patients.isEmpty();
+  }
+
+  public boolean isDuplicatePatient(
+      String firstName,
+      String lastName,
+      LocalDate birthDate,
+      String postalCode,
+      Organization org,
+      Facility facility) {
+    if (facility == null) {
+      return isPatientInOrg(firstName, lastName, birthDate, postalCode, org.getInternalId());
+    }
+
+    return isPatientInFacility(
+        firstName, lastName, birthDate, postalCode, facility.getInternalId());
   }
 
   @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
@@ -234,12 +316,12 @@ public class PersonService {
             Arrays.asList(tribalAffiliation),
             gender,
             residentCongregateSetting,
-            employedInHealthcare);
+            employedInHealthcare,
+            preferredLanguage,
+            testResultDelivery);
     updatePersonFacility(newPatient, facilityId);
     Person savedPerson = _repo.save(newPatient);
-    upsertPreferredLanguage(savedPerson, preferredLanguage);
     updatePhoneNumbers(newPatient, phoneNumbers);
-    updateTestResultDeliveryPreference(savedPerson.getInternalId(), testResultDelivery);
     return savedPerson;
   }
 
@@ -281,12 +363,12 @@ public class PersonService {
             Arrays.asList(tribalAffiliation),
             gender,
             residentCongregateSetting,
-            employedInHealthcare);
+            employedInHealthcare,
+            preferredLanguage,
+            testResultDelivery);
     newPatient.setFacility(link.getFacility());
     Person savedPerson = _repo.save(newPatient);
-    upsertPreferredLanguage(savedPerson, preferredLanguage);
     updatePhoneNumbers(newPatient, phoneNumbers);
-    updateTestResultDeliveryPreference(savedPerson.getInternalId(), testResultDelivery);
     return savedPerson;
   }
 
@@ -320,8 +402,9 @@ public class PersonService {
         Arrays.asList(tribalAffiliation),
         gender,
         residentCongregateSetting,
-        employedInHealthcare);
-    upsertPreferredLanguage(toUpdate, preferredLanguage);
+        employedInHealthcare,
+        preferredLanguage,
+        toUpdate.getTestResultDelivery());
     updatePhoneNumbers(toUpdate, phoneNumbers);
     return _repo.save(toUpdate);
   }
@@ -360,38 +443,21 @@ public class PersonService {
     }
   }
 
-  public PatientPreferences getPatientPreferences(Person person) {
-    return _prefRepo.findByPerson(person).orElseGet(() -> new PatientPreferences(person));
-  }
-
   @AuthorizationConfiguration.RequirePermissionStartTestForPatientById
-  public PatientPreferences updateTestResultDeliveryPreference(
+  public void updateTestResultDeliveryPreference(
       UUID patientId, TestResultDeliveryPreference testResultDelivery) {
     Person person = _repo.findById(patientId).orElseThrow();
-    return upsertTestResultDeliveryPreference(person, testResultDelivery);
+    person.setTestResultDelivery(testResultDelivery);
+    _repo.save(person);
   }
 
   // IMPLICIT AUTHORIZATION: this fetches the current patient after a patient link
   // is verified, so there is no authorization check
-  public PatientPreferences updateMyTestResultDeliveryPreference(
+  public void updateMyTestResultDeliveryPreference(
       TestResultDeliveryPreference testResultDelivery) {
     Person patient = _patientContext.getLinkedOrder().getPatient();
-    return upsertTestResultDeliveryPreference(patient, testResultDelivery);
-  }
-
-  private PatientPreferences upsertTestResultDeliveryPreference(
-      Person person, TestResultDeliveryPreference testResultDelivery) {
-    PatientPreferences toUpdate =
-        _prefRepo.findByPerson(person).orElseGet(() -> new PatientPreferences(person));
-    toUpdate.setTestResultDelivery(testResultDelivery);
-    return _prefRepo.save(toUpdate);
-  }
-
-  private PatientPreferences upsertPreferredLanguage(Person person, String preferredLanguage) {
-    PatientPreferences toUpdate =
-        _prefRepo.findByPerson(person).orElseGet(() -> new PatientPreferences(person));
-    toUpdate.setPreferredLanguage(preferredLanguage);
-    return _prefRepo.save(toUpdate);
+    patient.setTestResultDelivery(testResultDelivery);
+    _repo.save(patient);
   }
 
   @AuthorizationConfiguration.RequirePermissionEditPatientAtFacility
@@ -432,17 +498,11 @@ public class PersonService {
         Arrays.asList(tribalAffiliation),
         gender,
         residentCongregateSetting,
-        employedInHealthcare);
+        employedInHealthcare,
+        preferredLanguage,
+        testResultDelivery);
     updatePhoneNumbers(patientToUpdate, phoneNumbers);
-    upsertPreferredLanguage(patientToUpdate, preferredLanguage);
     updatePersonFacility(patientToUpdate, facilityId);
-
-    // Prevent test result delivery preference from getting un-set entirely.
-    // This also keeps backwards compatibility with older versions of the
-    // frontend that will not send in this value from the person form.
-    if (testResultDelivery != null) {
-      updateTestResultDeliveryPreference(patientToUpdate.getInternalId(), testResultDelivery);
-    }
 
     return _repo.save(patientToUpdate);
   }

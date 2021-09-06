@@ -16,10 +16,12 @@ module "metric_alerts" {
     "first_error_in_a_week",
     "account_request_failures",
     "frontend_error_boundary",
+    "db_query_duration",
+    "db_query_duration_over_time_window",
   ]
 
   action_group_ids = [
-    data.terraform_remote_state.global.outputs.pagerduty_demo_action_id
+    data.terraform_remote_state.global.outputs.pagerduty_non_prod_action_id
   ]
 
 }

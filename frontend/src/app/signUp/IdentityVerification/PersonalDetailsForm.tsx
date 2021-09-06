@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { DatePicker, Label } from "@trussworks/react-uswds";
 import moment from "moment";
 
 import { Card } from "../../commonComponents/Card/Card";
@@ -16,6 +15,7 @@ import {
 } from "../../../config/constants";
 import Select from "../../commonComponents/Select";
 import StepIndicator from "../../commonComponents/StepIndicator";
+import { DatePicker } from "../../commonComponents/DatePicker";
 
 import {
   initPersonalDetails,
@@ -118,10 +118,10 @@ const PersonalDetailsForm = ({
   }
 
   const getFormElement = (
-    field: keyof IdentityVerificationRequest,
+    field: keyof IdentityVerificationRequest | `preheader${"1" | "2"}`,
     label: string,
     required: boolean,
-    preheader: string | null
+    hintText: string
   ) => {
     switch (field) {
       case "state":
@@ -144,33 +144,32 @@ const PersonalDetailsForm = ({
       case "dateOfBirth":
         const now = moment();
         return (
-          <>
-            <Label
-              htmlFor="dateOfBirth"
-              className="font-ui-sm margin-top-2 margin-bottom-0"
-            >
-              Date of birth
-            </Label>
-            <span className="usa-hint">mm/dd/yyyy</span>
-            <DatePicker
-              id={field}
-              data-testid={field}
-              name={field}
-              onChange={(date) => {
-                if (date) {
-                  const newDate = moment(date, "MM/DD/YYYY")
-                    .hour(now.hours())
-                    .minute(now.minutes());
-                  onDetailChange("dateOfBirth")(newDate.format("YYYY-MM-DD"));
-                }
-              }}
-            />
-          </>
+          <DatePicker
+            name="dateOfBirth"
+            label="Date of birth"
+            labelClassName="font-ui-sm margin-top-2 margin-bottom-0"
+            onChange={(date) => {
+              if (date) {
+                const newDate = moment(date, "MM/DD/YYYY")
+                  .hour(now.hours())
+                  .minute(now.minutes());
+                onDetailChange("dateOfBirth")(newDate.format("YYYY-MM-DD"));
+              }
+            }}
+            onBlur={() => {
+              validateField("dateOfBirth");
+            }}
+            validationStatus={getValidationStatus("dateOfBirth")}
+            errorMessage={errors.dateOfBirth}
+            required
+          />
         );
+      case "preheader1":
+      case "preheader2":
+        return <p className="font-ui-sm text-bold margin-bottom-1">{label}</p>;
       default:
         return (
           <Input
-            className={preheader ? "margin-top-0" : ""}
             label={label}
             type={"text"}
             field={field}
@@ -181,6 +180,7 @@ const PersonalDetailsForm = ({
             validate={validateField}
             getValidationStatus={getValidationStatus}
             required={required}
+            hintText={hintText}
           />
         );
     }
@@ -203,8 +203,8 @@ const PersonalDetailsForm = ({
           noLabels={true}
           segmentIndicatorOnBottom={true}
         />
-        <div className="margin-bottom-2">
-          <p className="font-ui-2xs text-base">
+        <div className="margin-bottom-2 organization-form">
+          <p className="margin-top-neg-2">
             To create your account, we’ll need information to verify your
             identity directly with{" "}
             <a
@@ -214,9 +214,9 @@ const PersonalDetailsForm = ({
             >
               Experian
             </a>
-            . SimpleReport doesn’t access identity verification details.
+            . SimpleReport doesn’t access or keep identity verification details.
           </p>
-          <p className="font-ui-2sm margin-bottom-0">
+          <p className="font-ui-md margin-bottom-0">
             Why we verify your identity
           </p>
           <p className="font-ui-2xs text-base margin-top-1">
@@ -225,16 +225,11 @@ const PersonalDetailsForm = ({
           </p>
           <h3>{getPersonFullName()}</h3>
           {Object.entries(personalDetailsFields).map(
-            ([key, { label, required, preheader }]) => {
+            ([key, { label, required, hintText }]) => {
               const field = key as keyof IdentityVerificationRequest;
               return (
                 <div key={field}>
-                  {preheader && (
-                    <p className="font-ui-sm text-bold margin-bottom-1">
-                      {preheader}
-                    </p>
-                  )}
-                  {getFormElement(field, label, required, preheader)}
+                  {getFormElement(field, label, required, hintText)}
                 </div>
               );
             }

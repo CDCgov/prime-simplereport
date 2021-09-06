@@ -2717,3 +2717,175 @@ databaseChangeLog:
               JOIN patient_preferences pp on pp.internal_id=p.internal_id
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+  - changeSet:
+      id: denormalize-patient_preferences-1
+      author: adam@skylight.digital
+      comment: This is part 1 of denormalizing the patient_preference table on-row into person
+      changes:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: preferred_language
+                  type: text
+              - column:
+                  name: test_result_delivery_preference
+                  type: ${database.defaultSchemaName}.TEST_RESULT_DELIVERY
+                  remarks: Tracks the individual's preference for receiving test results
+  - changeSet:
+      id: denormalize-patient_preferences-2
+      author: adam@skylight.digital
+      comment: This copies the data from patient_preferences into the new columns
+      changes:
+        - sql:
+            sql: |
+              UPDATE ${database.defaultSchemaName}.person
+              SET
+                  preferred_language = patient_preferences.preferred_language,
+                  test_result_delivery_preference = patient_preferences.test_result_delivery
+              FROM ${database.defaultSchemaName}.patient_preferences
+              WHERE patient_preferences.internal_id = person.internal_id;
+      rollback:
+        - sql:
+            sql: |
+              UPDATE ${database.defaultSchemaName}.patient_preferences
+              SET
+                  preferred_language = person.preferred_language,
+                  test_result_delivery = person.test_result_delivery_preference
+              FROM ${database.defaultSchemaName}.person
+              WHERE patient_preferences.internal_id = person.internal_id;
+  - changeSet:
+      id: update-person_no_phi_view
+      author: adam@skylight.digital
+      changes:
+        - dropView:
+            viewName: person_no_phi_view
+        - createView:
+            viewName: person_no_phi_view
+            remarks: A subset of the person table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: |
+              SELECT
+                p.internal_id,
+                p.created_at,
+                p.created_by,
+                p.updated_at,
+                p.updated_by,
+                p.is_deleted,
+                p.organization_id,
+                p.facility_id,
+                p.race,
+                p.gender,
+                p.ethnicity,
+                p.county,
+                p.state,
+                p.employed_in_healthcare,
+                p.role,
+                p.resident_congregate_setting,
+                p.tribal_affiliation,
+                p.lookup_id,
+                get_census_dob_group(p.birth_date) AS census_dob_group,
+                p.preferred_language,
+                p.test_result_delivery_preference
+              FROM ${database.defaultSchemaName}.person p
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+      rollback:
+        - dropView:
+            viewName: person_no_phi_view
+        - createView:
+            viewName: person_no_phi_view
+            remarks: A subset of the person table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: |
+              SELECT
+                p.internal_id,
+                p.created_at,
+                p.created_by,
+                p.updated_at,
+                p.updated_by,
+                p.is_deleted,
+                p.organization_id,
+                p.facility_id,
+                p.race,
+                p.gender,
+                p.ethnicity,
+                p.county,
+                p.state,
+                p.employed_in_healthcare,
+                p.role,
+                p.resident_congregate_setting,
+                p.tribal_affiliation,
+                p.lookup_id,
+                get_census_dob_group(p.birth_date) AS census_dob_group,
+                pp.preferred_language,
+                pp.test_result_delivery
+              FROM ${database.defaultSchemaName}.person p
+              JOIN patient_preferences pp on pp.internal_id=p.internal_id
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+  - changeSet:
+      id: denormalize-patient_preferences-3
+      author: adam@skylight.digital
+      changes:
+        - dropTable:
+            tableName: patient_preferences
+      rollback:
+        - createTable:
+            tableName: patient_preferences
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier of the Person to whom these preferences belong
+                  constraints:
+                    foreignKeyName: fk__patient_preferences__person
+                    references: person
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: preferred_language
+                  type: text
+                  remarks: Tracks the individual's preferred language
+              - column:
+                  name: test_result_delivery
+                  type: ${database.defaultSchemaName}.TEST_RESULT_DELIVERY
+                  remarks: Tracks the individual's preference for receiving test results
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+        - sql:
+            sql: |
+              UPDATE ${database.defaultSchemaName}.patient_preferences
+              SET
+                  preferred_language = person.preferred_language,
+                  test_result_delivery = person.test_result_delivery_preference
+              FROM ${database.defaultSchemaName}.person
+              WHERE patient_preferences.internal_id = person.internal_id;
+  - changeSet:
+      id: add-index-person-org-facility-deleted
+      author: adam@skylight.digital
+      changes:
+        - createIndex:
+            tableName: person
+            indexName: ix__person__organization_id-facility_id-is_deleted
+            columns:
+              - column:
+                  name: organization_id
+              - column:
+                  name: facility_id
+              - column:
+                  name: is_deleted
+  - changeSet:
+      id: add-index-test_event-facility_id
+      author: adam@skylight.digital
+      changes:
+        - createIndex:
+            tableName: test_event
+            indexName: ix__test_event__facility_id
+            columns:
+              - column:
+                  name: facility_id

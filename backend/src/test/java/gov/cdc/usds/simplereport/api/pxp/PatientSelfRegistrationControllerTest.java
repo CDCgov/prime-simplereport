@@ -72,7 +72,6 @@ class PatientSelfRegistrationControllerTest extends BaseFullStackTest {
   @Test
   void registrationEntityFacilityNameFound() throws Exception {
     String link = _facilityRegistrationLink.getLink();
-    System.out.println(link);
 
     MockHttpServletRequestBuilder builder =
         get(ResourceLinks.ENTITY_NAME).param("patientRegistrationLink", link);
@@ -118,5 +117,36 @@ class PatientSelfRegistrationControllerTest extends BaseFullStackTest {
             .getHeader(LoggingConstants.REQUEST_ID_HEADER);
 
     assertLastAuditEntry(HttpStatus.OK, ResourceLinks.SELF_REGISTER, requestId);
+  }
+
+  @Test
+  void registrationCheckExistingPatient() throws Exception {
+    String link = _facilityRegistrationLink.getLink();
+    String firstName = "Luke";
+    String lastName = "Skywalker";
+    String requestBody =
+        "{\"birthDate\":\"1990-08-10\",\"firstName\":\""
+            + firstName
+            + "\",\"lastName\":\""
+            + lastName
+            + "\",\"postalCode\":\"92037\"}";
+
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.EXISTING_PATIENT)
+            .queryParam("patientRegistrationLink", link)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    String requestId =
+        _mockMvc
+            .perform(builder)
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getHeader(LoggingConstants.REQUEST_ID_HEADER);
+
+    assertLastAuditEntry(HttpStatus.OK, ResourceLinks.EXISTING_PATIENT, requestId);
   }
 }

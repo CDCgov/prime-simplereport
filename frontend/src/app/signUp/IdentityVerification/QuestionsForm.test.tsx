@@ -5,20 +5,27 @@ import QuestionsForm from "./QuestionsForm";
 
 describe("QuestionsForm", () => {
   let onSubmit: jest.Mock;
+  let onFail: jest.Mock;
 
   beforeEach(() => {
     onSubmit = jest.fn();
+    onFail = jest.fn();
 
     render(
       <QuestionsForm
         questionSet={exampleQuestionSet}
         saving={false}
         onSubmit={onSubmit}
+        onFail={onFail}
       />
     );
   });
   it("initializes with the submit button disabled", () => {
     expect(screen.getByText("Submit")).toHaveAttribute("disabled");
+  });
+  it("initializes with a counter and starts counting down", async () => {
+    expect(screen.getByText("5:00")).toBeInTheDocument();
+    expect(await screen.findByText("4:59")).toBeInTheDocument();
   });
   describe("One field entered", () => {
     beforeEach(() => {

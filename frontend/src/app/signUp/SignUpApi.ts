@@ -15,7 +15,7 @@ export class SignUpApi {
   }
   static submitAnswers(
     request: IdentityVerificationAnswersRequest
-  ): Promise<{ passed: boolean; email: string }> {
+  ): Promise<{ passed: boolean; email: string; activationToken: string }> {
     return api.request("/identity-verification/submit-answers", request);
   }
 

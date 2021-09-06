@@ -353,13 +353,4 @@ public class Translators {
     }
     throw IllegalGraphqlArgumentException.invalidInput(t, "organization type");
   }
-
-  public static String parseOrganizationTypeFromName(String t) {
-    for (Map.Entry<String, String> entry : ORGANIZATION_TYPES.entrySet()) {
-      if (entry.getValue().equals(t)) {
-        return entry.getKey();
-      }
-    }
-    throw IllegalGraphqlArgumentException.invalidInput(t, "organization type");
-  }
 }

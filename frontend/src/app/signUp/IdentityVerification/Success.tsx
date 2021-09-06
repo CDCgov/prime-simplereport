@@ -4,9 +4,14 @@ import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 
 interface Props {
   email: string;
+  activationToken?: string;
 }
 
-const Success: React.FC<Props> = ({ email }) => {
+const Success: React.FC<Props> = ({ email, activationToken }) => {
+  const activationLink = activationToken
+    ? `${process.env.PUBLIC_URL}/uac/?activationToken=${activationToken}`
+    : null;
+
   return (
     <CardBackground>
       <Card logo>
@@ -23,18 +28,28 @@ const Success: React.FC<Props> = ({ email }) => {
         <h1 className="font-ui-lg margin-top-3 margin-bottom-4">
           You’re ready to use SimpleReport
         </h1>
-        <p className="margin-bottom-2">
-          Congratulations, your identity has been verified successfully. Please
-          check your organization administrator email ({email}) for a link to
-          access your SimpleReport account.
-        </p>
         <p className="margin-bottom-0">
-          Didn’t get the email? Check your spam folder. If you’re unable to find
-          the email,{" "}
+          Congratulations, your identity has been verified successfully.{" "}
+          {activationLink
+            ? `Please click the button below to set up your SimpleReport account. 
+               (A link will also be sent to ${email}.)`
+            : `Please check your organization administrator email (${email}) for
+               a link to access your SimpleReport account.`}
+        </p>
+        {activationLink ? (
+          <a
+            className="usa-button width-full margin-top-3"
+            href={activationLink}
+          >
+            Set up your account
+          </a>
+        ) : null}
+        <p className="usa-hint font-ui-3xs margin-top-3">
+          Didn’t get the email? Check your spam folder and{" "}
           <a href="mailto:support@simplereport.gov">
             contact SimpleReport support
-          </a>
-          .
+          </a>{" "}
+          if you need help.
         </p>
       </Card>
     </CardBackground>

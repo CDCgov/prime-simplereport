@@ -46,22 +46,29 @@ export const organizationFields = [
       />
     </span>,
     true,
+    "",
   ],
-  ["state", "Organization state", true],
-  ["type", "Organization type", true],
-  ["banner", "Organization administrator", false],
-  ["firstName", "First name", true],
-  ["middleName", "Middle name", false],
-  ["lastName", "Last name", true],
-  ["email", "Work email", true],
-  ["workPhoneNumber", "Work phone number", true],
+  ["state", "Organization state", true, ""],
+  ["type", "Organization type", true, ""],
+  ["banner", "Organization administrator", false, ""],
+  ["firstName", "First name", true, ""],
+  ["middleName", "Middle name", false, ""],
+  ["lastName", "Last name", true, ""],
+  ["email", "Work email", true, "Enter your individual work email address."],
+  [
+    "workPhoneNumber",
+    "Work phone number",
+    true,
+    "Enter your direct work phone number.",
+  ],
 ].reduce((fields, field) => {
   fields[field[0] as keyof OrganizationCreateRequest] = {
     label: field[1] as string | React.ReactNode,
     required: field[2] as boolean,
+    hintText: field[3] as string,
   };
   return fields;
-}, {} as { [key: string]: { label: string | React.ReactNode; required: boolean } });
+}, {} as { [key: string]: { label: string | React.ReactNode; required: boolean; hintText: string } });
 
 export const initOrg = (): OrganizationCreateRequest => ({
   name: "",
@@ -91,9 +98,21 @@ export const initOrgErrors = (): Record<
 const getStateErrorMessage = (param: any) =>
   param.value !== "" ? (
     <>
-      SimpleReport isn't available yet in your state. For more information, view{" "}
-      <a href="https://simplereport.gov/using-simplereport/manage-facility-info/find-supported-jurisdictions">
+      SimpleReport isn't available yet in your state. View{" "}
+      <a
+        href="https://simplereport.gov/using-simplereport/manage-facility-info/find-supported-jurisdictions"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         supported jurisdictions
+      </a>{" "}
+      or sign up for our{" "}
+      <a
+        href="https://simplereport.gov/waitlist"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        waitlist
       </a>
       .
     </>

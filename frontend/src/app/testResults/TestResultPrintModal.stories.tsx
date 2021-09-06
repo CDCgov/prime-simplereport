@@ -17,7 +17,7 @@ export default {
 } as Meta;
 
 const testResult = {
-  dateTested: new Date(),
+  dateTested: new Date("2021-08-20"),
   result: "NEGATIVE",
   correctionStatus: null,
   deviceType: {
@@ -55,6 +55,7 @@ const defaultProps: TestResultPrintModalProps = {
   data: { testResult } as any,
   testResultId: uniqueId(),
   closeModal: () => {},
+  hardcodedPrintDate: "8/24/2021, 9:44:25 AM",
 };
 
 const Template: Story<TestResultPrintModalProps> = (args) => {

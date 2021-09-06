@@ -11,12 +11,8 @@ output "acr_simeplereport_admin_password" {
   sensitive = true
 }
 
-output "slack_alert_action_id" {
-  value = module.alerting.monitor_group_id
-}
-
-output "pagerduty_demo_action_id" {
-  value = module.pagerduty_demo.monitor_group_id
+output "pagerduty_non_prod_action_id" {
+  value = module.pagerduty_non_prod.monitor_group_id
 }
 
 output "pagerduty_prod_action_id" {

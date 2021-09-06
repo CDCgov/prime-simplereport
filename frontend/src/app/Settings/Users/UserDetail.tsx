@@ -4,6 +4,7 @@ import { Prompt } from "react-router-dom";
 import { Role } from "../../permissions";
 import { displayFullName } from "../../utils";
 import Button from "../../commonComponents/Button/Button";
+import { formatUserStatus } from "../../utils/text";
 
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import { UpdateUser } from "./ManageUsers";
@@ -62,9 +63,18 @@ const UserDetail: React.FC<Props> = ({
   return (
     <div className="tablet:grid-col padding-left-2">
       <div className="user-header grid-row flex-row flex-align-center">
-        <h2 className="display-inline-block margin-y-1">
-          {displayFullName(user.firstName, user.middleName, user.lastName)}
-        </h2>
+        <div>
+          <h2 className="display-inline-block margin-y-1">
+            {displayFullName(user.firstName, user.middleName, user.lastName)}
+          </h2>
+          {user.status !== "ACTIVE" && (
+            <div>
+              <span className="top-user-status">
+                {formatUserStatus(user.status)}
+              </span>
+            </div>
+          )}
+        </div>
         {user?.id === loggedInUser.id ? (
           <span className="usa-tag margin-left-1 bg-base-lighter text-ink">
             YOU
@@ -90,9 +100,12 @@ const UserDetail: React.FC<Props> = ({
         ) : null}
       </div>
       <div className="user-content">
+        <h3 className="margin-bottom-0 padding-top-1">User roles</h3>
         <p className="text-base">
-          Admins have full access to conduct tests, manage results and profiles,
-          and manage settings and users
+          Admins have full access to SimpleReport. They can conduct tests,
+          manage test results and patient profiles, and also manage account
+          settings, users, and testing facilities. Standard and testing only
+          users have limited access for specific tasks, as described below.
         </p>
         <UserRoleSettingsForm
           activeUser={user}

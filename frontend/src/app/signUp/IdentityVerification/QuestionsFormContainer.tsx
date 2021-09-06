@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { PhoneNumberUtil } from "google-libphonenumber";
 
 import { SignUpApi } from "../SignUpApi";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
@@ -11,9 +12,33 @@ import { answersToArray } from "./utils";
 interface Props {
   personalDetails: IdentityVerificationRequest;
   orgExternalId: string;
+  timeToComplete?: number;
 }
 
-const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
+// Experian doesn't accept names with accents, so we allow users to input them
+// but remove the accent before sending to the backend.
+function removeAccents(str: string) {
+  return str.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+}
+
+function normalizeIdentityVerificationRequest(
+  request: IdentityVerificationRequest
+) {
+  const phoneUtil = PhoneNumberUtil.getInstance();
+  const number = phoneUtil.parseAndKeepRawInput(request.phoneNumber, "US");
+  request.phoneNumber = `${number.getNationalNumber()}`;
+  request.firstName = removeAccents(request.firstName);
+  request.middleName = request.middleName
+    ? removeAccents(request.middleName)
+    : request.middleName;
+  request.lastName = removeAccents(request.lastName);
+}
+
+const QuestionsFormContainer = ({
+  personalDetails,
+  orgExternalId,
+  timeToComplete,
+}: Props) => {
   const [loading, setLoading] = useState(true);
   const [identificationVerified, setIdentificationVerified] = useState<
     boolean | undefined
@@ -21,8 +46,10 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
   const [questionSet, setQuestionSet] = useState<Question[] | undefined>();
   const [sessionId, setSessionId] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+  const [activationToken, setActivationToken] = useState<string>("");
 
   const getQuestionSet = async (request: IdentityVerificationRequest) => {
+    normalizeIdentityVerificationRequest(request);
     try {
       const response = await SignUpApi.getQuestions(request);
       if (!response.questionSet) {
@@ -34,6 +61,7 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
       setIdentificationVerified(false);
     }
     setLoading(false);
+    window.scrollTo(0, 0);
   };
 
   useEffect(() => {
@@ -52,6 +80,7 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
       const response = await SignUpApi.submitAnswers(request);
       setIdentificationVerified(response.passed);
       setEmail(response.email);
+      setActivationToken(response.activationToken);
     } catch (error) {
       setIdentificationVerified(false);
     }
@@ -71,11 +100,15 @@ const QuestionsFormContainer = ({ personalDetails, orgExternalId }: Props) => {
         questionSet={questionSet}
         saving={false}
         onSubmit={onSubmit}
+        onFail={() => onSubmit({})}
+        timeToComplete={timeToComplete}
       />
     );
   }
 
-  if (identificationVerified) {
+  if (identificationVerified && email && activationToken) {
+    return <Success email={email} activationToken={activationToken} />;
+  } else if (identificationVerified) {
     return <Success email={email} />;
   } else {
     return <NextSteps />;

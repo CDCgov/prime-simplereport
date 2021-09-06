@@ -75,6 +75,7 @@ class IdentityVerificationControllerTest {
   private static final String FAKE_ORG_EXTERNAL_ID = "FAKE_ORG_EXTERNAL_ID";
   private static final String FAKE_ORG_EXTERNAL_ID_DOES_NOT_EXIST = "DOES_NOT_EXIST";
   private static final String FAKE_ORG_ADMIN_EMAIL = "org.admin.email@example.com";
+  private static final String FAKE_ACTIVATION_TOKEN = "foo";
   // email address that generates PersonMatchException in DemoExperianService
   private static final String FAKE_NON_EXISTENT_EMAIL = "notfound@example.com";
   // email address that generates RestClientException in DemoExperianService
@@ -201,6 +202,8 @@ class IdentityVerificationControllerTest {
 
   @Test
   void submitAnswers_correctAnswer_success() throws Exception {
+    when(_orgService.verifyOrganizationNoPermissions(any())).thenReturn(FAKE_ACTIVATION_TOKEN);
+
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.ID_VERIFICATION_SUBMIT_ANSWERS)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -212,7 +215,8 @@ class IdentityVerificationControllerTest {
         .perform(builder)
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.passed", is(true)))
-        .andExpect(jsonPath("$.email", equalTo(FAKE_ORG_ADMIN_EMAIL)));
+        .andExpect(jsonPath("$.email", equalTo(FAKE_ORG_ADMIN_EMAIL)))
+        .andExpect(jsonPath("$.activationToken", equalTo(FAKE_ACTIVATION_TOKEN)));
 
     // successful verification, no emails sent
     verifyEmailsNotSent();
