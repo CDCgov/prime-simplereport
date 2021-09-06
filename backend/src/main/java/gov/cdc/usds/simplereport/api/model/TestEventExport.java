@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -119,12 +120,15 @@ public class TestEventExport {
     return value.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
   }
 
-  private String dateToHealthCareString(Optional<LocalDate> value) {
-    return dateToHealthCareString(value.orElse(null));
+  private String dateToHealthCareString(LocalDateTime value) {
+    if (value == null) {
+      return "";
+    }
+    return value.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
   }
 
-  private LocalDate convertToLocalDate(Date dateToConvert) {
-    return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+  private LocalDateTime convertToLocalDateTime(Date dateToConvert) {
+    return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
   }
 
   @JsonProperty("Patient_last_name")
@@ -154,7 +158,7 @@ public class TestEventExport {
 
   @JsonProperty("Patient_DOB")
   public String getPatientBirthDate() {
-    return dateToHealthCareString(patient.map(Person::getBirthDate));
+    return dateToHealthCareString(patient.map(Person::getBirthDate).orElse(null));
   }
 
   @JsonProperty("Patient_gender")
@@ -284,7 +288,7 @@ public class TestEventExport {
 
   @JsonProperty("Specimen_collection_date_time")
   public String getSpecimenCollectionDateTime() {
-    return dateToHealthCareString(convertToLocalDate(testEvent.getDateTested()));
+    return dateToHealthCareString(convertToLocalDateTime(testEvent.getDateTested()));
   }
 
   @JsonProperty("Ordering_provider_ID")
@@ -304,7 +308,7 @@ public class TestEventExport {
 
   @JsonProperty("Illness_onset_date")
   public String getSymptomOnsetDate() {
-    return dateToHealthCareString(survey.map(AskOnEntrySurvey::getSymptomOnsetDate));
+    return dateToHealthCareString(survey.map(AskOnEntrySurvey::getSymptomOnsetDate).orElse(null));
   }
 
   @JsonProperty("Testing_lab_name")
@@ -482,12 +486,14 @@ public class TestEventExport {
   @JsonProperty("Test_date")
   public String getTestDate() {
     return dateToHealthCareString(
-        Optional.ofNullable(testEvent.getDateTested()).map(this::convertToLocalDate));
+        Optional.ofNullable(testEvent.getDateTested())
+            .map(this::convertToLocalDateTime)
+            .orElse(null));
   }
 
   @JsonProperty("Date_result_released")
   public String getDateResultReleased() {
-    return dateToHealthCareString(LocalDate.now());
+    return dateToHealthCareString(LocalDateTime.now());
   }
 
   @JsonProperty("Order_test_date")
