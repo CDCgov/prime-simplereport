@@ -654,21 +654,19 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
   @Test
   @WithSimpleReportStandardUser
-  void isPatientInOrg_newPatient_returnsFalse() {
+  void isDuplicatePatient_newOrgPatient_returnsFalse() {
+    Organization org = _orgService.getCurrentOrganization();
+
     var result =
-        _service.isPatientInOrg(
-            "John",
-            "Doe",
-            LocalDate.parse("1990-01-01"),
-            "27601",
-            UUID.fromString("15438a9e-9b29-44dd-b74d-911b7d80e77e"));
+        _service.isDuplicatePatient(
+            "John", "Doe", LocalDate.parse("1990-01-01"), "27601", org, null);
 
     assertFalse(result);
   }
 
   @Test
   @WithSimpleReportStandardUser
-  void isPatientInOrg_existingPatient_returnsTrue() {
+  void isDuplicatePatient_existingOrgPatient_returnsTrue() {
     Organization org = _orgService.getCurrentOrganization();
     String registrationLink = org.getPatientSelfRegistrationLink();
 
@@ -695,19 +693,20 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             TestResultDeliveryPreference.NONE);
 
     var result =
-        _service.isPatientInOrg(
+        _service.isDuplicatePatient(
             person.getFirstName(),
             person.getLastName(),
             person.getBirthDate(),
             person.getAddress().getPostalCode(),
-            org.getInternalId());
+            org,
+            null);
 
     assertTrue(result);
   }
 
   @Test
   @WithSimpleReportStandardUser
-  void isPatientInOrg_existingPatientInChildFacility_returnsFalse() {
+  void isDuplicatePatient_existingPatientInChildFacility_returnsFalse() {
     Organization org = _orgService.getCurrentOrganization();
     Facility facility = _orgService.getFacilities(org).get(0);
     String registrationLink = facility.getPatientSelfRegistrationLink();
@@ -735,33 +734,37 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             TestResultDeliveryPreference.NONE);
 
     var result =
-        _service.isPatientInOrg(
+        _service.isDuplicatePatient(
             person.getFirstName(),
             person.getLastName(),
             person.getBirthDate(),
             person.getAddress().getPostalCode(),
-            org.getInternalId());
+            org,
+            null);
 
-    assertFalse(result);
+    assertTrue(result);
   }
 
   @Test
   @WithSimpleReportStandardUser
-  void isPatientInFacility_newPatient_returnsFalse() {
+  void isDuplicatePatient_newPatient_returnsFalse() {
+    Facility facility = _orgService.getFacilities(_orgService.getCurrentOrganization()).get(0);
+
     var result =
-        _service.isPatientInFacility(
+        _service.isDuplicatePatient(
             "John",
             "Doe",
             LocalDate.parse("1990-01-01"),
             "27601",
-            UUID.fromString("15438a9e-9b29-44dd-b74d-911b7d80e77e"));
+            facility.getOrganization(),
+            facility);
 
     assertFalse(result);
   }
 
   @Test
   @WithSimpleReportStandardUser
-  void isPatientInFacility_existingPatient_returnsTrue() {
+  void isDuplicatePatient_existingPatient_returnsTrue() {
     Facility facility = _orgService.getFacilities(_orgService.getCurrentOrganization()).get(0);
     String registrationLink = facility.getPatientSelfRegistrationLink();
 
@@ -788,19 +791,20 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             TestResultDeliveryPreference.NONE);
 
     var result =
-        _service.isPatientInFacility(
+        _service.isDuplicatePatient(
             person.getFirstName(),
             person.getLastName(),
             person.getBirthDate(),
             person.getAddress().getPostalCode(),
-            facility.getInternalId());
+            facility.getOrganization(),
+            facility);
 
     assertTrue(result);
   }
 
   @Test
   @WithSimpleReportStandardUser
-  void isPatientInFacility_existsInSiblingOrgFacility_returnsFalse() {
+  void isDuplicatePatient_existsInSiblingOrgFacility_returnsFalse() {
     // Ensure there are two facilities under the same org
     Facility facility1 = _orgService.getFacilities(_orgService.getCurrentOrganization()).get(0);
     Facility facility2 = _orgService.getFacilities(_orgService.getCurrentOrganization()).get(1);
@@ -832,19 +836,20 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     // Check for existing user in second facility
     var result =
-        _service.isPatientInFacility(
+        _service.isDuplicatePatient(
             person.getFirstName(),
             person.getLastName(),
             person.getBirthDate(),
             person.getAddress().getPostalCode(),
-            facility2.getInternalId());
+            facility2.getOrganization(),
+            facility2);
 
     assertFalse(result);
   }
 
   @Test
   @WithSimpleReportStandardUser
-  void isPatientInFacility_existsInParentOrg_returnsTrue() {
+  void isDuplicatePatient_existsInParentOrg_returnsTrue() {
     Organization organization = _orgService.getCurrentOrganization();
     Facility facility = _orgService.getFacilities(organization).get(0);
 
@@ -875,12 +880,13 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     // Check if patient exists in constituent facility
     var result =
-        _service.isPatientInFacility(
+        _service.isDuplicatePatient(
             person.getFirstName(),
             person.getLastName(),
             person.getBirthDate(),
             person.getAddress().getPostalCode(),
-            facility.getInternalId());
+            organization,
+            facility);
 
     assertTrue(result);
   }

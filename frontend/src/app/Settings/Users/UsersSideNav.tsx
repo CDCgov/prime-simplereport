@@ -1,7 +1,10 @@
 import React from "react";
 import classnames from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircle } from "@fortawesome/free-solid-svg-icons";
 
 import { displayFullName } from "../../utils";
+import { formatUserStatus } from "../../utils/text";
 
 import { LimitedUser } from "./ManageUsersContainer";
 
@@ -45,9 +48,33 @@ const UsersSideNav: React.FC<Props> = ({
                     user.middleName,
                     user.lastName
                   )}
+                  {user.status === "SUSPENDED" && (
+                    <span>
+                      {" "}
+                      <FontAwesomeIcon
+                        icon={faCircle}
+                        className={"prime-red-icon suspended-icon"}
+                      />
+                    </span>
+                  )}
+                  {user.status === "PROVISIONED" && (
+                    <span>
+                      {" "}
+                      <FontAwesomeIcon
+                        icon={faCircle}
+                        className={"prime-orange-icon suspended-icon"}
+                      />
+                    </span>
+                  )}
                 </span>
                 <br />
                 <span className="sidenav-user-email">{user.email}</span>
+                <br />
+                {user.status !== "ACTIVE" ? (
+                  <span className="sidenav-user-status">
+                    {formatUserStatus(user.status)}
+                  </span>
+                ) : null}
               </button>
             </li>
           );

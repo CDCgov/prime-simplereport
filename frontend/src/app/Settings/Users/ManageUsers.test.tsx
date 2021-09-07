@@ -260,7 +260,7 @@ describe("ManageUsers", () => {
       expect(getByLabelText("user", { exact: false })).toHaveAttribute(
         "disabled"
       );
-      expect(getByLabelText("Entry only", { exact: false })).toHaveAttribute(
+      expect(getByLabelText("Testing only", { exact: false })).toHaveAttribute(
         "disabled"
       );
       expect(container).toMatchSnapshot();
@@ -492,6 +492,12 @@ describe("ManageUsers", () => {
       expect(reactivateUser).toBeCalledWith({
         variables: { id: suspendedUsers[0].id },
       });
+    });
+
+    it("only shows status for non-active users", async () => {
+      // status appears twice for each suspended user - once in the side nav, and once in the detail view.
+      // the suspendedUsers list only has two users, one active and one suspended.
+      expect(screen.queryAllByText("Account deactivated").length).toBe(2);
     });
   });
 

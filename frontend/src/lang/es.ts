@@ -217,6 +217,13 @@ export const es: LanguageConfig = {
         checkIn:
           "Cuando llegue para su prueba, regístrese dando su nombre y apellido.",
       },
+      duplicate: {
+        heading: "Usted ya tiene un perfil en",
+        message:
+          "Nuestros registros muestran que alguien se ha inscrito con el mismo nombre, fecha de nacimiento y código postal. " +
+          "Por favor, comuníquese con el personal de su sitio de pruebas. No necesita inscribirse de nuevo.",
+        button: "Salir de la página de inscripción",
+      },
     },
     testResult: {
       result: "Resultado de SARS-CoV-2",

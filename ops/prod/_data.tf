@@ -139,26 +139,6 @@ data "azurerm_key_vault_secret" "smarty_auth_token" {
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
-data "azurerm_key_vault_secret" "dynamics_client_id" {
-  name         = "dynamics-client-id-prod"
-  key_vault_id = data.azurerm_key_vault.global.id
-}
-
-data "azurerm_key_vault_secret" "dynamics_client_secret" {
-  name         = "dynamics-client-secret-prod"
-  key_vault_id = data.azurerm_key_vault.global.id
-}
-
-data "azurerm_key_vault_secret" "dynamics_tenant_id" {
-  name         = "dynamics-tenant-id-prod"
-  key_vault_id = data.azurerm_key_vault.global.id
-}
-
-data "azurerm_key_vault_secret" "dynamics_resource_url" {
-  name         = "dynamics-resource-url-prod"
-  key_vault_id = data.azurerm_key_vault.global.id
-}
-
 data "azurerm_key_vault_secret" "experian_token_endpoint" {
   name         = "experian-token-endpoint-prod"
   key_vault_id = data.azurerm_key_vault.global.id

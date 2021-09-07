@@ -2,7 +2,6 @@ import { MfaVerify } from "../MfaVerify/MfaVerify";
 
 interface Props {
   phoneNumber: string;
-  resendCode: boolean;
 }
 
 export const VerifyPhone = (props: Props) => (

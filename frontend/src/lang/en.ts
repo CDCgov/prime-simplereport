@@ -208,6 +208,13 @@ export const en = {
         checkIn:
           "When you arrive for your test, check in by giving your first and last name.",
       },
+      duplicate: {
+        heading: "You already have a profile at",
+        message:
+          "Our records show someone has registered with the same name, date of birth, and ZIP code. Please check in with " +
+          "your testing site staff. You do not need to register again.",
+        button: "Exit sign up",
+      },
     },
     testResult: {
       result: "SARS-CoV-2 result",

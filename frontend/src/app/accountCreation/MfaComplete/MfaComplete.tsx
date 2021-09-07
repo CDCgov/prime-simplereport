@@ -19,7 +19,8 @@ export const MfaComplete = () => {
         </div>
         <h1 className="font-ui-lg margin-top-3">Account set up complete</h1>
         <p className="margin-bottom-0">
-          To start using SimpleReport, log in to your account.
+          To start using SimpleReport, visit the website to log in to your
+          account.
         </p>
         <div className="display-flex flex-justify-center">
           <Button

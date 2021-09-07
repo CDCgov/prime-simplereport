@@ -379,23 +379,6 @@ class TranslatorTest {
     assertEquals("[not-a-type] is not a valid organization type", caught.getMessage());
   }
 
-  @Test
-  void goodOrganizationTypeFromName() {
-    String type = Translators.parseOrganizationTypeFromName("Homeless Shelter");
-    assertEquals("shelter", type);
-  }
-
-  @Test
-  void badOrganizationTypeFromName() {
-    IllegalGraphqlArgumentException caught =
-        assertThrows(
-            IllegalGraphqlArgumentException.class,
-            () -> {
-              Translators.parseOrganizationTypeFromName("not-a-type");
-            });
-    assertEquals("[not-a-type] is not a valid organization type", caught.getMessage());
-  }
-
   static class GoodNameArgumentsProvider implements ArgumentsProvider {
 
     @Override

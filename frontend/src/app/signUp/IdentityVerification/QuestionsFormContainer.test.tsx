@@ -16,12 +16,12 @@ jest.mock("../SignUpApi", () => {
         return { questionSet: exampleQuestionSet, sessionId: "foo" };
       },
       submitAnswers: (request: IdentityVerificationAnswersRequest) => {
-        if (request.answers[0] === 2) {
+        if (!request.answers.length || request.answers[0] === 3) {
+          return { passed: false };
+        } else if (request.answers[0] === 2) {
           return setTimeout(() => {
             return { passed: false };
           }, 10000);
-        } else if (request.answers[0] === 3) {
-          return { passed: false };
         }
         return { passed: true, email: "foo@bar.com", activationToken: "foo" };
       },
@@ -29,27 +29,39 @@ jest.mock("../SignUpApi", () => {
   };
 });
 
+window.scrollTo = jest.fn();
+
 describe("QuestionsFormContainer", () => {
+  let personalDetails: IdentityVerificationRequest;
   beforeEach(async () => {
+    personalDetails = initPersonalDetails("foo", "Bob", "Bill", "Martínez");
+    personalDetails.phoneNumber = "530/867/5309 ext. 222";
     await act(async () => {
       render(
         <QuestionsFormContainer
-          personalDetails={initPersonalDetails("foo", "Bob", "Bill", "Buckley")}
+          personalDetails={personalDetails}
           orgExternalId="foo"
         />
       );
     });
   });
   it("show the user that the page is loading", () => {
+    personalDetails.orgExternalId = "slow";
     render(
       <QuestionsFormContainer
-        personalDetails={initPersonalDetails("slow", "Bob", "Bill", "Buckley")}
+        personalDetails={personalDetails}
         orgExternalId="slow"
       />
     );
     expect(
       screen.getByText("Submitting ID verification details", { exact: false })
     ).toBeInTheDocument();
+  });
+  it("should normalize the phone number to getQuestions", () => {
+    expect(personalDetails.phoneNumber).toBe("5308675309");
+  });
+  it("should remove accents from name", () => {
+    expect(personalDetails.lastName).toBe("Martinez");
   });
   it("should render the questions form after getQuestions response arrives", () => {
     expect(
@@ -126,5 +138,38 @@ describe("QuestionsFormContainer", () => {
         ).toBeInTheDocument();
       });
     });
+  });
+});
+
+describe("QuestionsFormContainer countdown", () => {
+  let personalDetails: IdentityVerificationRequest;
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+  it("redirects to failure page when countdown runs out", async () => {
+    personalDetails = initPersonalDetails("foo", "Bob", "Bill", "Martínez");
+    personalDetails.phoneNumber = "530/867/5309 ext. 222";
+    await act(async () => {
+      render(
+        <QuestionsFormContainer
+          personalDetails={personalDetails}
+          orgExternalId="foo"
+          timeToComplete={1}
+        />
+      );
+      expect(await screen.findByText("0:01")).toBeInTheDocument();
+      expect(
+        await screen.findByText(
+          "Experian was unable to verify your identity.",
+          {
+            exact: false,
+          }
+        )
+      ).toBeInTheDocument();
+    });
+  });
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
   });
 });

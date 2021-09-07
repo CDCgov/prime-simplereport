@@ -10,8 +10,8 @@ resource "azurerm_monitor_metric_alert" "cpu_util" {
   description         = "${local.env_title} CPU utilization is greater than ${var.cpu_threshold}%"
   resource_group_name = var.rg_name
   scopes              = [var.app_service_plan_id]
-  frequency           = "PT1M"
-  window_size         = "PT${var.cpu_window_size}M"
+  frequency           = "PT15M"
+  window_size         = var.cpu_window_size
   enabled             = contains(var.disabled_alerts, "cpu_util") ? false : true
 
   criteria {
@@ -210,7 +210,7 @@ ${local.skip_on_weekends}
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "db_query_duration_over_time_window" {
   name                = "${var.env}-db-query-duration-over-time-window"
-  description         = "${local.env_title} >= 5 DB queries with durations >= 1s over time window"
+  description         = "10+ DB queries with durations over 1.25s in the past 5 minutes"
   location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
   severity            = var.severity
@@ -223,12 +223,12 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "db_query_duration_over_t
   query = <<-QUERY
 dependencies
 ${local.skip_on_weekends}
-| where timestamp >= ago(5m) and name has "SQL:" and duration >= 1000
+| where timestamp >= ago(5m) and name has "SQL:" and duration > 1250
   QUERY
 
   trigger {
     operator  = "GreaterThan"
-    threshold = 4
+    threshold = 10
   }
 
   action {

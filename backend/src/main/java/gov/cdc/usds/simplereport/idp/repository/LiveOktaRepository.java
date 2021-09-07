@@ -211,6 +211,25 @@ public class LiveOktaRepository implements OktaRepository {
         .collect(Collectors.toUnmodifiableSet());
   }
 
+  public Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org) {
+    final String orgDefaultGroupName =
+        generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
+    final GroupList oktaGroupList =
+        _client.listGroups(orgDefaultGroupName, FILTER_TYPE_EQ_OKTA_GROUP, null);
+
+    Group orgDefaultOktaGroup =
+        oktaGroupList.stream()
+            .filter(g -> orgDefaultGroupName.equals(g.getProfile().getName()))
+            .findFirst()
+            .orElseThrow(
+                () ->
+                    new IllegalGraphqlArgumentException(
+                        "Okta group not found for this organization"));
+
+    return orgDefaultOktaGroup.listUsers().stream()
+        .collect(Collectors.toMap(u -> u.getProfile().getEmail(), u -> u.getStatus()));
+  }
+
   public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {
 
     UserList users = _client.listUsers(userIdentity.getUsername(), null, null, null, null);

@@ -6,14 +6,15 @@ import { UserRole, UserPermission, Role } from "../../permissions";
 
 import ManageUsers from "./ManageUsers";
 
-const GET_USERS = gql`
-  query GetUsers {
-    users {
+const GET_USERS_WITH_STATUS = gql`
+  query GetUsersAndStatus {
+    usersWithStatus {
       id
       firstName
       middleName
       lastName
       email
+      status
     }
   }
 `;
@@ -56,17 +57,18 @@ export interface SettingsUser {
   };
 }
 
-// structure for `getUsers` query
+// structure for `getUsersWithStatus` query
 export interface LimitedUser {
   id: string;
   firstName: string;
   middleName: string;
   lastName: string;
   email: string;
+  status: string;
 }
 
 interface UserData {
-  users: LimitedUser[];
+  usersWithStatus: LimitedUser[];
 }
 
 export interface SingleUserData {
@@ -171,7 +173,7 @@ const ManageUsersContainer: any = () => {
   const [resetPassword] = useMutation(RESET_USER_PASSWORD);
 
   const { data, loading, error, refetch: getUsers } = useQuery<UserData, {}>(
-    GET_USERS,
+    GET_USERS_WITH_STATUS,
     { fetchPolicy: "no-cache" }
   );
 
@@ -204,7 +206,7 @@ const ManageUsersContainer: any = () => {
 
   return (
     <ManageUsers
-      users={data.users}
+      users={data.usersWithStatus}
       loggedInUser={loggedInUser}
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}

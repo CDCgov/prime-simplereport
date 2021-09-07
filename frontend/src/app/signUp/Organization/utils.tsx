@@ -46,22 +46,29 @@ export const organizationFields = [
       />
     </span>,
     true,
+    "",
   ],
-  ["state", "Organization state", true],
-  ["type", "Organization type", true],
-  ["banner", "Organization administrator", false],
-  ["firstName", "First name", true],
-  ["middleName", "Middle name", false],
-  ["lastName", "Last name", true],
-  ["email", "Work email", true],
-  ["workPhoneNumber", "Work phone number", true],
+  ["state", "Organization state", true, ""],
+  ["type", "Organization type", true, ""],
+  ["banner", "Organization administrator", false, ""],
+  ["firstName", "First name", true, ""],
+  ["middleName", "Middle name", false, ""],
+  ["lastName", "Last name", true, ""],
+  ["email", "Work email", true, "Enter your individual work email address."],
+  [
+    "workPhoneNumber",
+    "Work phone number",
+    true,
+    "Enter your direct work phone number.",
+  ],
 ].reduce((fields, field) => {
   fields[field[0] as keyof OrganizationCreateRequest] = {
     label: field[1] as string | React.ReactNode,
     required: field[2] as boolean,
+    hintText: field[3] as string,
   };
   return fields;
-}, {} as { [key: string]: { label: string | React.ReactNode; required: boolean } });
+}, {} as { [key: string]: { label: string | React.ReactNode; required: boolean; hintText: string } });
 
 export const initOrg = (): OrganizationCreateRequest => ({
   name: "",

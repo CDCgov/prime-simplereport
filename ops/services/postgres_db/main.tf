@@ -38,3 +38,24 @@ resource "azurerm_postgresql_database" "simple_report" {
   resource_group_name = var.rg_name
   server_name         = azurerm_postgresql_server.db.name
 }
+
+resource "azurerm_postgresql_configuration" "log_autovacuum_min_duration" {
+  name                = "log_autovacuum_min_duration"
+  resource_group_name = var.rg_name
+  server_name         = azurerm_postgresql_server.db.name
+  value               = 250
+}
+
+resource "azurerm_postgresql_configuration" "pg_qs_query_capture_mode" {
+  name                = "pg_qs.query_capture_mode"
+  resource_group_name = var.rg_name
+  server_name         = azurerm_postgresql_server.db.name
+  value               = "TOP"
+}
+
+resource "azurerm_postgresql_configuration" "pgms_wait_sampling_query_capture_mode" {
+  name                = "pgms_wait_sampling.query_capture_mode"
+  resource_group_name = var.rg_name
+  server_name         = azurerm_postgresql_server.db.name
+  value               = "ALL"
+}

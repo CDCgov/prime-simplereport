@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "../../app/commonComponents/Button/Button";
+import Modal from "../../app/commonComponents/Modal";
 import { EMPTY_PERSON } from "../../app/patients/AddPatient";
 import PersonForm, {
   PersonFormView,
