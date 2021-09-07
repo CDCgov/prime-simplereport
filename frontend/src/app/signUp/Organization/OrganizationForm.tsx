@@ -224,13 +224,6 @@ const OrganizationForm = () => {
             noLabels={true}
             segmentIndicatorOnBottom={true}
           />
-          <p className="margin-top-neg-2 margin-bottom-4">
-            Learn more about our{" "}
-            <a href="https://simplereport.gov/getting-started/organizations-and-testing-facilities/onboard-your-organization/">
-              sign up and identity verification process
-            </a>
-            .
-          </p>
           {backendError ? backendError : null}
           {/* By mapping over organizationFields (found in utils.tsx), we reduce */}
           {/* duplication of input fields in JSX */}
