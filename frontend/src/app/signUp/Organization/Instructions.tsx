@@ -49,7 +49,7 @@ const Instructions = () => {
           </p>
         </div>
         <Button
-          className="width-full"
+          className="width-full continue-button"
           onClick={() => setSubmitted(true)}
           label={"Continue"}
         />
