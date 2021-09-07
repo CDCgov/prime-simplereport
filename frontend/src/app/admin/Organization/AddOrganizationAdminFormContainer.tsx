@@ -15,8 +15,8 @@ import { OrganizationOptions } from "./OrganizationDropDown";
 import AddOrganizationAdminForm from "./AddOrganizationAdminForm";
 
 const GET_ORGANIZATIONS_QUERY = gql`
-  query GetOrganizations {
-    organizations {
+  query GetOrganizations($identityVerified: Boolean) {
+    organizations(identityVerified: $identityVerified) {
       externalId
       name
     }
@@ -71,6 +71,7 @@ const AddOrganizationAdminFormContainer: any = () => {
     GET_ORGANIZATIONS_QUERY,
     {
       fetchPolicy: "no-cache",
+      variables: { identityVerified: true },
     }
   );
   const appInsights = useAppInsightsContext();

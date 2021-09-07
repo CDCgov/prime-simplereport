@@ -15,8 +15,8 @@ import { OrganizationOptions } from "./OrganizationDropDown";
 import TenantDataAccessForm from "./TenantDataAccessForm";
 
 export const GET_ORGANIZATIONS_QUERY = gql`
-  query GetOrganizations {
-    organizations {
+  query GetOrganizations($identityVerified: Boolean) {
+    organizations(identityVerified: $identityVerified) {
       externalId
       name
     }
@@ -50,6 +50,7 @@ const TenantDataAccessFormContainer: any = () => {
     GET_ORGANIZATIONS_QUERY,
     {
       fetchPolicy: "no-cache",
+      variables: { identityVerified: true },
     }
   );
   const appInsights = useAppInsightsContext();

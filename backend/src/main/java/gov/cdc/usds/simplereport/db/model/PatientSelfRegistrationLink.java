@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.db.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -9,11 +10,11 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "patient_registration_link")
 public class PatientSelfRegistrationLink extends EternalAuditedEntity {
-  @OneToOne(optional = true)
+  @OneToOne(optional = true, fetch = FetchType.LAZY)
   @JoinColumn(name = "facility_id")
   private Facility facility;
 
-  @OneToOne(optional = true)
+  @OneToOne(optional = true, fetch = FetchType.LAZY)
   @JoinColumn(name = "organization_id")
   private Organization organization;
 

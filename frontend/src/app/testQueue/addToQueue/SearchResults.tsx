@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 
 import Button from "../../commonComponents/Button/Button";
@@ -12,9 +12,10 @@ interface SearchResultsProps {
   shouldShowSuggestions: boolean;
   loading: boolean;
   dropDownRef?: React.RefObject<HTMLDivElement>;
+  selectedPatient?: Patient;
 }
 
-interface QueueProps extends SearchResultsProps {
+export interface QueueProps extends SearchResultsProps {
   page: "queue";
   onAddToQueue: (
     a: Patient,
@@ -30,10 +31,23 @@ interface TestResultsProps extends SearchResultsProps {
 }
 
 const SearchResults = (props: QueueProps | TestResultsProps) => {
-  const { patients, shouldShowSuggestions, loading, dropDownRef } = props;
+  const {
+    patients,
+    shouldShowSuggestions,
+    loading,
+    dropDownRef,
+    selectedPatient,
+  } = props;
 
   const [dialogPatient, setDialogPatient] = useState<Patient | null>(null);
   const [canAddToQueue, setCanAddToQueue] = useState(false);
+
+  useEffect(() => {
+    if (selectedPatient) {
+      setDialogPatient(selectedPatient);
+      setCanAddToQueue(true);
+    }
+  }, [selectedPatient]);
 
   const actionByPage = (patient: Patient) => {
     if (props.page === "queue") {

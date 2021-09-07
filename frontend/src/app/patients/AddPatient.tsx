@@ -5,6 +5,7 @@ import { Redirect, useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
 import { useSelector } from "react-redux";
+import { LocationDescriptor } from "history";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
@@ -19,6 +20,7 @@ import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { RootState } from "../store";
+import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
 
 import PersonForm from "./Components/PersonForm";
 
@@ -121,6 +123,9 @@ export const ADD_PATIENT = gql`
       testResultDelivery: $testResultDelivery
     ) {
       internalId
+      facility {
+        id
+      }
     }
   }
 `;
@@ -128,7 +133,12 @@ export const ADD_PATIENT = gql`
 type AddPatientParams = Nullable<Omit<PersonFormData, "lookupId">>;
 
 interface AddPatientResponse {
-  internalId: string;
+  addPatient: {
+    internalId: string;
+    facility: {
+      id: string;
+    };
+  };
 }
 
 const AddPatient = () => {
@@ -214,9 +224,14 @@ const AddPatient = () => {
   const [activeFacility] = useSelectedFacility();
   const activeFacilityId = activeFacility?.id;
 
+  const [startTest, setStartTest] = useState(false);
+
   const personPath = `/patients/?facility=${activeFacilityId}`;
-  const [redirect, setRedirect] = useState<string | undefined>(undefined);
+
   const [goBack, setGoBack] = useState(false);
+  const [redirect, setRedirect] = useState<
+    string | LocationDescriptor | undefined
+  >(undefined);
 
   if (redirect) {
     return <Redirect to={redirect} />;
@@ -231,7 +246,7 @@ const AddPatient = () => {
   }
 
   const savePerson = async (person: Nullable<PersonFormData>) => {
-    await addPatient({
+    const { data } = await addPatient({
       variables: {
         ...person,
         phoneNumbers: (person.phoneNumbers || []).filter(
@@ -249,8 +264,49 @@ const AddPatient = () => {
         body="New information record has been created."
       />
     );
-    setRedirect(personPath);
+    if (startTest) {
+      const facility = data?.addPatient?.facility?.id || activeFacilityId;
+      setRedirect({
+        pathname: "/queue",
+        search: `?facility=${facility}`,
+        state: {
+          patientId: data?.addPatient.internalId,
+        } as StartTestProps,
+      });
+    } else {
+      setRedirect(personPath);
+    }
   };
+
+  const getSaveButtons = (formChanged: boolean, onSave: () => void) => (
+    <>
+      <Button
+        id="edit-patient-save-lower"
+        className="prime-save-patient-changes-start-test"
+        disabled={loading || !formChanged}
+        onClick={() => {
+          setStartTest(true);
+          onSave();
+        }}
+        variant="outline"
+        label={
+          loading ? `${t("common.button.saving")}...` : "Save and start test"
+        }
+      />
+      <Button
+        id="edit-patient-save-lower"
+        className="prime-save-patient-changes"
+        disabled={loading || !formChanged}
+        onClick={() => {
+          setStartTest(false);
+          onSave();
+        }}
+        label={
+          loading ? `${t("common.button.saving")}...` : t("common.button.save")
+        }
+      />
+    </>
+  );
 
   return (
     <main className={"prime-edit-patient prime-home"}>
@@ -295,31 +351,13 @@ const AddPatient = () => {
                 </div>
               </div>
               <div className="display-flex flex-align-center">
-                <button
-                  className="prime-save-patient-changes usa-button margin-right-0 "
-                  disabled={loading || !formChanged}
-                  onClick={onSave}
-                >
-                  {loading
-                    ? `${t("common.button.saving")}...`
-                    : t("common.button.save")}
-                </button>
+                {getSaveButtons(formChanged, onSave)}
               </div>
             </div>
           )}
           getFooter={(onSave, formChanged) => (
             <div className="prime-edit-patient-heading">
-              <Button
-                id="edit-patient-save-lower"
-                className="prime-save-patient-changes"
-                disabled={loading || !formChanged}
-                onClick={onSave}
-                label={
-                  loading
-                    ? `${t("common.button.saving")}...`
-                    : t("common.button.save")
-                }
-              />
+              {getSaveButtons(formChanged, onSave)}
             </div>
           )}
         />
