@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
+import { Redirect } from "react-router-dom";
 
 import Button from "../../commonComponents/Button/Button";
 import AoEModalForm from "../AoEForm/AoEModalForm";
@@ -25,7 +26,7 @@ export interface QueueProps extends SearchResultsProps {
   patientsInQueue: string[];
 }
 
-interface TestResultsProps extends SearchResultsProps {
+export interface TestResultsProps extends SearchResultsProps {
   page: "test-results";
   onPatientSelect: (a: Patient) => void;
 }
@@ -41,6 +42,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
 
   const [dialogPatient, setDialogPatient] = useState<Patient | null>(null);
   const [canAddToQueue, setCanAddToQueue] = useState(false);
+  const [redirect, setRedirect] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (selectedPatient) {
@@ -48,6 +50,10 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
       setCanAddToQueue(true);
     }
   }, [selectedPatient]);
+
+  if (redirect) {
+    return <Redirect to={redirect} />;
+  }
 
   const actionByPage = (patient: Patient) => {
     if (props.page === "queue") {
@@ -83,7 +89,25 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
   if (loading) {
     resultsContent = <p>Searching...</p>;
   } else if (patients.length === 0) {
-    resultsContent = <p>No results</p>;
+    resultsContent = (
+      <div
+        className={
+          "display-flex flex-column flex-align-center margin-x-7 margin-y-2"
+        }
+      >
+        <div className="margin-bottom-105">No results found.</div>
+        <div>
+          Check for spelling errors or
+          <Button
+            className="margin-left-1"
+            label="Add new patient"
+            onClick={() => {
+              setRedirect("/add-patient");
+            }}
+          />
+        </div>
+      </div>
+    );
   } else {
     resultsContent = (
       <table className="usa-table usa-table--borderless">

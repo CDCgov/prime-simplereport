@@ -1,10 +1,11 @@
 import React from "react";
 import renderer from "react-test-renderer";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
+import userEvent from "@testing-library/user-event";
 
 import { Patient } from "../../patients/ManagePatients";
-import { TestResult } from "../../testQueue/QueueItem";
+import { TestResult } from "../QueueItem";
 import { LAST_TEST_QUERY } from "../AoEForm/AoEModalForm";
 
 import SearchResults from "./SearchResults";
@@ -70,20 +71,45 @@ const mocks = [
   },
 ];
 
-describe("SearchResults", () => {
-  it("should say 'No Results' for no matches", () => {
-    const component = renderer.create(
-      <SearchResults
-        page="queue"
-        patients={[]}
-        patientsInQueue={[]}
-        onAddToQueue={jest.fn()}
-        shouldShowSuggestions={true}
-        loading={false}
-      />
-    );
+jest.mock("react-router-dom", () => ({
+  Redirect: (props: any) => `Redirected to ${props.to}`,
+}));
 
-    expect(component.toJSON()).toMatchSnapshot();
+describe("SearchResults", () => {
+  describe("No Results", () => {
+    it("should say 'No Results' for no matches", () => {
+      const component = renderer.create(
+        <SearchResults
+          page="queue"
+          patients={[]}
+          patientsInQueue={[]}
+          onAddToQueue={jest.fn()}
+          shouldShowSuggestions={true}
+          loading={false}
+        />
+      );
+
+      expect(component.toJSON()).toMatchSnapshot();
+    });
+
+    it("should show add patient button", () => {
+      render(
+        <SearchResults
+          page="queue"
+          patients={[]}
+          patientsInQueue={[]}
+          onAddToQueue={jest.fn()}
+          shouldShowSuggestions={true}
+          loading={false}
+        />
+      );
+
+      expect(screen.getByText("Add new patient")).toBeInTheDocument();
+      userEvent.click(screen.getByText("Add new patient"));
+      expect(
+        screen.getByText("Redirected to /add-patient")
+      ).toBeInTheDocument();
+    });
   });
 
   it("should show matching results", () => {
