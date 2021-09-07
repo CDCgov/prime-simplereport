@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
+import { useLocation } from "react-router";
 import { Redirect } from "react-router-dom";
 
 import Button from "../../commonComponents/Button/Button";
@@ -7,6 +8,7 @@ import AoEModalForm from "../AoEForm/AoEModalForm";
 import { displayFullName } from "../../utils";
 import { Patient } from "../../patients/ManagePatients";
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
+import { getFacilityIdFromUrl } from "../../utils/url";
 
 interface SearchResultsProps {
   patients: Patient[];
@@ -43,6 +45,8 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
   const [dialogPatient, setDialogPatient] = useState<Patient | null>(null);
   const [canAddToQueue, setCanAddToQueue] = useState(false);
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
+
+  const activeFacilityId = getFacilityIdFromUrl(useLocation());
 
   useEffect(() => {
     if (selectedPatient) {
@@ -102,7 +106,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
             className="margin-left-1"
             label="Add new patient"
             onClick={() => {
-              setRedirect("/add-patient");
+              setRedirect(`/add-patient?facility=${activeFacilityId}`);
             }}
           />
         </div>

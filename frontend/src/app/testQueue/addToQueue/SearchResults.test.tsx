@@ -1,6 +1,7 @@
 import React from "react";
 import renderer from "react-test-renderer";
-import { render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import userEvent from "@testing-library/user-event";
 
@@ -50,6 +51,13 @@ const patients: Patient[] = [
   },
 ];
 
+const mockFacilityID = "facility-id-101";
+const RouterWithFacility: React.FC = ({ children }) => (
+  <MemoryRouter initialEntries={[`/queue?facility=${mockFacilityID}`]}>
+    {children}
+  </MemoryRouter>
+);
+
 const mocks = [
   {
     request: {
@@ -79,14 +87,16 @@ describe("SearchResults", () => {
   describe("No Results", () => {
     it("should say 'No Results' for no matches", () => {
       const component = renderer.create(
-        <SearchResults
-          page="queue"
-          patients={[]}
-          patientsInQueue={[]}
-          onAddToQueue={jest.fn()}
-          shouldShowSuggestions={true}
-          loading={false}
-        />
+        <RouterWithFacility>
+          <SearchResults
+            page="queue"
+            patients={[]}
+            patientsInQueue={[]}
+            onAddToQueue={jest.fn()}
+            shouldShowSuggestions={true}
+            loading={false}
+          />
+        </RouterWithFacility>
       );
 
       expect(component.toJSON()).toMatchSnapshot();
@@ -94,34 +104,42 @@ describe("SearchResults", () => {
 
     it("should show add patient button", () => {
       render(
-        <SearchResults
-          page="queue"
-          patients={[]}
-          patientsInQueue={[]}
-          onAddToQueue={jest.fn()}
-          shouldShowSuggestions={true}
-          loading={false}
-        />
+        <RouterWithFacility>
+          <SearchResults
+            page="queue"
+            patients={[]}
+            patientsInQueue={[]}
+            onAddToQueue={jest.fn()}
+            shouldShowSuggestions={true}
+            loading={false}
+          />
+        </RouterWithFacility>
       );
 
       expect(screen.getByText("Add new patient")).toBeInTheDocument();
-      userEvent.click(screen.getByText("Add new patient"));
+      act(() => {
+        userEvent.click(screen.getByText("Add new patient"));
+      });
       expect(
-        screen.getByText("Redirected to /add-patient")
+        screen.getByText(
+          `Redirected to /add-patient?facility=${mockFacilityID}`
+        )
       ).toBeInTheDocument();
     });
   });
 
   it("should show matching results", () => {
     const component = renderer.create(
-      <SearchResults
-        page="queue"
-        patients={patients}
-        patientsInQueue={[]}
-        onAddToQueue={jest.fn()}
-        shouldShowSuggestions={true}
-        loading={false}
-      />
+      <RouterWithFacility>
+        <SearchResults
+          page="queue"
+          patients={patients}
+          patientsInQueue={[]}
+          onAddToQueue={jest.fn()}
+          shouldShowSuggestions={true}
+          loading={false}
+        />
+      </RouterWithFacility>
     );
 
     expect(component.toJSON()).toMatchSnapshot();
@@ -130,14 +148,16 @@ describe("SearchResults", () => {
   it("links the non-duplicate patient", () => {
     const addToQueue = jest.fn();
     render(
-      <SearchResults
-        page="queue"
-        patients={patients}
-        patientsInQueue={["a123", "c789"]}
-        onAddToQueue={addToQueue}
-        shouldShowSuggestions={true}
-        loading={false}
-      />
+      <RouterWithFacility>
+        <SearchResults
+          page="queue"
+          patients={patients}
+          patientsInQueue={["a123", "c789"]}
+          onAddToQueue={addToQueue}
+          shouldShowSuggestions={true}
+          loading={false}
+        />
+      </RouterWithFacility>
     );
 
     expect(screen.getAllByText("Test in progress")).toHaveLength(2);
@@ -147,17 +167,19 @@ describe("SearchResults", () => {
   it("opens a modal for selected patient", async () => {
     const addToQueue = jest.fn();
     render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <SearchResults
-          page="queue"
-          patients={[]}
-          patientsInQueue={[]}
-          onAddToQueue={addToQueue}
-          shouldShowSuggestions={true}
-          loading={false}
-          selectedPatient={patients[0]}
-        />
-      </MockedProvider>
+      <RouterWithFacility>
+        <MockedProvider mocks={mocks} addTypename={false}>
+          <SearchResults
+            page="queue"
+            patients={[]}
+            patientsInQueue={[]}
+            onAddToQueue={addToQueue}
+            shouldShowSuggestions={true}
+            loading={false}
+            selectedPatient={patients[0]}
+          />
+        </MockedProvider>
+      </RouterWithFacility>
     );
 
     await waitFor(() => {
