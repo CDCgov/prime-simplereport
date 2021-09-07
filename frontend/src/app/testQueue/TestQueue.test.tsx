@@ -5,6 +5,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
+import { MemoryRouter } from "react-router-dom";
 
 import TestQueue, { queueQuery } from "./TestQueue";
 import { REMOVE_PATIENT_FROM_QUEUE } from "./QueueItem";
@@ -20,9 +21,11 @@ jest.mock("@microsoft/applicationinsights-react-js", () => {
 describe("TestQueue", () => {
   it("should render the test queue", async () => {
     const { container } = render(
-      <MockedProvider mocks={mocks}>
-        <TestQueue activeFacilityId="a1" />
-      </MockedProvider>
+      <MemoryRouter>
+        <MockedProvider mocks={mocks}>
+          <TestQueue activeFacilityId="a1" />
+        </MockedProvider>
+      </MemoryRouter>
     );
     await screen.findByLabelText("Search");
     expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
@@ -32,9 +35,11 @@ describe("TestQueue", () => {
   it("should remove items queue using the transition group", async () => {
     jest.useFakeTimers();
     render(
-      <MockedProvider mocks={mocks}>
-        <TestQueue activeFacilityId="a1" />
-      </MockedProvider>
+      <MemoryRouter>
+        <MockedProvider mocks={mocks}>
+          <TestQueue activeFacilityId="a1" />
+        </MockedProvider>
+      </MemoryRouter>
     );
     expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
     const removeButton = (await screen.findAllByLabelText("Close"))[0];
