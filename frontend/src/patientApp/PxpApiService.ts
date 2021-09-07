@@ -86,4 +86,21 @@ export class PxpApi {
   static selfRegister = async (person: SelfRegistrationData): Promise<void> => {
     return api.request("/register", person);
   };
+
+  static checkDuplicateRegistrant = async (person: {
+    firstName: string;
+    lastName: string;
+    birthDate: ISODate;
+    postalCode: string;
+    registrationLink: string;
+  }): Promise<boolean> => {
+    const { registrationLink, ...body } = person;
+
+    return api.request(
+      "/register/existing-patient",
+      body,
+      "POST",
+      `?patientRegistrationLink=${registrationLink}`
+    );
+  };
 }

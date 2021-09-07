@@ -76,6 +76,7 @@ interface Props {
   patient: Nullable<PersonFormData>;
   patientId?: string;
   savePerson: (person: Nullable<PersonFormData>) => void;
+  onBlur?: (person: Nullable<PersonFormData>) => void;
   hideFacilitySelect?: boolean;
   getHeader?: (
     person: Nullable<PersonFormData>,
@@ -96,7 +97,7 @@ const PersonForm = (props: Props) => {
   >();
   const languages = getLanguages();
 
-  const { view = PersonFormView.APP } = props;
+  const { view = PersonFormView.APP, onBlur } = props;
 
   const { t } = useTranslation();
 
@@ -133,8 +134,9 @@ const PersonForm = (props: Props) => {
     [errors]
   );
 
-  const validateField = useCallback(
+  const onBlurField = useCallback(
     async (field: keyof PersonErrors) => {
+      onBlur?.(patient);
       try {
         await schema.validateAt(field, patient);
         clearError(field);
@@ -145,7 +147,7 @@ const PersonForm = (props: Props) => {
         }));
       }
     },
-    [patient, clearError, schema, getValidationError]
+    [patient, clearError, schema, getValidationError, onBlur]
   );
 
   // Make sure all existing errors are up-to-date (including translations)
@@ -163,7 +165,7 @@ const PersonForm = (props: Props) => {
         }
       }
     });
-  }, [validateField, errors, schema, patient, getValidationError]);
+  }, [errors, schema, patient, getValidationError]);
 
   const onPersonChange = <K extends keyof PersonFormData>(field: K) => (
     value: PersonFormData[K]
@@ -256,7 +258,7 @@ const PersonForm = (props: Props) => {
   const commonInputProps = {
     formObject: patient,
     onChange: onPersonChange,
-    validate: validateField,
+    validate: onBlurField,
     getValidationStatus: validationStatus,
     errors: errors,
   };
@@ -322,7 +324,7 @@ const PersonForm = (props: Props) => {
               facilityId={patient.facilityId}
               onChange={onPersonChange("facilityId")}
               validateField={() => {
-                validateField("facilityId");
+                onBlurField("facilityId");
               }}
               validationStatus={validationStatus}
               errors={errors}
@@ -425,7 +427,7 @@ const PersonForm = (props: Props) => {
                 defaultSelect
                 onChange={onPersonChange("state")}
                 onBlur={() => {
-                  validateField("state");
+                  onBlurField("state");
                 }}
                 validationStatus={validationStatus("state")}
                 errorMessage={errors.state}
@@ -494,7 +496,7 @@ const PersonForm = (props: Props) => {
             onPersonChange("residentCongregateSetting")(yesNoUnknownToBool(v))
           }
           onBlur={() => {
-            validateField("residentCongregateSetting");
+            onBlurField("residentCongregateSetting");
           }}
           validationStatus={validationStatus("residentCongregateSetting")}
           errorMessage={errors.residentCongregateSetting}
@@ -507,7 +509,7 @@ const PersonForm = (props: Props) => {
             onPersonChange("employedInHealthcare")(yesNoUnknownToBool(v))
           }
           onBlur={() => {
-            validateField("employedInHealthcare");
+            onBlurField("employedInHealthcare");
           }}
           validationStatus={validationStatus("employedInHealthcare")}
           errorMessage={errors.employedInHealthcare}
