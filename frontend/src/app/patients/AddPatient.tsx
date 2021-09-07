@@ -206,18 +206,15 @@ const AddPatient = () => {
   };
 
   useEffect(() => {
-    async function checkForDuplicates(idata: IdentifyingData) {
+    const { firstName, lastName, zipCode, birthDate } = identifyingData;
+
+    if (firstName && lastName && zipCode && birthDate?.isValid()) {
       try {
         getPatientExists();
       } catch (e) {
         // A failure to check duplicate shouldn't disrupt registration
         console.error(e);
       }
-    }
-
-    const { firstName, lastName, zipCode, birthDate } = identifyingData;
-    if (firstName && lastName && zipCode && birthDate?.isValid()) {
-      checkForDuplicates({ firstName, lastName, zipCode, birthDate });
     }
   }, [identifyingData, getPatientExists]);
 

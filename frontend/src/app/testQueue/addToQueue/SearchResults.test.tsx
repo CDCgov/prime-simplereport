@@ -1,6 +1,6 @@
 import React from "react";
 import renderer from "react-test-renderer";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 
 import { Patient } from "../../patients/ManagePatients";
