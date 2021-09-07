@@ -28,6 +28,7 @@ import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -761,7 +762,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             LocalDate.parse("1990-01-01"),
             "27601",
             facility.getOrganization(),
-            facility);
+            Optional.of(facility));
 
     assertFalse(result);
   }
@@ -802,7 +803,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             person.getBirthDate(),
             person.getAddress().getPostalCode(),
             facility.getOrganization(),
-            facility);
+            Optional.of(facility));
 
     assertTrue(result);
   }
@@ -848,7 +849,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             person.getBirthDate(),
             person.getAddress().getPostalCode(),
             facility2.getOrganization(),
-            facility2);
+            Optional.of(facility2));
 
     assertFalse(result);
   }
@@ -893,7 +894,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             person.getBirthDate(),
             person.getAddress().getPostalCode(),
             organization,
-            facility);
+            Optional.of(facility));
 
     assertTrue(result);
   }

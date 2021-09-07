@@ -165,6 +165,10 @@ public class PersonService {
         patientExistsFilter(firstName, lastName, birthDate, postalCode)
             .and(inOrganizationFilter(organization.getInternalId()));
 
+    if (facility == null) {
+      return filter;
+    }
+
     return facility.map(f -> filter.and(inFacilityFilter(f.getInternalId()))).orElse(filter);
   }
 
