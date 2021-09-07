@@ -40,8 +40,4 @@ public class ApiOrganization extends WrappedEntity<Organization> {
   public boolean getIdentityVerified() {
     return wrapped.getIdentityVerified();
   }
-
-  public String getPatientSelfRegistrationLink() {
-    return wrapped.getPatientSelfRegistrationLink();
-  }
 }

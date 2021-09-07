@@ -15,7 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
 @Entity
 public class Facility extends OrganizationScopedEternalEntity implements LocatedEntity {
@@ -45,9 +44,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
       joinColumns = @JoinColumn(name = "facility_id"),
       inverseJoinColumns = @JoinColumn(name = "device_specimen_type_id"))
   private Set<DeviceSpecimenType> configuredDeviceSpecimenTypes = new HashSet<>();
-
-  @OneToOne(mappedBy = "facility", fetch = FetchType.LAZY)
-  private PatientSelfRegistrationLink patientSelfRegistrationLink;
 
   protected Facility() {
     /* for hibernate */ }
@@ -179,13 +175,5 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   public void setEmail(String email) {
     this.email = email;
-  }
-
-  public String getPatientSelfRegistrationLink() {
-    if (null == patientSelfRegistrationLink) {
-      return null;
-    }
-
-    return patientSelfRegistrationLink.getLink();
   }
 }
