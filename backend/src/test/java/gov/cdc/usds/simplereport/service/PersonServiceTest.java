@@ -662,7 +662,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     var result =
         _service.isDuplicatePatient(
-            "John", "Doe", LocalDate.parse("1990-01-01"), "27601", org, null);
+            "John", "Doe", LocalDate.parse("1990-01-01"), "27601", org, Optional.ofNullable(null));
 
     assertFalse(result);
   }
@@ -703,7 +703,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             person.getBirthDate(),
             person.getAddress().getPostalCode(),
             org,
-            null);
+            Optional.ofNullable(null));
 
     assertTrue(result);
   }
@@ -745,7 +745,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             person.getBirthDate(),
             person.getAddress().getPostalCode(),
             org,
-            null);
+            Optional.ofNullable(null));
 
     assertTrue(result);
   }
