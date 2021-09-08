@@ -30,7 +30,7 @@ const Instructions = () => {
             in three steps: <br />
             1. Fill out your organization information <br />
             2. Enter your personal contact details <br />
-            3. Complete identity verification
+            3. Verify your identity
           </p>
           <p className="font-ui-2xs margin-top-0 line-height-sans-5">
             Each organization gets one account and just needs to sign up one
