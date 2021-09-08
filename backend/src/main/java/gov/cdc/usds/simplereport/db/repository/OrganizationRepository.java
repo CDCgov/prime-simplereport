@@ -20,5 +20,5 @@ public interface OrganizationRepository extends EternalAuditedEntityRepository<O
 
   @Query(
       EternalAuditedEntityRepository.BASE_QUERY + " and UPPER(e.organizationName) = UPPER(:name)")
-  Optional<Organization> findByName(String name);
+  List<Organization> findAllByName(String name);
 }
