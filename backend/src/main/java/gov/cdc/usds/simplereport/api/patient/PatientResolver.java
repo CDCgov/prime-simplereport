@@ -11,38 +11,43 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Created by nickrobison on 11/17/20 */
 @Component
 public class PatientResolver implements GraphQLQueryResolver {
+  private final PersonService _ps;
+  private final OrganizationService _os;
 
-  @Autowired private PersonService ps;
-  @Autowired private OrganizationService os;
+  public PatientResolver(PersonService ps, OrganizationService os) {
+    _ps = ps;
+    _os = os;
+  }
 
   // authorization happens in calls to PersonService
   public List<Person> getPatients(
       UUID facilityId, int pageNumber, int pageSize, boolean showDeleted, String namePrefixMatch) {
-    return ps.getPatients(facilityId, pageNumber, pageSize, showDeleted, namePrefixMatch);
+    return _ps.getPatients(facilityId, pageNumber, pageSize, showDeleted, namePrefixMatch);
   }
 
   // authorization happens in calls to PersonService
   public long patientsCount(UUID facilityId, boolean showDeleted, String namePrefixMatch) {
-    return ps.getPatientsCount(facilityId, showDeleted, namePrefixMatch);
+    return _ps.getPatientsCount(facilityId, showDeleted, namePrefixMatch);
   }
 
   public boolean patientExists(
       String firstName, String lastName, LocalDate birthDate, String zipCode, UUID facilityId) {
-    Organization org = os.getCurrentOrganization();
+    Organization org = _os.getCurrentOrganization();
     Optional<Facility> facility =
-        facilityId == null ? Optional.empty() : Optional.of(os.getFacilityInCurrentOrg(facilityId));
+        facilityId == null
+            ? Optional.empty()
+            : Optional.of(_os.getFacilityInCurrentOrg(facilityId));
 
-    return ps.isDuplicatePatient(firstName, lastName, birthDate, zipCode, org, facility);
+    return _ps.isDuplicatePatient(firstName, lastName, birthDate, zipCode, org, facility);
   }
 
   @AuthorizationConfiguration.RequirePermissionSearchTargetPatient
   public Person getPatient(UUID patientId) {
-    return ps.getPatientNoPermissionsCheck(patientId);
+    return _ps.getPatientNoPermissionsCheck(patientId);
   }
 }
