@@ -5,7 +5,9 @@ function createOrg() {
   this.expect.section("@app").to.contain.text("Sign up for SimpleReport");
   this.expect
     .section("@app")
-    .to.contain.text("Each organization should only sign up one time.");
+    .to.contain.text(
+      "Each organization gets one account and just needs to sign up one time."
+    );
   this.section.app.click("@continueButton");
   this.section.app.expect.element("@nameInput").to.be.visible;
   this.section.app.expect.element("@stateInput").to.be.visible;

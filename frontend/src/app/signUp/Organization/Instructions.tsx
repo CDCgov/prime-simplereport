@@ -20,22 +20,23 @@ const Instructions = () => {
         <div className="margin-bottom-2">
           <h2>Sign up for SimpleReport</h2>
           <p className="font-ui-2xs line-height-sans-5">
-            Get access for your{" "}
+            Request access for your{" "}
             <TextWithTooltip
               text="organization"
               tooltip="Organizations have multiple testing facilities or locations as part of their network."
               position="top"
               className="font-ui-2xs"
             />{" "}
-            in two steps: <br />
-            1. Request access for your organization <br />
-            2. Verify your identity
+            in three steps: <br />
+            1. Fill out your organization information <br />
+            2. Enter your personal contact details <br />
+            3. Complete identity verification
           </p>
           <p className="font-ui-2xs margin-top-0 line-height-sans-5">
-            Each organization gets one account and only needs to sign up one
+            Each organization gets one account and just needs to sign up one
             time. After your organization sign up is complete, organization
-            admins can add additional staff and testing locations at any time.
-            Learn more about our{" "}
+            admins can add additional staff and testing locations to the account
+            at any time. Learn more about our{" "}
             <a href="/getting-started/organizations-and-testing-facilities/onboard-your-organization/">
               sign up and identity verification process
             </a>
