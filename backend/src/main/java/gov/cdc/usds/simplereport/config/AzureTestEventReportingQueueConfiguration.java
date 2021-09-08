@@ -37,9 +37,7 @@ class AzureTestEventReportingQueueConfiguration {
   @ConditionalOnBean
   QueueAsyncClient queueServiceAsyncClient(AzureStorageQueueReportingProperties properties) {
     return new QueueClientBuilder()
-        .endpoint(properties.getQueueUrl())
-        .sasToken(properties.getSasToken())
-        .queueName(properties.getQueueName())
+        .connectionString(properties.getConnectionString())
         .buildAsyncClient();
   }
 
