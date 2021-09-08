@@ -1,7 +1,7 @@
 {
   "bindings": [
     {
-      "name": "myTimer",
+      "name": "QueueBatchedReportStreamUploadTimer",
       "type": "timerTrigger",
       "direction": "in",
       "schedule": "0 */5 * * * *"
