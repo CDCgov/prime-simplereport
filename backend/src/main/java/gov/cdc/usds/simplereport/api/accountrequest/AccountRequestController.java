@@ -20,7 +20,7 @@ import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import java.io.IOException;
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
@@ -111,17 +111,16 @@ public class AccountRequestController {
   }
 
   private String checkForDuplicateOrg(String organizationName, String state) {
-    Optional<Organization> potentialDuplicateOrg = _os.getOrganizationByName(organizationName);
-    if (potentialDuplicateOrg.isPresent()) {
-      // potential duplicate orgs must be in the same state to be a true duplicate
-      if (potentialDuplicateOrg.get().getExternalId().startsWith(state)) {
-        throw new BadRequestException("Organization is a duplicate.");
-      } else {
-        return String.join("-", organizationName, state);
-      }
-    } else {
+    List<Organization> potentialDuplicates = _os.getOrganizationByName(organizationName);
+    if (potentialDuplicates.isEmpty()) {
       return organizationName;
     }
+
+    if (potentialDuplicates.stream().anyMatch(o -> o.getExternalId().startsWith(state))) {
+      throw new BadRequestException("Organization is a duplicate.");
+    }
+
+    return String.join("-", organizationName, state);
   }
 
   private String createOrgExternalId(String organizationName, String state) {

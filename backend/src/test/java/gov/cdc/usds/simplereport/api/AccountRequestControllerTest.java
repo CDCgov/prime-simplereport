@@ -19,7 +19,6 @@ import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.email.EmailProvider;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import java.util.List;
-import java.util.Optional;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -135,11 +134,10 @@ class AccountRequestControllerTest extends BaseFullStackTest {
     this._mockMvc.perform(builder).andExpect(status().isOk());
 
     // then
-    Optional<Organization> org = _orgService.getOrganizationByName("Day Hayes Trading");
-    assertThat(org).isPresent();
-    assertThat(org.get().getExternalId()).startsWith("RI-Day-Hayes-Trading-");
-
-    assertThat(org.get().getIdentityVerified()).isFalse();
+    List<Organization> org = _orgService.getOrganizationByName("Day Hayes Trading");
+    assertThat(org.size()).isEqualTo(1);
+    assertThat(org.get(0).getExternalId()).startsWith("RI-Day-Hayes-Trading-");
+    assertThat(org.get(0).getIdentityVerified()).isFalse();
 
     verify(apiUserService, times(1))
         .createUser(
@@ -297,13 +295,13 @@ class AccountRequestControllerTest extends BaseFullStackTest {
     this._mockMvc.perform(duplicateBuilder).andExpect(status().isOk());
 
     // then
-    Optional<Organization> originalOrg = _orgService.getOrganizationByName("Central Schools");
-    assertThat(originalOrg).isPresent();
-    assertThat(originalOrg.get().getExternalId()).startsWith("AZ-Central-Schools");
+    List<Organization> originalOrg = _orgService.getOrganizationByName("Central Schools");
+    assertThat(originalOrg.size()).isEqualTo(1);
+    assertThat(originalOrg.get(0).getExternalId()).startsWith("AZ-Central-Schools");
 
-    Optional<Organization> duplicateOrg = _orgService.getOrganizationByName("Central Schools-CA");
-    assertThat(duplicateOrg).isPresent();
-    assertThat(duplicateOrg.get().getExternalId()).startsWith("CA-Central-Schools-CA-");
+    List<Organization> duplicateOrg = _orgService.getOrganizationByName("Central Schools-CA");
+    assertThat(duplicateOrg.size()).isEqualTo(1);
+    assertThat(duplicateOrg.get(0).getExternalId()).startsWith("CA-Central-Schools-CA-");
   }
 
   @Test
