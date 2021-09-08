@@ -2,11 +2,12 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import createMockStore, { MockStoreEnhanced } from "redux-mock-store";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import App, { WHOAMI_QUERY } from "./App";
 import { queueQuery } from "./testQueue/TestQueue";
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
+import { TRAINING_PURPOSES_ONLY } from "./commonComponents/TrainingNotification";
 
 jest.mock("uuid");
 jest.mock("./VersionService", () => ({
@@ -171,6 +172,8 @@ const renderApp = (
   );
 };
 
+const MODAL_TEXT = "Welcome to the SimpleReport";
+
 describe("App", () => {
   it("Render first loading screen", async () => {
     const mockedStore = mockStore({});
@@ -198,5 +201,26 @@ describe("App", () => {
     const { container } = renderApp(mockedStore, [WhoAmIErrorQueryMock]);
     await screen.findByText("error", { exact: false });
     expect(container).toMatchSnapshot();
+  });
+  it("displays the training header and modal and dismisses the modal", async () => {
+    process.env.REACT_APP_IS_TRAINING_SITE = "true";
+    const mockedStore = mockStore({ ...store, dataLoaded: true });
+    renderApp(mockedStore, [WhoAmIQueryMock, facilityQueryMock]);
+    expect(await screen.findAllByText(TRAINING_PURPOSES_ONLY)).toHaveLength(2);
+    const trainingWelcome = await screen.findByText(MODAL_TEXT, {
+      exact: false,
+    });
+    expect(trainingWelcome).toBeInTheDocument();
+    await waitFor(() => {
+      fireEvent.click(screen.getByText("Got it", { exact: false }));
+    });
+    expect(trainingWelcome).not.toBeInTheDocument();
+  });
+  it("does not display training notifications outside the training environment", () => {
+    process.env.REACT_APP_IS_TRAINING_SITE = "false";
+    const mockedStore = mockStore({ ...store, dataLoaded: true });
+    renderApp(mockedStore, [WhoAmIQueryMock, facilityQueryMock]);
+    expect(screen.queryByText(TRAINING_PURPOSES_ONLY)).not.toBeInTheDocument();
+    expect(screen.queryByText(MODAL_TEXT)).not.toBeInTheDocument();
   });
 });
