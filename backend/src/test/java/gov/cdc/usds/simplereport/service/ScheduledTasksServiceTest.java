@@ -39,7 +39,7 @@ class ScheduledTasksServiceTest {
     when(schedulerBuilder.build()).thenReturn(scheduler);
 
     Map<String, ScheduledFuture<?>> scheduledUploads =
-        new ScheduledTasksService(uploader, schedulerBuilder).scheduleUploads(config);
+        new ScheduledTasksService(uploader, null, schedulerBuilder).scheduleUploads(config);
     assertEquals(Set.of(cronExpression), scheduledUploads.keySet());
 
     verify(scheduler, Mockito.times(1)).initialize();
@@ -66,7 +66,7 @@ class ScheduledTasksServiceTest {
     when(schedulerBuilder.build()).thenReturn(scheduler);
 
     Map<String, ScheduledFuture<?>> scheduledUploads =
-        new ScheduledTasksService(uploader, schedulerBuilder).scheduleUploads(config);
+        new ScheduledTasksService(uploader, null, schedulerBuilder).scheduleUploads(config);
     assertEquals(Collections.emptyMap(), scheduledUploads);
 
     verify(schedulerBuilder.build(), never())

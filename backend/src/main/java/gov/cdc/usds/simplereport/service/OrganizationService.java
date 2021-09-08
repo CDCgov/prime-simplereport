@@ -18,10 +18,17 @@ import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -394,5 +401,37 @@ public class OrganizationService {
         providerAddress,
         providerTelephone,
         providerNPI);
+  }
+
+  public Map<Organization, List<String>> sendAccountReminderEmails() {
+    TimeZone tz = TimeZone.getTimeZone("America/New_York");
+    LocalDate now = LocalDate.now(tz.toZoneId());
+    Date rangeStartDate = localDateTimeToDate(tz.toZoneId(), now.minusDays(1).atStartOfDay());
+    Date rangeStopDate = localDateTimeToDate(tz.toZoneId(), now.atStartOfDay());
+
+    LOG.info("CRON -- account reminder emails for {} - {}", rangeStartDate, rangeStopDate);
+
+    List<Organization> organizations =
+        _repo.findAllByIdentityVerifiedAndCreatedAtRange(false, rangeStartDate, rangeStopDate);
+
+    //    List<Organization> organizations = _repo.findAll();
+
+    Map<Organization, List<String>> orgMap = new HashMap<>();
+
+    for (Organization org : organizations) {
+      LOG.info("sending reminders to for org: {}", org.getOrganizationName());
+
+      Set<String> emailsInOrg = _oktaRepo.getAllUsersForOrganization(org);
+
+      for (String email : emailsInOrg) {
+        // send email
+      }
+    }
+
+    return orgMap;
+  }
+
+  private static Date localDateTimeToDate(ZoneId zoneId, LocalDateTime localDateTime) {
+    return Date.from(localDateTime.atZone(zoneId).toInstant());
   }
 }

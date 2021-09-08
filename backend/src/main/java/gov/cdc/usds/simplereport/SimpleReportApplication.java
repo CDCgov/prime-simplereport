@@ -61,6 +61,11 @@ public class SimpleReportApplication {
   }
 
   @Bean
+  public CommandLineRunner scheduleAccountReminderEmails(ScheduledTasksService scheduler) {
+    return args -> scheduler.scheduleAccountReminderEmails();
+  }
+
+  @Bean
   @ConditionalOnSingleCandidate(GitProperties.class)
   public CommandLineRunner logGitCommit(GitProperties gitProperties) {
     return args -> LOG.info("Current commit is: {}", gitProperties.getCommitId());
