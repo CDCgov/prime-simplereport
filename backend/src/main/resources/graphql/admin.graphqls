@@ -2,7 +2,7 @@
 # All queries and mutations in this file implicitly require site admin access,
 # which is enforced in the API not in the schema validator.
 extend type Query {
-  organizations(identityVerified: Boolean): [Organization!]! # not actually used in the admin console (yet)
+  organizations(identityVerified: Boolean): [Organization!]!
 }
 extend type Mutation {
   createDeviceType(

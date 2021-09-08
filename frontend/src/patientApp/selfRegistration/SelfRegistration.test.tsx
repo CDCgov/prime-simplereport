@@ -9,6 +9,8 @@ import { SelfRegistration } from "./SelfRegistration";
 
 const VALID_LINK = "foo-facility";
 
+const duplicatePersonFirstName = "Dupey";
+
 jest.mock("../PxpApiService", () => ({
   PxpApi: {
     getEntityName: (link: string) => {
@@ -22,6 +24,9 @@ jest.mock("../PxpApiService", () => ({
     },
     selfRegister: () => {
       return Promise.resolve();
+    },
+    checkDuplicateRegistrant: ({ firstName }: { firstName: string }) => {
+      return Promise.resolve(firstName === duplicatePersonFirstName);
     },
   },
 }));
@@ -88,6 +93,47 @@ describe("SelfRegistration", () => {
     fireEvent.click(screen.getByText("Save changes"));
     expect(
       await screen.findByText("Registration complete")
+    ).toBeInTheDocument();
+  });
+
+  it("Handles duplicate registrant flow", async () => {
+    await waitFor(() => {
+      render(
+        <Provider store={store}>
+          <MemoryRouter initialEntries={[`/register/${VALID_LINK}`]}>
+            <Route
+              exact
+              path="/register/:registrationLink"
+              component={SelfRegistration}
+            />
+          </MemoryRouter>
+        </Provider>
+      );
+    });
+    expect(screen.queryByText("Foo Facility")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("I agree"));
+    expect(screen.getByText("General information")).toBeInTheDocument();
+    Object.entries(filledForm).forEach(([field, value]) => {
+      fireEvent.change(screen.getByLabelText(field, { exact: false }), {
+        target: { value },
+      });
+    });
+    // Change firstName to duplicate value
+    const firstNameInput = await screen.findByLabelText("First name", {
+      exact: false,
+    });
+    fireEvent.change(firstNameInput, {
+      target: { value: duplicatePersonFirstName },
+    });
+    fireEvent.blur(firstNameInput);
+    // Duplicate modal shows
+    await screen.findByText("You already have a profile", { exact: false });
+    const exitButton = await screen.findByText("Exit sign up");
+    fireEvent.click(exitButton);
+    expect(
+      await screen.findByText("thanks for completing your patient profile", {
+        exact: false,
+      })
     ).toBeInTheDocument();
   });
 });

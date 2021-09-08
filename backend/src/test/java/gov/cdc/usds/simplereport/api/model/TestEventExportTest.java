@@ -91,4 +91,22 @@ class TestEventExportTest {
 
     assertEquals(o.getOrganizationType(), sut.getSiteOfCare());
   }
+
+  @Test
+  void certainDateFieldsIncludeTime() {
+    Organization o = _dataFactory.createValidOrg();
+    Facility f = _dataFactory.createValidFacility(o);
+    Person p = _dataFactory.createFullPerson(o);
+    TestEvent te = _dataFactory.createTestEvent(p, f);
+
+    TestEventExport sut = new TestEventExport(te);
+
+    var lengthWithoutTime = "yyyyMMdd".length();
+    var lengthWithTime = "yyyyMMddHHmmss".length();
+
+    assertEquals(lengthWithTime, sut.getSpecimenCollectionDateTime().length());
+    assertEquals(lengthWithTime, sut.getTestDate().length());
+    assertEquals(lengthWithTime, sut.getDateResultReleased().length());
+    assertEquals(lengthWithoutTime, sut.getPatientBirthDate().length());
+  }
 }

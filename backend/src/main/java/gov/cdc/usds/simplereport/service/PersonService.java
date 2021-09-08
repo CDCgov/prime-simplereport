@@ -86,10 +86,7 @@ public class PersonService {
 
   private Specification<Person> inOrganizationFilter(UUID orgId) {
     return (root, query, cb) ->
-        cb.and(
-            cb.or(
-                cb.isNull(root.get(SpecField.ORGANIZATION)),
-                cb.equal(root.get(SpecField.ORGANIZATION).get(SpecField.INTERNAL_ID), orgId)));
+        cb.and(cb.equal(root.get(SpecField.ORGANIZATION).get(SpecField.INTERNAL_ID), orgId));
   }
 
   // Note: Patients with NULL facilityIds appear in ALL facilities.
@@ -161,26 +158,14 @@ public class PersonService {
       String lastName,
       LocalDate birthDate,
       String postalCode,
-      UUID facilityId,
-      UUID orgId) {
-    Specification<Person> filter = patientExistsFilter(firstName, lastName, birthDate, postalCode);
+      Facility facility,
+      Organization organization) {
+    Specification<Person> filter =
+        patientExistsFilter(firstName, lastName, birthDate, postalCode)
+            .and(inOrganizationFilter(organization.getInternalId()));
 
-    if (orgId != null) {
-      filter = filter.and(inOrganizationFilter(orgId)).and(inFacilityFilter(null));
-    }
-
-    if (facilityId != null) {
-      filter = filter.and(inFacilityFilter(facilityId));
-
-      var facilityOrganization = _os.getOrganizationByFacilityId(facilityId);
-
-      // Additionally check if patient has already registered with an org link
-      if (facilityOrganization != null) {
-        filter =
-            filter.or(
-                inOrganizationFilter(facilityOrganization.getInternalId())
-                    .and(inFacilityFilter(null)));
-      }
+    if (facility != null) {
+      return filter.and(inFacilityFilter(facility.getInternalId()));
     }
 
     return filter;
@@ -214,26 +199,6 @@ public class PersonService {
         PageRequest.of(pageOffset, pageSize, NAME_SORT));
   }
 
-  public boolean isPatientInOrg(
-      String firstName, String lastName, LocalDate birthDate, String postalCode, UUID orgId) {
-    var patients =
-        _repo.findAll(
-            buildPersonMatchFilter(firstName, lastName, birthDate, postalCode, null, orgId),
-            PageRequest.of(0, 1, NAME_SORT));
-
-    return !patients.isEmpty();
-  }
-
-  public boolean isPatientInFacility(
-      String firstName, String lastName, LocalDate birthDate, String postalCode, UUID facilityId) {
-    var patients =
-        _repo.findAll(
-            buildPersonMatchFilter(firstName, lastName, birthDate, postalCode, facilityId, null),
-            PageRequest.of(0, 1, NAME_SORT));
-
-    return !patients.isEmpty();
-  }
-
   public boolean isDuplicatePatient(
       String firstName,
       String lastName,
@@ -241,12 +206,12 @@ public class PersonService {
       String postalCode,
       Organization org,
       Facility facility) {
-    if (facility == null) {
-      return isPatientInOrg(firstName, lastName, birthDate, postalCode, org.getInternalId());
-    }
+    var patients =
+        _repo.findAll(
+            buildPersonMatchFilter(firstName, lastName, birthDate, postalCode, facility, org),
+            PageRequest.of(0, 1, NAME_SORT));
 
-    return isPatientInFacility(
-        firstName, lastName, birthDate, postalCode, facility.getInternalId());
+    return !patients.isEmpty();
   }
 
   @AuthorizationConfiguration.RequireSpecificPatientSearchPermission

@@ -6,11 +6,12 @@ import React, {
   useCallback,
 } from "react";
 import { toast } from "react-toastify";
-import { gql, useMutation, useLazyQuery } from "@apollo/client";
+import { gql, useMutation, useLazyQuery, useQuery } from "@apollo/client";
 import {
   useAppInsightsContext,
   useTrackEvent,
 } from "@microsoft/applicationinsights-react-js";
+import { useLocation } from "react-router";
 
 import Alert from "../../commonComponents/Alert";
 import {
@@ -32,6 +33,26 @@ interface AoEAnswersForPatient extends AoEAnswersDelivery {
   patientId: string;
   facilityId?: string;
 }
+
+export const QUERY_SINGLE_PATIENT = gql`
+  query GetPatient($internalId: ID!) {
+    patient(id: $internalId) {
+      internalId
+      firstName
+      lastName
+      middleName
+      birthDate
+      gender
+      telephone
+      phoneNumbers {
+        type
+        number
+      }
+      testResultDelivery
+    }
+  }
+`;
+
 export const QUERY_PATIENT = gql`
   query GetPatientsByFacility($facilityId: ID!, $namePrefixMatch: String) {
     patients(
@@ -115,6 +136,10 @@ const UPDATE_AOE = gql`
   }
 `;
 
+export type StartTestProps = {
+  patientId: string;
+};
+
 interface Props {
   refetchQueue: () => void;
   facilityId: string;
@@ -132,6 +157,7 @@ const AddToQueueSearchBox = ({
     "Add Patient to Queue",
     {}
   );
+
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
     runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
@@ -144,6 +170,7 @@ const AddToQueueSearchBox = ({
 
   const [mutationError, updateMutationError] = useState(null);
   const [showSuggestion, setShowSuggestion] = useState(true);
+  const [selectedPatient, setSelectedPatient] = useState<Patient>();
 
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [updateAoe] = useMutation(UPDATE_AOE);
@@ -158,6 +185,18 @@ const AddToQueueSearchBox = ({
   const hideOnOutsideClick = useCallback(() => {
     setShowSuggestion(false);
   }, []);
+
+  const { patientId: patientIdParam } =
+    useLocation<StartTestProps>().state || {};
+
+  useQuery<{ patient: Patient }>(QUERY_SINGLE_PATIENT, {
+    fetchPolicy: "no-cache",
+    variables: { internalId: patientIdParam },
+    onCompleted: (response) => {
+      setSelectedPatient(response.patient);
+    },
+    skip: !patientIdParam,
+  });
 
   useOutsideClick(dropDownRef, hideOnOutsideClick);
 
@@ -252,6 +291,7 @@ const AddToQueueSearchBox = ({
       <SearchResults
         page="queue"
         patients={data?.patients || []}
+        selectedPatient={selectedPatient}
         onAddToQueue={onAddToQueue}
         patientsInQueue={patientsInQueue}
         shouldShowSuggestions={showDropdown}
