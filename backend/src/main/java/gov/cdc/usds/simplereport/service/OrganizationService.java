@@ -138,7 +138,7 @@ public class OrganizationService {
                 "An organization with external_id=" + externalId + " does not exist"));
   }
 
-  public List<Organization> getOrganizationByName(String name) {
+  public List<Organization> getOrganizationsByName(String name) {
     return _repo.findAllByName(name);
   }
 

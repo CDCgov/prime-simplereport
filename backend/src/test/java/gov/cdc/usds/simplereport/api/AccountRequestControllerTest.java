@@ -134,7 +134,7 @@ class AccountRequestControllerTest extends BaseFullStackTest {
     this._mockMvc.perform(builder).andExpect(status().isOk());
 
     // then
-    List<Organization> org = _orgService.getOrganizationByName("Day Hayes Trading");
+    List<Organization> org = _orgService.getOrganizationsByName("Day Hayes Trading");
     assertThat(org.size()).isEqualTo(1);
     assertThat(org.get(0).getExternalId()).startsWith("RI-Day-Hayes-Trading-");
     assertThat(org.get(0).getIdentityVerified()).isFalse();
@@ -295,11 +295,11 @@ class AccountRequestControllerTest extends BaseFullStackTest {
     this._mockMvc.perform(duplicateBuilder).andExpect(status().isOk());
 
     // then
-    List<Organization> originalOrg = _orgService.getOrganizationByName("Central Schools");
+    List<Organization> originalOrg = _orgService.getOrganizationsByName("Central Schools");
     assertThat(originalOrg.size()).isEqualTo(1);
     assertThat(originalOrg.get(0).getExternalId()).startsWith("AZ-Central-Schools");
 
-    List<Organization> duplicateOrg = _orgService.getOrganizationByName("Central Schools-CA");
+    List<Organization> duplicateOrg = _orgService.getOrganizationsByName("Central Schools-CA");
     assertThat(duplicateOrg.size()).isEqualTo(1);
     assertThat(duplicateOrg.get(0).getExternalId()).startsWith("CA-Central-Schools-CA-");
   }

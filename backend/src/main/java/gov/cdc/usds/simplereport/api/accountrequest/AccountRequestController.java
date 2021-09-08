@@ -111,7 +111,7 @@ public class AccountRequestController {
   }
 
   private String checkForDuplicateOrg(String organizationName, String state) {
-    List<Organization> potentialDuplicates = _os.getOrganizationByName(organizationName);
+    List<Organization> potentialDuplicates = _os.getOrganizationsByName(organizationName);
     if (potentialDuplicates.isEmpty()) {
       return organizationName;
     }
