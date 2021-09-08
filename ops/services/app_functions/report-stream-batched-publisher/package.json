@@ -12,7 +12,7 @@
   "dependencies": {
     "@azure/identity": "^1.5.2",
     "@azure/storage-queue": "^12.6.0",
-    "node-fetch": "^3.0.0"
+    "node-fetch": "^2.0.0"
   },
   "devDependencies": {
     "@azure/functions": "^1.2.3",
