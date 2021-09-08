@@ -32,9 +32,10 @@ const Instructions = () => {
             2. Verify your identity
           </p>
           <p className="font-ui-2xs margin-top-0 line-height-sans-5">
-            Each organization should only sign up one time. After your
-            organization profile is complete, you can add additional users and
-            locations. Learn more about our{" "}
+            Each organization gets one account and only needs to sign up one
+            time. After your organization sign up is complete, organization
+            admins can add additional staff and testing locations at any time.
+            Learn more about our{" "}
             <a href="/getting-started/organizations-and-testing-facilities/onboard-your-organization/">
               sign up and identity verification process
             </a>
