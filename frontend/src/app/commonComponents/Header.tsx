@@ -19,7 +19,6 @@ import Button from "./Button/Button";
 import Dropdown from "./Dropdown";
 import useComponentVisible from "./ComponentVisible";
 import { LinkWithQuery } from "./LinkWithQuery";
-import { TrainingNotification } from "./TrainingNotification";
 import ChangeUser from "./ChangeUser";
 
 const Header: React.FC<{}> = () => {
@@ -100,9 +99,6 @@ const Header: React.FC<{}> = () => {
 
   return (
     <header className="usa-header usa-header--basic">
-      {process.env.REACT_APP_IS_TRAINING_SITE === "true" && (
-        <TrainingNotification />
-      )}
       <div className="usa-nav-container">
         <div className="usa-navbar">
           <div className="usa-logo" id="basic-logo">

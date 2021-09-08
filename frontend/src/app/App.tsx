@@ -20,6 +20,7 @@ import { appPermissions } from "./permissions";
 import Settings from "./Settings/Settings";
 import { getAppInsights } from "./TelemetryService";
 import VersionEnforcer from "./VersionEnforcer";
+import { TrainingNotification } from "./commonComponents/TrainingNotification";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -92,6 +93,9 @@ const App = () => {
   return (
     <>
       <VersionEnforcer />
+      {process.env.REACT_APP_IS_TRAINING_SITE === "true" && (
+        <TrainingNotification />
+      )}
       <WithFacility>
         <Page>
           <Header />
