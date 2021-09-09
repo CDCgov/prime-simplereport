@@ -1,8 +1,10 @@
-import React, { useState } from "react";
-import { gql, useMutation } from "@apollo/client";
+import React, { useEffect, useState } from "react";
+import { gql, useLazyQuery, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import moment from "moment";
+import { useSelector } from "react-redux";
 import { LocationDescriptor } from "history";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
@@ -10,9 +12,14 @@ import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
 import { showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
+import {
+  DuplicatePatientModal,
+  IdentifyingData,
+} from "../../app/patients/Components/DuplicatePatientModal";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
+import { RootState } from "../store";
 import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
 
 import PersonForm from "./Components/PersonForm";
@@ -43,6 +50,24 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   preferredLanguage: null,
   testResultDelivery: null,
 };
+
+export const PATIENT_EXISTS = gql`
+  query PatientExists(
+    $firstName: String!
+    $lastName: String!
+    $birthDate: LocalDate!
+    $zipCode: String!
+    $facilityId: ID
+  ) {
+    patientExists(
+      firstName: $firstName
+      lastName: $lastName
+      birthDate: $birthDate
+      zipCode: $zipCode
+      facilityId: $facilityId
+    )
+  }
+`;
 
 export const ADD_PATIENT = gql`
   mutation AddPatient(
@@ -126,12 +151,81 @@ const AddPatient = () => {
     AddPatientParams
   >(ADD_PATIENT);
 
+  const [identifyingData, setIdentifyingData] = useState<
+    Nullable<IdentifyingData>
+  >({
+    firstName: null,
+    lastName: null,
+    zipCode: null,
+    birthDate: null,
+    facilityId: null,
+  });
+  const [preventModal, setPreventModal] = useState<boolean>(false);
+
+  const [getPatientExists, { data: patientExistsResponse }] = useLazyQuery(
+    PATIENT_EXISTS,
+    {
+      variables: {
+        ...identifyingData,
+        birthDate: moment(identifyingData.birthDate).format(
+          "YYYY-MM-DD"
+        ) as ISODate,
+      },
+    }
+  );
+
+  const facilities = useSelector<RootState, Facility[]>(
+    (state) => state.facilities
+  );
+
+  const organization = useSelector<RootState, { name: string }>(
+    (state) => state.organization
+  );
+
+  const onBlur = ({
+    firstName,
+    lastName,
+    zipCode,
+    birthDate,
+    facilityId,
+  }: Nullable<PersonFormData>) => {
+    if (
+      firstName !== identifyingData.firstName ||
+      lastName !== identifyingData.lastName ||
+      zipCode !== identifyingData.zipCode ||
+      !moment(birthDate).isSame(identifyingData.birthDate) ||
+      facilityId !== identifyingData.facilityId
+    ) {
+      setIdentifyingData({
+        firstName,
+        lastName,
+        zipCode,
+        birthDate: moment(birthDate),
+        facilityId,
+      });
+    }
+  };
+
+  useEffect(() => {
+    const { firstName, lastName, zipCode, birthDate } = identifyingData;
+
+    if (firstName && lastName && zipCode && birthDate?.isValid()) {
+      try {
+        getPatientExists();
+      } catch (e) {
+        // A failure to check duplicate shouldn't disrupt registration
+        console.error(e);
+      }
+    }
+  }, [identifyingData, getPatientExists]);
+
   const [activeFacility] = useSelectedFacility();
   const activeFacilityId = activeFacility?.id;
 
   const [startTest, setStartTest] = useState(false);
 
   const personPath = `/patients/?facility=${activeFacilityId}`;
+
   const [redirect, setRedirect] = useState<
     string | LocationDescriptor | undefined
   >(undefined);
@@ -210,9 +304,25 @@ const AddPatient = () => {
   return (
     <main className={"prime-edit-patient prime-home"}>
       <div className={"grid-container margin-bottom-4"}>
+        <DuplicatePatientModal
+          showModal={
+            patientExistsResponse?.patientExists && preventModal === false
+          }
+          onDuplicate={() => setRedirect(personPath)}
+          entityName={
+            identifyingData.facilityId
+              ? facilities.find((f) => f.id === identifyingData.facilityId)
+                  ?.name
+              : organization.name
+          }
+          onClose={() => {
+            setPreventModal(true);
+          }}
+        />
         <PersonForm
           patient={EMPTY_PERSON}
           savePerson={savePerson}
+          onBlur={onBlur}
           getHeader={(_, onSave, formChanged) => (
             <div className="display-flex flex-justify">
               <div>
