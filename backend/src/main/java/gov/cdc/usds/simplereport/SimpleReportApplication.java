@@ -61,8 +61,9 @@ public class SimpleReportApplication {
   }
 
   @Bean
+  @ConditionalOnProperty("simple-report.id-verification-reminders.enabled")
   public CommandLineRunner scheduleAccountReminderEmails(ScheduledTasksService scheduler) {
-    return args -> scheduler.scheduleAccountReminderEmails();
+    return args -> scheduler.scheduleAccountReminderEmails("0 * 1 * * *", "America/New_York");
   }
 
   @Bean

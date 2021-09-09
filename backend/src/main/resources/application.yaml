@@ -66,6 +66,8 @@ simple-report:
     secret-slack-notify-webhook-url: ${SECRET_SLACK_NOTIFY_WEBHOOK_URL:MISSING}
     upload-schedule: "0 0 11 * * *" # Daily at 11:00 AM Eastern Time
     upload-timezone: America/New_York
+  id-verification-reminders:
+    enabled: false
   authorization:
     # these are overridden by application-dev, -prod, -test, etc
     role-claim: dev_roles
@@ -89,6 +91,7 @@ simple-report:
       # app).  New versions of the template do not change this value.
       ACCOUNT_REQUEST: d-7b0c7810ce5643f295e169f38b8db015
       ID_VERIFICATION_FAILED: d-b629fce77d604a31a2872746674cf08e
+      ORGANIZATION_ID_VERIFICATION_REMINDER: d-609321a63983416face1b032599202a4
   experian:
     enabled: false
     token-endpoint: ${EXPERIAN_TOKEN_ENDPOINT}

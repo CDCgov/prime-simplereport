@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gov.cdc.usds.simplereport.api.model.errors.OrderingProviderRequiredException;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -15,24 +16,36 @@ import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
+import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
+import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private PatientRegistrationLinkRepository _prlRepo;
+  @Autowired private DemoOktaRepository _demoOktaRepo;
+  @Autowired private EntityManager _entityManager;
+  @Autowired private JdbcTemplate _jdbc;
 
   @BeforeEach
   void setupData() {
@@ -211,5 +224,52 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             () -> _service.verifyOrganizationNoPermissions(orgExternalId));
 
     assertEquals("Organization is already verified.", e.getMessage());
+  }
+
+  @Test
+  void sendAccountReminderEmails_noEmails_success() {
+    Map<Organization, Set<String>> orgEmailsSent = _service.sendAccountReminderEmails();
+    assertEquals(Set.of(), orgEmailsSent.keySet());
+  }
+
+  @Transactional
+  void backdateOrgCreatedAt(Organization org) throws SQLException {
+    // Ugly, but avoids exposing createdAt to modification.  This backdates an organization's
+    // created_at to noon gmt the previous day, which will fall in the range of times the id
+    // verification reminder email will be sent to.
+    String query =
+        "UPDATE simple_report.organization SET created_at = (created_at - INTERVAL '1 DAY')::date + INTERVAL '12 hour' WHERE internal_id = ?";
+    Connection conn = _jdbc.getDataSource().getConnection();
+    PreparedStatement statement = conn.prepareStatement(query);
+    statement.setObject(1, org.getInternalId());
+    statement.execute();
+  }
+
+  @Test
+  void sendAccountReminderEmails_sendEmails_success() throws SQLException {
+    String email = "fake@example.org";
+    Organization unverifiedOrg = _dataFactory.createUnverifiedOrg();
+    backdateOrgCreatedAt(unverifiedOrg);
+
+    // another unverified org, too new to be reminded
+    _dataFactory.createValidOrg("Second Org Name", "k12", "SECOND_ORG_NAME", false);
+    // verified org should not be reminded
+    _dataFactory.createValidOrg();
+
+    _demoOktaRepo.createUser(
+        new IdentityAttributes(email, "First", "Middle", "Last", ""),
+        unverifiedOrg,
+        Set.of(),
+        Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ADMIN),
+        true);
+
+    Map<Organization, Set<String>> orgEmailsSentMap = _service.sendAccountReminderEmails();
+    assertEquals(1, orgEmailsSentMap.keySet().size());
+
+    Organization remindedOrg = orgEmailsSentMap.keySet().iterator().next();
+    assertEquals(unverifiedOrg.getExternalId(), remindedOrg.getExternalId());
+
+    Set<String> remindedEmails = orgEmailsSentMap.get(remindedOrg);
+    assertEquals(Set.of(email), remindedEmails);
   }
 }

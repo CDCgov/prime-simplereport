@@ -49,17 +49,13 @@ public class ScheduledTasksService {
     return futures;
   }
 
-  public ScheduledFuture<?> scheduleAccountReminderEmails() {
-    String tzString = "America/New_York";
-    //    String cronScheduleDefinition = "0 0 1 * * *";
-    String cronScheduleDefinition = "0 * 15 * * *";
-
+  public void scheduleAccountReminderEmails(String cronScheduleDefinition, String tzString) {
     TimeZone tz = TimeZone.getTimeZone(tzString);
     LOG.info(
         "Scheduling account reminder emails to run on cron schedule '{}' in time zone {}",
         cronScheduleDefinition,
         tz.getID());
     Trigger cronTrigger = new CronTrigger(cronScheduleDefinition, tz);
-    return _scheduler.schedule(_orgService::sendAccountReminderEmails, cronTrigger);
+    _scheduler.schedule(_orgService::sendAccountReminderEmails, cronTrigger);
   }
 }

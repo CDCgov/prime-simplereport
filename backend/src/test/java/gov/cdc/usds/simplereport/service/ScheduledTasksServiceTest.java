@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -72,5 +73,33 @@ class ScheduledTasksServiceTest {
     verify(schedulerBuilder.build(), never())
         .schedule(captureMethod.capture(), captureTrigger.capture());
     verify(uploader, never()).dataHubUploaderTask();
+  }
+
+  @Test
+  void scheduleAccountReminderEmails_ensureScheduling() {
+    String cronExpression = "0 0 1 * * *";
+    String tzString = "America/New_York";
+
+    ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+    TaskSchedulerBuilder schedulerBuilder = mock(TaskSchedulerBuilder.class);
+    ArgumentCaptor<CronTrigger> captureTrigger = ArgumentCaptor.forClass(CronTrigger.class);
+    ArgumentCaptor<Runnable> captureMethod = ArgumentCaptor.forClass(Runnable.class);
+
+    OrganizationService orgService = mock(OrganizationService.class);
+
+    when(schedulerBuilder.build()).thenReturn(scheduler);
+
+    new ScheduledTasksService(null, orgService, schedulerBuilder)
+        .scheduleAccountReminderEmails(cronExpression, tzString);
+
+    verify(scheduler, Mockito.times(1)).initialize();
+    verify(scheduler, Mockito.times(1)).schedule(captureMethod.capture(), captureTrigger.capture());
+
+    CronTrigger trigger = captureTrigger.getValue();
+    assertEquals(cronExpression, trigger.getExpression());
+
+    verify(orgService, never()).sendAccountReminderEmails();
+    captureMethod.getValue().run();
+    verify(orgService, times(1)).sendAccountReminderEmails();
   }
 }
