@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PersonService;
-import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -16,11 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class PatientResolverTest extends BaseServiceTest<PersonService> {
   @Autowired private TestDataFactory _dataFactory;
-  // @Autowired private OrganizationService _os;
 
   @Test
-  @SuppressWarnings("checkstyle:IllegalCatch")
-  @WithSimpleReportStandardUser
   void patientExists_hasFacilityId_callsServiceWithFacility() {
     var personService = mock(PersonService.class);
     var orgService = mock(OrganizationService.class);
@@ -41,8 +37,6 @@ public class PatientResolverTest extends BaseServiceTest<PersonService> {
   }
 
   @Test
-  @SuppressWarnings("checkstyle:IllegalCatch")
-  @WithSimpleReportStandardUser
   void patientExists_hasNoFacilityId_callsServiceWithNoFacility() {
     var personService = mock(PersonService.class);
     var orgService = mock(OrganizationService.class);
