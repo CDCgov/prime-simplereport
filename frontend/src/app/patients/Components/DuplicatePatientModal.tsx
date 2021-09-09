@@ -1,7 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import Button from "../../commonComponents/Button/Button";
 import Modal from "../../commonComponents/Modal";
+
+const noop = () => {};
 
 export type DuplicateModalProps = {
   showModal: boolean;
@@ -24,21 +27,24 @@ export const DuplicatePatientModal: React.FC<DuplicateModalProps> = ({
   entityName,
   onClose,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Modal
-      onClose={() => {}}
+      onClose={typeof onClose === "function" ? onClose : noop}
       showModal={showModal}
       showClose={false}
       variant="warning"
     >
-      <Modal.Header>You already have a profile at {entityName}.</Modal.Header>
-      <p>
-        Our records show someone has registered with the same name, date of
-        birth, and ZIP code. Please check in with your testing site staff. You
-        do not need to register again.
-      </p>
+      <Modal.Header>
+        {t("selfRegistration.duplicate.heading") + " " + entityName}
+      </Modal.Header>
+      <p>{t("selfRegistration.duplicate.message")}</p>
       <Modal.Footer>
-        <Button onClick={onDuplicate}>Exit sign up</Button>
+        <Button onClick={onDuplicate}>
+          {t("selfRegistration.duplicate.exit")}
+        </Button>
+        {/* This button does not appear in the self-registration workflow - no translation required */}
         {onClose && <Button onClick={onClose}>Register anyway</Button>}
       </Modal.Footer>
     </Modal>
