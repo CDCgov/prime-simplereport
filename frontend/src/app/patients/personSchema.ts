@@ -58,6 +58,18 @@ export type SelfRegistationFields = Omit<RequiredPersonFields, "facilityId">;
 export const getValues = (options: Option[]) =>
   options.map(({ value }) => value);
 
+export function hasPhoneType(phoneNumbers: any) {
+  return (phoneNumbers || []).every((phoneNumber: any) => {
+    // Empty numbers are allowable in some cases
+    // `number` is OK for this validation
+    if (!phoneNumber?.number) {
+      return true;
+    }
+
+    return Boolean(phoneNumber?.type);
+  });
+}
+
 export function phoneNumberIsValid(input: any) {
   if (!input) {
     return false;
@@ -75,6 +87,11 @@ export function areUniquePhoneNumbers(phoneNumbers: any) {
   try {
     const phoneNumbersSeen = new Set(
       phoneNumbers.map((p: { number: string }) => {
+        // An empty number is allowable in some cases but will result in a parsing failure
+        if (!p.number) {
+          return true;
+        }
+
         const parsedNumber = phoneUtil.parse(p.number, "US");
         return phoneUtil.format(parsedNumber, PhoneNumberFormat.E164);
       })
@@ -167,6 +184,11 @@ const updateFieldSchemata: (
       "phone-numbers",
       t("patient.form.errors.phoneNumbersDuplicate"),
       areUniquePhoneNumbers
+    )
+    .test(
+      "phone-numbers",
+      t("patient.form.errors.phoneNumbersType"),
+      hasPhoneType
     )
     .required(),
   email: yup

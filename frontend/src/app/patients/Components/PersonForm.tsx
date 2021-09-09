@@ -247,6 +247,7 @@ const PersonForm = (props: Props) => {
       validatePatientAddress();
     }
   };
+
   const onSave = (address?: AddressWithMetaData) => {
     const person = address ? { ...patient, ...address } : patient;
     setPatient(person);
