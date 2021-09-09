@@ -13,7 +13,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class PatientResolverTest extends BaseServiceTest<PersonService> {
+class PatientResolverTest extends BaseServiceTest<PersonService> {
   @Autowired private TestDataFactory _dataFactory;
 
   @Test

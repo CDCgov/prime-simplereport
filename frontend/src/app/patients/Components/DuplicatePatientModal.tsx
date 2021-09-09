@@ -4,7 +4,13 @@ import { useTranslation } from "react-i18next";
 import Button from "../../commonComponents/Button/Button";
 import Modal from "../../commonComponents/Modal";
 
-const noop = () => {};
+const noop = () => {
+  /**
+   * The `onClose` callback is technically optional in this component but not
+   * in the child `Modal` component. Pass a no-op callback to the inner
+   * component to satisfy the prop type requirement
+   */
+};
 
 export type DuplicateModalProps = {
   showModal: boolean;
@@ -37,7 +43,7 @@ export const DuplicatePatientModal: React.FC<DuplicateModalProps> = ({
       variant="warning"
     >
       <Modal.Header>
-        {t("selfRegistration.duplicate.heading") + " " + entityName}
+        {`${t("selfRegistration.duplicate.heading")} ${entityName}`}
       </Modal.Header>
       <p>{t("selfRegistration.duplicate.message")}</p>
       <Modal.Footer>

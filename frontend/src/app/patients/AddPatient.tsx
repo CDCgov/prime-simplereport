@@ -162,14 +162,17 @@ const AddPatient = () => {
   });
   const [preventModal, setPreventModal] = useState<boolean>(false);
 
-  const [getPatientExists, { data }] = useLazyQuery(PATIENT_EXISTS, {
-    variables: {
-      ...identifyingData,
-      birthDate: moment(identifyingData.birthDate).format(
-        "YYYY-MM-DD"
-      ) as ISODate,
-    },
-  });
+  const [getPatientExists, { data: patientExistsResponse }] = useLazyQuery(
+    PATIENT_EXISTS,
+    {
+      variables: {
+        ...identifyingData,
+        birthDate: moment(identifyingData.birthDate).format(
+          "YYYY-MM-DD"
+        ) as ISODate,
+      },
+    }
+  );
 
   const facilities = useSelector<RootState, Facility[]>(
     (state) => state.facilities
@@ -302,7 +305,9 @@ const AddPatient = () => {
     <main className={"prime-edit-patient prime-home"}>
       <div className={"grid-container margin-bottom-4"}>
         <DuplicatePatientModal
-          showModal={data?.patientExists && preventModal === false}
+          showModal={
+            patientExistsResponse?.patientExists && preventModal === false
+          }
           onDuplicate={() => setRedirect(personPath)}
           entityName={
             identifyingData.facilityId
