@@ -107,7 +107,7 @@ public class PatientSelfRegistrationController {
         body.getBirthDate(),
         body.getPostalCode(),
         link.getOrganization(),
-        Optional.of(link.getFacility()));
+        Optional.ofNullable(link.getFacility()));
   }
 
   @GetMapping("/entity-name")
