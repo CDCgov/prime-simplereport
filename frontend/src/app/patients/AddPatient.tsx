@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { gql, useLazyQuery, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
-import { Redirect, useHistory } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
 import { useSelector } from "react-redux";
@@ -179,8 +179,6 @@ const AddPatient = () => {
     (state) => state.organization
   );
 
-  const history = useHistory();
-
   const onBlur = ({
     firstName,
     lastName,
@@ -225,17 +223,12 @@ const AddPatient = () => {
 
   const personPath = `/patients/?facility=${activeFacilityId}`;
 
-  const [goBack, setGoBack] = useState(false);
   const [redirect, setRedirect] = useState<
     string | LocationDescriptor | undefined
   >(undefined);
 
   if (redirect) {
     return <Redirect to={redirect} />;
-  }
-
-  if (goBack) {
-    history.goBack();
   }
 
   if (!activeFacilityId) {
@@ -310,7 +303,7 @@ const AddPatient = () => {
       <div className={"grid-container margin-bottom-4"}>
         <DuplicatePatientModal
           showModal={data?.patientExists && preventModal === false}
-          onDuplicate={() => setGoBack(true)}
+          onDuplicate={() => setRedirect(personPath)}
           entityName={
             identifyingData.facilityId
               ? facilities.find((f) => f.id === identifyingData.facilityId)
