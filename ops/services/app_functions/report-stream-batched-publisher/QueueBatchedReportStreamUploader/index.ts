@@ -1,4 +1,3 @@
-import { DefaultAzureCredential } from "@azure/identity";
 import { AzureFunction, Context } from "@azure/functions";
 import {
   QueueServiceClient,
@@ -12,6 +11,7 @@ import {
   dequeueMessages,
   minimumMessagesAvailable,
 } from "./lib";
+import { ReportStreamResponse } from "./rs-response";
 
 const {
   AZ_STORAGE_QUEUE_SVC_URL: AZ_QUEUE_SERVICE_URL,
@@ -62,7 +62,12 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   });
 
   if (postResult.ok) {
-    context.log("Upload succeeded; deleting messages");
+    const response: ReportStreamResponse = await postResult.json();
+    // TODO: interpret errors & warnings
+
+    context.log(`Upload to ${response.destinationCount} reporting destinations successful; deleting messages`);
+    // TODO: integrate w/ AppInsights ?
+
     await deleteSuccessfullyParsedMessages(
       context,
       queueClient,

@@ -96,7 +96,7 @@ export async function deleteSuccessfullyParsedMessages(
         message.popReceipt
       );
       context.log(
-        `Message ${message.messageId} deleted with service id ${deleteResponse}`
+        `Message ${message.messageId} deleted with request id ${deleteResponse.requestId}`
       );
     } catch(e) {
       context.log(`Failed to delete message ${message.messageId} from the queue:`, e);
