@@ -61,7 +61,7 @@ const QuestionsForm: React.FC<Props> = ({
     return () => {
       isCounting = false;
     };
-  }, [timeLeft, onFail]);
+  }, [timeLeft, onFail, disableTimer]);
 
   const schema = buildSchema(questionSet);
 
