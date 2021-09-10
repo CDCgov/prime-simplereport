@@ -14,7 +14,9 @@ export function fetchFromEnvironmentOrThrow(
 
 export const ENV = (() => {
   const CONFIG_VALUES = {
-    AZ_QUEUE_SERVICE_URL: "Azure Storage Queue service URL",
+    AZ_STORAGE_QUEUE_SVC_URL: "Azure Storage Queue service URL",
+    AZ_STORAGE_ACCOUNT_NAME: "Azure Account Name",
+    AZ_STORAGE_ACCOUNT_KEY: "Azure Account Key",
     TEST_EVENT_QUEUE_NAME: "storage queue resource name for Test Events",
     REPORT_STREAM_URL: "ReportStream URL to which tests should be reported",
     REPORT_STREAM_TOKEN: "ReportStream API key",

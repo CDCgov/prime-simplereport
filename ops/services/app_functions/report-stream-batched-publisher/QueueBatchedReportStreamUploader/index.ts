@@ -1,6 +1,9 @@
 import { DefaultAzureCredential } from "@azure/identity";
 import { AzureFunction, Context } from "@azure/functions";
-import { QueueServiceClient } from "@azure/storage-queue";
+import {
+  QueueServiceClient,
+  StorageSharedKeyCredential,
+} from "@azure/storage-queue";
 import fetch, { Headers } from "node-fetch";
 import { ENV } from "./config";
 import {
@@ -11,7 +14,9 @@ import {
 } from "./lib";
 
 const {
-  AZ_QUEUE_SERVICE_URL,
+  AZ_STORAGE_QUEUE_SVC_URL: AZ_QUEUE_SERVICE_URL,
+  AZ_STORAGE_ACCOUNT_NAME: AZ_ACCOUNT_NAME,
+  AZ_STORAGE_ACCOUNT_KEY: AZ_ACCOUNT_KEY,
   TEST_EVENT_QUEUE_NAME,
   REPORT_STREAM_URL,
   REPORT_STREAM_TOKEN,
@@ -23,7 +28,10 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   context: Context,
   myTimer: any
 ): Promise<void> {
-  const credential = new DefaultAzureCredential();
+  const credential = new StorageSharedKeyCredential(
+    AZ_ACCOUNT_NAME,
+    AZ_ACCOUNT_KEY
+  );
   const queueServiceClient = new QueueServiceClient(
     AZ_QUEUE_SERVICE_URL,
     credential
@@ -40,14 +48,16 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     convertToCsv(messages);
 
   context.log(`Uploading ${parseSuccessCount} TestEvents to ReportStream`);
+
+  const headers = new Headers({
+    "x-functions-key": REPORT_STREAM_TOKEN,
+    "x-api-version": uploaderVersion,
+    "content-type": "text/csv",
+    client: "simple_report",
+  });
   const postResult = await fetch(REPORT_STREAM_URL, {
     method: "POST",
-    headers: new Headers({
-      "x-functions-key": REPORT_STREAM_TOKEN,
-      "x-api-version": uploaderVersion,
-      "content-type": "text/csv",
-      client: "simple_report_queue_worker",
-    }),
+    headers,
     body: csvPayload,
   });
 
@@ -63,7 +73,9 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     context.log(
       `Upload to ReportStream failed with error code ${postResult.status}`
     );
-    context.log(`Response body: ${await postResult.text()}`);
+    context.log(
+      `Response body (${postResult.size}b): ${await postResult.text()}`
+    );
   }
 };
 
