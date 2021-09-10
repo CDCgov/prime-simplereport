@@ -15,23 +15,13 @@ import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
-import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
-import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -53,7 +43,6 @@ public class OrganizationService {
   private CurrentOrganizationRolesContextHolder _currentOrgRolesContextHolder;
   private OrderingProviderRequiredValidator _orderingProviderRequiredValidator;
   private PatientSelfRegistrationLinkService _psrlService;
-  private EmailService _emailService;
 
   public OrganizationService(
       OrganizationRepository repo,
@@ -63,8 +52,7 @@ public class OrganizationService {
       OktaRepository oktaRepo,
       CurrentOrganizationRolesContextHolder currentOrgRolesContextHolder,
       OrderingProviderRequiredValidator orderingProviderRequiredValidator,
-      PatientSelfRegistrationLinkService patientSelfRegistrationLinkService,
-      EmailService emailService) {
+      PatientSelfRegistrationLinkService patientSelfRegistrationLinkService) {
     _repo = repo;
     _facilityRepo = facilityRepo;
     _authService = authService;
@@ -73,7 +61,6 @@ public class OrganizationService {
     _currentOrgRolesContextHolder = currentOrgRolesContextHolder;
     _orderingProviderRequiredValidator = orderingProviderRequiredValidator;
     _psrlService = patientSelfRegistrationLinkService;
-    _emailService = emailService;
   }
 
   public void resetOrganizationRolesContext() {
@@ -407,57 +394,5 @@ public class OrganizationService {
         providerAddress,
         providerTelephone,
         providerNPI);
-  }
-
-  /*
-   * Send reminder emails to complete identity verification to members of organizations that
-   * were created and did not complete id verification
-   */
-  public Map<Organization, Set<String>> sendAccountReminderEmails() {
-    TimeZone tz = TimeZone.getTimeZone("America/New_York");
-    LocalDate now = LocalDate.now(tz.toZoneId());
-
-    // For now, the date range to consider is the previous day
-    Date rangeStartDate = localDateTimeToDate(tz.toZoneId(), now.minusDays(1).atStartOfDay());
-    Date rangeStopDate = localDateTimeToDate(tz.toZoneId(), now.atStartOfDay());
-
-    LOG.info("CRON -- account reminder emails for {} - {}", rangeStartDate, rangeStopDate);
-
-    List<Organization> organizations =
-        _repo.findAllByIdentityVerifiedAndCreatedAtRange(false, rangeStartDate, rangeStopDate);
-
-    Map<Organization, Set<String>> orgReminderMap = new HashMap<>();
-
-    for (Organization org : organizations) {
-      LOG.info("sending reminders for org: {}", org.getExternalId());
-
-      // This could be problematic depending on the number of unverified organizations created
-      // on the previous day.  It will make 2 requests to okta per organization.
-      Set<String> emailsInOrg = _oktaRepo.getAllUsersForOrganization(org);
-
-      if (emailsInOrg.isEmpty()) {
-        LOG.info(
-            "no emails sent: organization \"{}\" has no members in default group",
-            org.getExternalId());
-      }
-
-      for (String email : emailsInOrg) {
-        // unverified organizations will only have 1 associated email at this time
-        try {
-          _emailService.sendWithProviderTemplate(
-              email, EmailProviderTemplate.ORGANIZATION_ID_VERIFICATION_REMINDER);
-        } catch (IOException e) {
-          LOG.warn("Failed to send id verification reminder email to: {}", email);
-        }
-      }
-
-      orgReminderMap.put(org, emailsInOrg);
-    }
-
-    return orgReminderMap;
-  }
-
-  private static Date localDateTimeToDate(ZoneId zoneId, LocalDateTime localDateTime) {
-    return Date.from(localDateTime.atZone(zoneId).toInstant());
   }
 }

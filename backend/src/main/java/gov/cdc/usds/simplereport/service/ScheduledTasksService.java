@@ -21,14 +21,14 @@ public class ScheduledTasksService {
 
   private final TaskScheduler _scheduler;
   private final DataHubUploaderService _dataHubUploaderService;
-  private final OrganizationService _orgService;
+  private final ReminderService _reminderService;
 
   public ScheduledTasksService(
       DataHubUploaderService dataHubUploaderService,
-      OrganizationService orgService,
+      ReminderService reminderService,
       TaskSchedulerBuilder schedulerBuilder) {
     _dataHubUploaderService = dataHubUploaderService;
-    _orgService = orgService;
+    _reminderService = reminderService;
     ThreadPoolTaskScheduler scheduler = schedulerBuilder.build();
     scheduler.initialize();
     _scheduler = scheduler;
@@ -56,6 +56,6 @@ public class ScheduledTasksService {
         cronScheduleDefinition,
         tz.getID());
     Trigger cronTrigger = new CronTrigger(cronScheduleDefinition, tz);
-    _scheduler.schedule(_orgService::sendAccountReminderEmails, cronTrigger);
+    _scheduler.schedule(_reminderService::sendAccountReminderEmails, cronTrigger);
   }
 }

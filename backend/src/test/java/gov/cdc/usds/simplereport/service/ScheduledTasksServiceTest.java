@@ -85,11 +85,11 @@ class ScheduledTasksServiceTest {
     ArgumentCaptor<CronTrigger> captureTrigger = ArgumentCaptor.forClass(CronTrigger.class);
     ArgumentCaptor<Runnable> captureMethod = ArgumentCaptor.forClass(Runnable.class);
 
-    OrganizationService orgService = mock(OrganizationService.class);
+    ReminderService reminderService = mock(ReminderService.class);
 
     when(schedulerBuilder.build()).thenReturn(scheduler);
 
-    new ScheduledTasksService(null, orgService, schedulerBuilder)
+    new ScheduledTasksService(null, reminderService, schedulerBuilder)
         .scheduleAccountReminderEmails(cronExpression, tzString);
 
     verify(scheduler, Mockito.times(1)).initialize();
@@ -98,8 +98,8 @@ class ScheduledTasksServiceTest {
     CronTrigger trigger = captureTrigger.getValue();
     assertEquals(cronExpression, trigger.getExpression());
 
-    verify(orgService, never()).sendAccountReminderEmails();
+    verify(reminderService, never()).sendAccountReminderEmails();
     captureMethod.getValue().run();
-    verify(orgService, times(1)).sendAccountReminderEmails();
+    verify(reminderService, times(1)).sendAccountReminderEmails();
   }
 }
