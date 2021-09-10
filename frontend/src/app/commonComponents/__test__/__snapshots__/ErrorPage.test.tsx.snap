@@ -59,11 +59,15 @@ exports[`ErrorPage displays the correct error message 1`] = `
     <div
       class="grid-container"
     >
-      <img
-        alt="{process.env.REACT_APP_TITLE}"
-        class="maxh-4"
-        src="simplereport-logo-color.svg"
-      />
+      <a
+        href="/"
+      >
+        <img
+          alt="SimpleReport"
+          class="maxh-4"
+          src="simplereport-logo-color.svg"
+        />
+      </a>
     </div>
   </header>
   <main
