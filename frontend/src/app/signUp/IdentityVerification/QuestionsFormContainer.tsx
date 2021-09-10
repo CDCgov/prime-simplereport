@@ -13,6 +13,7 @@ interface Props {
   personalDetails: IdentityVerificationRequest;
   orgExternalId: string;
   timeToComplete?: number;
+  disableTimer?: boolean;
 }
 
 // Experian doesn't accept names with accents, so we allow users to input them
@@ -38,6 +39,7 @@ const QuestionsFormContainer = ({
   personalDetails,
   orgExternalId,
   timeToComplete,
+  disableTimer,
 }: Props) => {
   const [loading, setLoading] = useState(true);
   const [identificationVerified, setIdentificationVerified] = useState<
@@ -102,6 +104,7 @@ const QuestionsFormContainer = ({
         onSubmit={onSubmit}
         onFail={() => onSubmit({})}
         timeToComplete={timeToComplete}
+        disableTimer={disableTimer}
       />
     );
   }
