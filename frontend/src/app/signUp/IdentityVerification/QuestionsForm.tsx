@@ -24,6 +24,7 @@ interface Props {
   onSubmit: (answers: Answers) => void;
   onFail: () => void;
   timeToComplete?: number;
+  disableTimer?: boolean;
 }
 
 type QuestionFormErrors = Record<keyof Answers, string>;
@@ -34,6 +35,7 @@ const QuestionsForm: React.FC<Props> = ({
   onSubmit,
   onFail,
   timeToComplete,
+  disableTimer,
 }) => {
   const [answers, setAnswers] = useState<Nullable<Answers>>(
     initAnswers(questionSet)
@@ -52,14 +54,14 @@ const QuestionsForm: React.FC<Props> = ({
       onFail();
     }
     setTimeout(() => {
-      if (isCounting) {
+      if (isCounting && !disableTimer) {
         setTimeLeft(timeLeft - 1);
       }
     }, 1000);
     return () => {
       isCounting = false;
     };
-  }, [timeLeft, onFail]);
+  }, [timeLeft, onFail, disableTimer]);
 
   const schema = buildSchema(questionSet);
 
