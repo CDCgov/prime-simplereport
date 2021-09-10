@@ -30,7 +30,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   @Column private String cliaNumber;
 
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @ManyToOne(optional = false)
   @JoinColumn(name = "ordering_provider_id", nullable = false)
   private Provider orderingProvider;
 
