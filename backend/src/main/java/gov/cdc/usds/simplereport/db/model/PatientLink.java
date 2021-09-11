@@ -11,6 +11,8 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class PatientLink extends EternalAuditedEntity {
+  private static final int SHELF_LIFE_DAYS = 3;
+
   @ManyToOne(optional = false)
   @JoinColumn(name = "test_order_id", nullable = false)
   private TestOrder testOrder;
@@ -33,7 +35,7 @@ public class PatientLink extends EternalAuditedEntity {
 
   public Date getExpiresAt() {
     if (expiresAt == null) {
-      return Date.from(getCreatedAt().toInstant().plus(Duration.ofDays(1)));
+      return Date.from(getCreatedAt().toInstant().plus(Duration.ofDays(SHELF_LIFE_DAYS)));
     }
     return expiresAt;
   }
@@ -47,6 +49,6 @@ public class PatientLink extends EternalAuditedEntity {
   }
 
   public void refresh() {
-    expiresAt = Date.from(Instant.now().plus(Duration.ofDays(1)));
+    expiresAt = Date.from(Instant.now().plus(Duration.ofDays(SHELF_LIFE_DAYS)));
   }
 }
