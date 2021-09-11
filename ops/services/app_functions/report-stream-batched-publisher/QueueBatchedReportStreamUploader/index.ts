@@ -1,3 +1,4 @@
+import * as appInsights from "applicationinsights";
 import { AzureFunction, Context } from "@azure/functions";
 import {
   QueueServiceClient,
@@ -24,10 +25,15 @@ const {
 
 const uploaderVersion = "2021-08-17";
 
+appInsights.setup();
+const telemetry = appInsights.defaultClient;
+
 const QueueBatchedTestEventPublisher: AzureFunction = async function (
   context: Context,
   myTimer: any
 ): Promise<void> {
+  const tagOverrides = { "ai.operation.id": context.traceContext.traceparent };
+
   const credential = new StorageSharedKeyCredential(
     AZ_ACCOUNT_NAME,
     AZ_ACCOUNT_KEY
@@ -43,11 +49,28 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   }
 
   const messages = await dequeueMessages(context, queueClient);
+  telemetry.trackEvent({
+    name: "Messages Dequeued",
+    properties: { messagesDequeued: messages.length },
+    tagOverrides,
+  });
 
-  const { csvPayload, parseFailure, parseSuccessCount } =
+  const { csvPayload, parseFailure, parseFailureCount, parseSuccessCount } =
     convertToCsv(messages);
 
-  context.log(`Uploading ${parseSuccessCount} TestEvents to ReportStream`);
+  if (parseFailureCount > 0) {
+    telemetry.trackEvent({
+      name: "Test Event Parse Failure",
+      properties: {
+        count: parseFailureCount,
+        parseFailures: Object.keys(parseFailure),
+      },
+      tagOverrides,
+    });
+  }
+
+  const uploadStart = new Date().getTime();
+  context.log(`Starting upload of ${parseSuccessCount} records to ReportStream`);
 
   const headers = new Headers({
     "x-functions-key": REPORT_STREAM_TOKEN,
@@ -61,11 +84,26 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     body: csvPayload,
   });
 
+  telemetry.trackDependency({
+    dependencyTypeName: "HTTP",
+    name: "ReportStream",
+    data: REPORT_STREAM_URL,
+    properties: {
+      recordCount: parseSuccessCount
+    },
+    duration: new Date().getTime() - uploadStart,
+    resultCode: postResult.status,
+    success: postResult.ok,
+    tagOverrides
+  });
+
   if (postResult.ok) {
     const response: ReportStreamResponse = await postResult.json();
     // TODO: interpret errors & warnings
 
-    context.log(`Upload to ${response.destinationCount} reporting destinations successful; deleting messages`);
+    context.log(
+      `Upload to ${response.destinationCount} reporting destinations successful; deleting messages`
+    );
     // TODO: integrate w/ AppInsights ?
 
     await deleteSuccessfullyParsedMessages(
@@ -75,12 +113,18 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
       parseFailure
     );
   } else {
-    context.log(
-      `Upload to ReportStream failed with error code ${postResult.status}`
+    const responseBody = await postResult.text();
+    context.log.error(
+      `Upload to ReportStream failed with error code ${postResult.status}. Response body (${postResult.size}b): `, responseBody
     );
-    context.log(
-      `Response body (${postResult.size}b): ${await postResult.text()}`
-    );
+    telemetry.trackEvent({
+      name: "ReportStream Upload Failed",
+      properties: { 
+        status: postResult.status,
+        responseBody
+      },
+      tagOverrides,
+    });
   }
 };
 

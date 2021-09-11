@@ -60,12 +60,14 @@ export async function dequeueMessages(
 
 export function convertToCsv(messages: DequeuedMessageItem[]) {
   const parseFailure: { [k: string]: boolean } = {};
+  let parseFailureCount = 0;
   const messageTexts = messages
     .map((m) => {
       try {
         return JSON.parse(m.messageText);
       } catch (e) {
         parseFailure[m.messageId] = true;
+        parseFailureCount++;
         return undefined;
       }
     })
@@ -73,6 +75,7 @@ export function convertToCsv(messages: DequeuedMessageItem[]) {
   return {
     csvPayload: csvStringify(messageTexts, { header: true }),
     parseFailure,
+    parseFailureCount,
     parseSuccessCount: messageTexts.length,
   };
 }
