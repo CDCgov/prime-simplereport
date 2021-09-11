@@ -77,7 +77,12 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
     .required("CLIA number should be 10 characters (##D#######)")
     .test(
       "facility-clia",
-      "CLIA number should be 10 characters (##D#######)",
+      ({ value }) => {
+        if (value[2] === "Z" && value.length === 10) {
+          return "Special Z CLIAs are only valid in WA";
+        }
+        return "CLIA number should be 10 characters (##D#######)";
+      },
       (input, facility) => {
         if (!stateRequiresCLIANumberValidation(facility.parent.state)) {
           return true;

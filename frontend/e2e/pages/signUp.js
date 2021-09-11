@@ -3,6 +3,12 @@
 function createOrg() {
   this.expect.section("@app").to.be.visible;
   this.expect.section("@app").to.contain.text("Sign up for SimpleReport");
+  this.expect
+    .section("@app")
+    .to.contain.text(
+      "Each organization gets one account and just needs to sign up one time."
+    );
+  this.section.app.click("@continueButton");
   this.section.app.expect.element("@nameInput").to.be.visible;
   this.section.app.expect.element("@stateInput").to.be.visible;
   this.section.app.expect.element("@typeInput").to.be.visible;
@@ -50,6 +56,7 @@ module.exports = {
         lastNameInput: 'input[name="lastName"]',
         emailInput: 'input[name="email"]',
         workPhoneNumberInput: 'input[name="workPhoneNumber"]',
+        continueButton: "button.usa-button.continue-button",
         submitButton: "button.usa-button.submit-button",
       },
     },

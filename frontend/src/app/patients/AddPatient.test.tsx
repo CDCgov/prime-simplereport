@@ -11,12 +11,13 @@ import configureStore from "redux-mock-store";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter, Route } from "react-router";
 
-import AddPatient, { ADD_PATIENT } from "./AddPatient";
+import AddPatient, { ADD_PATIENT, PATIENT_EXISTS } from "./AddPatient";
 
 const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
 const mockStore = configureStore([]);
 const store = mockStore({
   facilities: [{ id: mockFacilityID, name: "123" }],
+  organization: { name: "Test Organization" },
 });
 
 const RouterWithFacility: React.FC = ({ children }) => (
@@ -184,6 +185,7 @@ describe("AddPatient", () => {
           },
         },
       ];
+
       render(
         <Provider store={store}>
           <MockedProvider mocks={mocks} addTypename={false}>
@@ -398,6 +400,189 @@ describe("AddPatient", () => {
           screen.getByText("facility-id-001", { exact: false })
         ).toBeInTheDocument();
       });
+    });
+  });
+
+  describe("when attempting to create an existing patient ", () => {
+    let patientExistsMockWasCalled = false;
+
+    it("performs GraphQL query when all identifying data fields have been entered", async () => {
+      const mocks = [
+        {
+          request: {
+            query: PATIENT_EXISTS,
+            variables: {
+              firstName: "Alice",
+              lastName: "Hamilton",
+              birthDate: "1970-09-22",
+              zipCode: "02115",
+              facilityId: mockFacilityID,
+            },
+          },
+          result: () => {
+            patientExistsMockWasCalled = true;
+
+            return {
+              data: {
+                patientExists: false,
+              },
+            };
+          },
+        },
+      ];
+
+      render(
+        <Provider store={store}>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <RouterWithFacility>
+              <Route component={AddPatient} path={"/add-patient/"} />
+              <Route path={"/patients"} render={() => <p>Patients!</p>} />
+            </RouterWithFacility>
+          </MockedProvider>
+        </Provider>
+      );
+
+      fillOutForm(
+        {
+          "First Name": "Alice",
+          "Last Name": "Hamilton",
+          Facility: mockFacilityID,
+          "Date of birth": "1970-09-22",
+          "ZIP code": "02115",
+        },
+        {}
+      );
+
+      const zip = await screen.findByLabelText("ZIP code", {
+        exact: false,
+      });
+
+      fireEvent.blur(zip);
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      expect(patientExistsMockWasCalled).toBe(true);
+    });
+
+    it("does not open modal if no patient with matching data exists", async () => {
+      const mocks = [
+        {
+          request: {
+            query: PATIENT_EXISTS,
+            variables: {
+              firstName: "Alice",
+              lastName: "Hamilton",
+              birthDate: "1970-09-22",
+              zipCode: "02115",
+              facilityId: mockFacilityID,
+            },
+          },
+          result: {
+            data: {
+              patientExists: false,
+            },
+          },
+        },
+      ];
+
+      render(
+        <Provider store={store}>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <RouterWithFacility>
+              <Route component={AddPatient} path={"/add-patient/"} />
+              <Route path={"/patients"} render={() => <p>Patients!</p>} />
+            </RouterWithFacility>
+          </MockedProvider>
+        </Provider>
+      );
+
+      fillOutForm(
+        {
+          "First Name": "Alice",
+          "Last Name": "Hamilton",
+          Facility: mockFacilityID,
+          "Date of birth": "1970-09-22",
+          "ZIP code": "02115",
+        },
+        {}
+      );
+
+      const zip = await screen.findByLabelText("ZIP code", {
+        exact: false,
+      });
+
+      fireEvent.blur(zip);
+
+      expect(
+        screen.queryByText("You already have a profile at", {
+          exact: false,
+        })
+      ).not.toBeInTheDocument();
+    });
+
+    it("displays modal when all identifying data fields have been entered with an existing patient's data", async () => {
+      const mocks = [
+        {
+          request: {
+            query: PATIENT_EXISTS,
+            variables: {
+              firstName: "Alice",
+              lastName: "Hamilton",
+              birthDate: "1970-09-22",
+              zipCode: "02115",
+              facilityId: mockFacilityID,
+            },
+          },
+          result: {
+            data: {
+              patientExists: true,
+            },
+          },
+        },
+      ];
+
+      render(
+        <Provider store={store}>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <RouterWithFacility>
+              <Route component={AddPatient} path={"/add-patient/"} />
+              <Route path={"/patients"} render={() => <p>Patients!</p>} />
+            </RouterWithFacility>
+          </MockedProvider>
+        </Provider>
+      );
+
+      fillOutForm(
+        {
+          "First Name": "Alice",
+          "Last Name": "Hamilton",
+          Facility: mockFacilityID,
+          "Date of birth": "1970-09-22",
+          "ZIP code": "02115",
+        },
+        {}
+      );
+
+      // The duplicate patient check is triggered on-blur from one of the identifying data fields
+      const zip = await screen.findByLabelText("ZIP code", {
+        exact: false,
+      });
+
+      act(() => {
+        fireEvent.change(zip, {
+          target: {
+            value: "02115",
+          },
+        });
+      });
+
+      fireEvent.blur(zip);
+
+      expect(
+        await screen.findByText("You already have a profile at", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
     });
   });
 });

@@ -213,7 +213,7 @@ export const en = {
         message:
           "Our records show someone has registered with the same name, date of birth, and ZIP code. Please check in with " +
           "your testing site staff. You do not need to register again.",
-        button: "Exit sign up",
+        exit: "Exit sign up",
       },
     },
     testResult: {

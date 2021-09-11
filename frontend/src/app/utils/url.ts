@@ -1,10 +1,18 @@
-const getParameterFromUrl = (param: string): string | null => {
-  const queryParams = new URLSearchParams(window.location.search);
+import { Location } from "history";
+
+const getParameterFromUrl = (
+  param: string,
+  location?: Location<unknown>
+): string | null => {
+  const queryParams = new URLSearchParams(
+    location ? location.search : window.location.search
+  );
   return queryParams.has(param) ? queryParams.get(param) : null;
 };
 
-export const getFacilityIdFromUrl = (): string | null =>
-  getParameterFromUrl("facility");
+export const getFacilityIdFromUrl = (
+  location?: Location<unknown>
+): string | null => getParameterFromUrl("facility", location);
 
 export const getPatientLinkIdFromUrl = (): string | null =>
   getParameterFromUrl("plid");

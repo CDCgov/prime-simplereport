@@ -3,8 +3,6 @@ import { render, screen } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
 
-import { Patient } from "../../patients/ManagePatients";
-
 import AddToQueueSearch, {
   QUERY_SINGLE_PATIENT,
   StartTestProps,

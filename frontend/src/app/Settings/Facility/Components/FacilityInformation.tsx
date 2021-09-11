@@ -43,27 +43,6 @@ const FacilityInformation: React.FC<Props> = ({
         errorMessage={errors.name}
       />
       <TextInput
-        label="CLIA number"
-        hintText={
-          <a
-            href="https://www.cdc.gov/clia/LabSearch.html#"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Find my CLIA
-          </a>
-        }
-        name="cliaNumber"
-        value={facility.cliaNumber}
-        required
-        onChange={onChange}
-        onBlur={() => {
-          validateField("cliaNumber");
-        }}
-        validationStatus={errors.cliaNumber ? "error" : undefined}
-        errorMessage={errors.cliaNumber}
-      />
-      <TextInput
         label="Phone number"
         name="phone"
         value={facility.phone}
@@ -140,6 +119,27 @@ const FacilityInformation: React.FC<Props> = ({
         errorMessage={errors.state}
         selectClassName="usa-input--medium"
         data-testid="facility-state-dropdown"
+      />
+      <TextInput
+        label="CLIA number"
+        hintText={
+          <a
+            href="https://www.cdc.gov/clia/LabSearch.html#"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Find my CLIA
+          </a>
+        }
+        name="cliaNumber"
+        value={facility.cliaNumber}
+        required
+        onChange={onChange}
+        onBlur={() => {
+          validateField("cliaNumber");
+        }}
+        validationStatus={errors.cliaNumber ? "error" : undefined}
+        errorMessage={errors.cliaNumber}
       />
     </div>
   );
