@@ -6,6 +6,12 @@ interface ReportingDestination {
   itemCount: number;
 }
 
+interface ReportStreamError {
+    id: string;
+    scope: "ITEM"|"REPORT";
+    details: string;
+}
+
 export interface ReportStreamResponse {
   id: string;
   timestamp: string;
@@ -22,6 +28,6 @@ export interface ReportStreamResponse {
   ];
   warningCount: number;
   errorCount: number;
-  errors: any[];
-  warnings: any[];
+  errors: ReportStreamError[];
+  warnings: ReportStreamError[];
 }
