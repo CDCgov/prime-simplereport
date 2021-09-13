@@ -68,9 +68,6 @@ const defaultProps: QueueItemProps = {
   selectedDeviceId: "tp4000",
   selectedDeviceTestLength: 0.1,
   selectedTestResult: "UNKNOWN",
-  defaultDevice: {
-    internalId: "tp4000",
-  },
   dateTestedProp: "",
   refetchQueue: () => {},
   facilityId: "100",
