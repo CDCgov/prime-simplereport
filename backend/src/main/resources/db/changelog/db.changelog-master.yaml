@@ -2889,3 +2889,13 @@ databaseChangeLog:
             columns:
               - column:
                   name: facility_id
+  - changeSet:
+      id: add-index-phone-number-person-internal-id
+      author: brett.m.maden@omb.eop.gov
+      changes:
+        - createIndex:
+            tableName: phone_number
+            indexName: ix__phone_number__person_internal_id
+            columns:
+              - column:
+                  name: person_internal_id
