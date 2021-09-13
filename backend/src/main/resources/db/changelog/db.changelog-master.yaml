@@ -2899,3 +2899,13 @@ databaseChangeLog:
             columns:
               - column:
                   name: person_internal_id
+  - changeSet:
+      id: add-index-test_event-patient_id
+      author: zedd@skylight.digital
+      changes:
+        - createIndex:
+            tableName: test_event
+            indexName: ix__test_event__patient_id
+            columns:
+              - column:
+                  name: patient_id
