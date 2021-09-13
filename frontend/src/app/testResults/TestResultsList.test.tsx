@@ -12,7 +12,6 @@ import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 import { testResultDetailsQuery } from "./TestResultDetailsModal";
 import TestResultsList, {
   DetachedTestResultsList,
-  FilterParams,
   resultsCountQuery,
   testResultQuery,
 } from "./TestResultsList";
