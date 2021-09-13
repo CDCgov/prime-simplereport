@@ -195,8 +195,7 @@ public class UserAuthorizationVerifier {
     if (currentOrgRoles.isEmpty()) {
       return false;
     } else {
-      boolean facility = _facilityRepo.existsById(facilityId);
-      return facility && currentOrgRoles.get().containsFacility(facilityId);
+      return currentOrgRoles.get().containsFacility(facilityId);
     }
   }
 
