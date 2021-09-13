@@ -19,10 +19,10 @@ export function formatDate(date: string | undefined | null | Date) {
   return moment(date).format("YYYY-MM-DD") as ISODate;
 }
 
-export const isValidDate = (date: string): boolean => {
+export const isValidDate = (date: string, strict = false): boolean => {
   return (
-    moment(date, "MM-DD-YYYY", false).isValid() ||
-    moment(date, "MM/DD/YYYY", false).isValid() ||
-    moment(date, "YYYY-MM-DD", false).isValid()
+    moment(date, "MM-DD-YYYY", strict).isValid() ||
+    moment(date, "MM/DD/YYYY", strict).isValid() ||
+    moment(date, "YYYY-MM-DD", strict).isValid()
   );
 };

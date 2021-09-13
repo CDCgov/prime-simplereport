@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.UUID;
 
 public class OrganizationRoles implements PermissionHolder {
 
@@ -33,8 +34,11 @@ public class OrganizationRoles implements PermissionHolder {
     return _roles;
   }
 
+  public boolean containsFacility(UUID facilityId) {
+    return getFacilities().stream().anyMatch(f -> f.getInternalId().equals(facilityId));
+  }
+
   public boolean containsFacility(Facility facility) {
-    return getFacilities().stream()
-        .anyMatch(f -> f.getInternalId().equals(facility.getInternalId()));
+    return containsFacility(facility.getInternalId());
   }
 }
