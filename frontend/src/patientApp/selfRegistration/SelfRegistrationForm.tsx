@@ -3,11 +3,14 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "../../app/commonComponents/Button/Button";
-import Modal from "../../app/commonComponents/Modal";
 import { EMPTY_PERSON } from "../../app/patients/AddPatient";
 import PersonForm, {
   PersonFormView,
 } from "../../app/patients/Components/PersonForm";
+import {
+  DuplicatePatientModal,
+  IdentifyingData,
+} from "../../app/patients/Components/DuplicatePatientModal";
 import { PxpApi } from "../PxpApiService";
 
 type Props = {
@@ -15,13 +18,6 @@ type Props = {
   onDuplicate: (person: Pick<PersonFormData, "firstName" | "lastName">) => void;
   entityName: string;
   registrationLink: string;
-};
-
-type IdentifyingData = {
-  firstName: string;
-  lastName: string;
-  zipCode: string;
-  birthDate: moment.Moment;
 };
 
 export const SelfRegistrationForm = ({
@@ -87,7 +83,7 @@ export const SelfRegistrationForm = ({
       id="registration-container"
       className="grid-container maxw-tablet padding-y-3"
     >
-      <DuplicateModal
+      <DuplicatePatientModal
         showModal={!!isDuplicate}
         onDuplicate={() => {
           const { firstName, lastName } = identifyingData;
@@ -110,42 +106,5 @@ export const SelfRegistrationForm = ({
         onBlur={onBlur}
       />
     </div>
-  );
-};
-
-type DuplicateModalProps = {
-  showModal: boolean;
-  onDuplicate: () => void;
-  entityName: string;
-};
-
-const DuplicateModal: React.FC<DuplicateModalProps> = ({
-  showModal,
-  onDuplicate,
-  entityName,
-}) => {
-  const { t } = useTranslation();
-
-  return (
-    <Modal
-      onClose={() => {}}
-      showModal={showModal}
-      showClose={false}
-      variant="warning"
-    >
-      <Modal.Header>
-        {t("selfRegistration.duplicate.heading") + " " + entityName}
-      </Modal.Header>
-      <p>{t("selfRegistration.duplicate.message")}</p>
-      <Modal.Footer>
-        <Button
-          onClick={() => {
-            onDuplicate();
-          }}
-        >
-          {t("selfRegistration.duplicate.button")}
-        </Button>
-      </Modal.Footer>
-    </Modal>
   );
 };

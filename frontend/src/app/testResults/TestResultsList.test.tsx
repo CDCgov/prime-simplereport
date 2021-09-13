@@ -1,3 +1,5 @@
+import qs from "querystring";
+
 import { MockedProvider } from "@apollo/client/testing";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { Provider } from "react-redux";
@@ -10,6 +12,7 @@ import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 import { testResultDetailsQuery } from "./TestResultDetailsModal";
 import TestResultsList, {
   DetachedTestResultsList,
+  FilterParams,
   resultsCountQuery,
   testResultQuery,
 } from "./TestResultsList";
@@ -723,26 +726,139 @@ const mocks = [
 
 describe("TestResultsList", () => {
   it("should render a list of tests", async () => {
-    const { container, getByText } = render(
+    const { container } = render(
       <WithRouter>
         <DetachedTestResultsList
           data={{ testResults }}
-          page={1}
+          pageNumber={1}
           entriesPerPage={20}
           totalEntries={testResults.length}
+          filterParams={{}}
+          setFilterParams={() => () => {}}
+          clearFilterParams={() => {}}
+          facilityId={"1"}
+          loading={false}
+          loadingTotalResults={false}
+          refetch={() => {}}
         />
       </WithRouter>
     );
-    expect(getByText("Test Results", { exact: false })).toBeInTheDocument();
-    expect(getByText("Cragell, Barb Whitaker")).toBeInTheDocument();
+
+    expect(
+      await screen.findByText("Test Results", { exact: false })
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText("Cragell, Barb Whitaker")
+    ).toBeInTheDocument();
+    expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+
     expect(container).toMatchSnapshot();
+  });
+  it("should be able to load filter params from url", async () => {
+    const localMocks = [
+      {
+        request: {
+          query: resultsCountQuery,
+          variables: {
+            facilityId: "1",
+            patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
+            startDate: "2021-03-18T00:00:00.000Z",
+            endDate: "2021-03-19T23:59:59.999Z",
+            role: "STAFF",
+            result: "NEGATIVE",
+          },
+        },
+        result: {
+          data: {
+            testResultsCount: testResultsByStartDateAndEndDate.length,
+          },
+        },
+      },
+      {
+        request: {
+          query: testResultQuery,
+          variables: {
+            facilityId: "1",
+            pageNumber: 0,
+            pageSize: 20,
+            patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
+            startDate: "2021-03-18T00:00:00.000Z",
+            endDate: "2021-03-19T23:59:59.999Z",
+            role: "STAFF",
+            result: "NEGATIVE",
+          },
+        },
+        result: {
+          data: {
+            testResults: testResultsByStartDateAndEndDate,
+          },
+        },
+      },
+    ];
+    const search = {
+      patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
+      startDate: "2021-03-18T00:00:00.000Z",
+      endDate: "2021-03-19T23:59:59.999Z",
+      result: "NEGATIVE",
+      role: "STAFF",
+      facility: "1",
+    };
+
+    await render(
+      <MemoryRouter
+        initialEntries={[
+          { pathname: "/results/1", search: qs.stringify(search) },
+        ]}
+      >
+        <Provider store={store}>
+          <MockedProvider mocks={localMocks}>
+            <TestResultsList pageNumber={1} />
+          </MockedProvider>
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText("Showing 1-1 of 1")).toBeInTheDocument();
+    expect(
+      await screen.findByLabelText("Date range (start)")
+    ).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("03/18/2021")).toBeInTheDocument();
+
+    expect(
+      await screen.findByLabelText("Date range (end)")
+    ).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("03/19/2021")).toBeInTheDocument();
+
+    const roleSelect = (await screen.findByLabelText(
+      "Role"
+    )) as HTMLSelectElement;
+    expect(roleSelect).toBeInTheDocument();
+    expect(roleSelect.value).toEqual("STAFF");
+
+    const resultSelect = (await screen.findByLabelText(
+      "Result"
+    )) as HTMLSelectElement;
+    expect(resultSelect).toBeInTheDocument();
+    expect(resultSelect.value).toEqual("NEGATIVE");
+
+    const searchBox = screen.getByLabelText(
+      "Search by name"
+    ) as HTMLInputElement;
+    expect(searchBox.value).toEqual("Colleer, Barde X");
+
+    const row = within(await screen.findByTitle("filtered-result"));
+    expect(await row.findByText("Colleer, Barde X")).toBeInTheDocument();
+    expect(await row.findByText("DOB: 11/07/1960")).toBeInTheDocument();
+    expect(await row.findByText("Negative")).toBeInTheDocument();
+    expect(await row.findByText("Abbott IDNow")).toBeInTheDocument();
+    expect(await row.findByText("User, Ursula")).toBeInTheDocument();
   });
   it("should call appropriate gql endpoints for pagination", async () => {
     render(
       <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
-            <TestResultsList page={1} />
+            <TestResultsList pageNumber={1} />
           </MockedProvider>
         </Provider>
       </WithRouter>
@@ -754,12 +870,13 @@ describe("TestResultsList", () => {
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();
   });
+
   it("should be able to filter by patient", async () => {
     render(
       <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
-            <TestResultsList page={1} />
+            <TestResultsList pageNumber={1} />
           </MockedProvider>
         </Provider>
       </WithRouter>
@@ -788,7 +905,7 @@ describe("TestResultsList", () => {
       <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
-            <TestResultsList page={1} />
+            <TestResultsList pageNumber={1} />
           </MockedProvider>
         </Provider>
       </WithRouter>
@@ -814,7 +931,7 @@ describe("TestResultsList", () => {
       <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
-            <TestResultsList page={1} />
+            <TestResultsList pageNumber={1} />
           </MockedProvider>
         </Provider>
       </WithRouter>
@@ -840,7 +957,7 @@ describe("TestResultsList", () => {
       <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
-            <TestResultsList page={1} />
+            <TestResultsList pageNumber={1} />
           </MockedProvider>
         </Provider>
       </WithRouter>
@@ -881,7 +998,7 @@ describe("TestResultsList", () => {
       <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
-            <TestResultsList page={1} />
+            <TestResultsList pageNumber={1} />
           </MockedProvider>
         </Provider>
       </WithRouter>
@@ -913,7 +1030,7 @@ describe("TestResultsList", () => {
       <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
-            <TestResultsList page={1} />
+            <TestResultsList pageNumber={1} />
           </MockedProvider>
         </Provider>
       </WithRouter>
@@ -961,7 +1078,7 @@ describe("TestResultsList", () => {
       <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
-            <TestResultsList page={1} />
+            <TestResultsList pageNumber={1} />
           </MockedProvider>
         </Provider>
       </WithRouter>
@@ -981,7 +1098,7 @@ describe("TestResultsList", () => {
       <MemoryRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
-            <TestResultsList page={1} />
+            <TestResultsList pageNumber={1} />
           </MockedProvider>
         </Provider>
       </MemoryRouter>

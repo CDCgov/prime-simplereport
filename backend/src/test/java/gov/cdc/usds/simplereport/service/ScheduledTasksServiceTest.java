@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -39,7 +40,7 @@ class ScheduledTasksServiceTest {
     when(schedulerBuilder.build()).thenReturn(scheduler);
 
     Map<String, ScheduledFuture<?>> scheduledUploads =
-        new ScheduledTasksService(uploader, schedulerBuilder).scheduleUploads(config);
+        new ScheduledTasksService(uploader, null, schedulerBuilder).scheduleUploads(config);
     assertEquals(Set.of(cronExpression), scheduledUploads.keySet());
 
     verify(scheduler, Mockito.times(1)).initialize();
@@ -66,11 +67,39 @@ class ScheduledTasksServiceTest {
     when(schedulerBuilder.build()).thenReturn(scheduler);
 
     Map<String, ScheduledFuture<?>> scheduledUploads =
-        new ScheduledTasksService(uploader, schedulerBuilder).scheduleUploads(config);
+        new ScheduledTasksService(uploader, null, schedulerBuilder).scheduleUploads(config);
     assertEquals(Collections.emptyMap(), scheduledUploads);
 
     verify(schedulerBuilder.build(), never())
         .schedule(captureMethod.capture(), captureTrigger.capture());
     verify(uploader, never()).dataHubUploaderTask();
+  }
+
+  @Test
+  void scheduleAccountReminderEmails_ensureScheduling() {
+    String cronExpression = "0 0 1 * * *";
+    String tzString = "America/New_York";
+
+    ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+    TaskSchedulerBuilder schedulerBuilder = mock(TaskSchedulerBuilder.class);
+    ArgumentCaptor<CronTrigger> captureTrigger = ArgumentCaptor.forClass(CronTrigger.class);
+    ArgumentCaptor<Runnable> captureMethod = ArgumentCaptor.forClass(Runnable.class);
+
+    ReminderService reminderService = mock(ReminderService.class);
+
+    when(schedulerBuilder.build()).thenReturn(scheduler);
+
+    new ScheduledTasksService(null, reminderService, schedulerBuilder)
+        .scheduleAccountReminderEmails(cronExpression, tzString);
+
+    verify(scheduler, Mockito.times(1)).initialize();
+    verify(scheduler, Mockito.times(1)).schedule(captureMethod.capture(), captureTrigger.capture());
+
+    CronTrigger trigger = captureTrigger.getValue();
+    assertEquals(cronExpression, trigger.getExpression());
+
+    verify(reminderService, never()).sendAccountReminderEmails();
+    captureMethod.getValue().run();
+    verify(reminderService, times(1)).sendAccountReminderEmails();
   }
 }

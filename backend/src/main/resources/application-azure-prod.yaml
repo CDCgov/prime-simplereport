@@ -7,6 +7,8 @@ simple-report:
     upload-schedule: "0 0 5-21/2 * * *"
   patient-link-url: https://simplereport.gov/app/pxp?plid=
   twilio-callback-url: https://simplereport.gov/api/pxp/callback
+  id-verification-reminders:
+    enabled: true
   sendgrid:
     enabled: true
   cors:

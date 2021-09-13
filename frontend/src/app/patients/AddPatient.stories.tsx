@@ -10,6 +10,7 @@ const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
 const mockStore = configureStore([]);
 const store = mockStore({
   facilities: [{ id: mockFacilityID, name: "123" }],
+  organization: { name: "Test Organization" },
 });
 
 export default {

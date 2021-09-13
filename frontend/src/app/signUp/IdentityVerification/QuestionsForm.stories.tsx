@@ -18,6 +18,7 @@ export default {
   args: {
     personalDetails,
     orgExternalId: "foo",
+    disableTimer: true,
   },
 } as Meta;
 

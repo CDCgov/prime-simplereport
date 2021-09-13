@@ -246,7 +246,7 @@ describe("FacilityForm", () => {
         });
 
         fireEvent.change(cliaInput, {
-          target: { value: "12Z3456789" },
+          target: { value: "12F3456789" },
         });
         fireEvent.blur(cliaInput);
 
@@ -341,6 +341,42 @@ describe("FacilityForm", () => {
         fireEvent.click(saveButton);
         await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
+      });
+      it("doesn't allow a Z-CLIA for a non-Washington state", async () => {
+        const californiaFacility: Facility = validFacility;
+        californiaFacility.state = "CA";
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={californiaFacility}
+              deviceOptions={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const cliaInput = screen.getByLabelText("CLIA number", {
+          exact: false,
+        });
+
+        fireEvent.change(cliaInput, {
+          target: { value: "12Z3456789" },
+        });
+        fireEvent.blur(cliaInput);
+
+        const expectedError = "Special Z CLIAs are only valid in WA";
+
+        expect(
+          await screen.findByText(expectedError, {
+            exact: false,
+          })
+        ).toBeInTheDocument();
+
+        const saveButton = screen.getAllByText("Save changes")[0];
+        await waitFor(async () => {
+          fireEvent.click(saveButton);
+        });
+        expect(saveFacility).toBeCalledTimes(0);
       });
     });
   });

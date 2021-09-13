@@ -23,10 +23,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
-import org.springframework.test.context.TestPropertySource;
 import reactor.core.publisher.Mono;
 
-@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 @SuppressWarnings("unchecked")
 class AzureStorageQueueTestEventReportingServiceTest
     extends BaseServiceTest<TestEventReportingService> {
