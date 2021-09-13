@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import Modal from "react-modal";
 import { gql, useQuery } from "@apollo/client";
 
@@ -107,7 +107,5 @@ const AoEModalForm = (props: AoEModalProps) => {
     </Modal>
   );
 };
-
-AoEModalForm.propTypes = {};
 
 export default AoEModalForm;
