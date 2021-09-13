@@ -84,23 +84,18 @@ export function phoneNumberIsValid(input: any) {
 }
 
 export function areUniquePhoneNumbers(phoneNumbers: any) {
-  try {
-    const phoneNumbersSeen = new Set(
-      phoneNumbers.map((p: { number: string }) => {
-        // An empty number is allowable in some cases but will result in a parsing failure
-        if (!p.number) {
-          return true;
-        }
+  // Only check valid phone numbers for uniqueness - blank or invalid
+  // phone numbers should be handled by other validators as appropriate
+  const validPhoneNumbers = phoneNumbers
+    .filter(function removeInvalidPhoneNumbers(pn: PhoneNumber) {
+      return phoneNumberIsValid(pn.number);
+    })
+    .map(function formatPhoneNumbers(pn: PhoneNumber) {
+      const parsedNumber = phoneUtil.parse(pn.number, "US");
+      return phoneUtil.format(parsedNumber, PhoneNumberFormat.E164);
+    });
 
-        const parsedNumber = phoneUtil.parse(p.number, "US");
-        return phoneUtil.format(parsedNumber, PhoneNumberFormat.E164);
-      })
-    );
-    return phoneNumbersSeen.size === phoneNumbers.length;
-  } catch (e) {
-    // parsing number can fail
-    return false;
-  }
+  return new Set(validPhoneNumbers).size === validPhoneNumbers.length;
 }
 
 export function areValidPhoneNumbers(phoneNumbers: any) {
