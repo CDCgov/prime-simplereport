@@ -6,9 +6,15 @@ import iconDotGov from "../../../node_modules/uswds/dist/img/icon-dot-gov.svg";
 import usFlagSmall from "../../../node_modules/uswds/dist/img/us_flag_small.png";
 import iconHttps from "../../../node_modules/uswds/dist/img/icon-https.svg";
 
-class USAGovBanner extends React.Component {
-  constructor() {
-    super();
+interface Props {}
+
+interface State {
+  contentVisible: boolean;
+}
+
+class USAGovBanner extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
     this.state = {
       contentVisible: false,
     };
