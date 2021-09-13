@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
-export const areAnswersComplete = (answers) => {
+import { AoEAnswers } from "./AoEForm/AoEForm";
+
+export const areAnswersComplete = (answers: AoEAnswers) => {
   if (!answers.noSymptoms) {
     const symptoms = JSON.parse(answers.symptoms);
-    //TODO: real booleans rather than Pinocchio boolean strings
     const filled = Object.values(symptoms).some((v) => String(v) === "true");
     if (!filled || !answers.symptomOnset) {
       return false;
@@ -18,7 +19,11 @@ export const areAnswersComplete = (answers) => {
   return true;
 };
 
-const AskOnEntryTag = ({ aoeAnswers }) => {
+interface Props {
+  aoeAnswers: AoEAnswers;
+}
+
+const AskOnEntryTag: React.FC<Props> = ({ aoeAnswers }) => {
   const [answers, setAnswers] = useState(aoeAnswers);
   useEffect(() => {
     setAnswers(aoeAnswers);
