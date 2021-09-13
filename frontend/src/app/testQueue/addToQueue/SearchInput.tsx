@@ -7,7 +7,7 @@ import React, {
 import classnames from "classnames";
 
 type Props = {
-  onSearchClick: MouseEventHandler<HTMLButtonElement>;
+  onSearchClick?: MouseEventHandler<HTMLButtonElement>;
   onInputChange: ChangeEventHandler<HTMLInputElement>;
   queryString: string;
   disabled?: boolean;

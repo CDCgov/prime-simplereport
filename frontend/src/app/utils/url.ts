@@ -1,6 +1,6 @@
 import { Location } from "history";
 
-const getParameterFromUrl = (
+export const getParameterFromUrl = (
   param: string,
   location?: Location<unknown>
 ): string | null => {
