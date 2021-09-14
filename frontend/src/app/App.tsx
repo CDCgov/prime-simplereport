@@ -9,6 +9,7 @@ import Header from "./commonComponents/Header";
 import Page from "./commonComponents/Page/Page";
 import { setInitialState } from "./store";
 import TestResultsList from "./testResults/TestResultsList";
+import CleanTestResultsList from "./testResults/CleanTestResultsList";
 import TestQueueContainer from "./testQueue/TestQueueContainer";
 import ManagePatientsContainer from "./patients/ManagePatientsContainer";
 import EditPatientContainer from "./patients/EditPatientContainer";
@@ -118,10 +119,16 @@ const App = () => {
               )}
             />
             <ProtectedRoute
-              path="/results/:page?"
+              path="/results/:page"
               render={({ match }: any) => {
                 return <TestResultsList pageNumber={match.params.page} />;
               }}
+              requiredPermissions={appPermissions.results.canView}
+              userPermissions={data.whoami.permissions}
+            />
+            <ProtectedRoute
+              path="/results/"
+              render={() => <CleanTestResultsList />}
               requiredPermissions={appPermissions.results.canView}
               userPermissions={data.whoami.permissions}
             />
