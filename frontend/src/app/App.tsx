@@ -7,7 +7,6 @@ import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
 import Header from "./commonComponents/Header";
 import Page from "./commonComponents/Page/Page";
-import LoginView from "./LoginView";
 import { setInitialState } from "./store";
 import TestResultsList from "./testResults/TestResultsList";
 import TestQueueContainer from "./testQueue/TestQueueContainer";
@@ -100,7 +99,6 @@ const App = () => {
         <Page>
           <Header />
           <Switch>
-            <Route path="/login" component={LoginView} />
             <Route
               path="/queue"
               render={() => {

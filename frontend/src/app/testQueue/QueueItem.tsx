@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
 import { gql, useMutation } from "@apollo/client";
@@ -19,7 +18,6 @@ import LabeledText from "../commonComponents/LabeledText";
 import TextInput from "../commonComponents/TextInput";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import { displayFullName, showNotification } from "../utils";
-import { patientPropType, devicePropType } from "../propTypes";
 import Checkboxes from "../commonComponents/Checkboxes";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
@@ -185,9 +183,6 @@ export interface QueueItemProps {
   selectedDeviceId: string;
   selectedDeviceTestLength: number;
   selectedTestResult: TestResult;
-  defaultDevice: {
-    internalId: string;
-  };
   dateTestedProp: string;
   refetchQueue: () => void;
   facilityId: string;
@@ -202,7 +197,7 @@ interface updateQueueItemProps {
 
 type SaveState = "idle" | "editing" | "saving" | "error";
 
-const QueueItem: any = ({
+const QueueItem = ({
   internalId,
   patient,
   devices,
@@ -210,7 +205,6 @@ const QueueItem: any = ({
   selectedDeviceId,
   selectedDeviceTestLength,
   selectedTestResult,
-  defaultDevice,
   refetchQueue,
   facilityId,
   dateTestedProp,
@@ -248,9 +242,7 @@ const QueueItem: any = ({
     setAoeAnswers(askOnEntry);
   }, [askOnEntry]);
 
-  const [deviceId, updateDeviceId] = useState(
-    selectedDeviceId || defaultDevice.internalId
-  );
+  const [deviceId, updateDeviceId] = useState(selectedDeviceId);
 
   const [deviceTestLength, updateDeviceTestLength] = useState(
     selectedDeviceTestLength
@@ -752,8 +744,4 @@ const QueueItem: any = ({
   );
 };
 
-QueueItem.propTypes = {
-  patient: patientPropType,
-  devices: PropTypes.arrayOf(devicePropType),
-};
 export default QueueItem;

@@ -18,7 +18,7 @@ module.exports = {
   webpackFinal: async (config) => {
     config.resolve.alias[
       "@microsoft/applicationinsights-react-js"
-    ] = require.resolve("../src/stories/__mocks__/appInsights.js");
+    ] = require.resolve("../src/stories/__mocks__/appInsights.ts");
     config.resolve.alias["./TestTimer"] = require.resolve(
       "../src/stories/__mocks__/TestTimer.ts"
     );
