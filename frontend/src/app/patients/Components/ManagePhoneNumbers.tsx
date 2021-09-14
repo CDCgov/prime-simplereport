@@ -15,6 +15,7 @@ interface Props {
   updateTestResultDelivery: (
     testResultDelivery: TestResultDeliveryPreference
   ) => void;
+  phoneNumberValidator: React.MutableRefObject<Function | null>;
 }
 
 const ManagePhoneNumbers: React.FC<Props> = ({
@@ -22,6 +23,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   testResultDelivery,
   updatePhoneNumbers,
   updateTestResultDelivery,
+  phoneNumberValidator,
 }) => {
   const [errors, setErrors] = useState<PhoneNumberErrors[]>([]);
 
@@ -94,6 +96,18 @@ const ManagePhoneNumbers: React.FC<Props> = ({
       getValidationError,
     ]
   );
+
+  const validatePhoneNumbers = useCallback(() => {
+    phoneNumbers.forEach((pn, idx) => {
+      Object.keys(pn).forEach((field) =>
+        validateField(idx, field as keyof PhoneNumber)
+      );
+    });
+  }, [phoneNumbers, validateField]);
+
+  useEffect(() => {
+    phoneNumberValidator.current = validatePhoneNumbers;
+  }, [phoneNumberValidator, validatePhoneNumbers]);
 
   // Make sure all existing errors are up-to-date (including translations)
   useEffect(() => {
@@ -207,6 +221,9 @@ const ManagePhoneNumbers: React.FC<Props> = ({
             selectedRadio={phoneNumber.type}
             required={isPrimary}
             onChange={(e) => onPhoneTypeChange(idx, e)}
+            onBlur={() => validateField(idx, "type")}
+            validationStatus={validationStatus(idx, "type")}
+            errorMessage={t("patient.form.errors.phoneNumbersType")}
           />
         </div>
       );

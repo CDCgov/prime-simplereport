@@ -4,12 +4,37 @@ import { TestContext } from "yup";
 import i18n from "../../i18n";
 
 import {
+  hasPhoneType,
   phoneNumberIsValid,
   areValidPhoneNumbers,
+  areUniquePhoneNumbers,
   isValidBirthdate18n,
 } from "./personSchema";
 
 const t = i18n.t.bind(i18n);
+
+describe("hasPhoneType", () => {
+  it("returns false if any phone number has a number and no type", () => {
+    const input = [
+      { number: "2708675309", type: "MOBILE" },
+      { number: "6318675309", type: "" },
+    ];
+
+    expect(hasPhoneType(input)).toBe(false);
+  });
+
+  it("returns true if all phone numbers have a phone type", () => {
+    const input = [{ number: "", type: "" }];
+
+    expect(hasPhoneType(input)).toBe(true);
+  });
+
+  it("returns true if any phone number object has no number", () => {
+    const input = [{ number: "", type: "" }];
+
+    expect(hasPhoneType(input)).toBe(true);
+  });
+});
 
 describe("phoneNumberIsValid", () => {
   it("returns false on null input", () => {
@@ -78,6 +103,36 @@ describe("areValidPhoneNumbers", () => {
 
       expect(areValidPhoneNumbers(phoneNumbers)).toBe(false);
     });
+  });
+});
+
+describe("areUniquePhoneNumbers", () => {
+  it("returns `true` if all phone numbers are distinct", () => {
+    const input = [
+      { number: "2708675309", type: "MOBILE" },
+      { number: "6318675309", type: "" },
+    ];
+
+    expect(areUniquePhoneNumbers(input)).toBe(true);
+  });
+
+  it("returns `false` on duplicate phone numbers", () => {
+    const input = [
+      { number: "2708675309", type: "MOBILE" },
+      { number: "2708675309", type: "MOBILE" },
+    ];
+
+    expect(areUniquePhoneNumbers(input)).toBe(false);
+  });
+
+  it("ignores falsy values for phone number", () => {
+    const input = [
+      { number: "2708675309", type: "MOBILE" },
+      { number: "", type: "LANDLINE" },
+      { number: "", type: "LANDLINE" },
+    ];
+
+    expect(areUniquePhoneNumbers(input)).toBe(true);
   });
 });
 

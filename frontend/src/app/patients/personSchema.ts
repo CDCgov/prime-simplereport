@@ -58,6 +58,18 @@ export type SelfRegistationFields = Omit<RequiredPersonFields, "facilityId">;
 export const getValues = (options: Option[]) =>
   options.map(({ value }) => value);
 
+export function hasPhoneType(phoneNumbers: any) {
+  return (phoneNumbers || []).every((phoneNumber: any) => {
+    // Empty numbers are allowable in some cases
+    // `number` is OK for this validation
+    if (!phoneNumber?.number) {
+      return true;
+    }
+
+    return Boolean(phoneNumber?.type);
+  });
+}
+
 export function phoneNumberIsValid(input: any) {
   if (!input) {
     return false;
@@ -72,18 +84,18 @@ export function phoneNumberIsValid(input: any) {
 }
 
 export function areUniquePhoneNumbers(phoneNumbers: any) {
-  try {
-    const phoneNumbersSeen = new Set(
-      phoneNumbers.map((p: { number: string }) => {
-        const parsedNumber = phoneUtil.parse(p.number, "US");
-        return phoneUtil.format(parsedNumber, PhoneNumberFormat.E164);
-      })
-    );
-    return phoneNumbersSeen.size === phoneNumbers.length;
-  } catch (e) {
-    // parsing number can fail
-    return false;
-  }
+  // Only check valid phone numbers for uniqueness - blank or invalid
+  // phone numbers should be handled by other validators as appropriate
+  const validPhoneNumbers = phoneNumbers
+    .filter(function removeInvalidPhoneNumbers(pn: PhoneNumber) {
+      return phoneNumberIsValid(pn.number);
+    })
+    .map(function formatPhoneNumbers(pn: PhoneNumber) {
+      const parsedNumber = phoneUtil.parse(pn.number, "US");
+      return phoneUtil.format(parsedNumber, PhoneNumberFormat.E164);
+    });
+
+  return new Set(validPhoneNumbers).size === validPhoneNumbers.length;
 }
 
 export function areValidPhoneNumbers(phoneNumbers: any) {
@@ -167,6 +179,11 @@ const updateFieldSchemata: (
       "phone-numbers",
       t("patient.form.errors.phoneNumbersDuplicate"),
       areUniquePhoneNumbers
+    )
+    .test(
+      "phone-numbers",
+      t("patient.form.errors.phoneNumbersType"),
+      hasPhoneType
     )
     .required(),
   email: yup
