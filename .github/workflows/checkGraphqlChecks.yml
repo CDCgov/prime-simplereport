@@ -35,6 +35,8 @@ jobs:
         run: yarn
       - name: Generate grahpql types
         run: yarn codegen
+      - name: Lint generated files
+        run: yarn lint:write
       - name: Check for changes
         run: |
           [ -z "$(git status --porcelain)" ]
