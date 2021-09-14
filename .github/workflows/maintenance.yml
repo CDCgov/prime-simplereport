@@ -10,6 +10,7 @@ on:
       message:
         description: "Message to display"
         required: true
+        default: "We're working on getting this fixed as soon as possible."
 
 jobs:
   pushMaintenanceBlob:
