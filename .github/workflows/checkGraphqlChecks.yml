@@ -1,0 +1,40 @@
+name: Check Graphql Checks
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - "**"
+  push:
+    branches:
+      - main
+
+env:
+  NODE_VERSION: 14
+
+defaults:
+  run:
+    working-directory: frontend
+
+jobs:
+  check-graphql-types:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{env.NODE_VERSION}}
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: ${{env.NODE_VERSION}}
+      - name: Cache npm local files
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./frontend/node_modules
+          key: npm-${{env.NODE_VERSION}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
+      - name: Node setup
+        run: yarn
+      - name: Generate grahpql types
+        run: yarn codegen
+      - name: Check for changes
+        run: |
+          [ -z "$(git status --porcelain)" ]
