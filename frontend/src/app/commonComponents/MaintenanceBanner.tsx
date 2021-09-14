@@ -14,8 +14,12 @@ export const MaintenanceBanner: React.FC = () => {
   useEffect(() => {
     const getMaintenanceMode = async () => {
       const maintenance = await fetch("/maintenance.json");
-      const maintenanceJSON = await maintenance.json();
-      setMaintenanceMode(maintenanceJSON);
+      try {
+        const maintenanceJSON = await maintenance.json();
+        setMaintenanceMode(maintenanceJSON);
+      } catch (e) {
+        console.error(e);
+      }
     };
     getMaintenanceMode();
   }, []);
