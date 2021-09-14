@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { gql, useMutation } from "@apollo/client";
-import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
 
 import Alert from "../../commonComponents/Alert";
@@ -51,7 +50,7 @@ const DeviceTypeFormContainer: any = () => {
           body="The device has been created"
         />
       );
-      showNotification(toast, alert);
+      showNotification(alert);
       setSubmitted(true);
     });
   };

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { toast } from "react-toastify";
 
 import TextInput from "../commonComponents/TextInput";
 import Button from "../commonComponents/Button/Button";
@@ -60,7 +59,6 @@ const ManageOrganization: React.FC<Props> = (props) => {
       props.onSave(organization);
     } else {
       showNotification(
-        toast,
         <Alert
           type="error"
           title="Information missing"

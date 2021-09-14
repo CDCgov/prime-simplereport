@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { useLazyQuery } from "@apollo/client";
 
 import Alert from "../../commonComponents/Alert";
@@ -183,7 +182,6 @@ const ManageUsers: React.FC<Props> = ({
         );
         setIsUpdating(false);
         showNotification(
-          toast,
           <Alert
             type="success"
             title="Changes Saved"
@@ -226,7 +224,6 @@ const ManageUsers: React.FC<Props> = ({
       await getUsers();
       const fullName = displayFullName(firstName, "", lastName);
       showNotification(
-        toast,
         <Alert
           type="success"
           title={`Invitation sent to ${fullName}`}
@@ -255,7 +252,6 @@ const ManageUsers: React.FC<Props> = ({
       );
       updateShowResetPasswordModal(false);
       showNotification(
-        toast,
         <Alert type="success" title={`Password reset for ${fullName}`} />
       );
     } catch (e) {
@@ -279,7 +275,6 @@ const ManageUsers: React.FC<Props> = ({
       updateShowDeleteUserModal(false);
       setDeletedUserId(userId);
       showNotification(
-        toast,
         <Alert type="success" title={`User account removed for ${fullName}`} />
       );
       await getUsers();
@@ -303,7 +298,6 @@ const ManageUsers: React.FC<Props> = ({
       updateShowReactivateUserModal(false);
       reload();
       showNotification(
-        toast,
         <Alert type="success" title={`${fullName} has been reactivated.`} />
       );
     } catch (e) {

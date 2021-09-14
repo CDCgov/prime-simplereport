@@ -5,7 +5,6 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
-import { toast } from "react-toastify";
 import { gql, useMutation, useLazyQuery, useQuery } from "@apollo/client";
 import {
   useAppInsightsContext,
@@ -269,7 +268,7 @@ const AddToQueueSearchBox = ({
           ),
         };
         const alert = <Alert type={type} title={title} body={body} />;
-        showNotification(toast, alert);
+        showNotification(alert);
         refetchQueue();
         if (createOrUpdate === "create") {
           return res.data.addPatientToQueue;

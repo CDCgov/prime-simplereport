@@ -1,6 +1,5 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { Prompt } from "react-router-dom";
-import { toast } from "react-toastify";
 import { SchemaOf } from "yup";
 import { useTranslation } from "react-i18next";
 
@@ -234,7 +233,7 @@ const PersonForm = (props: Props) => {
           document.getElementsByName(name)[0]?.focus();
           focusedOnError = true;
         }
-        showError(toast, t("patient.form.errors.validationMsg"), error);
+        showError(t("patient.form.errors.validationMsg"), error);
       });
       return;
     }

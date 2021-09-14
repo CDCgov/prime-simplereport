@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { gql, useLazyQuery, useMutation } from "@apollo/client";
-import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
@@ -250,7 +249,6 @@ const AddPatient = () => {
       },
     });
     showNotification(
-      toast,
       <Alert
         type="success"
         title={`${PATIENT_TERM_CAP} record created`}

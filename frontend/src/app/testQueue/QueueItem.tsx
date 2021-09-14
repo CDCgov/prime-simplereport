@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { toast } from "react-toastify";
 import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
 import {
@@ -311,11 +310,11 @@ const QueueItem = ({
           body="The phone number provided may not be valid or may not be able to accept text messages"
         />
       );
-      showNotification(toast, deliveryFailureAlert);
+      showNotification(deliveryFailureAlert);
     }
 
     let alert = <Alert type="success" title={title} body={body} />;
-    showNotification(toast, alert);
+    showNotification(alert);
   };
 
   const onTestResultSubmit = async (forceSubmit: boolean = false) => {
