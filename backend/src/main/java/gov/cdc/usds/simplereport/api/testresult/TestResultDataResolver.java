@@ -8,7 +8,6 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.dataloader.PatientLinkDataLoader;
 import graphql.kickstart.execution.context.GraphQLContext;
 import graphql.kickstart.tools.GraphQLResolver;
@@ -51,22 +50,6 @@ public class TestResultDataResolver
 
   public LocalDate getSymptomOnset(TestEvent testEvent) {
     return getSurvey(testEvent).getSymptomOnsetDate();
-  }
-
-  public Boolean getFirstTest(TestEvent testEvent) {
-    return getSurvey(testEvent).getFirstTest();
-  }
-
-  public LocalDate getPriorTestDate(TestEvent testEvent) {
-    return getSurvey(testEvent).getPriorTestDate();
-  }
-
-  public String getPriorTestType(TestEvent testEvent) {
-    return getSurvey(testEvent).getPriorTestType();
-  }
-
-  public TestResult getPriorTestResult(TestEvent testEvent) {
-    return getSurvey(testEvent).getPriorTestResult();
   }
 
   public TestDescription getTestPerformed(TestEvent event) {

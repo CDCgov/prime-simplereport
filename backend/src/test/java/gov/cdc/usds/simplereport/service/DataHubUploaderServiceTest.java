@@ -28,8 +28,7 @@ class DataHubUploaderServiceTest extends BaseServiceTest<DataHubUploaderService>
   void serialization() {
     Organization o = _dataFactory.createValidOrg();
     Facility f = _dataFactory.createValidFacility(o);
-    AskOnEntrySurvey s =
-        new AskOnEntrySurvey(null, Collections.emptyMap(), null, null, null, null, null, null);
+    AskOnEntrySurvey s = new AskOnEntrySurvey(null, Collections.emptyMap(), null, null);
     TestResult r = TestResult.NEGATIVE;
     Date d = new Date();
 
@@ -81,10 +80,10 @@ class DataHubUploaderServiceTest extends BaseServiceTest<DataHubUploaderService>
     var siteOfCare2 = entry2.getSiteOfCare();
 
     var serialized =
-        "\"Corrected_result_ID\",\"Date_result_released\",\"Device_ID\",\"Employed_in_healthcare\",\"First_test\",\"Illness_onset_date\",\"Instrument_ID\",\"Order_test_date\",\"Ordered_test_code\",\"Ordering_facility_city\",\"Ordering_facility_county\",\"Ordering_facility_email\",\"Ordering_facility_name\",\"Ordering_facility_phone_number\",\"Ordering_facility_state\",\"Ordering_facility_street\",\"Ordering_facility_street_2\",\"Ordering_facility_zip_code\",\"Ordering_provider_ID\",\"Ordering_provider_city\",\"Ordering_provider_county\",\"Ordering_provider_first_name\",\"Ordering_provider_last_name\",\"Ordering_provider_phone_number\",\"Ordering_provider_state\",\"Ordering_provider_street\",\"Ordering_provider_street_2\",\"Ordering_provider_zip_code\",\"Organization_name\",\"Patient_DOB\",\"Patient_ID\",\"Patient_city\",\"Patient_county\",\"Patient_email\",\"Patient_ethnicity\",\"Patient_first_name\",\"Patient_gender\",\"Patient_last_name\",\"Patient_middle_name\",\"Patient_phone_number\",\"Patient_preferred_language\",\"Patient_race\",\"Patient_role\",\"Patient_state\",\"Patient_street\",\"Patient_street_2\",\"Patient_suffix\",\"Patient_tribal_affiliation\",\"Patient_zip_code\",\"Processing_mode_code\",\"Resident_congregate_setting\",\"Result_ID\",\"Site_of_care\",\"Specimen_collection_date_time\",\"Specimen_source_site_code\",\"Specimen_type_code\",\"Symptomatic_for_disease\",\"Test_date\",\"Test_result_code\",\"Test_result_status\",\"Testing_lab_CLIA\",\"Testing_lab_city\",\"Testing_lab_county\",\"Testing_lab_name\",\"Testing_lab_phone_number\",\"Testing_lab_state\",\"Testing_lab_street\",\"Testing_lab_street_2\",\"Testing_lab_zip_code\"\n"
+        "\"Corrected_result_ID\",\"Date_result_released\",\"Device_ID\",\"Employed_in_healthcare\",\"Illness_onset_date\",\"Instrument_ID\",\"Order_test_date\",\"Ordered_test_code\",\"Ordering_facility_city\",\"Ordering_facility_county\",\"Ordering_facility_email\",\"Ordering_facility_name\",\"Ordering_facility_phone_number\",\"Ordering_facility_state\",\"Ordering_facility_street\",\"Ordering_facility_street_2\",\"Ordering_facility_zip_code\",\"Ordering_provider_ID\",\"Ordering_provider_city\",\"Ordering_provider_county\",\"Ordering_provider_first_name\",\"Ordering_provider_last_name\",\"Ordering_provider_phone_number\",\"Ordering_provider_state\",\"Ordering_provider_street\",\"Ordering_provider_street_2\",\"Ordering_provider_zip_code\",\"Organization_name\",\"Patient_DOB\",\"Patient_ID\",\"Patient_city\",\"Patient_county\",\"Patient_email\",\"Patient_ethnicity\",\"Patient_first_name\",\"Patient_gender\",\"Patient_last_name\",\"Patient_middle_name\",\"Patient_phone_number\",\"Patient_preferred_language\",\"Patient_race\",\"Patient_role\",\"Patient_state\",\"Patient_street\",\"Patient_street_2\",\"Patient_suffix\",\"Patient_tribal_affiliation\",\"Patient_zip_code\",\"Processing_mode_code\",\"Resident_congregate_setting\",\"Result_ID\",\"Site_of_care\",\"Specimen_collection_date_time\",\"Specimen_source_site_code\",\"Specimen_type_code\",\"Symptomatic_for_disease\",\"Test_date\",\"Test_result_code\",\"Test_result_status\",\"Testing_lab_CLIA\",\"Testing_lab_city\",\"Testing_lab_county\",\"Testing_lab_name\",\"Testing_lab_phone_number\",\"Testing_lab_state\",\"Testing_lab_street\",\"Testing_lab_street_2\",\"Testing_lab_zip_code\"\n"
             + "\"\",\""
             + entry1.getDateResultReleased()
-            + "\",\"SFN\",\"N\",\"UNK\",\"\",\""
+            + "\",\"SFN\",\"N\",\"\",\""
             + instrumentId1
             + "\",\""
             + entry1.getOrderTestDate()
@@ -103,7 +102,7 @@ class DataHubUploaderServiceTest extends BaseServiceTest<DataHubUploaderService>
             + te2.getPriorCorrectedTestEventId()
             + "\",\""
             + entry2.getDateResultReleased()
-            + "\",\"SFN\",\"Y\",\"UNK\",\"\",\""
+            + "\",\"SFN\",\"Y\",\"\",\""
             + instrumentId2
             + "\",\""
             + entry2.getOrderTestDate()

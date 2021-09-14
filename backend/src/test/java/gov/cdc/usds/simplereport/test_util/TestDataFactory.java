@@ -219,8 +219,7 @@ public class TestDataFactory {
   }
 
   public TestOrder createTestOrder(Person p, Facility f) {
-    AskOnEntrySurvey survey =
-        new AskOnEntrySurvey(null, Collections.emptyMap(), null, null, null, null, null, null);
+    AskOnEntrySurvey survey = new AskOnEntrySurvey(null, Collections.emptyMap(), null, null);
     return createTestOrder(p, f, survey);
   }
 

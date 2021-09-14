@@ -108,10 +108,6 @@ const UPDATE_AOE = gql`
     $symptoms: String
     $symptomOnset: LocalDate
     $pregnancy: String
-    $firstTest: Boolean
-    $priorTestDate: LocalDate
-    $priorTestType: String
-    $priorTestResult: String
     $noSymptoms: Boolean
     $testResultDelivery: TestResultDeliveryPreference
   ) {
@@ -120,10 +116,6 @@ const UPDATE_AOE = gql`
       pregnancy: $pregnancy
       symptoms: $symptoms
       noSymptoms: $noSymptoms
-      firstTest: $firstTest
-      priorTestDate: $priorTestDate
-      priorTestType: $priorTestType
-      priorTestResult: $priorTestResult
       symptomOnset: $symptomOnset
       testResultDelivery: $testResultDelivery
     )
@@ -467,15 +459,10 @@ const QueueItem = ({
       ? moment(answers.symptomOnset).format("YYYY-MM-DD")
       : null;
 
-    const priorTestDate = answers.priorTestDate
-      ? moment(answers.priorTestDate).format("YYYY-MM-DD")
-      : null;
-
     updateAoe({
       variables: {
         ...answers,
         symptomOnset,
-        priorTestDate,
         patientId: patient.internalId,
       },
     })

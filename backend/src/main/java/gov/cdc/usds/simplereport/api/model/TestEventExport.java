@@ -296,11 +296,6 @@ public class TestEventExport {
     return provider.map(Provider::getProviderId).orElse(null);
   }
 
-  @JsonProperty("First_test")
-  public String getFirstTest() {
-    return boolToYesNoUnk(survey.map(AskOnEntrySurvey::getFirstTest));
-  }
-
   @JsonProperty("Symptomatic_for_disease")
   public String getSymptomaticForDisease() {
     return boolToYesNoUnk(survey.map(AskOnEntrySurvey::getNoSymptoms).map(b -> !b));

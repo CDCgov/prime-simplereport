@@ -98,7 +98,6 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + testEventExport.getSpecimenCollectionDateTime()
             + "\","
             + "\"Ordering_provider_ID\":\"PEBBLES\","
-            + "\"First_test\":\"UNK\","
             + "\"Symptomatic_for_disease\":\"UNK\","
             + "\"Illness_onset_date\":\"\","
             + "\"Testing_lab_name\":\"Injection Site\","

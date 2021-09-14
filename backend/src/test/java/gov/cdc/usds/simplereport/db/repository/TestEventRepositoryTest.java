@@ -143,13 +143,8 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
   }
 
   private void compareAskOnEntrySurvey(AskOnEntrySurvey a1, AskOnEntrySurvey a2) {
-    assertEquals(a1.getFirstTest(), a2.getFirstTest());
     assertEquals(a1.getNoSymptoms(), a2.getNoSymptoms());
-    assertEquals(a1.getFirstTest(), a2.getFirstTest());
     assertEquals(a1.getPregnancy(), a2.getPregnancy());
-    assertEquals(a1.getPriorTestDate(), a2.getPriorTestDate());
-    assertEquals(a1.getPriorTestResult(), a2.getPriorTestResult());
-    assertEquals(a1.getPriorTestType(), a2.getPriorTestType());
     assertEquals(a1.getSymptomOnsetDate(), a2.getSymptomOnsetDate());
   }
 

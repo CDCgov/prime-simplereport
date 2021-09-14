@@ -6,7 +6,6 @@ import moment from "moment";
 import * as utils from "../utils/index";
 
 import QueueItem, { EDIT_QUEUE_ITEM, SUBMIT_TEST_RESULT } from "./QueueItem";
-import { LAST_TEST_QUERY } from "./AoEForm/AoEModalForm";
 
 const initialDateString = "2021-02-14";
 const updatedDateString = "2021-03-10";
@@ -433,24 +432,6 @@ const mocks = [
             internalId: internalId,
           },
           deliverySuccess: false,
-        },
-      },
-    },
-  },
-  {
-    request: {
-      query: LAST_TEST_QUERY,
-      variables: {
-        patientId: "f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554",
-      },
-    },
-    result: {
-      data: {
-        patient: {
-          lastTest: {
-            dateTested: "2021-06-04T16:01:00",
-            result: "NEGATIVE",
-          },
         },
       },
     },

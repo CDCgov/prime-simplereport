@@ -113,10 +113,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p,
         "",
         Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
 
@@ -176,10 +172,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p,
         "",
         Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
 
@@ -222,10 +214,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
                 p,
                 "",
                 Collections.<String, Boolean>emptyMap(),
-                false,
-                LocalDate.of(1865, 12, 25),
-                "",
-                TestResult.POSITIVE,
                 LocalDate.of(1865, 12, 25),
                 false));
 
@@ -235,10 +223,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p,
         "",
         Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
     TestUserIdentities.setFacilityAuthorities();
@@ -283,10 +267,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p,
         "",
         Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
     DeviceType devA = _dataFactory.getGenericDevice();
@@ -331,10 +311,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p,
         "",
         Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
     DeviceType devA = _dataFactory.getGenericDevice();
@@ -406,10 +382,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p1,
         "",
         Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
     _service.addPatientToQueue(
@@ -417,10 +389,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p2,
         "",
         Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.NEGATIVE,
         LocalDate.of(1865, 12, 25),
         false);
 
@@ -467,10 +435,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p,
         "",
         Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
     DeviceType devA = _dataFactory.getGenericDevice();
@@ -497,10 +461,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p,
         "",
         Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
     DeviceType devA = _dataFactory.getGenericDevice();
@@ -528,10 +488,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p,
         "",
         Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
     DeviceType devA = _dataFactory.getGenericDevice();
@@ -580,10 +536,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             p,
             "",
             Collections.<String, Boolean>emptyMap(),
-            false,
-            LocalDate.of(1865, 12, 25),
-            "",
-            TestResult.POSITIVE,
             LocalDate.of(1865, 12, 25),
             false);
     DeviceType devA = _dataFactory.getGenericDevice();
@@ -612,10 +564,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             p,
             "",
             Collections.<String, Boolean>emptyMap(),
-            false,
-            LocalDate.of(1865, 12, 25),
-            "",
-            TestResult.POSITIVE,
             LocalDate.of(1865, 12, 25),
             false);
     TestUserIdentities.setFacilityAuthorities();
@@ -648,10 +596,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             p,
             "",
             Collections.<String, Boolean>emptyMap(),
-            false,
-            LocalDate.of(1865, 12, 25),
-            "",
-            TestResult.POSITIVE,
             LocalDate.of(1865, 12, 25),
             false);
     DeviceType devA = _dataFactory.getGenericDevice();
@@ -679,10 +623,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             p,
             "",
             Collections.<String, Boolean>emptyMap(),
-            false,
-            LocalDate.of(1865, 12, 25),
-            "",
-            TestResult.POSITIVE,
             LocalDate.of(1865, 12, 25),
             false);
     DeviceType devA = _dataFactory.getGenericDevice();
@@ -833,10 +773,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p1,
         "",
         Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
 
@@ -874,10 +810,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
           p,
           "",
           Collections.<String, Boolean>emptyMap(),
-          false,
-          LocalDate.of(1865, 12, 25),
-          "",
-          TestResult.POSITIVE,
           LocalDate.of(1865, 12, 25),
           false);
     }
@@ -1134,39 +1066,17 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     patientsToRoles.put(LEELOO, PersonRole.STUDENT);
 
     Map<PersonName, AskOnEntrySurvey> patientsToSurveys = new HashMap<>();
-    patientsToSurveys.put(
-        AMOS,
-        new AskOnEntrySurvey(null, Map.of("fake", true), false, null, null, null, null, null));
-    patientsToSurveys.put(
-        CHARLES,
-        new AskOnEntrySurvey(null, Collections.emptyMap(), false, null, null, null, null, null));
-    patientsToSurveys.put(
-        DEXTER,
-        new AskOnEntrySurvey(null, Collections.emptyMap(), true, null, null, null, null, null));
-    patientsToSurveys.put(
-        ELIZABETH,
-        new AskOnEntrySurvey(null, Map.of("fake", true), false, null, null, null, null, null));
-    patientsToSurveys.put(
-        FRANK,
-        new AskOnEntrySurvey(null, Collections.emptyMap(), false, null, null, null, null, null));
-    patientsToSurveys.put(
-        GALE,
-        new AskOnEntrySurvey(null, Collections.emptyMap(), true, null, null, null, null, null));
-    patientsToSurveys.put(
-        HEINRICK,
-        new AskOnEntrySurvey(null, Map.of("fake", true), false, null, null, null, null, null));
-    patientsToSurveys.put(
-        IAN,
-        new AskOnEntrySurvey(null, Collections.emptyMap(), false, null, null, null, null, null));
-    patientsToSurveys.put(
-        JANNELLE,
-        new AskOnEntrySurvey(null, Collections.emptyMap(), true, null, null, null, null, null));
-    patientsToSurveys.put(
-        KACEY,
-        new AskOnEntrySurvey(null, Map.of("fake", true), false, null, null, null, null, null));
-    patientsToSurveys.put(
-        LEELOO,
-        new AskOnEntrySurvey(null, Collections.emptyMap(), false, null, null, null, null, null));
+    patientsToSurveys.put(AMOS, new AskOnEntrySurvey(null, Map.of("fake", true), false, null));
+    patientsToSurveys.put(CHARLES, new AskOnEntrySurvey(null, Collections.emptyMap(), false, null));
+    patientsToSurveys.put(DEXTER, new AskOnEntrySurvey(null, Collections.emptyMap(), true, null));
+    patientsToSurveys.put(ELIZABETH, new AskOnEntrySurvey(null, Map.of("fake", true), false, null));
+    patientsToSurveys.put(FRANK, new AskOnEntrySurvey(null, Collections.emptyMap(), false, null));
+    patientsToSurveys.put(GALE, new AskOnEntrySurvey(null, Collections.emptyMap(), true, null));
+    patientsToSurveys.put(HEINRICK, new AskOnEntrySurvey(null, Map.of("fake", true), false, null));
+    patientsToSurveys.put(IAN, new AskOnEntrySurvey(null, Collections.emptyMap(), false, null));
+    patientsToSurveys.put(JANNELLE, new AskOnEntrySurvey(null, Collections.emptyMap(), true, null));
+    patientsToSurveys.put(KACEY, new AskOnEntrySurvey(null, Map.of("fake", true), false, null));
+    patientsToSurveys.put(LEELOO, new AskOnEntrySurvey(null, Collections.emptyMap(), false, null));
 
     List<TestEvent> testEvents =
         patientsToResults.keySet().stream()

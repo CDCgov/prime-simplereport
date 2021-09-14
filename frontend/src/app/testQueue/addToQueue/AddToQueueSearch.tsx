@@ -85,10 +85,6 @@ export const ADD_PATIENT_TO_QUEUE = gql`
     $symptoms: String
     $symptomOnset: LocalDate
     $pregnancy: String
-    $firstTest: Boolean
-    $priorTestDate: LocalDate
-    $priorTestType: String
-    $priorTestResult: String
     $noSymptoms: Boolean
     $testResultDelivery: TestResultDeliveryPreference
   ) {
@@ -98,10 +94,6 @@ export const ADD_PATIENT_TO_QUEUE = gql`
       pregnancy: $pregnancy
       noSymptoms: $noSymptoms
       symptoms: $symptoms
-      firstTest: $firstTest
-      priorTestDate: $priorTestDate
-      priorTestType: $priorTestType
-      priorTestResult: $priorTestResult
       symptomOnset: $symptomOnset
       testResultDelivery: $testResultDelivery
     )
@@ -114,10 +106,6 @@ const UPDATE_AOE = gql`
     $symptoms: String
     $symptomOnset: LocalDate
     $pregnancy: String
-    $firstTest: Boolean
-    $priorTestDate: LocalDate
-    $priorTestType: String
-    $priorTestResult: String
     $noSymptoms: Boolean
     $testResultDelivery: TestResultDeliveryPreference
   ) {
@@ -126,10 +114,6 @@ const UPDATE_AOE = gql`
       pregnancy: $pregnancy
       symptoms: $symptoms
       noSymptoms: $noSymptoms
-      firstTest: $firstTest
-      priorTestDate: $priorTestDate
-      priorTestType: $priorTestType
-      priorTestResult: $priorTestResult
       symptomOnset: $symptomOnset
       testResultDelivery: $testResultDelivery
     )
@@ -229,10 +213,6 @@ const AddToQueueSearchBox = ({
       symptoms,
       symptomOnset,
       pregnancy,
-      firstTest,
-      priorTestResult,
-      priorTestDate,
-      priorTestType,
       testResultDelivery,
     }: AoEAnswersDelivery,
     createOrUpdate = "create"
@@ -249,10 +229,6 @@ const AddToQueueSearchBox = ({
       symptoms,
       symptomOnset,
       pregnancy,
-      firstTest,
-      priorTestDate,
-      priorTestType,
-      priorTestResult,
       testResultDelivery,
     };
     if (createOrUpdate === "create") {

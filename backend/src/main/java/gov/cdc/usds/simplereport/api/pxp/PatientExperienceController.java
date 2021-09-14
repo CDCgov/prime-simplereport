@@ -16,7 +16,6 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestEventService;
@@ -132,14 +131,7 @@ public class PatientExperienceController {
     Map<String, Boolean> symptomsMap = parseSymptoms(data.getSymptoms());
 
     _tos.updateMyTimeOfTestQuestions(
-        data.getPregnancy(),
-        symptomsMap,
-        data.isFirstTest(),
-        data.getPriorTestDate(),
-        data.getPriorTestType(),
-        data.getPriorTestResult() == null ? null : TestResult.valueOf(data.getPriorTestResult()),
-        data.getSymptomOnset(),
-        data.getNoSymptoms());
+        data.getPregnancy(), symptomsMap, data.getSymptomOnset(), data.getNoSymptoms());
 
     _ps.updateMyTestResultDeliveryPreference(data.getTestResultDelivery());
     _pls.expireMyPatientLink();
