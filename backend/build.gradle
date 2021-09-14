@@ -154,15 +154,20 @@ jacocoTestReport {
     dependsOn test // tests are required to run before generating the report
 }
 
+// Prefer SPRING_DATASOURCE_URL if provided
+def dbConnectionString = System.getenv("SPRING_DATASOURCE_URL") ?: "jdbc:postgresql://127.0.0.1:${System.getenv("SR_DB_PORT") ?: 5432}/simple_report"
+// If SPRING_DATASOURCE_URL is provided, assume target DB is non-local and schema is "public"
+def defaultSchema = System.getenv("SPRING_DATASOURCE_URL") ? "public" : "simple_report"
+
 liquibase {
     activities {
         main {
             driver "org.postgresql.Driver"
             changeLogFile "/db/changelog/db.changelog-master.yaml"
-            url "jdbc:postgresql://127.0.0.1:${System.getenv("SR_DB_PORT") ?: 5432}/simple_report"
+            url dbConnectionString
             username "postgres"
             password "admin_password_for_local_dev_is_not_very_secure"
-            defaultSchemaName "simple_report"
+            defaultSchemaName defaultSchema
             classpath "src/main/resources"
             // this shadows application.yaml: should probably be in a shared properties file
             changeLogParameters noPhiUsername: "simple_report_no_phi"

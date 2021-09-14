@@ -60,3 +60,36 @@ resource "azurerm_private_dns_zone" "default" {
   name                = "privatelink.postgres.database.azure.com"
   resource_group_name = var.resource_group_name
 }
+
+# Subnet + network profile for Azure Container Instances
+
+resource "azurerm_subnet" "container_instances" {
+  name                 = "${var.env}-azure-container-instances"
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = "simple-report-test-network"
+  address_prefixes     = ["10.3.101.0/24"]
+
+  delegation {
+    name = "${var.env}-container-instances"
+
+    service_delegation {
+      name    = "Microsoft.ContainerInstance/containerGroups"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+    }
+  }
+}
+
+resource "azurerm_network_profile" "container_instances" {
+  name                = "${var.env}-azure-container-instances"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+
+  container_network_interface {
+    name = "${var.env}-container-instances"
+
+    ip_configuration {
+      name      = "${var.env}-container-instances"
+      subnet_id = azurerm_subnet.container_instances.id
+    }
+  }
+}

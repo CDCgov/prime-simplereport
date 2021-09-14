@@ -1,1 +1,1 @@
-spring.datasource.url: jdbc:postgresql://db:${SR_DB_PORT:5432}/simple_report
+spring.datasource.url: jdbc:postgresql://prime_sr_db:${SR_DB_PORT:5432}/simple_report

@@ -43,12 +43,12 @@ api.tfvars: /dev/null
 	echo "deploy_actor=\"$(GITHUB_ACTOR)\"" >> $@;
 
 init-%: .valid-env-%
-	terraform -chdir=$* init
 	terraform -chdir=$*/persistent init
+	terraform -chdir=$* init
 
 deploy-%: .valid-env-% api.tfvars
-	terraform -chdir=$* apply -auto-approve -var-file=../api.tfvars
 	terraform -chdir=$*/persistent apply -auto-approve
+	terraform -chdir=$* apply -auto-approve -var-file=../api.tfvars
 
 promote-%: .be-logged-in .valid-env-%
 	az webapp deployment slot swap -g prime-simple-report-$* -n $(API_NAME) --slot $(SOURCE_SLOT) --target-slot $(TARGET_SLOT)

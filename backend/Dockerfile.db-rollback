@@ -1,0 +1,15 @@
+FROM gradle:6.9.1-jdk11-hotspot AS build
+
+WORKDIR /home/gradle/graphql-api
+COPY --chown=gradle:gradle ./.git ./.git
+
+WORKDIR /home/gradle/graphql-api/backend
+COPY --chown=gradle:gradle backend/gradle ./gradle
+COPY --chown=gradle:gradle backend/*.gradle ./
+COPY --chown=gradle:gradle ./backend/config ./config
+COPY --chown=gradle:gradle ./backend/src ./src
+COPY --chown=gradle:gradle ./backend/gradle.properties gradle.properties
+COPY --chown=gradle:gradle ./backend/db_rollback_to_tag.sh ./db_rollback_to_tag.sh
+
+# Indefinite keep-alive
+ENTRYPOINT ["./db_rollback_to_tag.sh"]

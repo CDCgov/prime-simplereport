@@ -32,3 +32,9 @@ variable "deploy_actor" {
   type        = string
   default     = ""
 }
+
+variable "liquibase_rollback_tag" {
+  description = "If defined, attempt to roll DB back to this tag"
+  type        = string
+  default     = null
+}
