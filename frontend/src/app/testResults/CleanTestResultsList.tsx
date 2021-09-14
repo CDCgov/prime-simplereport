@@ -1,4 +1,4 @@
-// this component removes the filter search params from the url
+// this component removes all filter search params from the url
 import qs from "querystring";
 
 import { useHistory } from "react-router-dom";

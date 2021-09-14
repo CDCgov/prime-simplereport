@@ -119,20 +119,18 @@ const App = () => {
               )}
             />
             <ProtectedRoute
-              path="/results/"
-              render={() => <CleanTestResultsList />}
-              requiredPermissions={appPermissions.results.canView}
-              userPermissions={data.whoami.permissions}
-              exact={true}
-            />
-            <ProtectedRoute
               path="/results/:page"
               render={({ match }: any) => {
                 return <TestResultsList pageNumber={match.params.page} />;
               }}
               requiredPermissions={appPermissions.results.canView}
               userPermissions={data.whoami.permissions}
-              exact={true}
+            />
+            <ProtectedRoute
+              path="/results/"
+              render={() => <CleanTestResultsList />}
+              requiredPermissions={appPermissions.results.canView}
+              userPermissions={data.whoami.permissions}
             />
             <ProtectedRoute
               path={`/patients/:page?`}
