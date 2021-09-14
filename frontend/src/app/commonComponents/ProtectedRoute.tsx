@@ -9,6 +9,7 @@ interface Props {
   path: string;
   component?: React.FC<any>;
   render?: any;
+  exact?: boolean;
 }
 const ProtectedRoute: React.FC<Props> = ({
   requiredPermissions,

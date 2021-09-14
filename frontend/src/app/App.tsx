@@ -8,7 +8,9 @@ import ProtectedRoute from "./commonComponents/ProtectedRoute";
 import Header from "./commonComponents/Header";
 import Page from "./commonComponents/Page/Page";
 import { setInitialState } from "./store";
-import TestResultsList from "./testResults/TestResultsList";
+import TestResultsList, {
+  CleanTestResultsList,
+} from "./testResults/TestResultsList";
 import TestQueueContainer from "./testQueue/TestQueueContainer";
 import ManagePatientsContainer from "./patients/ManagePatientsContainer";
 import EditPatientContainer from "./patients/EditPatientContainer";
@@ -118,12 +120,20 @@ const App = () => {
               )}
             />
             <ProtectedRoute
-              path="/results/:page?"
+              path="/results/"
+              render={() => <CleanTestResultsList />}
+              requiredPermissions={appPermissions.results.canView}
+              userPermissions={data.whoami.permissions}
+              exact={true}
+            />
+            <ProtectedRoute
+              path="/results/:page"
               render={({ match }: any) => {
                 return <TestResultsList pageNumber={match.params.page} />;
               }}
               requiredPermissions={appPermissions.results.canView}
               userPermissions={data.whoami.permissions}
+              exact={true}
             />
             <ProtectedRoute
               path={`/patients/:page?`}

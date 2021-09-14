@@ -601,15 +601,6 @@ const TestResultsList = (props: TestResultsListProps) => {
   const role = getParameterFromUrl("role", history.location);
   const result = getParameterFromUrl("result", history.location);
 
-  useEffect(
-    () => () => {
-      history.replace({
-        search: qs.stringify({ facility: activeFacilityId }),
-      });
-    },
-    [history, activeFacilityId]
-  );
-
   const filterParams: FilterParams = {
     ...(patientId && { patientId: patientId }),
     ...(startDate && { startDate: startDate }),
@@ -705,6 +696,22 @@ const TestResultsList = (props: TestResultsListProps) => {
       refetch={refetch}
     />
   );
+};
+
+// this component removes the filter search params from the url
+export const CleanTestResultsList = () => {
+  const history = useHistory();
+  const [facility] = useSelectedFacility();
+  const activeFacilityId = facility?.id || "";
+
+  history.push({
+    pathname: "/results/1",
+    search: qs.stringify({
+      facility: activeFacilityId,
+    }),
+  });
+
+  return <></>;
 };
 
 export default TestResultsList;
