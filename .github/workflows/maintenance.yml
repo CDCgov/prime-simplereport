@@ -20,8 +20,7 @@ jobs:
     strategy:
       matrix:
         deploy-env:
-          ["dev"]
-          # ["demo", "dev", "pentest", "prod", "stg", "test", "training"]
+          ["demo", "dev", "pentest", "prod", "stg", "test", "training"]
     steps:
       - uses: azure/login@v1
         with:
@@ -29,6 +28,6 @@ jobs:
       - name: Push maintenance.json
         shell: bash
         run: |
-          echo '{"active": true, "message": "Our engineers are actively working to fix the issue."}' > maintenance.json
+          echo '{"active": false, "message": ""}' > maintenance.json
           az storage blob upload -f maintenance.json -n maintenance.json -c '$web' \
             --account-name simplereport${{ matrix.deploy-env }}app
