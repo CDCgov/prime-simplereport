@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.testresult;
 
 import gov.cdc.usds.simplereport.api.Translators;
+import gov.cdc.usds.simplereport.api.model.TestMetrics;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -61,5 +62,9 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
 
   public TestEvent getTestResult(UUID id) {
     return tos.getTestResult(id);
+  }
+
+  public TestMetrics getDashboardMetrics(UUID facilityId, Date startDate, Date endDate) {
+    return new TestMetrics(0, 0);
   }
 }

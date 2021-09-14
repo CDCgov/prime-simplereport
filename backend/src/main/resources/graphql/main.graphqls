@@ -212,6 +212,11 @@ type TestResult {
   patientLink: PatientLink
 }
 
+type TestMetrics {
+  positiveTests: Int,
+  totalTests: Int
+}
+
 type AddTestResultResponse {
   testResult: TestOrder!
   deliverySuccess: Boolean
@@ -278,6 +283,8 @@ type Query {
     endDate: DateTime
   ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
+    @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  dashboardMetrics(facilityId: ID, startDate: DateTime, endDate: DateTime): TestMetrics
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
   usersWithStatus: [ApiUserWithStatus] @requiredPermissions(allOf: ["MANAGE_USERS"])
