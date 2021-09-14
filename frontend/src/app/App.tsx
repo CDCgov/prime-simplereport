@@ -21,6 +21,7 @@ import Settings from "./Settings/Settings";
 import { getAppInsights } from "./TelemetryService";
 import VersionEnforcer from "./VersionEnforcer";
 import { TrainingNotification } from "./commonComponents/TrainingNotification";
+import { MaintenanceBanner } from "./commonComponents/MaintenanceBanner";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -93,6 +94,7 @@ const App = () => {
   return (
     <>
       <VersionEnforcer />
+      <MaintenanceBanner />
       {process.env.REACT_APP_IS_TRAINING_SITE === "true" && (
         <TrainingNotification />
       )}

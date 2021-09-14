@@ -62,6 +62,21 @@ resource "azurerm_cdn_endpoint" "cdn_endpoint" {
       transforms   = ["Lowercase"]
     }
   }
+
+  delivery_rule {
+    name  = "bypassMaintenanceJsonCache"
+    order = 2
+
+    cache_expiration_action {
+      behavior = "BypassCache"
+    }
+
+    url_file_name_condition {
+      operator     = "Equal"
+      match_values = ["maintenance.json"]
+      transforms   = ["Lowercase"]
+    }
+  }
 }
 
 

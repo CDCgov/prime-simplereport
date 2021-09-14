@@ -19,7 +19,7 @@ import classnames from "classnames";
  * @param {string} role  ARIA role type
  */
 
-export type AlertType = "info" | "success" | "warning" | "error";
+export type AlertType = "info" | "success" | "warning" | "error" | "emergency";
 export interface AlertContent {
   type: AlertType;
   title: string;
