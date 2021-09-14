@@ -66,8 +66,8 @@ resource "azurerm_private_dns_zone" "default" {
 resource "azurerm_subnet" "container_instances" {
   name                 = "${var.env}-azure-container-instances"
   resource_group_name  = var.resource_group_name
-  virtual_network_name = "simple-report-test-network"
-  address_prefixes     = ["10.3.101.0/24"]
+  virtual_network_name = azurerm_virtual_network.vn.name
+  address_prefixes     = [cidrsubnet(var.network_address, 8, 101)] # X.X.101.0/24
 
   delegation {
     name = "${var.env}-container-instances"
