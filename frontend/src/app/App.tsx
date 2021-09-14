@@ -8,9 +8,8 @@ import ProtectedRoute from "./commonComponents/ProtectedRoute";
 import Header from "./commonComponents/Header";
 import Page from "./commonComponents/Page/Page";
 import { setInitialState } from "./store";
-import TestResultsList, {
-  CleanTestResultsList,
-} from "./testResults/TestResultsList";
+import TestResultsList from "./testResults/TestResultsList";
+import CleanTestResultsList from "./testResults/CleanTestResultsList";
 import TestQueueContainer from "./testQueue/TestQueueContainer";
 import ManagePatientsContainer from "./patients/ManagePatientsContainer";
 import EditPatientContainer from "./patients/EditPatientContainer";

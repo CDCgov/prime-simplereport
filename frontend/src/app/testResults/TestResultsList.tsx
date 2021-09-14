@@ -698,20 +698,4 @@ const TestResultsList = (props: TestResultsListProps) => {
   );
 };
 
-// this component removes the filter search params from the url
-export const CleanTestResultsList = () => {
-  const history = useHistory();
-  const [facility] = useSelectedFacility();
-  const activeFacilityId = facility?.id || "";
-
-  history.push({
-    pathname: "/results/1",
-    search: qs.stringify({
-      facility: activeFacilityId,
-    }),
-  });
-
-  return <></>;
-};
-
 export default TestResultsList;
