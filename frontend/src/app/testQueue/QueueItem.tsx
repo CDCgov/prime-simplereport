@@ -32,6 +32,7 @@ import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
 import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
 import { QueueItemSubmitLoader } from "./QueueItemSubmitLoader";
+import { UPDATE_AOE } from "./addToQueue/AddToQueueSearch";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
 
@@ -99,34 +100,6 @@ export const SUBMIT_TEST_RESULT = gql`
       }
       deliverySuccess
     }
-  }
-`;
-
-const UPDATE_AOE = gql`
-  mutation UpdateAOE(
-    $patientId: ID!
-    $symptoms: String
-    $symptomOnset: LocalDate
-    $pregnancy: String
-    $firstTest: Boolean
-    $priorTestDate: LocalDate
-    $priorTestType: String
-    $priorTestResult: String
-    $noSymptoms: Boolean
-    $testResultDelivery: TestResultDeliveryPreference
-  ) {
-    updateTimeOfTestQuestions(
-      patientId: $patientId
-      pregnancy: $pregnancy
-      symptoms: $symptoms
-      noSymptoms: $noSymptoms
-      firstTest: $firstTest
-      priorTestDate: $priorTestDate
-      priorTestType: $priorTestType
-      priorTestResult: $priorTestResult
-      symptomOnset: $symptomOnset
-      testResultDelivery: $testResultDelivery
-    )
   }
 `;
 

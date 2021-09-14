@@ -13,15 +13,7 @@ import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 import { OrganizationOptions } from "./OrganizationDropDown";
 import AddOrganizationAdminForm from "./AddOrganizationAdminForm";
-
-const GET_ORGANIZATIONS_QUERY = gql`
-  query GetOrganizations($identityVerified: Boolean) {
-    organizations(identityVerified: $identityVerified) {
-      externalId
-      name
-    }
-  }
-`;
+import { GET_ORGANIZATIONS_QUERY } from "./TenantDataAccessFormContainer";
 
 const ADD_USER_MUTATION = gql`
   mutation AddUser(
