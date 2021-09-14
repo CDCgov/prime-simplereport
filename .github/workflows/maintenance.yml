@@ -1,18 +1,15 @@
 name: Maintenance Mode
 
 on:
-  push:
-    branches:
-      - nick/2315-maintenance-banner
-  # workflow_dispatch:
-  #   inputs:
-  #     active:
-  #       description: "Active outage? (true/false)"
-  #       required: true
-  #       default: "true"
-  #     message:
-  #       description: "Message to display"
-  #       required: true
+  workflow_dispatch:
+    inputs:
+      active:
+        description: "Active outage? (true/false)"
+        required: true
+        default: "true"
+      message:
+        description: "Message to display"
+        required: true
 
 jobs:
   pushMaintenanceBlob:
@@ -28,6 +25,6 @@ jobs:
       - name: Push maintenance.json
         shell: bash
         run: |
-          echo '{"active": false, "message": ""}' > maintenance.json
+          echo '{"active": ${{ inputs.active }}, "message": "${{ inputs.message }}"}' > maintenance.json
           az storage blob upload -f maintenance.json -n maintenance.json -c '$web' \
             --account-name simplereport${{ matrix.deploy-env }}app
