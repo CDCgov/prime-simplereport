@@ -1,4 +1,4 @@
-name: Check Graphql Checks
+name: Check Graphql
 
 on:
   workflow_dispatch:
@@ -40,7 +40,9 @@ jobs:
       - name: Check for changes
         run: |
           if [[ -z "$(git status --porcelain)" ]]; then
-            echo "Current generated code does not match code in latest commit. try running `cd frontend/ && yarn codegen`"
+            exit 0
+          else
+            echo "Current generated code does not match code in latest commit. try running cd frontend/ && yarn codegen"
             git diff >> diff.txt
             exit 1
           fi
@@ -48,6 +50,6 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: test-report
-          path: backend/build/reports/tests/test
+          name: files changed
+          path: frontend/diff.txt
           retention-days: 7
