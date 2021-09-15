@@ -68,6 +68,7 @@
     "build": "INLINE_RUNTIME_CHUNK=false REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) craco build",
     "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/static/commit.txt",
     "codegen": "graphql-codegen --config codegen.yml",
+    "codegen:watch": "yarn codegen --watch",
     "lint": "npm-run-all -p lint:eslint lint:prettier lint:stylelint",
     "lint:write": "npm-run-all -p lint:eslint:write lint:prettier:write lint:stylelint:write",
     "lint:eslint": "eslint --quiet 'src/**/*.{js,ts,jsx,tsx}'",
