@@ -30,6 +30,7 @@
   - [ ] Any changes to tables that have custom no-PHI views are accompanied by changes to those views
         (including re-granting permission to the no-PHI user if need be)
   - [ ] Liquibase rollback has been tested locally using `./gradlew liquibaseRollbackSQL` or `liquibaseRollback`
+  - [ ] Each new changeset has a corresponding [tag](https://docs.liquibase.com/change-types/community/tag-database.html)
 - [ ] GraphQL schema changes are backward compatible with older version of the front-end
 
 ### Security
