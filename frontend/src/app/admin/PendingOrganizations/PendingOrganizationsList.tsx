@@ -1,5 +1,4 @@
-import { gql, useQuery, useMutation } from "@apollo/client";
-import React, { useState } from "react";
+import { useState } from "react";
 import classnames from "classnames";
 
 import "./PendingOrganizationsList.scss";
@@ -7,32 +6,17 @@ import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import Checkboxes from "../../commonComponents/Checkboxes";
 import Button from "../../commonComponents/Button/Button";
-
-export const ORGANIZATIONS_QUERY = gql`
-  query GetUnverifiedOrganizations($identityVerified: Boolean) {
-    organizations(identityVerified: $identityVerified) {
-      id
-      name
-      externalId
-      identityVerified
-    }
-  }
-`;
-export const SET_ORG_IDENTITY_VERIFIED_MUTATION = gql`
-  mutation SetOrgIdentityVerified($externalId: String!, $verified: Boolean!) {
-    setOrganizationIdentityVerified(
-      externalId: $externalId
-      verified: $verified
-    )
-  }
-`;
+import {
+  useGetOrganizationsQuery,
+  useSetOrgIdentityVerifiedMutation,
+} from "../../../generated/graphql";
 
 const PendingOrganizationsList = () => {
-  const [verifiedOrgExternalIds, setVerifiedOrgExternalIds] = useState(
-    new Set()
-  );
-  const [verifyIdentity] = useMutation(SET_ORG_IDENTITY_VERIFIED_MUTATION);
-  const { data, refetch, loading, error } = useQuery(ORGANIZATIONS_QUERY, {
+  const [verifiedOrgExternalIds, setVerifiedOrgExternalIds] = useState<
+    Set<string>
+  >(new Set());
+  const [verifyIdentity] = useSetOrgIdentityVerifiedMutation();
+  const { data, refetch, loading, error } = useGetOrganizationsQuery({
     variables: {
       identityVerified: false,
     },
@@ -44,8 +28,7 @@ const PendingOrganizationsList = () => {
     throw error;
   }
   const orgs = data?.organizations || [];
-
-  function adjustVerifiedOrgExternalIds(externalId: String, verified: Boolean) {
+  function adjustVerifiedOrgExternalIds(externalId: string, verified: boolean) {
     const newVerifiedOrgExternalIds = new Set(verifiedOrgExternalIds);
     if (verified) {
       newVerifiedOrgExternalIds.add(externalId);

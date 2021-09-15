@@ -1,0 +1,15 @@
+query GetUnverifiedOrganizations($identityVerified: Boolean) {
+    organizations(identityVerified: $identityVerified) {
+        id
+        name
+        externalId
+        identityVerified
+    }
+}
+
+mutation SetOrgIdentityVerified($externalId: String!, $verified: Boolean!) {
+    setOrganizationIdentityVerified(
+        externalId: $externalId
+        verified: $verified
+    )
+}
