@@ -10,6 +10,7 @@ interface Props {
   verifiedOrgExternalIds: Set<string>;
   submitIdentityVerified: () => void;
   setVerifiedOrganization: (externalId: string, verified: boolean) => void;
+  loading: boolean;
 }
 
 const PendingOrganizations = ({
@@ -17,8 +18,16 @@ const PendingOrganizations = ({
   verifiedOrgExternalIds,
   submitIdentityVerified,
   setVerifiedOrganization,
+  loading,
 }: Props) => {
   const orgRows = () => {
+    if (loading) {
+      return (
+        <tr>
+          <td>Loading Organizations...</td>
+        </tr>
+      );
+    }
     if (organizations.length === 0) {
       return (
         <tr>
@@ -27,30 +36,28 @@ const PendingOrganizations = ({
       );
     }
 
-    return [...organizations].map((o) => {
-      return (
-        <tr key={o.externalId} className="sr-org-row">
-          <th scope="row">{o.name}</th>
-          <th scope="row">{o.externalId}</th>
-          <td>
-            <Checkboxes
-              onChange={(e) =>
-                setVerifiedOrganization(o.externalId, e.target.checked)
-              }
-              name="identity_verified"
-              legend=""
-              boxes={[
-                {
-                  value: "1",
-                  label: "Identity Verified",
-                  checked: verifiedOrgExternalIds.has(o.externalId),
-                },
-              ]}
-            />
-          </td>
-        </tr>
-      );
-    });
+    return [...organizations].map((o) => (
+      <tr key={o.externalId} className="sr-org-row">
+        <th scope="row">{o.name}</th>
+        <th scope="row">{o.externalId}</th>
+        <td>
+          <Checkboxes
+            onChange={(e) =>
+              setVerifiedOrganization(o.externalId, e.target.checked)
+            }
+            name="identity_verified"
+            legend=""
+            boxes={[
+              {
+                value: "1",
+                label: "Identity Verified",
+                checked: verifiedOrgExternalIds.has(o.externalId),
+              },
+            ]}
+          />
+        </td>
+      </tr>
+    ));
   };
 
   return (
@@ -63,7 +70,7 @@ const PendingOrganizations = ({
               <div>
                 <Button
                   className="sr-active-button"
-                  disabled={verifiedOrgExternalIds.size === 0}
+                  disabled={loading || verifiedOrgExternalIds.size === 0}
                   onClick={submitIdentityVerified}
                 >
                   Save Changes

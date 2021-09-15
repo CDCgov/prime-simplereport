@@ -10,7 +10,6 @@ import {
 
 import PendingOrganizations from "./PendingOrganizations";
 
-
 const PendingOrganizationsContainer = () => {
   const [verifiedOrgExternalIds, setVerifiedOrgExternalIds] = useState<
     Set<string>
@@ -21,9 +20,6 @@ const PendingOrganizationsContainer = () => {
       identityVerified: false,
     },
   });
-  if (loading) {
-    return <p>Loading</p>;
-  }
   if (error) {
     throw error;
   }
@@ -73,6 +69,7 @@ const PendingOrganizationsContainer = () => {
       verifiedOrgExternalIds={verifiedOrgExternalIds}
       submitIdentityVerified={submitIdentityVerified}
       setVerifiedOrganization={setVerifiedOrganization}
+      loading={loading}
     />
   );
 };
