@@ -2,12 +2,10 @@ import React from "react";
 import renderer from "react-test-renderer";
 import { MemoryRouter } from "react-router";
 import { act, render, screen, waitFor } from "@testing-library/react";
-import { MockedProvider } from "@apollo/client/testing";
 import userEvent from "@testing-library/user-event";
 
 import { Patient } from "../../patients/ManagePatients";
 import { TestResult } from "../QueueItem";
-import { LAST_TEST_QUERY } from "../AoEForm/AoEModalForm";
 
 import SearchResults from "./SearchResults";
 
@@ -57,27 +55,6 @@ const RouterWithFacility: React.FC = ({ children }) => (
     {children}
   </MemoryRouter>
 );
-
-const mocks = [
-  {
-    request: {
-      query: LAST_TEST_QUERY,
-      variables: {
-        patientId: "a123",
-      },
-    },
-    result: {
-      data: {
-        patient: {
-          lastTest: {
-            dateTested: "2021-02-05T22:01:55.386Z",
-            result: "NEGATIVE",
-          },
-        },
-      },
-    },
-  },
-];
 
 jest.mock("react-router-dom", () => ({
   Redirect: (props: any) => `Redirected to ${props.to}`,
@@ -168,17 +145,15 @@ describe("SearchResults", () => {
     const addToQueue = jest.fn();
     render(
       <RouterWithFacility>
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <SearchResults
-            page="queue"
-            patients={[]}
-            patientsInQueue={[]}
-            onAddToQueue={addToQueue}
-            shouldShowSuggestions={true}
-            loading={false}
-            selectedPatient={patients[0]}
-          />
-        </MockedProvider>
+        <SearchResults
+          page="queue"
+          patients={[]}
+          patientsInQueue={[]}
+          onAddToQueue={addToQueue}
+          shouldShowSuggestions={true}
+          loading={false}
+          selectedPatient={patients[0]}
+        />
       </RouterWithFacility>
     );
 

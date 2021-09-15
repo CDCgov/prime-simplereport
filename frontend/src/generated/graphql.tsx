@@ -1437,22 +1437,6 @@ export type UploadPatientsMutation = {
   uploadPatients?: Maybe<string>;
 };
 
-export type GetPatientsLastResultQueryVariables = Exact<{
-  patientId: Scalars["ID"];
-}>;
-
-export type GetPatientsLastResultQuery = {
-  __typename?: "Query";
-  patient?: Maybe<{
-    __typename?: "Patient";
-    lastTest?: Maybe<{
-      __typename?: "TestResult";
-      dateTested?: Maybe<any>;
-      result?: Maybe<string>;
-    }>;
-  }>;
-};
-
 export type RemovePatientFromQueueMutationVariables = Exact<{
   patientId: Scalars["ID"];
 }>;
@@ -1515,10 +1499,6 @@ export type GetFacilityQueueQuery = {
         symptoms?: Maybe<string>;
         symptomOnset?: Maybe<any>;
         noSymptoms?: Maybe<boolean>;
-        firstTest?: Maybe<boolean>;
-        priorTestDate?: Maybe<any>;
-        priorTestType?: Maybe<string>;
-        priorTestResult?: Maybe<string>;
         result?: Maybe<string>;
         dateTested?: Maybe<any>;
         deviceType?: Maybe<{
@@ -1650,10 +1630,6 @@ export type AddPatientToQueueMutationVariables = Exact<{
   symptoms?: Maybe<Scalars["String"]>;
   symptomOnset?: Maybe<Scalars["LocalDate"]>;
   pregnancy?: Maybe<Scalars["String"]>;
-  firstTest?: Maybe<Scalars["Boolean"]>;
-  priorTestDate?: Maybe<Scalars["LocalDate"]>;
-  priorTestType?: Maybe<Scalars["String"]>;
-  priorTestResult?: Maybe<Scalars["String"]>;
   noSymptoms?: Maybe<Scalars["Boolean"]>;
   testResultDelivery?: Maybe<TestResultDeliveryPreference>;
 }>;
@@ -1668,10 +1644,6 @@ export type UpdateAoeMutationVariables = Exact<{
   symptoms?: Maybe<Scalars["String"]>;
   symptomOnset?: Maybe<Scalars["LocalDate"]>;
   pregnancy?: Maybe<Scalars["String"]>;
-  firstTest?: Maybe<Scalars["Boolean"]>;
-  priorTestDate?: Maybe<Scalars["LocalDate"]>;
-  priorTestType?: Maybe<Scalars["String"]>;
-  priorTestResult?: Maybe<Scalars["String"]>;
   noSymptoms?: Maybe<Scalars["Boolean"]>;
   testResultDelivery?: Maybe<TestResultDeliveryPreference>;
 }>;
@@ -4049,67 +4021,6 @@ export type UploadPatientsMutationOptions = Apollo.BaseMutationOptions<
   UploadPatientsMutation,
   UploadPatientsMutationVariables
 >;
-export const GetPatientsLastResultDocument = gql`
-  query GetPatientsLastResult($patientId: ID!) {
-    patient(id: $patientId) {
-      lastTest {
-        dateTested
-        result
-      }
-    }
-  }
-`;
-
-/**
- * __useGetPatientsLastResultQuery__
- *
- * To run a query within a React component, call `useGetPatientsLastResultQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetPatientsLastResultQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetPatientsLastResultQuery({
- *   variables: {
- *      patientId: // value for 'patientId'
- *   },
- * });
- */
-export function useGetPatientsLastResultQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetPatientsLastResultQuery,
-    GetPatientsLastResultQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetPatientsLastResultQuery,
-    GetPatientsLastResultQueryVariables
-  >(GetPatientsLastResultDocument, options);
-}
-export function useGetPatientsLastResultLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetPatientsLastResultQuery,
-    GetPatientsLastResultQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetPatientsLastResultQuery,
-    GetPatientsLastResultQueryVariables
-  >(GetPatientsLastResultDocument, options);
-}
-export type GetPatientsLastResultQueryHookResult = ReturnType<
-  typeof useGetPatientsLastResultQuery
->;
-export type GetPatientsLastResultLazyQueryHookResult = ReturnType<
-  typeof useGetPatientsLastResultLazyQuery
->;
-export type GetPatientsLastResultQueryResult = Apollo.QueryResult<
-  GetPatientsLastResultQuery,
-  GetPatientsLastResultQueryVariables
->;
 export const RemovePatientFromQueueDocument = gql`
   mutation RemovePatientFromQueue($patientId: ID!) {
     removePatientFromQueue(patientId: $patientId)
@@ -4298,10 +4209,6 @@ export const GetFacilityQueueDocument = gql`
       symptoms
       symptomOnset
       noSymptoms
-      firstTest
-      priorTestDate
-      priorTestType
-      priorTestResult
       deviceType {
         internalId
         name
@@ -4549,10 +4456,6 @@ export const AddPatientToQueueDocument = gql`
     $symptoms: String
     $symptomOnset: LocalDate
     $pregnancy: String
-    $firstTest: Boolean
-    $priorTestDate: LocalDate
-    $priorTestType: String
-    $priorTestResult: String
     $noSymptoms: Boolean
     $testResultDelivery: TestResultDeliveryPreference
   ) {
@@ -4562,10 +4465,6 @@ export const AddPatientToQueueDocument = gql`
       pregnancy: $pregnancy
       noSymptoms: $noSymptoms
       symptoms: $symptoms
-      firstTest: $firstTest
-      priorTestDate: $priorTestDate
-      priorTestType: $priorTestType
-      priorTestResult: $priorTestResult
       symptomOnset: $symptomOnset
       testResultDelivery: $testResultDelivery
     )
@@ -4594,10 +4493,6 @@ export type AddPatientToQueueMutationFn = Apollo.MutationFunction<
  *      symptoms: // value for 'symptoms'
  *      symptomOnset: // value for 'symptomOnset'
  *      pregnancy: // value for 'pregnancy'
- *      firstTest: // value for 'firstTest'
- *      priorTestDate: // value for 'priorTestDate'
- *      priorTestType: // value for 'priorTestType'
- *      priorTestResult: // value for 'priorTestResult'
  *      noSymptoms: // value for 'noSymptoms'
  *      testResultDelivery: // value for 'testResultDelivery'
  *   },
@@ -4629,10 +4524,6 @@ export const UpdateAoeDocument = gql`
     $symptoms: String
     $symptomOnset: LocalDate
     $pregnancy: String
-    $firstTest: Boolean
-    $priorTestDate: LocalDate
-    $priorTestType: String
-    $priorTestResult: String
     $noSymptoms: Boolean
     $testResultDelivery: TestResultDeliveryPreference
   ) {
@@ -4641,10 +4532,6 @@ export const UpdateAoeDocument = gql`
       pregnancy: $pregnancy
       symptoms: $symptoms
       noSymptoms: $noSymptoms
-      firstTest: $firstTest
-      priorTestDate: $priorTestDate
-      priorTestType: $priorTestType
-      priorTestResult: $priorTestResult
       symptomOnset: $symptomOnset
       testResultDelivery: $testResultDelivery
     )
@@ -4672,10 +4559,6 @@ export type UpdateAoeMutationFn = Apollo.MutationFunction<
  *      symptoms: // value for 'symptoms'
  *      symptomOnset: // value for 'symptomOnset'
  *      pregnancy: // value for 'pregnancy'
- *      firstTest: // value for 'firstTest'
- *      priorTestDate: // value for 'priorTestDate'
- *      priorTestType: // value for 'priorTestType'
- *      priorTestResult: // value for 'priorTestResult'
  *      noSymptoms: // value for 'noSymptoms'
  *      testResultDelivery: // value for 'testResultDelivery'
  *   },

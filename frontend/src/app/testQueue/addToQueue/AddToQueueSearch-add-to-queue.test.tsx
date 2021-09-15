@@ -38,10 +38,6 @@ const mockAoeAnswers: AoEAnswersDelivery = {
   noSymptoms: true,
   symptoms: '{"something":"true"}',
   symptomOnset: "2021-06-14",
-  firstTest: true,
-  priorTestType: "fake-test-type",
-  priorTestDate: "2021-05-14",
-  priorTestResult: "NEGATIVE",
   pregnancy: "77386006",
   testResultDelivery: "SMS",
 };

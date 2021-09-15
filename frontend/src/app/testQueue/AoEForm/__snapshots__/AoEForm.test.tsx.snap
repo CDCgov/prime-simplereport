@@ -57,14 +57,14 @@ exports[`AoEForm renders correctly 1`] = `
                   checked=""
                   class="usa-radio__input"
                   data-required="false"
-                  id="8-val-SMS"
+                  id="1-val-SMS"
                   name="testResultDelivery"
                   type="radio"
                   value="SMS"
                 />
                 <label
                   class="usa-radio__label"
-                  for="8-val-SMS"
+                  for="1-val-SMS"
                 >
                   Yes, text all mobile numbers on file.
                   <span
@@ -93,14 +93,14 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   class="usa-radio__input"
                   data-required="false"
-                  id="8-val-NONE"
+                  id="1-val-NONE"
                   name="testResultDelivery"
                   type="radio"
                   value="NONE"
                 />
                 <label
                   class="usa-radio__label"
-                  for="8-val-NONE"
+                  for="1-val-NONE"
                 >
                   No
                 </label>
@@ -151,14 +151,14 @@ exports[`AoEForm renders correctly 1`] = `
               >
                 <input
                   class="usa-checkbox__input"
-                  id="9-val-0"
+                  id="2-val-0"
                   name="no_symptoms"
                   type="checkbox"
                   value="no"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="9-val-0"
+                  for="2-val-0"
                 >
                   No symptoms
                 </label>
@@ -189,14 +189,14 @@ exports[`AoEForm renders correctly 1`] = `
                 <input
                   checked=""
                   class="usa-checkbox__input"
-                  id="10-val-0"
+                  id="3-val-0"
                   name="symptom_list"
                   type="checkbox"
                   value="426000000"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="10-val-0"
+                  for="3-val-0"
                 >
                   Fever over 100.4F
                 </label>
@@ -206,14 +206,14 @@ exports[`AoEForm renders correctly 1`] = `
               >
                 <input
                   class="usa-checkbox__input"
-                  id="10-val-1"
+                  id="3-val-1"
                   name="symptom_list"
                   type="checkbox"
                   value="103001002"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="10-val-1"
+                  for="3-val-1"
                 >
                   Feeling feverish
                 </label>
@@ -223,14 +223,14 @@ exports[`AoEForm renders correctly 1`] = `
               >
                 <input
                   class="usa-checkbox__input"
-                  id="10-val-2"
+                  id="3-val-2"
                   name="symptom_list"
                   type="checkbox"
                   value="43724002"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="10-val-2"
+                  for="3-val-2"
                 >
                   Chills
                 </label>
@@ -240,14 +240,14 @@ exports[`AoEForm renders correctly 1`] = `
               >
                 <input
                   class="usa-checkbox__input"
-                  id="10-val-3"
+                  id="3-val-3"
                   name="symptom_list"
                   type="checkbox"
                   value="49727002"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="10-val-3"
+                  for="3-val-3"
                 >
                   Cough
                 </label>
@@ -257,14 +257,14 @@ exports[`AoEForm renders correctly 1`] = `
               >
                 <input
                   class="usa-checkbox__input"
-                  id="10-val-4"
+                  id="3-val-4"
                   name="symptom_list"
                   type="checkbox"
                   value="267036007"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="10-val-4"
+                  for="3-val-4"
                 >
                   Shortness of breath
                 </label>
@@ -274,14 +274,14 @@ exports[`AoEForm renders correctly 1`] = `
               >
                 <input
                   class="usa-checkbox__input"
-                  id="10-val-5"
+                  id="3-val-5"
                   name="symptom_list"
                   type="checkbox"
                   value="230145002"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="10-val-5"
+                  for="3-val-5"
                 >
                   Difficulty breathing
                 </label>
@@ -291,14 +291,14 @@ exports[`AoEForm renders correctly 1`] = `
               >
                 <input
                   class="usa-checkbox__input"
-                  id="10-val-6"
+                  id="3-val-6"
                   name="symptom_list"
                   type="checkbox"
                   value="84229001"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="10-val-6"
+                  for="3-val-6"
                 >
                   Fatigue
                 </label>
@@ -308,14 +308,14 @@ exports[`AoEForm renders correctly 1`] = `
               >
                 <input
                   class="usa-checkbox__input"
-                  id="10-val-7"
+                  id="3-val-7"
                   name="symptom_list"
                   type="checkbox"
                   value="68962001"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="10-val-7"
+                  for="3-val-7"
                 >
                   Muscle or body aches
                 </label>
@@ -325,14 +325,14 @@ exports[`AoEForm renders correctly 1`] = `
               >
                 <input
                   class="usa-checkbox__input"
-                  id="10-val-8"
+                  id="3-val-8"
                   name="symptom_list"
                   type="checkbox"
                   value="25064002"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="10-val-8"
+                  for="3-val-8"
                 >
                   Headache
                 </label>
@@ -342,14 +342,14 @@ exports[`AoEForm renders correctly 1`] = `
               >
                 <input
                   class="usa-checkbox__input"
-                  id="10-val-9"
+                  id="3-val-9"
                   name="symptom_list"
                   type="checkbox"
                   value="36955009"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="10-val-9"
+                  for="3-val-9"
                 >
                   New loss of taste
                 </label>
@@ -359,14 +359,14 @@ exports[`AoEForm renders correctly 1`] = `
               >
                 <input
                   class="usa-checkbox__input"
-                  id="10-val-10"
+                  id="3-val-10"
                   name="symptom_list"
                   type="checkbox"
                   value="44169009"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="10-val-10"
+                  for="3-val-10"
                 >
                   New loss of smell
                 </label>
@@ -376,14 +376,14 @@ exports[`AoEForm renders correctly 1`] = `
               >
                 <input
                   class="usa-checkbox__input"
-                  id="10-val-11"
+                  id="3-val-11"
                   name="symptom_list"
                   type="checkbox"
                   value="162397003"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="10-val-11"
+                  for="3-val-11"
                 >
                   Sore throat
                 </label>
@@ -393,14 +393,14 @@ exports[`AoEForm renders correctly 1`] = `
               >
                 <input
                   class="usa-checkbox__input"
-                  id="10-val-12"
+                  id="3-val-12"
                   name="symptom_list"
                   type="checkbox"
                   value="68235000"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="10-val-12"
+                  for="3-val-12"
                 >
                   Nasal congestion
                 </label>
@@ -410,14 +410,14 @@ exports[`AoEForm renders correctly 1`] = `
               >
                 <input
                   class="usa-checkbox__input"
-                  id="10-val-13"
+                  id="3-val-13"
                   name="symptom_list"
                   type="checkbox"
                   value="64531003"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="10-val-13"
+                  for="3-val-13"
                 >
                   Runny nose
                 </label>
@@ -427,14 +427,14 @@ exports[`AoEForm renders correctly 1`] = `
               >
                 <input
                   class="usa-checkbox__input"
-                  id="10-val-14"
+                  id="3-val-14"
                   name="symptom_list"
                   type="checkbox"
                   value="422587007"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="10-val-14"
+                  for="3-val-14"
                 >
                   Nausea
                 </label>
@@ -444,14 +444,14 @@ exports[`AoEForm renders correctly 1`] = `
               >
                 <input
                   class="usa-checkbox__input"
-                  id="10-val-15"
+                  id="3-val-15"
                   name="symptom_list"
                   type="checkbox"
                   value="422400008"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="10-val-15"
+                  for="3-val-15"
                 >
                   Vomiting
                 </label>
@@ -461,14 +461,14 @@ exports[`AoEForm renders correctly 1`] = `
               >
                 <input
                   class="usa-checkbox__input"
-                  id="10-val-16"
+                  id="3-val-16"
                   name="symptom_list"
                   type="checkbox"
                   value="62315008"
                 />
                 <label
                   class="usa-checkbox__label"
-                  for="10-val-16"
+                  for="3-val-16"
                 >
                   Diarrhea
                 </label>
@@ -542,102 +542,6 @@ exports[`AoEForm renders correctly 1`] = `
               role="status"
             />
           </div>
-        </div>
-      </div>
-    </fieldset>
-  </div>
-  <div
-    class="prime-formgroup"
-  >
-    <fieldset
-      class="usa-fieldset"
-    >
-      <legend
-        class="prime-formgroup-heading usa-legend"
-      >
-        Test history
-      </legend>
-      <div
-        class="prime-formgroup__wrapper"
-      >
-        <div
-          class="margin-top-2"
-        >
-          <b>
-            Was this your most recent COVID-19 test?
-          </b>
-        </div>
-        <p
-          class="prime-previous-test-display margin-top-2 margin-bottom-0 line-height-sans-5"
-        >
-          <b>
-            Date: 
-          </b>
-          Monday, June 21, 2021 2:48 PM
-          <br />
-          <b>
-            Type: 
-          </b>
-          Antigen
-          <br />
-          <b>
-            Result: 
-          </b>
-          NEGATIVE
-        </p>
-        <div
-          class="usa-form-group"
-        >
-          <fieldset
-            class="usa-fieldset prime-radios"
-          >
-            <legend
-              class="usa-legend usa-sr-only"
-            >
-              Was this your most recent COVID-19 test?
-            </legend>
-            <div
-              class="prime-radio--horizontal"
-            >
-              <div
-                class="usa-radio prime-radio--horizontal__container"
-              >
-                <input
-                  checked=""
-                  class="usa-radio__input"
-                  data-required="false"
-                  id="11-val-yes"
-                  name="most_recent_flag"
-                  type="radio"
-                  value="yes"
-                />
-                <label
-                  class="usa-radio__label"
-                  for="11-val-yes"
-                >
-                  Yes
-                </label>
-              </div>
-              <div
-                class="usa-radio prime-radio--horizontal__container"
-              >
-                <input
-                  class="usa-radio__input"
-                  data-required="false"
-                  id="11-val-no"
-                  name="most_recent_flag"
-                  type="radio"
-                  value="no"
-                />
-                <label
-                  class="usa-radio__label"
-                  for="11-val-no"
-                >
-                  No
-                </label>
-              </div>
-            </div>
-          </fieldset>
         </div>
       </div>
     </fieldset>
