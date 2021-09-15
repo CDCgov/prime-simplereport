@@ -1,11 +1,7 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import classnames from "classnames";
 
-import {
-  InjectedQueryWrapperProps,
-  QueryWrapper,
-} from "../../commonComponents/QueryWrapper";
 import "./PendingOrganizationsList.scss";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
@@ -31,20 +27,23 @@ export const SET_ORG_IDENTITY_VERIFIED_MUTATION = gql`
   }
 `;
 
-interface Props {
-  data: any;
-  refetch: () => void;
-}
-
-export const DetachedPendingOrganizationsList: any = ({
-  data,
-  refetch,
-}: Props) => {
-  const orgs = data?.organizations || [];
-
+const PendingOrganizationsList = () => {
   const [verifiedOrgExternalIds, setVerifiedOrgExternalIds] = useState(
     new Set()
   );
+  const [verifyIdentity] = useMutation(SET_ORG_IDENTITY_VERIFIED_MUTATION);
+  const { data, refetch, loading, error } = useQuery(ORGANIZATIONS_QUERY, {
+    variables: {
+      identityVerified: false,
+    },
+  });
+  if (loading) {
+    return <p>Loading</p>;
+  }
+  if (error) {
+    throw error;
+  }
+  const orgs = data?.organizations || [];
 
   function adjustVerifiedOrgExternalIds(externalId: String, verified: Boolean) {
     const newVerifiedOrgExternalIds = new Set(verifiedOrgExternalIds);
@@ -92,8 +91,6 @@ export const DetachedPendingOrganizationsList: any = ({
   }
 
   const rows = orgRows(orgs);
-
-  const [verifyIdentity] = useMutation(SET_ORG_IDENTITY_VERIFIED_MUTATION);
 
   const submitIdentityVerified = () => {
     Promise.all(
@@ -157,31 +154,6 @@ export const DetachedPendingOrganizationsList: any = ({
         </div>
       </div>
     </main>
-  );
-};
-
-type OmittedProps = InjectedQueryWrapperProps;
-
-type PendingOrganizationsListProps = Omit<Props, OmittedProps>;
-
-const PendingOrganizationsList = (props: PendingOrganizationsListProps) => {
-  const queryVariables: {
-    identityVerified: boolean;
-  } = {
-    identityVerified: false,
-  };
-
-  return (
-    <QueryWrapper<Props>
-      query={ORGANIZATIONS_QUERY}
-      queryOptions={{
-        variables: queryVariables,
-      }}
-      Component={DetachedPendingOrganizationsList}
-      componentProps={{
-        ...props,
-      }}
-    />
   );
 };
 
