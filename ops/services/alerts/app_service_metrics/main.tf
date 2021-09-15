@@ -2,7 +2,7 @@ locals {
   env_title = title(var.env)
 
   // If skip_on_weekends true, only run the query on weekdays
-  skip_on_weekends = var.skip_on_weekends ? "| where dayofweek(now()) between (time(1) .. time(5))" : ""
+  skip_on_weekends = var.skip_on_weekends ? "| where dayofweek(now()) between (time(1) .. time(5))" : "| where true"
 }
 
 resource "azurerm_monitor_metric_alert" "cpu_util" {
