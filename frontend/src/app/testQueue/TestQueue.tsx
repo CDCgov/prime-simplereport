@@ -78,6 +78,7 @@ export const queueQuery = gql`
     organization {
       testingFacility {
         id
+        name
         deviceTypes {
           internalId
           name
@@ -183,6 +184,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 selectedTestResult={result}
                 devices={facility.deviceTypes}
                 refetchQueue={refetch}
+                facilityName={facility.name}
                 facilityId={activeFacilityId}
                 dateTestedProp={dateTested}
               />

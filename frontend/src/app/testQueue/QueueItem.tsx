@@ -10,6 +10,7 @@ import {
 import classnames from "classnames";
 import moment from "moment";
 import { DatePicker, Label } from "@trussworks/react-uswds";
+import { useSelector } from "react-redux";
 
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
@@ -185,6 +186,7 @@ export interface QueueItemProps {
   selectedTestResult: TestResult;
   dateTestedProp: string;
   refetchQueue: () => void;
+  facilityName: string;
   facilityId: string;
 }
 
@@ -206,6 +208,7 @@ const QueueItem = ({
   selectedDeviceTestLength,
   selectedTestResult,
   refetchQueue,
+  facilityName,
   facilityId,
   dateTestedProp,
 }: QueueItemProps) => {
@@ -255,6 +258,10 @@ const QueueItem = ({
   // always assume the current date unless provided something else
   const [dateTested, updateDateTested] = useState<string | undefined>(
     dateTestedProp || undefined
+  );
+
+  const organization = useSelector(
+    (state: any) => state.organization as Organization
   );
 
   // helper method to work around the annoying string-booleans
@@ -594,6 +601,13 @@ const QueueItem = ({
     cardColorDisplay()
   );
 
+  const context = {
+    organizationName: organization.name,
+    facilityName: facilityName,
+    patientId: patient.internalId,
+    testOrderId: internalId,
+  };
+
   return (
     <React.Fragment>
       <div className={containerClasses}>
@@ -610,7 +624,7 @@ const QueueItem = ({
                 id="patient-name-header"
               >
                 <h2>{patientFullName}</h2>
-                <TestTimerWidget timer={timer} />
+                <TestTimerWidget timer={timer} context={context} />
               </div>
               <div className="margin-top-2 margin-left-2 margin-bottom-2">
                 <div className="queue-item__description prime-ul grid-row grid-gap">
