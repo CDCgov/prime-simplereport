@@ -6,7 +6,7 @@ import { ReactPlugin } from "@microsoft/applicationinsights-react-js";
 import { useHistory } from "react-router";
 
 let reactPlugin: ReactPlugin | null = null;
-let appInsights: ApplicationInsights | null = null;
+export let appInsights: ApplicationInsights | null = null;
 
 const createTelemetryService = () => {
   const initialize = (browserHistory?: ReturnType<typeof useHistory>) => {
