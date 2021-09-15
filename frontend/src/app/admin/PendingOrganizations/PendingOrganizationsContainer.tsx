@@ -46,19 +46,15 @@ const PendingOrganizationsContainer = () => {
       })
     )
       .then(() => {
-        const alert = (
+        showNotification(
           <Alert
             type="success"
-            title={
-              "Identity verified for " +
-              verifiedOrgExternalIds.size +
-              " organization" +
-              (verifiedOrgExternalIds.size === 1 ? "" : "s")
-            }
+            title={`Identity verified for ${
+              verifiedOrgExternalIds.size
+            } organization${verifiedOrgExternalIds.size === 1 ? "" : "s"}`}
             body=""
           />
         );
-        showNotification(alert);
       })
       .finally(refetch);
   };
