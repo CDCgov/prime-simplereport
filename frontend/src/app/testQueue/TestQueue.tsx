@@ -6,7 +6,7 @@ import { TransitionGroup, CSSTransition } from "react-transition-group";
 import { showError } from "../utils";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
-import QueueItem from "./QueueItem";
+import QueueItem, { TestResult } from "./QueueItem";
 import { TestQueuePerson, AoEAnswers } from "./AoEForm/AoEForm";
 
 const pollInterval = 10_000;
@@ -107,7 +107,7 @@ interface QueueItemData extends AoEAnswers {
     testLength: number;
   };
   patient: TestQueuePerson;
-  result: string;
+  result: TestResult;
   dateTested: string;
 }
 
@@ -172,11 +172,16 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 internalId={internalId}
                 patient={patient}
                 askOnEntry={questions}
-                selectedDeviceId={deviceType?.internalId || null}
-                selectedDeviceTestLength={deviceType?.testLength || null}
+                selectedDeviceId={
+                  deviceType?.internalId ||
+                  facility.defaultDeviceType.internalId
+                }
+                selectedDeviceTestLength={
+                  deviceType?.testLength ||
+                  facility.defaultDeviceType.testLength
+                }
                 selectedTestResult={result}
                 devices={facility.deviceTypes}
-                defaultDevice={facility.defaultDeviceType}
                 refetchQueue={refetch}
                 facilityId={activeFacilityId}
                 dateTestedProp={dateTested}

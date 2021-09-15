@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.db.repository;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
@@ -17,6 +18,12 @@ public interface OrganizationRepository extends EternalAuditedEntityRepository<O
 
   @Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.identityVerified = :identityVerified")
   List<Organization> findAllByIdentityVerified(boolean identityVerified);
+
+  @Query(
+      EternalAuditedEntityRepository.BASE_QUERY
+          + " and e.identityVerified = :identityVerified and e.createdAt > :rangeStartDate and e.createdAt <= :rangeStopDate")
+  List<Organization> findAllByIdentityVerifiedAndCreatedAtRange(
+      boolean identityVerified, Date rangeStartDate, Date rangeStopDate);
 
   @Query(
       EternalAuditedEntityRepository.BASE_QUERY + " and UPPER(e.organizationName) = UPPER(:name)")

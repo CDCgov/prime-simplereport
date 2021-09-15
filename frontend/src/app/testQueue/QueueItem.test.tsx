@@ -35,7 +35,6 @@ describe("QueueItem", () => {
           selectedDeviceTestLength={testProps.selectedDeviceTestLength}
           selectedTestResult={testProps.selectedTestResult}
           devices={testProps.devices}
-          defaultDevice={testProps.defaultDevice}
           refetchQueue={testProps.refetchQueue}
           facilityId={testProps.facilityId}
           dateTestedProp={testProps.dateTestedProp}
@@ -59,7 +58,6 @@ describe("QueueItem", () => {
           selectedDeviceTestLength={testProps.selectedDeviceTestLength}
           selectedTestResult={testProps.selectedTestResult}
           devices={testProps.devices}
-          defaultDevice={testProps.defaultDevice}
           refetchQueue={testProps.refetchQueue}
           facilityId={testProps.facilityId}
           dateTestedProp={testProps.dateTestedProp}
@@ -102,7 +100,6 @@ describe("QueueItem", () => {
               selectedDeviceTestLength={testProps.selectedDeviceTestLength}
               selectedTestResult={testProps.selectedTestResult}
               devices={testProps.devices}
-              defaultDevice={testProps.defaultDevice}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
@@ -186,7 +183,6 @@ describe("QueueItem", () => {
           selectedDeviceTestLength={testProps.selectedDeviceTestLength}
           selectedTestResult={testProps.selectedTestResult}
           devices={testProps.devices}
-          defaultDevice={testProps.defaultDevice}
           refetchQueue={testProps.refetchQueue}
           facilityId={testProps.facilityId}
           dateTestedProp={testProps.dateTestedProp}
@@ -225,7 +221,6 @@ describe("QueueItem", () => {
           selectedDeviceTestLength={testProps.selectedDeviceTestLength}
           selectedTestResult={testProps.selectedTestResult}
           devices={testProps.devices}
-          defaultDevice={testProps.defaultDevice}
           refetchQueue={testProps.refetchQueue}
           facilityId={testProps.facilityId}
           dateTestedProp={testProps.dateTestedProp}
@@ -288,9 +283,6 @@ const testProps = {
   selectedDeviceId: internalId,
   selectedDeviceTestLength: 10,
   selectedTestResult: {},
-  defaultDevice: {
-    internalId: internalId,
-  },
   dateTestedProp: "",
   refetchQueue: {},
   facilityId: "Hogwarts",

@@ -1,8 +1,15 @@
-import React from "react";
+import { toast as t } from "react-toastify";
 
 import Alert from "../commonComponents/Alert";
 
-export const displayFullName = (first, middle, last, lastFirst = true) => {
+type Toast = typeof t;
+
+export const displayFullName = (
+  first: string | null | undefined,
+  middle: string | null | undefined,
+  last: string | null | undefined,
+  lastFirst = true
+) => {
   if (lastFirst) {
     return `${last || "?"}, ${first || "?"} ${middle || ""}`
       .replace(/ +/g, " ")
@@ -18,7 +25,7 @@ export const isEmptyString = (input = "") => {
   return Boolean(input.trim().length === 0);
 };
 
-export const showNotification = (toast, children) => {
+export const showNotification = (toast: Toast, children: JSX.Element) => {
   try {
     // id will de-dup. just use whole message as id
     const toastId = JSON.stringify(children.props).substr(0, 512);
@@ -30,7 +37,7 @@ export const showNotification = (toast, children) => {
 };
 
 export const showError = (
-  toast,
+  toast: Toast,
   message = "Please check for missing data or typos.",
   title = "Problems saving data to server"
 ) => {

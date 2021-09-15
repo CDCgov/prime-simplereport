@@ -21,10 +21,14 @@ public class ScheduledTasksService {
 
   private final TaskScheduler _scheduler;
   private final DataHubUploaderService _dataHubUploaderService;
+  private final ReminderService _reminderService;
 
   public ScheduledTasksService(
-      DataHubUploaderService dataHubUploaderService, TaskSchedulerBuilder schedulerBuilder) {
+      DataHubUploaderService dataHubUploaderService,
+      ReminderService reminderService,
+      TaskSchedulerBuilder schedulerBuilder) {
     _dataHubUploaderService = dataHubUploaderService;
+    _reminderService = reminderService;
     ThreadPoolTaskScheduler scheduler = schedulerBuilder.build();
     scheduler.initialize();
     _scheduler = scheduler;
@@ -43,5 +47,15 @@ public class ScheduledTasksService {
           cron, _scheduler.schedule(_dataHubUploaderService::dataHubUploaderTask, cronTrigger));
     }
     return futures;
+  }
+
+  public void scheduleAccountReminderEmails(String cronScheduleDefinition, String tzString) {
+    TimeZone tz = TimeZone.getTimeZone(tzString);
+    LOG.info(
+        "Scheduling account reminder emails to run on cron schedule '{}' in time zone {}",
+        cronScheduleDefinition,
+        tz.getID());
+    Trigger cronTrigger = new CronTrigger(cronScheduleDefinition, tz);
+    _scheduler.schedule(_reminderService::sendAccountReminderEmails, cronTrigger);
   }
 }
