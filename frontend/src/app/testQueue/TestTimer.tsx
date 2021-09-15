@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStopwatch, faRedo } from "@fortawesome/free-solid-svg-icons";
+
 import "./TestTimer.scss";
+import { appInsights } from "../../app/TelemetryService";
 
 const alarmModule = require("./test-timer.mp3");
 
@@ -12,7 +14,12 @@ type DateTimeStamp = ReturnType<typeof Date.now>;
 function toMillis(minutes: number) {
   return minutes * 60 * 1000;
 }
-
+export interface TimerTrackEventMetadata {
+  facilityName: string;
+  organizationName: string;
+  patientId: string;
+  testOrderId: string;
+}
 export class Timer {
   id: string;
   startedAt: DateTimeStamp;
@@ -131,7 +138,7 @@ const saveTimers = () => {
   window.setInterval(tickTimers, 1000);
 }
 
-const findTimer = (id: string): Timer | undefined =>
+export const findTimer = (id: string): Timer | undefined =>
   timers.find((t) => t.id === id);
 
 const addTimer = (id: string, testLength: number): Timer => {
@@ -171,12 +178,13 @@ export const useTestTimer = (id: string, testLength: number) => {
       (timer.startedAt ? timer.countdown : toMillis(timer.testLength)) / 1000
     ),
     elapsed: Math.round(timer.elapsed / 1000),
-    start: () => {
+    start: (trackClickEvent: Function) => {
       const timerToStart: Timer = findTimer(id) || addTimer(id, testLength);
       timerToStart.start(Date.now());
       saveTimers();
+      trackClickEvent();
     },
-    reset: () => {
+    reset: (trackClickEvent: Function) => {
       const timerToReset = findTimer(id);
       if (timerToReset) {
         // reset the timer
@@ -184,6 +192,7 @@ export const useTestTimer = (id: string, testLength: number) => {
         // force final update
         setCount(toMillis(testLength));
         saveTimers();
+        trackClickEvent();
       }
     },
   };
@@ -197,15 +206,25 @@ export const mmss = (t: number) => {
 
 type Props = {
   timer: ReturnType<typeof useTestTimer>;
+  context: TimerTrackEventMetadata;
 };
 
-export const TestTimerWidget = ({ timer }: Props) => {
+export const TestTimerWidget = ({ timer, context }: Props) => {
   const { running, countdown, elapsed, start, reset } = timer;
+  const [timerFinished, setTimerFinished] = useState(false);
+
+  const trackTimerStart = () =>
+    appInsights?.trackEvent({ name: "Test timer started" }, context);
+  const trackTimerReset = () =>
+    appInsights?.trackEvent({ name: "Test timer reset" }, context);
+  const trackTimerFinish = () =>
+    appInsights?.trackEvent({ name: "Test timer finished" }, context);
+
   if (!running) {
     return (
       <button
         className="timer-button timer-reset"
-        onClick={start}
+        onClick={() => start(trackTimerStart)}
         data-testid="timer"
       >
         <span>{mmss(countdown)}</span> <FontAwesomeIcon icon={faStopwatch} />
@@ -216,18 +235,25 @@ export const TestTimerWidget = ({ timer }: Props) => {
     return (
       <button
         className="timer-button timer-running"
-        onClick={reset}
+        onClick={() => reset(trackTimerReset)}
         data-testid="timer"
       >
         <span>{mmss(countdown)}</span> <FontAwesomeIcon icon={faRedo} />
       </button>
     );
   }
+
+  if (!timerFinished) {
+    trackTimerFinish();
+
+    setTimerFinished(true);
+  }
+
   return (
     <div>
       <button
         className="timer-button timer-ready"
-        onClick={reset}
+        onClick={() => reset(trackTimerReset)}
         data-testid="timer"
       >
         <span className="result-ready">RESULT READY</span>{" "}
