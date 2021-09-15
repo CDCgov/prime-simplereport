@@ -1,8 +1,12 @@
 import { Story, Meta } from "@storybook/react";
 import { uniqueId } from "lodash";
+import { Provider } from "react-redux";
+import createMockStore from "redux-mock-store";
 
 import QueueItem, { QueueItemProps } from "../../app/testQueue/QueueItem";
 import { getMocks, StoryGraphQLProvider } from "../storyMocks";
+
+const mockStore = createMockStore([]);
 
 export default {
   title: "App/Test queue/Queue item",
@@ -29,8 +33,16 @@ export default {
   args: {},
 } as Meta;
 
+const store = mockStore({
+  organization: { name: "An Organization " },
+});
+
 const Template: Story<QueueItemProps> = (args) => {
-  return <QueueItem {...args} />;
+  return (
+    <Provider store={store}>
+      <QueueItem {...args} />;
+    </Provider>
+  );
 };
 
 const defaultProps: QueueItemProps = {
