@@ -132,8 +132,14 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   }
   if (loading) {
     return (
-      <main className="prime-home display-flex flex-justify-center">
-        Loading patients...
+      <main
+        className="prime-home display-flex flex-justify-center"
+        style={{
+          fontSize: "22px",
+          paddingTop: "80px",
+        }}
+      >
+        Loading tests ...
       </main>
     );
   }
