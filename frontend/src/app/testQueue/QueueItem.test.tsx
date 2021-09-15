@@ -1,5 +1,7 @@
 import { MockedProvider } from "@apollo/client/testing";
+import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
+import configureStore, { MockStoreEnhanced } from "redux-mock-store";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import moment from "moment";
 
@@ -16,7 +18,16 @@ const updatedDate = Date.parse(updatedDateString);
 
 describe("QueueItem", () => {
   let nowFn = Date.now;
+  let store: MockStoreEnhanced<unknown, {}>;
+  const mockStore = configureStore([]);
+
   beforeEach(() => {
+    store = mockStore({
+      organization: {
+        name: "Organization Name",
+      },
+    });
+
     jest.useFakeTimers();
     Date.now = jest.fn(() => fakeDate);
   });
@@ -27,19 +38,21 @@ describe("QueueItem", () => {
   it("correctly renders the test queue", () => {
     const { container, getByTestId } = render(
       <MockedProvider mocks={[]}>
-        <QueueItem
-          internalId={testProps.internalId}
-          patient={testProps.patient}
-          askOnEntry={testProps.askOnEntry}
-          selectedDeviceId={testProps.selectedDeviceId}
-          selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-          selectedTestResult={testProps.selectedTestResult}
-          devices={testProps.devices}
-          refetchQueue={testProps.refetchQueue}
-          facilityId={testProps.facilityId}
-          dateTestedProp={testProps.dateTestedProp}
-          patientLinkId={testProps.patientLinkId}
-        ></QueueItem>
+        <Provider store={store}>
+          <QueueItem
+            internalId={testProps.internalId}
+            patient={testProps.patient}
+            askOnEntry={testProps.askOnEntry}
+            selectedDeviceId={testProps.selectedDeviceId}
+            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedTestResult={testProps.selectedTestResult}
+            devices={testProps.devices}
+            refetchQueue={testProps.refetchQueue}
+            facilityId={testProps.facilityId}
+            dateTestedProp={testProps.dateTestedProp}
+            patientLinkId={testProps.patientLinkId}
+          ></QueueItem>
+        </Provider>
       </MockedProvider>
     );
     expect(screen.getByText("Potter, Harry James")).toBeInTheDocument();
@@ -50,21 +63,24 @@ describe("QueueItem", () => {
   it("updates the timer when a device is changed", async () => {
     const { getByTestId, getByLabelText } = render(
       <MockedProvider mocks={mocks} addTypename={false}>
-        <QueueItem
-          internalId={testProps.internalId}
-          patient={testProps.patient}
-          askOnEntry={testProps.askOnEntry}
-          selectedDeviceId={testProps.selectedDeviceId}
-          selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-          selectedTestResult={testProps.selectedTestResult}
-          devices={testProps.devices}
-          refetchQueue={testProps.refetchQueue}
-          facilityId={testProps.facilityId}
-          dateTestedProp={testProps.dateTestedProp}
-          patientLinkId={testProps.patientLinkId}
-        ></QueueItem>
+        <Provider store={store}>
+          <QueueItem
+            internalId={testProps.internalId}
+            patient={testProps.patient}
+            askOnEntry={testProps.askOnEntry}
+            selectedDeviceId={testProps.selectedDeviceId}
+            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedTestResult={testProps.selectedTestResult}
+            devices={testProps.devices}
+            refetchQueue={testProps.refetchQueue}
+            facilityId={testProps.facilityId}
+            dateTestedProp={testProps.dateTestedProp}
+            patientLinkId={testProps.patientLinkId}
+          ></QueueItem>
+        </Provider>
       </MockedProvider>
     );
+
     await waitFor(() => {
       fireEvent.change(getByLabelText("Device", { exact: false }), {
         target: { value: "lumira" },
@@ -92,19 +108,21 @@ describe("QueueItem", () => {
       render(
         <>
           <MockedProvider mocks={mocks} addTypename={false}>
-            <QueueItem
-              internalId={testProps.internalId}
-              patient={testProps.patient}
-              askOnEntry={testProps.askOnEntry}
-              selectedDeviceId={testProps.selectedDeviceId}
-              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-              selectedTestResult={testProps.selectedTestResult}
-              devices={testProps.devices}
-              refetchQueue={testProps.refetchQueue}
-              facilityId={testProps.facilityId}
-              dateTestedProp={testProps.dateTestedProp}
-              patientLinkId={testProps.patientLinkId}
-            ></QueueItem>
+            <Provider store={store}>
+              <QueueItem
+                internalId={testProps.internalId}
+                patient={testProps.patient}
+                askOnEntry={testProps.askOnEntry}
+                selectedDeviceId={testProps.selectedDeviceId}
+                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+                selectedTestResult={testProps.selectedTestResult}
+                devices={testProps.devices}
+                refetchQueue={testProps.refetchQueue}
+                facilityId={testProps.facilityId}
+                dateTestedProp={testProps.dateTestedProp}
+                patientLinkId={testProps.patientLinkId}
+              ></QueueItem>
+            </Provider>
           </MockedProvider>
           <ToastContainer
             autoClose={5000}
@@ -175,19 +193,21 @@ describe("QueueItem", () => {
   it("updates custom test date/time", async () => {
     render(
       <MockedProvider mocks={mocks} addTypename={false}>
-        <QueueItem
-          internalId={testProps.internalId}
-          patient={testProps.patient}
-          askOnEntry={testProps.askOnEntry}
-          selectedDeviceId={testProps.selectedDeviceId}
-          selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-          selectedTestResult={testProps.selectedTestResult}
-          devices={testProps.devices}
-          refetchQueue={testProps.refetchQueue}
-          facilityId={testProps.facilityId}
-          dateTestedProp={testProps.dateTestedProp}
-          patientLinkId={testProps.patientLinkId}
-        ></QueueItem>
+        <Provider store={store}>
+          <QueueItem
+            internalId={testProps.internalId}
+            patient={testProps.patient}
+            askOnEntry={testProps.askOnEntry}
+            selectedDeviceId={testProps.selectedDeviceId}
+            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedTestResult={testProps.selectedTestResult}
+            devices={testProps.devices}
+            refetchQueue={testProps.refetchQueue}
+            facilityId={testProps.facilityId}
+            dateTestedProp={testProps.dateTestedProp}
+            patientLinkId={testProps.patientLinkId}
+          ></QueueItem>
+        </Provider>
       </MockedProvider>
     );
     const toggle = await screen.findByLabelText("Use current date");
@@ -213,19 +233,21 @@ describe("QueueItem", () => {
   it("displays person's mobile phone numbers", async () => {
     render(
       <MockedProvider mocks={mocks} addTypename={false}>
-        <QueueItem
-          internalId={testProps.internalId}
-          patient={testProps.patient}
-          askOnEntry={testProps.askOnEntry}
-          selectedDeviceId={testProps.selectedDeviceId}
-          selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-          selectedTestResult={testProps.selectedTestResult}
-          devices={testProps.devices}
-          refetchQueue={testProps.refetchQueue}
-          facilityId={testProps.facilityId}
-          dateTestedProp={testProps.dateTestedProp}
-          patientLinkId={testProps.patientLinkId}
-        ></QueueItem>
+        <Provider store={store}>
+          <QueueItem
+            internalId={testProps.internalId}
+            patient={testProps.patient}
+            askOnEntry={testProps.askOnEntry}
+            selectedDeviceId={testProps.selectedDeviceId}
+            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedTestResult={testProps.selectedTestResult}
+            devices={testProps.devices}
+            refetchQueue={testProps.refetchQueue}
+            facilityId={testProps.facilityId}
+            dateTestedProp={testProps.dateTestedProp}
+            patientLinkId={testProps.patientLinkId}
+          ></QueueItem>
+        </Provider>
       </MockedProvider>
     );
 

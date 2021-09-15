@@ -1,4 +1,19 @@
-import { Timer } from "./TestTimer";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+
+import {
+  findTimer,
+  removeTimer,
+  TestTimerWidget,
+  Timer,
+  TimerTrackEventMetadata,
+  useTestTimer,
+} from "./TestTimer";
+
+jest.mock("../TelemetryService", () => ({
+  appInsights: {
+    trackEvent: jest.fn(),
+  },
+}));
 
 describe("TestTimer", () => {
   let now = 1600000000;
@@ -52,6 +67,102 @@ describe("TestTimer", () => {
     testCountdown(timer.countdown, 9, 58);
   });
 });
+
+describe("TestTimerWidget", () => {
+  describe("telemetry", () => {
+    let context: TimerTrackEventMetadata;
+
+    beforeEach(() => {
+      context = {
+        patientId: "patient-id",
+        organizationName: "Organization",
+        facilityName: "Facility",
+        testOrderId: "test-order-id",
+      };
+    });
+
+    afterEach(() => removeTimer("internal-id"));
+
+    it("tracks a custom event when the timer is started", async () => {
+      const { appInsights } = require("../TelemetryService");
+
+      render(<DummyTestTimer testLength={15} context={context} />);
+
+      const startTimer = await screen.findByRole("button");
+
+      act(() => {
+        fireEvent.click(startTimer);
+      });
+
+      expect(appInsights?.trackEvent).toHaveBeenCalled();
+      expect(appInsights?.trackEvent).toHaveBeenCalledTimes(1);
+      expect(appInsights?.trackEvent).toHaveBeenCalledWith(
+        { name: "Test timer started" },
+        context
+      );
+    });
+
+    it("tracks a custom event when the timer reset", async () => {
+      const { appInsights } = require("../TelemetryService");
+
+      render(<DummyTestTimer testLength={15} context={context} />);
+
+      const timerButton = await screen.findByRole("button");
+
+      // Start timer
+      act(() => {
+        fireEvent.click(timerButton);
+      });
+
+      // The timer does not enter the countdown state instantly, so clicking the
+      // button in rapid succession will register as two "start timer" events.
+      // Force the timer forward -- otherwise we would need a 1sec timeout here
+      findTimer("internal-id")?.tick(Date.now());
+
+      // Reset timer
+      act(() => {
+        fireEvent.click(timerButton);
+      });
+
+      expect(appInsights?.trackEvent).toHaveBeenCalledWith(
+        { name: "Test timer reset" },
+        context
+      );
+    });
+
+    it("tracks a custom event when the timer reaches zero", async () => {
+      const { appInsights } = require("../TelemetryService");
+
+      render(<DummyTestTimer testLength={0} context={context} />);
+
+      const timerButton = await screen.findByRole("button");
+
+      act(() => {
+        fireEvent.click(timerButton);
+      });
+
+      // This is a 0-second timer, but it takes ~1 second to enter the
+      // countdown state and register as completed
+      findTimer("internal-id")?.tick(Date.now() + 1000);
+
+      expect(screen.getByText("RESULT READY")).toBeInTheDocument();
+
+      expect(appInsights?.trackEvent).toHaveBeenCalledWith(
+        { name: "Test timer finished" },
+        context
+      );
+    });
+  });
+});
+
+function DummyTestTimer(props: {
+  testLength: number;
+  context: TimerTrackEventMetadata;
+}) {
+  const timer = useTestTimer("internal-id", props.testLength);
+
+  return <TestTimerWidget timer={timer} context={props.context} />;
+}
 
 function testCountdown(actualMillis: number, mins: number, secs: number) {
   const actualMins = Math.floor(Math.abs(actualMillis) / (60 * 1000));

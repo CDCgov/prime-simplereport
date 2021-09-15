@@ -6,6 +6,8 @@ import {
 } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import configureStore, { MockStoreEnhanced } from "redux-mock-store";
 
 import TestQueue, { queueQuery } from "./TestQueue";
 import { REMOVE_PATIENT_FROM_QUEUE } from "./QueueItem";
@@ -19,11 +21,24 @@ jest.mock("@microsoft/applicationinsights-react-js", () => {
 });
 
 describe("TestQueue", () => {
+  let store: MockStoreEnhanced<unknown, {}>;
+  const mockStore = configureStore([]);
+
+  beforeEach(() => {
+    store = mockStore({
+      organization: {
+        name: "Organization Name",
+      },
+    });
+  });
+
   it("should render the test queue", async () => {
     const { container } = render(
       <MemoryRouter>
         <MockedProvider mocks={mocks}>
-          <TestQueue activeFacilityId="a1" />
+          <Provider store={store}>
+            <TestQueue activeFacilityId="a1" />
+          </Provider>
         </MockedProvider>
       </MemoryRouter>
     );
@@ -37,7 +52,9 @@ describe("TestQueue", () => {
     render(
       <MemoryRouter>
         <MockedProvider mocks={mocks}>
-          <TestQueue activeFacilityId="a1" />
+          <Provider store={store}>
+            <TestQueue activeFacilityId="a1" />
+          </Provider>
         </MockedProvider>
       </MemoryRouter>
     );

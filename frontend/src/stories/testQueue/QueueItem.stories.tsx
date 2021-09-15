@@ -70,6 +70,7 @@ const defaultProps: QueueItemProps = {
   selectedTestResult: "UNKNOWN",
   dateTestedProp: "",
   refetchQueue: () => {},
+  facilityName: "Facility Name",
   facilityId: "100",
 };
 
