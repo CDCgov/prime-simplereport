@@ -53,7 +53,10 @@ export const QUERY_SINGLE_PATIENT = gql`
 `;
 
 export const QUERY_PATIENT = gql`
-  query GetPatientsByFacility($facilityId: ID!, $namePrefixMatch: String) {
+  query GetPatientsByFacilityForQueue(
+    $facilityId: ID!
+    $namePrefixMatch: String
+  ) {
     patients(
       facilityId: $facilityId
       pageNumber: 0
@@ -107,7 +110,7 @@ export const ADD_PATIENT_TO_QUEUE = gql`
   }
 `;
 
-const UPDATE_AOE = gql`
+export const UPDATE_AOE = gql`
   mutation UpdateAOE(
     $patientId: ID!
     $symptoms: String
