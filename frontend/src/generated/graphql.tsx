@@ -1559,6 +1559,7 @@ export type GetFacilityQueueQuery = {
         Maybe<{
           __typename?: "Facility";
           id?: Maybe<string>;
+          name?: Maybe<string>;
           deviceTypes?: Maybe<
             Array<
               Maybe<{
@@ -4329,6 +4330,7 @@ export const GetFacilityQueueDocument = gql`
     organization {
       testingFacility {
         id
+        name
         deviceTypes {
           internalId
           name
