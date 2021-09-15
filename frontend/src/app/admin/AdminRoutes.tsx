@@ -5,7 +5,7 @@ import AddOrganizationAdminFormContainer from "./Organization/AddOrganizationAdm
 import DeviceTypeFormContainer from "./DeviceType/DeviceTypeFormContainer";
 import TenantDataAccessFormContainer from "./Organization/TenantDataAccessFormContainer";
 import Admin from "./Admin";
-import PendingOrganizationsList from "./Organization/PendingOrganizationsList";
+import PendingOrganizationsList from "./PendingOrganizations/PendingOrganizationsList";
 
 interface Props {
   match: { url: string };
