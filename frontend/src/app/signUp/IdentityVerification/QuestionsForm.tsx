@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStopwatch } from "@fortawesome/free-solid-svg-icons";
 
@@ -94,7 +93,7 @@ const QuestionsForm: React.FC<Props> = ({
         body="Please check the form to make sure you complete all of the required fields."
       />
     );
-    showNotification(toast, alert);
+    showNotification(alert);
   };
 
   return (

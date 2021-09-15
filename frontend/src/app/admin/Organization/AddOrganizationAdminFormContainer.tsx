@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { toast } from "react-toastify";
 import {
   useAppInsightsContext,
   useTrackEvent,
@@ -114,7 +113,7 @@ const AddOrganizationAdminFormContainer: any = () => {
           body="The organization admin has been added"
         />
       );
-      showNotification(toast, alert);
+      showNotification(alert);
       setSubmitted(true);
     });
   };
