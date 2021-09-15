@@ -1208,10 +1208,8 @@ export type GetUnverifiedOrganizationsQuery = {
   __typename?: "Query";
   organizations: Array<{
     __typename?: "Organization";
-    id: string;
     name: string;
     externalId: string;
-    identityVerified: boolean;
   }>;
 };
 
@@ -3258,10 +3256,8 @@ export type SetCurrentUserTenantDataAccessOpMutationOptions = Apollo.BaseMutatio
 export const GetUnverifiedOrganizationsDocument = gql`
   query GetUnverifiedOrganizations($identityVerified: Boolean) {
     organizations(identityVerified: $identityVerified) {
-      id
       name
       externalId
-      identityVerified
     }
   }
 `;
