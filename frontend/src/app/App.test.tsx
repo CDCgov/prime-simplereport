@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, MemoryRouter, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import createMockStore, { MockStoreEnhanced } from "redux-mock-store";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
@@ -15,6 +15,12 @@ jest.mock("./VersionService", () => ({
     enforce: jest.fn(),
   },
 }));
+jest.mock("./testResults/CleanTestResultsList", () => {
+  return () => <p>CleanTestResultsList</p>;
+});
+jest.mock("./testResults/TestResultsList", () => {
+  return () => <p>TestResultsList</p>;
+});
 
 const mockStore = createMockStore([]);
 const mockDispatch = jest.fn();
@@ -222,5 +228,44 @@ describe("App", () => {
     renderApp(mockedStore, [WhoAmIQueryMock, facilityQueryMock]);
     expect(screen.queryByText(TRAINING_PURPOSES_ONLY)).not.toBeInTheDocument();
     expect(screen.queryByText(MODAL_TEXT)).not.toBeInTheDocument();
+  });
+  it("renders CleanTestResultsList when going to /results/", async () => {
+    const mockedStore = mockStore({ ...store, dataLoaded: true });
+
+    await render(
+      <Provider store={mockedStore}>
+        <MockedProvider mocks={[WhoAmIQueryMock]} addTypename={false}>
+          <MemoryRouter
+            initialEntries={[
+              `/results?facility=fec4de56-f4cc-4c61-b3d5-76869ca71296`,
+            ]}
+          >
+            <App />
+          </MemoryRouter>
+        </MockedProvider>
+      </Provider>
+    );
+
+    expect(await screen.findByText("CleanTestResultsList")).toBeInTheDocument();
+  });
+
+  it("renders TestResultsList when going to /results/page_number ", async () => {
+    const mockedStore = mockStore({ ...store, dataLoaded: true });
+
+    await render(
+      <Provider store={mockedStore}>
+        <MockedProvider mocks={[WhoAmIQueryMock]} addTypename={false}>
+          <MemoryRouter
+            initialEntries={[
+              `/results/1?facility=fec4de56-f4cc-4c61-b3d5-76869ca71296`,
+            ]}
+          >
+            <App />
+          </MemoryRouter>
+        </MockedProvider>
+      </Provider>
+    );
+
+    expect(await screen.findByText("TestResultsList")).toBeInTheDocument();
   });
 });

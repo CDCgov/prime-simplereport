@@ -1,7 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import classnames from "classnames";
-import { toast } from "react-toastify";
 
 import {
   InjectedQueryWrapperProps,
@@ -120,7 +119,7 @@ export const DetachedPendingOrganizationsList: any = ({
             body=""
           />
         );
-        showNotification(toast, alert);
+        showNotification(alert);
       })
       .finally(refetch);
   };

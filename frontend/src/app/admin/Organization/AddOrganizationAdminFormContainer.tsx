@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { toast } from "react-toastify";
 import {
   useAppInsightsContext,
   useTrackEvent,
@@ -13,15 +12,7 @@ import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 import { OrganizationOptions } from "./OrganizationDropDown";
 import AddOrganizationAdminForm from "./AddOrganizationAdminForm";
-
-const GET_ORGANIZATIONS_QUERY = gql`
-  query GetOrganizations($identityVerified: Boolean) {
-    organizations(identityVerified: $identityVerified) {
-      externalId
-      name
-    }
-  }
-`;
+import { GET_ORGANIZATIONS_QUERY } from "./TenantDataAccessFormContainer";
 
 const ADD_USER_MUTATION = gql`
   mutation AddUser(
@@ -114,7 +105,7 @@ const AddOrganizationAdminFormContainer: any = () => {
           body="The organization admin has been added"
         />
       );
-      showNotification(toast, alert);
+      showNotification(alert);
       setSubmitted(true);
     });
   };

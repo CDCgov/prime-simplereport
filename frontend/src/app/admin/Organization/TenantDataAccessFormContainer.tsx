@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { toast } from "react-toastify";
 import {
   useAppInsightsContext,
   useTrackEvent,
@@ -88,7 +87,7 @@ const TenantDataAccessFormContainer: any = () => {
           body="You now have access to tenant data for the requested organization."
         />
       );
-      showNotification(toast, alert);
+      showNotification(alert);
       setSubmitted(true);
 
       // reload the page, in the future, this should just update state where appropriate

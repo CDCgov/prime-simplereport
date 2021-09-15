@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
-import { toast } from "react-toastify";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 import { showError } from "../utils";
@@ -144,7 +143,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   }
   if (facility.deviceTypes.length === 0) {
     showError(
-      toast,
       "This facility does not have any testing devices. Go into Settings -> Manage facilities and add a device."
     );
   }

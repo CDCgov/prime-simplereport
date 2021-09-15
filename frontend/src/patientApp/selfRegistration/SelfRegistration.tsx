@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import moment from "moment";
 import "react-toastify/dist/ReactToastify.css";
 import { useTranslation } from "react-i18next";
@@ -66,7 +66,6 @@ export const SelfRegistration = () => {
       setStep(RegistrationStep.FINISHED);
     } catch (e) {
       showError(
-        toast,
         t("selfRegistration.form.error.heading"),
         t("selfRegistration.form.error.text")
       );

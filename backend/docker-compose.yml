@@ -2,6 +2,7 @@ version: "3.5"
 services:
   db:
     image: postgres:12-alpine
+    container_name: prime_sr_db
     ports:
       - "${SR_DB_PORT:-5432}:${SR_DB_PORT:-5432}"
     environment:
@@ -26,6 +27,7 @@ services:
       context: ..
       dockerfile: backend/Dockerfile
     image: simple-report-api-build
+    container_name: prime_sr_api
     command: bootRun
     environment:
       SPRING_PROFILES_ACTIVE: dev,db-dockerized
@@ -42,6 +44,7 @@ services:
       context: .
       dockerfile: Dockerfile.schemaspy
       network: dev-net
+    container_name: prime_sr_schemaspy
     ports:
       - "${SR_SCHEMASPY_PORT:-8081}:80"
     environment:

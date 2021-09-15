@@ -1,5 +1,4 @@
 import { ReactElement, useState } from "react";
-import { toast } from "react-toastify";
 import { Redirect } from "react-router";
 
 import { Card } from "../../commonComponents/Card/Card";
@@ -104,7 +103,7 @@ const OrganizationForm = () => {
       />
     );
     window.scrollTo(0, 0);
-    showNotification(toast, alert);
+    showNotification(alert);
     setLoading(false);
   };
 

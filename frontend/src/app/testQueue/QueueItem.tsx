@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { toast } from "react-toastify";
 import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
 import {
@@ -33,6 +32,7 @@ import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
 import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
 import { QueueItemSubmitLoader } from "./QueueItemSubmitLoader";
+import { UPDATE_AOE } from "./addToQueue/AddToQueueSearch";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
 
@@ -100,34 +100,6 @@ export const SUBMIT_TEST_RESULT = gql`
       }
       deliverySuccess
     }
-  }
-`;
-
-const UPDATE_AOE = gql`
-  mutation UpdateAOE(
-    $patientId: ID!
-    $symptoms: String
-    $symptomOnset: LocalDate
-    $pregnancy: String
-    $firstTest: Boolean
-    $priorTestDate: LocalDate
-    $priorTestType: String
-    $priorTestResult: String
-    $noSymptoms: Boolean
-    $testResultDelivery: TestResultDeliveryPreference
-  ) {
-    updateTimeOfTestQuestions(
-      patientId: $patientId
-      pregnancy: $pregnancy
-      symptoms: $symptoms
-      noSymptoms: $noSymptoms
-      firstTest: $firstTest
-      priorTestDate: $priorTestDate
-      priorTestType: $priorTestType
-      priorTestResult: $priorTestResult
-      symptomOnset: $symptomOnset
-      testResultDelivery: $testResultDelivery
-    )
   }
 `;
 
@@ -318,11 +290,11 @@ const QueueItem = ({
           body="The phone number provided may not be valid or may not be able to accept text messages"
         />
       );
-      showNotification(toast, deliveryFailureAlert);
+      showNotification(deliveryFailureAlert);
     }
 
     let alert = <Alert type="success" title={title} body={body} />;
-    showNotification(toast, alert);
+    showNotification(alert);
   };
 
   const onTestResultSubmit = async (forceSubmit: boolean = false) => {

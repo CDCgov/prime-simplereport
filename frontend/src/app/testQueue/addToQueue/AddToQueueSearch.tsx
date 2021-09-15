@@ -5,7 +5,6 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
-import { toast } from "react-toastify";
 import { gql, useMutation, useLazyQuery, useQuery } from "@apollo/client";
 import {
   useAppInsightsContext,
@@ -54,7 +53,10 @@ export const QUERY_SINGLE_PATIENT = gql`
 `;
 
 export const QUERY_PATIENT = gql`
-  query GetPatientsByFacility($facilityId: ID!, $namePrefixMatch: String) {
+  query GetPatientsByFacilityForQueue(
+    $facilityId: ID!
+    $namePrefixMatch: String
+  ) {
     patients(
       facilityId: $facilityId
       pageNumber: 0
@@ -108,7 +110,7 @@ export const ADD_PATIENT_TO_QUEUE = gql`
   }
 `;
 
-const UPDATE_AOE = gql`
+export const UPDATE_AOE = gql`
   mutation UpdateAOE(
     $patientId: ID!
     $symptoms: String
@@ -269,7 +271,7 @@ const AddToQueueSearchBox = ({
           ),
         };
         const alert = <Alert type={type} title={title} body={body} />;
-        showNotification(toast, alert);
+        showNotification(alert);
         refetchQueue();
         if (createOrUpdate === "create") {
           return res.data.addPatientToQueue;
