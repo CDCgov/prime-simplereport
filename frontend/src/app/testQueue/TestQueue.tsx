@@ -131,7 +131,11 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     throw error;
   }
   if (loading) {
-    return <p>Loading patients...</p>;
+    return (
+      <main className="prime-home display-flex flex-justify-center">
+        Loading patients...
+      </main>
+    );
   }
 
   const facility = data.organization.testingFacility.find(
