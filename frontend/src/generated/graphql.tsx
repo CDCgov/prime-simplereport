@@ -473,17 +473,17 @@ export type NameInput = {
 
 export type Organization = {
   __typename?: "Organization";
-  externalId?: Maybe<Scalars["String"]>;
+  externalId: Scalars["String"];
   facilities: Array<Facility>;
-  id?: Maybe<Scalars["ID"]>;
-  identityVerified?: Maybe<Scalars["Boolean"]>;
+  id: Scalars["ID"];
+  identityVerified: Scalars["Boolean"];
   /** @deprecated alias for 'id' */
-  internalId?: Maybe<Scalars["ID"]>;
-  name?: Maybe<Scalars["String"]>;
+  internalId: Scalars["ID"];
+  name: Scalars["String"];
   patientSelfRegistrationLink?: Maybe<Scalars["String"]>;
   /** @deprecated Use the one that makes sense */
-  testingFacility?: Maybe<Array<Maybe<Facility>>>;
-  type?: Maybe<Scalars["String"]>;
+  testingFacility: Array<Facility>;
+  type: Scalars["String"];
 };
 
 export type Patient = {
@@ -779,16 +779,12 @@ export type WhoAmIQuery = {
     roleDescription: string;
     organization?: Maybe<{
       __typename?: "Organization";
-      name?: Maybe<string>;
-      testingFacility?: Maybe<
-        Array<
-          Maybe<{
-            __typename?: "Facility";
-            id?: Maybe<string>;
-            name?: Maybe<string>;
-          }>
-        >
-      >;
+      name: string;
+      testingFacility: Array<{
+        __typename?: "Facility";
+        id?: Maybe<string>;
+        name?: Maybe<string>;
+      }>;
     }>;
   };
 };
@@ -799,47 +795,41 @@ export type GetFacilitiesQuery = {
   __typename?: "Query";
   organization?: Maybe<{
     __typename?: "Organization";
-    internalId?: Maybe<string>;
-    testingFacility?: Maybe<
-      Array<
-        Maybe<{
-          __typename?: "Facility";
-          id?: Maybe<string>;
-          cliaNumber?: Maybe<string>;
-          name?: Maybe<string>;
-          street?: Maybe<string>;
-          streetTwo?: Maybe<string>;
-          city?: Maybe<string>;
-          state?: Maybe<string>;
-          zipCode?: Maybe<string>;
-          phone?: Maybe<string>;
-          email?: Maybe<string>;
-          defaultDeviceType?: Maybe<{
-            __typename?: "DeviceType";
-            internalId?: Maybe<string>;
-          }>;
-          deviceTypes?: Maybe<
-            Array<
-              Maybe<{ __typename?: "DeviceType"; internalId?: Maybe<string> }>
-            >
-          >;
-          orderingProvider?: Maybe<{
-            __typename?: "Provider";
-            firstName?: Maybe<string>;
-            middleName?: Maybe<string>;
-            lastName?: Maybe<string>;
-            suffix?: Maybe<string>;
-            NPI?: Maybe<string>;
-            street?: Maybe<string>;
-            streetTwo?: Maybe<string>;
-            city?: Maybe<string>;
-            state?: Maybe<string>;
-            zipCode?: Maybe<string>;
-            phone?: Maybe<string>;
-          }>;
-        }>
-      >
-    >;
+    internalId: string;
+    testingFacility: Array<{
+      __typename?: "Facility";
+      id?: Maybe<string>;
+      cliaNumber?: Maybe<string>;
+      name?: Maybe<string>;
+      street?: Maybe<string>;
+      streetTwo?: Maybe<string>;
+      city?: Maybe<string>;
+      state?: Maybe<string>;
+      zipCode?: Maybe<string>;
+      phone?: Maybe<string>;
+      email?: Maybe<string>;
+      defaultDeviceType?: Maybe<{
+        __typename?: "DeviceType";
+        internalId?: Maybe<string>;
+      }>;
+      deviceTypes?: Maybe<
+        Array<Maybe<{ __typename?: "DeviceType"; internalId?: Maybe<string> }>>
+      >;
+      orderingProvider?: Maybe<{
+        __typename?: "Provider";
+        firstName?: Maybe<string>;
+        middleName?: Maybe<string>;
+        lastName?: Maybe<string>;
+        suffix?: Maybe<string>;
+        NPI?: Maybe<string>;
+        street?: Maybe<string>;
+        streetTwo?: Maybe<string>;
+        city?: Maybe<string>;
+        state?: Maybe<string>;
+        zipCode?: Maybe<string>;
+        phone?: Maybe<string>;
+      }>;
+    }>;
   }>;
   deviceType?: Maybe<
     Array<
@@ -921,46 +911,40 @@ export type GetManagedFacilitiesQuery = {
   __typename?: "Query";
   organization?: Maybe<{
     __typename?: "Organization";
-    testingFacility?: Maybe<
-      Array<
-        Maybe<{
-          __typename?: "Facility";
-          id?: Maybe<string>;
-          cliaNumber?: Maybe<string>;
-          name?: Maybe<string>;
-          street?: Maybe<string>;
-          streetTwo?: Maybe<string>;
-          city?: Maybe<string>;
-          state?: Maybe<string>;
-          zipCode?: Maybe<string>;
-          phone?: Maybe<string>;
-          email?: Maybe<string>;
-          defaultDeviceType?: Maybe<{
-            __typename?: "DeviceType";
-            internalId?: Maybe<string>;
-          }>;
-          deviceTypes?: Maybe<
-            Array<
-              Maybe<{ __typename?: "DeviceType"; internalId?: Maybe<string> }>
-            >
-          >;
-          orderingProvider?: Maybe<{
-            __typename?: "Provider";
-            firstName?: Maybe<string>;
-            middleName?: Maybe<string>;
-            lastName?: Maybe<string>;
-            suffix?: Maybe<string>;
-            NPI?: Maybe<string>;
-            street?: Maybe<string>;
-            streetTwo?: Maybe<string>;
-            city?: Maybe<string>;
-            state?: Maybe<string>;
-            zipCode?: Maybe<string>;
-            phone?: Maybe<string>;
-          }>;
-        }>
-      >
-    >;
+    testingFacility: Array<{
+      __typename?: "Facility";
+      id?: Maybe<string>;
+      cliaNumber?: Maybe<string>;
+      name?: Maybe<string>;
+      street?: Maybe<string>;
+      streetTwo?: Maybe<string>;
+      city?: Maybe<string>;
+      state?: Maybe<string>;
+      zipCode?: Maybe<string>;
+      phone?: Maybe<string>;
+      email?: Maybe<string>;
+      defaultDeviceType?: Maybe<{
+        __typename?: "DeviceType";
+        internalId?: Maybe<string>;
+      }>;
+      deviceTypes?: Maybe<
+        Array<Maybe<{ __typename?: "DeviceType"; internalId?: Maybe<string> }>>
+      >;
+      orderingProvider?: Maybe<{
+        __typename?: "Provider";
+        firstName?: Maybe<string>;
+        middleName?: Maybe<string>;
+        lastName?: Maybe<string>;
+        suffix?: Maybe<string>;
+        NPI?: Maybe<string>;
+        street?: Maybe<string>;
+        streetTwo?: Maybe<string>;
+        city?: Maybe<string>;
+        state?: Maybe<string>;
+        zipCode?: Maybe<string>;
+        phone?: Maybe<string>;
+      }>;
+    }>;
   }>;
 };
 
@@ -970,8 +954,8 @@ export type GetOrganizationQuery = {
   __typename?: "Query";
   organization?: Maybe<{
     __typename?: "Organization";
-    name?: Maybe<string>;
-    type?: Maybe<string>;
+    name: string;
+    type: string;
   }>;
 };
 
@@ -1052,15 +1036,11 @@ export type GetUserQuery = {
     status?: Maybe<string>;
     organization?: Maybe<{
       __typename?: "Organization";
-      testingFacility?: Maybe<
-        Array<
-          Maybe<{
-            __typename?: "Facility";
-            id?: Maybe<string>;
-            name?: Maybe<string>;
-          }>
-        >
-      >;
+      testingFacility: Array<{
+        __typename?: "Facility";
+        id?: Maybe<string>;
+        name?: Maybe<string>;
+      }>;
     }>;
   }>;
 };
@@ -1125,15 +1105,11 @@ export type GetFacilitiesForManageUsersQuery = {
   __typename?: "Query";
   organization?: Maybe<{
     __typename?: "Organization";
-    testingFacility?: Maybe<
-      Array<
-        Maybe<{
-          __typename?: "Facility";
-          id?: Maybe<string>;
-          name?: Maybe<string>;
-        }>
-      >
-    >;
+    testingFacility: Array<{
+      __typename?: "Facility";
+      id?: Maybe<string>;
+      name?: Maybe<string>;
+    }>;
   }>;
 };
 
@@ -1179,8 +1155,8 @@ export type AddUserMutation = {
     }>;
     organization?: Maybe<{
       __typename?: "Organization";
-      name?: Maybe<string>;
-      externalId?: Maybe<string>;
+      name: string;
+      externalId: string;
       facilities: Array<{
         __typename?: "Facility";
         name?: Maybe<string>;
@@ -1198,10 +1174,10 @@ export type GetUnverifiedOrganizationsQuery = {
   __typename?: "Query";
   organizations: Array<{
     __typename?: "Organization";
-    id?: Maybe<string>;
-    name?: Maybe<string>;
-    externalId?: Maybe<string>;
-    identityVerified?: Maybe<boolean>;
+    id: string;
+    name: string;
+    externalId: string;
+    identityVerified: boolean;
   }>;
 };
 
@@ -1223,8 +1199,8 @@ export type GetOrganizationsQuery = {
   __typename?: "Query";
   organizations: Array<{
     __typename?: "Organization";
-    externalId?: Maybe<string>;
-    name?: Maybe<string>;
+    externalId: string;
+    name: string;
   }>;
 };
 
@@ -1243,8 +1219,8 @@ export type SetCurrentUserTenantDataAccessOpMutation = {
     role?: Maybe<Role>;
     organization?: Maybe<{
       __typename?: "Organization";
-      name?: Maybe<string>;
-      externalId?: Maybe<string>;
+      name: string;
+      externalId: string;
     }>;
   }>;
 };
@@ -1554,32 +1530,28 @@ export type GetFacilityQueueQuery = {
   >;
   organization?: Maybe<{
     __typename?: "Organization";
-    testingFacility?: Maybe<
-      Array<
-        Maybe<{
-          __typename?: "Facility";
-          id?: Maybe<string>;
-          deviceTypes?: Maybe<
-            Array<
-              Maybe<{
-                __typename?: "DeviceType";
-                internalId?: Maybe<string>;
-                name?: Maybe<string>;
-                model?: Maybe<string>;
-                testLength?: Maybe<number>;
-              }>
-            >
-          >;
-          defaultDeviceType?: Maybe<{
+    testingFacility: Array<{
+      __typename?: "Facility";
+      id?: Maybe<string>;
+      deviceTypes?: Maybe<
+        Array<
+          Maybe<{
             __typename?: "DeviceType";
             internalId?: Maybe<string>;
             name?: Maybe<string>;
             model?: Maybe<string>;
             testLength?: Maybe<number>;
-          }>;
-        }>
-      >
-    >;
+          }>
+        >
+      >;
+      defaultDeviceType?: Maybe<{
+        __typename?: "DeviceType";
+        internalId?: Maybe<string>;
+        name?: Maybe<string>;
+        model?: Maybe<string>;
+        testLength?: Maybe<number>;
+      }>;
+    }>;
   }>;
 };
 
