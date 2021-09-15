@@ -1,0 +1,52 @@
+#analytics-page {
+  .card-container {
+    h3 {
+      margin-bottom: 0;
+    }
+
+    p {
+      margin-top: 5px;
+    }
+  }
+
+  .inline-datepicker {
+    .usa-form-group {
+      display: flex;
+    }
+
+    label {
+      margin-top: 7px;
+      margin-right: 7px;
+    }
+
+    .usa-date-picker {
+      .usa-date-picker__external-input,
+      .usa-date-picker__button {
+        margin-top: 0;
+      }
+    }
+
+    .usa-date-picker__calendar {
+      width: 300px;
+    }
+  }
+
+  .card {
+    height: 250px;
+
+    h1,
+    h2 {
+      margin-top: 0;
+    }
+
+    h1 {
+      font-size: 70px;
+      margin-bottom: 4px;
+    }
+
+    p {
+      font-size: 20px;
+      text-align: center;
+    }
+  }
+}
