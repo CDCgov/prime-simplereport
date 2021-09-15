@@ -5,7 +5,7 @@ import AddOrganizationAdminFormContainer from "./Organization/AddOrganizationAdm
 import DeviceTypeFormContainer from "./DeviceType/DeviceTypeFormContainer";
 import TenantDataAccessFormContainer from "./Organization/TenantDataAccessFormContainer";
 import Admin from "./Admin";
-import PendingOrganizationsList from "./PendingOrganizations/PendingOrganizationsList";
+import PendingOrganizationsContainer from "./PendingOrganizations/PendingOrganizationsContainer";
 
 interface Props {
   match: { url: string };
@@ -27,7 +27,7 @@ const AdminRoutes: React.FC<Props> = ({ match, isAdmin }) => {
     <>
       <Route
         path={`${match.url}/pending-organizations`}
-        render={() => <PendingOrganizationsList />}
+        render={() => <PendingOrganizationsContainer />}
       />
       <Route
         path={`${match.url}/add-organization-admin`}
