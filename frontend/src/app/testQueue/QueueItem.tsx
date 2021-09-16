@@ -9,6 +9,7 @@ import {
 import classnames from "classnames";
 import moment from "moment";
 import { DatePicker, Label } from "@trussworks/react-uswds";
+import { useSelector } from "react-redux";
 
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
@@ -18,6 +19,7 @@ import TextInput from "../commonComponents/TextInput";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import { displayFullName, showNotification } from "../utils";
 import Checkboxes from "../commonComponents/Checkboxes";
+import { RootState } from "../store";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
@@ -157,6 +159,7 @@ export interface QueueItemProps {
   selectedTestResult: TestResult;
   dateTestedProp: string;
   refetchQueue: () => void;
+  facilityName: string | undefined;
   facilityId: string;
 }
 
@@ -178,6 +181,7 @@ const QueueItem = ({
   selectedDeviceTestLength,
   selectedTestResult,
   refetchQueue,
+  facilityName,
   facilityId,
   dateTestedProp,
 }: QueueItemProps) => {
@@ -227,6 +231,10 @@ const QueueItem = ({
   // always assume the current date unless provided something else
   const [dateTested, updateDateTested] = useState<string | undefined>(
     dateTestedProp || undefined
+  );
+
+  const organization = useSelector<RootState, Organization>(
+    (state: any) => state.organization as Organization
   );
 
   // helper method to work around the annoying string-booleans
@@ -561,6 +569,13 @@ const QueueItem = ({
     cardColorDisplay()
   );
 
+  const timerContext = {
+    organizationName: organization.name,
+    facilityName: facilityName,
+    patientId: patient.internalId,
+    testOrderId: internalId,
+  };
+
   return (
     <React.Fragment>
       <div className={containerClasses}>
@@ -577,7 +592,7 @@ const QueueItem = ({
                 id="patient-name-header"
               >
                 <h2>{patientFullName}</h2>
-                <TestTimerWidget timer={timer} />
+                <TestTimerWidget timer={timer} context={timerContext} />
               </div>
               <div className="margin-top-2 margin-left-2 margin-bottom-2">
                 <div className="queue-item__description prime-ul grid-row grid-gap">
