@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useState } from "react";
 import {
   useAppInsightsContext,
   useTrackEvent,
@@ -9,64 +8,22 @@ import { Redirect } from "react-router-dom";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
-import { OrganizationOptions } from "../Components/OrganizationDropDown";
-import { GET_ORGANIZATIONS_QUERY } from "../TenantDataAccess/TenantDataAccessFormContainer";
+import {
+  useAddUserMutation,
+  useGetOrganizationsQuery,
+  Role,
+} from "../../../generated/graphql";
 
 import AddOrganizationAdminForm from "./AddOrganizationAdminForm";
 
-const ADD_USER_MUTATION = gql`
-  mutation AddUser(
-    $firstName: String
-    $middleName: String
-    $lastName: String
-    $suffix: String
-    $email: String!
-    $organizationExternalId: String!
-    $role: Role!
-  ) {
-    addUser(
-      name: {
-        firstName: $firstName
-        middleName: $middleName
-        lastName: $lastName
-        suffix: $suffix
-      }
-      email: $email
-      organizationExternalId: $organizationExternalId
-      role: $role
-    ) {
-      id
-      name {
-        firstName
-        middleName
-        lastName
-        suffix
-      }
-      email
-      role
-      organization {
-        name
-        externalId
-        facilities {
-          name
-          id
-        }
-      }
-    }
-  }
-`;
-
 const AddOrganizationAdminFormContainer: any = () => {
   const [submitted, setSubmitted] = useState(false);
-  const { data, loading, error } = useQuery<OrganizationOptions, {}>(
-    GET_ORGANIZATIONS_QUERY,
-    {
-      fetchPolicy: "no-cache",
-      variables: { identityVerified: true },
-    }
-  );
+  const { data, loading, error } = useGetOrganizationsQuery({
+    fetchPolicy: "no-cache",
+    variables: { identityVerified: true },
+  });
   const appInsights = useAppInsightsContext();
-  const [addUser] = useMutation(ADD_USER_MUTATION);
+  const [addUser] = useAddUserMutation();
   const trackSaveSettings = useTrackEvent(appInsights, "Save Settings", null);
 
   if (loading) {
@@ -90,7 +47,7 @@ const AddOrganizationAdminFormContainer: any = () => {
     addUser({
       variables: {
         organizationExternalId: organizationExternalId,
-        role: "ADMIN",
+        role: Role.Admin,
         firstName: admin.firstName,
         middleName: admin.middleName,
         lastName: admin.lastName,
