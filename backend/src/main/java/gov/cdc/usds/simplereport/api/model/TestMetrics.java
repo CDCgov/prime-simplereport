@@ -6,6 +6,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class TestMetrics {
-  private long positiveTests;
-  private long totalTests;
+  private long positiveTestCount;
+  private long totalTestCount;
 }

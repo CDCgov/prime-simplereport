@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
+import gov.cdc.usds.simplereport.api.model.TestMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -34,6 +35,7 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -1089,6 +1092,18 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     makedata();
     int size = _service.getTestResultsCount(_site.getInternalId(), null, null, null, null, null);
     assertEquals(11, size);
+  }
+
+  @Test
+  @WithSimpleReportStandardAllFacilitiesUser
+  void getDashboardMetrics_inOrgWithStandardUser_success() {
+    makedata();
+    Date startDate = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
+    Date endDate = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
+
+    TestMetrics metrics = _service.getDashboardMetrics(null, startDate, endDate);
+    assertEquals(0, metrics.getPositiveTestCount());
+    assertEquals(1, metrics.getTotalTestCount());
   }
 
   private List<TestEvent> makedata() {

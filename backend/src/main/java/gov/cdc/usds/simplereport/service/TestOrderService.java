@@ -482,6 +482,7 @@ public class TestOrderService {
     return newRemoveEvent;
   }
 
+  @Transactional(readOnly = true)
   public TestMetrics getDashboardMetrics(UUID facilityId, Date startDate, Date endDate) {
     List<TestResultWithCount> testResultList;
 
@@ -498,10 +499,10 @@ public class TestOrderService {
             .collect(
                 Collectors.toMap(TestResultWithCount::getResult, TestResultWithCount::getCount));
 
-    long totalTests = testResultMap.values().stream().reduce(0L, Long::sum);
-    long positiveTests = testResultMap.getOrDefault(TestResult.POSITIVE, 0L);
+    long totalTestCount = testResultMap.values().stream().reduce(0L, Long::sum);
+    long positiveTestCount = testResultMap.getOrDefault(TestResult.POSITIVE, 0L);
 
-    return new TestMetrics(positiveTests, totalTests);
+    return new TestMetrics(positiveTestCount, totalTestCount);
   }
 
   // IMPLICITLY AUTHORIZED

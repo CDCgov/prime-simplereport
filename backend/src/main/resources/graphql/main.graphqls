@@ -213,8 +213,8 @@ type TestResult {
 }
 
 type TestMetrics {
-  positiveTests: Int,
-  totalTests: Int
+  positiveTestCount: Int,
+  totalTestCount: Int
 }
 
 type AddTestResultResponse {
