@@ -207,7 +207,7 @@ export const DetachedTestResultPrintModal = ({
             <h2>{t("testResult.note")}</h2>
             {data.testResult.result !== "POSITIVE" && (
               <>
-                <p>{t("testResult.notes.meaning")}</p>
+                <p>{t("testResult.notes.negative.p0")}</p>
                 <ul className="sr-multi-column">
                   <li>{t("testResult.notes.negative.symptoms.li2")}</li>
                   <li>{t("testResult.notes.negative.symptoms.li3")}</li>
@@ -219,6 +219,16 @@ export const DetachedTestResultPrintModal = ({
                   <li>{t("testResult.notes.negative.symptoms.li9")}</li>
                   <li>{t("testResult.notes.negative.symptoms.li10")}</li>
                 </ul>
+                <Trans
+                  t={t}
+                  parent="p"
+                  i18nKey="testResult.information"
+                  components={[
+                    <a href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html">
+                      Centers for Disease Control and Prevention (CDC) website
+                    </a>,
+                  ]}
+                />
               </>
             )}
             {data.testResult.result === "POSITIVE" && (
