@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStopwatch, faRedo } from "@fortawesome/free-solid-svg-icons";
 
 import "./TestTimer.scss";
-import { appInsights } from "../../app/TelemetryService";
+import { getAppInsights } from "../../app/TelemetryService";
 
 const alarmModule = require("./test-timer.mp3");
 
@@ -212,6 +212,8 @@ type Props = {
 export const TestTimerWidget = ({ timer, context }: Props) => {
   const { running, countdown, elapsed, start, reset } = timer;
   const [timerFinished, setTimerFinished] = useState(false);
+
+  const appInsights = getAppInsights();
 
   const trackTimerStart = () =>
     appInsights?.trackEvent({ name: "Test timer started" }, context);

@@ -1,5 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 
+import { getAppInsights } from "../TelemetryService";
+
 import {
   findTimer,
   removeTimer,
@@ -10,9 +12,7 @@ import {
 } from "./TestTimer";
 
 jest.mock("../TelemetryService", () => ({
-  appInsights: {
-    trackEvent: jest.fn(),
-  },
+  getAppInsights: jest.fn(),
 }));
 
 describe("TestTimer", () => {
@@ -70,22 +70,26 @@ describe("TestTimer", () => {
 
 describe("TestTimerWidget", () => {
   describe("telemetry", () => {
-    let context: TimerTrackEventMetadata;
+    const trackEventMock = jest.fn();
 
+    const context = {
+      patientId: "patient-id",
+      organizationName: "Organization",
+      facilityName: "Facility",
+      testOrderId: "test-order-id",
+    };
     beforeEach(() => {
-      context = {
-        patientId: "patient-id",
-        organizationName: "Organization",
-        facilityName: "Facility",
-        testOrderId: "test-order-id",
-      };
+      (getAppInsights as jest.Mock).mockImplementation(() => ({
+        trackEvent: trackEventMock,
+      }));
     });
 
-    afterEach(() => removeTimer("internal-id"));
+    afterEach(() => {
+      (getAppInsights as jest.Mock).mockReset();
+      removeTimer("internal-id");
+    });
 
     it("tracks a custom event when the timer is started", async () => {
-      const { appInsights } = require("../TelemetryService");
-
       render(<DummyTestTimer testLength={15} context={context} />);
 
       const startTimer = await screen.findByRole("button");
@@ -93,18 +97,15 @@ describe("TestTimerWidget", () => {
       act(() => {
         fireEvent.click(startTimer);
       });
-
-      expect(appInsights?.trackEvent).toHaveBeenCalled();
-      expect(appInsights?.trackEvent).toHaveBeenCalledTimes(1);
-      expect(appInsights?.trackEvent).toHaveBeenCalledWith(
+      expect(trackEventMock).toHaveBeenCalled();
+      expect(trackEventMock).toHaveBeenCalledTimes(1);
+      expect(trackEventMock).toHaveBeenCalledWith(
         { name: "Test timer started" },
         context
       );
     });
 
     it("tracks a custom event when the timer reset", async () => {
-      const { appInsights } = require("../TelemetryService");
-
       render(<DummyTestTimer testLength={15} context={context} />);
 
       const timerButton = await screen.findByRole("button");
@@ -124,15 +125,13 @@ describe("TestTimerWidget", () => {
         fireEvent.click(timerButton);
       });
 
-      expect(appInsights?.trackEvent).toHaveBeenCalledWith(
+      expect(trackEventMock).toHaveBeenCalledWith(
         { name: "Test timer reset" },
         context
       );
     });
 
     it("tracks a custom event when the timer reaches zero", async () => {
-      const { appInsights } = require("../TelemetryService");
-
       render(<DummyTestTimer testLength={0} context={context} />);
 
       const timerButton = await screen.findByRole("button");
@@ -147,7 +146,7 @@ describe("TestTimerWidget", () => {
 
       expect(screen.getByText("RESULT READY")).toBeInTheDocument();
 
-      expect(appInsights?.trackEvent).toHaveBeenCalledWith(
+      expect(trackEventMock).toHaveBeenCalledWith(
         { name: "Test timer finished" },
         context
       );
