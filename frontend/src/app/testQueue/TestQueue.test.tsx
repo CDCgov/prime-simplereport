@@ -29,6 +29,12 @@ describe("TestQueue", () => {
       organization: {
         name: "Organization Name",
       },
+      facilities: [
+        {
+          id: "a1",
+          name: "Fake Facility",
+        },
+      ],
     });
   });
 

@@ -158,7 +158,7 @@ export interface QueueItemProps {
   selectedTestResult: TestResult;
   dateTestedProp: string;
   refetchQueue: () => void;
-  facilityName: string;
+  facilityName: string | undefined;
   facilityId: string;
 }
 

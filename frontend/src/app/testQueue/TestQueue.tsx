@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
+import { useSelector } from "react-redux";
 
 import { showError } from "../utils";
 
@@ -77,7 +78,6 @@ export const queueQuery = gql`
     organization {
       testingFacility {
         id
-        name
         deviceTypes {
           internalId
           name
@@ -120,6 +120,10 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
         facilityId: activeFacilityId,
       },
     }
+  );
+
+  const facilities = useSelector(
+    (state: any) => state.facilities as Facility[]
   );
 
   useEffect(() => {
@@ -182,7 +186,9 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 selectedTestResult={result}
                 devices={facility.deviceTypes}
                 refetchQueue={refetch}
-                facilityName={facility.name}
+                facilityName={
+                  facilities.find((f) => f.id === activeFacilityId)?.name
+                }
                 facilityId={activeFacilityId}
                 dateTestedProp={dateTested}
               />

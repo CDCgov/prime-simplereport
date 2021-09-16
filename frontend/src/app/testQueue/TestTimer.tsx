@@ -15,7 +15,7 @@ function toMillis(minutes: number) {
   return minutes * 60 * 1000;
 }
 export interface TimerTrackEventMetadata {
-  facilityName: string;
+  facilityName: string | undefined;
   organizationName: string;
   patientId: string;
   testOrderId: string;
