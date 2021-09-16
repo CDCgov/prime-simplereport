@@ -41,27 +41,41 @@ export const Analytics = () => {
               />
             </div>
             <div className="grid-col-3 inline-datepicker flex-row">
-              <DatePicker name="begin" label="Begin" noHint />
+              <DatePicker
+                name="begin"
+                label="Begin"
+                defaultValue="12/1/2021"
+                noHint
+              />
             </div>
             <div className="grid-col-3 inline-datepicker flex-row">
-              <DatePicker name="end" label="End" noHint />
+              <DatePicker
+                name="end"
+                label="End"
+                defaultValue="12/31/2021"
+                noHint
+              />
             </div>
           </div>
           <h3>Abby Road School District</h3>
-          <p>12/1/2021-12-31/2021</p>
+          <p>{`12/1/2021 \u2013 12-31/2021`}</p>
           <div className="grid-row grid-gap-6">
             <div className="grid-col-4">
-              <div className="card display-flex flex-column flex-align-center">
-                <h2>Tests conducted</h2>
-                <h1>29</h1>
-                <p></p>
+              <div className="card display-flex flex-column flex-row">
+                <h2 className="flex-align-self-center">Tests conducted</h2>
+                <h1 className="flex-align-self-center">29</h1>
+                <p className="flex-align-self-center"></p>
               </div>
             </div>
             <div className="grid-col-4">
               <div className="card display-flex flex-column flex-align-center">
                 <h2>Positive tests</h2>
                 <h1>3</h1>
-                <p>^ 2 from last week</p>
+                {/* \u2BC6 is down pointing triangle */}
+                <p>
+                  <span className="red-pointing-up">{`\u2BC5`}</span> 2 from
+                  last week
+                </p>
               </div>
             </div>
             <div className="grid-col-4">
