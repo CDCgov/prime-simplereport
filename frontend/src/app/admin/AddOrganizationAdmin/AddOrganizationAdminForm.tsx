@@ -2,12 +2,12 @@ import React, { useMemo, useState } from "react";
 
 import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
-
-import FacilityAdmin, { useFacilityAdminValidation } from "./FacilityAdmin";
 import OrganizationDropDown, {
   useOrganizationDropDownValidation,
   OrganizationOption,
-} from "./OrganizationDropDown";
+} from "../Components/OrganizationDropDown";
+
+import FacilityAdmin, { useFacilityAdminValidation } from "./FacilityAdmin";
 
 const sortOrganizationOptions = (organizationOptions: OrganizationOption[]) =>
   Object.values(organizationOptions).sort((a, b) => {

@@ -9,41 +9,54 @@ import { Redirect } from "react-router-dom";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
+import { OrganizationOptions } from "../Components/OrganizationDropDown";
+import { GET_ORGANIZATIONS_QUERY } from "../TenantDataAccess/TenantDataAccessFormContainer";
 
-import { OrganizationOptions } from "./OrganizationDropDown";
-import TenantDataAccessForm from "./TenantDataAccessForm";
+import AddOrganizationAdminForm from "./AddOrganizationAdminForm";
 
-export const GET_ORGANIZATIONS_QUERY = gql`
-  query GetOrganizations($identityVerified: Boolean) {
-    organizations(identityVerified: $identityVerified) {
-      externalId
-      name
-    }
-  }
-`;
-
-export const SET_TENANT_DATA_ACCESS = gql`
-  mutation SetCurrentUserTenantDataAccessOp(
-    $organizationExternalId: String
-    $justification: String
+const ADD_USER_MUTATION = gql`
+  mutation AddUser(
+    $firstName: String
+    $middleName: String
+    $lastName: String
+    $suffix: String
+    $email: String!
+    $organizationExternalId: String!
+    $role: Role!
   ) {
-    setCurrentUserTenantDataAccess(
+    addUser(
+      name: {
+        firstName: $firstName
+        middleName: $middleName
+        lastName: $lastName
+        suffix: $suffix
+      }
+      email: $email
       organizationExternalId: $organizationExternalId
-      justification: $justification
+      role: $role
     ) {
       id
+      name {
+        firstName
+        middleName
+        lastName
+        suffix
+      }
       email
-      permissions
       role
       organization {
         name
         externalId
+        facilities {
+          name
+          id
+        }
       }
     }
   }
 `;
 
-const TenantDataAccessFormContainer: any = () => {
+const AddOrganizationAdminFormContainer: any = () => {
   const [submitted, setSubmitted] = useState(false);
   const { data, loading, error } = useQuery<OrganizationOptions, {}>(
     GET_ORGANIZATIONS_QUERY,
@@ -53,7 +66,7 @@ const TenantDataAccessFormContainer: any = () => {
     }
   );
   const appInsights = useAppInsightsContext();
-  const [setTenantDataAccess] = useMutation(SET_TENANT_DATA_ACCESS);
+  const [addUser] = useMutation(ADD_USER_MUTATION);
   const trackSaveSettings = useTrackEvent(appInsights, "Save Settings", null);
 
   if (loading) {
@@ -67,31 +80,33 @@ const TenantDataAccessFormContainer: any = () => {
     return <p>Error: could not get organizations</p>;
   }
 
-  const saveTenantDataAccess = (
-    organizationExternalId?: string,
-    justification?: string
+  const saveOrganizationAdmin = (
+    organizationExternalId: string,
+    admin: FacilityAdmin
   ) => {
     if (appInsights) {
       trackSaveSettings(null);
     }
-    setTenantDataAccess({
+    addUser({
       variables: {
         organizationExternalId: organizationExternalId,
-        justification: justification,
+        role: "ADMIN",
+        firstName: admin.firstName,
+        middleName: admin.middleName,
+        lastName: admin.lastName,
+        suffix: admin.suffix,
+        email: admin.email,
       },
     }).then(() => {
       const alert = (
         <Alert
           type="success"
-          title="Tenant Data Access Updated"
-          body="You now have access to tenant data for the requested organization."
+          title="Added Organization Admin"
+          body="The organization admin has been added"
         />
       );
       showNotification(alert);
       setSubmitted(true);
-
-      // reload the page, in the future, this should just update state where appropriate
-      window.location.reload();
     });
   };
 
@@ -100,13 +115,19 @@ const TenantDataAccessFormContainer: any = () => {
   }
 
   return (
-    <TenantDataAccessForm
+    <AddOrganizationAdminForm
       organizationExternalId={""}
-      justification={""}
+      admin={{
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        suffix: "",
+        email: "",
+      }}
       organizationOptions={data.organizations}
-      saveTenantDataAccess={saveTenantDataAccess}
+      saveOrganizationAdmin={saveOrganizationAdmin}
     />
   );
 };
 
-export default TenantDataAccessFormContainer;
+export default AddOrganizationAdminFormContainer;
