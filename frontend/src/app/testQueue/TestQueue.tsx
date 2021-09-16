@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
-import { useSelector } from "react-redux";
 
 import { showError } from "../utils";
+import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem, { TestResult } from "./QueueItem";
@@ -122,9 +122,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     }
   );
 
-  const facilities = useSelector(
-    (state: any) => state.facilities as Facility[]
-  );
+  const [selectedFacility] = useSelectedFacility();
 
   useEffect(() => {
     // Start polling on creation, stop on componenent teardown
@@ -186,9 +184,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 selectedTestResult={result}
                 devices={facility.deviceTypes}
                 refetchQueue={refetch}
-                facilityName={
-                  facilities.find((f) => f.id === activeFacilityId)?.name
-                }
+                facilityName={selectedFacility?.name}
                 facilityId={activeFacilityId}
                 dateTestedProp={dateTested}
               />
