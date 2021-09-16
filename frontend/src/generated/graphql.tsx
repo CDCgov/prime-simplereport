@@ -1200,19 +1200,6 @@ export type SetCurrentUserTenantDataAccessOpMutation = {
   }>;
 };
 
-export type GetUnverifiedOrganizationsQueryVariables = Exact<{
-  identityVerified?: Maybe<Scalars["Boolean"]>;
-}>;
-
-export type GetUnverifiedOrganizationsQuery = {
-  __typename?: "Query";
-  organizations: Array<{
-    __typename?: "Organization";
-    name: string;
-    externalId: string;
-  }>;
-};
-
 export type SetOrgIdentityVerifiedMutationVariables = Exact<{
   externalId: Scalars["String"];
   verified: Scalars["Boolean"];
@@ -3252,65 +3239,6 @@ export type SetCurrentUserTenantDataAccessOpMutationResult = Apollo.MutationResu
 export type SetCurrentUserTenantDataAccessOpMutationOptions = Apollo.BaseMutationOptions<
   SetCurrentUserTenantDataAccessOpMutation,
   SetCurrentUserTenantDataAccessOpMutationVariables
->;
-export const GetUnverifiedOrganizationsDocument = gql`
-  query GetUnverifiedOrganizations($identityVerified: Boolean) {
-    organizations(identityVerified: $identityVerified) {
-      name
-      externalId
-    }
-  }
-`;
-
-/**
- * __useGetUnverifiedOrganizationsQuery__
- *
- * To run a query within a React component, call `useGetUnverifiedOrganizationsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUnverifiedOrganizationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetUnverifiedOrganizationsQuery({
- *   variables: {
- *      identityVerified: // value for 'identityVerified'
- *   },
- * });
- */
-export function useGetUnverifiedOrganizationsQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetUnverifiedOrganizationsQuery,
-    GetUnverifiedOrganizationsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetUnverifiedOrganizationsQuery,
-    GetUnverifiedOrganizationsQueryVariables
-  >(GetUnverifiedOrganizationsDocument, options);
-}
-export function useGetUnverifiedOrganizationsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetUnverifiedOrganizationsQuery,
-    GetUnverifiedOrganizationsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetUnverifiedOrganizationsQuery,
-    GetUnverifiedOrganizationsQueryVariables
-  >(GetUnverifiedOrganizationsDocument, options);
-}
-export type GetUnverifiedOrganizationsQueryHookResult = ReturnType<
-  typeof useGetUnverifiedOrganizationsQuery
->;
-export type GetUnverifiedOrganizationsLazyQueryHookResult = ReturnType<
-  typeof useGetUnverifiedOrganizationsLazyQuery
->;
-export type GetUnverifiedOrganizationsQueryResult = Apollo.QueryResult<
-  GetUnverifiedOrganizationsQuery,
-  GetUnverifiedOrganizationsQueryVariables
 >;
 export const SetOrgIdentityVerifiedDocument = gql`
   mutation SetOrgIdentityVerified($externalId: String!, $verified: Boolean!) {
