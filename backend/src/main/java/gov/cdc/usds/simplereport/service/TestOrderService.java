@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import com.twilio.exception.ApiException;
 import com.twilio.exception.TwilioException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
+import gov.cdc.usds.simplereport.api.model.TestMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -24,6 +25,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount;
 import gov.cdc.usds.simplereport.db.repository.AdvisoryLockManager;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
@@ -36,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Join;
@@ -477,6 +480,28 @@ public class TestOrderService {
     _repo.save(order);
 
     return newRemoveEvent;
+  }
+
+  public TestMetrics getDashboardMetrics(UUID facilityId, Date startDate, Date endDate) {
+    List<TestResultWithCount> testResultList;
+
+    if (facilityId != null) {
+      Facility fac = _os.getFacilityInCurrentOrg(facilityId);
+      testResultList = _terepo.countByResultInFacility(fac.getInternalId(), startDate, endDate);
+    } else {
+      Organization org = _os.getCurrentOrganization();
+      testResultList = _terepo.countByResultInOrganization(org.getInternalId(), startDate, endDate);
+    }
+
+    Map<TestResult, Long> testResultMap =
+        testResultList.stream()
+            .collect(
+                Collectors.toMap(TestResultWithCount::getResult, TestResultWithCount::getCount));
+
+    long totalTests = testResultMap.values().stream().reduce(0L, Long::sum);
+    long positiveTests = testResultMap.getOrDefault(TestResult.POSITIVE, 0L);
+
+    return new TestMetrics(positiveTests, totalTests);
   }
 
   // IMPLICITLY AUTHORIZED
