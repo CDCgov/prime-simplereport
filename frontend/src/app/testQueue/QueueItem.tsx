@@ -573,7 +573,7 @@ const QueueItem = ({
     cardColorDisplay()
   );
 
-  const context = {
+  const timerContext = {
     organizationName: organization.name,
     facilityName: facilityName,
     patientId: patient.internalId,
@@ -596,7 +596,7 @@ const QueueItem = ({
                 id="patient-name-header"
               >
                 <h2>{patientFullName}</h2>
-                <TestTimerWidget timer={timer} context={context} />
+                <TestTimerWidget timer={timer} context={timerContext} />
               </div>
               <div className="margin-top-2 margin-left-2 margin-bottom-2">
                 <div className="queue-item__description prime-ul grid-row grid-gap">
