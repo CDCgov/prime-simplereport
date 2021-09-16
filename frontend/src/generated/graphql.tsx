@@ -1113,22 +1113,6 @@ export type GetFacilitiesForManageUsersQuery = {
   }>;
 };
 
-export type CreateDeviceTypeMutationVariables = Exact<{
-  name: Scalars["String"];
-  manufacturer: Scalars["String"];
-  model: Scalars["String"];
-  loincCode: Scalars["String"];
-  swabType: Scalars["String"];
-}>;
-
-export type CreateDeviceTypeMutation = {
-  __typename?: "Mutation";
-  createDeviceType?: Maybe<{
-    __typename?: "DeviceType";
-    internalId?: Maybe<string>;
-  }>;
-};
-
 export type AddUserMutationVariables = Exact<{
   firstName?: Maybe<Scalars["String"]>;
   middleName?: Maybe<Scalars["String"]>;
@@ -1166,6 +1150,32 @@ export type AddUserMutation = {
   }>;
 };
 
+export type CreateDeviceTypeMutationVariables = Exact<{
+  name: Scalars["String"];
+  manufacturer: Scalars["String"];
+  model: Scalars["String"];
+  loincCode: Scalars["String"];
+  swabType: Scalars["String"];
+}>;
+
+export type CreateDeviceTypeMutation = {
+  __typename?: "Mutation";
+  createDeviceType?: Maybe<{
+    __typename?: "DeviceType";
+    internalId?: Maybe<string>;
+  }>;
+};
+
+export type SetOrgIdentityVerifiedMutationVariables = Exact<{
+  externalId: Scalars["String"];
+  verified: Scalars["Boolean"];
+}>;
+
+export type SetOrgIdentityVerifiedMutation = {
+  __typename?: "Mutation";
+  setOrganizationIdentityVerified?: Maybe<boolean>;
+};
+
 export type GetOrganizationsQueryVariables = Exact<{
   identityVerified?: Maybe<Scalars["Boolean"]>;
 }>;
@@ -1198,16 +1208,6 @@ export type SetCurrentUserTenantDataAccessOpMutation = {
       externalId: string;
     }>;
   }>;
-};
-
-export type SetOrgIdentityVerifiedMutationVariables = Exact<{
-  externalId: Scalars["String"];
-  verified: Scalars["Boolean"];
-}>;
-
-export type SetOrgIdentityVerifiedMutation = {
-  __typename?: "Mutation";
-  setOrganizationIdentityVerified?: Maybe<boolean>;
 };
 
 export type PatientExistsQueryVariables = Exact<{
@@ -2938,71 +2938,6 @@ export type GetFacilitiesForManageUsersQueryResult = Apollo.QueryResult<
   GetFacilitiesForManageUsersQuery,
   GetFacilitiesForManageUsersQueryVariables
 >;
-export const CreateDeviceTypeDocument = gql`
-  mutation createDeviceType(
-    $name: String!
-    $manufacturer: String!
-    $model: String!
-    $loincCode: String!
-    $swabType: String!
-  ) {
-    createDeviceType(
-      name: $name
-      manufacturer: $manufacturer
-      model: $model
-      loincCode: $loincCode
-      swabType: $swabType
-    ) {
-      internalId
-    }
-  }
-`;
-export type CreateDeviceTypeMutationFn = Apollo.MutationFunction<
-  CreateDeviceTypeMutation,
-  CreateDeviceTypeMutationVariables
->;
-
-/**
- * __useCreateDeviceTypeMutation__
- *
- * To run a mutation, you first call `useCreateDeviceTypeMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateDeviceTypeMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createDeviceTypeMutation, { data, loading, error }] = useCreateDeviceTypeMutation({
- *   variables: {
- *      name: // value for 'name'
- *      manufacturer: // value for 'manufacturer'
- *      model: // value for 'model'
- *      loincCode: // value for 'loincCode'
- *      swabType: // value for 'swabType'
- *   },
- * });
- */
-export function useCreateDeviceTypeMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    CreateDeviceTypeMutation,
-    CreateDeviceTypeMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    CreateDeviceTypeMutation,
-    CreateDeviceTypeMutationVariables
-  >(CreateDeviceTypeDocument, options);
-}
-export type CreateDeviceTypeMutationHookResult = ReturnType<
-  typeof useCreateDeviceTypeMutation
->;
-export type CreateDeviceTypeMutationResult = Apollo.MutationResult<CreateDeviceTypeMutation>;
-export type CreateDeviceTypeMutationOptions = Apollo.BaseMutationOptions<
-  CreateDeviceTypeMutation,
-  CreateDeviceTypeMutationVariables
->;
 export const AddUserDocument = gql`
   mutation AddUser(
     $firstName: String
@@ -3089,6 +3024,122 @@ export type AddUserMutationResult = Apollo.MutationResult<AddUserMutation>;
 export type AddUserMutationOptions = Apollo.BaseMutationOptions<
   AddUserMutation,
   AddUserMutationVariables
+>;
+export const CreateDeviceTypeDocument = gql`
+  mutation createDeviceType(
+    $name: String!
+    $manufacturer: String!
+    $model: String!
+    $loincCode: String!
+    $swabType: String!
+  ) {
+    createDeviceType(
+      name: $name
+      manufacturer: $manufacturer
+      model: $model
+      loincCode: $loincCode
+      swabType: $swabType
+    ) {
+      internalId
+    }
+  }
+`;
+export type CreateDeviceTypeMutationFn = Apollo.MutationFunction<
+  CreateDeviceTypeMutation,
+  CreateDeviceTypeMutationVariables
+>;
+
+/**
+ * __useCreateDeviceTypeMutation__
+ *
+ * To run a mutation, you first call `useCreateDeviceTypeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateDeviceTypeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createDeviceTypeMutation, { data, loading, error }] = useCreateDeviceTypeMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      manufacturer: // value for 'manufacturer'
+ *      model: // value for 'model'
+ *      loincCode: // value for 'loincCode'
+ *      swabType: // value for 'swabType'
+ *   },
+ * });
+ */
+export function useCreateDeviceTypeMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateDeviceTypeMutation,
+    CreateDeviceTypeMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    CreateDeviceTypeMutation,
+    CreateDeviceTypeMutationVariables
+  >(CreateDeviceTypeDocument, options);
+}
+export type CreateDeviceTypeMutationHookResult = ReturnType<
+  typeof useCreateDeviceTypeMutation
+>;
+export type CreateDeviceTypeMutationResult = Apollo.MutationResult<CreateDeviceTypeMutation>;
+export type CreateDeviceTypeMutationOptions = Apollo.BaseMutationOptions<
+  CreateDeviceTypeMutation,
+  CreateDeviceTypeMutationVariables
+>;
+export const SetOrgIdentityVerifiedDocument = gql`
+  mutation SetOrgIdentityVerified($externalId: String!, $verified: Boolean!) {
+    setOrganizationIdentityVerified(
+      externalId: $externalId
+      verified: $verified
+    )
+  }
+`;
+export type SetOrgIdentityVerifiedMutationFn = Apollo.MutationFunction<
+  SetOrgIdentityVerifiedMutation,
+  SetOrgIdentityVerifiedMutationVariables
+>;
+
+/**
+ * __useSetOrgIdentityVerifiedMutation__
+ *
+ * To run a mutation, you first call `useSetOrgIdentityVerifiedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetOrgIdentityVerifiedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setOrgIdentityVerifiedMutation, { data, loading, error }] = useSetOrgIdentityVerifiedMutation({
+ *   variables: {
+ *      externalId: // value for 'externalId'
+ *      verified: // value for 'verified'
+ *   },
+ * });
+ */
+export function useSetOrgIdentityVerifiedMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    SetOrgIdentityVerifiedMutation,
+    SetOrgIdentityVerifiedMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    SetOrgIdentityVerifiedMutation,
+    SetOrgIdentityVerifiedMutationVariables
+  >(SetOrgIdentityVerifiedDocument, options);
+}
+export type SetOrgIdentityVerifiedMutationHookResult = ReturnType<
+  typeof useSetOrgIdentityVerifiedMutation
+>;
+export type SetOrgIdentityVerifiedMutationResult = Apollo.MutationResult<SetOrgIdentityVerifiedMutation>;
+export type SetOrgIdentityVerifiedMutationOptions = Apollo.BaseMutationOptions<
+  SetOrgIdentityVerifiedMutation,
+  SetOrgIdentityVerifiedMutationVariables
 >;
 export const GetOrganizationsDocument = gql`
   query GetOrganizations($identityVerified: Boolean) {
@@ -3211,57 +3262,6 @@ export type SetCurrentUserTenantDataAccessOpMutationResult = Apollo.MutationResu
 export type SetCurrentUserTenantDataAccessOpMutationOptions = Apollo.BaseMutationOptions<
   SetCurrentUserTenantDataAccessOpMutation,
   SetCurrentUserTenantDataAccessOpMutationVariables
->;
-export const SetOrgIdentityVerifiedDocument = gql`
-  mutation SetOrgIdentityVerified($externalId: String!, $verified: Boolean!) {
-    setOrganizationIdentityVerified(
-      externalId: $externalId
-      verified: $verified
-    )
-  }
-`;
-export type SetOrgIdentityVerifiedMutationFn = Apollo.MutationFunction<
-  SetOrgIdentityVerifiedMutation,
-  SetOrgIdentityVerifiedMutationVariables
->;
-
-/**
- * __useSetOrgIdentityVerifiedMutation__
- *
- * To run a mutation, you first call `useSetOrgIdentityVerifiedMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSetOrgIdentityVerifiedMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [setOrgIdentityVerifiedMutation, { data, loading, error }] = useSetOrgIdentityVerifiedMutation({
- *   variables: {
- *      externalId: // value for 'externalId'
- *      verified: // value for 'verified'
- *   },
- * });
- */
-export function useSetOrgIdentityVerifiedMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    SetOrgIdentityVerifiedMutation,
-    SetOrgIdentityVerifiedMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    SetOrgIdentityVerifiedMutation,
-    SetOrgIdentityVerifiedMutationVariables
-  >(SetOrgIdentityVerifiedDocument, options);
-}
-export type SetOrgIdentityVerifiedMutationHookResult = ReturnType<
-  typeof useSetOrgIdentityVerifiedMutation
->;
-export type SetOrgIdentityVerifiedMutationResult = Apollo.MutationResult<SetOrgIdentityVerifiedMutation>;
-export type SetOrgIdentityVerifiedMutationOptions = Apollo.BaseMutationOptions<
-  SetOrgIdentityVerifiedMutation,
-  SetOrgIdentityVerifiedMutationVariables
 >;
 export const PatientExistsDocument = gql`
   query PatientExists(

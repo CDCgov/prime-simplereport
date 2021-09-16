@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useState } from "react";
 import {
   useAppInsightsContext,
   useTrackEvent,
@@ -9,51 +8,21 @@ import { Redirect } from "react-router-dom";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
-import { OrganizationOptions } from "../Components/OrganizationDropDown";
+import {
+  useGetOrganizationsQuery,
+  useSetCurrentUserTenantDataAccessOpMutation,
+} from "../../../generated/graphql";
 
 import TenantDataAccessForm from "./TenantDataAccessForm";
 
-export const GET_ORGANIZATIONS_QUERY = gql`
-  query GetOrganizations($identityVerified: Boolean) {
-    organizations(identityVerified: $identityVerified) {
-      externalId
-      name
-    }
-  }
-`;
-
-export const SET_TENANT_DATA_ACCESS = gql`
-  mutation SetCurrentUserTenantDataAccessOp(
-    $organizationExternalId: String
-    $justification: String
-  ) {
-    setCurrentUserTenantDataAccess(
-      organizationExternalId: $organizationExternalId
-      justification: $justification
-    ) {
-      id
-      email
-      permissions
-      role
-      organization {
-        name
-        externalId
-      }
-    }
-  }
-`;
-
 const TenantDataAccessFormContainer: any = () => {
   const [submitted, setSubmitted] = useState(false);
-  const { data, loading, error } = useQuery<OrganizationOptions, {}>(
-    GET_ORGANIZATIONS_QUERY,
-    {
-      fetchPolicy: "no-cache",
-      variables: { identityVerified: true },
-    }
-  );
+  const { data, loading, error } = useGetOrganizationsQuery({
+    fetchPolicy: "no-cache",
+    variables: { identityVerified: true },
+  });
   const appInsights = useAppInsightsContext();
-  const [setTenantDataAccess] = useMutation(SET_TENANT_DATA_ACCESS);
+  const [setTenantDataAccess] = useSetCurrentUserTenantDataAccessOpMutation();
   const trackSaveSettings = useTrackEvent(appInsights, "Save Settings", null);
 
   if (loading) {
