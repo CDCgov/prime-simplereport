@@ -28,8 +28,7 @@ class DataHubUploaderServiceTest extends BaseServiceTest<DataHubUploaderService>
   void serialization() {
     Organization o = _dataFactory.createValidOrg();
     Facility f = _dataFactory.createValidFacility(o);
-    AskOnEntrySurvey s =
-        new AskOnEntrySurvey(null, Collections.emptyMap(), null, null, null, null, null, null);
+    AskOnEntrySurvey s = AskOnEntrySurvey.builder().symptoms(Collections.emptyMap()).build();
     TestResult r = TestResult.NEGATIVE;
     Date d = new Date();
 

@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.api;
 /** Container class for test constants related to REST handler testing */
 public final class ResourceLinks {
   public static final String VERIFY_LINK = "/pxp/link/verify";
-  public static final String ANSWER_QUESTIONS = "/pxp/questions";
   public static final String UPDATE_PATIENT = "/pxp/patient";
 
   public static final String SELF_REGISTER = "/pxp/register";

@@ -54,18 +54,13 @@ class QueueManagementTest extends BaseGraphqlTest {
     Person p = _dataFactory.createFullPerson(_org);
     String personId = p.getInternalId().toString();
     ObjectNode variables =
-        getFacilityScopedArguments()
-            .put("id", personId)
-            .put("previousTestDate", "2020-05-15")
-            .put("symptomOnsetDate", "2020-11-30");
+        getFacilityScopedArguments().put("id", personId).put("symptomOnsetDate", "2020-11-30");
     performEnqueueMutation(variables, Optional.empty());
     ArrayNode queueData = fetchQueue();
     assertEquals(1, queueData.size());
     JsonNode queueEntry = queueData.get(0);
     String symptomOnset = queueEntry.get("symptomOnset").asText();
-    String priorTest = queueEntry.get("priorTestDate").asText();
     assertEquals("2020-11-30", symptomOnset);
-    assertEquals("2020-05-15", priorTest);
     // this assertion is kind of extra, should be on a patient management
     // test instead
     assertEquals("1899-05-10", queueEntry.get("patient").get("birthDate").asText());
@@ -107,18 +102,13 @@ class QueueManagementTest extends BaseGraphqlTest {
     Person p = _dataFactory.createFullPerson(_org);
     String personId = p.getInternalId().toString();
     ObjectNode variables =
-        getFacilityScopedArguments()
-            .put("id", personId)
-            .put("previousTestDate", "2020-05-15")
-            .put("symptomOnsetDate", "2020-11-30");
+        getFacilityScopedArguments().put("id", personId).put("symptomOnsetDate", "2020-11-30");
     performEnqueueMutation(variables, Optional.empty());
     ArrayNode queueData = fetchQueue();
     assertEquals(1, queueData.size());
     JsonNode queueEntry = queueData.get(0);
     String symptomOnset = queueEntry.get("symptomOnset").asText();
-    String priorTest = queueEntry.get("priorTestDate").asText();
     assertEquals("2020-11-30", symptomOnset);
-    assertEquals("2020-05-15", priorTest);
   }
 
   @Test
@@ -135,7 +125,6 @@ class QueueManagementTest extends BaseGraphqlTest {
     ObjectNode enqueueVariables =
         getFacilityScopedArguments()
             .put("id", personId.toString())
-            .put("previousTestDate", "2020-05-15")
             .put("symptomOnsetDate", "2020-11-30");
     performEnqueueMutation(enqueueVariables, Optional.of(ACCESS_ERROR));
     updateSelfPrivileges(Role.USER, false, Set.of(_site.getInternalId()));
@@ -180,10 +169,7 @@ class QueueManagementTest extends BaseGraphqlTest {
     Person p1 = _dataFactory.createFullPerson(_org);
     String personId1 = p1.getInternalId().toString();
     ObjectNode variables =
-        getFacilityScopedArguments()
-            .put("id", personId1)
-            .put("previousTestDate", "2020-05-15")
-            .put("symptomOnsetDate", "2020-11-30");
+        getFacilityScopedArguments().put("id", personId1).put("symptomOnsetDate", "2020-11-30");
     performEnqueueMutation(variables, Optional.empty());
 
     // get the first query count
@@ -196,10 +182,7 @@ class QueueManagementTest extends BaseGraphqlTest {
       Person p = _dataFactory.createFullPerson(_org);
       String personId = p.getInternalId().toString();
       variables =
-          getFacilityScopedArguments()
-              .put("id", personId)
-              .put("previousTestDate", "2020-05-15")
-              .put("symptomOnsetDate", "2020-11-30");
+          getFacilityScopedArguments().put("id", personId).put("symptomOnsetDate", "2020-11-30");
       performEnqueueMutation(variables, Optional.empty());
     }
 

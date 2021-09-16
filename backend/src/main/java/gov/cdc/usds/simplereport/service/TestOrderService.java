@@ -5,7 +5,6 @@ import com.twilio.exception.TwilioException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
-import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.AuditedEntity_;
 import gov.cdc.usds.simplereport.db.model.BaseTestInfo_;
@@ -65,7 +64,6 @@ public class TestOrderService {
   private TestEventRepository _terepo;
   private PatientLinkService _pls;
   private SmsService _smss;
-  private final CurrentPatientContextHolder _patientContext;
   private final TestEventReportingService _testEventReportingService;
   private final FacilityDeviceTypeService _facilityDeviceTypeService;
 
@@ -89,9 +87,7 @@ public class TestOrderService {
       PersonService ps,
       PatientLinkService pls,
       SmsService smss,
-      CurrentPatientContextHolder patientContext,
       TestEventReportingService testEventReportingService) {
-    _patientContext = patientContext;
     _os = os;
     _ps = ps;
     _dts = dts;
@@ -279,7 +275,8 @@ public class TestOrderService {
       order.setDateTestedBackdate(dateTested);
       order.markComplete();
 
-      TestEvent testEvent = new TestEvent(order);
+      boolean hasPriorTests = _terepo.existsByPatient(person);
+      TestEvent testEvent = new TestEvent(order, hasPriorTests);
       _terepo.save(testEvent);
 
       order.setTestEventRef(testEvent);
@@ -301,7 +298,7 @@ public class TestOrderService {
         boolean hasDeliveryFailure =
             smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
 
-        if (hasDeliveryFailure == true) {
+        if (hasDeliveryFailure) {
           return new AddTestResultResponse(savedOrder, false);
         }
 
@@ -320,10 +317,6 @@ public class TestOrderService {
       Person patient,
       String pregnancy,
       Map<String, Boolean> symptoms,
-      Boolean firstTest,
-      LocalDate priorTestDate,
-      String priorTestType,
-      TestResult priorTestResult,
       LocalDate symptomOnsetDate,
       Boolean noSymptoms) {
     // Check if there is an existing queue entry for the patient. If there is one,
@@ -351,15 +344,12 @@ public class TestOrderService {
     TestOrder newOrder = new TestOrder(patient, testFacility);
 
     AskOnEntrySurvey survey =
-        new AskOnEntrySurvey(
-            pregnancy,
-            symptoms,
-            noSymptoms,
-            symptomOnsetDate,
-            firstTest,
-            priorTestDate,
-            priorTestType,
-            priorTestResult);
+        AskOnEntrySurvey.builder()
+            .pregnancy(pregnancy)
+            .symptoms(symptoms)
+            .noSymptoms(noSymptoms)
+            .symptomOnsetDate(symptomOnsetDate)
+            .build();
     PatientAnswers answers = new PatientAnswers(survey);
     _parepo.save(answers);
     newOrder.setAskOnEntrySurvey(answers);
@@ -373,34 +363,17 @@ public class TestOrderService {
       UUID patientId,
       String pregnancy,
       Map<String, Boolean> symptoms,
-      Boolean firstTest,
-      LocalDate priorTestDate,
-      String priorTestType,
-      TestResult priorTestResult,
       LocalDate symptomOnsetDate,
       Boolean noSymptoms) {
     TestOrder order = retrieveTestOrder(patientId);
 
-    updateTimeOfTest(
-        order,
-        pregnancy,
-        symptoms,
-        firstTest,
-        priorTestDate,
-        priorTestType,
-        priorTestResult,
-        symptomOnsetDate,
-        noSymptoms);
+    updateTimeOfTest(order, pregnancy, symptoms, symptomOnsetDate, noSymptoms);
   }
 
   private void updateTimeOfTest(
       TestOrder order,
       String pregnancy,
       Map<String, Boolean> symptoms,
-      Boolean firstTest,
-      LocalDate priorTestDate,
-      String priorTestType,
-      TestResult priorTestResult,
       LocalDate symptomOnsetDate,
       Boolean noSymptoms) {
     PatientAnswers answers = order.getAskOnEntrySurvey();
@@ -409,10 +382,6 @@ public class TestOrderService {
     survey.setSymptoms(symptoms);
     survey.setNoSymptoms(noSymptoms);
     survey.setSymptomOnsetDate(symptomOnsetDate);
-    survey.setFirstTest(firstTest);
-    survey.setPriorTestDate(priorTestDate);
-    survey.setPriorTestType(priorTestType);
-    survey.setPriorTestResult(priorTestResult);
     answers.setSurvey(survey);
     _parepo.save(answers);
   }
@@ -515,28 +484,6 @@ public class TestOrderService {
     long positiveTestCount = testResultMap.getOrDefault(TestResult.POSITIVE, 0L);
 
     return new TopLevelDashboardMetrics(positiveTestCount, totalTestCount);
-  }
-
-  // IMPLICITLY AUTHORIZED
-  public void updateMyTimeOfTestQuestions(
-      String pregnancy,
-      Map<String, Boolean> symptoms,
-      boolean firstTest,
-      LocalDate priorTestDate,
-      String priorTestType,
-      TestResult priorTestResult,
-      LocalDate symptomOnset,
-      boolean noSymptoms) {
-    updateTimeOfTest(
-        _patientContext.getLinkedOrder(),
-        pregnancy,
-        symptoms,
-        firstTest,
-        priorTestDate,
-        priorTestType,
-        priorTestResult,
-        symptomOnset,
-        noSymptoms);
   }
 
   private void lockOrder(UUID orderId) throws IllegalGraphqlArgumentException {
