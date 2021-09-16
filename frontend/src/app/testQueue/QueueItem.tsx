@@ -19,6 +19,7 @@ import TextInput from "../commonComponents/TextInput";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import { displayFullName, showNotification } from "../utils";
 import Checkboxes from "../commonComponents/Checkboxes";
+import { RootState } from "../store";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
@@ -232,7 +233,7 @@ const QueueItem = ({
     dateTestedProp || undefined
   );
 
-  const organization = useSelector(
+  const organization = useSelector<RootState, Organization>(
     (state: any) => state.organization as Organization
   );
 
