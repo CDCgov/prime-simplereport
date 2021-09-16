@@ -15,7 +15,7 @@ export interface Device {
   swabType: string;
 }
 
-const DeviceTypeFormContainer: any = () => {
+const DeviceTypeFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
   const [createDeviceType] = useCreateDeviceTypeMutation();
 

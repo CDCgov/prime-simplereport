@@ -15,7 +15,7 @@ import {
 
 import TenantDataAccessForm from "./TenantDataAccessForm";
 
-const TenantDataAccessFormContainer: any = () => {
+const TenantDataAccessFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
   const { data, loading, error } = useGetOrganizationsQuery({
     fetchPolicy: "no-cache",
@@ -29,7 +29,7 @@ const TenantDataAccessFormContainer: any = () => {
     return <LoadingCard message={"Loading Organizations"} />;
   }
   if (error) {
-    return error;
+    throw error;
   }
 
   if (data === undefined) {

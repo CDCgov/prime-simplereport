@@ -16,7 +16,7 @@ import {
 
 import AddOrganizationAdminForm from "./AddOrganizationAdminForm";
 
-const AddOrganizationAdminFormContainer: any = () => {
+const AddOrganizationAdminFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
   const { data, loading, error } = useGetOrganizationsQuery({
     fetchPolicy: "no-cache",
@@ -30,7 +30,7 @@ const AddOrganizationAdminFormContainer: any = () => {
     return <LoadingCard message={"Loading Organizations"} />;
   }
   if (error) {
-    return error;
+    throw error;
   }
 
   if (data === undefined) {
