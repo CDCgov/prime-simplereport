@@ -566,6 +566,7 @@ export type Provider = {
 
 export type Query = {
   __typename?: "Query";
+  dashboardMetrics?: Maybe<TestMetrics>;
   /** @deprecated use the pluralized form to reduce confusion */
   deviceType?: Maybe<Array<Maybe<DeviceType>>>;
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
@@ -584,6 +585,12 @@ export type Query = {
   users?: Maybe<Array<Maybe<ApiUser>>>;
   usersWithStatus?: Maybe<Array<Maybe<ApiUserWithStatus>>>;
   whoami: User;
+};
+
+export type QueryDashboardMetricsArgs = {
+  endDate: Scalars["DateTime"];
+  facilityId?: Maybe<Scalars["ID"]>;
+  startDate: Scalars["DateTime"];
 };
 
 export type QueryOrganizationsArgs = {
@@ -674,6 +681,12 @@ export type TestDescription = {
 
 export type TestDescriptionNameArgs = {
   nameType?: Maybe<Scalars["String"]>;
+};
+
+export type TestMetrics = {
+  __typename?: "TestMetrics";
+  positiveTestCount?: Maybe<Scalars["Int"]>;
+  totalTestCount?: Maybe<Scalars["Int"]>;
 };
 
 export type TestOrder = {
