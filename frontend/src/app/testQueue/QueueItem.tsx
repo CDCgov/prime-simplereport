@@ -439,15 +439,10 @@ const QueueItem = ({
       ? moment(answers.symptomOnset).format("YYYY-MM-DD")
       : null;
 
-    const priorTestDate = answers.priorTestDate
-      ? moment(answers.priorTestDate).format("YYYY-MM-DD")
-      : null;
-
     updateAoe({
       variables: {
         ...answers,
         symptomOnset,
-        priorTestDate,
         patientId: patient.internalId,
       },
     })

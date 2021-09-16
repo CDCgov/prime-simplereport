@@ -61,7 +61,6 @@ const defaultProps: QueueItemProps = {
   // askOnEntry prop is incorrectly typed as "string" in the component
   askOnEntry: {
     noSymptoms: undefined,
-    firstTest: true,
     pregnancy: "no",
     symptoms: "{}",
   } as any,
@@ -85,7 +84,6 @@ FilledOut.args = {
   internalId: uniqueId(),
   askOnEntry: {
     noSymptoms: true,
-    firstTest: true,
     pregnancy: "no",
     symptoms: "{}",
   } as any,
@@ -98,7 +96,6 @@ ReadyIndicator.args = {
   internalId: "completed-timer",
   askOnEntry: {
     noSymptoms: true,
-    firstTest: true,
     pregnancy: "no",
     symptoms: "{}",
   } as any,
@@ -110,7 +107,6 @@ CompletedIndicator.args = {
   internalId: "completed-timer",
   askOnEntry: {
     noSymptoms: true,
-    firstTest: true,
     pregnancy: "no",
     symptoms: "{}",
   } as any,
@@ -123,7 +119,6 @@ FailOnSubmit.args = {
   internalId: "completed_timer",
   askOnEntry: {
     noSymptoms: true,
-    firstTest: true,
     pregnancy: "no",
     symptoms: "{}",
   } as any,

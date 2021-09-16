@@ -50,7 +50,6 @@ const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
         isModal={false}
         saveButtonText="Submit"
         noValidation={false}
-        lastTest={patient.lastTest}
         saveCallback={saveCallback}
       />
     </PatientTimeOfTestContainer>
