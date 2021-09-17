@@ -1,8 +1,9 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
+import { OrganizationOption } from "../Components/OrganizationDropDown";
+
 import TenantDataAccessForm from "./TenantDataAccessForm";
-import { OrganizationOption } from "./OrganizationDropDown";
 
 let saveTenantDataAccess: jest.Mock;
 

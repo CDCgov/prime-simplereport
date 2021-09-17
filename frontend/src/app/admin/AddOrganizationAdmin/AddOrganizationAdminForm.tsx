@@ -1,13 +1,13 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
-
-import FacilityAdmin, { useFacilityAdminValidation } from "./FacilityAdmin";
 import OrganizationDropDown, {
   useOrganizationDropDownValidation,
   OrganizationOption,
-} from "./OrganizationDropDown";
+} from "../Components/OrganizationDropDown";
+
+import FacilityAdmin, { useFacilityAdminValidation } from "./FacilityAdmin";
 
 const sortOrganizationOptions = (organizationOptions: OrganizationOption[]) =>
   Object.values(organizationOptions).sort((a, b) => {
@@ -24,7 +24,7 @@ interface Props {
   ) => void;
 }
 
-const AddOrganizationAdminForm: React.FC<Props> = (props) => {
+const AddOrganizationAdminForm = (props: Props) => {
   const [admin, updateAdminFormData] = useState<FacilityAdmin>(props.admin);
   const [
     organizationExternalId,

@@ -1,0 +1,24 @@
+query GetOrganizations($identityVerified: Boolean) {
+    organizations(identityVerified: $identityVerified) {
+        externalId
+        name
+    }
+}
+mutation SetCurrentUserTenantDataAccessOp(
+    $organizationExternalId: String
+    $justification: String
+) {
+    setCurrentUserTenantDataAccess(
+        organizationExternalId: $organizationExternalId
+        justification: $justification
+    ) {
+        id
+        email
+        permissions
+        role
+        organization {
+        name
+        externalId
+        }
+    }
+}

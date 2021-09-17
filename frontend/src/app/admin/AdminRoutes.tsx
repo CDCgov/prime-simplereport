@@ -1,9 +1,9 @@
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
 
-import AddOrganizationAdminFormContainer from "./Organization/AddOrganizationAdminFormContainer";
+import AddOrganizationAdminFormContainer from "./AddOrganizationAdmin/AddOrganizationAdminFormContainer";
 import DeviceTypeFormContainer from "./DeviceType/DeviceTypeFormContainer";
-import TenantDataAccessFormContainer from "./Organization/TenantDataAccessFormContainer";
+import TenantDataAccessFormContainer from "./TenantDataAccess/TenantDataAccessFormContainer";
 import Admin from "./Admin";
 import PendingOrganizationsContainer from "./PendingOrganizations/PendingOrganizationsContainer";
 

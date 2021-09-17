@@ -1113,6 +1113,21 @@ export type GetFacilitiesForManageUsersQuery = {
   }>;
 };
 
+export type AddUserMutationVariables = Exact<{
+  firstName?: Maybe<Scalars["String"]>;
+  middleName?: Maybe<Scalars["String"]>;
+  lastName?: Maybe<Scalars["String"]>;
+  suffix?: Maybe<Scalars["String"]>;
+  email: Scalars["String"];
+  organizationExternalId: Scalars["String"];
+  role: Role;
+}>;
+
+export type AddUserMutation = {
+  __typename?: "Mutation";
+  addUser?: Maybe<{ __typename?: "User"; id?: Maybe<string> }>;
+};
+
 export type CreateDeviceTypeMutationVariables = Exact<{
   name: Scalars["String"];
   manufacturer: Scalars["String"];
@@ -1129,41 +1144,14 @@ export type CreateDeviceTypeMutation = {
   }>;
 };
 
-export type AddUserMutationVariables = Exact<{
-  firstName?: Maybe<Scalars["String"]>;
-  middleName?: Maybe<Scalars["String"]>;
-  lastName?: Maybe<Scalars["String"]>;
-  suffix?: Maybe<Scalars["String"]>;
-  email: Scalars["String"];
-  organizationExternalId: Scalars["String"];
-  role: Role;
+export type SetOrgIdentityVerifiedMutationVariables = Exact<{
+  externalId: Scalars["String"];
+  verified: Scalars["Boolean"];
 }>;
 
-export type AddUserMutation = {
+export type SetOrgIdentityVerifiedMutation = {
   __typename?: "Mutation";
-  addUser?: Maybe<{
-    __typename?: "User";
-    id?: Maybe<string>;
-    email: string;
-    role?: Maybe<Role>;
-    name?: Maybe<{
-      __typename?: "NameInfo";
-      firstName?: Maybe<string>;
-      middleName?: Maybe<string>;
-      lastName: string;
-      suffix?: Maybe<string>;
-    }>;
-    organization?: Maybe<{
-      __typename?: "Organization";
-      name: string;
-      externalId: string;
-      facilities: Array<{
-        __typename?: "Facility";
-        name?: Maybe<string>;
-        id?: Maybe<string>;
-      }>;
-    }>;
-  }>;
+  setOrganizationIdentityVerified?: Maybe<boolean>;
 };
 
 export type GetOrganizationsQueryVariables = Exact<{
@@ -1198,16 +1186,6 @@ export type SetCurrentUserTenantDataAccessOpMutation = {
       externalId: string;
     }>;
   }>;
-};
-
-export type SetOrgIdentityVerifiedMutationVariables = Exact<{
-  externalId: Scalars["String"];
-  verified: Scalars["Boolean"];
-}>;
-
-export type SetOrgIdentityVerifiedMutation = {
-  __typename?: "Mutation";
-  setOrganizationIdentityVerified?: Maybe<boolean>;
 };
 
 export type PatientExistsQueryVariables = Exact<{
@@ -2938,6 +2916,77 @@ export type GetFacilitiesForManageUsersQueryResult = Apollo.QueryResult<
   GetFacilitiesForManageUsersQuery,
   GetFacilitiesForManageUsersQueryVariables
 >;
+export const AddUserDocument = gql`
+  mutation AddUser(
+    $firstName: String
+    $middleName: String
+    $lastName: String
+    $suffix: String
+    $email: String!
+    $organizationExternalId: String!
+    $role: Role!
+  ) {
+    addUser(
+      name: {
+        firstName: $firstName
+        middleName: $middleName
+        lastName: $lastName
+        suffix: $suffix
+      }
+      email: $email
+      organizationExternalId: $organizationExternalId
+      role: $role
+    ) {
+      id
+    }
+  }
+`;
+export type AddUserMutationFn = Apollo.MutationFunction<
+  AddUserMutation,
+  AddUserMutationVariables
+>;
+
+/**
+ * __useAddUserMutation__
+ *
+ * To run a mutation, you first call `useAddUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addUserMutation, { data, loading, error }] = useAddUserMutation({
+ *   variables: {
+ *      firstName: // value for 'firstName'
+ *      middleName: // value for 'middleName'
+ *      lastName: // value for 'lastName'
+ *      suffix: // value for 'suffix'
+ *      email: // value for 'email'
+ *      organizationExternalId: // value for 'organizationExternalId'
+ *      role: // value for 'role'
+ *   },
+ * });
+ */
+export function useAddUserMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    AddUserMutation,
+    AddUserMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<AddUserMutation, AddUserMutationVariables>(
+    AddUserDocument,
+    options
+  );
+}
+export type AddUserMutationHookResult = ReturnType<typeof useAddUserMutation>;
+export type AddUserMutationResult = Apollo.MutationResult<AddUserMutation>;
+export type AddUserMutationOptions = Apollo.BaseMutationOptions<
+  AddUserMutation,
+  AddUserMutationVariables
+>;
 export const CreateDeviceTypeDocument = gql`
   mutation createDeviceType(
     $name: String!
@@ -3003,92 +3052,56 @@ export type CreateDeviceTypeMutationOptions = Apollo.BaseMutationOptions<
   CreateDeviceTypeMutation,
   CreateDeviceTypeMutationVariables
 >;
-export const AddUserDocument = gql`
-  mutation AddUser(
-    $firstName: String
-    $middleName: String
-    $lastName: String
-    $suffix: String
-    $email: String!
-    $organizationExternalId: String!
-    $role: Role!
-  ) {
-    addUser(
-      name: {
-        firstName: $firstName
-        middleName: $middleName
-        lastName: $lastName
-        suffix: $suffix
-      }
-      email: $email
-      organizationExternalId: $organizationExternalId
-      role: $role
-    ) {
-      id
-      name {
-        firstName
-        middleName
-        lastName
-        suffix
-      }
-      email
-      role
-      organization {
-        name
-        externalId
-        facilities {
-          name
-          id
-        }
-      }
-    }
+export const SetOrgIdentityVerifiedDocument = gql`
+  mutation SetOrgIdentityVerified($externalId: String!, $verified: Boolean!) {
+    setOrganizationIdentityVerified(
+      externalId: $externalId
+      verified: $verified
+    )
   }
 `;
-export type AddUserMutationFn = Apollo.MutationFunction<
-  AddUserMutation,
-  AddUserMutationVariables
+export type SetOrgIdentityVerifiedMutationFn = Apollo.MutationFunction<
+  SetOrgIdentityVerifiedMutation,
+  SetOrgIdentityVerifiedMutationVariables
 >;
 
 /**
- * __useAddUserMutation__
+ * __useSetOrgIdentityVerifiedMutation__
  *
- * To run a mutation, you first call `useAddUserMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAddUserMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useSetOrgIdentityVerifiedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetOrgIdentityVerifiedMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [addUserMutation, { data, loading, error }] = useAddUserMutation({
+ * const [setOrgIdentityVerifiedMutation, { data, loading, error }] = useSetOrgIdentityVerifiedMutation({
  *   variables: {
- *      firstName: // value for 'firstName'
- *      middleName: // value for 'middleName'
- *      lastName: // value for 'lastName'
- *      suffix: // value for 'suffix'
- *      email: // value for 'email'
- *      organizationExternalId: // value for 'organizationExternalId'
- *      role: // value for 'role'
+ *      externalId: // value for 'externalId'
+ *      verified: // value for 'verified'
  *   },
  * });
  */
-export function useAddUserMutation(
+export function useSetOrgIdentityVerifiedMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    AddUserMutation,
-    AddUserMutationVariables
+    SetOrgIdentityVerifiedMutation,
+    SetOrgIdentityVerifiedMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<AddUserMutation, AddUserMutationVariables>(
-    AddUserDocument,
-    options
-  );
+  return Apollo.useMutation<
+    SetOrgIdentityVerifiedMutation,
+    SetOrgIdentityVerifiedMutationVariables
+  >(SetOrgIdentityVerifiedDocument, options);
 }
-export type AddUserMutationHookResult = ReturnType<typeof useAddUserMutation>;
-export type AddUserMutationResult = Apollo.MutationResult<AddUserMutation>;
-export type AddUserMutationOptions = Apollo.BaseMutationOptions<
-  AddUserMutation,
-  AddUserMutationVariables
+export type SetOrgIdentityVerifiedMutationHookResult = ReturnType<
+  typeof useSetOrgIdentityVerifiedMutation
+>;
+export type SetOrgIdentityVerifiedMutationResult = Apollo.MutationResult<SetOrgIdentityVerifiedMutation>;
+export type SetOrgIdentityVerifiedMutationOptions = Apollo.BaseMutationOptions<
+  SetOrgIdentityVerifiedMutation,
+  SetOrgIdentityVerifiedMutationVariables
 >;
 export const GetOrganizationsDocument = gql`
   query GetOrganizations($identityVerified: Boolean) {
@@ -3211,57 +3224,6 @@ export type SetCurrentUserTenantDataAccessOpMutationResult = Apollo.MutationResu
 export type SetCurrentUserTenantDataAccessOpMutationOptions = Apollo.BaseMutationOptions<
   SetCurrentUserTenantDataAccessOpMutation,
   SetCurrentUserTenantDataAccessOpMutationVariables
->;
-export const SetOrgIdentityVerifiedDocument = gql`
-  mutation SetOrgIdentityVerified($externalId: String!, $verified: Boolean!) {
-    setOrganizationIdentityVerified(
-      externalId: $externalId
-      verified: $verified
-    )
-  }
-`;
-export type SetOrgIdentityVerifiedMutationFn = Apollo.MutationFunction<
-  SetOrgIdentityVerifiedMutation,
-  SetOrgIdentityVerifiedMutationVariables
->;
-
-/**
- * __useSetOrgIdentityVerifiedMutation__
- *
- * To run a mutation, you first call `useSetOrgIdentityVerifiedMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSetOrgIdentityVerifiedMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [setOrgIdentityVerifiedMutation, { data, loading, error }] = useSetOrgIdentityVerifiedMutation({
- *   variables: {
- *      externalId: // value for 'externalId'
- *      verified: // value for 'verified'
- *   },
- * });
- */
-export function useSetOrgIdentityVerifiedMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    SetOrgIdentityVerifiedMutation,
-    SetOrgIdentityVerifiedMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    SetOrgIdentityVerifiedMutation,
-    SetOrgIdentityVerifiedMutationVariables
-  >(SetOrgIdentityVerifiedDocument, options);
-}
-export type SetOrgIdentityVerifiedMutationHookResult = ReturnType<
-  typeof useSetOrgIdentityVerifiedMutation
->;
-export type SetOrgIdentityVerifiedMutationResult = Apollo.MutationResult<SetOrgIdentityVerifiedMutation>;
-export type SetOrgIdentityVerifiedMutationOptions = Apollo.BaseMutationOptions<
-  SetOrgIdentityVerifiedMutation,
-  SetOrgIdentityVerifiedMutationVariables
 >;
 export const PatientExistsDocument = gql`
   query PatientExists(
