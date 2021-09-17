@@ -35,3 +35,19 @@ variable "storage_account_key" {
 variable "storage_account_primary_connection_string" {
   type = string
 }
+
+variable "test_event_queue_name" {
+    type = string
+}
+
+variable "report_stream_url" {
+    type = string
+}
+
+variable "report_stream_token" {
+    type = string
+}
+
+variable "app_insights_instrumentation_key" {
+    type = string
+}

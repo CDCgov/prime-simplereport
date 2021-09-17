@@ -61,15 +61,23 @@ resource "azurerm_function_app" "functions" {
   version                    = "~2"
 
   app_settings = {
-    https_only                   = true
-    FUNCTIONS_WORKER_RUNTIME     = "node"
-    WEBSITE_NODE_DEFAULT_VERSION = "~10"
-    FUNCTION_APP_EDIT_MODE       = "readonly"
-    HASH                         = "${base64encode(filesha256("${var.function_app_source}"))}"
-    WEBSITE_RUN_FROM_PACKAGE     = "https://${var.storage_account_name}.blob.core.windows.net/${azurerm_storage_container.deployments.name}/${azurerm_storage_blob.appcode.name}${data.azurerm_storage_account_sas.sas.sas}"
+    https_only                     = true
+    FUNCTIONS_WORKER_RUNTIME       = "node"
+    WEBSITE_NODE_DEFAULT_VERSION   = "~10"
+    FUNCTION_APP_EDIT_MODE         = "readonly"
+    HASH                           = "${base64encode(filesha256("${var.function_app_source}"))}"
+    WEBSITE_RUN_FROM_PACKAGE       = "https://${var.storage_account_name}.blob.core.windows.net/${azurerm_storage_container.deployments.name}/${azurerm_storage_blob.appcode.name}${data.azurerm_storage_account_sas.sas.sas}"
+    APPINSIGHTS_INSTRUMENTATIONKEY = var.app_insights_instrumentation_key
+    AZ_STORAGE_QUEUE_SVC_URL       = "https://${var.storage_account_name}.queue.core.windows.net/"
+    AZ_STORAGE_ACCOUNT_NAME        = var.storage_account_name
+    AZ_STORAGE_ACCOUNT_KEY         = var.storage_account_key
+    TEST_EVENT_QUEUE_NAME          = var.test_event_queue_name
+    REPORT_STREAM_URL              = var.report_stream_url
+    REPORT_STREAM_TOKEN            = var.report_stream_token
+    REPORT_STREAM_BATCH_MINIMUM    = "1"
+    REPORT_STREAM_BATCH_MAXIMUM    = "1000"
   }
 }
-
 
 provider "azurerm" {
   features {}
