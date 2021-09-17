@@ -1125,29 +1125,7 @@ export type AddUserMutationVariables = Exact<{
 
 export type AddUserMutation = {
   __typename?: "Mutation";
-  addUser?: Maybe<{
-    __typename?: "User";
-    id?: Maybe<string>;
-    email: string;
-    role?: Maybe<Role>;
-    name?: Maybe<{
-      __typename?: "NameInfo";
-      firstName?: Maybe<string>;
-      middleName?: Maybe<string>;
-      lastName: string;
-      suffix?: Maybe<string>;
-    }>;
-    organization?: Maybe<{
-      __typename?: "Organization";
-      name: string;
-      externalId: string;
-      facilities: Array<{
-        __typename?: "Facility";
-        name?: Maybe<string>;
-        id?: Maybe<string>;
-      }>;
-    }>;
-  }>;
+  addUser?: Maybe<{ __typename?: "User"; id?: Maybe<string> }>;
 };
 
 export type CreateDeviceTypeMutationVariables = Exact<{
@@ -2960,22 +2938,6 @@ export const AddUserDocument = gql`
       role: $role
     ) {
       id
-      name {
-        firstName
-        middleName
-        lastName
-        suffix
-      }
-      email
-      role
-      organization {
-        name
-        externalId
-        facilities {
-          name
-          id
-        }
-      }
     }
   }
 `;

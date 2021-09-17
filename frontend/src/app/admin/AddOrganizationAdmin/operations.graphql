@@ -19,21 +19,5 @@
       role: $role
     ) {
       id
-      name {
-        firstName
-        middleName
-        lastName
-        suffix
-      }
-      email
-      role
-      organization {
-        name
-        externalId
-        facilities {
-          name
-          id
-        }
-      }
     }
   }
