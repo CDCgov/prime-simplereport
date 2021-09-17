@@ -5,9 +5,53 @@ import "./Analytics.scss";
 import testsConducted from "./img/tests-conducted-graph.png";
 import positivityRate from "./img/positivity-rate-graph.png";
 import positiveTests from "./img/positive-tests-map.png";
-import totalsByRole from "./img/totals-by-role-table.png";
-import allTestingFacilities from "./img/all-testing-facilities-table.png";
 import testsConductedAllFacilities from "./img/tests-conducted-all-facilities-graph.png";
+import AggregateResultsTable, { ResultsRow } from "./AggregateResultsTable";
+
+let abbeyRoad: ResultsRow = {
+  name: "Abbey Road School District (Organization)",
+  testsConducted: 29,
+  numberPeopleTested: 25,
+  positiveTests: 3,
+  negativeTests: 26,
+  positivityRate: 10.3,
+};
+
+let kennedyHigh: ResultsRow = {
+  name: "Kennedy High School",
+  testsConducted: 16,
+  numberPeopleTested: 14,
+  positiveTests: 1,
+  negativeTests: 15,
+  positivityRate: 6.25,
+};
+
+let beverlyMiddle: ResultsRow = {
+  name: "Beverly Middle School",
+  testsConducted: 4,
+  numberPeopleTested: 3,
+  positiveTests: 0,
+  negativeTests: 4,
+  positivityRate: 0,
+};
+
+let johnsonElementary: ResultsRow = {
+  name: "Johnson Elementary",
+  testsConducted: 9,
+  numberPeopleTested: 9,
+  positiveTests: 2,
+  negativeTests: 7,
+  positivityRate: 22.22,
+};
+
+let jacksonHigh: ResultsRow = {
+  name: "Jackson High School",
+  testsConducted: 0,
+  numberPeopleTested: 0,
+  positiveTests: 0,
+  negativeTests: 0,
+  positivityRate: 0,
+};
 
 export const Analytics = () => {
   return (
@@ -106,12 +150,19 @@ export const Analytics = () => {
               <img src={positiveTests} alt="Positive tests map" />
             </div>
           </div>
-          <h4>Totals by role</h4>
-          <img src={totalsByRole} alt="Totals by role table" />
         </div>
         <div className="padding-2">
-          <h4>All testing facilities</h4>
-          <img src={allTestingFacilities} alt="All testing facilities table" />
+          <AggregateResultsTable
+            tableName="All testing facilities"
+            tableType="Facility"
+            rows={[
+              abbeyRoad,
+              kennedyHigh,
+              beverlyMiddle,
+              johnsonElementary,
+              jacksonHigh,
+            ]}
+          ></AggregateResultsTable>
           <div className="grid-row">
             <div className="grid-col-6">
               <img
