@@ -1095,8 +1095,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   }
 
   @Test
-  @WithSimpleReportStandardAllFacilitiesUser
-  void getDashboardMetrics_inOrgWithStandardUser_success() {
+  @WithSimpleReportOrgAdminUser
+  void getDashboardMetrics_inOrgWithOrgAdmin_success() {
     makedata();
     Date startDate = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
     Date endDate = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
@@ -1104,6 +1104,20 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     TestMetrics metrics = _service.getDashboardMetrics(null, startDate, endDate);
     assertEquals(0, metrics.getPositiveTestCount());
     assertEquals(1, metrics.getTotalTestCount());
+  }
+
+  @Test
+  @WithSimpleReportStandardAllFacilitiesUser
+  void getDashboardMetrics_inOrgWithStandardUser_failure() {
+    makedata();
+    Date startDate = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
+    Date endDate = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
+
+    assertThrows(
+        AccessDeniedException.class,
+        () -> {
+          _service.getDashboardMetrics(null, startDate, endDate);
+        });
   }
 
   private List<TestEvent> makedata() {

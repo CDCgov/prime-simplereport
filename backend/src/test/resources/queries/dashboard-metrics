@@ -1,0 +1,6 @@
+query GetDashboardMetrics($facilityId: ID, $startDate: DateTime!, $endDate: DateTime!) {
+  dashboardMetrics(facilityId: $facilityId, startDate: $startDate, endDate: $endDate) {
+    positiveTestCount
+    totalTestCount
+  }
+}

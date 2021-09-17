@@ -483,6 +483,7 @@ public class TestOrderService {
   }
 
   @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionEditOrganization
   public TestMetrics getDashboardMetrics(UUID facilityId, Date startDate, Date endDate) {
     List<TestResultWithCount> testResultList;
 
