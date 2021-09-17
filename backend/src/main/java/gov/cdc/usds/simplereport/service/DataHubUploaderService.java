@@ -119,15 +119,15 @@ public class DataHubUploaderService {
     }
   }
 
-  private List<TestEvent> createTestEventCSV(Date earlistCreatedAt, Date latestCreateOn)
+  private List<TestEvent> createTestEventCSV(Date earliestCreatedAt, Date latestCreateOn)
       throws IOException, DateTimeParseException {
     List<TestEvent> events =
         _testReportEventsRepo.queryMatchAllBetweenDates(
-            earlistCreatedAt, latestCreateOn, PageRequest.of(0, _config.getMaxCsvRows()));
+            earliestCreatedAt, latestCreateOn, PageRequest.of(0, _config.getMaxCsvRows()));
     if (events.size() == 0) {
       // next end timerange stays the same as the last. NOTE: This will not change until there are
       // new events
-      this._nextTimestamp = earlistCreatedAt;
+      this._nextTimestamp = earliestCreatedAt;
       return events;
     } else if (events.size() == _config.getMaxCsvRows()) {
       this._warnMessage += "More rows were found than can be uploaded in a single batch.";
