@@ -1,8 +1,4 @@
 import { useState } from "react";
-import {
-  useAppInsightsContext,
-  useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
 import { Redirect } from "react-router-dom";
 
 import Alert from "../../commonComponents/Alert";
@@ -22,9 +18,7 @@ const AddOrganizationAdminFormContainer = () => {
     fetchPolicy: "no-cache",
     variables: { identityVerified: true },
   });
-  const appInsights = useAppInsightsContext();
   const [addUser] = useAddUserMutation();
-  const trackSaveSettings = useTrackEvent(appInsights, "Save Settings", null);
 
   if (loading) {
     return <LoadingCard message={"Loading Organizations"} />;
@@ -41,9 +35,6 @@ const AddOrganizationAdminFormContainer = () => {
     organizationExternalId: string,
     admin: FacilityAdmin
   ) => {
-    if (appInsights) {
-      trackSaveSettings(null);
-    }
     addUser({
       variables: {
         organizationExternalId: organizationExternalId,
