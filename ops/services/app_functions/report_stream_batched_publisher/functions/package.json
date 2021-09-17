@@ -3,9 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "tsc",
+    "func": "func",
+    "clean": "rimraf build",
+    "build:compile": "tsc",
+    "build:production": "npm run prestart && npm prune --production",
+    "prebuild:zip": "mkdirp --mode=0700 build",
+    "build:zip": "jszip-cli",
+    "build": "run-s clean build:compile build:zip",
+    "predeploy": "npm run build:production",
+    "deploy": "terraform apply",
     "watch": "tsc -w",
-    "prestart": "npm run build",
+    "prestart": "npm run build && func extensions install",
     "start": "func start",
     "test": "echo \"No tests yet...\""
   },
@@ -18,6 +26,12 @@
     "node-fetch": "^2.0.0"
   },
   "devDependencies": {
+    "@azure/functions": "^1.0.3",
+    "@ffflorian/jszip-cli": "3.1.0",
+    "azure-functions-core-tools": "^2.7.1724",
+    "mkdirp": "^0.5.1",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.0",
     "typescript": "^4.0.0"
   }
 }

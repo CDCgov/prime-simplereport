@@ -1,37 +1,3 @@
-variable "prefix" {
-    type = string
-    default = "twphoto"
-}
-
-variable "location" {
-    type = string
-    default = "eastus"
-}
-
-variable "environment" {
-    type = string
-    default = "dev"
-}
-
-variable "resource_group" {
-    type = string
-    default = "prime-simple-report-dev"
-}
-
-variable "function_app_source" {
-    type = string
-    default = "./build/functionapp.zip"
-}
-
-variable "storage_account_name" {
-    type = string
-    default = "simplereportdevapp" 
-}
-
-variable "storage_account_primary_connection_string" {
-    type = string
-}
-
 resource "azurerm_storage_container" "deployments" {
     name = "rs-batched-publisher-function-releases"
     storage_account_name = "${var.storage_account_name}"
@@ -88,9 +54,10 @@ resource "azurerm_app_service_plan" "asp" {
 resource "azurerm_function_app" "functions" {
     name = "${var.prefix}-${var.environment}"
     location = "${var.location}"
-    resource_group_name = "${var.resource_group}"
-    app_service_plan_id = "${azurerm_app_service_plan.asp.id}"
-    storage_connection_string = "${var.storage_account_primary_connection_string}"
+    resource_group_name        = "${var.resource_group}"
+    app_service_plan_id        = "${azurerm_app_service_plan.asp.id}"
+    storage_account_name       = "${var.storage_account_name}"
+    storage_account_access_key = "${var.storage_account_key}"
     version = "~2"
 
     app_settings = {
