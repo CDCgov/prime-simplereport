@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -210,7 +211,12 @@ public class DataHubUploaderService {
     }
   }
 
-  public void uploaderTask(Supplier<Collection<TestEvent>> testEventSupplier) {
+  private void uploaderTask(Supplier<Collection<TestEvent>> testEventSupplier) {
+    uploaderTask(testEventSupplier, true);
+  }
+
+  private void uploaderTask(
+      Supplier<Collection<TestEvent>> testEventSupplier, boolean withTracking) {
     // sanity check everything is configured correctly (dev likely will not be)
     if (!_config.getUploadEnabled()) {
       LOG.warn(
@@ -249,10 +255,12 @@ public class DataHubUploaderService {
       return;
     }
 
-    DataHubUpload newUpload = _trackingService.startUpload(lastTimestamp);
+    Optional<DataHubUpload> tracking =
+        withTracking ? Optional.of(_trackingService.startUpload(lastTimestamp)) : Optional.empty();
     try {
       var eventsReported = testEventSupplier.get();
-      _trackingService.markRowCount(newUpload, _rowCount, _nextTimestamp);
+      tracking.ifPresent(
+          upload -> _trackingService.markRowCount(upload, _rowCount, _nextTimestamp));
 
       if (_rowCount > 0) {
         this.uploadCSVDocument(_config.getApiKey());
@@ -261,26 +269,31 @@ public class DataHubUploaderService {
       }
 
       // todo: parse json run sanity checks like total records processed matches what we sent.
-      _trackingService.markSucceeded(newUpload, _resultJson, _warnMessage);
+      tracking.ifPresent(
+          upload -> _trackingService.markSucceeded(upload, _resultJson, _warnMessage));
 
       // Clear the reported items from the testing queue
       _testEventReportingService.markTestEventsAsReported(new HashSet<>(eventsReported));
     } catch (RestClientException | UnexpectedIOException err) {
-      _trackingService.markFailed(newUpload, _resultJson, err);
+      tracking.ifPresent(upload -> _trackingService.markFailed(upload, _resultJson, err));
     }
 
-    if (_rowCount > 0) {
-      // Build and send message to slackChannel
-      ArrayList<String> message = new ArrayList<>();
-      message.add("Result: ```" + newUpload.getJobStatus() + "``` ");
-      message.add("RecordsProcessed: " + newUpload.getRecordsProcessed());
-      message.add("EarlistTimestamp: " + dateToUTCString(newUpload.getEarliestRecordedTimestamp()));
-      message.add("LatestTimestamp: " + dateToUTCString(newUpload.getLatestRecordedTimestamp()));
-      message.add("ErrorMessage: " + newUpload.getErrorMessage());
-      message.add("setResponseData: ");
-      message.add("> ``` " + newUpload.getResponseData() + " ```");
-      _slack.sendSlackChannelMessage("DataHubUpload result", message, false);
-    }
+    tracking.ifPresent(
+        upload -> {
+          if (_rowCount > 0) {
+            // Build and send message to slackChannel
+            ArrayList<String> message = new ArrayList<>();
+            message.add("Result: ```" + upload.getJobStatus() + "``` ");
+            message.add("RecordsProcessed: " + upload.getRecordsProcessed());
+            message.add(
+                "EarliestTimestamp: " + dateToUTCString(upload.getEarliestRecordedTimestamp()));
+            message.add("LatestTimestamp: " + dateToUTCString(upload.getLatestRecordedTimestamp()));
+            message.add("ErrorMessage: " + upload.getErrorMessage());
+            message.add("setResponseData: ");
+            message.add("> ``` " + upload.getResponseData() + " ```");
+            _slack.sendSlackChannelMessage("DataHubUpload result", message, false);
+          }
+        });
 
     // should this sleep for some period of time? If no rows match it may be really fast
     // and other server instances not overlap and get blocked by tryUploadLock() otherwise.
