@@ -196,10 +196,9 @@ public class DataHubUploaderService {
             return this.createTestEventCSV(dateOneMinAgo, getLatestRecordedTimestamp());
           } catch (IOException err) {
             // writeAsString is declared to throw IOException, but its internal commentary describes
-            // it as basically
-            // impossible for it to reach that code branch. In order to refactor this lambda as
-            // cleanly as possible,
-            // I'm wrapping it in a RuntimeException, so we don't have to declare anything different
+            // it as basically impossible for it to reach that code branch. In order to refactor
+            // this lambda as cleanly as possible, I'm wrapping it in a RuntimeException, so we
+            // don't have to declare anything different
             throw new UnexpectedIOException(err);
           }
         });
