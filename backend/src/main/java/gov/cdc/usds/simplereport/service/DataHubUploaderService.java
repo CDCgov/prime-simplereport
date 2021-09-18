@@ -19,7 +19,6 @@ import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -125,13 +124,13 @@ public class DataHubUploaderService {
 
   private List<TestEvent> createTestEventCSV(Date earliestCreatedAt, Date latestCreateOn)
       throws IOException, DateTimeParseException {
-    List<TestEvent> events =
+    return createTestEventCSV(
         _testReportEventsRepo.queryMatchAllBetweenDates(
-            earliestCreatedAt, latestCreateOn, PageRequest.of(0, _config.getMaxCsvRows()));
+            earliestCreatedAt, latestCreateOn, PageRequest.of(0, _config.getMaxCsvRows())));
+  }
+
+  private List<TestEvent> createTestEventCSV(List<TestEvent> events) throws IOException {
     if (events.size() == 0) {
-      // next end timerange stays the same as the last. NOTE: This will not change until there are
-      // new events
-      this._nextTimestamp = earliestCreatedAt;
       return events;
     } else if (events.size() == _config.getMaxCsvRows()) {
       this._warnMessage += "More rows were found than can be uploaded in a single batch.";
@@ -185,7 +184,17 @@ public class DataHubUploaderService {
     _resultJson = restTemplate.postForObject(url, contentsAsResource, String.class);
   }
 
-  public void oneOffUploaderTask(Collection<UUID> testEventIds) {}
+  public void oneOffUploaderTask(List<UUID> testEventIds) {
+    uploaderTask(
+        () -> {
+          try {
+            return createTestEventCSV(_testReportEventsRepo.findAllByInternalIdIn(testEventIds));
+          } catch (IOException err) {
+            throw new UnexpectedIOException(err);
+          }
+        },
+        false);
+  }
 
   public void dataHubUploaderTask() {
     uploaderTask(
@@ -194,29 +203,30 @@ public class DataHubUploaderService {
           // transactions
           Timestamp dateOneMinAgo = Timestamp.from(Instant.now().minus(1, ChronoUnit.MINUTES));
           try {
-            return this.createTestEventCSV(dateOneMinAgo, getLatestRecordedTimestamp());
+            return createTestEventCSV(dateOneMinAgo, getLatestRecordedTimestamp());
           } catch (IOException err) {
-            // writeAsString is declared to throw IOException, but its internal commentary describes
-            // it as basically impossible for it to reach that code branch. In order to refactor
-            // this lambda as cleanly as possible, I'm wrapping it in a RuntimeException, so we
-            // don't have to declare anything different
             throw new UnexpectedIOException(err);
           }
         });
   }
 
+  /**
+   * The logic in setFileContents uses Jackson's writeAsString, which is declared to throw
+   * IOException. Its internal commentary describes it as basically impossible for it to reach that
+   * code branch. In order to refactor this lambda as cleanly as possible, I'm wrapping it in a
+   * RuntimeException, so we don't have to declare anything different
+   */
   private static class UnexpectedIOException extends RuntimeException {
     UnexpectedIOException(Exception e) {
       super(e);
     }
   }
 
-  private void uploaderTask(Supplier<Collection<TestEvent>> testEventSupplier) {
+  private void uploaderTask(Supplier<List<TestEvent>> testEventSupplier) {
     uploaderTask(testEventSupplier, true);
   }
 
-  private void uploaderTask(
-      Supplier<Collection<TestEvent>> testEventSupplier, boolean withTracking) {
+  private void uploaderTask(Supplier<List<TestEvent>> testEventSupplier, boolean withTracking) {
     // sanity check everything is configured correctly (dev likely will not be)
     if (!_config.getUploadEnabled()) {
       LOG.warn(

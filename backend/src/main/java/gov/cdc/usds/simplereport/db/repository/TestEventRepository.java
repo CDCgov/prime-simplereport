@@ -61,6 +61,8 @@ public interface TestEventRepository
       "FROM #{#entityName} q WHERE q.createdAt > :before AND q.createdAt <= :after ORDER BY q.createdAt")
   List<TestEvent> queryMatchAllBetweenDates(Date before, Date after, Pageable p);
 
+  List<TestEvent> findAllByInternalIdIn(Collection<UUID> ids);
+
   // @Query("FROM #{#entityName} q WHERE q.facility = :facility and q.createdAt >
   // :newerThanDate
   // ORDER BY q.createdAt DESC")
