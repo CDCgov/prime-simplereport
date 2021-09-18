@@ -4,6 +4,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import gov.cdc.usds.simplereport.api.model.TestEventExport;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.db.model.DataHubUpload;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -184,7 +185,8 @@ public class DataHubUploaderService {
     _resultJson = restTemplate.postForObject(url, contentsAsResource, String.class);
   }
 
-  public void oneOffUploaderTask(List<UUID> testEventIds) {
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public void dataHubUploaderTask(List<UUID> testEventIds) {
     uploaderTask(
         () -> {
           try {
@@ -199,8 +201,7 @@ public class DataHubUploaderService {
   public void dataHubUploaderTask() {
     uploaderTask(
         () -> {
-          // end range is back 1 minute, to avoid complications involving open
-          // transactions
+          // end range is back 1 minute, to avoid complications involving open transactions
           Timestamp dateOneMinAgo = Timestamp.from(Instant.now().minus(1, ChronoUnit.MINUTES));
           try {
             return createTestEventCSV(dateOneMinAgo, getLatestRecordedTimestamp());
@@ -211,7 +212,7 @@ public class DataHubUploaderService {
   }
 
   /**
-   * The logic in setFileContents uses Jackson's writeAsString, which is declared to throw
+   * The logic in setFileContents uses Jackson's writeValueAsString, which is declared to throw
    * IOException. Its internal commentary describes it as basically impossible for it to reach that
    * code branch. In order to refactor this lambda as cleanly as possible, I'm wrapping it in a
    * RuntimeException, so we don't have to declare anything different
