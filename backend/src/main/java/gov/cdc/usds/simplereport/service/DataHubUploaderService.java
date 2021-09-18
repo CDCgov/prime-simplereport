@@ -19,10 +19,13 @@ import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.UUID;
+import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -181,7 +184,34 @@ public class DataHubUploaderService {
     _resultJson = restTemplate.postForObject(url, contentsAsResource, String.class);
   }
 
+  public void oneOffUploaderTask(Collection<UUID> testEventIds) {}
+
   public void dataHubUploaderTask() {
+    uploaderTask(
+        () -> {
+          // end range is back 1 minute, to avoid complications involving open
+          // transactions
+          Timestamp dateOneMinAgo = Timestamp.from(Instant.now().minus(1, ChronoUnit.MINUTES));
+          try {
+            return this.createTestEventCSV(dateOneMinAgo, getLatestRecordedTimestamp());
+          } catch (IOException err) {
+            // writeAsString is declared to throw IOException, but its internal commentary describes
+            // it as basically
+            // impossible for it to reach that code branch. In order to refactor this lambda as
+            // cleanly as possible,
+            // I'm wrapping it in a RuntimeException, so we don't have to declare anything different
+            throw new UnexpectedIOException(err);
+          }
+        });
+  }
+
+  private static class UnexpectedIOException extends RuntimeException {
+    UnexpectedIOException(Exception e) {
+      super(e);
+    }
+  }
+
+  public void uploaderTask(Supplier<Collection<TestEvent>> testEventSupplier) {
     // sanity check everything is configured correctly (dev likely will not be)
     if (!_config.getUploadEnabled()) {
       LOG.warn(
@@ -222,11 +252,7 @@ public class DataHubUploaderService {
 
     DataHubUpload newUpload = _trackingService.startUpload(lastTimestamp);
     try {
-      // end range is back 1 minute, to avoid complications involving open
-      // transactions
-      Timestamp dateOneMinAgo = Timestamp.from(Instant.now().minus(1, ChronoUnit.MINUTES));
-
-      var eventsReported = this.createTestEventCSV(lastTimestamp, dateOneMinAgo);
+      var eventsReported = testEventSupplier.get();
       _trackingService.markRowCount(newUpload, _rowCount, _nextTimestamp);
 
       if (_rowCount > 0) {
@@ -240,7 +266,7 @@ public class DataHubUploaderService {
 
       // Clear the reported items from the testing queue
       _testEventReportingService.markTestEventsAsReported(new HashSet<>(eventsReported));
-    } catch (RestClientException | IOException err) {
+    } catch (RestClientException | UnexpectedIOException err) {
       _trackingService.markFailed(newUpload, _resultJson, err);
     }
 
