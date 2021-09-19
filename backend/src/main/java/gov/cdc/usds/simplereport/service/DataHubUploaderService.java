@@ -155,8 +155,7 @@ public class DataHubUploaderService {
         .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
         .enable(CsvGenerator.Feature.ALWAYS_QUOTE_EMPTY_STRINGS);
     // You would think `withNullValue` and `ALWAYS_QUOTE_EMPTY_STRINGS` would be enough, but it's
-    // not.
-    // we have to return `""` withNullValue to keep `,,,` out of the the csv
+    // not. we have to return `""` withNullValue to keep `,,,` out of the the csv
     CsvSchema schema = mapper.schemaFor(TestEventExport.class).withHeader().withNullValue("\"\"");
     this._fileContents = mapper.writer(schema).writeValueAsString(eventsToExport);
   }
