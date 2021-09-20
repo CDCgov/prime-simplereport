@@ -7,7 +7,6 @@
   "force": true,
   "ignoreEntries": [
     ".terraform",
-    "build",
     "*.zip",
     "*.map",
     "terraform.*",

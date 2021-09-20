@@ -24,7 +24,7 @@ variable "function_app_source" {
 
 variable "storage_account_name_prefix" {
   type    = string
-  default = "simplereportdev"
+  default = "simplereport"
 }
 
 variable "storage_account_key" {

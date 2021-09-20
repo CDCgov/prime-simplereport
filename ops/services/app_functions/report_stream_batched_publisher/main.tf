@@ -1,5 +1,5 @@
 locals {
-  storage_account_name = "${var.storage_account_name_prefix}${var.environment}"
+  storage_account_name = "${var.storage_account_name_prefix}${var.environment}app"
   resource_group_name  = "${var.resource_group_name_prefix}${var.environment}"
 }
 
@@ -61,7 +61,7 @@ resource "azurerm_function_app" "functions" {
   location                   = var.location
   resource_group_name        = local.resource_group_name
   app_service_plan_id        = azurerm_app_service_plan.asp.id
-  storage_account_name       = "${var.storage_account_name_prefix}${var.environment}"
+  storage_account_name       = local.storage_account_name
   storage_account_access_key = var.storage_account_key
   version                    = "~2"
 
@@ -74,7 +74,7 @@ resource "azurerm_function_app" "functions" {
     WEBSITE_RUN_FROM_PACKAGE       = "https://${local.storage_account_name}.blob.core.windows.net/${azurerm_storage_container.deployments.name}/${azurerm_storage_blob.appcode.name}${data.azurerm_storage_account_sas.sas.sas}"
     APPINSIGHTS_INSTRUMENTATIONKEY = var.app_insights_instrumentation_key
     AZ_STORAGE_QUEUE_SVC_URL       = "https://${local.storage_account_name}.queue.core.windows.net/"
-    AZ_STORAGE_ACCOUNT_NAME        = "${var.storage_account_name_prefix}${var.environment}"
+    AZ_STORAGE_ACCOUNT_NAME        = local.storage_account_name
     AZ_STORAGE_ACCOUNT_KEY         = var.storage_account_key
     TEST_EVENT_QUEUE_NAME          = var.test_event_queue_name
     REPORT_STREAM_URL              = var.report_stream_url
