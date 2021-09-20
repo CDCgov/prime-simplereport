@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 import { connect, useSelector } from "react-redux";
-import { toast } from "react-toastify";
 
 import AoEForm from "../../app/testQueue/AoEForm/AoEForm";
 import { showError } from "../../app/utils";
@@ -28,7 +27,7 @@ const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
       await PxpApi.submitQuestions(plid as string, patient.birthDate, data);
       setNextPage(true);
     } catch (e) {
-      showError(toast, "There was an error submitting your responses");
+      showError("There was an error submitting your responses");
       return;
     }
   };
@@ -51,7 +50,6 @@ const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
         isModal={false}
         saveButtonText="Submit"
         noValidation={false}
-        lastTest={patient.lastTest}
         saveCallback={saveCallback}
       />
     </PatientTimeOfTestContainer>

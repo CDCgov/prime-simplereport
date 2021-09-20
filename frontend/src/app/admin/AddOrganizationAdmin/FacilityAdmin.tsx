@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from "react";
-import { toast } from "react-toastify";
 
 import Alert from "../../commonComponents/Alert";
 import Input from "../../commonComponents/Input";
@@ -61,7 +60,7 @@ export const useFacilityAdminValidation = (admin: FacilityAdmin) => {
           body="Please check the form to make sure you complete all of the required fields."
         />
       );
-      showNotification(toast, alert);
+      showNotification(alert);
       return "error";
     }
   };

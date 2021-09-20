@@ -1,7 +1,6 @@
 import React, { ComponentProps } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { gql, useQuery, useMutation } from "@apollo/client";
-import { toast } from "react-toastify";
 import {
   useAppInsightsContext,
   useTrackEvent,
@@ -94,7 +93,7 @@ const ManageOrganizationContainer: any = () => {
       alertProps.body =
         "There was an eroror updating the organization settings";
     }
-    showNotification(toast, <Alert {...alertProps} />);
+    showNotification(<Alert {...alertProps} />);
   };
 
   return (

@@ -8,8 +8,6 @@ const expectedStates: {
     noSymptoms: boolean;
     symptoms: string;
     symptomOnset: string | null;
-    firstTest: boolean;
-    priorTestType: string | null;
     pregnancy: string | null;
   };
   result: "COMPLETED" | "PENDING";
@@ -20,8 +18,6 @@ const expectedStates: {
       noSymptoms: false,
       symptoms: "{}",
       symptomOnset: null,
-      firstTest: false,
-      priorTestType: null,
       pregnancy: null,
     },
     result: "PENDING",
@@ -32,8 +28,6 @@ const expectedStates: {
       noSymptoms: true,
       symptoms: "{}",
       symptomOnset: null,
-      firstTest: true,
-      priorTestType: null,
       pregnancy: "no",
     },
     result: "COMPLETED",
@@ -44,8 +38,6 @@ const expectedStates: {
       noSymptoms: false,
       symptoms: '{"something":"true"}',
       symptomOnset: "12/12/2020",
-      firstTest: true,
-      priorTestType: null,
       pregnancy: "no",
     },
     result: "COMPLETED",
@@ -56,8 +48,6 @@ const expectedStates: {
       noSymptoms: false,
       symptoms: '{"something":"true"}',
       symptomOnset: null,
-      firstTest: true,
-      priorTestType: null,
       pregnancy: "no",
     },
     result: "PENDING",
@@ -68,8 +58,6 @@ const expectedStates: {
       noSymptoms: true,
       symptoms: '{"something":"true"}',
       symptomOnset: null,
-      firstTest: true,
-      priorTestType: null,
       pregnancy: null,
     },
     result: "PENDING",
