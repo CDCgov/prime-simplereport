@@ -71,7 +71,7 @@ class TestResultTest extends BaseGraphqlTest {
   @Test
   void submitTestResult() throws Exception {
     Person p = _dataFactory.createFullPerson(_org);
-    DeviceType d = _dataFactory.getGenericDevice();
+    DeviceType d = _site.getDefaultDeviceType();
     _dataFactory.createTestOrder(p, _site);
     String dateTested = "2020-12-31T14:30:30.001Z";
 
@@ -93,7 +93,7 @@ class TestResultTest extends BaseGraphqlTest {
   @Test
   void submitTestResultBackwardsCompatible() throws Exception {
     Person p = _dataFactory.createFullPerson(_org);
-    DeviceType d = _dataFactory.getGenericDevice();
+    DeviceType d = _site.getDefaultDeviceType();
     _dataFactory.createTestOrder(p, _site);
     String dateTested = "2020-12-31T14:30:30.001Z";
 
@@ -116,7 +116,7 @@ class TestResultTest extends BaseGraphqlTest {
   void testResultOperations_standardUser_successDependsOnFacilityAccess() throws Exception {
     Person p1 = _dataFactory.createFullPerson(_org);
     Person p2 = _dataFactory.createMinimalPerson(_org, _site);
-    DeviceType d = _dataFactory.getGenericDevice();
+    DeviceType d = _site.getDefaultDeviceType();
     _dataFactory.createTestOrder(p1, _site);
     _dataFactory.createTestOrder(p2, _site);
     String dateTested = "2020-12-31T14:30:30.001Z";

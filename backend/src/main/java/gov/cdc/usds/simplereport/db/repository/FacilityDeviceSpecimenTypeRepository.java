@@ -10,6 +10,4 @@ public interface FacilityDeviceSpecimenTypeRepository
   Optional<FacilityDeviceSpecimenType>
       findFirstByFacilityInternalIdAndDeviceSpecimenTypeDeviceTypeInternalIdOrderByDeviceSpecimenTypeCreatedAt(
           UUID facilityId, UUID deviceId);
-  //    findFirstByFacilityInternalIdAndDeviceSpecimenTypeIdOrderByDeviceSpecimenTypeCreatedAt(
-  //          UUID facilityId, UUID deviceId);
 }

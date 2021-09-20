@@ -123,7 +123,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
 
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
     _service.addTestResult(
         devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
 
@@ -289,7 +289,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
 
     _service.addTestResult(
         devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
@@ -337,7 +337,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
 
     _service.addTestResult(
         devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
@@ -473,7 +473,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
 
     _service.addTestResult(
         devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
@@ -503,7 +503,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
 
     _service.addTestResult(
         devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
@@ -534,7 +534,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
 
     List<SmsAPICallResult> deliveryResults = new ArrayList<SmsAPICallResult>();
     deliveryResults.add(new SmsAPICallResult("message-id", "id", false));
@@ -620,7 +620,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             false);
     TestUserIdentities.setFacilityAuthorities();
 
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
 
     assertThrows(
         AccessDeniedException.class,
@@ -654,7 +654,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             TestResult.POSITIVE,
             LocalDate.of(1865, 12, 25),
             false);
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
 
     _service.editQueueItem(
         o.getInternalId(), devA.getInternalId().toString(), TestResult.POSITIVE.toString(), null);
@@ -685,7 +685,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             TestResult.POSITIVE,
             LocalDate.of(1865, 12, 25),
             false);
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
 
     _service.editQueueItem(
         o.getInternalId(), devA.getInternalId().toString(), TestResult.NEGATIVE.toString(), null);
