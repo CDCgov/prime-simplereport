@@ -580,6 +580,7 @@ export type Query = {
   testResult?: Maybe<TestResult>;
   testResults?: Maybe<Array<Maybe<TestResult>>>;
   testResultsCount?: Maybe<Scalars["Int"]>;
+  topLevelDashboardMetrics?: Maybe<TopLevelDashboardMetrics>;
   user?: Maybe<User>;
   users?: Maybe<Array<Maybe<ApiUser>>>;
   usersWithStatus?: Maybe<Array<Maybe<ApiUserWithStatus>>>;
@@ -642,6 +643,12 @@ export type QueryTestResultsCountArgs = {
   result?: Maybe<Scalars["String"]>;
   role?: Maybe<Scalars["String"]>;
   startDate?: Maybe<Scalars["DateTime"]>;
+};
+
+export type QueryTopLevelDashboardMetricsArgs = {
+  endDate: Scalars["DateTime"];
+  facilityId?: Maybe<Scalars["ID"]>;
+  startDate: Scalars["DateTime"];
 };
 
 export type QueryUserArgs = {
@@ -726,6 +733,12 @@ export enum TestResultDeliveryPreference {
   None = "NONE",
   Sms = "SMS",
 }
+
+export type TopLevelDashboardMetrics = {
+  __typename?: "TopLevelDashboardMetrics";
+  positiveTestCount?: Maybe<Scalars["Int"]>;
+  totalTestCount?: Maybe<Scalars["Int"]>;
+};
 
 export type User = {
   __typename?: "User";
