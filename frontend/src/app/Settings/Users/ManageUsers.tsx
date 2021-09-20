@@ -5,6 +5,7 @@ import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button/Button";
 import { showNotification, displayFullName } from "../../utils";
 import reload from "../../utils/reload";
+import { UserPermission } from "../../../generated/graphql";
 
 import CreateUserModal from "./CreateUserModal";
 import UsersSideNav from "./UsersSideNav";
@@ -168,7 +169,7 @@ const ManageUsers: React.FC<Props> = ({
           ({ id }) => id
         ),
         accessAllFacilities: userWithPermissions?.permissions.includes(
-          "ACCESS_ALL_FACILITIES"
+          UserPermission.AccessAllFacilities
         ),
       },
     })
@@ -217,7 +218,7 @@ const ManageUsers: React.FC<Props> = ({
           role: role,
           facilities: organization?.testingFacility.map(({ id }) => id) || [],
           accessAllFacilities:
-            permissions?.includes("ACCESS_ALL_FACILITIES") || false,
+            permissions?.includes(UserPermission.AccessAllFacilities) || false,
         },
       });
 

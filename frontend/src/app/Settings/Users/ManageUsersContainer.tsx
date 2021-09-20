@@ -2,7 +2,8 @@ import React from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
 
-import { UserRole, UserPermission, Role } from "../../permissions";
+import { UserRole, Role } from "../../permissions";
+import { UserPermission } from "../../../generated/graphql";
 
 import ManageUsers from "./ManageUsers";
 
