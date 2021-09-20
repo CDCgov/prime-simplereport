@@ -154,7 +154,6 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
                   type="button"
                   onClick={submitCancellationRequest}
                   label="Cancel access"
-                  disabled={!formIsValid}
                 />
               </div>
             </div>
