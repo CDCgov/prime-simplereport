@@ -64,7 +64,7 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
     return tos.getTestResult(id);
   }
 
-  public TestMetrics getDashboardMetrics(UUID facilityId, Date startDate, Date endDate) {
-    return tos.getDashboardMetrics(facilityId, startDate, endDate);
+  public TestMetrics getTopLevelDashboardMetrics(UUID facilityId, Date startDate, Date endDate) {
+    return tos.getTopLevelDashboardMetrics(facilityId, startDate, endDate);
   }
 }

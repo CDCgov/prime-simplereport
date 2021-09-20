@@ -189,7 +189,7 @@ class TestResultTest extends BaseGraphqlTest {
   }
 
   @Test
-  void getDashboardMetrics_orgAdmin_success() {
+  void getTopLevelDashboardMetrics_orgAdmin_success() {
     Person p1 = _dataFactory.createFullPerson(_org);
     Person p2 = _dataFactory.createMinimalPerson(_org, _site);
     DeviceType d = _dataFactory.getGenericDevice();
@@ -222,15 +222,16 @@ class TestResultTest extends BaseGraphqlTest {
     ObjectNode variables =
         JsonNodeFactory.instance.objectNode().put("startDate", startDate).put("endDate", endDate);
 
-    ObjectNode result = runQuery("dashboard-metrics", variables);
+    ObjectNode result =
+        runQuery("dashboard-metrics", "GetTopLevelDashboardMetrics", variables, null);
 
-    JsonNode metrics = result.get("dashboardMetrics");
+    JsonNode metrics = result.get("topLevelDashboardMetrics");
     assertEquals(1L, metrics.get("positiveTestCount").asLong());
     assertEquals(2L, metrics.get("totalTestCount").asLong());
   }
 
   @Test
-  void getDashboardMetrics_orgUser_failure() {
+  void getTopLevelDashboardMetrics_orgUser_failure() {
     String startDate = "2020-01-01";
     String endDate = new SimpleDateFormat("yyyy-MM-dd").format(Date.from(Instant.now()));
 
@@ -241,8 +242,9 @@ class TestResultTest extends BaseGraphqlTest {
 
     runQuery(
         "dashboard-metrics",
+        "GetTopLevelDashboardMetrics",
         variables,
-        "Current user does not have permission to request [/dashboardMetrics]");
+        "Current user does not have permission to request [/topLevelDashboardMetrics]");
   }
 
   private ObjectNode getFacilityScopedArguments() {

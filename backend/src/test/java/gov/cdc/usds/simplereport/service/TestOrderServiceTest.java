@@ -1096,19 +1096,19 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void getDashboardMetrics_inOrgWithOrgAdmin_success() {
+  void getTopLevelDashboardMetrics_inOrgWithOrgAdmin_success() {
     makedata();
     Date startDate = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
     Date endDate = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
 
-    TestMetrics metrics = _service.getDashboardMetrics(null, startDate, endDate);
+    TestMetrics metrics = _service.getTopLevelDashboardMetrics(null, startDate, endDate);
     assertEquals(0, metrics.getPositiveTestCount());
     assertEquals(1, metrics.getTotalTestCount());
   }
 
   @Test
   @WithSimpleReportStandardAllFacilitiesUser
-  void getDashboardMetrics_inOrgWithStandardUser_failure() {
+  void getTopLevelDashboardMetrics_inOrgWithStandardUser_failure() {
     makedata();
     Date startDate = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
     Date endDate = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
@@ -1116,7 +1116,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertThrows(
         AccessDeniedException.class,
         () -> {
-          _service.getDashboardMetrics(null, startDate, endDate);
+          _service.getTopLevelDashboardMetrics(null, startDate, endDate);
         });
   }
 

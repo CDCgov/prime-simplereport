@@ -284,7 +284,7 @@ type Query {
   ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
-  dashboardMetrics(facilityId: ID, startDate: DateTime!, endDate: DateTime!): TestMetrics
+  topLevelDashboardMetrics(facilityId: ID, startDate: DateTime!, endDate: DateTime!): TestMetrics
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
   usersWithStatus: [ApiUserWithStatus] @requiredPermissions(allOf: ["MANAGE_USERS"])

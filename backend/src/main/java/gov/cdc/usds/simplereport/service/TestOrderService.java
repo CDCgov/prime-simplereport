@@ -485,7 +485,7 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionEditOrganization
-  public TestMetrics getDashboardMetrics(UUID facilityId, Date startDate, Date endDate) {
+  public TestMetrics getTopLevelDashboardMetrics(UUID facilityId, Date startDate, Date endDate) {
     Set<UUID> facilityIds;
 
     if (facilityId != null) {
