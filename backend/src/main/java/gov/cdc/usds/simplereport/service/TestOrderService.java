@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
@@ -485,16 +486,19 @@ public class TestOrderService {
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionEditOrganization
   public TestMetrics getDashboardMetrics(UUID facilityId, Date startDate, Date endDate) {
-    List<TestResultWithCount> testResultList;
+    Set<UUID> facilityIds;
 
     if (facilityId != null) {
       Facility fac = _os.getFacilityInCurrentOrg(facilityId);
-      testResultList = _terepo.countByResultInFacility(fac.getInternalId(), startDate, endDate);
+      facilityIds = Set.of(fac.getInternalId());
     } else {
       Organization org = _os.getCurrentOrganization();
-      testResultList = _terepo.countByResultInOrganization(org.getInternalId(), startDate, endDate);
+      facilityIds =
+          _os.getFacilities(org).stream().map(Facility::getInternalId).collect(Collectors.toSet());
     }
 
+    List<TestResultWithCount> testResultList =
+        _terepo.countByResultByFacility(facilityIds, startDate, endDate);
     Map<TestResult, Long> testResultMap =
         testResultList.stream()
             .collect(

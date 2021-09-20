@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount;
+import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -40,6 +41,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
 
   @Autowired private TestEventRepository _repo;
   @Autowired private TestDataFactory _dataFactory;
+  @Autowired private OrganizationService _orgService;
 
   private Specification<TestEvent> filter(UUID facilityId, TestResult result) {
     return (root, query, cb) -> {
@@ -146,7 +148,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
   }
 
   @Test
-  void testCountByResultInFacility() {
+  void countByResultByFacility_singleFacility_success() {
     Date d1 = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
     final Date DATE_1MIN_FUTURE =
         new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
@@ -154,7 +156,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Facility place = createTestEventsForMetricsTests(org);
 
     List<TestResultWithCount> results =
-        _repo.countByResultInFacility(place.getInternalId(), d1, DATE_1MIN_FUTURE);
+        _repo.countByResultByFacility(Set.of(place.getInternalId()), d1, DATE_1MIN_FUTURE);
 
     assertEquals(2, results.size());
 
@@ -168,15 +170,20 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
   }
 
   @Test
-  void testCountByResultInOrganization() {
+  void countByResultByFacility_entireOrganization_success() {
     Date d1 = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
     final Date DATE_1MIN_FUTURE =
         new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
     Organization org = _dataFactory.createValidOrg();
     createTestEventsForMetricsTests(org);
 
+    Set<UUID> facilityIds =
+        _orgService.getFacilities(org).stream()
+            .map(Facility::getInternalId)
+            .collect(Collectors.toSet());
+
     List<TestResultWithCount> results =
-        _repo.countByResultInOrganization(org.getInternalId(), d1, DATE_1MIN_FUTURE);
+        _repo.countByResultByFacility(facilityIds, d1, DATE_1MIN_FUTURE);
 
     assertEquals(3, results.size());
 
