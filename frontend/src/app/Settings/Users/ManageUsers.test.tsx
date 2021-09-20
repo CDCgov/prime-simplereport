@@ -7,8 +7,9 @@ import configureStore from "redux-mock-store";
 import { displayFullName } from "../../utils";
 
 import ManageUsers, { SettingsUsers } from "./ManageUsers";
-import { GET_USER } from "./ManageUsersContainer";
+
 import "../../../i18n";
+import { GetUserDocument } from "../../../generated/graphql";
 
 const organization = { testingFacility: [{ id: "a1", name: "Foo Org" }] };
 const allFacilities = [
@@ -90,7 +91,7 @@ const suspendedUsers: SettingsUsers[keyof SettingsUsers][] = [
 const mocks = [
   {
     request: {
-      query: GET_USER,
+      query: GetUserDocument,
       variables: {
         id: "a123",
       },
@@ -113,7 +114,7 @@ const mocks = [
   },
   {
     request: {
-      query: GET_USER,
+      query: GetUserDocument,
       variables: {
         id: "b1",
       },
@@ -136,7 +137,7 @@ const mocks = [
   },
   {
     request: {
-      query: GET_USER,
+      query: GetUserDocument,
       variables: {
         id: "b234",
       },
@@ -505,7 +506,7 @@ describe("ManageUsers", () => {
     const updatedMocks = [
       {
         request: {
-          query: GET_USER,
+          query: GetUserDocument,
           variables: {
             id: "a123",
           },
@@ -533,7 +534,7 @@ describe("ManageUsers", () => {
       },
       {
         request: {
-          query: GET_USER,
+          query: GetUserDocument,
           variables: {
             id: "b1",
           },

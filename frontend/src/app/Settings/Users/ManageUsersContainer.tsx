@@ -2,8 +2,8 @@ import React from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
 
-import { UserRole, Role } from "../../permissions";
-import { UserPermission } from "../../../generated/graphql";
+import { Role } from "../../permissions";
+import { Maybe, UserPermission } from "../../../generated/graphql";
 
 import ManageUsers from "./ManageUsers";
 
@@ -20,52 +20,30 @@ const GET_USERS_WITH_STATUS = gql`
   }
 `;
 
-export const GET_USER = gql`
-  query GetUser($id: ID!) {
-    user(id: $id) {
-      id
-      firstName
-      middleName
-      lastName
-      roleDescription
-      role
-      permissions
-      email
-      status
-      organization {
-        testingFacility {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
-
 // structure for `getUser` query
 export interface SettingsUser {
   id: string;
-  firstName: string;
-  middleName: string;
+  firstName?: Maybe<string>;
+  middleName?: Maybe<string>;
   lastName: string;
-  roleDescription: UserRole;
-  role: Role;
+  roleDescription: string;
+  role?: Maybe<Role>;
   permissions: UserPermission[];
   email: string;
-  status: string;
-  organization: {
+  status?: Maybe<string>;
+  organization?: Maybe<{
     testingFacility: UserFacilitySetting[];
-  };
+  }>;
 }
 
 // structure for `getUsersWithStatus` query
 export interface LimitedUser {
   id: string;
-  firstName: string;
-  middleName: string;
+  firstName?: string;
+  middleName?: string;
   lastName: string;
   email: string;
-  status: string;
+  status?: string;
 }
 
 interface UserData {
@@ -156,13 +134,6 @@ interface FacilityData {
 export interface UserFacilitySetting {
   id: string;
   name: string;
-}
-
-export interface NewUserInvite {
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: UserRole | string | undefined; // TODO: clean this up or delete it if we are not supporting this feature
 }
 
 const ManageUsersContainer: any = () => {

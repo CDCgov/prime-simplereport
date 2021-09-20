@@ -1,7 +1,5 @@
 import { UserPermission } from "../generated/graphql";
 
-export type UserRole = "admin" | "user" | "entry-only";
-
 // this is what the server sends back in the user.roleDescription field. It is used as the display value (most of the time)
 export type RoleDescription =
   | "Admin user"

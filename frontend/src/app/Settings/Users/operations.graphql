@@ -1,0 +1,19 @@
+query GetUser($id: ID!) {
+  user(id: $id) {
+    id
+    firstName
+    middleName
+    lastName
+    roleDescription
+    role
+    permissions
+    email
+    status
+    organization {
+      testingFacility {
+        id
+        name
+      }
+    }
+  }
+}

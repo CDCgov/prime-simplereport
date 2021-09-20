@@ -17,8 +17,8 @@ type Organization {
 }
 
 type Facility {
-  id: ID
-  name: String
+  id: ID!
+  name: String!
   cliaNumber: String
   address: AddressInfo
   street: String
@@ -81,8 +81,8 @@ input PhoneNumberInput {
 
 # Note: the login username is the user's email
 type User {
-  id: ID
-  name: NameInfo
+  id: ID!
+  name: NameInfo!
   firstName: String
   middleName: String
   lastName: String!
