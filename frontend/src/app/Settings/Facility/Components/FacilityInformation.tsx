@@ -113,7 +113,6 @@ const FacilityInformation: React.FC<Props> = ({
         onChange={onChange}
         onBlur={() => {
           validateField("state");
-          validateField("cliaNumber");
         }}
         validationStatus={errors.state ? "error" : undefined}
         errorMessage={errors.state}

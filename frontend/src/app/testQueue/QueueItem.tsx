@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { toast } from "react-toastify";
 import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
 import {
@@ -11,6 +9,7 @@ import {
 import classnames from "classnames";
 import moment from "moment";
 import { DatePicker, Label } from "@trussworks/react-uswds";
+import { useSelector } from "react-redux";
 
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
@@ -19,8 +18,8 @@ import LabeledText from "../commonComponents/LabeledText";
 import TextInput from "../commonComponents/TextInput";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import { displayFullName, showNotification } from "../utils";
-import { patientPropType, devicePropType } from "../propTypes";
 import Checkboxes from "../commonComponents/Checkboxes";
+import { RootState } from "../store";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
@@ -34,6 +33,7 @@ import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
 import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
 import { QueueItemSubmitLoader } from "./QueueItemSubmitLoader";
+import { UPDATE_AOE } from "./addToQueue/AddToQueueSearch";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
 
@@ -104,34 +104,6 @@ export const SUBMIT_TEST_RESULT = gql`
   }
 `;
 
-const UPDATE_AOE = gql`
-  mutation UpdateAOE(
-    $patientId: ID!
-    $symptoms: String
-    $symptomOnset: LocalDate
-    $pregnancy: String
-    $firstTest: Boolean
-    $priorTestDate: LocalDate
-    $priorTestType: String
-    $priorTestResult: String
-    $noSymptoms: Boolean
-    $testResultDelivery: TestResultDeliveryPreference
-  ) {
-    updateTimeOfTestQuestions(
-      patientId: $patientId
-      pregnancy: $pregnancy
-      symptoms: $symptoms
-      noSymptoms: $noSymptoms
-      firstTest: $firstTest
-      priorTestDate: $priorTestDate
-      priorTestType: $priorTestType
-      priorTestResult: $priorTestResult
-      symptomOnset: $symptomOnset
-      testResultDelivery: $testResultDelivery
-    )
-  }
-`;
-
 interface AreYouSureProps {
   cancelText: string;
   continueText: string;
@@ -185,11 +157,9 @@ export interface QueueItemProps {
   selectedDeviceId: string;
   selectedDeviceTestLength: number;
   selectedTestResult: TestResult;
-  defaultDevice: {
-    internalId: string;
-  };
   dateTestedProp: string;
   refetchQueue: () => void;
+  facilityName: string | undefined;
   facilityId: string;
 }
 
@@ -202,7 +172,7 @@ interface updateQueueItemProps {
 
 type SaveState = "idle" | "editing" | "saving" | "error";
 
-const QueueItem: any = ({
+const QueueItem = ({
   internalId,
   patient,
   devices,
@@ -210,8 +180,8 @@ const QueueItem: any = ({
   selectedDeviceId,
   selectedDeviceTestLength,
   selectedTestResult,
-  defaultDevice,
   refetchQueue,
+  facilityName,
   facilityId,
   dateTestedProp,
 }: QueueItemProps) => {
@@ -248,9 +218,7 @@ const QueueItem: any = ({
     setAoeAnswers(askOnEntry);
   }, [askOnEntry]);
 
-  const [deviceId, updateDeviceId] = useState(
-    selectedDeviceId || defaultDevice.internalId
-  );
+  const [deviceId, updateDeviceId] = useState(selectedDeviceId);
 
   const [deviceTestLength, updateDeviceTestLength] = useState(
     selectedDeviceTestLength
@@ -263,6 +231,10 @@ const QueueItem: any = ({
   // always assume the current date unless provided something else
   const [dateTested, updateDateTested] = useState<string | undefined>(
     dateTestedProp || undefined
+  );
+
+  const organization = useSelector<RootState, Organization>(
+    (state: any) => state.organization as Organization
   );
 
   // helper method to work around the annoying string-booleans
@@ -319,11 +291,11 @@ const QueueItem: any = ({
           body="The phone number provided may not be valid or may not be able to accept text messages"
         />
       );
-      showNotification(toast, deliveryFailureAlert);
+      showNotification(deliveryFailureAlert);
     }
 
     let alert = <Alert type="success" title={title} body={body} />;
-    showNotification(toast, alert);
+    showNotification(alert);
   };
 
   const onTestResultSubmit = async (forceSubmit: boolean = false) => {
@@ -475,15 +447,10 @@ const QueueItem: any = ({
       ? moment(answers.symptomOnset).format("YYYY-MM-DD")
       : null;
 
-    const priorTestDate = answers.priorTestDate
-      ? moment(answers.priorTestDate).format("YYYY-MM-DD")
-      : null;
-
     updateAoe({
       variables: {
         ...answers,
         symptomOnset,
-        priorTestDate,
         patientId: patient.internalId,
       },
     })
@@ -602,6 +569,13 @@ const QueueItem: any = ({
     cardColorDisplay()
   );
 
+  const timerContext = {
+    organizationName: organization.name,
+    facilityName: facilityName,
+    patientId: patient.internalId,
+    testOrderId: internalId,
+  };
+
   return (
     <React.Fragment>
       <div className={containerClasses}>
@@ -618,7 +592,7 @@ const QueueItem: any = ({
                 id="patient-name-header"
               >
                 <h2>{patientFullName}</h2>
-                <TestTimerWidget timer={timer} />
+                <TestTimerWidget timer={timer} context={timerContext} />
               </div>
               <div className="margin-top-2 margin-left-2 margin-bottom-2">
                 <div className="queue-item__description prime-ul grid-row grid-gap">
@@ -752,8 +726,4 @@ const QueueItem: any = ({
   );
 };
 
-QueueItem.propTypes = {
-  patient: patientPropType,
-  devices: PropTypes.arrayOf(devicePropType),
-};
 export default QueueItem;

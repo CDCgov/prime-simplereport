@@ -35,10 +35,6 @@
           "description": "Unique patient identifier",
           "type": "string"
         },
-        "firstTest": {
-          "description": "is this their first test I assume?",
-          "type": "boolean"
-        },
         "symptomatic": {
           "description": "symptomatic per CDC",
           "type": "string",
@@ -112,7 +108,6 @@
   },
   "required": [
     "orderingProviderID",
-    "patientInfo.firstTest",
     "facilityInfo.testingLabName",
     "facilityInfo.orderingProvider.lastName",
     "facilityInfo.orderingProvider.zipCode"

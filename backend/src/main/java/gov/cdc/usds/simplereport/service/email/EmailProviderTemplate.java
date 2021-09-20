@@ -9,5 +9,8 @@ public enum EmailProviderTemplate {
   ACCOUNT_REQUEST,
 
   // identity verification failed email (to account requester)
-  ID_VERIFICATION_FAILED;
+  ID_VERIFICATION_FAILED,
+
+  // message to account requester who didn't complete automatic id verification
+  ORGANIZATION_ID_VERIFICATION_REMINDER;
 }

@@ -1,0 +1,17 @@
+version: "3.2"
+services:
+  rollback:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile.db-rollback
+      target: build
+    image: simple-report-api-build
+    container_name: db_rollback
+    environment:
+      LIQUIBASE_ROLLBACK_TAG: ${LIQUIBASE_ROLLBACK_TAG:-}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://db:5432/simple_report}
+    networks:
+      - dev-net
+networks:
+  dev-net:
+    name: dev-net

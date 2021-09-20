@@ -601,15 +601,6 @@ const TestResultsList = (props: TestResultsListProps) => {
   const role = getParameterFromUrl("role", history.location);
   const result = getParameterFromUrl("result", history.location);
 
-  useEffect(
-    () => () => {
-      history.replace({
-        search: qs.stringify({ facility: activeFacilityId }),
-      });
-    },
-    [history, activeFacilityId]
-  );
-
   const filterParams: FilterParams = {
     ...(patientId && { patientId: patientId }),
     ...(startDate && { startDate: startDate }),

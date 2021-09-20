@@ -1,0 +1,31 @@
+name: Maintenance Mode
+
+on:
+  workflow_dispatch:
+    inputs:
+      active:
+        description: "Active outage? (true/false)"
+        required: true
+        default: "true"
+      message:
+        description: "Message to display"
+        required: true
+        default: "We're working on getting this fixed as soon as possible."
+
+jobs:
+  pushMaintenanceBlob:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        deploy-env:
+          ["demo", "dev", "pentest", "prod", "stg", "test", "training"]
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Push maintenance.json
+        shell: bash
+        run: |
+          echo '{"active": ${{ inputs.active }}, "message": "${{ inputs.message }}"}' > maintenance.json
+          az storage blob upload -f maintenance.json -n maintenance.json -c '$web' \
+            --account-name simplereport${{ matrix.deploy-env }}app

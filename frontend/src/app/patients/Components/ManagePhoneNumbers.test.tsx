@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import i18n from "../../../i18n";
@@ -15,6 +15,7 @@ function ManagePhoneNumbersContainer() {
       testResultDelivery="NONE"
       updatePhoneNumbers={updatePhoneNumbers}
       updateTestResultDelivery={jest.fn()}
+      phoneNumberValidator={useRef(null)}
     />
   );
 }

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
-import { toast } from "react-toastify";
 
 import Button from "../commonComponents/Button/Button";
 import { displayFullName, showNotification } from "../utils";
@@ -64,7 +63,7 @@ export const DetachedTestResultCorrectionModal = ({
         const alert = (
           <Alert type="success" title="Result marked as error" body="" />
         );
-        showNotification(toast, alert);
+        showNotification(alert);
       })
       .finally(() => {
         closeModal();

@@ -224,7 +224,7 @@ exports[`TestResultPrintModal should render the test result print view 1`] = `
               Notes
             </h2>
             <p>
-              COVID-19 antigen tests can sometimes provid inaccurate or false results and follow up testing may be needed. Continue social distancing and wearing a mask. Contact your health care provider to determine if additional testing is needed especially if you experience any of these  symptoms.
+              Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:
             </p>
             <ul
               class="sr-multi-column"
@@ -257,6 +257,15 @@ exports[`TestResultPrintModal should render the test result print view 1`] = `
                 Diarrhea
               </li>
             </ul>
+            <p>
+              For more information, please visit the 
+              <a
+                href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html"
+              >
+                Centers for Disease Control and Prevention (CDC) website
+              </a>
+               or contact your local health department.
+            </p>
           </section>
         </main>
         <footer>

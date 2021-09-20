@@ -11,6 +11,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router";
+import { ToastContainer } from "react-toastify";
 
 import EditPatient, { GET_PATIENT } from "./EditPatient";
 import EditPatientContainer from "./EditPatientContainer";
@@ -100,16 +101,25 @@ describe("EditPatient", () => {
       ];
 
       render(
-        <MemoryRouter>
-          <Provider store={store}>
-            <MockedProvider mocks={mocks} addTypename={false}>
-              <EditPatient
-                facilityId={mockFacilityID}
-                patientId={mockPatientID}
-              />
-            </MockedProvider>
-          </Provider>
-        </MemoryRouter>
+        <>
+          <MemoryRouter>
+            <Provider store={store}>
+              <MockedProvider mocks={mocks} addTypename={false}>
+                <EditPatient
+                  facilityId={mockFacilityID}
+                  patientId={mockPatientID}
+                />
+              </MockedProvider>
+            </Provider>
+          </MemoryRouter>
+          <ToastContainer
+            autoClose={5000}
+            closeButton={false}
+            limit={2}
+            position="bottom-center"
+            hideProgressBar={true}
+          />
+        </>
       );
 
       await act(async () => {
@@ -131,6 +141,35 @@ describe("EditPatient", () => {
       // phone numbers array, but the array should be sorted to place the
       // value matching `patient.telephone` first
       expect(input.value).toBe("(634) 397-4114");
+    });
+
+    it("displays a validation failure alert if phone type not entered", async () => {
+      await act(async () => {
+        fireEvent.click(
+          screen.queryAllByText("Add another number", {
+            exact: false,
+          })[0]
+        );
+      });
+
+      // Do not enter phone type for additional number
+      const number = screen.getAllByLabelText("Additional phone number", {
+        exact: false,
+      })[1] as HTMLInputElement;
+
+      fireEvent.change(number, {
+        target: { value: "6318675309" },
+      });
+
+      await waitFor(() => {
+        fireEvent.click(screen.getAllByText("Save changes")[0]);
+      });
+
+      expect(
+        await screen.findByText("Phone type is required", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
     });
   });
 

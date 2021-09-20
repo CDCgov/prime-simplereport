@@ -1,6 +1,5 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useRef } from "react";
 import { Prompt } from "react-router-dom";
-import { toast } from "react-toastify";
 import { SchemaOf } from "yup";
 import { useTranslation } from "react-i18next";
 
@@ -95,6 +94,8 @@ const PersonForm = (props: Props) => {
   const [addressSuggestion, setAddressSuggestion] = useState<
     AddressWithMetaData | undefined
   >();
+  const phoneNumberValidator = useRef<Function | null>(null);
+
   const languages = getLanguages();
 
   const { view = PersonFormView.APP, onBlur } = props;
@@ -211,6 +212,7 @@ const PersonForm = (props: Props) => {
 
   const validateForm = async () => {
     try {
+      phoneNumberValidator.current?.();
       await schema.validate(patient, { abortEarly: false });
     } catch (e) {
       const newErrors: PersonErrors = e.inner.reduce(
@@ -234,7 +236,7 @@ const PersonForm = (props: Props) => {
           document.getElementsByName(name)[0]?.focus();
           focusedOnError = true;
         }
-        showError(toast, t("patient.form.errors.validationMsg"), error);
+        showError(t("patient.form.errors.validationMsg"), error);
       });
       return;
     }
@@ -247,6 +249,7 @@ const PersonForm = (props: Props) => {
       validatePatientAddress();
     }
   };
+
   const onSave = (address?: AddressWithMetaData) => {
     const person = address ? { ...patient, ...address } : patient;
     setPatient(person);
@@ -379,6 +382,7 @@ const PersonForm = (props: Props) => {
           testResultDelivery={patient.testResultDelivery}
           updatePhoneNumbers={onPersonChange("phoneNumbers")}
           updateTestResultDelivery={onPersonChange("testResultDelivery")}
+          phoneNumberValidator={phoneNumberValidator}
         />
         <div className="usa-form">
           <Input

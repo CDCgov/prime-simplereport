@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
-import { toast } from "react-toastify";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 import { showError } from "../utils";
+import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
-import QueueItem from "./QueueItem";
+import QueueItem, { TestResult } from "./QueueItem";
 import { TestQueuePerson, AoEAnswers } from "./AoEForm/AoEForm";
 
 const pollInterval = 10_000;
@@ -47,10 +47,6 @@ export const queueQuery = gql`
       symptoms
       symptomOnset
       noSymptoms
-      firstTest
-      priorTestDate
-      priorTestType
-      priorTestResult
       deviceType {
         internalId
         name
@@ -107,7 +103,7 @@ interface QueueItemData extends AoEAnswers {
     testLength: number;
   };
   patient: TestQueuePerson;
-  result: string;
+  result: TestResult;
   dateTested: string;
 }
 
@@ -122,6 +118,8 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     }
   );
 
+  const [selectedFacility] = useSelectedFacility();
+
   useEffect(() => {
     // Start polling on creation, stop on componenent teardown
     startPolling(pollInterval);
@@ -132,7 +130,17 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     throw error;
   }
   if (loading) {
-    return <p>Loading patients...</p>;
+    return (
+      <main
+        className="prime-home display-flex flex-justify-center"
+        style={{
+          fontSize: "22px",
+          paddingTop: "80px",
+        }}
+      >
+        Loading tests ...
+      </main>
+    );
   }
 
   const facility = data.organization.testingFacility.find(
@@ -143,7 +151,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   }
   if (facility.deviceTypes.length === 0) {
     showError(
-      toast,
       "This facility does not have any testing devices. Go into Settings -> Manage facilities and add a device."
     );
   }
@@ -172,12 +179,18 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 internalId={internalId}
                 patient={patient}
                 askOnEntry={questions}
-                selectedDeviceId={deviceType?.internalId || null}
-                selectedDeviceTestLength={deviceType?.testLength || null}
+                selectedDeviceId={
+                  deviceType?.internalId ||
+                  facility.defaultDeviceType.internalId
+                }
+                selectedDeviceTestLength={
+                  deviceType?.testLength ||
+                  facility.defaultDeviceType.testLength
+                }
                 selectedTestResult={result}
                 devices={facility.deviceTypes}
-                defaultDevice={facility.defaultDeviceType}
                 refetchQueue={refetch}
+                facilityName={selectedFacility?.name}
                 facilityId={activeFacilityId}
                 dateTestedProp={dateTested}
               />
