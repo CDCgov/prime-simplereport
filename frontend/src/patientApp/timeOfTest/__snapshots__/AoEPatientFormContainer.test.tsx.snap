@@ -681,92 +681,6 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
           <legend
             className="prime-formgroup-heading usa-legend"
           >
-            Test history
-          </legend>
-          <div
-            className="prime-formgroup__wrapper"
-          >
-            <div
-              className="usa-legend"
-            >
-              Is this your first COVID-19 test?
-            </div>
-            <div
-              className="prime-previous-test-display margin-top-2"
-            >
-              No previous test data found
-            </div>
-            <div
-              className="usa-form-group"
-            >
-              <fieldset
-                className="usa-fieldset prime-radios"
-              >
-                <legend
-                  className="usa-legend usa-sr-only"
-                >
-                  Is this your first covid test?
-                </legend>
-                <div
-                  className="prime-radio--horizontal"
-                >
-                  <div
-                    className="usa-radio prime-radio--horizontal__container"
-                  >
-                    <input
-                      checked={false}
-                      className="usa-radio__input"
-                      data-required="false"
-                      disabled={false}
-                      id="4-val-YES"
-                      name="prior_test_flag"
-                      onChange={[Function]}
-                      type="radio"
-                      value="YES"
-                    />
-                    <label
-                      className="usa-radio__label"
-                      htmlFor="4-val-YES"
-                    >
-                      Yes
-                    </label>
-                  </div>
-                  <div
-                    className="usa-radio prime-radio--horizontal__container"
-                  >
-                    <input
-                      checked={false}
-                      className="usa-radio__input"
-                      data-required="false"
-                      disabled={false}
-                      id="4-val-NO"
-                      name="prior_test_flag"
-                      onChange={[Function]}
-                      type="radio"
-                      value="NO"
-                    />
-                    <label
-                      className="usa-radio__label"
-                      htmlFor="4-val-NO"
-                    >
-                      No
-                    </label>
-                  </div>
-                </div>
-              </fieldset>
-            </div>
-          </div>
-        </fieldset>
-      </div>
-      <div
-        className="prime-formgroup"
-      >
-        <fieldset
-          className="usa-fieldset"
-        >
-          <legend
-            className="prime-formgroup-heading usa-legend"
-          >
             Pregnancy
           </legend>
           <div
@@ -791,7 +705,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     className="usa-radio__input"
                     data-required="false"
                     disabled={false}
-                    id="5-val-77386006"
+                    id="4-val-77386006"
                     name="pregnancy"
                     onChange={[Function]}
                     type="radio"
@@ -799,7 +713,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                   />
                   <label
                     className="usa-radio__label"
-                    htmlFor="5-val-77386006"
+                    htmlFor="4-val-77386006"
                   >
                     Yes
                   </label>
@@ -812,7 +726,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     className="usa-radio__input"
                     data-required="false"
                     disabled={false}
-                    id="5-val-60001007"
+                    id="4-val-60001007"
                     name="pregnancy"
                     onChange={[Function]}
                     type="radio"
@@ -820,7 +734,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                   />
                   <label
                     className="usa-radio__label"
-                    htmlFor="5-val-60001007"
+                    htmlFor="4-val-60001007"
                   >
                     No
                   </label>
@@ -833,7 +747,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     className="usa-radio__input"
                     data-required="false"
                     disabled={false}
-                    id="5-val-261665006"
+                    id="4-val-261665006"
                     name="pregnancy"
                     onChange={[Function]}
                     type="radio"
@@ -841,7 +755,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                   />
                   <label
                     className="usa-radio__label"
-                    htmlFor="5-val-261665006"
+                    htmlFor="4-val-261665006"
                   >
                     Prefer not to answer
                   </label>

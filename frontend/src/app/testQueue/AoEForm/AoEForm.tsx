@@ -3,7 +3,6 @@ import classnames from "classnames";
 
 import {
   globalSymptomDefinitions,
-  getTestTypes,
   getPregnancyResponses,
   PregnancyCode,
 } from "../../../patientApp/timeOfTest/constants";
@@ -12,11 +11,8 @@ import Button from "../../commonComponents/Button/Button";
 import FormGroup from "../../commonComponents/FormGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import "./AoEForm.scss";
-import { COVID_RESULTS } from "../../constants";
-import { TestResult } from "../QueueItem";
 
 import SymptomInputs from "./SymptomInputs";
-import PriorTestInputs from "./PriorTestInputs";
 
 // Get the value associate with a button label
 // TODO: move to utility?
@@ -37,13 +33,7 @@ export interface TestQueuePerson {
   testResultDelivery: string;
 }
 
-export interface PriorTest {
-  priorTestDate: ISODate | undefined | null;
-  priorTestResult: TestResult | undefined | null;
-  priorTestType: string | undefined | null;
-  firstTest: boolean;
-}
-export interface AoEAnswersDelivery extends PriorTest {
+export interface AoEAnswersDelivery {
   noSymptoms: boolean;
   symptoms: string;
   symptomOnset: ISODate | null | undefined;
@@ -60,15 +50,10 @@ export type AoEAnswers = Omit<
   "testResultDelivery"
 >;
 
-export type LastTest = {
-  dateTested: string;
-  result: TestResult;
-};
 interface Props {
   saveButtonText: string;
   onClose?: () => void;
   patient: TestQueuePerson;
-  lastTest: LastTest | undefined;
   loadState?: AoEAnswers;
   saveCallback: (response: AoEAnswersDelivery) => void;
   isModal: boolean;
@@ -84,12 +69,10 @@ const AoEForm: React.FC<Props> = ({
   saveCallback,
   isModal,
   noValidation,
-  lastTest,
   formRef,
 }) => {
   // this seems like it will do a bunch of wasted work on re-renders and non-renders,
   // but it's all small-ball stuff for now
-  const testConfig = getTestTypes();
   const symptomConfig = globalSymptomDefinitions;
   const initialSymptoms: { [key: string]: boolean } = {};
   if (loadState.symptoms) {
@@ -115,19 +98,6 @@ const AoEForm: React.FC<Props> = ({
   const [currentSymptoms, setSymptoms] = useState(initialSymptoms);
   const [onsetDate, setOnsetDate] = useState<ISODate | undefined | null>(
     loadState.symptomOnset
-  );
-  const [isFirstTest, setIsFirstTest] = useState(loadState.firstTest);
-  const [priorTestDate, setPriorTestDate] = useState<
-    ISODate | undefined | null
-  >(loadState.priorTestDate);
-
-  const [priorTestType, setPriorTestType] = useState(loadState.priorTestType);
-  const [priorTestResult, setPriorTestResult] = useState<
-    TestResult | null | undefined
-  >(
-    loadState.priorTestResult === undefined
-      ? undefined
-      : loadState.priorTestResult || null
   );
   const [pregnancyResponse, setPregnancyResponse] = useState(
     loadState.pregnancy
@@ -225,28 +195,11 @@ const AoEForm: React.FC<Props> = ({
           saveSymptoms[value] = false;
         });
       }
-      const priorTest: PriorTest = isFirstTest
-        ? {
-            firstTest: true,
-            priorTestDate: null,
-            priorTestType: null,
-            priorTestResult: null,
-          }
-        : {
-            firstTest: false,
-            priorTestDate: priorTestDate,
-            priorTestType: priorTestType,
-            priorTestResult:
-              !priorTestResult || priorTestResult === COVID_RESULTS.UNKNOWN
-                ? null
-                : priorTestResult,
-          };
 
       saveCallback({
         noSymptoms,
         symptoms: JSON.stringify(saveSymptoms),
         symptomOnset: onsetDate,
-        ...priorTest,
         pregnancy: pregnancyResponse,
         testResultDelivery,
       });
@@ -318,23 +271,6 @@ const AoEForm: React.FC<Props> = ({
             symptomRef={symptomRef}
             symptomOnsetRef={symptomOnsetRef}
           />
-        </FormGroup>
-
-        <FormGroup title="Test history">
-          <div className="prime-formgroup__wrapper">
-            <PriorTestInputs
-              testTypeConfig={testConfig}
-              priorTestDate={priorTestDate}
-              setPriorTestDate={setPriorTestDate}
-              isFirstTest={isFirstTest}
-              setIsFirstTest={setIsFirstTest}
-              priorTestType={priorTestType}
-              setPriorTestType={setPriorTestType}
-              priorTestResult={priorTestResult}
-              setPriorTestResult={setPriorTestResult}
-              lastTest={lastTest}
-            />
-          </div>
         </FormGroup>
 
         {patient.gender?.toLowerCase() !== "male" && (

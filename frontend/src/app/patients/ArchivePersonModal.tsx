@@ -1,7 +1,6 @@
 import React from "react";
 import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
-import { toast } from "react-toastify";
 
 import Button from "../commonComponents/Button/Button";
 import { displayFullName, showNotification } from "../utils";
@@ -43,7 +42,7 @@ const ArchivePersonModal = ({ person, closeModal }: Props) => {
     })
       .then(() => {
         const alert = <Alert type="success" title="Record archived" body="" />;
-        showNotification(toast, alert);
+        showNotification(alert);
       })
       .finally(() => {
         closeModal();

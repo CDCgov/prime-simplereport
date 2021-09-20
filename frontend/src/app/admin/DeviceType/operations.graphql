@@ -1,0 +1,17 @@
+  mutation createDeviceType(
+    $name: String!
+    $manufacturer: String!
+    $model: String!
+    $loincCode: String!
+    $swabType: String!
+  ) {
+    createDeviceType(
+      name: $name
+      manufacturer: $manufacturer
+      model: $model
+      loincCode: $loincCode
+      swabType: $swabType
+    ) {
+      internalId
+    }
+  }

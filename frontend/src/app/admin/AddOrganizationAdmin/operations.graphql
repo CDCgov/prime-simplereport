@@ -1,0 +1,23 @@
+  mutation AddUser(
+    $firstName: String
+    $middleName: String
+    $lastName: String
+    $suffix: String
+    $email: String!
+    $organizationExternalId: String!
+    $role: Role!
+  ) {
+    addUser(
+      name: {
+        firstName: $firstName
+        middleName: $middleName
+        lastName: $lastName
+        suffix: $suffix
+      }
+      email: $email
+      organizationExternalId: $organizationExternalId
+      role: $role
+    ) {
+      id
+    }
+  }
