@@ -580,7 +580,7 @@ export type Query = {
   testResult?: Maybe<TestResult>;
   testResults?: Maybe<Array<Maybe<TestResult>>>;
   testResultsCount?: Maybe<Scalars["Int"]>;
-  topLevelDashboardMetrics?: Maybe<TestMetrics>;
+  topLevelDashboardMetrics?: Maybe<TopLevelDashboardMetrics>;
   user?: Maybe<User>;
   users?: Maybe<Array<Maybe<ApiUser>>>;
   usersWithStatus?: Maybe<Array<Maybe<ApiUserWithStatus>>>;
@@ -683,12 +683,6 @@ export type TestDescriptionNameArgs = {
   nameType?: Maybe<Scalars["String"]>;
 };
 
-export type TestMetrics = {
-  __typename?: "TestMetrics";
-  positiveTestCount?: Maybe<Scalars["Int"]>;
-  totalTestCount?: Maybe<Scalars["Int"]>;
-};
-
 export type TestOrder = {
   __typename?: "TestOrder";
   correctionStatus?: Maybe<Scalars["String"]>;
@@ -739,6 +733,12 @@ export enum TestResultDeliveryPreference {
   None = "NONE",
   Sms = "SMS",
 }
+
+export type TopLevelDashboardMetrics = {
+  __typename?: "TopLevelDashboardMetrics";
+  positiveTestCount?: Maybe<Scalars["Int"]>;
+  totalTestCount?: Maybe<Scalars["Int"]>;
+};
 
 export type User = {
   __typename?: "User";

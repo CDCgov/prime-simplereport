@@ -12,7 +12,7 @@ import static org.mockito.Mockito.verify;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
-import gov.cdc.usds.simplereport.api.model.TestMetrics;
+import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -1101,7 +1101,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Date startDate = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
     Date endDate = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
 
-    TestMetrics metrics = _service.getTopLevelDashboardMetrics(null, startDate, endDate);
+    TopLevelDashboardMetrics metrics =
+        _service.getTopLevelDashboardMetrics(null, startDate, endDate);
     assertEquals(0, metrics.getPositiveTestCount());
     assertEquals(1, metrics.getTotalTestCount());
   }

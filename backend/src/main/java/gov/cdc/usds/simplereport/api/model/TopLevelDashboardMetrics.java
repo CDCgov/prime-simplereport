@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class TestMetrics {
+public class TopLevelDashboardMetrics {
   private long positiveTestCount;
   private long totalTestCount;
 }

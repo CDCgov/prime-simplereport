@@ -3,7 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import com.twilio.exception.ApiException;
 import com.twilio.exception.TwilioException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
-import gov.cdc.usds.simplereport.api.model.TestMetrics;
+import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -485,7 +485,8 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionEditOrganization
-  public TestMetrics getTopLevelDashboardMetrics(UUID facilityId, Date startDate, Date endDate) {
+  public TopLevelDashboardMetrics getTopLevelDashboardMetrics(
+      UUID facilityId, Date startDate, Date endDate) {
     Set<UUID> facilityIds;
 
     if (facilityId != null) {
@@ -507,7 +508,7 @@ public class TestOrderService {
     long totalTestCount = testResultMap.values().stream().reduce(0L, Long::sum);
     long positiveTestCount = testResultMap.getOrDefault(TestResult.POSITIVE, 0L);
 
-    return new TestMetrics(positiveTestCount, totalTestCount);
+    return new TopLevelDashboardMetrics(positiveTestCount, totalTestCount);
   }
 
   // IMPLICITLY AUTHORIZED
