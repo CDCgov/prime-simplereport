@@ -1,4 +1,3 @@
-import React from "react";
 import { gql, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
 
@@ -107,7 +106,7 @@ export interface UserFacilitySetting {
   name: string;
 }
 
-const ManageUsersContainer: any = () => {
+const ManageUsersContainer = () => {
   const loggedInUser = useSelector<RootState, User>((state) => state.user);
   const allFacilities = useSelector<RootState, UserFacilitySetting[]>(
     (state) => state.facilities
