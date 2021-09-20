@@ -317,7 +317,7 @@ export type MutationRemovePatientFromQueueArgs = {
 };
 
 export type MutationResendToReportStreamArgs = {
-  testEventIds: Array<Maybe<Scalars["ID"]>>;
+  testEventIds: Array<Scalars["ID"]>;
 };
 
 export type MutationResetUserPasswordArgs = {
