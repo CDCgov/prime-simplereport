@@ -1,7 +1,8 @@
 import React from "react";
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
 
+import { RootState } from "../../store";
 import { Role } from "../../permissions";
 import {
   Maybe,
@@ -101,30 +102,16 @@ const ADD_USER_TO_ORG = gql`
   }
 `;
 
-const GET_FACILITIES = gql`
-  query GetFacilitiesForManageUsers {
-    organization {
-      testingFacility {
-        id
-        name
-      }
-    }
-  }
-`;
-
-interface FacilityData {
-  organization: {
-    testingFacility: UserFacilitySetting[];
-  };
-}
-
 export interface UserFacilitySetting {
   id: string;
   name: string;
 }
 
 const ManageUsersContainer: any = () => {
-  const loggedInUser = useSelector((state) => (state as any).user as User);
+  const loggedInUser = useSelector<RootState, User>((state) => state.user);
+  const allFacilities = useSelector<RootState, UserFacilitySetting[]>(
+    (state) => state.facilities
+  );
   const [updateUserPrivileges] = useMutation(UPDATE_USER_PRIVILEGES);
   const [deleteUser] = useMutation(DELETE_USER);
   const [reactivateUser] = useMutation(REACTIVATE_USER);
@@ -138,32 +125,17 @@ const ManageUsersContainer: any = () => {
     refetch: getUsers,
   } = useGetUsersAndStatusQuery({ fetchPolicy: "no-cache" });
 
-  const {
-    data: dataFacilities,
-    loading: loadingFacilities,
-    error: errorFacilities,
-  } = useQuery<FacilityData, {}>(GET_FACILITIES, {
-    fetchPolicy: "no-cache",
-  });
-
-  if (loading || loadingFacilities) {
+  if (loading) {
     return <p> Loading... </p>;
   }
 
-  if (error || errorFacilities) {
-    throw error || errorFacilities;
+  if (error) {
+    throw error;
   }
 
   if (data === undefined) {
     return <p>Error: Users not found</p>;
   }
-
-  if (dataFacilities === undefined) {
-    return <p>Error: Facilities not found</p>;
-  }
-
-  const allFacilities = dataFacilities.organization
-    .testingFacility as UserFacilitySetting[];
 
   return (
     <ManageUsers

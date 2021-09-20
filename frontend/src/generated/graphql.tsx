@@ -1063,22 +1063,6 @@ export type AddUserToCurrentOrgMutation = {
   addUserToCurrentOrg?: Maybe<{ __typename?: "User"; id: string }>;
 };
 
-export type GetFacilitiesForManageUsersQueryVariables = Exact<{
-  [key: string]: never;
-}>;
-
-export type GetFacilitiesForManageUsersQuery = {
-  __typename?: "Query";
-  organization?: Maybe<{
-    __typename?: "Organization";
-    testingFacility: Array<{
-      __typename?: "Facility";
-      id: string;
-      name: string;
-    }>;
-  }>;
-};
-
 export type GetUserQueryVariables = Exact<{
   id: Scalars["ID"];
 }>;
@@ -2742,66 +2726,6 @@ export type AddUserToCurrentOrgMutationResult = Apollo.MutationResult<AddUserToC
 export type AddUserToCurrentOrgMutationOptions = Apollo.BaseMutationOptions<
   AddUserToCurrentOrgMutation,
   AddUserToCurrentOrgMutationVariables
->;
-export const GetFacilitiesForManageUsersDocument = gql`
-  query GetFacilitiesForManageUsers {
-    organization {
-      testingFacility {
-        id
-        name
-      }
-    }
-  }
-`;
-
-/**
- * __useGetFacilitiesForManageUsersQuery__
- *
- * To run a query within a React component, call `useGetFacilitiesForManageUsersQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetFacilitiesForManageUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetFacilitiesForManageUsersQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetFacilitiesForManageUsersQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetFacilitiesForManageUsersQuery,
-    GetFacilitiesForManageUsersQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetFacilitiesForManageUsersQuery,
-    GetFacilitiesForManageUsersQueryVariables
-  >(GetFacilitiesForManageUsersDocument, options);
-}
-export function useGetFacilitiesForManageUsersLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetFacilitiesForManageUsersQuery,
-    GetFacilitiesForManageUsersQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetFacilitiesForManageUsersQuery,
-    GetFacilitiesForManageUsersQueryVariables
-  >(GetFacilitiesForManageUsersDocument, options);
-}
-export type GetFacilitiesForManageUsersQueryHookResult = ReturnType<
-  typeof useGetFacilitiesForManageUsersQuery
->;
-export type GetFacilitiesForManageUsersLazyQueryHookResult = ReturnType<
-  typeof useGetFacilitiesForManageUsersLazyQuery
->;
-export type GetFacilitiesForManageUsersQueryResult = Apollo.QueryResult<
-  GetFacilitiesForManageUsersQuery,
-  GetFacilitiesForManageUsersQueryVariables
 >;
 export const GetUserDocument = gql`
   query GetUser($id: ID!) {
