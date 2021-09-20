@@ -10,12 +10,11 @@ variable "location" {
 
 variable "environment" {
   type    = string
-  default = "dev"
 }
 
-variable "resource_group" {
+variable "resource_group_name_prefix" {
   type    = string
-  default = "prime-simple-report-dev"
+  default = "prime-simple-report-"
 }
 
 variable "function_app_source" {
@@ -23,9 +22,9 @@ variable "function_app_source" {
   default = "./functions/build/batched-rs-publisher.zip"
 }
 
-variable "storage_account_name" {
+variable "storage_account_name_prefix" {
   type    = string
-  default = "simplereportdevapp"
+  default = "simplereportdev"
 }
 
 variable "storage_account_key" {
@@ -38,6 +37,7 @@ variable "storage_account_primary_connection_string" {
 
 variable "test_event_queue_name" {
     type = string
+    default = "test-event-publishing"
 }
 
 variable "report_stream_url" {
