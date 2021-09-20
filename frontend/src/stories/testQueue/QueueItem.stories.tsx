@@ -1,8 +1,12 @@
 import { Story, Meta } from "@storybook/react";
 import { uniqueId } from "lodash";
+import { Provider } from "react-redux";
+import createMockStore from "redux-mock-store";
 
 import QueueItem, { QueueItemProps } from "../../app/testQueue/QueueItem";
 import { getMocks, StoryGraphQLProvider } from "../storyMocks";
+
+const mockStore = createMockStore([]);
 
 export default {
   title: "App/Test queue/Queue item",
@@ -29,8 +33,16 @@ export default {
   args: {},
 } as Meta;
 
+const store = mockStore({
+  organization: { name: "An Organization " },
+});
+
 const Template: Story<QueueItemProps> = (args) => {
-  return <QueueItem {...args} />;
+  return (
+    <Provider store={store}>
+      <QueueItem {...args} />;
+    </Provider>
+  );
 };
 
 const defaultProps: QueueItemProps = {
@@ -61,7 +73,6 @@ const defaultProps: QueueItemProps = {
   // askOnEntry prop is incorrectly typed as "string" in the component
   askOnEntry: {
     noSymptoms: undefined,
-    firstTest: true,
     pregnancy: "no",
     symptoms: "{}",
   } as any,
@@ -70,6 +81,7 @@ const defaultProps: QueueItemProps = {
   selectedTestResult: "UNKNOWN",
   dateTestedProp: "",
   refetchQueue: () => {},
+  facilityName: "Facility Name",
   facilityId: "100",
 };
 
@@ -85,7 +97,6 @@ FilledOut.args = {
   internalId: uniqueId(),
   askOnEntry: {
     noSymptoms: true,
-    firstTest: true,
     pregnancy: "no",
     symptoms: "{}",
   } as any,
@@ -98,7 +109,6 @@ ReadyIndicator.args = {
   internalId: "completed-timer",
   askOnEntry: {
     noSymptoms: true,
-    firstTest: true,
     pregnancy: "no",
     symptoms: "{}",
   } as any,
@@ -110,7 +120,6 @@ CompletedIndicator.args = {
   internalId: "completed-timer",
   askOnEntry: {
     noSymptoms: true,
-    firstTest: true,
     pregnancy: "no",
     symptoms: "{}",
   } as any,
@@ -123,7 +132,6 @@ FailOnSubmit.args = {
   internalId: "completed_timer",
   askOnEntry: {
     noSymptoms: true,
-    firstTest: true,
     pregnancy: "no",
     symptoms: "{}",
   } as any,

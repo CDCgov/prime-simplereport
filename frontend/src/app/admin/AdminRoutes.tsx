@@ -1,11 +1,11 @@
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
 
-import AddOrganizationAdminFormContainer from "./Organization/AddOrganizationAdminFormContainer";
+import AddOrganizationAdminFormContainer from "./AddOrganizationAdmin/AddOrganizationAdminFormContainer";
 import DeviceTypeFormContainer from "./DeviceType/DeviceTypeFormContainer";
-import TenantDataAccessFormContainer from "./Organization/TenantDataAccessFormContainer";
+import TenantDataAccessFormContainer from "./TenantDataAccess/TenantDataAccessFormContainer";
 import Admin from "./Admin";
-import PendingOrganizationsList from "./Organization/PendingOrganizationsList";
+import PendingOrganizationsContainer from "./PendingOrganizations/PendingOrganizationsContainer";
 
 interface Props {
   match: { url: string };
@@ -27,7 +27,7 @@ const AdminRoutes: React.FC<Props> = ({ match, isAdmin }) => {
     <>
       <Route
         path={`${match.url}/pending-organizations`}
-        render={() => <PendingOrganizationsList />}
+        render={() => <PendingOrganizationsContainer />}
       />
       <Route
         path={`${match.url}/add-organization-admin`}

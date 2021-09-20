@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -209,7 +208,6 @@ const EditPatient = (props: Props) => {
       },
     });
     showNotification(
-      toast,
       <Alert
         type="success"
         title={`${PATIENT_TERM_CAP} record saved`}

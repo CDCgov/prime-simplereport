@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { connect, useSelector, useDispatch } from "react-redux";
 import { Redirect, useHistory } from "react-router-dom";
-import { toast } from "react-toastify";
 
 import { setPatient as reduxSetPatient } from "../../app/store";
 import { PxpApi } from "../../patientApp/PxpApiService";
@@ -67,7 +66,6 @@ const PatientFormContainer = () => {
       }
     );
     showNotification(
-      toast,
       <Alert type="success" title={`Your profile changes have been saved`} />
     );
 

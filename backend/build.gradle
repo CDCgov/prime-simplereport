@@ -183,7 +183,7 @@ sonarqube {
         property "sonar.host.url", "https://sonarcloud.io"
         // In order to get both the frontend and backend code to report, we need to set the sonar project to the root directory.
         property "sonar.sources", "backend/src/main/java,frontend/src"
-        property "sonar.exclusions", "frontend/src/**/*.test.*,frontend/src/stories/**/*,frontend/src/**/*.stories.tsx"
+        property "sonar.exclusions", "frontend/src/**/*.test.*,frontend/src/stories/**/*,frontend/src/**/*.stories.tsx,frontend/src/generated/*.tsx"
         property "sonar.cpd.exclusions", "frontend/src/lang/*.ts"
         property "sonar.javascript.lcov.reportPaths", "frontend/coverage/lcov.info"
     }

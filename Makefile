@@ -1,5 +1,5 @@
 start:
-	make -j start-backend start-frontend watch-backend
+	make -j start-backend start-frontend watch-backend watch-api
 watch-backend:
 	cd backend;\
 	./gradlew build --continuous -xtest -xcheckstyleMain -xcheckstyleTest -xspotlessCheck -xbootBuildInfo
@@ -10,4 +10,6 @@ start-backend:
 start-frontend:
 	cd frontend;\
 	yarn install && docker-compose up;
-
+watch-api:
+	cd frontend;\
+	yarn && yarn codegen:watch;

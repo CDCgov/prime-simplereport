@@ -10,9 +10,6 @@ export const areAnswersComplete = (answers: AoEAnswers) => {
       return false;
     }
   }
-  if (!answers.firstTest && !answers.priorTestType) {
-    return false;
-  }
   if (!answers.pregnancy) {
     return false;
   }

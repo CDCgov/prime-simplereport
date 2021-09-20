@@ -5,7 +5,6 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
-import { toast } from "react-toastify";
 import { gql, useMutation, useLazyQuery, useQuery } from "@apollo/client";
 import {
   useAppInsightsContext,
@@ -54,7 +53,10 @@ export const QUERY_SINGLE_PATIENT = gql`
 `;
 
 export const QUERY_PATIENT = gql`
-  query GetPatientsByFacility($facilityId: ID!, $namePrefixMatch: String) {
+  query GetPatientsByFacilityForQueue(
+    $facilityId: ID!
+    $namePrefixMatch: String
+  ) {
     patients(
       facilityId: $facilityId
       pageNumber: 0
@@ -85,10 +87,6 @@ export const ADD_PATIENT_TO_QUEUE = gql`
     $symptoms: String
     $symptomOnset: LocalDate
     $pregnancy: String
-    $firstTest: Boolean
-    $priorTestDate: LocalDate
-    $priorTestType: String
-    $priorTestResult: String
     $noSymptoms: Boolean
     $testResultDelivery: TestResultDeliveryPreference
   ) {
@@ -98,26 +96,18 @@ export const ADD_PATIENT_TO_QUEUE = gql`
       pregnancy: $pregnancy
       noSymptoms: $noSymptoms
       symptoms: $symptoms
-      firstTest: $firstTest
-      priorTestDate: $priorTestDate
-      priorTestType: $priorTestType
-      priorTestResult: $priorTestResult
       symptomOnset: $symptomOnset
       testResultDelivery: $testResultDelivery
     )
   }
 `;
 
-const UPDATE_AOE = gql`
+export const UPDATE_AOE = gql`
   mutation UpdateAOE(
     $patientId: ID!
     $symptoms: String
     $symptomOnset: LocalDate
     $pregnancy: String
-    $firstTest: Boolean
-    $priorTestDate: LocalDate
-    $priorTestType: String
-    $priorTestResult: String
     $noSymptoms: Boolean
     $testResultDelivery: TestResultDeliveryPreference
   ) {
@@ -126,10 +116,6 @@ const UPDATE_AOE = gql`
       pregnancy: $pregnancy
       symptoms: $symptoms
       noSymptoms: $noSymptoms
-      firstTest: $firstTest
-      priorTestDate: $priorTestDate
-      priorTestType: $priorTestType
-      priorTestResult: $priorTestResult
       symptomOnset: $symptomOnset
       testResultDelivery: $testResultDelivery
     )
@@ -229,10 +215,6 @@ const AddToQueueSearchBox = ({
       symptoms,
       symptomOnset,
       pregnancy,
-      firstTest,
-      priorTestResult,
-      priorTestDate,
-      priorTestType,
       testResultDelivery,
     }: AoEAnswersDelivery,
     createOrUpdate = "create"
@@ -249,10 +231,6 @@ const AddToQueueSearchBox = ({
       symptoms,
       symptomOnset,
       pregnancy,
-      firstTest,
-      priorTestDate,
-      priorTestType,
-      priorTestResult,
       testResultDelivery,
     };
     if (createOrUpdate === "create") {
@@ -269,7 +247,7 @@ const AddToQueueSearchBox = ({
           ),
         };
         const alert = <Alert type={type} title={title} body={body} />;
-        showNotification(toast, alert);
+        showNotification(alert);
         refetchQueue();
         if (createOrUpdate === "create") {
           return res.data.addPatientToQueue;

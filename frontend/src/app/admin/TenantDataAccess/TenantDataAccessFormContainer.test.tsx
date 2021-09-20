@@ -4,10 +4,12 @@ import { Provider } from "react-redux";
 import { MockedProvider } from "@apollo/client/testing";
 import configureStore from "redux-mock-store";
 
-import TenantDataAccessFormContainer, {
-  GET_ORGANIZATIONS_QUERY,
-  SET_TENANT_DATA_ACCESS,
-} from "./TenantDataAccessFormContainer";
+import {
+  GetOrganizationsDocument,
+  SetCurrentUserTenantDataAccessOpDocument,
+} from "../../../generated/graphql";
+
+import TenantDataAccessFormContainer from "./TenantDataAccessFormContainer";
 import { Props as TenantDataAccessFormProps } from "./TenantDataAccessForm";
 
 const params = {
@@ -52,7 +54,7 @@ const store = configureStore([])({
 const mocks = [
   {
     request: {
-      query: GET_ORGANIZATIONS_QUERY,
+      query: GetOrganizationsDocument,
       variables: {
         identityVerified: true,
       },
@@ -68,7 +70,7 @@ const mocks = [
   },
   {
     request: {
-      query: SET_TENANT_DATA_ACCESS,
+      query: SetCurrentUserTenantDataAccessOpDocument,
       variables: {
         organizationExternalId: "ORG_1",
         justification: "sample justification text",

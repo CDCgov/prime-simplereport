@@ -12,7 +12,6 @@ import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import { createUploadLink } from "apollo-upload-client";
 import { ErrorResponse, onError } from "@apollo/client/link/error";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
-import { toast } from "react-toastify";
 import Modal from "react-modal";
 
 import App from "./app/App";
@@ -79,11 +78,7 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
       if (appInsights instanceof ApplicationInsights) {
         appInsights.trackException({ error: networkError });
       }
-      showError(
-        toast,
-        "Please check for errors and try again",
-        networkError.message
-      );
+      showError("Please check for errors and try again", networkError.message);
     }
   }
   if (graphQLErrors) {
@@ -93,11 +88,7 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
       );
       return message;
     });
-    showError(
-      toast,
-      "Please check for errors and try again",
-      messages.join(" ")
-    );
+    showError("Please check for errors and try again", messages.join(" "));
     console.error("graphql error", graphQLErrors);
   }
 });
