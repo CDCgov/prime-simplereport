@@ -5,11 +5,11 @@ import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 
 import { displayFullName } from "../../utils";
+import { GetUserDocument } from "../../../generated/graphql";
 
 import ManageUsers, { SettingsUsers } from "./ManageUsers";
 
 import "../../../i18n";
-import { GetUserDocument } from "../../../generated/graphql";
 
 const organization = { testingFacility: [{ id: "a1", name: "Foo Org" }] };
 const allFacilities = [
