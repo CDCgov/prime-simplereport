@@ -55,7 +55,7 @@ export type ApiUserWithStatus = {
   __typename?: "ApiUserWithStatus";
   email: Scalars["String"];
   firstName?: Maybe<Scalars["String"]>;
-  id?: Maybe<Scalars["ID"]>;
+  id: Scalars["ID"];
   lastName: Scalars["String"];
   middleName?: Maybe<Scalars["String"]>;
   name: NameInfo;
@@ -583,7 +583,7 @@ export type Query = {
   topLevelDashboardMetrics?: Maybe<TopLevelDashboardMetrics>;
   user?: Maybe<User>;
   users?: Maybe<Array<Maybe<ApiUser>>>;
-  usersWithStatus?: Maybe<Array<Maybe<ApiUserWithStatus>>>;
+  usersWithStatus?: Maybe<Array<ApiUserWithStatus>>;
   whoami: User;
 };
 
@@ -1011,25 +1011,6 @@ export type AllSelfRegistrationLinksQuery = {
   };
 };
 
-export type GetUsersAndStatusQueryVariables = Exact<{ [key: string]: never }>;
-
-export type GetUsersAndStatusQuery = {
-  __typename?: "Query";
-  usersWithStatus?: Maybe<
-    Array<
-      Maybe<{
-        __typename?: "ApiUserWithStatus";
-        id?: Maybe<string>;
-        firstName?: Maybe<string>;
-        middleName?: Maybe<string>;
-        lastName: string;
-        email: string;
-        status?: Maybe<string>;
-      }>
-    >
-  >;
-};
-
 export type UpdateUserPrivilegesMutationVariables = Exact<{
   id: Scalars["ID"];
   role: Role;
@@ -1124,6 +1105,23 @@ export type GetUserQuery = {
       }>;
     }>;
   }>;
+};
+
+export type GetUsersAndStatusQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetUsersAndStatusQuery = {
+  __typename?: "Query";
+  usersWithStatus?: Maybe<
+    Array<{
+      __typename?: "ApiUserWithStatus";
+      id: string;
+      firstName?: Maybe<string>;
+      middleName?: Maybe<string>;
+      lastName: string;
+      email: string;
+      status?: Maybe<string>;
+    }>
+  >;
 };
 
 export type AddUserMutationVariables = Exact<{
@@ -2473,68 +2471,6 @@ export type AllSelfRegistrationLinksQueryResult = Apollo.QueryResult<
   AllSelfRegistrationLinksQuery,
   AllSelfRegistrationLinksQueryVariables
 >;
-export const GetUsersAndStatusDocument = gql`
-  query GetUsersAndStatus {
-    usersWithStatus {
-      id
-      firstName
-      middleName
-      lastName
-      email
-      status
-    }
-  }
-`;
-
-/**
- * __useGetUsersAndStatusQuery__
- *
- * To run a query within a React component, call `useGetUsersAndStatusQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUsersAndStatusQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetUsersAndStatusQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetUsersAndStatusQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetUsersAndStatusQuery,
-    GetUsersAndStatusQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetUsersAndStatusQuery,
-    GetUsersAndStatusQueryVariables
-  >(GetUsersAndStatusDocument, options);
-}
-export function useGetUsersAndStatusLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetUsersAndStatusQuery,
-    GetUsersAndStatusQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetUsersAndStatusQuery,
-    GetUsersAndStatusQueryVariables
-  >(GetUsersAndStatusDocument, options);
-}
-export type GetUsersAndStatusQueryHookResult = ReturnType<
-  typeof useGetUsersAndStatusQuery
->;
-export type GetUsersAndStatusLazyQueryHookResult = ReturnType<
-  typeof useGetUsersAndStatusLazyQuery
->;
-export type GetUsersAndStatusQueryResult = Apollo.QueryResult<
-  GetUsersAndStatusQuery,
-  GetUsersAndStatusQueryVariables
->;
 export const UpdateUserPrivilegesDocument = gql`
   mutation UpdateUserPrivileges(
     $id: ID!
@@ -2928,6 +2864,68 @@ export type GetUserLazyQueryHookResult = ReturnType<typeof useGetUserLazyQuery>;
 export type GetUserQueryResult = Apollo.QueryResult<
   GetUserQuery,
   GetUserQueryVariables
+>;
+export const GetUsersAndStatusDocument = gql`
+  query GetUsersAndStatus {
+    usersWithStatus {
+      id
+      firstName
+      middleName
+      lastName
+      email
+      status
+    }
+  }
+`;
+
+/**
+ * __useGetUsersAndStatusQuery__
+ *
+ * To run a query within a React component, call `useGetUsersAndStatusQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUsersAndStatusQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUsersAndStatusQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetUsersAndStatusQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetUsersAndStatusQuery,
+    GetUsersAndStatusQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetUsersAndStatusQuery,
+    GetUsersAndStatusQueryVariables
+  >(GetUsersAndStatusDocument, options);
+}
+export function useGetUsersAndStatusLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetUsersAndStatusQuery,
+    GetUsersAndStatusQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetUsersAndStatusQuery,
+    GetUsersAndStatusQueryVariables
+  >(GetUsersAndStatusDocument, options);
+}
+export type GetUsersAndStatusQueryHookResult = ReturnType<
+  typeof useGetUsersAndStatusQuery
+>;
+export type GetUsersAndStatusLazyQueryHookResult = ReturnType<
+  typeof useGetUsersAndStatusLazyQuery
+>;
+export type GetUsersAndStatusQueryResult = Apollo.QueryResult<
+  GetUsersAndStatusQuery,
+  GetUsersAndStatusQueryVariables
 >;
 export const AddUserDocument = gql`
   mutation AddUser(

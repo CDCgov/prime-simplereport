@@ -17,3 +17,14 @@ query GetUser($id: ID!) {
     }
   }
 }
+
+query GetUsersAndStatus {
+  usersWithStatus {
+    id
+    firstName
+    middleName
+    lastName
+    email
+    status
+  }
+}

@@ -3,22 +3,13 @@ import { gql, useQuery, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
 
 import { Role } from "../../permissions";
-import { Maybe, UserPermission } from "../../../generated/graphql";
+import {
+  Maybe,
+  useGetUsersAndStatusQuery,
+  UserPermission,
+} from "../../../generated/graphql";
 
 import ManageUsers from "./ManageUsers";
-
-const GET_USERS_WITH_STATUS = gql`
-  query GetUsersAndStatus {
-    usersWithStatus {
-      id
-      firstName
-      middleName
-      lastName
-      email
-      status
-    }
-  }
-`;
 
 // structure for `getUser` query
 export interface SettingsUser {
@@ -39,15 +30,11 @@ export interface SettingsUser {
 // structure for `getUsersWithStatus` query
 export interface LimitedUser {
   id: string;
-  firstName?: string;
-  middleName?: string;
+  firstName?: Maybe<string>;
+  middleName?: Maybe<string>;
   lastName: string;
   email: string;
-  status?: string;
-}
-
-interface UserData {
-  usersWithStatus: LimitedUser[];
+  status?: Maybe<string>;
 }
 
 export interface SingleUserData {
@@ -144,10 +131,12 @@ const ManageUsersContainer: any = () => {
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
   const [resetPassword] = useMutation(RESET_USER_PASSWORD);
 
-  const { data, loading, error, refetch: getUsers } = useQuery<UserData, {}>(
-    GET_USERS_WITH_STATUS,
-    { fetchPolicy: "no-cache" }
-  );
+  const {
+    data,
+    loading,
+    error,
+    refetch: getUsers,
+  } = useGetUsersAndStatusQuery({ fetchPolicy: "no-cache" });
 
   const {
     data: dataFacilities,
@@ -178,7 +167,7 @@ const ManageUsersContainer: any = () => {
 
   return (
     <ManageUsers
-      users={data.usersWithStatus}
+      users={data.usersWithStatus || []}
       loggedInUser={loggedInUser}
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}
