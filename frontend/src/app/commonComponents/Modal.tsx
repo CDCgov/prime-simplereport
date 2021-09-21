@@ -14,7 +14,6 @@ interface Props {
   showClose?: boolean;
   containerClassName?: string;
   variant?: "warning";
-  title?: string;
 }
 interface SubComponents {
   Header: typeof Header;
