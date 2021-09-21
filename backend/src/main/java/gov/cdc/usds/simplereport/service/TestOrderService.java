@@ -67,6 +67,7 @@ public class TestOrderService {
   private SmsService _smss;
   private final CurrentPatientContextHolder _patientContext;
   private final TestEventReportingService _testEventReportingService;
+  private final FacilityDeviceTypeService _facilityDeviceTypeService;
 
   @PersistenceContext EntityManager _entityManager;
 
@@ -81,6 +82,7 @@ public class TestOrderService {
   public TestOrderService(
       OrganizationService os,
       DeviceTypeService dts,
+      FacilityDeviceTypeService facilityDeviceTypeService,
       TestOrderRepository repo,
       PatientAnswersRepository parepo,
       TestEventRepository terepo,
@@ -99,6 +101,7 @@ public class TestOrderService {
     _pls = pls;
     _smss = smss;
     _testEventReportingService = testEventReportingService;
+    _facilityDeviceTypeService = facilityDeviceTypeService;
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
@@ -260,11 +263,14 @@ public class TestOrderService {
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
       String deviceID, TestResult result, UUID patientId, Date dateTested) {
-    DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order =
         _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
+
+    UUID facilityId = order.getFacility().getInternalId();
+    DeviceSpecimenType deviceSpecimen =
+        _facilityDeviceTypeService.getDefaultForDeviceId(facilityId, UUID.fromString(deviceID));
 
     lockOrder(order.getInternalId());
     try {
