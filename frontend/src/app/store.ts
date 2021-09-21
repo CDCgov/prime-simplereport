@@ -1,8 +1,7 @@
 import { createStore } from "redux";
 
 import { COVID_RESULTS } from "../app/constants";
-
-import { UserPermission } from "./permissions";
+import { UserPermission } from "../generated/graphql";
 
 const SET_INITIAL_STATE = "SET_INITIAL_STATE";
 const UPDATE_ORGANIZATION = "UPDATE_ORGANIZATION";

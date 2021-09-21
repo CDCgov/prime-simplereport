@@ -1,74 +1,40 @@
-import React from "react";
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
 
-import { UserRole, UserPermission, Role } from "../../permissions";
+import { RootState } from "../../store";
+import { Role } from "../../permissions";
+import {
+  Maybe,
+  useGetUsersAndStatusQuery,
+  UserPermission,
+} from "../../../generated/graphql";
 
 import ManageUsers from "./ManageUsers";
-
-const GET_USERS_WITH_STATUS = gql`
-  query GetUsersAndStatus {
-    usersWithStatus {
-      id
-      firstName
-      middleName
-      lastName
-      email
-      status
-    }
-  }
-`;
-
-export const GET_USER = gql`
-  query GetUser($id: ID!) {
-    user(id: $id) {
-      id
-      firstName
-      middleName
-      lastName
-      roleDescription
-      role
-      permissions
-      email
-      status
-      organization {
-        testingFacility {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
 
 // structure for `getUser` query
 export interface SettingsUser {
   id: string;
-  firstName: string;
-  middleName: string;
+  firstName?: Maybe<string>;
+  middleName?: Maybe<string>;
   lastName: string;
-  roleDescription: UserRole;
-  role: Role;
+  roleDescription: string;
+  role?: Maybe<Role>;
   permissions: UserPermission[];
   email: string;
-  status: string;
-  organization: {
+  status?: Maybe<string>;
+  organization?: Maybe<{
     testingFacility: UserFacilitySetting[];
-  };
+  }>;
 }
 
 // structure for `getUsersWithStatus` query
 export interface LimitedUser {
   id: string;
-  firstName: string;
-  middleName: string;
+  firstName?: Maybe<string>;
+  middleName?: Maybe<string>;
   lastName: string;
   email: string;
-  status: string;
-}
-
-interface UserData {
-  usersWithStatus: LimitedUser[];
+  status?: Maybe<string>;
 }
 
 export interface SingleUserData {
@@ -135,78 +101,44 @@ const ADD_USER_TO_ORG = gql`
   }
 `;
 
-const GET_FACILITIES = gql`
-  query GetFacilitiesForManageUsers {
-    organization {
-      testingFacility {
-        id
-        name
-      }
-    }
-  }
-`;
-
-interface FacilityData {
-  organization: {
-    testingFacility: UserFacilitySetting[];
-  };
-}
-
 export interface UserFacilitySetting {
   id: string;
   name: string;
 }
 
-export interface NewUserInvite {
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: UserRole | string | undefined; // TODO: clean this up or delete it if we are not supporting this feature
-}
-
-const ManageUsersContainer: any = () => {
-  const loggedInUser = useSelector((state) => (state as any).user as User);
+const ManageUsersContainer = () => {
+  const loggedInUser = useSelector<RootState, User>((state) => state.user);
+  const allFacilities = useSelector<RootState, UserFacilitySetting[]>(
+    (state) => state.facilities
+  );
   const [updateUserPrivileges] = useMutation(UPDATE_USER_PRIVILEGES);
   const [deleteUser] = useMutation(DELETE_USER);
   const [reactivateUser] = useMutation(REACTIVATE_USER);
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
   const [resetPassword] = useMutation(RESET_USER_PASSWORD);
 
-  const { data, loading, error, refetch: getUsers } = useQuery<UserData, {}>(
-    GET_USERS_WITH_STATUS,
-    { fetchPolicy: "no-cache" }
-  );
-
   const {
-    data: dataFacilities,
-    loading: loadingFacilities,
-    error: errorFacilities,
-  } = useQuery<FacilityData, {}>(GET_FACILITIES, {
-    fetchPolicy: "no-cache",
-  });
+    data,
+    loading,
+    error,
+    refetch: getUsers,
+  } = useGetUsersAndStatusQuery({ fetchPolicy: "no-cache" });
 
-  if (loading || loadingFacilities) {
+  if (loading) {
     return <p> Loading... </p>;
   }
 
-  if (error || errorFacilities) {
-    throw error || errorFacilities;
+  if (error) {
+    throw error;
   }
 
   if (data === undefined) {
     return <p>Error: Users not found</p>;
   }
 
-  if (dataFacilities === undefined) {
-    return <p>Error: Facilities not found</p>;
-  }
-
-  const allFacilities = dataFacilities.organization
-    .testingFacility as UserFacilitySetting[];
-
   return (
     <ManageUsers
-      users={data.usersWithStatus}
+      users={data.usersWithStatus || []}
       loggedInUser={loggedInUser}
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}

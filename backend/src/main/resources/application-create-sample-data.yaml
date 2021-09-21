@@ -23,6 +23,7 @@ simple-report-initialization:
         city: Los Angeles
         state: CA
         postal-code: 90000
+      telephone: 8002324636
       email: testingsite@disorg.com
       organization-external-id: DIS_ORG
     - facility-name: Uptown Clinic
@@ -32,6 +33,7 @@ simple-report-initialization:
         city: New York
         state: NY
         postal-code: 10128
+      telephone: 8002324636
       organization-external-id: DAT_ORG
     - facility-name: Downtown Clinic
       clia-number: "987654321-0"
@@ -40,6 +42,7 @@ simple-report-initialization:
         city: New York
         state: NY
         postal-code: 10010
+      telephone: 8002324636
       email: downtownclinic@dat.org
       organization-external-id: DAT_ORG
   provider:
