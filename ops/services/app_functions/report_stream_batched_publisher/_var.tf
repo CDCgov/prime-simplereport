@@ -22,14 +22,6 @@ variable "function_app_source" {
   default = "./functions/build/batched-rs-publisher.zip"
 }
 
-variable "storage_account_key" {
-  type = string
-}
-
-variable "storage_account_primary_connection_string" {
-  type = string
-}
-
 variable "test_event_queue_name" {
     type = string
     default = "test-event-publishing"
