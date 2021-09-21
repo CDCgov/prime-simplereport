@@ -1,77 +1,58 @@
-import { useState } from "react";
-
-import Alert from "../../../commonComponents/Alert";
 import Button from "../../../commonComponents/Button/Button";
-import { SettingsUser } from "../ManageUsersContainer";
-import { useResetUserPasswordMutation } from "../../../../generated/graphql";
-import { displayFullName, showNotification } from "../../../utils";
-
-import ResetUserPasswordModal from "./ResetUserPasswordModal";
+import Modal from "../../../commonComponents/Modal";
 
 interface Props {
-  user: SettingsUser;
-  isUpdating: boolean;
-  loggedInUser: User;
+  isOpen: boolean;
+  disabled: boolean;
+  showModal: () => void;
+  onClose: () => void;
+  onResetPassword: () => void;
+  fullName: string;
 }
 
-const ResetPasswordForm = ({ user, loggedInUser, isUpdating }: Props) => {
-  const [showResetPasswordModal, updateShowResetPasswordModal] = useState(
-    false
-  );
-  const [resetPassword] = useResetUserPasswordMutation();
+const ResetPasswordForm = ({
+  isOpen,
+  disabled,
+  showModal,
+  onClose,
+  onResetPassword,
+  fullName,
+}: Props) => (
+  <>
+    <Button
+      variant="outline"
+      className="margin-left-auto margin-bottom-1"
+      onClick={showModal}
+      label={"Reset password"}
+      disabled={disabled}
+    />
+    <Modal showModal={isOpen} onClose={onClose}>
+      <Modal.Header>Reset {fullName} password</Modal.Header>
+      <p>
+        Are you sure you want to reset the password for{" "}
+        <strong>{fullName}</strong>?
+      </p>
+      <p>
+        {" "}
+        Doing so will email this person a link to reset their password. The link
+        will expire in 24 hours.
+      </p>
 
-  const showConfirmation = () => {
-    updateShowResetPasswordModal(true);
-  };
-
-  const hideConfirmation = () => {
-    updateShowResetPasswordModal(false);
-  };
-
-  const handleResetUserPassword = async () => {
-    try {
-      await resetPassword({
-        variables: {
-          id: user.id,
-        },
-      });
-      const fullName = displayFullName(
-        user.firstName,
-        user?.middleName,
-        user?.lastName
-      );
-      hideConfirmation();
-      showNotification(
-        <Alert type="success" title={`Password reset for ${fullName}`} />
-      );
-    } catch (e) {
-      throw e;
-    }
-  };
-
-  if (user.status === "SUSPENDED") {
-    return null;
-  }
-  if (user.id === loggedInUser.id) {
-    return null;
-  }
-  return (
-    <>
-      <Button
-        variant="outline"
-        className="margin-left-auto margin-bottom-1"
-        onClick={showConfirmation}
-        label={"Reset password"}
-        disabled={isUpdating}
-      />
-      <ResetUserPasswordModal
-        isOpen={showResetPasswordModal}
-        user={user}
-        onClose={hideConfirmation}
-        onResetPassword={handleResetUserPassword}
-      />
-    </>
-  );
-};
+      <Modal.Footer>
+        <Button
+          className="margin-right-2"
+          onClick={onClose}
+          variant="unstyled"
+          label="No, go back"
+        />
+        <Button
+          className="margin-right-205"
+          onClick={onResetPassword}
+          label="Yes, I'm sure"
+        />
+      </Modal.Footer>
+    </Modal>
+  </>
+);
 
 export default ResetPasswordForm;

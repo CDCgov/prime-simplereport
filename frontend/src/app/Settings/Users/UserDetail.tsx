@@ -12,7 +12,7 @@ import InProgressModal from "./InProgressModal";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
 import "./ManageUsers.scss";
-import ResetPasswordForm from "./ResetPassword/ResetPasswordForm";
+import ResetPasswordFormContainer from "./ResetPassword/ResetPasswordFormContainer";
 import DeleteUserFormContainer from "./DeleteUser/DeleteUserFormContainer";
 import ReactivateUserFormContainer from "./ReactivateUser/ReactivateUserFormContainer";
 
@@ -71,7 +71,7 @@ const UserDetail: React.FC<Props> = ({
           isUpdating={isUpdating}
           onReactivateUser={onReactivateUser}
         />
-        <ResetPasswordForm
+        <ResetPasswordFormContainer
           user={user}
           isUpdating={isUpdating}
           loggedInUser={loggedInUser}
