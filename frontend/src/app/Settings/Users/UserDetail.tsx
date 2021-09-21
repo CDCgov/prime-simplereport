@@ -11,10 +11,10 @@ import { UpdateUser } from "./ManageUsers";
 import InProgressModal from "./InProgressModal";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
-import ReactivateUserModal from "./ReactivateUserModal";
 import "./ManageUsers.scss";
 import ResetPasswordForm from "./ResetPassword/ResetPasswordForm";
 import DeleteUserForm from "./DeleteUser/DeleteUserForm";
+import ReactivateUserForm from "./ReactivateUser/ReactivateUserForm";
 
 interface Props {
   user: SettingsUser;
@@ -24,13 +24,10 @@ interface Props {
   handleUpdateUser: () => void;
   onDeleteUser: (userId: string) => void;
   updateUser: UpdateUser;
-  showReactivateUserModal: boolean;
-  updateShowReactivateUserModal: (showReactivateUserModal: boolean) => void;
   showInProgressModal: boolean;
   updateShowInProgressModal: (showInProgressUserModal: boolean) => void;
   isUserEdited: boolean;
   onContinueChangeActiveUser: () => void;
-  handleReactivateUser: (userId: string) => void;
 }
 const roles: Role[] = ["ADMIN", "ENTRY_ONLY", "USER"];
 
@@ -42,13 +39,10 @@ const UserDetail: React.FC<Props> = ({
   handleUpdateUser,
   onDeleteUser,
   isUpdating,
-  showReactivateUserModal,
-  updateShowReactivateUserModal,
   showInProgressModal,
   updateShowInProgressModal,
   isUserEdited,
   onContinueChangeActiveUser,
-  handleReactivateUser,
 }) => {
   return (
     <div className="tablet:grid-col padding-left-2">
@@ -70,15 +64,7 @@ const UserDetail: React.FC<Props> = ({
             YOU
           </span>
         ) : null}
-        {user.status === "SUSPENDED" ? (
-          <Button
-            variant="secondary"
-            className="margin-left-auto margin-bottom-1"
-            onClick={() => updateShowReactivateUserModal(true)}
-            label="Reactivate user"
-            disabled={isUpdating}
-          />
-        ) : null}
+        <ReactivateUserForm user={user} isUpdating={isUpdating} />
         <ResetPasswordForm
           user={user}
           isUpdating={isUpdating}
@@ -139,13 +125,6 @@ const UserDetail: React.FC<Props> = ({
         <Prompt
           when={isUserEdited}
           message="You have unsaved changes. Do you want to continue?"
-        />
-      ) : null}
-      {showReactivateUserModal ? (
-        <ReactivateUserModal
-          user={user}
-          onClose={() => updateShowReactivateUserModal(false)}
-          onReactivateUser={handleReactivateUser}
         />
       ) : null}
     </div>

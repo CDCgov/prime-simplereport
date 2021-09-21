@@ -59,14 +59,6 @@ const UPDATE_USER_PRIVILEGES = gql`
   }
 `;
 
-const REACTIVATE_USER = gql`
-  mutation ReactivateUser($id: ID!) {
-    reactivateUser(id: $id) {
-      id
-    }
-  }
-`;
-
 const ADD_USER_TO_ORG = gql`
   mutation AddUserToCurrentOrg(
     $firstName: String
@@ -96,7 +88,6 @@ const ManageUsersContainer = () => {
     (state) => state.facilities
   );
   const [updateUserPrivileges] = useMutation(UPDATE_USER_PRIVILEGES);
-  const [reactivateUser] = useMutation(REACTIVATE_USER);
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
 
   const {
@@ -125,7 +116,6 @@ const ManageUsersContainer = () => {
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}
       addUserToOrg={addUserToOrg}
-      reactivateUser={reactivateUser}
       getUsers={getUsers}
     />
   );

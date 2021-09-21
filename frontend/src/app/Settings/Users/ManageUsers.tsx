@@ -4,7 +4,6 @@ import { ApolloQueryResult } from "@apollo/client";
 import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button/Button";
 import { showNotification, displayFullName } from "../../utils";
-import reload from "../../utils/reload";
 import {
   UserPermission,
   useGetUserLazyQuery,
@@ -27,7 +26,6 @@ interface Props {
   allFacilities: UserFacilitySetting[];
   updateUserPrivileges: (variables: any) => Promise<any>;
   addUserToOrg: (variables: any) => Promise<any>;
-  reactivateUser: (variables: any) => Promise<any>;
   getUsers: () => Promise<ApolloQueryResult<GetUsersAndStatusQuery>>;
 }
 
@@ -73,7 +71,6 @@ const ManageUsers: React.FC<Props> = ({
   allFacilities,
   updateUserPrivileges,
   addUserToOrg,
-  reactivateUser,
   getUsers,
 }) => {
   const [activeUser, updateActiveUser] = useState<LimitedUser>();
@@ -91,9 +88,7 @@ const ManageUsers: React.FC<Props> = ({
   );
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
   const [showAddUserModal, updateShowAddUserModal] = useState(false);
-  const [showReactivateUserModal, updateShowReactivateUserModal] = useState(
-    false
-  );
+
   const [isUserEdited, updateIsUserEdited] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<Error>();
@@ -230,28 +225,6 @@ const ManageUsers: React.FC<Props> = ({
     }
   };
 
-  const handleReactivateUser = async (userId: string) => {
-    try {
-      await reactivateUser({
-        variables: {
-          id: userId,
-        },
-      });
-      const fullName = displayFullName(
-        userWithPermissions?.firstName,
-        userWithPermissions?.middleName,
-        userWithPermissions?.lastName
-      );
-      updateShowReactivateUserModal(false);
-      reload();
-      showNotification(
-        <Alert type="success" title={`${fullName} has been reactivated.`} />
-      );
-    } catch (e) {
-      setError(e);
-    }
-  };
-
   // Default to first user
   useEffect(() => {
     if (!activeUser && sortedUsers.length) {
@@ -338,13 +311,10 @@ const ManageUsers: React.FC<Props> = ({
               allFacilities={allFacilities}
               handleUpdateUser={handleUpdateUser}
               updateUser={updateUser}
-              showReactivateUserModal={showReactivateUserModal}
-              updateShowReactivateUserModal={updateShowReactivateUserModal}
               showInProgressModal={showInProgressModal}
               updateShowInProgressModal={updateShowInProgressModal}
               isUserEdited={isUserEdited}
               onContinueChangeActiveUser={onContinueChangeActiveUser}
-              handleReactivateUser={handleReactivateUser}
               onDeleteUser={onDeleteUser}
             />
           </div>
