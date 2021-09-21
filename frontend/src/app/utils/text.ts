@@ -92,14 +92,15 @@ export function formatPhoneNumber(str: string) {
   return null;
 }
 
-export function formatUserStatus(status: string) {
-  let userFriendlyStatus;
-  if (status === "SUSPENDED") {
-    userFriendlyStatus = "Account deactivated";
-  } else if (status === "PROVISIONED") {
-    userFriendlyStatus = "Pending account set up";
-  } else {
-    userFriendlyStatus = capitalizeText(status);
+export function formatUserStatus(status?: string | null) {
+  if (!status) {
+    return "Unknown";
   }
-  return userFriendlyStatus;
+  if (status === "SUSPENDED") {
+    return "Account deactivated";
+  } else if (status === "PROVISIONED") {
+    return "Pending account set up";
+  } else {
+    return capitalizeText(status);
+  }
 }

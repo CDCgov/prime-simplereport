@@ -92,7 +92,9 @@ exports[`ManageUsers regular list of users disables logged-in user's settings 1`
               <div>
                 <span
                   class="top-user-status"
-                />
+                >
+                  Unknown
+                </span>
               </div>
             </div>
             <span
@@ -430,7 +432,9 @@ exports[`ManageUsers regular list of users displays the list of users and defaul
               <div>
                 <span
                   class="top-user-status"
-                />
+                >
+                  Unknown
+                </span>
               </div>
             </div>
             <button

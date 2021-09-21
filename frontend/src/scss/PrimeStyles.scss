@@ -1076,20 +1076,16 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 .modal__footer--sticky {
   z-index: 1;
-  position: absolute;
-  width: 100%;
-  right: 0;
+  position: sticky;
+  width: calc(100% + 40px);
   bottom: 0;
   padding: units(2) units(2.5);
   box-shadow: 0 units(-0.5) units(1) 0 rgba(0, 0, 0, 0.1);
   background: color("white");
+  transform: translateX(-20px) translateY(20px);
 
   @include at-media(tablet) {
-    position: fixed;
-    width: unset;
-    right: unset;
-    padding: 0;
-    bottom: units(7);
+    transform: translateX(-20px);
   }
 }
 
