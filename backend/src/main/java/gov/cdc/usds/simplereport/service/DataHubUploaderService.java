@@ -132,6 +132,7 @@ public class DataHubUploaderService {
 
   private List<TestEvent> createTestEventCSV(List<TestEvent> events) throws IOException {
     if (events.size() == 0) {
+      this._nextTimestamp = getLatestRecordedTimestamp();
       return events;
     } else if (events.size() == _config.getMaxCsvRows()) {
       this._warnMessage += "More rows were found than can be uploaded in a single batch.";
