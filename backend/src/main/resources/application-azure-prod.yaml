@@ -3,7 +3,7 @@ spring:
 simple-report:
   data-hub:
     upload-enabled: true
-    upload-url: "https://prime-data-hub-prod.azurefd.net/api/reports?option=SkipInvalidItems&verbose=true"
+    upload-url: "https://prime-data-hub-prod.azurefd.net/api/reports?option=SkipInvalidItems"
     upload-schedule: "5,20,35,50 * * * *"
   patient-link-url: https://simplereport.gov/app/pxp?plid=
   twilio-callback-url: https://simplereport.gov/api/pxp/callback
