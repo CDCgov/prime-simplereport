@@ -22,6 +22,7 @@ import { getAppInsights } from "./TelemetryService";
 import VersionEnforcer from "./VersionEnforcer";
 import { TrainingNotification } from "./commonComponents/TrainingNotification";
 import { MaintenanceBanner } from "./commonComponents/MaintenanceBanner";
+import { Analytics } from "./analytics/Analytics";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -168,6 +169,7 @@ const App = () => {
                 <AdminRoutes match={match} isAdmin={data.whoami.isAdmin} />
               )}
             />
+            <Route path={"/analytics"} component={Analytics} />
           </Switch>
         </Page>
       </WithFacility>

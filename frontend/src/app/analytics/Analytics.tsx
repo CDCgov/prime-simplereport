@@ -1,10 +1,40 @@
+import moment from "moment";
+
 import { DatePicker } from "../commonComponents/DatePicker";
 import Dropdown from "../commonComponents/Dropdown";
+import { useGetTopLevelDashboardMetricsQuery } from "../../generated/graphql";
+import { LoadingCard } from "../commonComponents/LoadingCard/LoadingCard";
 
 import "./Analytics.scss";
 import allTestingFacilities from "./img/all-testing-facilities-table.png";
 
 export const Analytics = () => {
+  const { data, loading, error } = useGetTopLevelDashboardMetricsQuery({
+    variables: {
+      facilityId: null,
+      startDate: moment("2020-01-01"),
+      endDate: moment("2025-01-01"),
+    },
+    fetchPolicy: "no-cache",
+  });
+
+  if (loading) {
+    return <LoadingCard />;
+  }
+
+  if (error) {
+    throw error;
+  }
+
+  if (data === undefined) {
+    return <p>Error: Users not found</p>;
+  }
+
+  const totalTests = data.topLevelDashboardMetrics?.totalTestCount || 0;
+  const positiveTests = data.topLevelDashboardMetrics?.positiveTestCount || 0;
+  const negativeTests = totalTests - positiveTests;
+  const positivityRate = (positiveTests / totalTests) * 100;
+
   return (
     <main className="prime-home">
       <div id="analytics-page" className="grid-container">
@@ -84,14 +114,14 @@ export const Analytics = () => {
             <div className="grid-col-3">
               <div className="card display-flex flex-column flex-row">
                 <h2>Tests conducted</h2>
-                <h1>29</h1>
+                <h1>{totalTests}</h1>
                 <p></p>
               </div>
             </div>
             <div className="grid-col-3">
               <div className="card display-flex flex-column flex-align-center">
                 <h2>Positive tests</h2>
-                <h1>3</h1>
+                <h1>{positiveTests}</h1>
                 {/* \u2BC6 is down pointing triangle */}
                 <p>
                   <span className="red-pointing-up">{`\u2BC5`} 2</span>{" "}
@@ -102,14 +132,14 @@ export const Analytics = () => {
             <div className="grid-col-3">
               <div className="card display-flex flex-column flex-align-center">
                 <h2>Negative tests</h2>
-                <h1>26</h1>
+                <h1>{negativeTests}</h1>
                 <p></p>
               </div>
             </div>
             <div className="grid-col-3">
               <div className="card display-flex flex-column flex-align-center">
                 <h2>Positivity rate</h2>
-                <h1>10.3%</h1>
+                <h1>{positivityRate.toFixed(1)}%</h1>
                 <p></p>
               </div>
             </div>
