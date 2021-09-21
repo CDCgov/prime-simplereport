@@ -1,31 +1,11 @@
-import React, { useState } from "react";
-import { gql, useMutation } from "@apollo/client";
+import { useState } from "react";
 import { Redirect } from "react-router-dom";
 
+import { useCreateDeviceTypeMutation } from "../../../generated/graphql";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 
 import DeviceTypeForm from "./DeviceTypeForm";
-
-const CREATE_DEVICE_TYPE_MUTATION = gql`
-  mutation createDeviceType(
-    $name: String!
-    $manufacturer: String!
-    $model: String!
-    $loincCode: String!
-    $swabType: String!
-  ) {
-    createDeviceType(
-      name: $name
-      manufacturer: $manufacturer
-      model: $model
-      loincCode: $loincCode
-      swabType: $swabType
-    ) {
-      internalId
-    }
-  }
-`;
 
 export interface Device {
   name: string;
@@ -35,9 +15,9 @@ export interface Device {
   swabType: string;
 }
 
-const DeviceTypeFormContainer: any = () => {
+const DeviceTypeFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
-  const [createDeviceType] = useMutation(CREATE_DEVICE_TYPE_MUTATION);
+  const [createDeviceType] = useCreateDeviceTypeMutation();
 
   const saveDeviceType = (device: Device) => {
     createDeviceType({

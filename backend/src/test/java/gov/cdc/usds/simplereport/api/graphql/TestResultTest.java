@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -18,6 +19,9 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -182,6 +186,65 @@ class TestResultTest extends BaseGraphqlTest {
     updateSelfPrivileges(Role.USER, false, Set.of(_site.getInternalId()));
     fetchTestResult(fetchT1Variables, Optional.empty());
     fetchTestResult(fetchT2Variables, Optional.empty());
+  }
+
+  @Test
+  void getTopLevelDashboardMetrics_orgAdmin_success() {
+    Person p1 = _dataFactory.createFullPerson(_org);
+    Person p2 = _dataFactory.createMinimalPerson(_org, _site);
+    DeviceType d = _dataFactory.getGenericDevice();
+    _dataFactory.createTestOrder(p1, _site);
+    _dataFactory.createTestOrder(p2, _site);
+    String dateTested = "2020-12-31T14:30:30.001Z";
+
+    ObjectNode submitP1Variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("deviceId", d.getInternalId().toString())
+            .put("patientId", p1.getInternalId().toString())
+            .put("result", TestResult.POSITIVE.toString())
+            .put("dateTested", dateTested);
+    ObjectNode submitP2Variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("deviceId", d.getInternalId().toString())
+            .put("patientId", p2.getInternalId().toString())
+            .put("result", TestResult.NEGATIVE.toString())
+            .put("dateTested", dateTested);
+    submitTestResult(submitP1Variables, Optional.empty());
+    submitTestResult(submitP2Variables, Optional.empty());
+
+    String startDate = "2020-01-01";
+    String endDate = new SimpleDateFormat("yyyy-MM-dd").format(Date.from(Instant.now()));
+
+    useOrgAdmin();
+
+    ObjectNode variables =
+        JsonNodeFactory.instance.objectNode().put("startDate", startDate).put("endDate", endDate);
+
+    ObjectNode result =
+        runQuery("dashboard-metrics", "GetTopLevelDashboardMetrics", variables, null);
+
+    JsonNode metrics = result.get("topLevelDashboardMetrics");
+    assertEquals(1L, metrics.get("positiveTestCount").asLong());
+    assertEquals(2L, metrics.get("totalTestCount").asLong());
+  }
+
+  @Test
+  void getTopLevelDashboardMetrics_orgUser_failure() {
+    String startDate = "2020-01-01";
+    String endDate = new SimpleDateFormat("yyyy-MM-dd").format(Date.from(Instant.now()));
+
+    ObjectNode variables =
+        JsonNodeFactory.instance.objectNode().put("startDate", startDate).put("endDate", endDate);
+
+    useOrgUser();
+
+    runQuery(
+        "dashboard-metrics",
+        "GetTopLevelDashboardMetrics",
+        variables,
+        "Current user does not have permission to request [/topLevelDashboardMetrics]");
   }
 
   private ObjectNode getFacilityScopedArguments() {
