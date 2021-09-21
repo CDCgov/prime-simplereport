@@ -13,7 +13,7 @@ import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
 import "./ManageUsers.scss";
 import ResetPasswordForm from "./ResetPassword/ResetPasswordForm";
-import DeleteUserForm from "./DeleteUser/DeleteUserForm";
+import DeleteUserFormContainer from "./DeleteUser/DeleteUserFormContainer";
 import ReactivateUserForm from "./ReactivateUser/ReactivateUserForm";
 
 interface Props {
@@ -98,7 +98,7 @@ const UserDetail: React.FC<Props> = ({
         />
       </div>
       <div className="usa-card__footer display-flex flex-justify margin-top-5 padding-x-0">
-        <DeleteUserForm
+        <DeleteUserFormContainer
           user={user}
           isUpdating={isUpdating}
           loggedInUser={loggedInUser}

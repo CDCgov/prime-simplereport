@@ -1,78 +1,53 @@
-import { useState } from "react";
-
-import { useSetUserIsDeletedMutation } from "../../../../generated/graphql";
-import Alert from "../../../commonComponents/Alert";
 import Button from "../../../commonComponents/Button/Button";
-import { displayFullName, showNotification } from "../../../utils";
-import { SettingsUser } from "../ManageUsersContainer";
-
-import DeleteUserModal from "./DeleteUserModal";
+import Modal from "../../../commonComponents/Modal";
 
 interface Props {
-  user: SettingsUser;
-  isUpdating: boolean;
-  loggedInUser: User;
-  onDeleteUser: (userId: string) => void;
+  disabled: boolean;
+  isOpen: boolean;
+  fullName: string;
+  showModal: () => void;
+  onClose: () => void;
+  onDeleteUser: () => void;
 }
 
-const DeleteUserForm = ({
-  user,
-  loggedInUser,
-  isUpdating,
+const DeleteUserConfirmation = ({
+  disabled,
+  isOpen,
+  fullName,
+  showModal,
+  onClose,
   onDeleteUser,
-}: Props) => {
-  const [deleteUser] = useSetUserIsDeletedMutation();
-  const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
+}: Props) => (
+  <>
+    <Button
+      variant="outline"
+      icon="trash"
+      className="flex-align-self-start display-inline-block"
+      onClick={showModal}
+      label="Remove user"
+      disabled={disabled}
+    />
+    <Modal showModal={isOpen} onClose={onClose}>
+      <Modal.Header>Remove user</Modal.Header>
+      <p>
+        Are you sure you want to remove <strong>{fullName}</strong>?
+      </p>
+      <p> Doing so will remove this person's access to SimpleReport.</p>
+      <Modal.Footer>
+        <Button
+          className="margin-right-2"
+          onClick={onClose}
+          variant="unstyled"
+          label="No, go back"
+        />
+        <Button
+          className="margin-right-205"
+          onClick={onDeleteUser}
+          label="Yes, I'm sure"
+        />
+      </Modal.Footer>
+    </Modal>
+  </>
+);
 
-  const showConfirmation = () => {
-    updateShowDeleteUserModal(true);
-  };
-
-  const hideConfirmation = () => {
-    updateShowDeleteUserModal(false);
-  };
-
-  const handleDeleteUser = async () => {
-    try {
-      await deleteUser({
-        variables: {
-          id: user.id,
-          deleted: true,
-        },
-      });
-      const fullName = displayFullName(
-        user.firstName,
-        user.middleName,
-        user.lastName
-      );
-      hideConfirmation();
-      showNotification(
-        <Alert type="success" title={`User account removed for ${fullName}`} />
-      );
-      await onDeleteUser(user.id);
-    } catch (e) {
-      throw e;
-    }
-  };
-
-  return (
-    <>
-      <Button
-        variant="outline"
-        icon="trash"
-        className="flex-align-self-start display-inline-block"
-        onClick={showConfirmation}
-        label="Remove user"
-        disabled={loggedInUser.id === user.id || isUpdating}
-      />
-      <DeleteUserModal
-        isOpen={showDeleteUserModal}
-        user={user}
-        onClose={hideConfirmation}
-        onDeleteUser={handleDeleteUser}
-      />
-    </>
-  );
-};
-
-export default DeleteUserForm;
+export default DeleteUserConfirmation;
