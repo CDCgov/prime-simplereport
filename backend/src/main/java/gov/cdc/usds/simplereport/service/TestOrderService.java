@@ -270,8 +270,7 @@ public class TestOrderService {
 
     UUID facilityId = order.getFacility().getInternalId();
     DeviceSpecimenType deviceSpecimen =
-        _facilityDeviceTypeService.getDefaultForDeviceId(
-            facilityId, UUID.fromString(deviceID)); // _dts.getDefaultForDeviceId(deviceID);
+        _facilityDeviceTypeService.getDefaultForDeviceId(facilityId, UUID.fromString(deviceID));
 
     lockOrder(order.getInternalId());
     try {
