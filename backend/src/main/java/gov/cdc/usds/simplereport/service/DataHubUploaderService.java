@@ -123,11 +123,11 @@ public class DataHubUploaderService {
     }
   }
 
-  private List<TestEvent> createTestEventCSV(Date earliestCreatedAt, Date latestCreateOn)
+  private List<TestEvent> createTestEventCSV(Date start, Date stop)
       throws IOException, DateTimeParseException {
     return createTestEventCSV(
         _testReportEventsRepo.queryMatchAllBetweenDates(
-            earliestCreatedAt, latestCreateOn, PageRequest.of(0, _config.getMaxCsvRows())));
+            start, stop, PageRequest.of(0, _config.getMaxCsvRows())));
   }
 
   private List<TestEvent> createTestEventCSV(List<TestEvent> events) throws IOException {
@@ -204,7 +204,7 @@ public class DataHubUploaderService {
           // end range is back 1 minute, to avoid complications involving open transactions
           Timestamp dateOneMinAgo = Timestamp.from(Instant.now().minus(1, ChronoUnit.MINUTES));
           try {
-            return createTestEventCSV(dateOneMinAgo, getLatestRecordedTimestamp());
+            return createTestEventCSV(getLatestRecordedTimestamp(), dateOneMinAgo);
           } catch (IOException err) {
             throw new UnexpectedIOException(err);
           }
