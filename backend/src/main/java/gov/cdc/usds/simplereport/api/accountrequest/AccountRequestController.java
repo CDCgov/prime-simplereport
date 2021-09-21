@@ -91,7 +91,7 @@ public class AccountRequestController {
       // This happens fairly frequently and is the expected behavior of the current form.
       // We rethrow this as a BadRequestException so that users get a toast on the frontend
       // informing them of the error.
-      System.out.println("Okta resource exception thrown: " + e);
+      LOG.info("Okta resource exception thrown: " + e);
       throw new BadRequestException(
           "This email address is already associated with a SimpleReport user.");
     } catch (BadRequestException | UnexpectedRollbackException e) {
