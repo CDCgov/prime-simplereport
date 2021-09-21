@@ -1,17 +1,4 @@
-export type UserPermission =
-  | "READ_PATIENT_LIST"
-  | "READ_RESULT_LIST"
-  | "EDIT_PATIENT"
-  | "ARCHIVE_PATIENT"
-  | "EDIT_FACILITY"
-  | "EDIT_ORGANIZATION"
-  | "START_TEST"
-  | "UPDATE_TEST"
-  | "SUBMIT_TEST"
-  | "SEARCH_PATIENTS"
-  | "ACCESS_ALL_FACILITIES";
-
-export type UserRole = "admin" | "user" | "entry-only";
+import { UserPermission } from "../generated/graphql";
 
 // this is what the server sends back in the user.roleDescription field. It is used as the display value (most of the time)
 export type RoleDescription =
@@ -51,55 +38,33 @@ const hasPermission = (
   );
 };
 
-interface AppPermissions {
-  settings: {
-    canView: UserPermission[];
-    canEditFacility: UserPermission[];
-    canEditOrganization: UserPermission[];
-  };
-  people: {
-    canView: UserPermission[];
-    canEdit: UserPermission[];
-    canDelete: UserPermission[];
-  };
-  results: {
-    canView: UserPermission[];
-  };
-  tests: {
-    canView: UserPermission[];
-    canSearch: UserPermission[];
-    canStart: UserPermission[];
-    canUpdate: UserPermission[];
-    canSubmit: UserPermission[];
-  };
-}
-
 /*
     Maps a user functionality to the required list of professions
     - a user functionality could be a link that needs to be disabled, a button that needs to be hidden, a query that needs to be rejected, etc
         - a single UX functionality may need gating at multiple parts in the app
     - permissions are defined in the backend and returned in the whoami query
 */
-const appPermissions: AppPermissions = {
+const appPermissions = {
   settings: {
-    canView: ["EDIT_ORGANIZATION", "EDIT_FACILITY"],
-    canEditFacility: ["EDIT_FACILITY"], // TODO: not used
-    canEditOrganization: ["EDIT_ORGANIZATION"], // TODO: not used
+    canView: [UserPermission.EditOrganization, UserPermission.EditFacility],
   },
   people: {
-    canView: ["READ_PATIENT_LIST"],
-    canEdit: ["EDIT_PATIENT"],
-    canDelete: ["ARCHIVE_PATIENT"],
+    canView: [UserPermission.ReadPatientList],
+    canEdit: [UserPermission.EditPatient],
+    canDelete: [UserPermission.ArchivePatient],
   },
   results: {
-    canView: ["READ_RESULT_LIST"],
+    canView: [UserPermission.ReadResultList],
   },
   tests: {
-    canView: ["START_TEST", "UPDATE_TEST", "SUBMIT_TEST"],
-    canSearch: ["SEARCH_PATIENTS"], // TODO: not used
-    canStart: ["START_TEST"],
-    canUpdate: ["UPDATE_TEST"],
-    canSubmit: ["SUBMIT_TEST"],
+    canView: [
+      UserPermission.StartTest,
+      UserPermission.UpdateTest,
+      UserPermission.SubmitTest,
+    ],
+    canStart: [UserPermission.StartTest],
+    canUpdate: [UserPermission.UpdateTest],
+    canSubmit: [UserPermission.SubmitTest],
   },
 };
 

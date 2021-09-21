@@ -5,6 +5,8 @@ extend type Query {
   organizations(identityVerified: Boolean): [Organization!]!
 }
 extend type Mutation {
+  uploadPatients(patientList: Upload!): String
+  resendToReportStream(testEventIds: [ID!]!): Boolean
   createDeviceType(
     name: String!
     manufacturer: String!

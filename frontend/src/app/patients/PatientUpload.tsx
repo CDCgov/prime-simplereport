@@ -1,6 +1,5 @@
 import React from "react";
 import { gql, useMutation } from "@apollo/client";
-import { toast } from "react-toastify";
 
 import { showError, showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
@@ -23,12 +22,11 @@ const PatientUpload = ({ onSuccess }: Props) => {
   }: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = files;
     if (fileList === null) {
-      showError(toast, "Error", "File not found");
+      showError("Error", "File not found");
       return;
     }
     upload({ variables: { patientList: fileList[0] } }).then((response) => {
       showNotification(
-        toast,
         <Alert
           type="success"
           title={`Patients uploaded`}

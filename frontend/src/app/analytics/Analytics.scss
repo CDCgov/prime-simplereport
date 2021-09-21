@@ -16,27 +16,13 @@
     .green-pointing-down {
       color: green;
     }
-  }
 
-  .inline-datepicker {
     .usa-form-group {
-      display: flex;
+      margin-top: 0;
     }
 
-    label {
-      margin-top: 7px;
-      margin-right: 7px;
-    }
-
-    .usa-date-picker {
-      .usa-date-picker__external-input,
-      .usa-date-picker__button {
-        margin-top: 0;
-      }
-    }
-
-    .usa-date-picker__calendar {
-      width: 300px;
+    .usa-date-picker__button {
+      margin-left: -48px;
     }
   }
 
@@ -46,18 +32,19 @@
     text-align: center;
 
     h1 {
-      font-size: 70px;
+      font-size: 52px;
       margin: auto;
     }
 
     h2 {
-      height: 46px;
+      height: 25px;
       font-weight: 400;
       margin: 0;
+      font-size: 20px;
     }
 
     p {
-      height: 46px;
+      height: 25px;
       font-size: 20px;
       margin: 0;
     }

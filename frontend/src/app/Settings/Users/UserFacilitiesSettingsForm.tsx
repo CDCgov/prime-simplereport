@@ -6,6 +6,7 @@ import classnames from "classnames";
 import Checkboxes from "../../commonComponents/Checkboxes";
 import Dropdown from "../../commonComponents/Dropdown";
 import Button from "../../commonComponents/Button/Button";
+import { UserPermission } from "../../../generated/graphql";
 
 import { UpdateUser } from "./ManageUsers";
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
@@ -15,7 +16,8 @@ import "./ManageUsers.scss";
 type FacilityLookup = Record<string, UserFacilitySetting>;
 
 const getHasAllFacilityAccess = (user: Partial<SettingsUser>) =>
-  user.role === "ADMIN" || user.permissions?.includes("ACCESS_ALL_FACILITIES");
+  user.role === "ADMIN" ||
+  user.permissions?.includes(UserPermission.AccessAllFacilities);
 
 const alphabeticalFacilitySort = (
   a: UserFacilitySetting,
@@ -158,7 +160,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
           if (e.target.checked) {
             onUpdateUser("permissions", [
               ...(activeUser.permissions || []),
-              "ACCESS_ALL_FACILITIES",
+              UserPermission.AccessAllFacilities,
             ]);
           } else {
             onUpdateUser(

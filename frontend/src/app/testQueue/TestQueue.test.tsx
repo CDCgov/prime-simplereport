@@ -6,6 +6,8 @@ import {
 } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import configureStore, { MockStoreEnhanced } from "redux-mock-store";
 
 import TestQueue, { queueQuery } from "./TestQueue";
 import { REMOVE_PATIENT_FROM_QUEUE } from "./QueueItem";
@@ -19,11 +21,30 @@ jest.mock("@microsoft/applicationinsights-react-js", () => {
 });
 
 describe("TestQueue", () => {
+  let store: MockStoreEnhanced<unknown, {}>;
+  const mockStore = configureStore([]);
+
+  beforeEach(() => {
+    store = mockStore({
+      organization: {
+        name: "Organization Name",
+      },
+      facilities: [
+        {
+          id: "a1",
+          name: "Fake Facility",
+        },
+      ],
+    });
+  });
+
   it("should render the test queue", async () => {
     const { container } = render(
       <MemoryRouter>
         <MockedProvider mocks={mocks}>
-          <TestQueue activeFacilityId="a1" />
+          <Provider store={store}>
+            <TestQueue activeFacilityId="a1" />
+          </Provider>
         </MockedProvider>
       </MemoryRouter>
     );
@@ -37,7 +58,9 @@ describe("TestQueue", () => {
     render(
       <MemoryRouter>
         <MockedProvider mocks={mocks}>
-          <TestQueue activeFacilityId="a1" />
+          <Provider store={store}>
+            <TestQueue activeFacilityId="a1" />
+          </Provider>
         </MockedProvider>
       </MemoryRouter>
     );
@@ -79,14 +102,12 @@ const createPatient = ({
   last,
   birthDate,
   resultId,
-  firstTest,
 }: {
   first: string;
   middle: string | null;
   last: string;
   birthDate: string;
   resultId: string;
-  firstTest: boolean;
 }) => ({
   internalId: resultId,
   pregnancy: null,
@@ -94,10 +115,6 @@ const createPatient = ({
   symptoms,
   symptomOnset: null,
   noSymptoms: false,
-  firstTest,
-  priorTestDate: null,
-  priorTestType: null,
-  priorTestResult: "",
   deviceType: {
     internalId,
     testLength: 15,
@@ -133,7 +150,6 @@ const result = {
         last: "Doe",
         birthDate: "1996-06-19",
         resultId: "abc",
-        firstTest: true,
       }),
       createPatient({
         first: "Jane",
@@ -141,7 +157,6 @@ const result = {
         last: "Smith",
         birthDate: "2021-02-01",
         resultId: "def",
-        firstTest: false,
       }),
     ],
     organization: {

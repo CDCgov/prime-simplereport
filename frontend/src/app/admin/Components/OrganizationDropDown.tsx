@@ -1,5 +1,4 @@
 import React from "react";
-import { toast } from "react-toastify";
 
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
@@ -27,7 +26,7 @@ export const useOrganizationDropDownValidation = (
           body="Please select an organization."
         />
       );
-      showNotification(toast, alert);
+      showNotification(alert);
       return "error";
     }
 

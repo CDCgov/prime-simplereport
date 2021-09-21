@@ -4,6 +4,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -58,8 +59,10 @@ public interface TestEventRepository
   // Need to control how this query is built. "between" is too vague.
   // This is across all Orgs/facilities because datahub uploader users
   @Query(
-      "FROM #{#entityName} q WHERE q.createdAt > :before AND q.createdAt <= :after ORDER BY q.createdAt")
-  List<TestEvent> queryMatchAllBetweenDates(Date before, Date after, Pageable p);
+      "FROM #{#entityName} q WHERE q.createdAt > :begin AND q.createdAt <= :end ORDER BY q.createdAt")
+  List<TestEvent> queryMatchAllBetweenDates(Date begin, Date end, Pageable p);
+
+  List<TestEvent> findAllByInternalIdIn(Collection<UUID> ids);
 
   // @Query("FROM #{#entityName} q WHERE q.facility = :facility and q.createdAt >
   // :newerThanDate
@@ -71,4 +74,15 @@ public interface TestEventRepository
   Page<TestEvent> findAll(Specification<TestEvent> searchSpec, Pageable p);
 
   long count(Specification<TestEvent> searchSpec);
+
+  @Query(
+      value =
+          "SELECT new gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount(te.result, COUNT(te)) "
+              + "FROM TestEvent te "
+              + "         LEFT JOIN TestEvent corrected_te ON corrected_te.priorCorrectedTestEventId = te.internalId "
+              + "WHERE te.facility.internalId IN :facilityIds AND COALESCE(te.dateTestedBackdate, te.createdAt) BETWEEN :startDate AND :endDate AND "
+              + "    te.correctionStatus = 'ORIGINAL' AND corrected_te.priorCorrectedTestEventId IS NULL "
+              + "GROUP BY te.result")
+  List<TestResultWithCount> countByResultByFacility(
+      Collection<UUID> facilityIds, Date startDate, Date endDate);
 }

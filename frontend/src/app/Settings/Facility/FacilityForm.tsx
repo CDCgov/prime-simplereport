@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from "react";
-import { toast } from "react-toastify";
 import { Prompt } from "react-router-dom";
 
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
@@ -90,7 +89,7 @@ export const useFacilityValidation = (facility: Facility) => {
           body="Please check the form to make sure you complete all of the required fields."
         />
       );
-      showNotification(toast, alert);
+      showNotification(alert);
       return "error";
     }
   };

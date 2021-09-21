@@ -416,6 +416,7 @@ exports[`App Render main screen 1`] = `
       </header>
       <main
         class="prime-home"
+        style="padding-top: 80px;"
       >
         <div
           class="grid-container"

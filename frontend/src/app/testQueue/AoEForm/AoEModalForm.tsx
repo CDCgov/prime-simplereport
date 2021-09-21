@@ -1,29 +1,10 @@
-import { useRef } from "react";
 import Modal from "react-modal";
-import { gql, useQuery } from "@apollo/client";
 
 import { displayFullName } from "../../utils";
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 import iconClose from "../../../../node_modules/uswds/dist/img/usa-icons/close.svg";
 
-import AoEForm, { LastTest } from "./AoEForm";
-
-interface LastTestData {
-  patient: {
-    lastTest: LastTest;
-  };
-}
-
-export const LAST_TEST_QUERY = gql`
-  query GetPatientsLastResult($patientId: ID!) {
-    patient(id: $patientId) {
-      lastTest {
-        dateTested
-        result
-      }
-    }
-  }
-`;
+import AoEForm from "./AoEForm";
 
 interface AoEModalProps {
   onClose: () => void;
@@ -35,28 +16,13 @@ interface AoEModalProps {
 const AoEModalForm = (props: AoEModalProps) => {
   const { onClose, patient, loadState = {}, saveCallback } = props;
 
-  const formRef = useRef<HTMLFormElement>(null);
-
   const symptomsResponse: { [key: string]: boolean } = {};
   globalSymptomDefinitions.forEach(({ value }) => {
     symptomsResponse[value] = false;
   });
 
-  const { data, loading, error } = useQuery<LastTestData, {}>(LAST_TEST_QUERY, {
-    fetchPolicy: "no-cache",
-    variables: { patientId: patient.internalId },
-  });
-  if (loading) {
-    return null;
-  }
-  if (error) {
-    throw error;
-  }
-  const lastTest = data?.patient.lastTest;
-
   const buttonGroup = (
     <div className="sr-time-of-test-buttons">
-      {/* <Button variant="unstyled" label="Cancel" onClick={onClose} /> */}
       <button
         className="modal__close-button"
         style={{ cursor: "pointer" }}
@@ -101,8 +67,6 @@ const AoEModalForm = (props: AoEModalProps) => {
         saveCallback={saveCallback}
         isModal={true}
         noValidation={true}
-        formRef={formRef}
-        lastTest={lastTest}
       />
     </Modal>
   );

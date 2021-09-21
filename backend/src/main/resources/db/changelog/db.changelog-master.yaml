@@ -2909,3 +2909,19 @@ databaseChangeLog:
             columns:
               - column:
                   name: patient_id
+  - changeSet:
+      id: add-patient_has_prior_tests
+      author: zedd@skylight.digital
+      comment: This is to add patient_has_prior_tests test field to test event
+      changes:
+        - tagDatabase:
+            tag:  add-patient_has_prior_tests
+        - addColumn:
+            tableName: test_event
+            columns:
+              - column:
+                  name: patient_has_prior_tests
+                  type: boolean
+                  remarks: patient_has_prior_tests will track whether a patient has prior test events
+                  constraints:
+                    nullable: true

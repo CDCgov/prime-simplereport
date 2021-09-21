@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { toast } from "react-toastify";
 import moment from "moment";
 
 import { Card } from "../../commonComponents/Card/Card";
@@ -92,7 +91,7 @@ const PersonalDetailsForm = ({
         body="Please check the form to make sure you complete all of the required fields."
       />
     );
-    showNotification(toast, alert);
+    showNotification(alert);
     setSaving(false);
   };
 
