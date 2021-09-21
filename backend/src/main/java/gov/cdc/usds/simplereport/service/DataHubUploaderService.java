@@ -123,11 +123,11 @@ public class DataHubUploaderService {
     }
   }
 
-  private List<TestEvent> createTestEventCSV(Date start, Date stop)
+  private List<TestEvent> createTestEventCSV(Date begin, Date end)
       throws IOException, DateTimeParseException {
     return createTestEventCSV(
         _testReportEventsRepo.queryMatchAllBetweenDates(
-            start, stop, PageRequest.of(0, _config.getMaxCsvRows())));
+            begin, end, PageRequest.of(0, _config.getMaxCsvRows())));
   }
 
   private List<TestEvent> createTestEventCSV(List<TestEvent> events) throws IOException {
