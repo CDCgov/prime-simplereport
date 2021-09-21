@@ -14,7 +14,7 @@ import UserRoleSettingsForm from "./UserRoleSettingsForm";
 import "./ManageUsers.scss";
 import ResetPasswordForm from "./ResetPassword/ResetPasswordForm";
 import DeleteUserFormContainer from "./DeleteUser/DeleteUserFormContainer";
-import ReactivateUserForm from "./ReactivateUser/ReactivateUserForm";
+import ReactivateUserFormContainer from "./ReactivateUser/ReactivateUserFormContainer";
 
 interface Props {
   user: SettingsUser;
@@ -66,7 +66,7 @@ const UserDetail: React.FC<Props> = ({
             YOU
           </span>
         ) : null}
-        <ReactivateUserForm
+        <ReactivateUserFormContainer
           user={user}
           isUpdating={isUpdating}
           onReactivateUser={onReactivateUser}

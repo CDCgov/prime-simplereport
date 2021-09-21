@@ -1,68 +1,59 @@
-import { useState } from "react";
-
-import { useReactivateUserMutation } from "../../../../generated/graphql";
-import Alert from "../../../commonComponents/Alert";
 import Button from "../../../commonComponents/Button/Button";
-import { displayFullName, showNotification } from "../../../utils";
-import { SettingsUser } from "../ManageUsersContainer";
-
-import ReactivateUserModal from "./ReactivateUserModal";
+import Modal from "../../../commonComponents/Modal";
 
 interface Props {
-  user: SettingsUser;
-  isUpdating: boolean;
+  disabled: boolean;
+  isOpen: boolean;
+  showModal: () => void;
+  onClose: () => void;
   onReactivateUser: () => void;
+  fullName: string;
 }
 
-const ReactivateUserForm = ({ user, isUpdating, onReactivateUser }: Props) => {
-  const [showReactivateUserModal, updateShowReactivateUserModal] = useState(
-    false
-  );
-  const [reactivateUser] = useReactivateUserMutation();
-
-  const handleReactivateUser = async () => {
-    try {
-      await reactivateUser({
-        variables: {
-          id: user.id,
-        },
-      });
-      const fullName = displayFullName(
-        user.firstName,
-        user.middleName,
-        user.lastName
-      );
-      updateShowReactivateUserModal(false);
-      showNotification(
-        <Alert type="success" title={`${fullName} has been reactivated.`} />
-      );
-      await onReactivateUser();
-    } catch (e) {
-      throw e;
-    }
-  };
-
-  if (user.status !== "SUSPENDED") {
-    return null;
-  }
-
-  return (
-    <>
-      <Button
-        variant="secondary"
-        className="margin-left-auto margin-bottom-1"
-        onClick={() => updateShowReactivateUserModal(true)}
-        label="Reactivate user"
-        disabled={isUpdating}
-      />
-      <ReactivateUserModal
-        isOpen={showReactivateUserModal}
-        user={user}
-        onClose={() => updateShowReactivateUserModal(false)}
-        onReactivateUser={handleReactivateUser}
-      />
-    </>
-  );
-};
+const ReactivateUserForm = ({
+  disabled,
+  isOpen,
+  showModal,
+  onClose,
+  onReactivateUser,
+  fullName,
+}: Props) => (
+  <>
+    <Button
+      variant="secondary"
+      className="margin-left-auto margin-bottom-1"
+      onClick={showModal}
+      label="Reactivate user"
+      disabled={disabled}
+    />
+    <Modal showModal={isOpen} onClose={onClose}>
+      <Modal.Header>Reactivate account:{` ${fullName}`}</Modal.Header>
+      <p>
+        <strong>{fullName}</strong>
+        's SimpleReport account is currently inactive. They can't log in until
+        their account is reactivated.
+      </p>
+      <p>
+        <strong>
+          Please note: Users will have 24 hours to log back in to SimpleReport.
+        </strong>
+      </p>
+      <p>Are you sure you want to reactivate this account?</p>
+      <Modal.Footer>
+        <Button
+          className="margin-right-2"
+          onClick={onClose}
+          variant="unstyled"
+          label="No, go back"
+        />
+        <Button
+          className="margin-right-205"
+          onClick={onReactivateUser}
+          label="Yes, reactivate"
+        />
+      </Modal.Footer>
+    </Modal>
+  </>
+);
 
 export default ReactivateUserForm;
