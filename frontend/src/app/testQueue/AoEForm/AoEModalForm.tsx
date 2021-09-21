@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import Modal from "react-modal";
 
 import { displayFullName } from "../../utils";
@@ -16,8 +15,6 @@ interface AoEModalProps {
 
 const AoEModalForm = (props: AoEModalProps) => {
   const { onClose, patient, loadState = {}, saveCallback } = props;
-
-  const formRef = useRef<HTMLFormElement>(null);
 
   const symptomsResponse: { [key: string]: boolean } = {};
   globalSymptomDefinitions.forEach(({ value }) => {
@@ -70,7 +67,6 @@ const AoEModalForm = (props: AoEModalProps) => {
         saveCallback={saveCallback}
         isModal={true}
         noValidation={true}
-        formRef={formRef}
       />
     </Modal>
   );
