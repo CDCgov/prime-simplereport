@@ -1,8 +1,9 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
+import { OrganizationOption } from "../Components/OrganizationDropDown";
+
 import TenantDataAccessForm from "./TenantDataAccessForm";
-import { OrganizationOption } from "./OrganizationDropDown";
 
 let saveTenantDataAccess: jest.Mock;
 
@@ -72,6 +73,25 @@ describe("TenantDataAccessForm", () => {
     fireEvent.change(screen.getByLabelText("Justification", { exact: false }), {
       target: { value: "sample justification text" },
     });
+    const cancelButton = await screen.getAllByText("Cancel access")[0];
+    expect(cancelButton).toBeEnabled();
+    await waitFor(async () => {
+      fireEvent.click(cancelButton);
+    });
+    expect(saveTenantDataAccess).toBeCalledTimes(1);
+  });
+
+  it("Cancel button always enabled", async () => {
+    render(
+      <MemoryRouter>
+        <TenantDataAccessForm
+          organizationOptions={organizations}
+          organizationExternalId=""
+          justification=""
+          saveTenantDataAccess={saveTenantDataAccess}
+        />
+      </MemoryRouter>
+    );
     const cancelButton = await screen.getAllByText("Cancel access")[0];
     expect(cancelButton).toBeEnabled();
     await waitFor(async () => {

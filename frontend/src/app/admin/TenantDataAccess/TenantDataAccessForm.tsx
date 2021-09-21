@@ -3,11 +3,10 @@ import React, { useEffect, useMemo, useState } from "react";
 import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import TextInput from "../../commonComponents/TextInput";
-
 import OrganizationDropDown, {
   useOrganizationDropDownValidation,
   OrganizationOption,
-} from "./OrganizationDropDown";
+} from "../Components/OrganizationDropDown";
 
 const sortOrganizationOptions = (organizationOptions: OrganizationOption[]) =>
   Object.values(organizationOptions).sort((a, b) => {
@@ -155,7 +154,6 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
                   type="button"
                   onClick={submitCancellationRequest}
                   label="Cancel access"
-                  disabled={!formIsValid}
                 />
               </div>
             </div>

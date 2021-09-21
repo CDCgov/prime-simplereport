@@ -58,7 +58,6 @@ interface Props {
   saveCallback: (response: AoEAnswersDelivery) => void;
   isModal: boolean;
   noValidation: boolean;
-  formRef?: React.Ref<HTMLFormElement>;
 }
 
 const AoEForm: React.FC<Props> = ({
@@ -69,7 +68,6 @@ const AoEForm: React.FC<Props> = ({
   saveCallback,
   isModal,
   noValidation,
-  formRef,
 }) => {
   // this seems like it will do a bunch of wasted work on re-renders and non-renders,
   // but it's all small-ball stuff for now
@@ -214,34 +212,13 @@ const AoEForm: React.FC<Props> = ({
     }
   };
 
-  const buttonGroup = (
-    <div
-      className={classnames(
-        "sr-time-of-test-buttons",
-        "sr-time-of-test-buttons-footer",
-        { "aoe-modal__footer": isModal }
-      )}
-    >
-      <Button
-        id="aoe-form-save-button"
-        className="margin-right-0"
-        label={saveButtonText}
-        type={"submit"}
-      />
-    </div>
-  );
-
   const patientMobileNumbers = (patient.phoneNumbers || []).filter(
     (phoneNumber) => phoneNumber.type === "MOBILE"
   );
 
   return (
-    <>
-      <form
-        className="display-flex flex-column padding-bottom-10"
-        onSubmit={saveAnswers}
-        ref={formRef}
-      >
+    <div>
+      <form className="display-flex flex-column padding-bottom-4">
         <RequiredMessage />
         <FormGroup title="Results">
           <div className="prime-formgroup__wrapper">
@@ -284,17 +261,29 @@ const AoEForm: React.FC<Props> = ({
             />
           </FormGroup>
         )}
+      </form>
+      <div
+        className={classnames(
+          isModal
+            ? "modal__footer--sticky flex-align-self-end border-base-lighter "
+            : "margin-top-3"
+        )}
+      >
         <div
           className={classnames(
-            isModal
-              ? "modal__footer--sticky position-fixed flex-align-self-end border-top border-base-lighter "
-              : "margin-top-3"
+            "sr-time-of-test-buttons",
+            "sr-time-of-test-buttons-footer"
           )}
         >
-          {buttonGroup}
+          <Button
+            id="aoe-form-save-button"
+            className="margin-right-0"
+            label={saveButtonText}
+            onClick={saveAnswers}
+          />
         </div>
-      </form>
-    </>
+      </div>
+    </div>
   );
 };
 
