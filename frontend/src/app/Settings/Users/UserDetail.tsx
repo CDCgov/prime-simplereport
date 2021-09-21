@@ -133,8 +133,9 @@ const UserDetail: React.FC<Props> = ({
           onClick={() => handleUpdateUser()}
           label={isUpdating ? "Saving..." : "Save changes"}
           disabled={
+            !user.role ||
             !roles.includes(user.role) ||
-            user.organization.testingFacility.length === 0 ||
+            user?.organization?.testingFacility.length === 0 ||
             !isUserEdited ||
             !["Admin user", "Admin user (SU)"].includes(
               loggedInUser.roleDescription

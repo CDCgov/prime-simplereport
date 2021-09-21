@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useLazyQuery } from "@apollo/client";
+import { ApolloQueryResult } from "@apollo/client";
 
 import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button/Button";
 import { showNotification, displayFullName } from "../../utils";
 import reload from "../../utils/reload";
+import {
+  UserPermission,
+  useGetUserLazyQuery,
+  GetUsersAndStatusQuery,
+} from "../../../generated/graphql";
 
 import CreateUserModal from "./CreateUserModal";
 import UsersSideNav from "./UsersSideNav";
@@ -13,8 +18,6 @@ import {
   SettingsUser,
   LimitedUser,
   UserFacilitySetting,
-  SingleUserData,
-  GET_USER,
 } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
 
@@ -27,7 +30,7 @@ interface Props {
   resetUserPassword: (variables: any) => Promise<any>;
   deleteUser: (variables: any) => Promise<any>;
   reactivateUser: (variables: any) => Promise<any>;
-  getUsers: () => Promise<any>;
+  getUsers: () => Promise<ApolloQueryResult<GetUsersAndStatusQuery>>;
 }
 
 export type LimitedUsers = { [id: string]: LimitedUser };
@@ -81,15 +84,12 @@ const ManageUsers: React.FC<Props> = ({
   const [
     userWithPermissions,
     updateUserWithPermissions,
-  ] = useState<SettingsUser>();
-  const [queryUserWithPermissions] = useLazyQuery<SingleUserData, {}>(
-    GET_USER,
-    {
-      variables: { id: activeUser ? activeUser.id : loggedInUser.id },
-      fetchPolicy: "no-cache",
-      onCompleted: (data) => updateUserWithPermissions(data.user),
-    }
-  );
+  ] = useState<SettingsUser | null>();
+  const [queryUserWithPermissions] = useGetUserLazyQuery({
+    variables: { id: activeUser ? activeUser.id : loggedInUser.id },
+    fetchPolicy: "no-cache",
+    onCompleted: (data) => updateUserWithPermissions(data.user),
+  });
   const [nextActiveUserId, updateNextActiveUserId] = useState<string | null>(
     null
   );
@@ -164,11 +164,11 @@ const ManageUsers: React.FC<Props> = ({
       variables: {
         id: userWithPermissions?.id,
         role: userWithPermissions?.role,
-        facilities: userWithPermissions?.organization.testingFacility.map(
+        facilities: userWithPermissions?.organization?.testingFacility.map(
           ({ id }) => id
         ),
         accessAllFacilities: userWithPermissions?.permissions.includes(
-          "ACCESS_ALL_FACILITIES"
+          UserPermission.AccessAllFacilities
         ),
       },
     })
@@ -217,7 +217,7 @@ const ManageUsers: React.FC<Props> = ({
           role: role,
           facilities: organization?.testingFacility.map(({ id }) => id) || [],
           accessAllFacilities:
-            permissions?.includes("ACCESS_ALL_FACILITIES") || false,
+            permissions?.includes(UserPermission.AccessAllFacilities) || false,
         },
       });
 
