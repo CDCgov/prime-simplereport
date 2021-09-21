@@ -1,24 +1,45 @@
 locals {
-  storage_account_name = "${var.storage_account_name_prefix}${var.environment}app"
   resource_group_name  = "${var.resource_group_name_prefix}${var.environment}"
+   management_tags = {
+    prime-app      = "simple-report"
+    environment    = var.environment
+    resource_group = local.resource_group_name
+  }
+}
+
+resource "azurerm_storage_account" "fn_app" {
+  account_replication_type  = "GRS" # Cross-regional redundancy
+  account_tier              = "Standard"
+  account_kind              = "StorageV2"
+  name                      = "simplereport${var.environment}rspubfn"
+  resource_group_name       = local.resource_group_name
+  location                  = var.location
+  enable_https_traffic_only = false
+  min_tls_version           = "TLS1_2"
+  tags = local.management_tags
+}
+
+resource "azurerm_storage_queue" "test_event_queue" {
+  name                 = "test-event-publishing"
+  storage_account_name = azurerm_storage_account.fn_app.name
 }
 
 resource "azurerm_storage_container" "deployments" {
   name                  = "rs-batched-publisher-function-releases"
-  storage_account_name  = local.storage_account_name
+  storage_account_name  = azurerm_storage_account.fn_app.name
   container_access_type = "private"
 }
 
 resource "azurerm_storage_blob" "appcode" {
   name                   = "functionapp.zip"
-  storage_account_name   = local.storage_account_name
+  storage_account_name   = azurerm_storage_account.fn_app.name
   storage_container_name = azurerm_storage_container.deployments.name
   type                   = "Block"
   source                 = var.function_app_source
 }
 
 data "azurerm_storage_account_sas" "sas" {
-  connection_string = var.storage_account_primary_connection_string
+  connection_string = azurerm_storage_account.fn_app.primary_connection_string
   https_only        = true
   start             = "2021-09-01"
   expiry            = "2022-12-31"
@@ -61,7 +82,7 @@ resource "azurerm_function_app" "functions" {
   location                   = var.location
   resource_group_name        = local.resource_group_name
   app_service_plan_id        = azurerm_app_service_plan.asp.id
-  storage_account_name       = local.storage_account_name
+  storage_account_name       = azurerm_storage_account.fn_app.name
   storage_account_access_key = var.storage_account_key
   version                    = "~2"
 
@@ -71,10 +92,10 @@ resource "azurerm_function_app" "functions" {
     WEBSITE_NODE_DEFAULT_VERSION   = "~10"
     FUNCTION_APP_EDIT_MODE         = "readonly"
     HASH                           = "${base64encode(filesha256("${var.function_app_source}"))}"
-    WEBSITE_RUN_FROM_PACKAGE       = "https://${local.storage_account_name}.blob.core.windows.net/${azurerm_storage_container.deployments.name}/${azurerm_storage_blob.appcode.name}${data.azurerm_storage_account_sas.sas.sas}"
+    WEBSITE_RUN_FROM_PACKAGE       = "https://${azurerm_storage_account.fn_app.name}.blob.core.windows.net/${azurerm_storage_container.deployments.name}/${azurerm_storage_blob.appcode.name}${data.azurerm_storage_account_sas.sas.sas}"
     APPINSIGHTS_INSTRUMENTATIONKEY = var.app_insights_instrumentation_key
-    AZ_STORAGE_QUEUE_SVC_URL       = "https://${local.storage_account_name}.queue.core.windows.net/"
-    AZ_STORAGE_ACCOUNT_NAME        = local.storage_account_name
+    AZ_STORAGE_QUEUE_SVC_URL       = "https://${azurerm_storage_account.fn_app.name}.queue.core.windows.net/"
+    AZ_STORAGE_ACCOUNT_NAME        = azurerm_storage_account.fn_app.name
     AZ_STORAGE_ACCOUNT_KEY         = var.storage_account_key
     TEST_EVENT_QUEUE_NAME          = var.test_event_queue_name
     REPORT_STREAM_URL              = var.report_stream_url

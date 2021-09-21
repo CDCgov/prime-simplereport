@@ -22,11 +22,6 @@ variable "function_app_source" {
   default = "./functions/build/batched-rs-publisher.zip"
 }
 
-variable "storage_account_name_prefix" {
-  type    = string
-  default = "simplereport"
-}
-
 variable "storage_account_key" {
   type = string
 }
