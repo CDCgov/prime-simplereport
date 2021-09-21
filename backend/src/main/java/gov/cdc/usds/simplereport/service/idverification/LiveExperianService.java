@@ -117,9 +117,8 @@ public class LiveExperianService
               _experianProperties.getPreciseidClientReferenceId(),
               userData);
 
-      LOG.info("EXPERIAN_QUESTION_REQUEST_SUBMITTED: {}", initialRequestBody);
+      LOG.info("EXPERIAN_QUESTION_REQUEST_SUBMITTED");
       ObjectNode responseEntity = submitExperianRequest(initialRequestBody);
-      LOG.info("EXPERIAN_QUESTION_RESPONSE: {}", responseEntity);
 
       // KIQ response may a kbaresultCode that indicates failure, this seems to only be present
       // in unsuccessful requests to get questions (consumer not found, deceased, etc.)
@@ -149,9 +148,8 @@ public class LiveExperianService
               _experianProperties.getPreciseidTenantId(),
               _experianProperties.getPreciseidClientReferenceId(),
               answersRequest);
-      LOG.info("EXPERIAN_ANSWER_REQUEST_SUBMITTED: {}", finalRequestBody);
+      LOG.info("EXPERIAN_ANSWER_REQUEST_SUBMITTED");
       ObjectNode responseEntity = submitExperianRequest(finalRequestBody);
-      LOG.info("EXPERIAN_ANSWER_RESPONSE: {}", responseEntity);
 
       // look for errors in KIQ response ("CrossCore - PreciseId (Option 24).pdf" page 79)
       int kbaResultCode = findNodeInResponse(responseEntity, KBA_RESULT_CODE_PATH).asInt();
@@ -175,7 +173,7 @@ public class LiveExperianService
 
       // Generate a searchable log message so we can monitor decisions from Experian
       String requestData = _objectMapper.writeValueAsString(answersRequest);
-      LOG.info("EXPERIAN_DECISION ({}): {}, {}", passed, responseEntity, requestData);
+      LOG.info("EXPERIAN_DECISION ({}): {}", passed, requestData);
 
       return new IdentityVerificationAnswersResponse(passed);
     } catch (RestClientException | JsonProcessingException e) {
@@ -202,7 +200,6 @@ public class LiveExperianService
     final JsonNode fetchedNode = responseEntity.at(path);
     if (fetchedNode.isMissingNode()) {
       LOG.error("EXPERIAN_NULL_NODE: {}", path);
-      LOG.error("EXPERIAN_NULL_NODE_RESPONSE: {}", responseEntity);
       throw new ExperianNullNodeException("Could not find data in response from Experian");
     }
     return fetchedNode;
