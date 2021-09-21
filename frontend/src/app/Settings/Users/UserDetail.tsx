@@ -9,12 +9,12 @@ import { formatUserStatus } from "../../utils/text";
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import { UpdateUser } from "./ManageUsers";
 import InProgressModal from "./InProgressModal";
-import DeleteUserModal from "./DeleteUserModal";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
 import ReactivateUserModal from "./ReactivateUserModal";
 import "./ManageUsers.scss";
 import ResetPasswordForm from "./ResetPassword/ResetPasswordForm";
+import DeleteUserForm from "./DeleteUser/DeleteUserForm";
 
 interface Props {
   user: SettingsUser;
@@ -22,12 +22,10 @@ interface Props {
   loggedInUser: User;
   allFacilities: UserFacilitySetting[];
   handleUpdateUser: () => void;
-  handleDeleteUser: (userId: string) => void;
+  onDeleteUser: (userId: string) => void;
   updateUser: UpdateUser;
   showReactivateUserModal: boolean;
   updateShowReactivateUserModal: (showReactivateUserModal: boolean) => void;
-  showDeleteUserModal: boolean;
-  updateShowDeleteUserModal: (showDeleteUserModal: boolean) => void;
   showInProgressModal: boolean;
   updateShowInProgressModal: (showInProgressUserModal: boolean) => void;
   isUserEdited: boolean;
@@ -42,12 +40,10 @@ const UserDetail: React.FC<Props> = ({
   allFacilities,
   updateUser,
   handleUpdateUser,
+  onDeleteUser,
   isUpdating,
-  handleDeleteUser,
   showReactivateUserModal,
   updateShowReactivateUserModal,
-  showDeleteUserModal,
-  updateShowDeleteUserModal,
   showInProgressModal,
   updateShowInProgressModal,
   isUserEdited,
@@ -110,13 +106,11 @@ const UserDetail: React.FC<Props> = ({
         />
       </div>
       <div className="usa-card__footer display-flex flex-justify margin-top-5 padding-x-0">
-        <Button
-          variant="outline"
-          icon="trash"
-          className="flex-align-self-start display-inline-block"
-          onClick={() => updateShowDeleteUserModal(true)}
-          label="Remove user"
-          disabled={loggedInUser.id === user.id || isUpdating}
+        <DeleteUserForm
+          user={user}
+          isUpdating={isUpdating}
+          loggedInUser={loggedInUser}
+          onDeleteUser={onDeleteUser}
         />
         <Button
           type="button"
@@ -145,13 +139,6 @@ const UserDetail: React.FC<Props> = ({
         <Prompt
           when={isUserEdited}
           message="You have unsaved changes. Do you want to continue?"
-        />
-      ) : null}
-      {showDeleteUserModal ? (
-        <DeleteUserModal
-          user={user}
-          onClose={() => updateShowDeleteUserModal(false)}
-          onDeleteUser={handleDeleteUser}
         />
       ) : null}
       {showReactivateUserModal ? (

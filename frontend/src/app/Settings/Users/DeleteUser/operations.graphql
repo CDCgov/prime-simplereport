@@ -1,0 +1,5 @@
+mutation SetUserIsDeleted($id: ID!, $deleted: Boolean!) {
+  setUserIsDeleted(id: $id, deleted: $deleted) {
+    id
+  }
+}

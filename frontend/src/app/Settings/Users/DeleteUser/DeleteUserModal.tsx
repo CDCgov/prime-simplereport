@@ -1,23 +1,21 @@
-import React from "react";
 import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Button from "../../commonComponents/Button/Button";
-import { displayFullName } from "../../utils";
-
-import { SettingsUser } from "./ManageUsersContainer";
-import "./ManageUsers.scss";
+import Button from "../../../commonComponents/Button/Button";
+import { displayFullName } from "../../../utils";
+import { SettingsUser } from "../ManageUsersContainer";
 
 interface Props {
+  isOpen: boolean;
   onClose: () => void;
   onDeleteUser: (userId: string) => void;
   user: SettingsUser;
 }
 
-const DeleteUserModal: React.FC<Props> = ({ onClose, onDeleteUser, user }) => {
+const DeleteUserModal = ({ onClose, onDeleteUser, user, isOpen }: Props) => {
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       style={{
         content: {
           maxHeight: "90vh",

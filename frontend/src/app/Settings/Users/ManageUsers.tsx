@@ -27,7 +27,6 @@ interface Props {
   allFacilities: UserFacilitySetting[];
   updateUserPrivileges: (variables: any) => Promise<any>;
   addUserToOrg: (variables: any) => Promise<any>;
-  deleteUser: (variables: any) => Promise<any>;
   reactivateUser: (variables: any) => Promise<any>;
   getUsers: () => Promise<ApolloQueryResult<GetUsersAndStatusQuery>>;
 }
@@ -74,7 +73,6 @@ const ManageUsers: React.FC<Props> = ({
   allFacilities,
   updateUserPrivileges,
   addUserToOrg,
-  deleteUser,
   reactivateUser,
   getUsers,
 }) => {
@@ -93,7 +91,6 @@ const ManageUsers: React.FC<Props> = ({
   );
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
   const [showAddUserModal, updateShowAddUserModal] = useState(false);
-  const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
   const [showReactivateUserModal, updateShowReactivateUserModal] = useState(
     false
   );
@@ -233,30 +230,6 @@ const ManageUsers: React.FC<Props> = ({
     }
   };
 
-  const handleDeleteUser = async (userId: string) => {
-    try {
-      await deleteUser({
-        variables: {
-          id: userId,
-          deleted: true,
-        },
-      });
-      const fullName = displayFullName(
-        userWithPermissions?.firstName,
-        userWithPermissions?.middleName,
-        userWithPermissions?.lastName
-      );
-      updateShowDeleteUserModal(false);
-      setDeletedUserId(userId);
-      showNotification(
-        <Alert type="success" title={`User account removed for ${fullName}`} />
-      );
-      await getUsers();
-    } catch (e) {
-      setError(e);
-    }
-  };
-
   const handleReactivateUser = async (userId: string) => {
     try {
       await reactivateUser({
@@ -316,6 +289,11 @@ const ManageUsers: React.FC<Props> = ({
     }
   }, [queryUserWithPermissions, userWithPermissions]);
 
+  const onDeleteUser = async (userId: String) => {
+    setDeletedUserId(user.id);
+    await getUsers();
+  };
+
   const user: SettingsUser = userWithPermissions
     ? userWithPermissions
     : emptySettingsUser;
@@ -359,17 +337,15 @@ const ManageUsers: React.FC<Props> = ({
               loggedInUser={loggedInUser}
               allFacilities={allFacilities}
               handleUpdateUser={handleUpdateUser}
-              handleDeleteUser={handleDeleteUser}
               updateUser={updateUser}
               showReactivateUserModal={showReactivateUserModal}
               updateShowReactivateUserModal={updateShowReactivateUserModal}
-              showDeleteUserModal={showDeleteUserModal}
-              updateShowDeleteUserModal={updateShowDeleteUserModal}
               showInProgressModal={showInProgressModal}
               updateShowInProgressModal={updateShowInProgressModal}
               isUserEdited={isUserEdited}
               onContinueChangeActiveUser={onContinueChangeActiveUser}
               handleReactivateUser={handleReactivateUser}
+              onDeleteUser={onDeleteUser}
             />
           </div>
         </div>

@@ -59,14 +59,6 @@ const UPDATE_USER_PRIVILEGES = gql`
   }
 `;
 
-const DELETE_USER = gql`
-  mutation SetUserIsDeleted($id: ID!, $deleted: Boolean!) {
-    setUserIsDeleted(id: $id, deleted: $deleted) {
-      id
-    }
-  }
-`;
-
 const REACTIVATE_USER = gql`
   mutation ReactivateUser($id: ID!) {
     reactivateUser(id: $id) {
@@ -104,7 +96,6 @@ const ManageUsersContainer = () => {
     (state) => state.facilities
   );
   const [updateUserPrivileges] = useMutation(UPDATE_USER_PRIVILEGES);
-  const [deleteUser] = useMutation(DELETE_USER);
   const [reactivateUser] = useMutation(REACTIVATE_USER);
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
 
@@ -134,7 +125,6 @@ const ManageUsersContainer = () => {
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}
       addUserToOrg={addUserToOrg}
-      deleteUser={deleteUser}
       reactivateUser={reactivateUser}
       getUsers={getUsers}
     />
