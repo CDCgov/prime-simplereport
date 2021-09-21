@@ -192,7 +192,7 @@ class TestResultTest extends BaseGraphqlTest {
   void getTopLevelDashboardMetrics_orgAdmin_success() {
     Person p1 = _dataFactory.createFullPerson(_org);
     Person p2 = _dataFactory.createMinimalPerson(_org, _site);
-    DeviceType d = _dataFactory.getGenericDevice();
+    DeviceType d = _site.getDefaultDeviceType();
     _dataFactory.createTestOrder(p1, _site);
     _dataFactory.createTestOrder(p2, _site);
     String dateTested = "2020-12-31T14:30:30.001Z";
