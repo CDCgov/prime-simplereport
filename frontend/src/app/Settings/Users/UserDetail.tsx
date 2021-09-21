@@ -23,6 +23,7 @@ interface Props {
   allFacilities: UserFacilitySetting[];
   handleUpdateUser: () => void;
   onDeleteUser: (userId: string) => void;
+  onReactivateUser: () => void;
   updateUser: UpdateUser;
   showInProgressModal: boolean;
   updateShowInProgressModal: (showInProgressUserModal: boolean) => void;
@@ -38,6 +39,7 @@ const UserDetail: React.FC<Props> = ({
   updateUser,
   handleUpdateUser,
   onDeleteUser,
+  onReactivateUser,
   isUpdating,
   showInProgressModal,
   updateShowInProgressModal,
@@ -64,7 +66,11 @@ const UserDetail: React.FC<Props> = ({
             YOU
           </span>
         ) : null}
-        <ReactivateUserForm user={user} isUpdating={isUpdating} />
+        <ReactivateUserForm
+          user={user}
+          isUpdating={isUpdating}
+          onReactivateUser={onReactivateUser}
+        />
         <ResetPasswordForm
           user={user}
           isUpdating={isUpdating}

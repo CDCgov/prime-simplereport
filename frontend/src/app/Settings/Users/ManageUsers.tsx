@@ -267,6 +267,10 @@ const ManageUsers: React.FC<Props> = ({
     await getUsers();
   };
 
+  const onReactivateUser = async () => {
+    await getUsers();
+  };
+
   const user: SettingsUser = userWithPermissions
     ? userWithPermissions
     : emptySettingsUser;
@@ -316,6 +320,7 @@ const ManageUsers: React.FC<Props> = ({
               isUserEdited={isUserEdited}
               onContinueChangeActiveUser={onContinueChangeActiveUser}
               onDeleteUser={onDeleteUser}
+              onReactivateUser={onReactivateUser}
             />
           </div>
         </div>

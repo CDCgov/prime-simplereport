@@ -4,7 +4,6 @@ import { useReactivateUserMutation } from "../../../../generated/graphql";
 import Alert from "../../../commonComponents/Alert";
 import Button from "../../../commonComponents/Button/Button";
 import { displayFullName, showNotification } from "../../../utils";
-import reload from "../../../utils/reload";
 import { SettingsUser } from "../ManageUsersContainer";
 
 import ReactivateUserModal from "./ReactivateUserModal";
@@ -12,9 +11,10 @@ import ReactivateUserModal from "./ReactivateUserModal";
 interface Props {
   user: SettingsUser;
   isUpdating: boolean;
+  onReactivateUser: () => void;
 }
 
-const ReactivateUserForm = ({ user, isUpdating }: Props) => {
+const ReactivateUserForm = ({ user, isUpdating, onReactivateUser }: Props) => {
   const [showReactivateUserModal, updateShowReactivateUserModal] = useState(
     false
   );
@@ -33,10 +33,10 @@ const ReactivateUserForm = ({ user, isUpdating }: Props) => {
         user.lastName
       );
       updateShowReactivateUserModal(false);
-      reload();
       showNotification(
         <Alert type="success" title={`${fullName} has been reactivated.`} />
       );
+      await onReactivateUser();
     } catch (e) {
       throw e;
     }
