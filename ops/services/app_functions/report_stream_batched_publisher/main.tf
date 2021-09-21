@@ -85,7 +85,8 @@ resource "azurerm_function_app" "functions" {
   app_service_plan_id        = azurerm_app_service_plan.asp.id
   storage_account_name       = azurerm_storage_account.fn_app.name
   storage_account_access_key = azurerm_storage_account.fn_app.primary_access_key
-  version                    = "~2"
+  https_only                 = true
+  version                    = "~3"
   os_type                    = "linux"
   site_config {
     linux_fx_version          = "node|14"
