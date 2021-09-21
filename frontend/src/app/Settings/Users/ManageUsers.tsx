@@ -262,8 +262,8 @@ const ManageUsers: React.FC<Props> = ({
     }
   }, [queryUserWithPermissions, userWithPermissions]);
 
-  const onDeleteUser = async (userId: String) => {
-    setDeletedUserId(user.id);
+  const onDeleteUser = async (userId: string) => {
+    setDeletedUserId(userId);
     await getUsers();
   };
 
