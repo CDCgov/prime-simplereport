@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -215,6 +216,19 @@ public class DemoOktaRepository implements OktaRepository {
   public String activateOrganizationWithSingleUser(Organization org) {
     activateOrganization(org);
     return "activationToken";
+  }
+
+  public String fetchAdminUserEmail(Organization org) {
+    Optional<Entry<String, OrganizationRoleClaims>> admin =
+        usernameOrgRolesMap.entrySet().stream()
+            .filter(e -> e.getValue().getGrantedRoles().contains(OrganizationRole.ADMIN))
+            .findFirst();
+    return admin
+        .map(
+            a -> {
+              return a.getKey();
+            })
+        .orElseThrow(() -> new IllegalStateException("Organization does not have an admin."));
   }
 
   public void createFacility(Facility facility) {
