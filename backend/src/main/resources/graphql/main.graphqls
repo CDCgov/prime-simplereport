@@ -30,6 +30,8 @@ type Facility {
   phone: String
   email: String
   deviceTypes: [DeviceType]
+  specimenTypes: [SpecimenType]
+  deviceSpecimenTypes: [DeviceSpecimenType]
   defaultDeviceType: DeviceType
   orderingProvider: Provider
   patientSelfRegistrationLink: String
@@ -60,6 +62,19 @@ type DeviceType {
   loincCode: String
   swabType: String
   testLength: Int
+}
+
+type SpecimenType {
+  internalId: ID
+  name: String
+  typeCode: String
+  collectionLocationName: String
+  collectionLocationCode: String
+}
+
+type DeviceSpecimenType {
+  deviceType: DeviceType!
+  specimenType: SpecimenType!
 }
 
 type TestDescription {
@@ -213,7 +228,7 @@ type TestResult {
 }
 
 type TopLevelDashboardMetrics {
-  positiveTestCount: Int,
+  positiveTestCount: Int
   totalTestCount: Int
 }
 
@@ -239,6 +254,7 @@ type Query {
   deviceType: [DeviceType]
     @deprecated(reason: "use the pluralized form to reduce confusion")
   deviceTypes: [DeviceType]
+  specimenType: [SpecimenType]
   patients(
     facilityId: ID
     pageNumber: Int
@@ -284,10 +300,14 @@ type Query {
   ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
-  topLevelDashboardMetrics(facilityId: ID, startDate: DateTime!, endDate: DateTime!): TopLevelDashboardMetrics
-    @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
+  topLevelDashboardMetrics(
+    facilityId: ID
+    startDate: DateTime!
+    endDate: DateTime!
+  ): TopLevelDashboardMetrics @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
-  usersWithStatus: [ApiUserWithStatus!] @requiredPermissions(allOf: ["MANAGE_USERS"])
+  usersWithStatus: [ApiUserWithStatus!]
+    @requiredPermissions(allOf: ["MANAGE_USERS"])
   user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
 }
