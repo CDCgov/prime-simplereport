@@ -88,6 +88,13 @@ public class ReminderService {
       orgReminderMap.put(org, emailsInOrg);
     }
 
+    try {
+      // hold the lock a little extra so other instances have a chance to fail to acquire it
+      Thread.sleep(1L);
+    } catch (InterruptedException e) {
+      LOG.debug("sendAccountReminderEmails: sleep interrupted");
+    }
+
     return orgReminderMap;
   }
 
