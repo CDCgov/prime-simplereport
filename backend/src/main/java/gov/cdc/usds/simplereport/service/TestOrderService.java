@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import com.twilio.exception.ApiException;
 import com.twilio.exception.TwilioException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
+import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -24,6 +25,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount;
 import gov.cdc.usds.simplereport.db.repository.AdvisoryLockManager;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
@@ -35,7 +37,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Join;
@@ -63,6 +67,7 @@ public class TestOrderService {
   private SmsService _smss;
   private final CurrentPatientContextHolder _patientContext;
   private final TestEventReportingService _testEventReportingService;
+  private final FacilityDeviceTypeService _facilityDeviceTypeService;
 
   @PersistenceContext EntityManager _entityManager;
 
@@ -77,6 +82,7 @@ public class TestOrderService {
   public TestOrderService(
       OrganizationService os,
       DeviceTypeService dts,
+      FacilityDeviceTypeService facilityDeviceTypeService,
       TestOrderRepository repo,
       PatientAnswersRepository parepo,
       TestEventRepository terepo,
@@ -95,6 +101,7 @@ public class TestOrderService {
     _pls = pls;
     _smss = smss;
     _testEventReportingService = testEventReportingService;
+    _facilityDeviceTypeService = facilityDeviceTypeService;
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
@@ -256,11 +263,14 @@ public class TestOrderService {
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
       String deviceID, TestResult result, UUID patientId, Date dateTested) {
-    DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order =
         _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
+
+    UUID facilityId = order.getFacility().getInternalId();
+    DeviceSpecimenType deviceSpecimen =
+        _facilityDeviceTypeService.getDefaultForDeviceId(facilityId, UUID.fromString(deviceID));
 
     lockOrder(order.getInternalId());
     try {
@@ -477,6 +487,34 @@ public class TestOrderService {
     _repo.save(order);
 
     return newRemoveEvent;
+  }
+
+  @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionEditOrganization
+  public TopLevelDashboardMetrics getTopLevelDashboardMetrics(
+      UUID facilityId, Date startDate, Date endDate) {
+    Set<UUID> facilityIds;
+
+    if (facilityId != null) {
+      Facility fac = _os.getFacilityInCurrentOrg(facilityId);
+      facilityIds = Set.of(fac.getInternalId());
+    } else {
+      Organization org = _os.getCurrentOrganization();
+      facilityIds =
+          _os.getFacilities(org).stream().map(Facility::getInternalId).collect(Collectors.toSet());
+    }
+
+    List<TestResultWithCount> testResultList =
+        _terepo.countByResultByFacility(facilityIds, startDate, endDate);
+    Map<TestResult, Long> testResultMap =
+        testResultList.stream()
+            .collect(
+                Collectors.toMap(TestResultWithCount::getResult, TestResultWithCount::getCount));
+
+    long totalTestCount = testResultMap.values().stream().reduce(0L, Long::sum);
+    long positiveTestCount = testResultMap.getOrDefault(TestResult.POSITIVE, 0L);
+
+    return new TopLevelDashboardMetrics(positiveTestCount, totalTestCount);
   }
 
   // IMPLICITLY AUTHORIZED

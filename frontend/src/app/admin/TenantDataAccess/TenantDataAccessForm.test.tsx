@@ -80,4 +80,23 @@ describe("TenantDataAccessForm", () => {
     });
     expect(saveTenantDataAccess).toBeCalledTimes(1);
   });
+
+  it("Cancel button always enabled", async () => {
+    render(
+      <MemoryRouter>
+        <TenantDataAccessForm
+          organizationOptions={organizations}
+          organizationExternalId=""
+          justification=""
+          saveTenantDataAccess={saveTenantDataAccess}
+        />
+      </MemoryRouter>
+    );
+    const cancelButton = await screen.getAllByText("Cancel access")[0];
+    expect(cancelButton).toBeEnabled();
+    await waitFor(async () => {
+      fireEvent.click(cancelButton);
+    });
+    expect(saveTenantDataAccess).toBeCalledTimes(1);
+  });
 });

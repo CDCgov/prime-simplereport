@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
+import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -34,6 +35,7 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -123,7 +126,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
 
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
     _service.addTestResult(
         devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
 
@@ -289,7 +292,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
 
     _service.addTestResult(
         devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
@@ -337,7 +340,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
 
     _service.addTestResult(
         devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
@@ -473,7 +476,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
 
     _service.addTestResult(
         devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
@@ -503,7 +506,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
 
     _service.addTestResult(
         devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
@@ -534,7 +537,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
 
     List<SmsAPICallResult> deliveryResults = new ArrayList<SmsAPICallResult>();
     deliveryResults.add(new SmsAPICallResult("message-id", "id", false));
@@ -620,7 +623,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             false);
     TestUserIdentities.setFacilityAuthorities();
 
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
 
     assertThrows(
         AccessDeniedException.class,
@@ -654,7 +657,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             TestResult.POSITIVE,
             LocalDate.of(1865, 12, 25),
             false);
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
 
     _service.editQueueItem(
         o.getInternalId(), devA.getInternalId().toString(), TestResult.POSITIVE.toString(), null);
@@ -685,7 +688,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             TestResult.POSITIVE,
             LocalDate.of(1865, 12, 25),
             false);
-    DeviceType devA = _dataFactory.getGenericDevice();
+    DeviceType devA = facility.getDefaultDeviceType();
 
     _service.editQueueItem(
         o.getInternalId(), devA.getInternalId().toString(), TestResult.NEGATIVE.toString(), null);
@@ -1089,6 +1092,33 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     makedata();
     int size = _service.getTestResultsCount(_site.getInternalId(), null, null, null, null, null);
     assertEquals(11, size);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getTopLevelDashboardMetrics_inOrgWithOrgAdmin_success() {
+    makedata();
+    Date startDate = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
+    Date endDate = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
+
+    TopLevelDashboardMetrics metrics =
+        _service.getTopLevelDashboardMetrics(null, startDate, endDate);
+    assertEquals(0, metrics.getPositiveTestCount());
+    assertEquals(1, metrics.getTotalTestCount());
+  }
+
+  @Test
+  @WithSimpleReportStandardAllFacilitiesUser
+  void getTopLevelDashboardMetrics_inOrgWithStandardUser_failure() {
+    makedata();
+    Date startDate = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
+    Date endDate = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
+
+    assertThrows(
+        AccessDeniedException.class,
+        () -> {
+          _service.getTopLevelDashboardMetrics(null, startDate, endDate);
+        });
   }
 
   private List<TestEvent> makedata() {

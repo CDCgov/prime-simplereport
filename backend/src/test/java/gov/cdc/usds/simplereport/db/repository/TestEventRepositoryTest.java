@@ -16,15 +16,19 @@ import gov.cdc.usds.simplereport.db.model.TestOrder_;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount;
+import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import org.junit.jupiter.api.Test;
@@ -37,6 +41,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
 
   @Autowired private TestEventRepository _repo;
   @Autowired private TestDataFactory _dataFactory;
+  @Autowired private OrganizationService _orgService;
 
   private Specification<TestEvent> filter(UUID facilityId, TestResult result) {
     return (root, query, cb) -> {
@@ -140,6 +145,93 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
             .toList();
     assertEquals(1, results.size());
     assertEquals("Charles", results.get(0).getPatient().getFirstName());
+  }
+
+  @Test
+  void countByResultByFacility_singleFacility_success() {
+    Date d1 = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
+    final Date DATE_1MIN_FUTURE =
+        new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
+    Organization org = _dataFactory.createValidOrg();
+    Facility place = createTestEventsForMetricsTests(org);
+
+    List<TestResultWithCount> results =
+        _repo.countByResultByFacility(Set.of(place.getInternalId()), d1, DATE_1MIN_FUTURE);
+
+    assertEquals(2, results.size());
+
+    Map<TestResult, Long> resultMap =
+        results.stream()
+            .collect(
+                Collectors.toMap(TestResultWithCount::getResult, TestResultWithCount::getCount));
+
+    assertEquals(1L, resultMap.get(TestResult.POSITIVE));
+    assertEquals(1L, resultMap.get(TestResult.UNDETERMINED));
+  }
+
+  @Test
+  void countByResultByFacility_entireOrganization_success() {
+    Date d1 = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
+    final Date DATE_1MIN_FUTURE =
+        new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
+    Organization org = _dataFactory.createValidOrg();
+    createTestEventsForMetricsTests(org);
+
+    Set<UUID> facilityIds =
+        _orgService.getFacilities(org).stream()
+            .map(Facility::getInternalId)
+            .collect(Collectors.toSet());
+
+    List<TestResultWithCount> results =
+        _repo.countByResultByFacility(facilityIds, d1, DATE_1MIN_FUTURE);
+
+    assertEquals(3, results.size());
+
+    Map<TestResult, Long> resultMap =
+        results.stream()
+            .collect(
+                Collectors.toMap(TestResultWithCount::getResult, TestResultWithCount::getCount));
+
+    assertEquals(2L, resultMap.get(TestResult.POSITIVE));
+    assertEquals(1L, resultMap.get(TestResult.NEGATIVE));
+    assertEquals(1L, resultMap.get(TestResult.UNDETERMINED));
+  }
+
+  private Facility createTestEventsForMetricsTests(Organization org) {
+    Facility place = _dataFactory.createValidFacility(org);
+    Person patient = _dataFactory.createMinimalPerson(org);
+
+    TestOrder order = _dataFactory.createTestOrder(patient, place);
+    TestEvent first =
+        new TestEvent(TestResult.POSITIVE, place.getDefaultDeviceSpecimen(), patient, place, order);
+    TestEvent second =
+        new TestEvent(
+            TestResult.UNDETERMINED, place.getDefaultDeviceSpecimen(), patient, place, order);
+    _repo.save(first);
+    _repo.save(second);
+
+    Facility otherPlace = _dataFactory.createValidFacility(org, "Other Place");
+    Person otherPatient =
+        _dataFactory.createMinimalPerson(org, otherPlace, "First", "Middle", "Last", "");
+    TestOrder order2 = _dataFactory.createTestOrder(otherPatient, otherPlace);
+    TestEvent third =
+        new TestEvent(
+            TestResult.NEGATIVE,
+            otherPlace.getDefaultDeviceSpecimen(),
+            otherPatient,
+            otherPlace,
+            order2);
+    TestEvent fourth =
+        new TestEvent(
+            TestResult.POSITIVE,
+            otherPlace.getDefaultDeviceSpecimen(),
+            otherPatient,
+            otherPlace,
+            order2);
+    _repo.save(third);
+    _repo.save(fourth);
+
+    return place;
   }
 
   private void compareAskOnEntrySurvey(AskOnEntrySurvey a1, AskOnEntrySurvey a2) {

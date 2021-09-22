@@ -70,7 +70,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
     !newUser.lastName ||
     !newUser.email ||
     !(newUser as SettingsUser).organization?.testingFacility ||
-    (newUser as SettingsUser).organization.testingFacility.length === 0;
+    (newUser as SettingsUser)?.organization?.testingFacility.length === 0;
 
   const onSave = async () => {
     setSaving(true);
