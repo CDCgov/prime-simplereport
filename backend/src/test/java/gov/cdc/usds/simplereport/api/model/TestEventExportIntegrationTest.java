@@ -50,7 +50,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
     ObjectNode variables =
         JsonNodeFactory.instance
             .objectNode()
-            .put("deviceId", _dataFactory.getGenericDevice().getInternalId().toString())
+            .put("deviceId", facility.getDefaultDeviceType().getInternalId().toString())
             .put("patientId", patient.getInternalId().toString())
             .put("result", TestResult.NEGATIVE.toString())
             .put("dateTested", "2021-09-01T10:31:30.001Z");
@@ -130,13 +130,13 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + "\"Ordering_provider_zip_code\":null,"
             + "\"Ordering_provider_county\":null,"
             + "\"Ordering_provider_phone_number\":\"(202) 555-1212\","
-            + "\"Ordered_test_code\":\"54321-BOOM\","
-            + "\"Specimen_source_site_code\":\"986543321\","
-            + "\"Specimen_type_code\":\"000111222\","
+            + "\"Ordered_test_code\":\"95209-3\","
+            + "\"Specimen_source_site_code\":\"71836000\","
+            + "\"Specimen_type_code\":\"445297001\","
             + "\"Instrument_ID\":"
             + testEventExport.getInstrumentID()
             + ","
-            + "\"Device_ID\":\"SFN\","
+            + "\"Device_ID\":\"LumiraDx SARS-CoV-2 Ag Test*\","
             + "\"Test_date\":\""
             + testEventExport.getTestDate()
             + "\","

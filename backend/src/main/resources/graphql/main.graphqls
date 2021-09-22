@@ -293,7 +293,6 @@ type Query {
 }
 
 type Mutation {
-  uploadPatients(patientList: Upload!): String
   updateFacility(
     facilityId: ID!
     testingFacilityName: String!

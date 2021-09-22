@@ -17,6 +17,7 @@ interface Props {
   defaultValue?: string;
   minDate?: string; // TODO: pass minDate and maxDate to yup object for validation
   maxDate?: string;
+  noHint?: boolean;
 }
 
 export const DatePicker = ({
@@ -33,6 +34,7 @@ export const DatePicker = ({
   defaultValue,
   minDate,
   maxDate,
+  noHint,
 }: Props) => {
   return (
     <div
@@ -49,7 +51,7 @@ export const DatePicker = ({
       >
         {label}
       </label>
-      <span className="usa-hint">mm/dd/yyyy</span>
+      {noHint ? null : <span className="usa-hint">mm/dd/yyyy</span>}
       {validationStatus === "error" && (
         <span className="usa-error-message" id={`error_${name}`} role="alert">
           <span className="usa-sr-only">Error: </span>
