@@ -224,10 +224,7 @@ public class DemoOktaRepository implements OktaRepository {
             .filter(e -> e.getValue().getGrantedRoles().contains(OrganizationRole.ADMIN))
             .findFirst();
     return admin
-        .map(
-            a -> {
-              return a.getKey();
-            })
+        .map(Entry::getKey)
         .orElseThrow(() -> new IllegalStateException("Organization does not have an admin."));
   }
 
