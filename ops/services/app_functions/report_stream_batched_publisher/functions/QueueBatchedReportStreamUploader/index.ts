@@ -10,15 +10,12 @@ import {
   convertToCsv,
   deleteSuccessfullyParsedMessages,
   dequeueMessages,
+  getQueueClient,
   minimumMessagesAvailable,
 } from "./lib";
 import { ReportStreamResponse } from "./rs-response";
 
 const {
-  AZ_STORAGE_QUEUE_SVC_URL: AZ_QUEUE_SERVICE_URL,
-  AZ_STORAGE_ACCOUNT_NAME: AZ_ACCOUNT_NAME,
-  AZ_STORAGE_ACCOUNT_KEY: AZ_ACCOUNT_KEY,
-  TEST_EVENT_QUEUE_NAME,
   REPORT_STREAM_URL,
   REPORT_STREAM_TOKEN,
 } = ENV;
@@ -33,16 +30,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   myTimer: any
 ): Promise<void> {
   const tagOverrides = { "ai.operation.id": context.traceContext.traceparent };
-
-  const credential = new StorageSharedKeyCredential(
-    AZ_ACCOUNT_NAME,
-    AZ_ACCOUNT_KEY
-  );
-  const queueServiceClient = new QueueServiceClient(
-    AZ_QUEUE_SERVICE_URL,
-    credential
-  );
-  const queueClient = queueServiceClient.getQueueClient(TEST_EVENT_QUEUE_NAME);
+  const queueClient = getQueueClient();
 
   if (!(await minimumMessagesAvailable(context, queueClient))) {
     return;
