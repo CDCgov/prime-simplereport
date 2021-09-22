@@ -52,15 +52,18 @@ const ManageDevices: React.FC<Props> = ({
   };
 
   const onSpecimenTypeChange = (
-    oldSpecimenId: string,
+    //oldSpecimenId: string,
+    index: number,
     newSpecimenId: string
   ) => {
     const newDeviceSpecimenTypes = [...deviceSpecimenTypes];
+    /*
     const deviceIndex = newDeviceSpecimenTypes.findIndex(
       (dst) => dst.specimenType === oldSpecimenId
     );
-    newDeviceSpecimenTypes[deviceIndex] = {
-      ...newDeviceSpecimenTypes[deviceIndex],
+    */
+    newDeviceSpecimenTypes[index] = {
+      ...newDeviceSpecimenTypes[index],
       specimenType: newSpecimenId,
     };
 
@@ -97,7 +100,7 @@ const ManageDevices: React.FC<Props> = ({
   };
 
   const generateDeviceRows = () => {
-    return deviceSpecimenTypes.map((dst) => {
+    return deviceSpecimenTypes.map((dst, idx) => {
       const deviceId = dst.deviceType;
 
       const deviceDropdownOptions = deviceOptions.map(
@@ -140,10 +143,7 @@ const ManageDevices: React.FC<Props> = ({
               options={specimenDropdownOptions}
               selectedValue={dst.specimenType}
               onChange={(e) =>
-                onSpecimenTypeChange(
-                  dst.specimenType,
-                  (e.target as HTMLSelectElement).value
-                )
+                onSpecimenTypeChange(idx, (e.target as HTMLSelectElement).value)
               }
             />
           </td>
