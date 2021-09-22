@@ -4,7 +4,7 @@ import Dropdown from "../commonComponents/Dropdown";
 import "./Analytics.scss";
 import AggregateResultsTable, { ResultsRow } from "./AggregateResultsTable";
 
-let abbeyRoad: ResultsRow = {
+const abbeyRoad: ResultsRow = {
   name: "Abbey Road School District (Organization)",
   testsConducted: 29,
   numberPeopleTested: 25,
@@ -13,7 +13,7 @@ let abbeyRoad: ResultsRow = {
   positivityRate: 10.3,
 };
 
-let kennedyHigh: ResultsRow = {
+const kennedyHigh: ResultsRow = {
   name: "Kennedy High School",
   testsConducted: 16,
   numberPeopleTested: 14,
@@ -22,7 +22,7 @@ let kennedyHigh: ResultsRow = {
   positivityRate: 6.25,
 };
 
-let beverlyMiddle: ResultsRow = {
+const beverlyMiddle: ResultsRow = {
   name: "Beverly Middle School",
   testsConducted: 4,
   numberPeopleTested: 3,
@@ -31,7 +31,7 @@ let beverlyMiddle: ResultsRow = {
   positivityRate: 0,
 };
 
-let johnsonElementary: ResultsRow = {
+const johnsonElementary: ResultsRow = {
   name: "Johnson Elementary",
   testsConducted: 9,
   numberPeopleTested: 9,
@@ -40,7 +40,7 @@ let johnsonElementary: ResultsRow = {
   positivityRate: 22.22,
 };
 
-let jacksonHigh: ResultsRow = {
+const jacksonHigh: ResultsRow = {
   name: "Jackson High School",
   testsConducted: 0,
   numberPeopleTested: 0,
