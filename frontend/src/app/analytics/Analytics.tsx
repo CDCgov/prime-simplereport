@@ -104,13 +104,11 @@ export const Analytics = () => {
         setEndDate(moment().format(EXTERNAL_DATE_FORMAT));
         break;
       case "week":
-        setStartDate(moment().subtract(1, "week").format(EXTERNAL_DATE_FORMAT));
+        setStartDate(moment().subtract(7, "day").format(EXTERNAL_DATE_FORMAT));
         setEndDate(moment().format(EXTERNAL_DATE_FORMAT));
         break;
       case "month":
-        setStartDate(
-          moment().subtract(1, "month").format(EXTERNAL_DATE_FORMAT)
-        );
+        setStartDate(moment().subtract(30, "day").format(EXTERNAL_DATE_FORMAT));
         setEndDate(moment().format(EXTERNAL_DATE_FORMAT));
         break;
       default:
@@ -181,15 +179,15 @@ export const Analytics = () => {
                 label="Date range"
                 options={[
                   {
-                    label: "Last day",
+                    label: "Last day (24 hours)",
                     value: "day",
                   },
                   {
-                    label: "Last week",
+                    label: "Last week (7 days)",
                     value: "week",
                   },
                   {
-                    label: "Last month",
+                    label: "Last month (30 days)",
                     value: "month",
                   },
                   {
