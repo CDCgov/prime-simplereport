@@ -305,6 +305,55 @@ class AccountRequestControllerTest extends BaseFullStackTest {
   }
 
   @Test
+  @DisplayName("Duplicate org with admin re-signing up fails")
+  void duplicateOrgWithAdminFails() throws Exception {
+    // given
+    String originalRequestBody =
+        createAccountRequest(
+            "Central Schools",
+            "AZ",
+            "k12",
+            "Mary",
+            "",
+            "Lopez",
+            "mlopez@mailinator.com",
+            "+1 (969) 768-2863");
+    MockHttpServletRequestBuilder originalBuilder =
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(originalRequestBody);
+    this._mockMvc.perform(originalBuilder).andExpect(status().isOk());
+
+    // when
+    String duplicateRequestBody =
+        createAccountRequest(
+            "Central Schools",
+            "AZ",
+            "k12",
+            "Mary",
+            "",
+            "Lopez",
+            "mlopez@mailinator.com",
+            "+1 (969) 768-2863");
+
+    MockHttpServletRequestBuilder duplicateBuilder =
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(duplicateRequestBody);
+
+    // then
+    MvcResult result = this._mockMvc.perform(duplicateBuilder).andReturn();
+    assertThat(result.getResponse().getStatus()).isEqualTo(400);
+    assertThat(result.getResponse().getContentAsString())
+        .contains(
+            "Duplicate organization with admin user that has not completed identity verification.");
+  }
+
+  @Test
   @DisplayName("Cannot create user with existing email address")
   void duplicateUserFails() throws Exception {
     // given

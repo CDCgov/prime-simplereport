@@ -49,6 +49,8 @@ public interface OktaRepository {
 
   String activateOrganizationWithSingleUser(Organization org);
 
+  String fetchAdminUserEmail(Organization org);
+
   void createFacility(Facility facility);
 
   void deleteOrganization(Organization org);

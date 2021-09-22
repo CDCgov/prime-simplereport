@@ -41,6 +41,18 @@ jest.mock("../SignUpApi", () => ({
         throw new Error(
           "This email address is already associated with a SimpleReport user."
         );
+      } else if (request.name === "DuplicateAdmin") {
+        throw new Error(
+          "Duplicate organization with admin user that has not completed identity verification."
+        );
+      } else if (request.name === "IdentityVerificationComplete") {
+        throw new Error(
+          "Duplicate organization with admin user who has completed identity verification."
+        );
+      } else if (request.name === "InternalError") {
+        throw new Error(
+          "An unknown error occured when creating this organization in Okta."
+        );
       } else {
         throw new Error("This is an error.");
       }
@@ -125,7 +137,7 @@ describe("OrganizationForm", () => {
 
     expect(
       screen.getByText(
-        "This organization has already registered with SimpleReport.",
+        "This organization already has a SimpleReport account. Please contact your organization administrator to request access.",
         { exact: false }
       )
     ).toBeInTheDocument();
@@ -147,6 +159,69 @@ describe("OrganizationForm", () => {
     expect(
       screen.getByText(
         "This email address is already registered with SimpleReport.",
+        { exact: false }
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("displays a duplicate org error and id verification link for an admin re-signing up", async () => {
+    fillIn(getOrgNameInput(), "DuplicateAdmin");
+    fillInDropDown(getOrgStateDropdown(), "TX");
+    fillInDropDown(getOrgTypeDropdown(), "Employer");
+    fillIn(getFirstNameInput(), "Greatest");
+    fillIn(getMiddleNameInput(), "OG");
+    fillIn(getLastNameInput(), "Ever");
+    fillIn(getEmailInput(), "admin@example.com");
+    fillIn(getPhoneInput(), "8008675309");
+    await act(async () => {
+      await getSubmitButton().click();
+    });
+
+    expect(
+      screen.getByText(
+        "Your organization is already registered with SimpleReport. To begin using it, schedule a time",
+        { exact: false }
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("displays a duplicate org error and instructions for admin user who has finished id verification", async () => {
+    fillIn(getOrgNameInput(), "IdentityVerificationComplete");
+    fillInDropDown(getOrgStateDropdown(), "TX");
+    fillInDropDown(getOrgTypeDropdown(), "Employer");
+    fillIn(getFirstNameInput(), "Greatest");
+    fillIn(getMiddleNameInput(), "OG");
+    fillIn(getLastNameInput(), "Ever");
+    fillIn(getEmailInput(), "admin@example.com");
+    fillIn(getPhoneInput(), "8008675309");
+    await act(async () => {
+      await getSubmitButton().click();
+    });
+
+    expect(
+      screen.getByText(
+        "Your organization is already registered with SimpleReport. Check your email for instructions on setting up your account.",
+        { exact: false }
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("displays a generic error message for Okta internal errors", async () => {
+    fillIn(getOrgNameInput(), "InternalError");
+    fillInDropDown(getOrgStateDropdown(), "TX");
+    fillInDropDown(getOrgTypeDropdown(), "Employer");
+    fillIn(getFirstNameInput(), "Greatest");
+    fillIn(getMiddleNameInput(), "OG");
+    fillIn(getLastNameInput(), "Ever");
+    fillIn(getEmailInput(), "admin@example.com");
+    fillIn(getPhoneInput(), "8008675309");
+    await act(async () => {
+      await getSubmitButton().click();
+    });
+
+    expect(
+      screen.getByText(
+        "An unexpected error occured. Please resubmit this form",
         { exact: false }
       )
     ).toBeInTheDocument();
