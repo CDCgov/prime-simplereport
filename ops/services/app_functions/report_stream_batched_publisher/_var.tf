@@ -9,7 +9,7 @@ variable "location" {
 }
 
 variable "environment" {
-  type    = string
+  type = string
 }
 
 variable "resource_group_name_prefix" {
@@ -23,18 +23,6 @@ variable "function_app_source" {
 }
 
 variable "test_event_queue_name" {
-    type = string
-    default = "test-event-publishing"
-}
-
-variable "report_stream_url" {
-    type = string
-}
-
-variable "report_stream_token" {
-    type = string
-}
-
-variable "app_insights_instrumentation_key" {
-    type = string
+  type    = string
+  default = "test-event-publishing"
 }
