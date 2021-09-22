@@ -89,16 +89,11 @@ public class AccountRequestController {
           request.getFirstName(), request.getLastName(), request.getEmail(), org.getExternalId());
       return new AccountResponse(org.getExternalId());
     } catch (ResourceException e) {
-      // The `ResourceException` is thrown when a user requests an account with an email address
-      // that's already in Okta.
-      // This happens fairly frequently and is the expected behavior of the current form.
-      // We rethrow this as a BadRequestException so that users get a toast on the frontend
-      // informing them of the error.
-      LOG.info("Okta resource exception thrown: " + e);
-      LOG.info("Okta message: " + e.getMessage());
-      LOG.info("Okta code: " + e.getCode());
-      LOG.info("Okta error: " + e.getError());
-      if (e.getMessage().contains(" An object with this field already exists")) {
+      // The `ResourceException` is mostly thrown when a user requests an account with an email
+      // address that's already in Okta, but can be thrown for other Okta internal errors as well.
+      // We rethrow it as a BadRequestException so that users get a toast informing them of the
+      // error.
+      if (e.getMessage().contains("An object with this field already exists")) {
         throw new BadRequestException(
             "This email address is already associated with a SimpleReport user.");
       } else {
@@ -106,8 +101,10 @@ public class AccountRequestController {
             "An unknown error occured when creating this organization in Okta.");
       }
     } catch (UnexpectedRollbackException e) {
-      // The `BadRequestException` is thrown when an account is requested with an existing org
-      // name. This happens quite frequently and is expected behavior of the current form
+      // This `UnexpectedRollbackException` is thrown if a duplicate org somehow slips past our
+      // checks and is attempted to be committed to the database.
+      // We rethrow it as a BadRequestException so that users get a toast informing them of the
+      // error.
       throw new BadRequestException("This organization has already registered with SimpleReport.");
     } catch (IOException | RuntimeException e) {
       throw new AccountRequestFailureException(e);
@@ -115,7 +112,6 @@ public class AccountRequestController {
   }
 
   private Organization checkAccountRequestAndCreateOrg(OrganizationAccountRequest request) {
-    // verify that the organization doesn't already exist
     String organizationName =
         checkForDuplicateOrg(request.getName(), request.getState(), request.getEmail());
     String orgExternalId = createOrgExternalId(organizationName, request.getState());
@@ -133,6 +129,7 @@ public class AccountRequestController {
       Optional<Organization> duplicateOrg =
           potentialDuplicates.stream().filter(o -> o.getExternalId().startsWith(state)).findFirst();
       if (duplicateOrg.isPresent()
+          // Special toasts are shown to admin users trying to re-register their org.
           && (_oktaRepo.fetchAdminUserEmail(duplicateOrg.get()).equals(email))) {
         String message =
             duplicateOrg.get().getIdentityVerified()
@@ -140,7 +137,7 @@ public class AccountRequestController {
                 : "Duplicate organization with admin user that has not completed identity verification.";
         throw new BadRequestException(message);
       }
-      throw new BadRequestException("Organization is a duplicate.");
+      throw new BadRequestException("This organization has already registered with SimpleReport.");
     }
 
     return String.join("-", organizationName, state);

@@ -147,16 +147,7 @@ export const organizationSchema: yup.SchemaOf<OrganizationCreateRequest> = yup
 
 export const organizationBackendErrors = (error: string): ReactElement => {
   switch (error) {
-    // Duplicate org; not admin user
-    case "Organization is a duplicate.":
-    case "This organization has already registered with SimpleReport.":
-      return (
-        <Alert type="error" title="Duplicate organization">
-          This organization already has a SimpleReport account. Please contact
-          your organization administrator to request access.
-        </Alert>
-      );
-    // Duplicate org; admin user has finised id verification
+    // Duplicate org. Admin user is attempting to resign up but has already completed identity verification.
     case "Duplicate organization with admin user who has completed identity verification.":
       return (
         <Alert type="error" title="Duplicate organization">
@@ -164,7 +155,7 @@ export const organizationBackendErrors = (error: string): ReactElement => {
           email for instructions on setting up your account.
         </Alert>
       );
-    // Duplicate org; admin user hasn't finished identity verification
+    // Duplicate org. Admin user is attempting to resign up and hasn't finished identity verification.
     case "Duplicate organization with admin user that has not completed identity verification.":
       return (
         <Alert type="error" title="Duplicate organization">
@@ -175,6 +166,15 @@ export const organizationBackendErrors = (error: string): ReactElement => {
           </a>{" "}
         </Alert>
       );
+    // Duplicate org. Non-admin user is attempting to reregister the organization.
+    case "This organization has already registered with SimpleReport.":
+      return (
+        <Alert type="error" title="Duplicate organization">
+          This organization already has a SimpleReport account. Please contact
+          your organization administrator to request access.
+        </Alert>
+      );
+    // Email already exists in SimpleReport (user is potentially already in another org.)
     case "This email address is already associated with a SimpleReport user.":
       return (
         <Alert type="error" title="Email already registered">
@@ -184,6 +184,7 @@ export const organizationBackendErrors = (error: string): ReactElement => {
           for help.
         </Alert>
       );
+    // Okta internal error.
     case "An unknown error occured when creating this organization in Okta.":
       return (
         <Alert type="error" title="Unexpected error">
