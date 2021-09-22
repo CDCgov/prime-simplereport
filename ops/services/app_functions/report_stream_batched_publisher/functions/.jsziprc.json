@@ -10,7 +10,8 @@
     "*.zip",
     "*.map",
     "terraform.*",
-    "*.tf"
+    "*.tf",
+    "local.settings.json"
   ],
   "mode": "add",
   "outputEntry": "build/batched-rs-publisher.zip",
