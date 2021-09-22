@@ -40,6 +40,14 @@ public class ReminderService {
    * were created and did not complete id verification
    */
   public Map<Organization, Set<String>> sendAccountReminderEmails() {
+    // take the advisory lock for this process. auto released after transaction
+    if (_orgRepo.tryOrgReminderLock()) {
+      LOG.info("Reminder lock obtained: commencing email sending");
+    } else {
+      LOG.info("Reminders locked out by mutex: aborting");
+      return new HashMap<>();
+    }
+
     TimeZone tz = TimeZone.getTimeZone("America/New_York");
     LocalDate now = LocalDate.now(tz.toZoneId());
 
