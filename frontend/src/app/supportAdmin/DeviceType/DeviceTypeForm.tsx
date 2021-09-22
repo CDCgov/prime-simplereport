@@ -2,6 +2,8 @@ import React, { useState } from "react";
 
 import Button from "../../commonComponents/Button/Button";
 import TextInput from "../../commonComponents/TextInput";
+import MultiSelect from "../../commonComponents/MultiSelect";
+import { ComboBoxOption } from "../../commonComponents/ComboBox/ComboBox";
 
 import { Device } from "./DeviceTypeFormContainer";
 
@@ -10,6 +12,12 @@ interface Props {
 }
 
 const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType }) => {
+  const swabOptions: ComboBoxOption[] = [
+    { label: "Nasopharyngeal swab", value: "Nasopharyngeal swab" },
+    { label: "Throat swab", value: "Throat swab" },
+    { label: "Mid-turbinate swab", value: "Mid-turbinate swab" },
+  ];
+
   const [device, updateDevice] = useState<Device>({
     name: "",
     manufacturer: "",
@@ -117,11 +125,11 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType }) => {
               </div>
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
-                  <TextInput
+                  <MultiSelect
                     label="SNOMED code of Swab Type"
                     name="swabType"
-                    value={device.swabType}
-                    onChange={onChange}
+                    onChange={() => {}}
+                    options={swabOptions}
                     required
                   />
                 </div>

@@ -50,7 +50,8 @@ export interface State {
 
 export const useCombobox = (
   initialState: State,
-  optionsList: ComboBoxOption[]
+  optionsList: ComboBoxOption[],
+  showInputValue: boolean
 ): [State, React.Dispatch<Action>] => {
   const isPartialMatch = (
     needle: string
@@ -67,7 +68,7 @@ export const useCombobox = (
           isOpen: false,
           selectedOption: action.option,
           focusMode: FocusMode.Input,
-          inputValue: action.option.label,
+          inputValue: showInputValue ? action.option.label : "",
           filter: undefined,
           filteredOptions: optionsList.filter(isPartialMatch("")),
         };

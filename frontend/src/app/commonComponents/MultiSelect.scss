@@ -1,0 +1,33 @@
+
+.combo-box {
+  max-width: unset !important;
+}
+
+.pill-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 16px 0 0 0;
+
+  .pill {
+    display: flex;
+    align-items: center;
+    margin: 4px 8px 4px 0;
+    padding: 4px 4px 4px 8px;
+    background: #d9e8f6;
+    border-radius: 4px;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    color: #005ea2;
+    cursor: default;
+  }
+
+  .close-button {
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

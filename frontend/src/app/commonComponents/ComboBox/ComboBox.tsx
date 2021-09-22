@@ -44,6 +44,7 @@ interface ComboBoxProps {
   noResults?: string;
   inputProps?: JSX.IntrinsicElements["input"];
   selectProps?: JSX.IntrinsicElements["select"];
+  showSelectedValue?: boolean;
 }
 
 interface InputProps {
@@ -86,6 +87,7 @@ export const ComboBox = ({
   noResults,
   selectProps,
   inputProps,
+  showSelectedValue = true,
 }: ComboBoxProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -106,7 +108,11 @@ export const ComboBox = ({
     inputValue: defaultOption ? defaultOption.label : "",
   };
 
-  const [state, dispatch] = useCombobox(initialState, options);
+  const [state, dispatch] = useCombobox(
+    initialState,
+    options,
+    showSelectedValue
+  );
 
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRef = useRef<HTMLLIElement>(null);
@@ -311,19 +317,21 @@ export const ComboBox = ({
         disabled={isDisabled}
         {...inputProps}
       />
-      <span className="usa-combo-box__clear-input__wrapper" tabIndex={-1}>
-        <button
-          type="button"
-          className="usa-combo-box__clear-input"
-          aria-label="Clear the select contents"
-          onClick={(): void => dispatch({ type: ActionTypes.CLEAR })}
-          data-testid="combo-box-clear-button"
-          onKeyDown={handleClearKeyDown}
-          hidden={!state.selectedOption}
-        >
-          &nbsp;
-        </button>
-      </span>
+      {showSelectedValue && (
+        <span className="usa-combo-box__clear-input__wrapper" tabIndex={-1}>
+          <button
+            type="button"
+            className="usa-combo-box__clear-input"
+            aria-label="Clear the select contents"
+            onClick={(): void => dispatch({ type: ActionTypes.CLEAR })}
+            data-testid="combo-box-clear-button"
+            onKeyDown={handleClearKeyDown}
+            hidden={!state.selectedOption}
+          >
+            &nbsp;
+          </button>
+        </span>
+      )}
       <span className="usa-combo-box__input-button-separator">&nbsp;</span>
       <span className="usa-combo-box__toggle-list__wrapper" tabIndex={-1}>
         <button
@@ -357,7 +365,8 @@ export const ComboBox = ({
           const selected = option === state.selectedOption;
           const itemClasses = classnames("usa-combo-box__list-option", {
             "usa-combo-box__list-option--focused": focused,
-            "usa-combo-box__list-option--selected": selected,
+            "usa-combo-box__list-option--selected":
+              selected && showSelectedValue,
           });
 
           return (
