@@ -23,6 +23,14 @@ const GET_FACILITIES = gql`
         deviceTypes {
           internalId
         }
+        deviceSpecimenTypes {
+          deviceType {
+            internalId
+          }
+          specimenType {
+            internalId
+          }
+        }
         orderingProvider {
           firstName
           middleName

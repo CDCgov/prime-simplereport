@@ -8,6 +8,8 @@ import {
 } from "../../utils/clia";
 import { isEmptyString } from "../../utils";
 
+import { DeviceSpecimenType } from "./FacilityForm";
+
 const phoneUtil = PhoneNumberUtil.getInstance();
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -70,6 +72,11 @@ const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
   zipCode: yup.string().nullable(),
 });
 
+export const deviceSchema: yup.SchemaOf<DeviceSpecimenType> = yup.object({
+  deviceType: yup.string().required(),
+  specimenType: yup.string().required(),
+});
+
 export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
   name: yup.string().required("Facility name is missing"),
   cliaNumber: yup
@@ -102,6 +109,7 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
     .of(yup.string().required())
     .min(1, "There must be at least one device")
     .required("There must be at least one device"),
+  deviceSpecimenTypes: yup.array().of(deviceSchema),
   defaultDevice: yup.mixed().test(function (input) {
     if (!input) {
       return this.createError({ message: "A default device must be selected" });

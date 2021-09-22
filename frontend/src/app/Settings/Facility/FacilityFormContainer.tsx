@@ -32,6 +32,15 @@ export const GET_FACILITY_QUERY = gql`
         deviceTypes {
           internalId
         }
+        deviceSpecimenTypes {
+          deviceType {
+            internalId
+          }
+          specimenType {
+            internalId
+            name
+          }
+        }
         orderingProvider {
           firstName
           middleName
@@ -48,6 +57,10 @@ export const GET_FACILITY_QUERY = gql`
       }
     }
     deviceType {
+      internalId
+      name
+    }
+    specimenType {
       internalId
       name
     }
@@ -167,10 +180,7 @@ interface Props {
 
 const FacilityFormContainer: any = (props: Props) => {
   const { data, loading, error } = useQuery<FacilityData, {}>(
-    GET_FACILITY_QUERY,
-    {
-      fetchPolicy: "no-cache",
-    }
+    GET_FACILITY_QUERY
   );
   const appInsights = useAppInsightsContext();
   const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION);
@@ -244,12 +254,16 @@ const FacilityFormContainer: any = (props: Props) => {
       (f) => f.id === props.facilityId
     );
     if (facility) {
-      let deviceTypes = Object.values(facility.deviceTypes).map(
-        (d) => d.internalId
+      let deviceTypes = Object.values(facility.deviceSpecimenTypes).map(
+        (dst) => dst.deviceType.internalId
       );
       return {
         ...facility,
         deviceTypes: deviceTypes,
+        deviceSpecimenTypes: facility.deviceSpecimenTypes.map((dst) => ({
+          deviceType: dst.deviceType.internalId,
+          specimenType: dst.specimenType.internalId,
+        })),
         defaultDevice: facility.defaultDeviceType
           ? facility.defaultDeviceType.internalId
           : "",
@@ -281,6 +295,12 @@ const FacilityFormContainer: any = (props: Props) => {
         phone: "",
       },
       deviceTypes: [defaultDevice],
+      deviceSpecimenTypes: [
+        {
+          deviceType: defaultDevice,
+          specimenType: "",
+        },
+      ],
       defaultDevice,
     };
   };
@@ -289,6 +309,7 @@ const FacilityFormContainer: any = (props: Props) => {
     <FacilityForm
       facility={getFacilityData()}
       deviceOptions={data.deviceType}
+      specimenOptions={data.specimenType}
       saveFacility={saveFacility}
       newOrg={props.newOrg}
     />

@@ -5,24 +5,26 @@ import Button from "../../../commonComponents/Button/Button";
 import Dropdown from "../../../commonComponents/Dropdown";
 import Checkboxes from "../../../commonComponents/Checkboxes";
 import { FacilityErrors } from "../facilitySchema";
-import { ValidateField } from "../FacilityForm";
+import { ValidateField, DeviceSpecimenType } from "../FacilityForm";
 
 interface Props {
-  deviceTypes: string[];
+  deviceSpecimenTypes: DeviceSpecimenType[];
   defaultDevice: string;
-  updateDeviceTypes: (deviceTypes: string[]) => void;
+  updateDeviceSpecimenTypes: (deviceTypes: DeviceSpecimenType[]) => void;
   updateDefaultDevice: (defaultDevice: string) => void;
   deviceOptions: DeviceType[];
+  specimenOptions: SpecimenType[];
   errors: FacilityErrors;
   validateField: ValidateField;
 }
 
 const ManageDevices: React.FC<Props> = ({
-  deviceTypes,
+  deviceSpecimenTypes,
   defaultDevice,
-  updateDeviceTypes,
+  updateDeviceSpecimenTypes,
   updateDefaultDevice,
   deviceOptions,
+  specimenOptions,
   errors,
   validateField,
 }) => {
@@ -34,16 +36,45 @@ const ManageDevices: React.FC<Props> = ({
     deviceErrors.push(errors.defaultDevice);
   }
 
-  const onDeviceChange = (oldDeviceId: string, newDeviceId: string) => {
-    const newDeviceTypes = Array.from(deviceTypes);
-    newDeviceTypes[newDeviceTypes.indexOf(oldDeviceId)] = newDeviceId;
-    updateDeviceTypes(newDeviceTypes);
+  const deviceTypeIds = deviceSpecimenTypes.map((dst) => dst.deviceType);
+
+  const onDeviceTypeChange = (oldDeviceId: string, newDeviceId: string) => {
+    const newDeviceSpecimenTypes = [...deviceSpecimenTypes];
+    const deviceIndex = newDeviceSpecimenTypes.findIndex(
+      (el) => el.deviceType === oldDeviceId
+    );
+    newDeviceSpecimenTypes[deviceIndex] = {
+      ...newDeviceSpecimenTypes[deviceIndex],
+      deviceType: newDeviceId,
+    };
+
+    updateDeviceSpecimenTypes(newDeviceSpecimenTypes);
+  };
+
+  const onSpecimenTypeChange = (
+    oldSpecimenId: string,
+    newSpecimenId: string
+  ) => {
+    const newDeviceSpecimenTypes = [...deviceSpecimenTypes];
+    const deviceIndex = newDeviceSpecimenTypes.findIndex(
+      (dst) => dst.specimenType === oldSpecimenId
+    );
+    newDeviceSpecimenTypes[deviceIndex] = {
+      ...newDeviceSpecimenTypes[deviceIndex],
+      specimenType: newSpecimenId,
+    };
+
+    updateDeviceSpecimenTypes(newDeviceSpecimenTypes);
   };
 
   const onDeviceRemove = (id: string) => {
-    const newDeviceTypes = Array.from(deviceTypes);
-    newDeviceTypes.splice(newDeviceTypes.indexOf(id), 1);
-    updateDeviceTypes(newDeviceTypes);
+    const newDeviceSpecimenTypes = [...deviceSpecimenTypes];
+    const deviceIndex = newDeviceSpecimenTypes.findIndex(
+      (el) => el.deviceType === id
+    );
+    newDeviceSpecimenTypes.splice(deviceIndex, 1);
+
+    updateDeviceSpecimenTypes(newDeviceSpecimenTypes);
     // Unset default device if ID matches
     if (defaultDevice === id) {
       updateDefaultDevice("");
@@ -52,32 +83,67 @@ const ManageDevices: React.FC<Props> = ({
 
   // returns a list of deviceIds that have *not* been selected so far
   const _getRemainingDeviceOptions = () =>
-    deviceOptions.filter((d) => !deviceTypes.includes(d.internalId));
+    deviceOptions.filter((d) => !deviceTypeIds.includes(d.internalId));
 
   const onAddDevice = () => {
     const remainingDeviceOptions = _getRemainingDeviceOptions();
-    const newDeviceTypes = Array.from(deviceTypes);
-    newDeviceTypes.push(remainingDeviceOptions[0].internalId);
-    updateDeviceTypes(newDeviceTypes);
+    const newDeviceSpecimenTypes = [...deviceSpecimenTypes];
+    newDeviceSpecimenTypes.push({
+      deviceType: remainingDeviceOptions[0].internalId,
+      specimenType: "",
+    });
+
+    updateDeviceSpecimenTypes(newDeviceSpecimenTypes);
   };
 
   const generateDeviceRows = () => {
-    return deviceTypes.map((deviceId) => {
-      let dropdownOptions = deviceOptions.map(({ name, internalId }) => {
-        return {
-          label: name,
-          value: internalId,
-          disabled: deviceTypes.includes(internalId),
-        };
-      });
+    return deviceSpecimenTypes.map((dst) => {
+      const deviceId = dst.deviceType;
+
+      const deviceDropdownOptions = deviceOptions.map(
+        ({ name, internalId }) => {
+          return {
+            label: name,
+            value: internalId,
+            disabled: deviceSpecimenTypes
+              .map((d) => d.deviceType)
+              .includes(internalId),
+          };
+        }
+      );
+
+      const specimenDropdownOptions = specimenOptions.map(
+        ({ name, internalId }) => {
+          return {
+            label: name,
+            value: internalId,
+          };
+        }
+      );
+
       return (
         <tr key={deviceId}>
           <td>
             <Dropdown
-              options={dropdownOptions}
+              options={deviceDropdownOptions}
               selectedValue={deviceId}
               onChange={(e) =>
-                onDeviceChange(deviceId, (e.target as HTMLSelectElement).value)
+                onDeviceTypeChange(
+                  deviceId,
+                  (e.target as HTMLSelectElement).value
+                )
+              }
+            />
+          </td>
+          <td>
+            <Dropdown
+              options={specimenDropdownOptions}
+              selectedValue={dst.specimenType}
+              onChange={(e) =>
+                onSpecimenTypeChange(
+                  dst.specimenType,
+                  (e.target as HTMLSelectElement).value
+                )
               }
             />
           </td>
@@ -111,7 +177,7 @@ const ManageDevices: React.FC<Props> = ({
   };
 
   const renderDevicesTable = () => {
-    if (Object.keys(deviceTypes).length === 0) {
+    if (Object.keys(deviceSpecimenTypes).length === 0) {
       return <p> There are currently no devices </p>;
     }
     return (
@@ -122,6 +188,7 @@ const ManageDevices: React.FC<Props> = ({
         <thead>
           <tr>
             <th scope="col">Device type</th>
+            <th scope="col">Swab type</th>
             <th scope="col"></th>
             <th scope="col">Action</th>
           </tr>

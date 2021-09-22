@@ -23,6 +23,11 @@ import OrderingProviderSettings from "./Components/OrderingProvider";
 import FacilityInformation from "./Components/FacilityInformation";
 import { FacilityErrors, facilitySchema } from "./facilitySchema";
 
+export interface DeviceSpecimenType {
+  deviceType: string;
+  specimenType: string;
+}
+
 export type ValidateField = (field: keyof FacilityErrors) => Promise<void>;
 
 export const useFacilityValidation = (facility: Facility) => {
@@ -121,6 +126,7 @@ type AddressOptions = "facility" | "provider";
 export interface Props {
   facility: Facility;
   deviceOptions: DeviceType[];
+  specimenOptions: SpecimenType[];
   saveFacility: (facility: Facility) => void;
   newOrg?: boolean;
 }
@@ -137,24 +143,30 @@ const FacilityForm: React.FC<Props> = (props) => {
     updateFormData(data);
     updateFormChanged(true);
   };
+
   const updateFacility = (newFacility: Facility) => {
     updateForm({
       ...facility,
       ...newFacility,
     });
   };
+
   const updateProvider = (orderingProvider: Provider) => {
     updateForm({
       ...facility,
       orderingProvider,
     });
   };
-  const updateDeviceTypes = (deviceTypes: string[]) => {
+
+  const updateDeviceSpecimenTypes = (
+    deviceSpecimenTypes: DeviceSpecimenType[]
+  ) => {
     updateForm((facility) => ({
       ...facility,
-      deviceTypes,
+      deviceSpecimenTypes,
     }));
   };
+
   const updateDefaultDevice = (defaultDevice: string) => {
     updateForm((facility) => ({
       ...facility,
@@ -350,11 +362,15 @@ const FacilityForm: React.FC<Props> = (props) => {
           validateField={validateField}
         />
         <ManageDevices
-          deviceTypes={facility.deviceTypes}
+          deviceSpecimenTypes={facility.deviceSpecimenTypes.map((dst) => ({
+            deviceType: dst.deviceType,
+            specimenType: dst.specimenType,
+          }))}
           defaultDevice={facility.defaultDevice}
-          updateDeviceTypes={updateDeviceTypes}
+          updateDeviceSpecimenTypes={updateDeviceSpecimenTypes}
           updateDefaultDevice={updateDefaultDevice}
           deviceOptions={props.deviceOptions}
+          specimenOptions={props.specimenOptions}
           errors={errors}
           validateField={validateField}
         />
