@@ -2,6 +2,31 @@ type Nullable<T> = { [P in keyof T]: T[P] | null };
 
 type ISODate = `${number}${number}${number}${number}-${number}${number}-${number}${number}`;
 
+interface DeviceType {
+  internalId: string;
+  name: string;
+}
+interface DeviceTypes {
+  deviceType: [DeviceType];
+}
+interface SpecimenType {
+  internalId: string;
+  name: string;
+  typeCode?: string;
+  collectionLocationName?: string;
+  collectionLocationCode?: string;
+}
+
+interface DeviceSpecimenTypeIds {
+  deviceType: !ID;
+  specimenType: !ID;
+}
+
+interface DeviceSpecimenTypes {
+  deviceType: DeviceType;
+  specimenType: SpecimenType;
+}
+
 interface Address {
   street: string;
   streetTwo: string | null;
@@ -21,6 +46,7 @@ interface Facility extends Address {
   phone: string;
   email: string | null;
   deviceTypes: string[];
+  deviceSpecimenTypes: DeviceSpecimenTypeIds[];
   defaultDevice: string;
   orderingProvider: Provider;
 }
@@ -68,15 +94,6 @@ interface FlatOrganization {
   defaultDevice: string;
 }
 
-interface DeviceType {
-  internalId: string;
-  name: string;
-}
-
-interface DeviceTypes {
-  deviceType: [DeviceType];
-}
-
 interface PhoneNumber {
   type: string;
   number: string;
@@ -107,6 +124,7 @@ interface SettingsData {
             internalId: string;
           }
         ];
+        deviceSpecimenTypes: DeviceSpecimenTypes[];
         orderingProvider: {
           firstName: string;
           middleName: string;
@@ -157,6 +175,7 @@ interface FacilityData {
             internalId: string;
           }
         ];
+        deviceSpecimenTypes: DeviceSpecimenTypes[];
         orderingProvider: {
           firstName: string;
           middleName: string;
@@ -175,6 +194,12 @@ interface FacilityData {
     ];
   };
   deviceType: [
+    {
+      internalId: string;
+      name: string;
+    }
+  ];
+  specimenType: [
     {
       internalId: string;
       name: string;
