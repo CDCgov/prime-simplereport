@@ -1,9 +1,8 @@
-mutation patientLinkSubmit($internalId: String!, $birthDate: LocalDate!, $symptoms: String!, $previousTestDate: LocalDate!, $symptomOnsetDate: LocalDate!) {
+mutation patientLinkSubmit($internalId: String!, $birthDate: LocalDate!, $symptoms: String!, $symptomOnsetDate: LocalDate!) {
     patientLinkSubmit(
       internalId: $internalId, 
       birthDate: $birthDate,
       symptoms: $symptoms,
-      priorTestDate: $previousTestDate,
       symptomOnset: $symptomOnsetDate
     )
   }

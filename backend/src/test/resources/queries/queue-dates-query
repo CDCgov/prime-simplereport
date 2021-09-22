@@ -6,7 +6,6 @@
         birthDate
       }
       symptomOnset
-      priorTestDate
       dateTested
     }
 }

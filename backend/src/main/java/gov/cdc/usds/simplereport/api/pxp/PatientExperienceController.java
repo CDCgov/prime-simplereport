@@ -5,9 +5,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
-import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
-import gov.cdc.usds.simplereport.api.model.AoEQuestions;
 import gov.cdc.usds.simplereport.api.model.PersonUpdate;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponse;
@@ -16,13 +14,10 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestEventService;
-import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
-import java.util.Map;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -56,7 +51,6 @@ public class PatientExperienceController {
 
   private final PersonService _ps;
   private final PatientLinkService _pls;
-  private final TestOrderService _tos;
   private final TestEventService _tes;
   private final TimeOfConsentService _tocs;
   private final CurrentPatientContextHolder _contextHolder;
@@ -64,13 +58,11 @@ public class PatientExperienceController {
   public PatientExperienceController(
       PersonService personService,
       PatientLinkService patientLinkService,
-      TestOrderService testOrderService,
       TestEventService testEventService,
       TimeOfConsentService timeOfConsentService,
       CurrentPatientContextHolder contextHolder) {
     this._ps = personService;
     this._pls = patientLinkService;
-    this._tos = testOrderService;
     this._tes = testEventService;
     this._tocs = timeOfConsentService;
     this._contextHolder = contextHolder;
@@ -123,25 +115,5 @@ public class PatientExperienceController {
     OrderStatus os = pl.getTestOrder().getOrderStatus();
     TestEvent te = _tes.getLastTestResultsForPatient(updated);
     return new PxpVerifyResponse(updated, os, te);
-  }
-
-  @PostMapping("/questions")
-  public void patientLinkSubmit(
-      @RequestBody PxpRequestWrapper<AoEQuestions> body, HttpServletRequest request) {
-    AoEQuestions data = body.getData();
-    Map<String, Boolean> symptomsMap = parseSymptoms(data.getSymptoms());
-
-    _tos.updateMyTimeOfTestQuestions(
-        data.getPregnancy(),
-        symptomsMap,
-        data.isFirstTest(),
-        data.getPriorTestDate(),
-        data.getPriorTestType(),
-        data.getPriorTestResult() == null ? null : TestResult.valueOf(data.getPriorTestResult()),
-        data.getSymptomOnset(),
-        data.getNoSymptoms());
-
-    _ps.updateMyTestResultDeliveryPreference(data.getTestResultDelivery());
-    _pls.expireMyPatientLink();
   }
 }
