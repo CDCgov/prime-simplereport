@@ -209,6 +209,14 @@ type TopLevelDashboardMetrics {
   totalTestCount: Int
 }
 
+type AggregateFacilityMetrics {
+  facilityName: String,
+  totalTestCount: Int,
+  peopleTestedCount: Int,
+  positiveTestCount: Int,
+  negativeTestCount: Int
+}
+
 type AddTestResultResponse {
   testResult: TestOrder!
   deliverySuccess: Boolean
@@ -277,6 +285,8 @@ type Query {
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   topLevelDashboardMetrics(facilityId: ID, startDate: DateTime!, endDate: DateTime!): TopLevelDashboardMetrics
+    @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
+  aggregateFacilityMetrics(startDate: DateTime!, endDate: DateTime!): [AggregateFacilityMetrics]
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
   usersWithStatus: [ApiUserWithStatus!] @requiredPermissions(allOf: ["MANAGE_USERS"])

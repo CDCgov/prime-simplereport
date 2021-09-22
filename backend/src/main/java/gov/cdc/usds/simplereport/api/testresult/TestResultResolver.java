@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.testresult;
 
 import gov.cdc.usds.simplereport.api.Translators;
+import gov.cdc.usds.simplereport.api.model.AggregateFacilityMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.service.TestOrderService;
@@ -67,5 +68,10 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
   public TopLevelDashboardMetrics getTopLevelDashboardMetrics(
       UUID facilityId, Date startDate, Date endDate) {
     return tos.getTopLevelDashboardMetrics(facilityId, startDate, endDate);
+  }
+
+  public List<AggregateFacilityMetrics> getAggregateFaciltiyMetrics(
+    Date startDate, Date endDate) {
+    return tos.getAggregateFacilityMetrics(startDate, endDate);
   }
 }

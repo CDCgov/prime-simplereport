@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import com.twilio.exception.ApiException;
 import com.twilio.exception.TwilioException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
+import gov.cdc.usds.simplereport.api.model.AggregateFacilityMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -484,6 +485,12 @@ public class TestOrderService {
     long positiveTestCount = testResultMap.getOrDefault(TestResult.POSITIVE, 0L);
 
     return new TopLevelDashboardMetrics(positiveTestCount, totalTestCount);
+  }
+
+  @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionEditOrganization
+  public List<AggregateFacilityMetrics> getAggregateFacilityMetrics(Date startDate, Date endDate) {
+    return List.of();
   }
 
   private void lockOrder(UUID orderId) throws IllegalGraphqlArgumentException {
