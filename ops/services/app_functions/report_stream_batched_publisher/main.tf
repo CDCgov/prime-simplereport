@@ -38,34 +38,6 @@ resource "azurerm_storage_blob" "appcode" {
   source                 = var.function_app_source
 }
 
-data "azurerm_storage_account_sas" "sas" {
-  connection_string = azurerm_storage_account.fn_app.primary_connection_string
-  https_only        = true
-  start             = "2021-09-01"
-  expiry            = "2022-12-31"
-  resource_types {
-    object    = true
-    container = false
-    service   = false
-  }
-  services {
-    blob  = true
-    queue = false
-    table = false
-    file  = false
-  }
-  permissions {
-    read    = true
-    write   = false
-    delete  = false
-    list    = false
-    add     = false
-    create  = false
-    update  = false
-    process = false
-  }
-}
-
 resource "azurerm_app_service_plan" "asp" {
   name                = "${var.prefix}-plan"
   resource_group_name = local.resource_group_name
@@ -101,13 +73,13 @@ resource "azurerm_function_app" "functions" {
     HASH                           = "${base64encode(filesha256("${var.function_app_source}"))}"
     WEBSITE_RUN_FROM_PACKAGE       = "https://${azurerm_storage_account.fn_app.name}.blob.core.windows.net/${azurerm_storage_container.deployments.name}/${azurerm_storage_blob.appcode.name}${data.azurerm_storage_account_sas.sas.sas}"
     APPINSIGHTS_INSTRUMENTATIONKEY = var.app_insights_instrumentation_key
-    AZ_STORAGE_QUEUE_SVC_URL       = "https://${azurerm_storage_account.fn_app.name}.queue.core.windows.net/"
-    AZ_STORAGE_ACCOUNT_NAME        = azurerm_storage_account.fn_app.name
-    AZ_STORAGE_ACCOUNT_KEY         = azurerm_storage_account.fn_app.primary_access_key
+    AZ_STORAGE_QUEUE_SVC_URL       = "https://${data.azurerm_storage_account.app.name}.queue.core.windows.net/"
+    AZ_STORAGE_ACCOUNT_NAME        = data.azurerm_storage_account.app.name
+    AZ_STORAGE_ACCOUNT_KEY         = data.azurerm_storage_account.app.primary_access_key
     TEST_EVENT_QUEUE_NAME          = var.test_event_queue_name
     REPORT_STREAM_URL              = var.report_stream_url
     REPORT_STREAM_TOKEN            = var.report_stream_token
-    REPORT_STREAM_BATCH_MINIMUM    = "100"
+    REPORT_STREAM_BATCH_MINIMUM    = "1"
     REPORT_STREAM_BATCH_MAXIMUM    = "1000"
   }
 }
