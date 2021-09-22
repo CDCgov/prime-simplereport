@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -345,6 +346,26 @@ class DemoOktaRepositoryTest {
         new IdentityAttributes(AMOS.getUsername(), "First", "Middle", "Last", "Jr");
     assertThrows(
         IllegalGraphqlArgumentException.class, () -> _repo.reprovisionUser(identityAttributes));
+  }
+
+  @Test
+  void fetchAdminUserEmail_successful() {
+    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER), true);
+    _repo.createUser(
+        BRAD,
+        ABC,
+        Set.of(ABC_2),
+        Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES),
+        true);
+    _repo.createUser(CHARLES, ABC, Set.of(ABC_1, ABC_2), Set.of(), true);
+    _repo.createUser(
+        DIANE,
+        ABC,
+        Set.of(ABC_1, ABC_2),
+        Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN),
+        true);
+
+    assertEquals(_repo.fetchAdminUserEmail(ABC), "dianek@gmail.com");
   }
 
   private static Facility getFacility(UUID uuid, Organization org) {
