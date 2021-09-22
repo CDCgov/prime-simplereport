@@ -24,8 +24,5 @@ query GetFacilityResults($facilityId: ID!, $nameType: String = "long") {
     noSymptoms
     pregnancy
     symptomOnset
-    priorTestDate
-    priorTestResult
-    priorTestType
   }
 }

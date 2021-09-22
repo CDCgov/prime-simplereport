@@ -188,13 +188,9 @@ export type MutationAddPatientArgs = {
 
 export type MutationAddPatientToQueueArgs = {
   facilityId: Scalars["ID"];
-  firstTest?: Maybe<Scalars["Boolean"]>;
   noSymptoms?: Maybe<Scalars["Boolean"]>;
   patientId: Scalars["ID"];
   pregnancy?: Maybe<Scalars["String"]>;
-  priorTestDate?: Maybe<Scalars["LocalDate"]>;
-  priorTestResult?: Maybe<Scalars["String"]>;
-  priorTestType?: Maybe<Scalars["String"]>;
   symptomOnset?: Maybe<Scalars["LocalDate"]>;
   symptoms?: Maybe<Scalars["String"]>;
   testResultDelivery?: Maybe<TestResultDeliveryPreference>;
@@ -429,13 +425,9 @@ export type MutationUpdateRegistrationLinkArgs = {
 };
 
 export type MutationUpdateTimeOfTestQuestionsArgs = {
-  firstTest?: Maybe<Scalars["Boolean"]>;
   noSymptoms?: Maybe<Scalars["Boolean"]>;
   patientId: Scalars["ID"];
   pregnancy?: Maybe<Scalars["String"]>;
-  priorTestDate?: Maybe<Scalars["LocalDate"]>;
-  priorTestResult?: Maybe<Scalars["String"]>;
-  priorTestType?: Maybe<Scalars["String"]>;
   symptomOnset?: Maybe<Scalars["LocalDate"]>;
   symptoms?: Maybe<Scalars["String"]>;
   testResultDelivery?: Maybe<TestResultDeliveryPreference>;
@@ -694,16 +686,12 @@ export type TestOrder = {
   dateAdded?: Maybe<Scalars["String"]>;
   dateTested?: Maybe<Scalars["DateTime"]>;
   deviceType?: Maybe<DeviceType>;
-  firstTest?: Maybe<Scalars["Boolean"]>;
   id?: Maybe<Scalars["ID"]>;
   /** @deprecated alias for 'id' */
   internalId?: Maybe<Scalars["ID"]>;
   noSymptoms?: Maybe<Scalars["Boolean"]>;
   patient?: Maybe<Patient>;
   pregnancy?: Maybe<Scalars["String"]>;
-  priorTestDate?: Maybe<Scalars["LocalDate"]>;
-  priorTestResult?: Maybe<Scalars["String"]>;
-  priorTestType?: Maybe<Scalars["String"]>;
   reasonForCorrection?: Maybe<Scalars["String"]>;
   result?: Maybe<Scalars["String"]>;
   symptomOnset?: Maybe<Scalars["LocalDate"]>;
@@ -718,15 +706,11 @@ export type TestResult = {
   dateTested?: Maybe<Scalars["DateTime"]>;
   deviceType?: Maybe<DeviceType>;
   facility?: Maybe<Facility>;
-  firstTest?: Maybe<Scalars["Boolean"]>;
   internalId?: Maybe<Scalars["ID"]>;
   noSymptoms?: Maybe<Scalars["Boolean"]>;
   patient?: Maybe<Patient>;
   patientLink?: Maybe<PatientLink>;
   pregnancy?: Maybe<Scalars["String"]>;
-  priorTestDate?: Maybe<Scalars["String"]>;
-  priorTestResult?: Maybe<Scalars["String"]>;
-  priorTestType?: Maybe<Scalars["String"]>;
   reasonForCorrection?: Maybe<Scalars["String"]>;
   result?: Maybe<Scalars["String"]>;
   symptomOnset?: Maybe<Scalars["LocalDate"]>;

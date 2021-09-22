@@ -26,7 +26,7 @@ class TestEventExportTest {
   @Autowired protected TestDataFactory _dataFactory;
 
   @Test
-  void json_property_gender_mapping() throws Exception {
+  void json_property_gender_mapping() {
     Organization o = _dataFactory.createValidOrg();
     Facility f = _dataFactory.createValidFacility(o);
     Person p = _dataFactory.createFullPerson(o);
@@ -39,7 +39,7 @@ class TestEventExportTest {
   }
 
   @Test
-  void json_property_ethnicity_mapping() throws Exception {
+  void json_property_ethnicity_mapping() {
     Organization o = _dataFactory.createValidOrg();
     Facility f = _dataFactory.createValidFacility(o);
     Person p = _dataFactory.createFullPerson(o);
@@ -53,7 +53,7 @@ class TestEventExportTest {
   }
 
   @Test
-  void json_property_test_result_mapping() throws Exception {
+  void json_property_test_result_mapping() {
     Organization o = _dataFactory.createValidOrg();
     Facility f = _dataFactory.createValidFacility(o);
     Person p = _dataFactory.createFullPerson(o);
@@ -67,7 +67,7 @@ class TestEventExportTest {
   }
 
   @Test
-  void json_property_race_mapping() throws Exception {
+  void json_property_race_mapping() {
     Organization o = _dataFactory.createValidOrg();
     Facility f = _dataFactory.createValidFacility(o);
     Person p = _dataFactory.createFullPerson(o);
@@ -81,7 +81,7 @@ class TestEventExportTest {
   }
 
   @Test
-  void json_property_site_of_care_reporting() throws Exception {
+  void json_property_site_of_care_reporting() {
     Organization o = _dataFactory.createValidOrg();
     Facility f = _dataFactory.createValidFacility(o);
     Person p = _dataFactory.createFullPerson(o);
@@ -108,5 +108,41 @@ class TestEventExportTest {
     assertEquals(lengthWithTime, sut.getTestDate().length());
     assertEquals(lengthWithTime, sut.getDateResultReleased().length());
     assertEquals(lengthWithoutTime, sut.getPatientBirthDate().length());
+  }
+
+  @Test
+  void determinesFirstTestFromTestEvent_hasPriorTest_false() {
+    Organization o = _dataFactory.createValidOrg();
+    Facility f = _dataFactory.createValidFacility(o);
+    Person p = _dataFactory.createFullPerson(o);
+    TestEvent te = _dataFactory.createTestEvent(p, f, TestResult.NEGATIVE, false);
+
+    TestEventExport sut = new TestEventExport(te);
+
+    assertEquals("UNK", sut.getFirstTest());
+  }
+
+  @Test
+  void determinesFirstTestFromTestEvent_hasPriorTest_true() {
+    Organization o = _dataFactory.createValidOrg();
+    Facility f = _dataFactory.createValidFacility(o);
+    Person p = _dataFactory.createFullPerson(o);
+    TestEvent te = _dataFactory.createTestEvent(p, f, TestResult.NEGATIVE, true);
+
+    TestEventExport sut = new TestEventExport(te);
+
+    assertEquals("N", sut.getFirstTest());
+  }
+
+  @Test
+  void determinesFirstTestFromTestEvent_hasPriorTest_null() {
+    Organization o = _dataFactory.createValidOrg();
+    Facility f = _dataFactory.createValidFacility(o);
+    Person p = _dataFactory.createFullPerson(o);
+    TestEvent te = _dataFactory.createTestEvent(p, f, TestResult.NEGATIVE, null);
+
+    TestEventExport sut = new TestEventExport(te);
+
+    assertEquals("UNK", sut.getFirstTest());
   }
 }

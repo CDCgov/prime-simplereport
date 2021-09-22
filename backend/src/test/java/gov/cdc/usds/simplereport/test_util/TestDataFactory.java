@@ -219,8 +219,7 @@ public class TestDataFactory {
   }
 
   public TestOrder createTestOrder(Person p, Facility f) {
-    AskOnEntrySurvey survey =
-        new AskOnEntrySurvey(null, Collections.emptyMap(), null, null, null, null, null, null);
+    AskOnEntrySurvey survey = AskOnEntrySurvey.builder().symptoms(Collections.emptyMap()).build();
     return createTestOrder(p, f, survey);
   }
 
@@ -251,10 +250,14 @@ public class TestDataFactory {
   }
 
   public TestEvent createTestEvent(Person p, Facility f, TestResult r) {
+    return createTestEvent(p, f, r, false);
+  }
+
+  public TestEvent createTestEvent(Person p, Facility f, TestResult r, Boolean hasPriorTests) {
     TestOrder o = createTestOrder(p, f);
     o.setResult(r);
 
-    TestEvent e = _testEventRepo.save(new TestEvent(o));
+    TestEvent e = _testEventRepo.save(new TestEvent(o, hasPriorTests));
     o.setTestEventRef(e);
     o.markComplete();
     _testOrderRepo.save(o);
