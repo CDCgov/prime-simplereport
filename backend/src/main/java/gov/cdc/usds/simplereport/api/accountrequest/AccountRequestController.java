@@ -100,6 +100,10 @@ public class AccountRequestController {
         throw new BadRequestException(
             "An unknown error occured when creating this organization in Okta.");
       }
+    } catch (BadRequestException e) {
+      // Need to catch and re-throw these BadRequestExceptions or they get rethrown as
+      // AccountRequestFailureExceptions
+      throw e;
     } catch (UnexpectedRollbackException e) {
       // This `UnexpectedRollbackException` is thrown if a duplicate org somehow slips past our
       // checks and is attempted to be committed to the database.
