@@ -155,9 +155,20 @@ public class AccountRequestController {
   }
 
   private String createOrgExternalId(String organizationName, String state) {
-    return String.format(
-        "%s-%s-%s",
-        state, organizationName.replace(' ', '-').replace(':', '-'), UUID.randomUUID().toString());
+    organizationName =
+        organizationName
+            // remove all non-alpha-numeric
+            .replaceAll("[^-A-Za-z0-9 ]", "")
+            // spaces to hyphens
+            .replace(' ', '-')
+            // reduce repeated hyphens to one
+            .replaceAll("-+", "-")
+            // remove leading hyphens
+            .replaceAll("^-+", "");
+    if (organizationName.length() == 0) {
+      throw new BadRequestException("The organization name is invalid.");
+    }
+    return String.format("%s-%s-%s", state, organizationName, UUID.randomUUID());
   }
 
   private void createAdminUser(String firstName, String lastName, String email, String externalId) {

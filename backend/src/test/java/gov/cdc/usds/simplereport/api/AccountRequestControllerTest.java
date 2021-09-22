@@ -200,6 +200,53 @@ class AccountRequestControllerTest extends BaseFullStackTest {
   }
 
   @Test
+  void submitOrganizationAccountRequest_invalidOrgName_failure() throws Exception {
+    String requestBody =
+        createAccountRequest(
+            "% ^ #",
+            "AZ", "k12", "Mary", "", "Lopez", "kyvuzoxy@mailinator.com", "+1 (969) 768-2863");
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    MvcResult result = this._mockMvc.perform(builder).andReturn();
+    assertThat(result.getResponse().getStatus()).isEqualTo(400);
+    assertThat(result.getResponse().getContentAsString())
+        .contains("The organization name is invalid.");
+  }
+
+  @Test
+  void submitOrganizationAccountRequest_hyphens_failure() throws Exception {
+    // hyphens are a special-special character since they are used for whitespace replacement and
+    // can also be added during org name cleaning (in the case of a name that exists in another
+    // state)
+    String requestBody =
+        createAccountRequest(
+            "  --- --- ---",
+            "AZ",
+            "k12",
+            "Mary",
+            "",
+            "Lopez",
+            "kyvuzoxy@mailinator.com",
+            "+1 (969) 768-2863");
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    MvcResult result = this._mockMvc.perform(builder).andReturn();
+    assertThat(result.getResponse().getStatus()).isEqualTo(400);
+    assertThat(result.getResponse().getContentAsString())
+        .contains("The organization name is invalid.");
+  }
+
+  @Test
   @DisplayName("Duplicate org in same state fails")
   void duplicateOrgInSameState() throws Exception {
     // given
