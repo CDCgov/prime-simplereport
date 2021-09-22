@@ -93,6 +93,7 @@ public class ReminderService {
       Thread.sleep(1L);
     } catch (InterruptedException e) {
       LOG.debug("sendAccountReminderEmails: sleep interrupted");
+      Thread.currentThread().interrupt();
     }
 
     return orgReminderMap;
