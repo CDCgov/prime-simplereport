@@ -23,6 +23,8 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -183,6 +185,7 @@ class AccountRequestControllerTest extends BaseFullStackTest {
 
   @Test
   void submitOrganizationAccountRequest_emptyOrgName_failure() throws Exception {
+    // failures when cleaning and checking organization name
     String requestBody =
         createAccountRequest(
             " ", "AZ", "k12", "Mary", "", "Lopez", "kyvuzoxy@mailinator.com", "+1 (969) 768-2863");
@@ -199,33 +202,13 @@ class AccountRequestControllerTest extends BaseFullStackTest {
         .contains("The organization name is empty.");
   }
 
-  @Test
-  void submitOrganizationAccountRequest_invalidOrgName_failure() throws Exception {
+  @ParameterizedTest
+  @ValueSource(strings = {"% ^ #", "-", "  --- --- ---"})
+  void submitOrganizationAccountRequest_invalidOrgName_failure(String orgName) throws Exception {
+    // failures when cleaning and checking organization external id
     String requestBody =
         createAccountRequest(
-            "% ^ #",
-            "AZ", "k12", "Mary", "", "Lopez", "kyvuzoxy@mailinator.com", "+1 (969) 768-2863");
-    MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody);
-
-    MvcResult result = this._mockMvc.perform(builder).andReturn();
-    assertThat(result.getResponse().getStatus()).isEqualTo(400);
-    assertThat(result.getResponse().getContentAsString())
-        .contains("The organization name is invalid.");
-  }
-
-  @Test
-  void submitOrganizationAccountRequest_hyphens_failure() throws Exception {
-    // hyphens are a special-special character since they are used for whitespace replacement and
-    // can also be added during org name cleaning (in the case of a name that exists in another
-    // state)
-    String requestBody =
-        createAccountRequest(
-            "  --- --- ---",
+            orgName,
             "AZ",
             "k12",
             "Mary",
