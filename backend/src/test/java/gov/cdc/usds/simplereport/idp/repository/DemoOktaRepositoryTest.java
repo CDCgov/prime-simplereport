@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -365,7 +366,7 @@ class DemoOktaRepositoryTest {
         Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN),
         true);
 
-    assertEquals(_repo.fetchAdminUserEmail(ABC), "dianek@gmail.com");
+    assertThat(_repo.fetchAdminUserEmail(ABC).contains("dianek@gmail.com"));
   }
 
   private static Facility getFacility(UUID uuid, Organization org) {
