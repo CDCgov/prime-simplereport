@@ -1159,4 +1159,83 @@ describe("ComboBox component", () => {
       expect(firstItem).toHaveTextContent("NOTHING");
     });
   });
+
+  describe("when not showing selected value", () => {
+    it("doesnt highlight the default value when opening the menu, when one exists", () => {
+      const { getByTestId } = render(
+        <ComboBox
+          id="favorite-fruit"
+          name="favorite-fruit"
+          options={fruitOptions}
+          onChange={jest.fn()}
+          defaultValue="avocado"
+          showSelectedValue={false}
+        />
+      );
+
+      userEvent.click(getByTestId("combo-box-input"));
+
+      expect(getByTestId("combo-box-option-avocado")).toHaveAttribute(
+        "aria-selected",
+        "false"
+      );
+    });
+
+    it("doesnt render input with default value if passed in", () => {
+      const { getByTestId } = render(
+        <ComboBox
+          id="favorite-fruit"
+          name="favorite-fruit"
+          options={fruitOptions}
+          onChange={jest.fn()}
+          defaultValue="apple"
+          showSelectedValue={false}
+        />
+      );
+      expect(getByTestId("combo-box-input")).not.toHaveValue("Apple");
+      expect(getByTestId("combo-box-option-list")).not.toBeVisible();
+    });
+
+    it(" doesnt show clear button", () => {
+      const { getByTestId, queryByTestId } = render(
+        <ComboBox
+          id="favorite-fruit"
+          name="favorite-fruit"
+          options={fruitOptions}
+          onChange={jest.fn()}
+          showSelectedValue={false}
+        />
+      );
+
+      userEvent.type(getByTestId("combo-box-input"), "app");
+
+      // We are sure the first child exists
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const firstItem = getByTestId("combo-box-option-list").firstChild!;
+      fireEvent.click(firstItem);
+
+      expect(queryByTestId("combo-box-clear-button")).not.toBeInTheDocument();
+    });
+
+    it("doesn't show selected item when clicking on an option", () => {
+      const onChange = jest.fn();
+      const { getByTestId } = render(
+        <ComboBox
+          id="favorite-fruit"
+          name="favorite-fruit"
+          options={fruitOptions}
+          onChange={onChange}
+          showSelectedValue={false}
+        />
+      );
+
+      fireEvent.click(getByTestId("combo-box-toggle"));
+      fireEvent.click(getByTestId("combo-box-option-apple"));
+
+      expect(onChange).toHaveBeenNthCalledWith(1, undefined);
+      expect(onChange).toHaveBeenNthCalledWith(2, "apple");
+      expect(onChange).toHaveBeenNthCalledWith(3, undefined);
+      expect(getByTestId("combo-box-input")).not.toHaveValue("Apple");
+    });
+  });
 });

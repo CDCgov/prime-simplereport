@@ -10,7 +10,7 @@ import { ComboBoxOption } from "./ComboBox/ComboBox";
 
 import "./MultiSelect.scss";
 
-interface Props {
+type Props = {
   name: string;
   label: React.ReactNode;
   labelSrOnly?: boolean;
@@ -23,7 +23,7 @@ interface Props {
   labelClassName?: string;
   options: ComboBoxOption[];
   className?: string;
-}
+};
 
 type PillProps = {
   text: string;
@@ -39,7 +39,7 @@ const Pill = (props: PillProps) => (
   </div>
 );
 
-export const TextInput = ({
+export const MultiSelect = ({
   name,
   label,
   labelSrOnly,
@@ -124,4 +124,4 @@ export const TextInput = ({
   );
 };
 
-export default TextInput;
+export default MultiSelect;
