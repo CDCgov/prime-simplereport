@@ -6,13 +6,15 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
-import java.time.Duration;
-import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -149,20 +151,21 @@ class TestEventExportTest {
   }
 
   @Test
-  void specimenCollectionSubtractsDeviceOffset() {
+  void specimenCollectionSubtractsDeviceOffset() throws ParseException {
     Organization o = _dataFactory.createValidOrg();
     Facility f = _dataFactory.createValidFacility(o);
     Person p = _dataFactory.createFullPerson(o);
-    TestEvent te = _dataFactory.createTestEvent(p, f, TestResult.NEGATIVE, null);
 
-    var testLength = f.getDefaultDeviceType().getTestLength();
-    var specimenTime =
-        Date.from(te.getDateTested().toInstant().plus(Duration.ofMinutes(testLength)));
+    var dStr = "20201215";
+    TestEvent te =
+        _dataFactory.createTestEvent(
+            p,
+            f,
+            AskOnEntrySurvey.builder().symptoms(Collections.emptyMap()).build(),
+            TestResult.NEGATIVE,
+            new SimpleDateFormat("yyyyMMdd").parse(dStr));
     TestEventExport sut = new TestEventExport(te);
 
-    assertEquals(
-        TestEventExport.dateToHealthCareString(
-            TestEventExport.convertToLocalDateTime(specimenTime)),
-        sut.getSpecimenCollectionDateTime());
+    assertEquals(dStr + "001500", sut.getSpecimenCollectionDateTime());
   }
 }

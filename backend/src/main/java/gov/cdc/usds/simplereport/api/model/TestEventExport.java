@@ -120,14 +120,14 @@ public class TestEventExport {
     return value.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
   }
 
-  static String dateToHealthCareString(LocalDateTime value) {
+  private String dateToHealthCareString(LocalDateTime value) {
     if (value == null) {
       return "";
     }
     return value.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
   }
 
-  static LocalDateTime convertToLocalDateTime(Date dateToConvert) {
+  private LocalDateTime convertToLocalDateTime(Date dateToConvert) {
     return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
   }
 
@@ -500,7 +500,7 @@ public class TestEventExport {
   public String getTestDate() {
     return dateToHealthCareString(
         Optional.ofNullable(testEvent.getDateTested())
-            .map(TestEventExport::convertToLocalDateTime)
+            .map(this::convertToLocalDateTime)
             .orElse(null));
   }
 
