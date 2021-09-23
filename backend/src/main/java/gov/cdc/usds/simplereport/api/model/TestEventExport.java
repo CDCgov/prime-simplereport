@@ -37,7 +37,7 @@ import java.util.UUID;
  */
 public class TestEventExport {
   public static final String CSV_API_VERSION = "05Aug2021"; // last time we changed something
-  private static final int FALLBACK_DEFAULT_TEST_LENGTH = 15;
+  private static final int FALLBACK_DEFAULT_TEST_MINUTES = 15;
   private final TestEvent testEvent;
   private final Optional<Person> patient;
   private final Optional<AskOnEntrySurvey> survey;
@@ -53,6 +53,7 @@ public class TestEventExport {
     this.provider = Optional.ofNullable(testEvent.getProviderData());
     this.facility = Optional.ofNullable(testEvent.getFacility());
     this.organization = Optional.ofNullable(testEvent.getOrganization());
+
     this.deviceSpecimenType = Optional.ofNullable(testEvent.getDeviceSpecimen());
   }
 
@@ -291,7 +292,7 @@ public class TestEventExport {
         deviceSpecimenType
             .map(DeviceSpecimenType::getDeviceType)
             .map(DeviceType::getTestLength)
-            .orElse(FALLBACK_DEFAULT_TEST_LENGTH);
+            .orElse(FALLBACK_DEFAULT_TEST_MINUTES);
     return dateToHealthCareString(
         convertToLocalDateTime(
             Date.from(
