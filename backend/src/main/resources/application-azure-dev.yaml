@@ -1,8 +1,6 @@
 spring:
   profiles.include: okta-dev, server-debug
 simple-report:
-  data-hub:
-    upload-enabled: false
   azure-reporting-queue:
     enabled: true
     name: test-event-publishing
