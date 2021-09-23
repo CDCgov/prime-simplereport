@@ -85,4 +85,6 @@ public interface TestEventRepository
               + "GROUP BY te.result")
   List<TestResultWithCount> countByResultByFacility(
       Collection<UUID> facilityIds, Date startDate, Date endDate);
+
+  boolean existsByPatient(Person person);
 }

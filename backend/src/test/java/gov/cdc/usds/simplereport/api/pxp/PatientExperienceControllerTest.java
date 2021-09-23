@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.api.pxp;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -19,11 +18,9 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TimeOfConsent;
-import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.logging.LoggingConstants;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
@@ -175,55 +172,6 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
   }
 
   @Test
-  void questionnaireSubmissionExpiresPatientLink() throws Exception {
-    // GIVEN
-    String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    boolean noSymptoms = false;
-    String symptomOnsetDate = "2021-02-01";
-    String requestBody =
-        "{\"patientLinkId\":\""
-            + _patientLink.getInternalId()
-            + "\",\"dateOfBirth\":\""
-            + dob
-            + "\",\"data\":{\"noSymptoms\":"
-            + noSymptoms
-            + ",\"symptoms\":\"{\\\"25064002\\\":false,\\\"36955009\\\":false,\\\"43724002\\\":false,\\\"44169009\\\":false,\\\"49727002\\\":false,\\\"62315008\\\":false,\\\"64531003\\\":true,\\\"68235000\\\":false,\\\"68962001\\\":false,\\\"84229001\\\":true,\\\"103001002\\\":false,\\\"162397003\\\":false,\\\"230145002\\\":false,\\\"267036007\\\":false,\\\"422400008\\\":false,\\\"422587007\\\":false,\\\"426000000\\\":false}\",\"symptomOnset\":\""
-            + symptomOnsetDate
-            + "\",\"firstTest\":true,\"priorTestDate\":null,\"priorTestType\":null,\"priorTestResult\":null,\"pregnancy\":\"261665006\"}}";
-
-    // WHEN
-    MockHttpServletRequestBuilder submitBuilder =
-        post(ResourceLinks.ANSWER_QUESTIONS)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody);
-    String requestId = runBuilderReturningRequestId(submitBuilder, status().isOk());
-    assertLastAuditEntry(HttpStatus.OK, ResourceLinks.ANSWER_QUESTIONS, requestId);
-
-    // OKAY NOW DO IT AGAIN
-    MockHttpServletRequestBuilder verifyBuilder =
-        post(ResourceLinks.VERIFY_LINK)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody);
-
-    MockHttpServletRequestBuilder secondSubmitBuilder =
-        post(ResourceLinks.ANSWER_QUESTIONS)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody);
-
-    // THEN
-    requestId = runBuilderReturningRequestId(verifyBuilder, status().isGone());
-    assertLastAuditEntry(HttpStatus.GONE, ResourceLinks.VERIFY_LINK, requestId);
-    requestId = runBuilderReturningRequestId(secondSubmitBuilder, status().isGone());
-    assertLastAuditEntry(HttpStatus.GONE, ResourceLinks.ANSWER_QUESTIONS, requestId);
-  }
-
-  @Test
   void verifyLinkSavesTimeOfConsent() throws Exception {
     // GIVEN
     String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -353,39 +301,6 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
         .perform(builder2)
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.zipCode", is(postalCode)));
-  }
-
-  @Test
-  void aoeSubmitCallsUpdate() throws Exception {
-    // GIVEN
-    String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    boolean noSymptoms = false;
-    String symptomOnsetDate = "2021-02-01";
-    String requestBody =
-        "{\"patientLinkId\":\""
-            + _patientLink.getInternalId()
-            + "\",\"dateOfBirth\":\""
-            + dob
-            + "\",\"data\":{\"noSymptoms\":"
-            + noSymptoms
-            + ",\"symptoms\":\"{\\\"25064002\\\":false,\\\"36955009\\\":false,\\\"43724002\\\":false,\\\"44169009\\\":false,\\\"49727002\\\":false,\\\"62315008\\\":false,\\\"64531003\\\":true,\\\"68235000\\\":false,\\\"68962001\\\":false,\\\"84229001\\\":true,\\\"103001002\\\":false,\\\"162397003\\\":false,\\\"230145002\\\":false,\\\"267036007\\\":false,\\\"422400008\\\":false,\\\"422587007\\\":false,\\\"426000000\\\":false}\",\"symptomOnset\":\""
-            + symptomOnsetDate
-            + "\",\"firstTest\":true,\"priorTestDate\":null,\"priorTestType\":null,\"priorTestResult\":null,\"pregnancy\":\"261665006\"}}";
-
-    // WHEN
-    MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.ANSWER_QUESTIONS)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody);
-
-    // THEN
-    _mockMvc.perform(builder).andExpect(status().isOk());
-
-    AskOnEntrySurvey survey = _dataFactory.getAoESurveyForTestOrder(_testOrder.getInternalId());
-    assertEquals(survey.getNoSymptoms(), noSymptoms);
-    assertEquals(survey.getSymptomOnsetDate(), LocalDate.parse(symptomOnsetDate));
   }
 
   private String runBuilderReturningRequestId(RequestBuilder builder, ResultMatcher statusMatcher)

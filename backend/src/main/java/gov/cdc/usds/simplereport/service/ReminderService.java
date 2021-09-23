@@ -18,8 +18,10 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 public class ReminderService {
 
   private static final Logger LOG = LoggerFactory.getLogger(ReminderService.class);
@@ -40,6 +42,14 @@ public class ReminderService {
    * were created and did not complete id verification
    */
   public Map<Organization, Set<String>> sendAccountReminderEmails() {
+    // take the advisory lock for this process. auto released after transaction
+    if (_orgRepo.tryOrgReminderLock()) {
+      LOG.info("Reminder lock obtained: commencing email sending");
+    } else {
+      LOG.info("Reminders locked out by mutex: aborting");
+      return new HashMap<>();
+    }
+
     TimeZone tz = TimeZone.getTimeZone("America/New_York");
     LocalDate now = LocalDate.now(tz.toZoneId());
 
@@ -78,6 +88,14 @@ public class ReminderService {
       }
 
       orgReminderMap.put(org, emailsInOrg);
+    }
+
+    try {
+      // hold the lock a little extra so other instances have a chance to fail to acquire it
+      Thread.sleep(1L);
+    } catch (InterruptedException e) {
+      LOG.debug("sendAccountReminderEmails: sleep interrupted");
+      Thread.currentThread().interrupt();
     }
 
     return orgReminderMap;

@@ -50,10 +50,6 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
       UUID patientID,
       String pregnancy,
       String symptoms,
-      boolean firstTest,
-      LocalDate priorTestDate,
-      String priorTestType,
-      String priorTestResult,
       LocalDate symptomOnset,
       boolean noSymptoms,
       TestResultDeliveryPreference testResultDelivery)
@@ -67,10 +63,6 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
             _ps.getPatientNoPermissionsCheck(patientID),
             pregnancy,
             symptomsMap,
-            firstTest,
-            priorTestDate,
-            priorTestType,
-            (priorTestResult == null) ? null : TestResult.valueOf(priorTestResult),
             symptomOnset,
             noSymptoms);
 
@@ -88,26 +80,13 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
       UUID patientID,
       String pregnancy,
       String symptoms,
-      boolean firstTest,
-      LocalDate priorTestDate,
-      String priorTestType,
-      String priorTestResult,
       LocalDate symptomOnset,
       boolean noSymptoms,
       TestResultDeliveryPreference testResultDelivery) {
 
     Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);
 
-    _tos.updateTimeOfTestQuestions(
-        patientID,
-        pregnancy,
-        symptomsMap,
-        firstTest,
-        priorTestDate,
-        priorTestType,
-        priorTestResult == null ? null : TestResult.valueOf(priorTestResult),
-        symptomOnset,
-        noSymptoms);
+    _tos.updateTimeOfTestQuestions(patientID, pregnancy, symptomsMap, symptomOnset, noSymptoms);
 
     _ps.updateTestResultDeliveryPreference(patientID, testResultDelivery);
   }

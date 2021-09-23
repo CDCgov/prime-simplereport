@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -10,7 +11,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
@@ -26,6 +26,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
@@ -60,6 +61,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Autowired private OrganizationService _organizationService;
   @Autowired private PersonService _personService;
+  @Autowired private TestEventRepository _testEventRepository;
   @Autowired private TestDataFactory _dataFactory;
   @MockBean private SmsService _smsService;
 
@@ -86,7 +88,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void roundTrip() throws NumberParseException {
+  void roundTrip() {
     Facility facility =
         _dataFactory.createValidFacility(_organizationService.getCurrentOrganization());
     Person p =
@@ -112,16 +114,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null);
 
     _service.addPatientToQueue(
-        facility.getInternalId(),
-        p,
-        "",
-        Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
-        LocalDate.of(1865, 12, 25),
-        false);
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
@@ -132,6 +125,65 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
+
+    List<TestEvent> testEvents =
+        _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility));
+    assertThat(testEvents).hasSize(1);
+    assertThat(testEvents.get(0).getPatientHasPriorTests()).isFalse();
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void addTestResult_populateFirstTest() {
+    Facility facility =
+        _dataFactory.createValidFacility(_organizationService.getCurrentOrganization());
+    Person p =
+        _personService.addPatient(
+            (UUID) null,
+            "FOO",
+            "Fred",
+            null,
+            "",
+            "Sr.",
+            LocalDate.of(1865, 12, 25),
+            _dataFactory.getAddress(),
+            TestDataFactory.getListOfOnePhoneNumber(),
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "English",
+            null);
+
+    _service.addPatientToQueue(
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+    _service.addTestResult(
+        _dataFactory.getGenericDevice().getInternalId().toString(),
+        TestResult.POSITIVE,
+        p.getInternalId(),
+        null);
+
+    List<TestEvent> testEvents =
+        _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility));
+    assertThat(testEvents).hasSize(1);
+    assertThat(testEvents.get(0).getPatientHasPriorTests()).isFalse();
+
+    _service.addPatientToQueue(
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1866, 12, 25), false);
+    _service.addTestResult(
+        _dataFactory.getGenericDevice().getInternalId().toString(),
+        TestResult.POSITIVE,
+        p.getInternalId(),
+        null);
+
+    testEvents = _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility));
+    assertThat(testEvents).hasSize(2);
+    assertThat(testEvents.get(0).getPatientHasPriorTests()).isFalse();
+    assertThat(testEvents.get(1).getPatientHasPriorTests()).isTrue();
   }
 
   @Test
@@ -175,16 +227,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null);
 
     _service.addPatientToQueue(
-        facility.getInternalId(),
-        p,
-        "",
-        Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
-        LocalDate.of(1865, 12, 25),
-        false);
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
@@ -224,26 +267,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
                 facility.getInternalId(),
                 p,
                 "",
-                Collections.<String, Boolean>emptyMap(),
-                false,
-                LocalDate.of(1865, 12, 25),
-                "",
-                TestResult.POSITIVE,
+                Collections.emptyMap(),
                 LocalDate.of(1865, 12, 25),
                 false));
 
     TestUserIdentities.setFacilityAuthorities(facility);
     _service.addPatientToQueue(
-        facility.getInternalId(),
-        p,
-        "",
-        Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
-        LocalDate.of(1865, 12, 25),
-        false);
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     TestUserIdentities.setFacilityAuthorities();
 
     assertThrows(AccessDeniedException.class, () -> _service.getQueue(facility.getInternalId()));
@@ -255,7 +285,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void addTestResult_orgAdmin_ok() throws NumberParseException {
+  void addTestResult_orgAdmin_ok() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p =
@@ -282,16 +312,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _personService.updateTestResultDeliveryPreference(
         p.getInternalId(), TestResultDeliveryPreference.SMS);
     _service.addPatientToQueue(
-        facility.getInternalId(),
-        p,
-        "",
-        Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
-        LocalDate.of(1865, 12, 25),
-        false);
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceType devA = facility.getDefaultDeviceType();
 
     _service.addTestResult(
@@ -305,7 +326,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportStandardAllFacilitiesUser
-  void addTestResult_standardUserAllFacilities_ok() throws NumberParseException {
+  void addTestResult_standardUserAllFacilities_ok() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p =
@@ -330,16 +351,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "Spanish",
             null);
     _service.addPatientToQueue(
-        facility.getInternalId(),
-        p,
-        "",
-        Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
-        LocalDate.of(1865, 12, 25),
-        false);
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceType devA = facility.getDefaultDeviceType();
 
     _service.addTestResult(
@@ -351,7 +363,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportStandardUser
-  void addTestResult_standardUser_successDependsOnFacilityAccess() throws NumberParseException {
+  void addTestResult_standardUser_successDependsOnFacilityAccess() {
     Facility facility1 =
         _dataFactory.createValidFacility(
             _organizationService.getCurrentOrganization(), "First One");
@@ -408,22 +420,14 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility1.getInternalId(),
         p1,
         "",
-        Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
+        Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
     _service.addPatientToQueue(
         facility1.getInternalId(),
         p2,
         "",
-        Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.NEGATIVE,
+        Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
 
@@ -459,23 +463,14 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportEntryOnlyAllFacilitiesUser
-  void addTestResult_entryOnlyUserAllFacilities_ok() throws NumberParseException {
+  void addTestResult_entryOnlyUserAllFacilities_ok() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p = _dataFactory.createFullPerson(org);
     _personService.updateTestResultDeliveryPreference(
         p.getInternalId(), TestResultDeliveryPreference.SMS);
     _service.addPatientToQueue(
-        facility.getInternalId(),
-        p,
-        "",
-        Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
-        LocalDate.of(1865, 12, 25),
-        false);
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceType devA = facility.getDefaultDeviceType();
 
     _service.addTestResult(
@@ -489,23 +484,14 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void addTestResult_testAlreadySubmitted_failure() throws NumberParseException {
+  void addTestResult_testAlreadySubmitted_failure() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p = _dataFactory.createFullPerson(org);
     _personService.updateTestResultDeliveryPreference(
         p.getInternalId(), TestResultDeliveryPreference.SMS);
     _service.addPatientToQueue(
-        facility.getInternalId(),
-        p,
-        "",
-        Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
-        LocalDate.of(1865, 12, 25),
-        false);
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceType devA = facility.getDefaultDeviceType();
 
     _service.addTestResult(
@@ -519,7 +505,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void addTestResult_smsDelivery_invalidPhoneNumber() throws NumberParseException {
+  void addTestResult_smsDelivery_invalidPhoneNumber() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p = _dataFactory.createFullPerson(org);
@@ -527,16 +513,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _personService.updateTestResultDeliveryPreference(
         p.getInternalId(), TestResultDeliveryPreference.SMS);
     _service.addPatientToQueue(
-        facility.getInternalId(),
-        p,
-        "",
-        Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
-        LocalDate.of(1865, 12, 25),
-        false);
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceType devA = facility.getDefaultDeviceType();
 
     List<SmsAPICallResult> deliveryResults = new ArrayList<SmsAPICallResult>();
@@ -582,11 +559,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             facility.getInternalId(),
             p,
             "",
-            Collections.<String, Boolean>emptyMap(),
-            false,
-            LocalDate.of(1865, 12, 25),
-            "",
-            TestResult.POSITIVE,
+            Collections.emptyMap(),
             LocalDate.of(1865, 12, 25),
             false);
     DeviceType devA = _dataFactory.getGenericDevice();
@@ -614,11 +587,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             facility.getInternalId(),
             p,
             "",
-            Collections.<String, Boolean>emptyMap(),
-            false,
-            LocalDate.of(1865, 12, 25),
-            "",
-            TestResult.POSITIVE,
+            Collections.emptyMap(),
             LocalDate.of(1865, 12, 25),
             false);
     TestUserIdentities.setFacilityAuthorities();
@@ -650,11 +619,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             facility.getInternalId(),
             p,
             "",
-            Collections.<String, Boolean>emptyMap(),
-            false,
-            LocalDate.of(1865, 12, 25),
-            "",
-            TestResult.POSITIVE,
+            Collections.emptyMap(),
             LocalDate.of(1865, 12, 25),
             false);
     DeviceType devA = facility.getDefaultDeviceType();
@@ -670,7 +635,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void editTestResult_testAlreadySubmitted_failure() throws NumberParseException {
+  void editTestResult_testAlreadySubmitted_failure() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p = _dataFactory.createFullPerson(org);
@@ -681,11 +646,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             facility.getInternalId(),
             p,
             "",
-            Collections.<String, Boolean>emptyMap(),
-            false,
-            LocalDate.of(1865, 12, 25),
-            "",
-            TestResult.POSITIVE,
+            Collections.emptyMap(),
             LocalDate.of(1865, 12, 25),
             false);
     DeviceType devA = facility.getDefaultDeviceType();
@@ -832,16 +793,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null);
 
     _service.addPatientToQueue(
-        facilityId,
-        p1,
-        "",
-        Collections.<String, Boolean>emptyMap(),
-        false,
-        LocalDate.of(1865, 12, 25),
-        "",
-        TestResult.POSITIVE,
-        LocalDate.of(1865, 12, 25),
-        false);
+        facilityId, p1, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
 
     // get the first query count
     long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
@@ -873,16 +825,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
               null);
 
       _service.addPatientToQueue(
-          facilityId,
-          p,
-          "",
-          Collections.<String, Boolean>emptyMap(),
-          false,
-          LocalDate.of(1865, 12, 25),
-          "",
-          TestResult.POSITIVE,
-          LocalDate.of(1865, 12, 25),
-          false);
+          facilityId, p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     }
 
     startQueryCount = _hibernateQueryInterceptor.getQueryCount();
@@ -900,7 +843,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     TestEvent _e = _dataFactory.createTestEvent(p, facility);
     TestOrder _o = _e.getTestOrder();
 
-    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now().toString();
+    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
     TestEvent deleteMarkerEvent = _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg);
     assertNotNull(deleteMarkerEvent);
 
@@ -1164,39 +1107,17 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     patientsToRoles.put(LEELOO, PersonRole.STUDENT);
 
     Map<PersonName, AskOnEntrySurvey> patientsToSurveys = new HashMap<>();
-    patientsToSurveys.put(
-        AMOS,
-        new AskOnEntrySurvey(null, Map.of("fake", true), false, null, null, null, null, null));
-    patientsToSurveys.put(
-        CHARLES,
-        new AskOnEntrySurvey(null, Collections.emptyMap(), false, null, null, null, null, null));
-    patientsToSurveys.put(
-        DEXTER,
-        new AskOnEntrySurvey(null, Collections.emptyMap(), true, null, null, null, null, null));
-    patientsToSurveys.put(
-        ELIZABETH,
-        new AskOnEntrySurvey(null, Map.of("fake", true), false, null, null, null, null, null));
-    patientsToSurveys.put(
-        FRANK,
-        new AskOnEntrySurvey(null, Collections.emptyMap(), false, null, null, null, null, null));
-    patientsToSurveys.put(
-        GALE,
-        new AskOnEntrySurvey(null, Collections.emptyMap(), true, null, null, null, null, null));
-    patientsToSurveys.put(
-        HEINRICK,
-        new AskOnEntrySurvey(null, Map.of("fake", true), false, null, null, null, null, null));
-    patientsToSurveys.put(
-        IAN,
-        new AskOnEntrySurvey(null, Collections.emptyMap(), false, null, null, null, null, null));
-    patientsToSurveys.put(
-        JANNELLE,
-        new AskOnEntrySurvey(null, Collections.emptyMap(), true, null, null, null, null, null));
-    patientsToSurveys.put(
-        KACEY,
-        new AskOnEntrySurvey(null, Map.of("fake", true), false, null, null, null, null, null));
-    patientsToSurveys.put(
-        LEELOO,
-        new AskOnEntrySurvey(null, Collections.emptyMap(), false, null, null, null, null, null));
+    patientsToSurveys.put(AMOS, new AskOnEntrySurvey(null, Map.of("fake", true), false, null));
+    patientsToSurveys.put(CHARLES, new AskOnEntrySurvey(null, Collections.emptyMap(), false, null));
+    patientsToSurveys.put(DEXTER, new AskOnEntrySurvey(null, Collections.emptyMap(), true, null));
+    patientsToSurveys.put(ELIZABETH, new AskOnEntrySurvey(null, Map.of("fake", true), false, null));
+    patientsToSurveys.put(FRANK, new AskOnEntrySurvey(null, Collections.emptyMap(), false, null));
+    patientsToSurveys.put(GALE, new AskOnEntrySurvey(null, Collections.emptyMap(), true, null));
+    patientsToSurveys.put(HEINRICK, new AskOnEntrySurvey(null, Map.of("fake", true), false, null));
+    patientsToSurveys.put(IAN, new AskOnEntrySurvey(null, Collections.emptyMap(), false, null));
+    patientsToSurveys.put(JANNELLE, new AskOnEntrySurvey(null, Collections.emptyMap(), true, null));
+    patientsToSurveys.put(KACEY, new AskOnEntrySurvey(null, Map.of("fake", true), false, null));
+    patientsToSurveys.put(LEELOO, new AskOnEntrySurvey(null, Collections.emptyMap(), false, null));
 
     List<TestEvent> testEvents =
         patientsToResults.keySet().stream()
@@ -1237,7 +1158,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Person p = _dataFactory.createFullPerson(org);
     TestEvent _e = _dataFactory.createTestEvent(p, facility);
 
-    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now().toString();
+    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
     assertThrows(
         AccessDeniedException.class,
         () -> _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg));

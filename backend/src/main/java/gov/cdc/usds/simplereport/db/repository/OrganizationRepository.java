@@ -8,7 +8,10 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 
 /** Interface specification for fetching and manipulating {@link Organization} entities */
-public interface OrganizationRepository extends EternalAuditedEntityRepository<Organization> {
+public interface OrganizationRepository
+    extends EternalAuditedEntityRepository<Organization>, AdvisoryLockManager {
+
+  int ORG_REMINDER_LOCK = 66543221; // arbitrary 32-bit integer for our lock
 
   @Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.externalId = :externalId")
   Optional<Organization> findByExternalId(String externalId);
@@ -28,4 +31,14 @@ public interface OrganizationRepository extends EternalAuditedEntityRepository<O
   @Query(
       EternalAuditedEntityRepository.BASE_QUERY + " and UPPER(e.organizationName) = UPPER(:name)")
   List<Organization> findAllByName(String name);
+
+  /**
+   * Try to obtain the lock for the unverified organization reminders task. (It will be released
+   * automatically when the current transaction closes.)
+   *
+   * @return true if the lock was obtained, false otherwise.
+   */
+  default boolean tryOrgReminderLock() {
+    return tryTransactionLock(CORE_API_LOCK_SCOPE, ORG_REMINDER_LOCK);
+  }
 }
