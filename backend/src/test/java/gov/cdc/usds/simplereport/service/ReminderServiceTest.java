@@ -62,7 +62,7 @@ class ReminderServiceTest extends BaseServiceTest<ReminderService> {
     List<Future<Map<Organization, Set<String>>>> futures = new ArrayList<>();
 
     ThreadPoolExecutor executor =
-        new ThreadPoolExecutor(2, 2, 1, TimeUnit.MINUTES, new ArrayBlockingQueue<>(2));
+        new ThreadPoolExecutor(n, n, 1, TimeUnit.MINUTES, new ArrayBlockingQueue<>(2));
 
     for (int i = 0; i < n; i++) {
       Future<Map<Organization, Set<String>>> future =
