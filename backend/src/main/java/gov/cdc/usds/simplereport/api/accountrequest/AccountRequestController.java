@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -125,25 +126,33 @@ public class AccountRequestController {
 
   private String checkForDuplicateOrg(String organizationName, String state, String email) {
     List<Organization> potentialDuplicates = _os.getOrganizationsByName(organizationName);
+    // Not a duplicate org, can be safely created
     if (potentialDuplicates.isEmpty()) {
       return organizationName;
     }
 
+    // Is the duplicate org in the same state? If so, it's a true duplicate
     if (potentialDuplicates.stream().anyMatch(o -> o.getExternalId().startsWith(state))) {
       Optional<Organization> duplicateOrg =
           potentialDuplicates.stream().filter(o -> o.getExternalId().startsWith(state)).findFirst();
-      if (duplicateOrg.isPresent()
+      if (duplicateOrg.isPresent()) {
+        if (_oktaRepo.fetchAdminUserEmail(duplicateOrg.get()).stream()
+            .anyMatch(Predicate.isEqual(email))) {
           // Special toasts are shown to admin users trying to re-register their org.
-          && (_oktaRepo.fetchAdminUserEmail(duplicateOrg.get()).equals(email))) {
-        String message =
-            duplicateOrg.get().getIdentityVerified()
-                ? "Duplicate organization with admin user who has completed identity verification."
-                : "Duplicate organization with admin user that has not completed identity verification.";
-        throw new BadRequestException(message);
+          String message =
+              duplicateOrg.get().getIdentityVerified()
+                  ? "Duplicate organization with admin user who has completed identity verification."
+                  : "Duplicate organization with admin user that has not completed identity verification.";
+          throw new BadRequestException(message);
+        } else {
+          throw new BadRequestException(
+              "This organization has already registered with SimpleReport.");
+        }
       }
-      throw new BadRequestException("This organization has already registered with SimpleReport.");
     }
 
+    // Org can be created because it's not in the same state, but it gets a special org name to
+    // distinguish it
     return String.join("-", organizationName, state);
   }
 

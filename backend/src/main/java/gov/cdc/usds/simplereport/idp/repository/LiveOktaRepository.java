@@ -471,9 +471,9 @@ public class LiveOktaRepository implements OktaRepository {
     return activateUser(user);
   }
 
-  public String fetchAdminUserEmail(Organization org) {
-    User user = getOrgAdminUsers(org).single();
-    return user.getProfile().getLogin();
+  public List<String> fetchAdminUserEmail(Organization org) {
+    UserList admins = getOrgAdminUsers(org);
+    return admins.stream().map(u -> u.getProfile().getLogin()).collect(Collectors.toList());
   }
 
   public void createFacility(Facility facility) {
