@@ -4,6 +4,7 @@ import static java.lang.Boolean.TRUE;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -288,7 +289,8 @@ public class TestEventExport {
   public String getSpecimenCollectionDateTime() {
     var testDuration =
         deviceSpecimenType
-            .map(dts -> dts.getDeviceType().getTestLength())
+            .map(DeviceSpecimenType::getDeviceType)
+            .map(DeviceType::getTestLength)
             .orElse(FALLBACK_DEFAULT_TEST_LENGTH);
     return dateToHealthCareString(
         convertToLocalDateTime(
