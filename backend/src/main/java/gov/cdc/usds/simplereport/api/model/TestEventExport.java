@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -35,6 +36,7 @@ import java.util.UUID;
  */
 public class TestEventExport {
   public static final String CSV_API_VERSION = "05Aug2021"; // last time we changed something
+  private static final int FALLBACK_DEFAULT_TEST_LENGTH = 15;
   private final TestEvent testEvent;
   private final Optional<Person> patient;
   private final Optional<AskOnEntrySurvey> survey;
@@ -116,14 +118,14 @@ public class TestEventExport {
     return value.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
   }
 
-  private String dateToHealthCareString(LocalDateTime value) {
+  static String dateToHealthCareString(LocalDateTime value) {
     if (value == null) {
       return "";
     }
     return value.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
   }
 
-  private LocalDateTime convertToLocalDateTime(Date dateToConvert) {
+  static LocalDateTime convertToLocalDateTime(Date dateToConvert) {
     return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
   }
 
@@ -284,7 +286,14 @@ public class TestEventExport {
 
   @JsonProperty("Specimen_collection_date_time")
   public String getSpecimenCollectionDateTime() {
-    return dateToHealthCareString(convertToLocalDateTime(testEvent.getDateTested()));
+    var testDuration =
+        deviceSpecimenType
+            .map(dts -> dts.getDeviceType().getTestLength())
+            .orElse(FALLBACK_DEFAULT_TEST_LENGTH);
+    return dateToHealthCareString(
+        convertToLocalDateTime(
+            Date.from(
+                testEvent.getDateTested().toInstant().plus(Duration.ofMinutes(testDuration)))));
   }
 
   @JsonProperty("Ordering_provider_ID")
@@ -488,7 +497,7 @@ public class TestEventExport {
   public String getTestDate() {
     return dateToHealthCareString(
         Optional.ofNullable(testEvent.getDateTested())
-            .map(this::convertToLocalDateTime)
+            .map(TestEventExport::convertToLocalDateTime)
             .orElse(null));
   }
 

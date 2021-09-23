@@ -11,6 +11,8 @@ import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import java.time.Duration;
+import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -144,5 +146,23 @@ class TestEventExportTest {
     TestEventExport sut = new TestEventExport(te);
 
     assertEquals("UNK", sut.getFirstTest());
+  }
+
+  @Test
+  void specimenCollectionSubtractsDeviceOffset() {
+    Organization o = _dataFactory.createValidOrg();
+    Facility f = _dataFactory.createValidFacility(o);
+    Person p = _dataFactory.createFullPerson(o);
+    TestEvent te = _dataFactory.createTestEvent(p, f, TestResult.NEGATIVE, null);
+
+    var testLength = f.getDefaultDeviceType().getTestLength();
+    var specimenTime =
+        Date.from(te.getDateTested().toInstant().plus(Duration.ofMinutes(testLength)));
+    TestEventExport sut = new TestEventExport(te);
+
+    assertEquals(
+        TestEventExport.dateToHealthCareString(
+            TestEventExport.convertToLocalDateTime(specimenTime)),
+        sut.getSpecimenCollectionDateTime());
   }
 }
