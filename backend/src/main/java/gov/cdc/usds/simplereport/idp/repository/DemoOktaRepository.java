@@ -218,14 +218,12 @@ public class DemoOktaRepository implements OktaRepository {
     return "activationToken";
   }
 
-  public String fetchAdminUserEmail(Organization org) {
-    Optional<Entry<String, OrganizationRoleClaims>> admin =
+  public List<String> fetchAdminUserEmail(Organization org) {
+    Set<Entry<String, OrganizationRoleClaims>> admins =
         usernameOrgRolesMap.entrySet().stream()
             .filter(e -> e.getValue().getGrantedRoles().contains(OrganizationRole.ADMIN))
-            .findFirst();
-    return admin
-        .map(Entry::getKey)
-        .orElseThrow(() -> new IllegalStateException("Organization does not have an admin."));
+            .collect(Collectors.toSet());
+    return admins.stream().map(Entry::getKey).collect(Collectors.toList());
   }
 
   public void createFacility(Facility facility) {
