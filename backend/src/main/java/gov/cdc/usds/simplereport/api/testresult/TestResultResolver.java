@@ -70,7 +70,7 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
     return tos.getTopLevelDashboardMetrics(facilityId, startDate, endDate);
   }
 
-  public List<AggregateFacilityMetrics> getAggregateFaciltiyMetrics(
+  public List<AggregateFacilityMetrics> getAggregateFacilityMetrics(
     Date startDate, Date endDate) {
     return tos.getAggregateFacilityMetrics(startDate, endDate);
   }
