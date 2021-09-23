@@ -8,54 +8,8 @@ import { useGetTopLevelDashboardMetricsQuery } from "../../generated/graphql";
 import { LoadingCard } from "../commonComponents/LoadingCard/LoadingCard";
 
 import "./Analytics.scss";
-import AggregateResultsTable, { ResultsRow } from "./AggregateResultsTable";
 
-const abbeyRoad: ResultsRow = {
-  name: "Abbey Road School District (Organization)",
-  testsConducted: 29,
-  numberPeopleTested: 25,
-  positiveTests: 3,
-  negativeTests: 26,
-  positivityRate: 10.3,
-};
-
-const kennedyHigh: ResultsRow = {
-  name: "Kennedy High School",
-  testsConducted: 16,
-  numberPeopleTested: 14,
-  positiveTests: 1,
-  negativeTests: 15,
-  positivityRate: 6.25,
-};
-
-const beverlyMiddle: ResultsRow = {
-  name: "Beverly Middle School",
-  testsConducted: 4,
-  numberPeopleTested: 3,
-  positiveTests: 0,
-  negativeTests: 4,
-  positivityRate: 0,
-};
-
-const johnsonElementary: ResultsRow = {
-  name: "Johnson Elementary",
-  testsConducted: 9,
-  numberPeopleTested: 9,
-  positiveTests: 2,
-  negativeTests: 7,
-  positivityRate: 22.22,
-};
-
-const jacksonHigh: ResultsRow = {
-  name: "Jackson High School",
-  testsConducted: 0,
-  numberPeopleTested: 0,
-  positiveTests: 0,
-  negativeTests: 0,
-  positivityRate: 0,
-};
-
-const EXTERNAL_DATE_FORMAT = "MM/DD/YYYY";
+export const EXTERNAL_DATE_FORMAT = "MM/DD/YYYY";
 
 export const Analytics = () => {
   const organization = useSelector(
@@ -271,19 +225,6 @@ export const Analytics = () => {
               </div>
             </div>
           </div>
-        </div>
-        <div>
-          <AggregateResultsTable
-            tableName="All testing facilities"
-            tableType="Facility"
-            rows={[
-              abbeyRoad,
-              kennedyHigh,
-              beverlyMiddle,
-              johnsonElementary,
-              jacksonHigh,
-            ]}
-          />
         </div>
       </div>
     </main>
