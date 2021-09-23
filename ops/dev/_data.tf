@@ -51,11 +51,6 @@ data "azurerm_key_vault_secret" "datahub_api_key" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
-data "azurerm_key_vault_secret" "test-event-queue-cxn-string" {
-  name         = "test-event-queue-cxn-string-dev"
-  key_vault_id = data.azurerm_key_vault.sr_global.id
-}
-
 data "azurerm_key_vault_secret" "slack_notify_webhook_url" {
   name         = "slack-notify-webhook-url-dev"
   key_vault_id = data.azurerm_key_vault.sr_global.id
