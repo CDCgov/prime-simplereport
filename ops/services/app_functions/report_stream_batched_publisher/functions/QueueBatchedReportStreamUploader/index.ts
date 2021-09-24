@@ -102,8 +102,9 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     );
   } else {
     const responseBody = await postResult.text();
+    const errorText = `Failed to upload to ReportStream with response code ${postResult.status}`;
     context.log.error(
-      `Upload to ReportStream failed with error code ${postResult.status}. Response body (${postResult.size}b): `, responseBody
+      `${errorText}. Response body (${postResult.size}b): `, responseBody
     );
     telemetry.trackEvent({
       name: "ReportStream Upload Failed",
@@ -113,6 +114,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
       },
       tagOverrides,
     });
+    throw new Error(errorText);
   }
 };
 
