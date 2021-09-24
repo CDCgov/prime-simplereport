@@ -56,7 +56,7 @@ class ReminderServiceTest extends BaseServiceTest<ReminderService> {
   // reproducible
   // so more investigation is required.  For now, disabling this test for this reason.
   @Test
-  @org.junit.jupiter.api.Disabled
+  @org.junit.jupiter.api.Disabled("Test is unreliable, but behavior verified on prod")
   void sendAccountReminderEmails_concurrencyLock_success()
       throws InterruptedException, ExecutionException, SQLException {
     String email = "fake@example.org";
