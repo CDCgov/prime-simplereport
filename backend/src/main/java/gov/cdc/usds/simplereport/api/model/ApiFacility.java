@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.service.model.WrappedEntity;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class ApiFacility extends WrappedEntity<Facility> implements LocatedWrapper<Facility> {
 
@@ -31,9 +32,14 @@ public class ApiFacility extends WrappedEntity<Facility> implements LocatedWrapp
     return getWrapped().getEmail();
   }
 
+  public List<UUID> getDeviceSpecimenTypes() {
+    return getWrapped().getDeviceSpecimenTypes();
+  }
+  /*
   public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
     return getWrapped().getDeviceSpecimenTypes();
   }
+  */
 
   public List<DeviceType> getDeviceTypes() {
     return getWrapped().getDeviceTypes();
@@ -45,6 +51,10 @@ public class ApiFacility extends WrappedEntity<Facility> implements LocatedWrapp
 
   public DeviceType getDefaultDeviceType() {
     return getWrapped().getDefaultDeviceType();
+  }
+
+  public DeviceSpecimenType getDefaultDeviceSpecimen() {
+    return getWrapped().getDefaultDeviceSpecimen();
   }
 
   public ApiProvider getOrderingProvider() {

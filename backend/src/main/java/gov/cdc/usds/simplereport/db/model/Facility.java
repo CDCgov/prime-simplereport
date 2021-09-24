@@ -106,13 +106,14 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
         .collect(Collectors.toList());
   }
 
-  public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
+  public List<UUID> getDeviceSpecimenTypes() {
     return configuredDeviceSpecimenTypes.stream()
         .filter(
             e ->
                 !(e.isDeleted()
                     || e.getSpecimenType().isDeleted()
                     || e.getDeviceType().isDeleted()))
+        .map(e -> e.getInternalId())
         .collect(Collectors.toList());
   }
 

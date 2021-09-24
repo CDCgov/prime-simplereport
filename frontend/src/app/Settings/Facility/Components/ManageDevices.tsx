@@ -5,15 +5,18 @@ import Button from "../../../commonComponents/Button/Button";
 import Dropdown from "../../../commonComponents/Dropdown";
 import Checkboxes from "../../../commonComponents/Checkboxes";
 import { FacilityErrors } from "../facilitySchema";
-import { ValidateField, DeviceSpecimenType } from "../FacilityForm";
+import { ValidateField } from "../FacilityForm";
 
 interface Props {
   deviceSpecimenTypes: DeviceSpecimenType[];
   defaultDevice: string;
   updateDeviceSpecimenTypes: (deviceTypes: DeviceSpecimenType[]) => void;
   updateDefaultDevice: (defaultDevice: string) => void;
+  /*
   deviceOptions: DeviceType[];
   specimenOptions: SpecimenType[];
+  */
+  deviceSpecimenTypeOptions: DeviceSpecimenType[];
   errors: FacilityErrors;
   validateField: ValidateField;
 }
@@ -23,8 +26,11 @@ const ManageDevices: React.FC<Props> = ({
   defaultDevice,
   updateDeviceSpecimenTypes,
   updateDefaultDevice,
+  /*
   deviceOptions,
   specimenOptions,
+  */
+  deviceSpecimenTypeOptions,
   errors,
   validateField,
 }) => {
@@ -52,16 +58,10 @@ const ManageDevices: React.FC<Props> = ({
   };
 
   const onSpecimenTypeChange = (
-    //oldSpecimenId: string,
     index: number,
     newSpecimenId: string
   ) => {
     const newDeviceSpecimenTypes = [...deviceSpecimenTypes];
-    /*
-    const deviceIndex = newDeviceSpecimenTypes.findIndex(
-      (dst) => dst.specimenType === oldSpecimenId
-    );
-    */
     newDeviceSpecimenTypes[index] = {
       ...newDeviceSpecimenTypes[index],
       specimenType: newSpecimenId,
@@ -93,7 +93,7 @@ const ManageDevices: React.FC<Props> = ({
     const newDeviceSpecimenTypes = [...deviceSpecimenTypes];
     newDeviceSpecimenTypes.push({
       deviceType: remainingDeviceOptions[0].internalId,
-      specimenType: "",
+      specimenType: specimenOptions[0].internalId
     });
 
     updateDeviceSpecimenTypes(newDeviceSpecimenTypes);

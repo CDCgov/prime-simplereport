@@ -33,6 +33,7 @@ export const GET_FACILITY_QUERY = gql`
           internalId
         }
         deviceSpecimenTypes {
+          internalId
           deviceType {
             internalId
           }
@@ -64,6 +65,17 @@ export const GET_FACILITY_QUERY = gql`
       internalId
       name
     }
+    deviceSpecimenTypes {
+      internalId
+      deviceType {
+        internalId
+        name
+      }
+      specimenType {
+        internalId
+        name
+      }
+    }
   }
 `;
 
@@ -91,6 +103,7 @@ export const UPDATE_FACILITY_MUTATION = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
+    $deviceSpecimenTypes: [DeviceSpecimenTypeInput]!
     $defaultDevice: String!
   ) {
     updateFacility(
@@ -116,6 +129,7 @@ export const UPDATE_FACILITY_MUTATION = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceTypes: $devices
+      deviceSpecimenTypes: $deviceSpecimenTypes
       defaultDevice: $defaultDevice
     )
   }
@@ -144,6 +158,7 @@ const ADD_FACILITY_MUTATION = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
+    $deviceSpecimenTypes: [DeviceSpecimenTypeInput]!
     $defaultDevice: String!
   ) {
     addFacility(
@@ -168,6 +183,7 @@ const ADD_FACILITY_MUTATION = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceTypes: $devices
+      deviceSpecimenTypes: $deviceSpecimenTypes
       defaultDevice: $defaultDevice
     )
   }
@@ -235,9 +251,11 @@ const FacilityFormContainer: any = (props: Props) => {
         orderingProviderZipCode: provider.zipCode,
         orderingProviderPhone: provider.phone || null,
         devices: facility.deviceTypes,
+        deviceSpecimenTypes: facility.deviceSpecimenTypes,
         defaultDevice: facility.defaultDevice,
       },
     });
+
     const alert = (
       <Alert
         type="success"
@@ -245,6 +263,7 @@ const FacilityFormContainer: any = (props: Props) => {
         body="The settings for the facility have been updated"
       />
     );
+
     showNotification(alert);
     updateSaveSuccess(true);
   };
@@ -260,16 +279,19 @@ const FacilityFormContainer: any = (props: Props) => {
       return {
         ...facility,
         deviceTypes: deviceTypes,
+        deviceSpecimenTypes: facility.deviceSpecimenTypes,
+        /*
         deviceSpecimenTypes: facility.deviceSpecimenTypes.map((dst) => ({
           deviceType: dst.deviceType.internalId,
           specimenType: dst.specimenType.internalId,
         })),
+        */
         defaultDevice: facility.defaultDeviceType
           ? facility.defaultDeviceType.internalId
           : "",
       };
     }
-    const defaultDevice = data.deviceType[0].internalId;
+    const defaultDevice = data.deviceSpecimenTypes[0].deviceType.internalId;
     return {
       id: "",
       name: "",
@@ -295,12 +317,16 @@ const FacilityFormContainer: any = (props: Props) => {
         phone: "",
       },
       deviceTypes: [defaultDevice],
+      deviceSpecimenTypes: [],
+      /*
       deviceSpecimenTypes: [
         {
+          internalId: "",
           deviceType: defaultDevice,
           specimenType: "",
         },
       ],
+      */
       defaultDevice,
     };
   };
@@ -308,8 +334,11 @@ const FacilityFormContainer: any = (props: Props) => {
   return (
     <FacilityForm
       facility={getFacilityData()}
-      deviceOptions={data.deviceType}
-      specimenOptions={data.specimenType}
+      deviceSpecimenTypeOptions={data.deviceSpecimenTypes}
+      /*
+      deviceOptions={data.deviceSpecimenTypes.map(dst => dst.deviceType)}
+      specimenOptions={data.deviceSpecimenTypes.map(dst => dst.specimenType)}
+      */
       saveFacility={saveFacility}
       newOrg={props.newOrg}
     />

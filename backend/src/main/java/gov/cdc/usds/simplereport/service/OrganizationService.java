@@ -237,12 +237,20 @@ public class OrganizationService {
     for (DeviceSpecimenType ds : deviceSpecimenTypes.getFullList()) {
       facility.addDeviceSpecimenType(ds);
     }
-    // remove all existing devices
-    for (DeviceSpecimenType ds : facility.getDeviceSpecimenTypes()) {
-      if (!deviceSpecimenTypes.getFullList().contains(ds)) {
-        facility.removeDeviceSpecimenType(ds);
+
+    for (UUID ds : facility.getDeviceSpecimenTypes()) {
+      var existingDeviceSpecimenType = deviceSpecimenTypes
+        .getFullList()
+        .stream()
+        .filter(dst -> ds.equals(dst.getInternalId()))
+        .findFirst()
+        .orElse(null);
+
+      if (existingDeviceSpecimenType != null) {
+        facility.removeDeviceSpecimenType(existingDeviceSpecimenType);
       }
     }
+
     facility.addDefaultDeviceSpecimen(deviceSpecimenTypes.getDefault());
     return _facilityRepo.save(facility);
   }

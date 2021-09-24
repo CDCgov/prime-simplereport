@@ -31,7 +31,10 @@ type Facility {
   email: String
   deviceTypes: [DeviceType]
   specimenTypes: [SpecimenType]
+  deviceSpecimenTypes: [String]
+  """
   deviceSpecimenTypes: [DeviceSpecimenType]
+  """
   defaultDeviceType: DeviceType
   orderingProvider: Provider
   patientSelfRegistrationLink: String
@@ -73,8 +76,14 @@ type SpecimenType {
 }
 
 type DeviceSpecimenType {
+  internalId: ID
   deviceType: DeviceType!
   specimenType: SpecimenType!
+}
+
+input DeviceSpecimenTypeInput {
+  deviceType: ID!
+  specimenType: ID!
 }
 
 type TestDescription {
@@ -255,6 +264,7 @@ type Query {
     @deprecated(reason: "use the pluralized form to reduce confusion")
   deviceTypes: [DeviceType]
   specimenType: [SpecimenType]
+  deviceSpecimenTypes: [DeviceSpecimenType]
   patients(
     facilityId: ID
     pageNumber: Int
@@ -341,6 +351,7 @@ type Mutation {
     orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
+    deviceSpecimenTypes: [DeviceSpecimenTypeInput]!
     defaultDevice: String!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addFacility(
@@ -369,6 +380,7 @@ type Mutation {
     orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
+    deviceSpecimenTypes: [DeviceSpecimenTypeInput]!
     defaultDevice: String!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addUserToCurrentOrg(

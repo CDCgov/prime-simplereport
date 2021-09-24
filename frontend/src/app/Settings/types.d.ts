@@ -18,11 +18,12 @@ interface SpecimenType {
 }
 
 interface DeviceSpecimenTypeIds {
-  deviceType: !ID;
-  specimenType: !ID;
+  deviceType: ID;
+  specimenType: ID;
 }
 
-interface DeviceSpecimenTypes {
+interface DeviceSpecimenType {
+  internalId: ID;
   deviceType: DeviceType;
   specimenType: SpecimenType;
 }
@@ -46,7 +47,7 @@ interface Facility extends Address {
   phone: string;
   email: string | null;
   deviceTypes: string[];
-  deviceSpecimenTypes: DeviceSpecimenTypeIds[];
+  deviceSpecimenTypes: DeviceSpecimenType[];
   defaultDevice: string;
   orderingProvider: Provider;
 }
@@ -124,7 +125,7 @@ interface SettingsData {
             internalId: string;
           }
         ];
-        deviceSpecimenTypes: DeviceSpecimenTypes[];
+        deviceSpecimenTypes: DeviceSpecimenType[];
         orderingProvider: {
           firstName: string;
           middleName: string;
@@ -175,7 +176,8 @@ interface FacilityData {
             internalId: string;
           }
         ];
-        deviceSpecimenTypes: DeviceSpecimenTypes[];
+        //deviceSpecimenTypes: DeviceSpecimenType[];
+        deviceSpecimenTypes: ID[];
         orderingProvider: {
           firstName: string;
           middleName: string;
@@ -193,6 +195,8 @@ interface FacilityData {
       }
     ];
   };
+  deviceSpecimenTypes: DeviceSpecimenType[]
+  /*
   deviceType: [
     {
       internalId: string;
@@ -205,6 +209,7 @@ interface FacilityData {
       name: string;
     }
   ];
+  */
 }
 
 type TestCorrectionStatus = "ORIGINAL" | "CORRECTED" | "REMOVED";

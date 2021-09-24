@@ -23,11 +23,6 @@ import OrderingProviderSettings from "./Components/OrderingProvider";
 import FacilityInformation from "./Components/FacilityInformation";
 import { FacilityErrors, facilitySchema } from "./facilitySchema";
 
-export interface DeviceSpecimenType {
-  deviceType: string;
-  specimenType: string;
-}
-
 export type ValidateField = (field: keyof FacilityErrors) => Promise<void>;
 
 export const useFacilityValidation = (facility: Facility) => {
@@ -125,8 +120,11 @@ type AddressOptions = "facility" | "provider";
 
 export interface Props {
   facility: Facility;
+  /*
   deviceOptions: DeviceType[];
   specimenOptions: SpecimenType[];
+  */
+  deviceSpecimenTypeOptions: DeviceSpecimenTypes[];
   saveFacility: (facility: Facility) => void;
   newOrg?: boolean;
 }
@@ -159,7 +157,7 @@ const FacilityForm: React.FC<Props> = (props) => {
   };
 
   const updateDeviceSpecimenTypes = (
-    deviceSpecimenTypes: DeviceSpecimenType[]
+    deviceSpecimenTypes: DeviceSpecimenTypes[]
   ) => {
     updateForm((facility) => ({
       ...facility,
@@ -363,14 +361,17 @@ const FacilityForm: React.FC<Props> = (props) => {
         />
         <ManageDevices
           deviceSpecimenTypes={facility.deviceSpecimenTypes.map((dst) => ({
-            deviceType: dst.deviceType,
-            specimenType: dst.specimenType,
+            deviceType: dst.deviceType.internalId,
+            specimenType: dst.specimenType.internalId,
           }))}
           defaultDevice={facility.defaultDevice}
           updateDeviceSpecimenTypes={updateDeviceSpecimenTypes}
           updateDefaultDevice={updateDefaultDevice}
+          /*
           deviceOptions={props.deviceOptions}
           specimenOptions={props.specimenOptions}
+          */
+          deviceSpecimenTypeOptions={props.deviceSpecimenTypeOptions}
           errors={errors}
           validateField={validateField}
         />

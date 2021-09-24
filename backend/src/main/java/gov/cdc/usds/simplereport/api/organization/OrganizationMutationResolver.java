@@ -4,19 +4,25 @@ import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.Role;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.auxiliary.DeviceSpecimenTypeInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
+import gov.cdc.usds.simplereport.service.FacilityDeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
+import gov.cdc.usds.simplereport.service.SpecimenTypeService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 /** Created by nickrobison on 11/17/20 */
@@ -24,17 +30,23 @@ import org.springframework.stereotype.Component;
 public class OrganizationMutationResolver implements GraphQLMutationResolver {
 
   private final OrganizationService _os;
+  private final SpecimenTypeService _sts;
   private final DeviceTypeService _dts;
+  private final FacilityDeviceTypeService _fdts;
   private final AddressValidationService _avs;
   private final ApiUserService _aus;
 
   public OrganizationMutationResolver(
       OrganizationService os,
       DeviceTypeService dts,
+      FacilityDeviceTypeService fdts,
+      SpecimenTypeService sts,
       AddressValidationService avs,
       ApiUserService aus) {
     _os = os;
+    _sts = sts;
     _dts = dts;
+    _fdts = fdts;
     _avs = avs;
     _aus = aus;
   }
@@ -63,10 +75,12 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String orderingProviderZipCode,
       String orderingProviderTelephone,
       List<String> deviceIds,
+      List<DeviceSpecimenTypeInput> deviceSpecimenTypes,
       String defaultDeviceId) {
     _os.assertFacilityNameAvailable(testingFacilityName);
-    DeviceSpecimenTypeHolder deviceSpecimenTypes =
-        _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+    // DeviceSpecimenTypeHolder deviceSpecimenTypes =
+    DeviceSpecimenTypeHolder dsts = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+
     StreetAddress facilityAddress =
         _avs.getValidatedAddress(
             street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
@@ -91,7 +105,8 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             facilityAddress,
             Translators.parsePhoneNumber(phone),
             Translators.parseEmail(email),
-            deviceSpecimenTypes,
+            // deviceSpecimenTypes,
+            dsts,
             providerName,
             providerAddress,
             orderingProviderTelephone,
@@ -124,9 +139,32 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String orderingProviderZipCode,
       String orderingProviderTelephone,
       List<String> deviceIds,
+      List<DeviceSpecimenTypeInput> deviceSpecimenTypes,
       String defaultDeviceId) {
-    DeviceSpecimenTypeHolder deviceSpecimenTypes =
-        _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+
+    /**
+     * TODO: - Currently _all_ swab types are in the dropdown - should just be for device - Do we
+     * need to return _all_ device_specimen_types in GraphQL response and group specimens by device
+     * type on the frontend? - Frontend bug - no "success" toast alert on-save; changes don't appear
+     * until refresh
+     */
+    List<DeviceSpecimenType> dsts =
+        deviceSpecimenTypes.stream()
+            .map(dst -> _dts.getDeviceSpecimenType(dst.getDeviceType(), dst.getSpecimenType()))
+            .collect(Collectors.toList());
+
+    DeviceSpecimenType defaultDeviceSpecimenType =
+        dsts.stream()
+            .filter(dst -> defaultDeviceId.equals(dst.getDeviceType().getInternalId().toString()))
+            .findAny()
+            .orElseThrow(
+                () ->
+                    new IllegalGraphqlArgumentException(
+                        "No default device specimen type selected"));
+
+    DeviceSpecimenTypeHolder dstHolder =
+        new DeviceSpecimenTypeHolder(defaultDeviceSpecimenType, dsts);
+
     StreetAddress facilityAddress =
         _avs.getValidatedAddress(
             street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
@@ -153,7 +191,8 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             orderingProviderNPI,
             providerAddress,
             Translators.parsePhoneNumber(orderingProviderTelephone),
-            deviceSpecimenTypes);
+            // deviceSpecimenTypes);
+            dstHolder);
     return new ApiFacility(facility);
   }
 
