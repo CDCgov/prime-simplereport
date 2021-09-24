@@ -26,8 +26,7 @@ import java.io.IOException;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("@" + AUTHORIZER_BEAN + ".permitAllAccountRequests()")
 @RestController
 @RequestMapping(IDENTITY_VERIFICATION)
+@Slf4j
 public class IdentityVerificationController {
 
   @Autowired private EmailService _es;
@@ -53,11 +53,9 @@ public class IdentityVerificationController {
   @Autowired private OrganizationService _orgService;
   @Autowired private SendGridProperties sendGridProperties;
 
-  private static final Logger LOG = LoggerFactory.getLogger(IdentityVerificationController.class);
-
   @PostConstruct
   private void init() {
-    LOG.info("Identity verification REST endpoint enabled.");
+    log.info("Identity verification REST endpoint enabled.");
   }
 
   @ExceptionHandler(BadRequestException.class)

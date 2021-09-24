@@ -12,8 +12,7 @@ import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.properties.SmartyStreetsProperties;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.ScheduledTasksService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,6 +25,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+@Slf4j
 @SpringBootApplication
 // Adding any configuration here should probably be added to SliceTestConfiguration
 @EnableConfigurationProperties({
@@ -42,8 +42,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAsync
 @EnableScheduling
 public class SimpleReportApplication {
-  private static final Logger LOG = LoggerFactory.getLogger(SimpleReportApplication.class);
-
   public static void main(String[] args) {
     SpringApplication.run(SimpleReportApplication.class, args);
   }
@@ -69,6 +67,6 @@ public class SimpleReportApplication {
   @Bean
   @ConditionalOnSingleCandidate(GitProperties.class)
   public CommandLineRunner logGitCommit(GitProperties gitProperties) {
-    return args -> LOG.info("Current commit is: {}", gitProperties.getCommitId());
+    return args -> log.info("Current commit is: {}", gitProperties.getCommitId());
   }
 }

@@ -43,7 +43,7 @@ class HttpRequestDetailsSerializationTest {
   }
 
   @Test
-  // IF THIS TEST BREAKS YOU HAVE BROKEN THE DATABASE AUDIT LOG. FIX THE MODEL, NOT THE TEST.
+  // IF THIS TEST BREAKS YOU HAVE BROKEN THE DATABASE AUDIT log. FIX THE MODEL, NOT THE TEST.
   void deserialize_fullValues_allFieldsSet() throws IOException {
     ObjectContent<HttpRequestDetails> val =
         _tester.read("/deserialization/http-request-details/full.json");
@@ -60,7 +60,7 @@ class HttpRequestDetailsSerializationTest {
   }
 
   @Test
-  // IF THIS TEST BREAKS YOU HAVE BROKEN THE DATABASE AUDIT LOG. FIX THE MODEL, NOT THE TEST.
+  // IF THIS TEST BREAKS YOU HAVE BROKEN THE DATABASE AUDIT log. FIX THE MODEL, NOT THE TEST.
   void deserialize_partialValues_correctFieldsSet() throws IOException {
     ObjectContent<HttpRequestDetails> val =
         _tester.read("/deserialization/http-request-details/partial.json");

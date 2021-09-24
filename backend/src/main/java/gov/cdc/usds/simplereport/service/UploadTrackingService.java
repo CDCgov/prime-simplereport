@@ -4,8 +4,7 @@ import gov.cdc.usds.simplereport.db.model.DataHubUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.DataHubUploadStatus;
 import gov.cdc.usds.simplereport.db.repository.DataHubUploadRepository;
 import java.util.Date;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -18,9 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
+@Slf4j
 public class UploadTrackingService {
-
-  private static final Logger LOG = LoggerFactory.getLogger(UploadTrackingService.class);
 
   @Autowired private DataHubUploadRepository _repo;
 
@@ -46,7 +44,7 @@ public class UploadTrackingService {
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void markFailed(DataHubUpload newUpload, String resultJson, Exception err) {
-    LOG.error("Data hub upload failed", err);
+    log.error("Data hub upload failed", err);
     newUpload
         .setJobStatus(DataHubUploadStatus.FAIL)
         .setResponseData(resultJson)
