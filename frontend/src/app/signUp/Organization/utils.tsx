@@ -147,6 +147,15 @@ export const organizationSchema: yup.SchemaOf<OrganizationCreateRequest> = yup
 
 export const organizationBackendErrors = (error: string): ReactElement => {
   switch (error) {
+    // Unusable org name.  Name probably doesn't contain any alphanumeric characters
+    case "The organization name is empty.":
+    case "The organization name is invalid.":
+      return (
+        <Alert type="error" title="Invalid organization name">
+          The organization name you entered is invalid. Please double check and
+          re-enter the organization name.
+        </Alert>
+      );
     // Duplicate org. Admin user is attempting to resign up but has already completed identity verification.
     case "Duplicate organization with admin user who has completed identity verification.":
       return (
@@ -185,10 +194,10 @@ export const organizationBackendErrors = (error: string): ReactElement => {
         </Alert>
       );
     // Okta internal error.
-    case "An unknown error occured when creating this organization in Okta.":
+    case "An unknown error occurred when creating this organization in Okta.":
       return (
         <Alert type="error" title="Unexpected error">
-          An unexpected error occured. Please resubmit this form, or contact{" "}
+          An unexpected error occurred. Please resubmit this form, or contact{" "}
           <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
           if the problem persists.
         </Alert>
