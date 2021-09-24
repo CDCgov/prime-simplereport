@@ -17,7 +17,6 @@ public class TestResultMutationResolver implements GraphQLMutationResolver {
      * NOTE: This when the DataHubUploaderService is decommissioned, this will need to be replaced with some logic like:
      * TestEventRepository.findAllByInternalIdIn(testEventIds).forEach(testEvent -> TestEventReportingService.report(testEvent))
      */
-    _dataHubUploaderService.dataHubUploaderTask(testEventIds);
-    return true;
+    return _dataHubUploaderService.dataHubUploaderTask(testEventIds);
   }
 }
