@@ -28,8 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,9 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component(AuthorizationConfiguration.AUTHORIZER_BEAN)
 @Transactional(readOnly = true)
+@Slf4j
 public class UserAuthorizationVerifier {
-
-  private static final Logger LOG = LoggerFactory.getLogger(UserAuthorizationVerifier.class);
 
   private IdentitySupplier _supplier;
   private OrganizationService _orgService;
@@ -91,7 +89,7 @@ public class UserAuthorizationVerifier {
     // 'AbstractAccessDecisionManager.accessDenied' in
     // spring library AffirmativeBased.java and set a breakpoint there.
     if (orgRoles.isEmpty()) {
-      LOG.warn("Permission request for {} failed. No roles for org defined.", permissions);
+      log.warn("Permission request for {} failed. No roles for org defined.", permissions);
       return false;
     }
     // check that all the granted permissions contain this permission.
@@ -102,7 +100,7 @@ public class UserAuthorizationVerifier {
 
     if (!failedChecks.isEmpty()) {
       // if failed checks are empty, then user has permission
-      LOG.warn(
+      log.warn(
           "Permissions request for {} failed. Failed permission: {}", permissions, failedChecks);
       return false;
     }

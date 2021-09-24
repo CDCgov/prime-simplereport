@@ -33,9 +33,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -50,9 +50,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /** Base class for GraphQL API full-stack tests. */
+@Slf4j
 public abstract class BaseGraphqlTest extends BaseFullStackTest {
-
-  private static final Logger LOG = LoggerFactory.getLogger(BaseGraphqlTest.class);
 
   protected static final String ACCESS_ERROR =
       "Current user does not have permission for this action";
@@ -137,7 +136,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
         // Dear future reader: this is not negotiable. If you set a default user, then patients will
         // show up as being the default user instead of themselves. This would be bad.
         _users.getDefaultUser(), "default user should never be set in this application context");
-    LOG.trace(
+    log.trace(
         "Usernames configured: {}",
         _users.getAllUsers().stream().map(DemoUser::getUsername).collect(Collectors.toList()));
 
@@ -164,8 +163,8 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
    * other custom headers supplied for this request.
    */
   private void setQueryHeaders() {
-    LOG.info("Setting up graphql template authorization for {}", _userName);
-    LOG.info("Setting custom headers: {}", _customHeaders.keySet());
+    log.info("Setting up graphql template authorization for {}", _userName);
+    log.info("Setting custom headers: {}", _customHeaders.keySet());
     _template
         .withClearHeaders()
         .withBearerAuth(getBearerAuth())

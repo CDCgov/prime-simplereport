@@ -34,17 +34,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@Slf4j
 public class OrganizationInitializingService {
-
-  private static final Logger LOG = LoggerFactory.getLogger(OrganizationInitializingService.class);
 
   @Autowired private InitialSetupProperties _props;
   @Autowired private OrganizationRepository _orgRepo;
@@ -65,7 +63,7 @@ public class OrganizationInitializingService {
     // passing permission-checks
     initCurrentUser();
 
-    LOG.debug("Organization init called (again?)");
+    log.debug("Organization init called (again?)");
     Provider savedProvider = _providerRepo.save(_props.getProvider());
 
     Map<String, DeviceType> deviceTypesByName =
@@ -76,7 +74,7 @@ public class OrganizationInitializingService {
     for (SpecimenType s : _props.getSpecimenTypes()) {
       SpecimenType specimenType = specimenTypesByCode.get(s.getTypeCode());
       if (null == specimenType) {
-        LOG.info("Creating specimen type {}", s.getName());
+        log.info("Creating specimen type {}", s.getName());
         specimenType = _specimenTypeRepo.save(s);
         specimenTypesByCode.put(specimenType.getTypeCode(), _specimenTypeRepo.save(s));
       }
@@ -86,7 +84,7 @@ public class OrganizationInitializingService {
     for (DeviceType d : _props.getDeviceTypes()) {
       DeviceType deviceType = deviceTypesByName.get(d.getName());
       if (null == deviceType) {
-        LOG.info("Creating device type {}", d.getName());
+        log.info("Creating device type {}", d.getName());
         deviceType = _deviceTypeRepo.save(d);
         deviceTypesByName.put(deviceType.getName(), deviceType);
       }
@@ -121,7 +119,7 @@ public class OrganizationInitializingService {
                   if (orgProbe.isPresent()) {
                     return orgProbe.get();
                   } else {
-                    LOG.info("Creating organization {}", o.getOrganizationName());
+                    log.info("Creating organization {}", o.getOrganizationName());
                     return _orgRepo.save(o);
                   }
                 })
@@ -148,7 +146,7 @@ public class OrganizationInitializingService {
                             defaultDeviceSpecimen,
                             configuredDs))
             .collect(Collectors.toList());
-    LOG.info(
+    log.info(
         "Creating facilities {} with {} devices configured",
         facilitiesByName.keySet(),
         configuredDs.size());
@@ -176,7 +174,7 @@ public class OrganizationInitializingService {
         Organization org = orgLookup.get();
         Optional<PatientSelfRegistrationLink> link = _prlRepository.findByOrganization(org);
         if (!link.isPresent()) {
-          LOG.info("Creating patient registration link {}", p.getLink());
+          log.info("Creating patient registration link {}", p.getLink());
           PatientSelfRegistrationLink prl =
               p.makePatientRegistrationLink(orgsByExternalId.get(orgExternalId), p.getLink());
           _prlRepository.save(prl);
@@ -188,7 +186,7 @@ public class OrganizationInitializingService {
         }
         Optional<PatientSelfRegistrationLink> link = _prlRepository.findByFacility(facility);
         if (!link.isPresent()) {
-          LOG.info("Creating patient registration link {}", p.getLink());
+          log.info("Creating patient registration link {}", p.getLink());
           PatientSelfRegistrationLink prl = p.makePatientRegistrationLink(facility, p.getLink());
           _prlRepository.save(prl);
         }
@@ -211,7 +209,7 @@ public class OrganizationInitializingService {
             _orgRepo
                 .findByExternalId(authorization.getOrganizationExternalId())
                 .orElseThrow(MisconfiguredUserException::new);
-        LOG.info(
+        log.info(
             "User={} will have roles={} in organization={}",
             identity.getUsername(),
             roles,
@@ -232,12 +230,12 @@ public class OrganizationInitializingService {
                     })
                 .collect(Collectors.toSet());
         if (PermissionHolder.grantsAllFacilityAccess(roles)) {
-          LOG.info(
+          log.info(
               "User={} will have access to all facilities in organization={}",
               identity.getUsername(),
               authorization.getOrganizationExternalId());
         } else {
-          LOG.info(
+          log.info(
               "User={} will have access to facilities={} in organization={}",
               identity.getUsername(),
               authorization.getFacilities(),
@@ -256,19 +254,19 @@ public class OrganizationInitializingService {
 
   private void initOktaOrg(Organization org) {
     try {
-      LOG.info("Creating organization {} in Okta", org.getOrganizationName());
+      log.info("Creating organization {} in Okta", org.getOrganizationName());
       _oktaRepo.createOrganization(org);
     } catch (ResourceException e) {
-      LOG.info("Organization {} already exists in Okta", org.getOrganizationName());
+      log.info("Organization {} already exists in Okta", org.getOrganizationName());
     }
   }
 
   private void initOktaFacility(Facility facility) {
     try {
-      LOG.info("Creating facility={} in Okta", facility.getFacilityName());
+      log.info("Creating facility={} in Okta", facility.getFacilityName());
       _oktaRepo.createFacility(facility);
     } catch (ResourceException e) {
-      LOG.info("Facility={} already exists in Okta", facility.getFacilityName());
+      log.info("Facility={} already exists in Okta", facility.getFacilityName());
     }
   }
 
@@ -278,10 +276,10 @@ public class OrganizationInitializingService {
       Set<Facility> facilities,
       Set<OrganizationRole> roles) {
     try {
-      LOG.info("Creating user {} in Okta", user.getUsername());
+      log.info("Creating user {} in Okta", user.getUsername());
       _oktaRepo.createUser(user, org, facilities, roles, true);
     } catch (ResourceException e) {
-      LOG.info("User {} already exists in Okta", user.getUsername());
+      log.info("User {} already exists in Okta", user.getUsername());
     }
   }
 }

@@ -4,8 +4,7 @@ import com.okta.spring.boot.oauth.Okta;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.actuate.health.HealthEndpoint;
@@ -33,13 +32,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @Profile("!" + BeanProfiles.NO_SECURITY) // Activate this profile to disable security
 @ConditionalOnWebApplication
+@Slf4j
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter
     implements WebMvcConfigurer {
 
   @Autowired CorsProperties _corsProperties;
 
   public static final String SAVED_REQUEST_HEADER = "SPRING_SECURITY_SAVED_REQUEST";
-  private static final Logger LOG = LoggerFactory.getLogger(SecurityConfiguration.class);
 
   public interface OktaAttributes {
     String EMAIL = "email";
@@ -110,25 +109,25 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
       Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
       if (principal instanceof OidcUser) {
         OidcUser me = (OidcUser) principal;
-        LOG.debug("OIDC user found with attributes {}", me.getAttributes());
+        log.debug("OIDC user found with attributes {}", me.getAttributes());
         String firstName = me.getAttribute(OktaAttributes.FIRST_NAME);
         String lastName = me.getAttribute(OktaAttributes.LAST_NAME);
         String email = me.getAttribute(OktaAttributes.EMAIL);
         if (lastName == null) {
           lastName = email;
         }
-        LOG.debug("Hello OIDC user {} {} ({})", firstName, lastName, email);
+        log.debug("Hello OIDC user {} {} ({})", firstName, lastName, email);
         return new IdentityAttributes(email, firstName, null, lastName, null);
       } else if (principal instanceof Jwt) {
         Jwt token = (Jwt) principal;
-        LOG.debug("JWT user found with claims {}", token.getClaims());
+        log.debug("JWT user found with claims {}", token.getClaims());
         String email = token.getSubject();
         String firstName = token.getClaim(OktaAttributes.FIRST_NAME);
         String lastName = token.getClaim(OktaAttributes.LAST_NAME);
         if (lastName == null) {
           lastName = email;
         }
-        LOG.debug("Hello JWT user {} {} ({})", firstName, lastName, email);
+        log.debug("Hello JWT user {} {} ({})", firstName, lastName, email);
         return new IdentityAttributes(email, firstName, null, lastName, null);
       } else if (principal instanceof String && "anonymousUser".equals(principal)) {
         return null;
