@@ -26,3 +26,7 @@ variable "test_event_queue_name" {
   type    = string
   default = "test-event-publishing"
 }
+
+variable "report_stream_api_token" {
+  type = string
+}
