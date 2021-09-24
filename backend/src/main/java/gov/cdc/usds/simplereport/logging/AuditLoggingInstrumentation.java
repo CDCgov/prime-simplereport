@@ -19,14 +19,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.security.auth.Subject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class AuditLoggingInstrumentation extends SimpleInstrumentation {
-
-  private static final Logger LOG = LoggerFactory.getLogger(AuditLoggingInstrumentation.class);
 
   private final AuditService _auditService;
 
@@ -37,7 +35,7 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
   @Override
   public InstrumentationState createState() {
     GraphqlQueryState state = new GraphqlQueryState();
-    LOG.trace("Creating state={} for audit", state);
+    log.trace("Creating state={} for audit", state);
     return state;
   }
 
@@ -46,7 +44,7 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
   public InstrumentationContext<ExecutionResult> beginExecution(
       InstrumentationExecutionParameters parameters) {
     String executionId = parameters.getExecutionInput().getExecutionId().toString();
-    LOG.trace("Instrumenting query executionId={} for audit", executionId);
+    log.trace("Instrumenting query executionId={} for audit", executionId);
     try {
       GraphQLServletContext context = parameters.getContext();
       GraphqlQueryState state = parameters.getInstrumentationState();
@@ -58,7 +56,7 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
       return new ExecutionResultContext(state, context.getSubject().orElseThrow());
     } catch (Exception e) {
       // we don't 100% trust this error not to get swallowed by graphql-java
-      LOG.error("Extremely unexpected error creating instrumentation state for audit", e);
+      log.error("Extremely unexpected error creating instrumentation state for audit", e);
       throw e;
     }
   }
@@ -77,7 +75,7 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
     public void onCompleted(ExecutionResult result, Throwable t) {
-      LOG.trace("End of execution, audit entry being saved.");
+      log.trace("End of execution, audit entry being saved.");
       List<String> errorPaths =
           result.getErrors().stream()
               .map(e -> e.getPath() == null ? Collections.emptyList() : e.getPath())
@@ -100,7 +98,7 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
                 .orElse(null));
       } catch (Exception e) {
         // we don't 100% trust this error not to get swallowed by graphql-java
-        LOG.error("Unexpected error saving audit event", e);
+        log.error("Unexpected error saving audit event", e);
         throw e;
       }
     }

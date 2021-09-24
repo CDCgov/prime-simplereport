@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter, Route, Switch } from "react-router";
 
@@ -52,14 +53,12 @@ describe("Verify Google Auth MFA", () => {
         exact: false,
       })
     ).toBeInTheDocument();
-    fireEvent.change(
+    userEvent.type(
       screen.getByLabelText("One-time security code", { exact: false }),
-      {
-        target: { value: "123456" },
-      }
+      "123456"
     );
     await act(async () => {
-      await fireEvent.click(screen.getByText("Submit"));
+      await userEvent.click(screen.getByText("Submit"));
     });
     expect(
       screen.queryByText("Enter your security code")
@@ -77,14 +76,12 @@ describe("Verify Google Auth MFA", () => {
         exact: false,
       })
     ).toBeInTheDocument();
-    fireEvent.change(
+    userEvent.type(
       screen.getByLabelText("One-time security code", { exact: false }),
-      {
-        target: { value: "999999" },
-      }
+      "999999"
     );
     await act(async () => {
-      await fireEvent.click(screen.getByText("Submit"));
+      await userEvent.click(screen.getByText("Submit"));
     });
     expect(screen.getByText("incorrect code")).toBeInTheDocument();
     expect(
@@ -95,7 +92,7 @@ describe("Verify Google Auth MFA", () => {
   });
 
   it("requires a security code to be entered", () => {
-    fireEvent.click(screen.getByText("Submit"));
+    userEvent.click(screen.getByText("Submit"));
     expect(screen.getByText("Enter your security code")).toBeInTheDocument();
     expect(
       screen.queryByText(

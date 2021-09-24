@@ -1,5 +1,6 @@
 import { MockedProvider } from "@apollo/client/testing";
 import { render, fireEvent, waitFor, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
@@ -253,7 +254,7 @@ describe("ManageUsers", () => {
     });
 
     it("disables logged-in user's settings", async () => {
-      fireEvent.click(getByText(displayFullName("Bob", "", "Bobberoo")));
+      userEvent.click(getByText(displayFullName("Bob", "", "Bobberoo")));
       await findByText("YOU");
       expect(getByLabelText("admin", { exact: false })).toHaveAttribute(
         "disabled"
@@ -275,7 +276,7 @@ describe("ManageUsers", () => {
         role: "USER",
       };
 
-      fireEvent.click(getByText("New User", { exact: false }));
+      userEvent.click(getByText("New User", { exact: false }));
       const [first, last, email] = await findAllByRole("textbox");
       const select = getByLabelText("Access level", { exact: false });
       fireEvent.change(first, inputValue(newUser.firstName));
@@ -284,10 +285,10 @@ describe("ManageUsers", () => {
       fireEvent.change(select, inputValue(newUser.role));
       const sendButton = getByText("Send invite");
       await waitFor(() => {
-        fireEvent.click(screen.getAllByRole("checkbox")[1]);
+        userEvent.click(screen.getAllByRole("checkbox")[1]);
         expect(sendButton).not.toBeDisabled();
       });
-      fireEvent.click(sendButton);
+      userEvent.click(sendButton);
       await waitFor(() => expect(addUserToOrg).toBeCalled());
       expect(addUserToOrg).toBeCalledWith({ variables: newUser });
       expect(updateUserPrivileges).toBeCalledWith({
@@ -308,7 +309,7 @@ describe("ManageUsers", () => {
         role: "USER",
       };
 
-      fireEvent.click(getByText("New User", { exact: false }));
+      userEvent.click(getByText("New User", { exact: false }));
       const [first, last, email] = await findAllByRole("textbox");
       const select = getByLabelText("Access level", { exact: false });
       fireEvent.change(first, inputValue(newUser.firstName));
@@ -317,10 +318,10 @@ describe("ManageUsers", () => {
       fireEvent.change(select, inputValue(newUser.role));
       const sendButton = getByText("Send invite");
       await waitFor(() => {
-        fireEvent.click(screen.getAllByRole("checkbox")[1]);
+        userEvent.click(screen.getAllByRole("checkbox")[1]);
         expect(sendButton).not.toBeDisabled();
       });
-      fireEvent.click(sendButton);
+      userEvent.click(sendButton);
       await waitFor(() => expect(addUserToOrg).not.toBeCalled());
       expect(
         screen.queryAllByText("Email must be a valid email address").length
@@ -334,15 +335,15 @@ describe("ManageUsers", () => {
         email: "jane@smith.co",
       };
 
-      fireEvent.click(getByText("New User", { exact: false }));
+      userEvent.click(getByText("New User", { exact: false }));
       const [first, last, email] = await findAllByRole("textbox");
       fireEvent.change(first, inputValue(newUser.firstName));
       fireEvent.change(last, inputValue(newUser.lastName));
       fireEvent.change(email, inputValue(newUser.email));
-      fireEvent.click(screen.getAllByRole("checkbox")[1]);
+      userEvent.click(screen.getAllByRole("checkbox")[1]);
       const sendButton = getByText("Send invite");
       await waitFor(() => expect(sendButton).not.toBeDisabled());
-      fireEvent.click(sendButton);
+      userEvent.click(sendButton);
       await waitFor(() => expect(addUserToOrg).toBeCalled());
       expect(addUserToOrg).toBeCalledWith({
         variables: { ...newUser, role: "USER" },
@@ -351,9 +352,9 @@ describe("ManageUsers", () => {
 
     it("deletes a user", async () => {
       const removeButton = await findByText("Remove", { exact: false });
-      fireEvent.click(removeButton);
+      userEvent.click(removeButton);
       const sureButton = await findByText("Yes", { exact: false });
-      fireEvent.click(sureButton);
+      userEvent.click(sureButton);
       await waitFor(() => expect(deleteUser).toBeCalled());
       expect(deleteUser).toBeCalledWith({
         variables: { deleted: true, id: users[0].id },
@@ -362,10 +363,10 @@ describe("ManageUsers", () => {
 
     it("updates someone from user to admin", async () => {
       const [adminOption] = await findAllByRole("radio");
-      fireEvent.click(adminOption);
+      userEvent.click(adminOption);
       const button = await findByText("Save", { exact: false });
       await waitFor(() => expect(button).not.toHaveAttribute("disabled"));
-      fireEvent.click(button);
+      userEvent.click(button);
       await waitFor(() => expect(updateUserPrivileges).toBeCalled());
       expect(updateUserPrivileges).toBeCalledWith({
         variables: {
@@ -384,11 +385,11 @@ describe("ManageUsers", () => {
         fireEvent.change(facilitySelect, { target: { value: "a1" } });
         expect(addButton).not.toBeDisabled();
       });
-      fireEvent.click(addButton);
+      userEvent.click(addButton);
       const saveButton = screen.getByText("Save changes");
       await waitFor(() => expect(saveButton).not.toBeDisabled());
       await waitFor(() => {
-        fireEvent.click(saveButton);
+        userEvent.click(saveButton);
         expect(updateUserPrivileges).toBeCalled();
       });
       expect(updateUserPrivileges).toBeCalledWith({
@@ -443,16 +444,16 @@ describe("ManageUsers", () => {
         email: "jane@smith.co",
       };
 
-      fireEvent.click(getByText("New User", { exact: false }));
+      userEvent.click(getByText("New User", { exact: false }));
       const [first, last, email] = await findAllByRole("textbox");
       fireEvent.change(first, inputValue(newUser.firstName));
       fireEvent.change(last, inputValue(newUser.lastName));
       fireEvent.change(email, inputValue(newUser.email));
-      fireEvent.click(screen.getByRole("checkbox"));
+      userEvent.click(screen.getByRole("checkbox"));
       const sendButton = getByText("Send invite");
       await waitFor(() => expect(sendButton).not.toBeDisabled());
       await waitFor(() => {
-        fireEvent.click(sendButton);
+        userEvent.click(sendButton);
         expect(addUserToOrg).toBeCalled();
       });
       expect(addUserToOrg).toBeCalledWith({
@@ -486,9 +487,9 @@ describe("ManageUsers", () => {
 
     it("reactivates a suspended user", async () => {
       const reactivateButton = await findByText("Reactivate", { exact: false });
-      fireEvent.click(reactivateButton);
+      userEvent.click(reactivateButton);
       const sureButton = await findByText("Yes", { exact: false });
-      fireEvent.click(sureButton);
+      userEvent.click(sureButton);
       await waitFor(() => expect(reactivateUser).toBeCalled());
       expect(reactivateUser).toBeCalledWith({
         variables: { id: suspendedUsers[0].id },
@@ -590,11 +591,11 @@ describe("ManageUsers", () => {
     )[0];
     const saveButton = await screen.findByText("Save changes");
     await waitFor(() => {
-      fireEvent.click(removeButton);
+      userEvent.click(removeButton);
       expect(saveButton).not.toBeDisabled();
     });
     await waitFor(() => {
-      fireEvent.click(saveButton);
+      userEvent.click(saveButton);
     });
     expect(updateUserPrivileges).toBeCalledWith({
       variables: {

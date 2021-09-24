@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class AzureStorageQueueTestEventReportingService implements TestEventReportingService {
-  private static final Logger LOG =
+  private static final Logger log =
       LoggerFactory.getLogger(AzureStorageQueueTestEventReportingService.class);
   private static final int MAX_QUEUE_MESSAGES_TO_RECEIVE = 32;
   private final ObjectMapper mapper;
@@ -28,7 +28,7 @@ public final class AzureStorageQueueTestEventReportingService implements TestEve
 
   @Override
   public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
-    LOG.trace("Dispatching TestEvent [{}] to Azure storage queue", testEvent.getInternalId());
+    log.trace("Dispatching TestEvent [{}] to Azure storage queue", testEvent.getInternalId());
     return queueClient.sendMessage(toBuffer(testEvent)).toFuture().thenApply(result -> null);
   }
 
@@ -54,7 +54,7 @@ public final class AzureStorageQueueTestEventReportingService implements TestEve
         try {
           resultId = mapper.readTree(message.getMessageText()).get("Result_ID").asText();
         } catch (IOException e) {
-          LOG.error("Unable to read queue message as JSON", e);
+          log.error("Unable to read queue message as JSON", e);
           continue;
         }
 
@@ -66,7 +66,7 @@ public final class AzureStorageQueueTestEventReportingService implements TestEve
                   .thenAccept(voidValue -> idsToComplete.remove(resultId))
                   .exceptionally(
                       t -> {
-                        LOG.warn("Unable to delete queue message concerning test [{}]", resultId);
+                        log.warn("Unable to delete queue message concerning test [{}]", resultId);
                         return null;
                       }));
         }

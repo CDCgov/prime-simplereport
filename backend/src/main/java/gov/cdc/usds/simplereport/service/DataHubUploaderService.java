@@ -27,8 +27,7 @@ import java.util.Optional;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.function.Supplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.PageRequest;
@@ -42,9 +41,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 @Transactional(readOnly = true)
+@Slf4j
 public class DataHubUploaderService {
-  private static final Logger LOG = LoggerFactory.getLogger(DataHubUploaderService.class);
-
   private final DataHubConfig _config;
   private final TestEventRepository _testReportEventsRepo;
   private final DataHubUploadRepository _dataHubUploadRepo;
@@ -72,19 +70,19 @@ public class DataHubUploaderService {
     _slack = slack;
     _testEventReportingService = testEventReportingService;
 
-    LOG.info("Datahub scheduling uploader enable state: {}", config.getUploadEnabled());
+    log.info("Datahub scheduling uploader enable state: {}", config.getUploadEnabled());
 
     // sanity checks that run at startup since they are used by scheduler and may not fail until
     // 4am.
     // maybe these should throw?
     if (config.getApiKey().startsWith("MISSING")) {
-      LOG.warn("DataHub API key is not configured.");
+      log.warn("DataHub API key is not configured.");
     }
     if (!config.getUploadUrl().startsWith("https://")) {
-      LOG.warn("DataHub upload URL is not configured.");
+      log.warn("DataHub upload URL is not configured.");
     }
     if (!config.getSlackNotifyWebhookUrl().startsWith("https://")) {
-      LOG.warn("DataHub Slack webhook URL is not configured.");
+      log.warn("DataHub Slack webhook URL is not configured.");
     }
   }
 
@@ -117,7 +115,7 @@ public class DataHubUploaderService {
       return lastUpload.getLatestRecordedTimestamp();
     } else {
       // This should only happen when database is empty, throw?
-      LOG.error(
+      log.error(
           "No default timestamp, will return everything. Use url to set initial lastEndCreateOn.");
       return null;
     }
@@ -230,7 +228,7 @@ public class DataHubUploaderService {
   private void uploaderTask(Supplier<List<TestEvent>> testEventSupplier, boolean withTracking) {
     // sanity check everything is configured correctly (dev likely will not be)
     if (!_config.getUploadEnabled()) {
-      LOG.warn(
+      log.warn(
           "DataHubUploaderTask not running because simple-report.data-hub.uploadEnabled is false");
       return;
     }
@@ -238,9 +236,9 @@ public class DataHubUploaderService {
     if (_dataHubUploadRepo
         .tryUploadLock()) { // take the advisory lock for this process. auto released after
       // transaction
-      LOG.info("Data hub upload lock obtained: commencing upload processing.");
+      log.info("Data hub upload lock obtained: commencing upload processing.");
     } else {
-      LOG.info("Data hub upload locked out by mutex: aborting");
+      log.info("Data hub upload locked out by mutex: aborting");
       return;
     }
 
@@ -262,7 +260,7 @@ public class DataHubUploaderService {
     Date lastTimestamp = getLatestRecordedTimestamp();
     if (lastTimestamp == null) {
       // this happens if EVERYTHING in the db would be matched.
-      LOG.error("No earliest_recorded_timestamp found. EVERYTHING would be matched and sent");
+      log.error("No earliest_recorded_timestamp found. EVERYTHING would be matched and sent");
       return;
     }
 
@@ -276,7 +274,7 @@ public class DataHubUploaderService {
       if (_rowCount > 0) {
         this.uploadCSVDocument(_config.getApiKey());
       } else {
-        LOG.info("No new tests found since previous successful data hub upload.");
+        log.info("No new tests found since previous successful data hub upload.");
       }
 
       // todo: parse json run sanity checks like total records processed matches what we sent.

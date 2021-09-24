@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import i18n from "../../../i18n";
 import { es } from "../../../lang/es";
@@ -36,14 +37,14 @@ describe("ManagePhoneNumbers", () => {
       exact: false,
     });
     // Enter bad info and blur
-    fireEvent.change(primary, { target: { value: "not a number" } });
-    fireEvent.blur(primary);
+    userEvent.type(primary, "not a number");
+    userEvent.tab();
     expect(
       await screen.findByText("Phone number is missing or invalid")
     ).toBeInTheDocument();
     // Enter good info and blur
-    fireEvent.change(primary, { target: { value: "202-867-5309" } });
-    fireEvent.blur(primary);
+    userEvent.type(primary, "202-867-5309");
+    userEvent.tab();
     await waitFor(() =>
       expect(
         screen.queryByText("Phone number is missing or invalid")
@@ -55,23 +56,23 @@ describe("ManagePhoneNumbers", () => {
       exact: false,
     });
     // Show two errors
-    fireEvent.change(primary, { target: { value: "" } });
-    fireEvent.blur(primary);
+    userEvent.clear(primary);
+    userEvent.tab();
     const addButton = screen.getByText("Add another number", { exact: false });
-    fireEvent.click(addButton);
+    userEvent.click(addButton);
     const second = await screen.findByLabelText("Additional phone", {
       exact: false,
     });
-    fireEvent.change(second, { target: { value: "" } });
-    fireEvent.blur(second);
+    userEvent.clear(second);
+    userEvent.tab();
     await waitFor(() => {
       expect(
         screen.getAllByText("Phone number is missing or invalid").length
       ).toBe(2);
     });
     // Fix one of the errors
-    fireEvent.change(primary, { target: { value: "3018675309" } });
-    fireEvent.blur(primary);
+    userEvent.type(primary, "3018675309");
+    userEvent.tab();
     await waitFor(() => {
       expect(
         screen.getAllByText("Phone number is missing or invalid").length
@@ -83,8 +84,9 @@ describe("ManagePhoneNumbers", () => {
       exact: false,
     });
     // Show two errors
-    fireEvent.change(primary, { target: { value: "" } });
-    fireEvent.blur(primary);
+    userEvent.clear(primary);
+    userEvent.tab();
+
     await waitFor(() => {
       i18n.changeLanguage("es");
     });
@@ -96,14 +98,14 @@ describe("ManagePhoneNumbers", () => {
     const primary = await screen.findByLabelText("Primary phone", {
       exact: false,
     });
-    fireEvent.change(primary, { target: { value: "202-867-5309" } });
+    userEvent.type(primary, "202-867-5309");
     const addButton = screen.getByText("Add another number", { exact: false });
-    fireEvent.click(addButton);
+    userEvent.click(addButton);
     const second = await screen.findByLabelText("Additional phone", {
       exact: false,
     });
-    fireEvent.change(second, { target: { value: "404-867-5309" } });
-    fireEvent.click(
+    userEvent.type(second, "404-867-5309");
+    userEvent.click(
       await screen.findByLabelText("Delete phone number 404-867-5309")
     );
     await waitFor(() => {

@@ -1,8 +1,7 @@
 package gov.cdc.usds.simplereport.test_util;
 
 import javax.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,12 +12,12 @@ import org.springframework.stereotype.Component;
  * in our schema, all at once so no foreign keys get upset.
  */
 @Component
+@Slf4j
 public class DbTruncator {
 
   @Value("${spring.jpa.properties.hibernate.default_schema:public}")
   private String hibernateSchema;
 
-  private static final Logger LOG = LoggerFactory.getLogger(DbTruncator.class);
   /**
    * Credit:
    * https://stackoverflow.com/questions/2829158/truncating-all-tables-in-a-postgres-database
@@ -47,7 +46,7 @@ public class DbTruncator {
    * @see gov.usds.case_issues.test_util.DbTruncator#truncateAll() */
   @Transactional
   public void truncateAll() {
-    LOG.info("Truncating all non-liquibase tables in {}", hibernateSchema);
+    log.info("Truncating all non-liquibase tables in {}", hibernateSchema);
     jdbc.execute(String.format(TRUNCATE_FUNCTION_TEMPLATE, hibernateSchema));
   }
 }

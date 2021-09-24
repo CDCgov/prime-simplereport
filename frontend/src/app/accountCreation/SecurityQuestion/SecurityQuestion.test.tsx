@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter, Route } from "react-router";
@@ -38,19 +38,21 @@ describe("SecurityQuestion", () => {
       screen.getByLabelText("Security question", { exact: false }),
       ["In what city or town was your first job?"]
     );
-    fireEvent.change(screen.getByLabelText("Answer", { exact: false }), {
-      target: { value: "New York" },
-    });
+    userEvent.type(
+      screen.getByLabelText("Answer", { exact: false }),
+      "New York"
+    );
     expect(
       screen.getByText("In what city or town was your first job?")
     ).toBeInTheDocument();
   });
 
   it("requires a security question", () => {
-    fireEvent.change(screen.getByLabelText("Answer", { exact: false }), {
-      target: { value: "New York" },
-    });
-    fireEvent.click(screen.getByText("Continue"));
+    userEvent.type(
+      screen.getByLabelText("Answer", { exact: false }),
+      "New York"
+    );
+    userEvent.click(screen.getByText("Continue"));
     expect(screen.getByText("Select a security question")).toBeInTheDocument();
   });
 
@@ -59,7 +61,7 @@ describe("SecurityQuestion", () => {
       screen.getByLabelText("Security question", { exact: false }),
       ["In what city or town was your first job?"]
     );
-    fireEvent.click(screen.getByText("Continue"));
+    userEvent.click(screen.getByText("Continue"));
     expect(
       screen.getByText("Answer must be at least 4 characters")
     ).toBeInTheDocument();
@@ -70,11 +72,12 @@ describe("SecurityQuestion", () => {
       screen.getByLabelText("Security question", { exact: false }),
       ["In what city or town was your first job?"]
     );
-    fireEvent.change(screen.getByLabelText("Answer", { exact: false }), {
-      target: { value: "Valid answer" },
-    });
+    userEvent.type(
+      screen.getByLabelText("Answer", { exact: false }),
+      "Valid answer"
+    );
     await act(async () => {
-      await fireEvent.click(screen.getByText("Continue"));
+      await userEvent.click(screen.getByText("Continue"));
     });
     expect(
       screen.getByText("Recovery question set successfully.")
@@ -86,11 +89,12 @@ describe("SecurityQuestion", () => {
       screen.getByLabelText("Security question", { exact: false }),
       ["In what city or town was your first job?"]
     );
-    fireEvent.change(screen.getByLabelText("Answer", { exact: false }), {
-      target: { value: "Invalid answer" },
-    });
+    userEvent.type(
+      screen.getByLabelText("Answer", { exact: false }),
+      "Invalid answer"
+    );
     await act(async () => {
-      await fireEvent.click(screen.getByText("Continue"));
+      await userEvent.click(screen.getByText("Continue"));
     });
     expect(screen.getByText("catastrophic failure")).toBeInTheDocument();
   });

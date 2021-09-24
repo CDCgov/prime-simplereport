@@ -1,7 +1,7 @@
 import qs from "querystring";
 
 import { MockedProvider } from "@apollo/client/testing";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router";
 import configureStore from "redux-mock-store";
@@ -1086,9 +1086,9 @@ describe("TestResultsList", () => {
     const moreActions = within(screen.getByRole("table")).getAllByRole(
       "button"
     )[0];
-    fireEvent.click(moreActions);
+    userEvent.click(moreActions);
     const viewDetails = await screen.findByText("View details");
-    fireEvent.click(viewDetails);
+    userEvent.click(viewDetails);
     expect(screen.queryAllByText("Test details").length).toBe(2);
   });
 
