@@ -9,19 +9,16 @@ import gov.cdc.usds.simplereport.service.AzureStorageQueueTestEventReportingServ
 import gov.cdc.usds.simplereport.service.TestEventReportingService;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
+@Slf4j
 @Configuration
 class AzureTestEventReportingQueueConfiguration {
-  private static final Logger LOG =
-      LoggerFactory.getLogger(AzureTestEventReportingQueueConfiguration.class);
-
   @Bean
   @Primary
   @ConditionalOnProperty(
@@ -29,7 +26,7 @@ class AzureTestEventReportingQueueConfiguration {
       havingValue = "true")
   TestEventReportingService storageQueueReportingService(
       ObjectMapper mapper, QueueAsyncClient queueClient) {
-    LOG.info("Configured for queue={}", queueClient.getQueueName());
+    log.info("Configured for queue={}", queueClient.getQueueName());
     return new AzureStorageQueueTestEventReportingService(mapper, queueClient);
   }
 
@@ -51,11 +48,9 @@ class AzureTestEventReportingQueueConfiguration {
   }
 
   private static class NoOpReportingService implements TestEventReportingService {
-    private static final Logger LOG = LoggerFactory.getLogger(NoOpReportingService.class);
-
     @Override
     public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
-      LOG.warn(
+      log.warn(
           "No TestEventReportingService configured; defaulting to no-op reporting for TestEvent [{}]",
           testEvent.getInternalId());
       return CompletableFuture.completedFuture(null);
@@ -63,7 +58,7 @@ class AzureTestEventReportingQueueConfiguration {
 
     @Override
     public void markTestEventsAsReported(Set<TestEvent> testEvents) {
-      LOG.warn("No TestEventReportingService configured; defaulting to no-op reporting");
+      log.warn("No TestEventReportingService configured; defaulting to no-op reporting");
     }
   }
 }
