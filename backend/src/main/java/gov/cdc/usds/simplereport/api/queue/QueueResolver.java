@@ -6,15 +6,12 @@ import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class QueueResolver implements GraphQLQueryResolver {
-
-  private static final Logger LOG = LoggerFactory.getLogger(QueueResolver.class);
-
   private final TestOrderService _testOrderService;
 
   public QueueResolver(TestOrderService testOrderService) {
@@ -26,7 +23,7 @@ public class QueueResolver implements GraphQLQueryResolver {
         _testOrderService.getQueue(facilityId).stream()
             .map(ApiTestOrder::new)
             .collect(Collectors.toList());
-    LOG.trace("getQueue({}): Returning {} items", facilityId, queue.size());
+    log.trace("getQueue({}): Returning {} items", facilityId, queue.size());
     return queue;
   }
 }

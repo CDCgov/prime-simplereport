@@ -26,16 +26,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import javax.servlet.http.Part;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /** Mutations for creating and updating patient records. */
 @Component
+@Slf4j
 public class PatientMutationResolver implements GraphQLMutationResolver {
-
-  private static final Logger LOG = LoggerFactory.getLogger(PatientMutationResolver.class);
-
   private final PersonService _ps;
   private final UploadService _us;
 
@@ -50,7 +47,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
     } catch (IllegalGraphqlArgumentException e) {
       throw e;
     } catch (IOException e) {
-      LOG.error("Patient CSV upload failed", e);
+      log.error("Patient CSV upload failed", e);
       throw new CsvProcessingException("Unable to complete patient CSV upload");
     }
   }

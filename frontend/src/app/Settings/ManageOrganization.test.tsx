@@ -1,5 +1,6 @@
 import { MockedProvider } from "@apollo/client/testing";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { DeepPartial } from "redux";
 import configureStore from "redux-mock-store";
@@ -48,11 +49,11 @@ describe("ManageOrganization", () => {
     });
     const saveButton = screen.getByText("Save settings");
     expect(orgNameInput).not.toBeDisabled();
-    fireEvent.change(orgNameInput, { target: { value: "Penny Lane" } });
-    fireEvent.change(orgTypeInput, { target: { value: "other" } });
+    userEvent.type(orgNameInput, "Penny Lane");
+    userEvent.selectOptions(orgTypeInput, "other");
     expect(saveButton).not.toBeDisabled();
     await waitFor(() => {
-      fireEvent.click(saveButton);
+      userEvent.click(saveButton);
     });
   });
 
@@ -69,10 +70,10 @@ describe("ManageOrganization", () => {
       exact: false,
     });
     const saveButton = screen.getByText("Save settings");
-    fireEvent.change(orgTypeInput, { target: { value: "hospice" } });
+    userEvent.selectOptions(orgTypeInput, "hospice");
     expect(saveButton).not.toBeDisabled();
     await waitFor(() => {
-      fireEvent.click(saveButton);
+      userEvent.click(saveButton);
     });
   });
 });

@@ -3,9 +3,8 @@ package gov.cdc.usds.simplereport.service;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -18,9 +17,8 @@ import org.springframework.web.client.RestClientException;
  * DataHubConfig#getSlackNotifyWebhookUrl()}
  */
 @Service
+@Slf4j
 public class SlackMessageService {
-
-  private static final Logger LOG = LoggerFactory.getLogger(SlackMessageService.class);
 
   private DataHubConfig _config;
   private RestTemplateBuilder _builder;
@@ -33,12 +31,12 @@ public class SlackMessageService {
   public void sendSlackChannelMessage(
       String titleMsg, List<String> markupMsgs, Boolean separateMsgs) {
     if (!_config.getSlackNotifyWebhookUrl().startsWith("https://hooks.slack.com/")) {
-      LOG.error(
+      log.error(
           "SlackChannelNotConfigured. Message not sent Title: '{}' Body: {}", titleMsg, markupMsgs);
       return;
     } else {
       // log the result since slack may be down.
-      LOG.debug("Attempting to send slack message {}: {}", titleMsg, markupMsgs);
+      log.debug("Attempting to send slack message {}: {}", titleMsg, markupMsgs);
     }
 
     try {
@@ -48,10 +46,10 @@ public class SlackMessageService {
               .body(SlackMessage.build(titleMsg, markupMsgs, separateMsgs));
 
       ResponseEntity<String> responseBody = _builder.build().exchange(r, String.class);
-      LOG.debug("Slack responded {}", responseBody);
+      log.debug("Slack responded {}", responseBody);
     } catch (RestClientException | JSONException err) {
-      LOG.error("sendSlackChannelMessage failed", err);
-      LOG.info("Intended slackMessage Title: '{}'  Body: '{}'", titleMsg, markupMsgs);
+      log.error("sendSlackChannelMessage failed", err);
+      log.info("Intended slackMessage Title: '{}'  Body: '{}'", titleMsg, markupMsgs);
     }
   }
 

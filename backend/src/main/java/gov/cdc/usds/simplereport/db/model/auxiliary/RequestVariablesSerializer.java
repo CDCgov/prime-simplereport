@@ -13,12 +13,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.http.Part;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class RequestVariablesSerializer extends JsonSerializer<Map<String, Object>> {
-  private static final Logger LOG = LoggerFactory.getLogger(RequestVariablesSerializer.class);
-
   private Object parseValue(Object value) {
     if (value instanceof Part) {
       Part part = (Part) value;
@@ -28,7 +26,7 @@ public class RequestVariablesSerializer extends JsonSerializer<Map<String, Objec
             .lines()
             .collect(Collectors.joining("\n"));
       } catch (IOException e) {
-        LOG.error("Unable to read uploaded file while writing audit log", e);
+        log.error("Unable to read uploaded file while writing audit log", e);
         throw new AuditLogFailureException();
       }
     }

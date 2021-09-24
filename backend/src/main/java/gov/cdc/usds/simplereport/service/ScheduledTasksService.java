@@ -5,8 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.task.TaskSchedulerBuilder;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
@@ -15,9 +14,8 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class ScheduledTasksService {
-
-  private static final Logger LOG = LoggerFactory.getLogger(ScheduledTasksService.class);
 
   private final TaskScheduler _scheduler;
   private final DataHubUploaderService _dataHubUploaderService;
@@ -38,7 +36,7 @@ public class ScheduledTasksService {
     Map<String, ScheduledFuture<?>> futures = new HashMap<>();
     TimeZone tz = config.getUploadTimezone();
     for (String cron : config.getUploadSchedule()) {
-      LOG.info(
+      log.info(
           "Scheduling data hub upload to run on cron schedule '{}' in time zone {}",
           cron,
           tz.getID());
@@ -51,7 +49,7 @@ public class ScheduledTasksService {
 
   public void scheduleAccountReminderEmails(String cronScheduleDefinition, String tzString) {
     TimeZone tz = TimeZone.getTimeZone(tzString);
-    LOG.info(
+    log.info(
         "Scheduling account reminder emails to run on cron schedule '{}' in time zone {}",
         cronScheduleDefinition,
         tz.getID());

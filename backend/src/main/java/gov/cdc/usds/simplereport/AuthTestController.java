@@ -7,8 +7,7 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,12 +16,10 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @Profile(BeanProfiles.SERVER_DEBUG)
 public class AuthTestController {
-
-  private static final Logger LOG = LoggerFactory.getLogger(AuthTestController.class);
-
   private OrganizationExtractor _extractor;
 
   public AuthTestController(AuthorizationProperties p) {
@@ -31,15 +28,15 @@ public class AuthTestController {
 
   @GetMapping("/authTest")
   public Object showMe(Authentication auth) {
-    LOG.warn("Authentication is of class {}", auth.getClass().getCanonicalName());
+    log.warn("Authentication is of class {}", auth.getClass().getCanonicalName());
     Object principal = auth.getPrincipal();
-    LOG.warn("Principal is {}", principal);
+    log.warn("Principal is {}", principal);
     if (principal != null) {
-      LOG.warn("Principal class is {}", principal.getClass());
+      log.warn("Principal class is {}", principal.getClass());
     }
     if (principal instanceof OidcUser) {
       OidcUser user = OidcUser.class.cast(principal);
-      LOG.warn("Available attributes are {}", user.getAttributes().keySet());
+      log.warn("Available attributes are {}", user.getAttributes().keySet());
       return user;
     }
     if (principal instanceof Jwt) {

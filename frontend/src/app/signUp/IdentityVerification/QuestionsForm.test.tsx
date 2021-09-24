@@ -1,4 +1,5 @@
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { exampleQuestionSet } from "./constants";
 import QuestionsForm from "./QuestionsForm";
@@ -29,9 +30,7 @@ describe("QuestionsForm", () => {
   });
   describe("One field entered", () => {
     beforeEach(() => {
-      fireEvent.click(screen.getByLabelText("2002", { exact: false }), {
-        target: { value: "1" },
-      });
+      userEvent.click(screen.getByLabelText("2002", { exact: false }));
     });
     it("enables the submit button", () => {
       expect(screen.getByText("Submit")).not.toHaveAttribute("disabled");
@@ -50,7 +49,7 @@ describe("QuestionsForm", () => {
     describe("On submit", () => {
       beforeEach(async () => {
         await act(async () => {
-          await fireEvent.click(
+          await userEvent.click(
             screen.queryAllByText("Submit", {
               exact: false,
             })[0]
@@ -67,36 +66,23 @@ describe("QuestionsForm", () => {
   });
   describe("Completed form", () => {
     beforeEach(() => {
-      fireEvent.click(screen.getByLabelText("2002", { exact: false }), {
-        target: { value: "1" },
-      });
-      fireEvent.click(
-        screen.getByLabelText("OPTICIAN / OPTOMETRIST", { exact: false }),
-        {
-          target: { value: "3" },
-        }
+      userEvent.click(screen.getByLabelText("2002", { exact: false }));
+      userEvent.click(
+        screen.getByLabelText("OPTICIAN / OPTOMETRIST", { exact: false })
       );
-      fireEvent.click(
-        screen.getByLabelText("MID AMERICA MORTGAGE", { exact: false }),
-        {
-          target: { value: "3" },
-        }
+      userEvent.click(
+        screen.getByLabelText("MID AMERICA MORTGAGE", { exact: false })
       );
-      fireEvent.click(screen.getByLabelText("TWO", { exact: false }), {
-        target: { value: "2" },
-      });
-      fireEvent.click(
-        screen.getByLabelText("AGUA DULCE HIGH SCHOOL", { exact: false }),
-        {
-          target: { value: "4" },
-        }
+      userEvent.click(screen.getByLabelText("TWO", { exact: false }));
+      userEvent.click(
+        screen.getByLabelText("AGUA DULCE HIGH SCHOOL", { exact: false })
       );
     });
 
     describe("On submit", () => {
       beforeEach(async () => {
         await act(async () => {
-          await fireEvent.click(
+          await userEvent.click(
             screen.queryAllByText("Submit", {
               exact: false,
             })[0]

@@ -21,8 +21,7 @@ import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -46,9 +45,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/pxp")
 @Validated
+@Slf4j
 public class PatientExperienceController {
-  private static final Logger LOG = LoggerFactory.getLogger(PatientExperienceController.class);
-
   private final PersonService _ps;
   private final PatientLinkService _pls;
   private final TestEventService _tes;
@@ -70,7 +68,7 @@ public class PatientExperienceController {
 
   @PostConstruct
   private void init() {
-    LOG.info("Patient Experience REST endpoints enabled");
+    log.info("Patient Experience REST endpoints enabled");
   }
 
   /**
