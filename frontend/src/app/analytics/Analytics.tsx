@@ -11,6 +11,15 @@ import "./Analytics.scss";
 
 export const EXTERNAL_DATE_FORMAT = "MM/DD/YYYY";
 
+export const getDateWithCurrentTimeFromString = (date: string): Date => {
+  const now = moment();
+  return moment(date, EXTERNAL_DATE_FORMAT)
+    .hour(now.hours())
+    .minute(now.minutes())
+    .second(now.seconds())
+    .toDate();
+};
+
 export const Analytics = () => {
   const organization = useSelector(
     (state) => (state as any).organization as Organization
@@ -22,7 +31,7 @@ export const Analytics = () => {
   const [facilityName, setFacilityName] = useState<string>(organization.name);
   const [dateRange, setDateRange] = useState<string>("week");
   const [startDate, setStartDate] = useState<string>(
-    moment().subtract(1, "week").format(EXTERNAL_DATE_FORMAT)
+    moment().subtract(7, "day").format(EXTERNAL_DATE_FORMAT)
   );
   const [endDate, setEndDate] = useState<string>(
     moment().format(EXTERNAL_DATE_FORMAT)
@@ -70,19 +79,11 @@ export const Analytics = () => {
     }
   };
 
-  const now = moment();
-
   const { data, loading, error } = useGetTopLevelDashboardMetricsQuery({
     variables: {
       facilityId,
-      startDate: moment(startDate, EXTERNAL_DATE_FORMAT)
-        .hour(now.hours())
-        .minute(now.minutes())
-        .toDate(),
-      endDate: moment(endDate, EXTERNAL_DATE_FORMAT)
-        .hour(now.hours())
-        .minute(now.minutes())
-        .toDate(),
+      startDate: getDateWithCurrentTimeFromString(startDate),
+      endDate: getDateWithCurrentTimeFromString(endDate),
     },
     fetchPolicy: "no-cache",
   });
@@ -102,7 +103,8 @@ export const Analytics = () => {
   const totalTests = data.topLevelDashboardMetrics?.totalTestCount || 0;
   const positiveTests = data.topLevelDashboardMetrics?.positiveTestCount || 0;
   const negativeTests = totalTests - positiveTests;
-  const positivityRate = (positiveTests / totalTests) * 100;
+  const positivityRate =
+    totalTests > 0 ? (positiveTests / totalTests) * 100 : null;
 
   return (
     <main className="prime-home">
@@ -220,7 +222,9 @@ export const Analytics = () => {
             <div className="grid-col-3">
               <div className="card display-flex flex-column flex-align-center">
                 <h2>Positivity rate</h2>
-                <h1>{positivityRate.toFixed(1)}%</h1>
+                <h1>
+                  {positivityRate ? positivityRate.toFixed(1) + "%" : "N/A"}
+                </h1>
                 <p></p>
               </div>
             </div>
