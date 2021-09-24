@@ -1,4 +1,5 @@
-import { act, fireEvent, render } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
@@ -48,7 +49,7 @@ describe("PatientHeader", () => {
     expect(getByText("Español")).toBeInTheDocument();
 
     await act(async () => {
-      await fireEvent.click(getByRole("button"));
+      await userEvent.click(getByRole("button"));
     });
 
     expect(queryByText("Español")).not.toBeInTheDocument();
