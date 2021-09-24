@@ -23,7 +23,7 @@ resource "azurerm_storage_blob" "appcode" {
 }
 
 resource "azurerm_app_service_plan" "asp" {
-  name                = "${var.prefix}-plan"
+  name                = "${var.prefix}-plan-${var.environment}"
   resource_group_name = local.resource_group_name
   location            = var.location
   kind                = "elastic"
