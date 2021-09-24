@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @PreAuthorize(
     "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
-@PostAuthorize("@restAuditlogManager.logRestSuccess(#request, returnObject)")
+@PostAuthorize("@restAuditLogManager.logRestSuccess(#request, returnObject)")
 @RestController
 @RequestMapping("/pxp")
 @Validated

@@ -33,7 +33,7 @@ class GraphqlInputsSerializationTest {
   }
 
   @Test
-  // IF THIS TEST BREAKS YOU HAVE BROKEN THE DATABASE AUDIT log. FIX THE MODEL, NOT THE TEST.
+  // IF THIS TEST BREAKS YOU HAVE BROKEN THE DATABASE AUDIT LOG. FIX THE MODEL, NOT THE TEST.
   void deserialize_fullObject_allFieldsSet() throws IOException {
     GraphQlInputs object = _tester.read("/deserialization/graphql-inputs/full.json").getObject();
     assertNotNull(object);

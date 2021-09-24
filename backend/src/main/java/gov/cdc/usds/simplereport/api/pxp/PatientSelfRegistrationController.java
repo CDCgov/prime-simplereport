@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/pxp/register")
 @PreAuthorize("@patientSelfRegistrationLinkService.flagSelfRegistrationRequest()")
-@PostAuthorize("@restAuditlogManager.logRestSuccess(#request, returnObject)")
+@PostAuthorize("@restAuditLogManager.logRestSuccess(#request, returnObject)")
 @Validated
 @Slf4j
 public class PatientSelfRegistrationController {
