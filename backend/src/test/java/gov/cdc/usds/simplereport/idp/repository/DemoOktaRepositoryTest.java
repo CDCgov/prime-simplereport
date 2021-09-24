@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -365,7 +365,7 @@ class DemoOktaRepositoryTest {
         Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN),
         true);
 
-    assertEquals(_repo.fetchAdminUserEmail(ABC), "dianek@gmail.com");
+    assertThat(_repo.fetchAdminUserEmail(ABC)).contains("dianek@gmail.com");
   }
 
   private static Facility getFacility(UUID uuid, Organization org) {

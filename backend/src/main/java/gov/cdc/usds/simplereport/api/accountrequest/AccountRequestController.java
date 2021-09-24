@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -98,7 +99,7 @@ public class AccountRequestController {
             "This email address is already associated with a SimpleReport user.");
       } else {
         throw new BadRequestException(
-            "An unknown error occured when creating this organization in Okta.");
+            "An unknown error occurred when creating this organization in Okta.");
       }
     } catch (BadRequestException e) {
       // Need to catch and re-throw these BadRequestExceptions or they get rethrown as
@@ -116,41 +117,67 @@ public class AccountRequestController {
   }
 
   private Organization checkAccountRequestAndCreateOrg(OrganizationAccountRequest request) {
+    String parsedStateCode = Translators.parseState(request.getState());
     String organizationName =
-        checkForDuplicateOrg(request.getName(), request.getState(), request.getEmail());
-    String orgExternalId = createOrgExternalId(organizationName, request.getState());
+        checkForDuplicateOrg(request.getName(), parsedStateCode, request.getEmail());
+    String orgExternalId = createOrgExternalId(organizationName, parsedStateCode);
     String organizationType = Translators.parseOrganizationType(request.getType());
     return _os.createOrganization(organizationName, organizationType, orgExternalId);
   }
 
   private String checkForDuplicateOrg(String organizationName, String state, String email) {
+    organizationName = Translators.parseString(organizationName);
+    if (organizationName == null || "".equals(organizationName)) {
+      throw new BadRequestException("The organization name is empty.");
+    }
+    organizationName = organizationName.replaceAll("\\s{2,}", " ");
+
     List<Organization> potentialDuplicates = _os.getOrganizationsByName(organizationName);
+    // Not a duplicate org, can be safely created
     if (potentialDuplicates.isEmpty()) {
       return organizationName;
     }
 
+    // Is the duplicate org in the same state? If so, it's a true duplicate
     if (potentialDuplicates.stream().anyMatch(o -> o.getExternalId().startsWith(state))) {
       Optional<Organization> duplicateOrg =
           potentialDuplicates.stream().filter(o -> o.getExternalId().startsWith(state)).findFirst();
-      if (duplicateOrg.isPresent()
+      if (duplicateOrg.isPresent()) {
+        if (_oktaRepo.fetchAdminUserEmail(duplicateOrg.get()).stream()
+            .anyMatch(Predicate.isEqual(email))) {
           // Special toasts are shown to admin users trying to re-register their org.
-          && (_oktaRepo.fetchAdminUserEmail(duplicateOrg.get()).equals(email))) {
-        String message =
-            duplicateOrg.get().getIdentityVerified()
-                ? "Duplicate organization with admin user who has completed identity verification."
-                : "Duplicate organization with admin user that has not completed identity verification.";
-        throw new BadRequestException(message);
+          String message =
+              duplicateOrg.get().getIdentityVerified()
+                  ? "Duplicate organization with admin user who has completed identity verification."
+                  : "Duplicate organization with admin user that has not completed identity verification.";
+          throw new BadRequestException(message);
+        } else {
+          throw new BadRequestException(
+              "This organization has already registered with SimpleReport.");
+        }
       }
-      throw new BadRequestException("This organization has already registered with SimpleReport.");
     }
 
+    // Org can be created because it's not in the same state, but it gets a special org name to
+    // distinguish it
     return String.join("-", organizationName, state);
   }
 
   private String createOrgExternalId(String organizationName, String state) {
-    return String.format(
-        "%s-%s-%s",
-        state, organizationName.replace(' ', '-').replace(':', '-'), UUID.randomUUID().toString());
+    organizationName =
+        organizationName
+            // remove all non-alpha-numeric
+            .replaceAll("[^-A-Za-z0-9 ]", "")
+            // spaces to hyphens
+            .replace(' ', '-')
+            // reduce repeated hyphens to one
+            .replaceAll("-+", "-")
+            // remove leading hyphens
+            .replaceAll("^-+", "");
+    if (organizationName.length() == 0) {
+      throw new BadRequestException("The organization name is invalid.");
+    }
+    return String.format("%s-%s-%s", state, organizationName, UUID.randomUUID());
   }
 
   private void createAdminUser(String firstName, String lastName, String email, String externalId) {
