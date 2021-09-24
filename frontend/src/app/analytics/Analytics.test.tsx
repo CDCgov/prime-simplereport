@@ -1,16 +1,15 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
 import { MockedProvider } from "@apollo/client/testing";
 import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
-import moment from "moment";
 
 import { GetTopLevelDashboardMetricsDocument } from "../../generated/graphql";
 
 import {
   Analytics,
-  EXTERNAL_DATE_FORMAT,
+  getDateFromDaysAgo,
   getDateWithCurrentTimeFromString,
 } from "./Analytics";
 
@@ -27,22 +26,18 @@ const store = mockStore({
   ],
 });
 
-const getToday = () => moment().format(EXTERNAL_DATE_FORMAT);
-const getYesterday = () =>
-  moment().subtract(1, "day").format(EXTERNAL_DATE_FORMAT);
-const getLastWeek = () =>
-  moment().subtract(7, "day").format(EXTERNAL_DATE_FORMAT);
-const getLastMonth = () =>
-  moment().subtract(30, "day").format(EXTERNAL_DATE_FORMAT);
+beforeAll(() => {
+  jest.useFakeTimers("modern").setSystemTime(new Date("2021-08-01").getTime());
+});
 
-const buildMocks = () => [
+const getMocks = () => [
   {
     request: {
       query: GetTopLevelDashboardMetricsDocument,
       variables: {
         facilityId: "",
-        startDate: getDateWithCurrentTimeFromString(getLastWeek()),
-        endDate: getDateWithCurrentTimeFromString(getToday()),
+        startDate: getDateFromDaysAgo(7),
+        endDate: new Date(),
       },
     },
     result: {
@@ -59,8 +54,8 @@ const buildMocks = () => [
       query: GetTopLevelDashboardMetricsDocument,
       variables: {
         facilityId: "",
-        startDate: getDateWithCurrentTimeFromString(getYesterday()),
-        endDate: getDateWithCurrentTimeFromString(getToday()),
+        startDate: getDateFromDaysAgo(1),
+        endDate: new Date(),
       },
     },
     result: {
@@ -77,8 +72,8 @@ const buildMocks = () => [
       query: GetTopLevelDashboardMetricsDocument,
       variables: {
         facilityId: "",
-        startDate: getDateWithCurrentTimeFromString(getLastMonth()),
-        endDate: getDateWithCurrentTimeFromString(getToday()),
+        startDate: getDateFromDaysAgo(30),
+        endDate: new Date(),
       },
     },
     result: {
@@ -95,8 +90,8 @@ const buildMocks = () => [
       query: GetTopLevelDashboardMetricsDocument,
       variables: {
         facilityId: "1",
-        startDate: getDateWithCurrentTimeFromString(getLastWeek()),
-        endDate: getDateWithCurrentTimeFromString(getToday()),
+        startDate: getDateFromDaysAgo(7),
+        endDate: new Date(),
       },
     },
     result: {
@@ -113,8 +108,8 @@ const buildMocks = () => [
       query: GetTopLevelDashboardMetricsDocument,
       variables: {
         facilityId: "2",
-        startDate: getDateWithCurrentTimeFromString(getLastWeek()),
-        endDate: getDateWithCurrentTimeFromString(getToday()),
+        startDate: getDateFromDaysAgo(7),
+        endDate: new Date(),
       },
     },
     result: {
@@ -150,7 +145,7 @@ const buildMocks = () => [
       variables: {
         facilityId: "",
         startDate: getDateWithCurrentTimeFromString("07/01/2021"),
-        endDate: getDateWithCurrentTimeFromString(getToday()),
+        endDate: new Date(),
       },
     },
     result: {
@@ -167,8 +162,8 @@ const buildMocks = () => [
       query: GetTopLevelDashboardMetricsDocument,
       variables: {
         facilityId: "3",
-        startDate: getDateWithCurrentTimeFromString(getLastWeek()),
-        endDate: getDateWithCurrentTimeFromString(getToday()),
+        startDate: getDateFromDaysAgo(7),
+        endDate: new Date(),
       },
     },
     result: {
@@ -184,13 +179,20 @@ const buildMocks = () => [
 
 describe("Analytics", () => {
   beforeEach(() => {
+    jest
+      .useFakeTimers("modern")
+      .setSystemTime(new Date("2021-08-01").getTime());
     render(
-      <MockedProvider mocks={buildMocks()}>
+      <MockedProvider mocks={getMocks()}>
         <Provider store={store}>
           <Analytics />
         </Provider>
       </MockedProvider>
     );
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it("renders", async () => {

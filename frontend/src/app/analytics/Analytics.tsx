@@ -1,6 +1,5 @@
 import { ChangeEvent, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import moment from "moment";
 
 import { DatePicker } from "../commonComponents/DatePicker";
 import Dropdown from "../commonComponents/Dropdown";
@@ -9,15 +8,23 @@ import { LoadingCard } from "../commonComponents/LoadingCard/LoadingCard";
 
 import "./Analytics.scss";
 
-export const EXTERNAL_DATE_FORMAT = "MM/DD/YYYY";
+export const getDateFromDaysAgo = (daysAgo: number): Date => {
+  const date = new Date();
+  date.setDate(date.getDate() - daysAgo);
+  return date;
+};
+
+export const getDateStringFromDaysAgo = (daysAgo: number): string => {
+  return getDateFromDaysAgo(daysAgo).toLocaleDateString();
+};
 
 export const getDateWithCurrentTimeFromString = (date: string): Date => {
-  const now = moment();
-  return moment(date, EXTERNAL_DATE_FORMAT)
-    .hour(now.hours())
-    .minute(now.minutes())
-    .second(now.seconds())
-    .toDate();
+  const now = new Date();
+  const newDate = new Date(date);
+  newDate.setHours(now.getHours());
+  newDate.setMinutes(now.getMinutes());
+  newDate.setSeconds(now.getSeconds());
+  return newDate;
 };
 
 export const Analytics = () => {
@@ -31,10 +38,10 @@ export const Analytics = () => {
   const [facilityName, setFacilityName] = useState<string>(organization.name);
   const [dateRange, setDateRange] = useState<string>("week");
   const [startDate, setStartDate] = useState<string>(
-    moment().subtract(7, "day").format(EXTERNAL_DATE_FORMAT)
+    getDateStringFromDaysAgo(7)
   );
   const [endDate, setEndDate] = useState<string>(
-    moment().format(EXTERNAL_DATE_FORMAT)
+    new Date().toLocaleDateString()
   );
 
   useEffect(() => {
@@ -63,16 +70,16 @@ export const Analytics = () => {
     setDateRange(value);
     switch (value) {
       case "day":
-        setStartDate(moment().subtract(1, "day").format(EXTERNAL_DATE_FORMAT));
-        setEndDate(moment().format(EXTERNAL_DATE_FORMAT));
+        setStartDate(getDateStringFromDaysAgo(1));
+        setEndDate(new Date().toLocaleDateString());
         break;
       case "week":
-        setStartDate(moment().subtract(7, "day").format(EXTERNAL_DATE_FORMAT));
-        setEndDate(moment().format(EXTERNAL_DATE_FORMAT));
+        setStartDate(getDateStringFromDaysAgo(7));
+        setEndDate(new Date().toLocaleDateString());
         break;
       case "month":
-        setStartDate(moment().subtract(30, "day").format(EXTERNAL_DATE_FORMAT));
-        setEndDate(moment().format(EXTERNAL_DATE_FORMAT));
+        setStartDate(getDateStringFromDaysAgo(30));
+        setEndDate(new Date().toLocaleDateString());
         break;
       default:
         break;
@@ -164,10 +171,8 @@ export const Analytics = () => {
                   label="Begin"
                   onChange={(date?: string) => {
                     if (date && date.length === 10) {
-                      const newDate = moment(date, EXTERNAL_DATE_FORMAT);
-                      if (newDate.isValid()) {
-                        setStartDate(newDate.format(EXTERNAL_DATE_FORMAT));
-                      }
+                      const newDate = new Date(date);
+                      setStartDate(newDate.toLocaleDateString());
                     }
                   }}
                   noHint
@@ -179,10 +184,8 @@ export const Analytics = () => {
                   label="End"
                   onChange={(date?: string) => {
                     if (date && date.length === 10) {
-                      const newDate = moment(date, EXTERNAL_DATE_FORMAT);
-                      if (newDate.isValid()) {
-                        setEndDate(newDate.format(EXTERNAL_DATE_FORMAT));
-                      }
+                      const newDate = new Date(date);
+                      setEndDate(newDate.toLocaleDateString());
                     }
                   }}
                   noHint
