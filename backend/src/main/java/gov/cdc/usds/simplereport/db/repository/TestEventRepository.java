@@ -4,7 +4,6 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
-import gov.cdc.usds.simplereport.db.model.auxiliary.FacilitySummaryTestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount;
 import java.util.Collection;
 import java.util.Date;
@@ -87,29 +86,5 @@ public interface TestEventRepository
   List<TestResultWithCount> countByResultByFacility(
       Collection<UUID> facilityIds, Date startDate, Date endDate);
 
-  @Query(
-      value = 
-      "SELECT COUNT(DISTINCT te.person.internalId) " 
-      + "COUNT(CASE WHEN te.result = POSITIVE THEN ResultCount END) AS PositiveResultCount,"
-      + "COUNT(CASE WHEN te.result = NEGATIVE THEN ResultCount END) AS NegativeResultCount,"
-      + "COUNT(CASE WHEN te.result = UNDETERMINED THEN ResultCount END) AS UndeterminedResultCount,"
-      + "FROM (SELECT te.result AS ResultValue, te.patientData.internalId AS PersonId, COUNT(*) AS ResultCount FROM TestEvent te "
-      + "         LEFT JOIN TestEvent corrected_te ON corrected_te.priorCorrectedTestEventId = te.internalId "
-              + "WHERE te.facility.internalId IN :facilityIds AND COALESCE(te.dateTestedBackdate, te.createdAt) BETWEEN :startDate AND :endDate AND "
-              + "    te.correctionStatus = 'ORIGINAL' AND corrected_te.priorCorrectedTestEventId IS NULL "
-              + "GROUP BY te.result, te.patientData.internalId)" 
-  )
-  List<FacilitySummaryTestResult> countByResultsByFacilityWithUniquePeople(
-      Collection<UUID> facilityIds, Date startDate, Date endDate);
-
   boolean existsByPatient(Person person);
 }
-
-/**SELECT COUNT(DISTINCT PersonId), 
-COUNT(CASE WHEN te.result = POSITIVE THEN ResultCount END) AS PositiveResultCount,
-COUNT(CASE WHEN te.result = NEGATIVE THEN ResultCount END) AS NegativeResultCount,
-COUNT(CASE WHEN te.result = UNDETERMINED THEN ResultCount END) AS UndeterminedResultCount,
-FROM
-(SELECT te.result as ResultValue, te.patientData.lookupId AS PersonId,
-  COUNT(*) AS ResultCount,
-GROUP BY te.result, te.patientData.lookupId) */

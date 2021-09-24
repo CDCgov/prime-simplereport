@@ -490,6 +490,32 @@ public class TestOrderService {
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionEditOrganization
   public List<AggregateFacilityMetrics> getAggregateFacilityMetrics(Date startDate, Date endDate) {
+    // todo here:
+    // get the full list of facilites in the organization.
+    // for each facility, run the countByResultByFacility query.
+    // take those results and input them into an AggregateFacilityMetrics object.
+    // (need to make sure order is preserved throughout.)
+    // Once that's been done for each facility, return the list of aggregate metrics.
+
+    // ok there's a wrench in the operations here.
+    // we don't want to double-query each facility for every single page load, which is what will happen with the current configuration.
+    // is graphQL smart enough to cache the results for the table queries? probably not.
+    
+    // new plan:
+    // have one "initial load" query that returns metrics for _each_ facility. This will return org-level and facility-level metrics for a week. 
+    // that data will be passed back to the frontend, which will use it to populate both the boxes and table.
+    // if the datepicker is changed on either object, we'll call the query _for that object_. 
+    // this will require a new dashboard-level query in graphQL.
+    // this method should still be written out to account for those changes, but it won't be used on initial table load.
+    List<AggregateFacilityMetrics> aggregateMetrics;
+
+    Organization org = _os.getCurrentOrganization();
+    List<UUID> facilityIds = _os.getFacilities(org).stream().map(Facility::getInternalId).collect(Collectors.toList());
+
+    for (UUID facilityId : facilityIds) {
+      _terepo.countByResultByFacility(facilityId, startDate, endDate);
+    }
+
     return List.of();
   }
 
