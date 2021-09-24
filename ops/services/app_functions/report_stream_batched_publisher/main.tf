@@ -66,7 +66,7 @@ resource "azurerm_function_app" "functions" {
     # REPORT_STREAM_TOKEN            = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
     REPORT_STREAM_TOKEN            = var.report_stream_api_token
     REPORT_STREAM_BATCH_MINIMUM    = "1"
-    REPORT_STREAM_BATCH_MAXIMUM    = "1000"
+    REPORT_STREAM_BATCH_MAXIMUM    = "5000"
   }
 }
 
