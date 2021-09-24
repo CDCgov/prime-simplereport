@@ -104,7 +104,7 @@ export const Analytics = () => {
   }
 
   if (data === undefined) {
-    return <p>Error: Users not found</p>;
+    return <p>Error: Results not found</p>;
   }
 
   const totalTests = data.topLevelDashboardMetrics?.totalTestCount || 0;
@@ -209,10 +209,10 @@ export const Analytics = () => {
                 <h2>Positive tests</h2>
                 <h1>{positiveTests}</h1>
                 {/* \u2BC6 is down pointing triangle */}
-                <p>
+                {/* <p>
                   <span className="red-pointing-up">{`\u2BC5`} 2</span>{" "}
                   <span className="usa-hint font-ui-md">from last week</span>
-                </p>
+                </p> */}
               </div>
             </div>
             <div className="grid-col-3">
@@ -228,7 +228,7 @@ export const Analytics = () => {
                 <h1>
                   {positivityRate ? positivityRate.toFixed(1) + "%" : "N/A"}
                 </h1>
-                <p></p>
+                <p>(Positive tests / Total tests)</p>
               </div>
             </div>
           </div>
