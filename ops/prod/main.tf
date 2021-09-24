@@ -27,6 +27,11 @@ resource "azurerm_storage_account" "app" {
   tags = local.management_tags
 }
 
+resource "azurerm_storage_queue" "test_event_queue" {
+  name                 = "test-event-publishing"
+  storage_account_name = azurerm_storage_account.app.name
+}
+
 resource "azurerm_cdn_profile" "cdn_profile" {
   name                = "${local.name}-${local.env}"
   resource_group_name = data.azurerm_resource_group.rg.name

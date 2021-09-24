@@ -10,20 +10,23 @@ import gov.cdc.usds.simplereport.service.TestEventReportingService;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
-@Configuration
 @Slf4j
+@Configuration
 class AzureTestEventReportingQueueConfiguration {
   @Bean
   @Primary
-  @ConditionalOnBean
+  @ConditionalOnProperty(
+      value = "simple-report.azure-reporting-queue.enabled",
+      havingValue = "true")
   TestEventReportingService storageQueueReportingService(
       ObjectMapper mapper, QueueAsyncClient queueClient) {
+    log.info("Configured for queue={}", queueClient.getQueueName());
     return new AzureStorageQueueTestEventReportingService(mapper, queueClient);
   }
 
@@ -34,12 +37,13 @@ class AzureTestEventReportingQueueConfiguration {
   }
 
   @Bean
-  @ConditionalOnBean
+  @ConditionalOnProperty(
+      value = "simple-report.azure-reporting-queue.enabled",
+      havingValue = "true")
   QueueAsyncClient queueServiceAsyncClient(AzureStorageQueueReportingProperties properties) {
     return new QueueClientBuilder()
-        .endpoint(properties.getQueueUrl())
-        .sasToken(properties.getSasToken())
-        .queueName(properties.getQueueName())
+        .connectionString(properties.getConnectionString())
+        .queueName(properties.getName())
         .buildAsyncClient();
   }
 
