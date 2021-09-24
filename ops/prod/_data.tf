@@ -76,11 +76,6 @@ data "azurerm_key_vault_secret" "postgres_nophi_password" {
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
-data "azurerm_key_vault_secret" "datahub_api_key" {
-  name         = "datahub-api-key-prod"
-  key_vault_id = data.azurerm_key_vault.global.id
-}
-
 data "azurerm_key_vault_secret" "slack_notify_webhook_url" {
   name         = "slack-notify-webhook-url-prod"
   key_vault_id = data.azurerm_key_vault.global.id
