@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import RadioGroup from "./RadioGroup";
 
@@ -15,9 +16,7 @@ describe("RadioGroup", () => {
   });
 
   it("selects the correct value from the props", () => {
-    fireEvent.click(screen.getByLabelText("Option 1"), {
-      target: { value: "second" },
-    });
+    userEvent.click(screen.getByLabelText("Option 1"));
     expect(onChange).toBeCalledWith("1");
   });
 
