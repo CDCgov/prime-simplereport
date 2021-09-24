@@ -1,6 +1,6 @@
 locals {
   resource_group_name = "${var.resource_group_name_prefix}${var.environment}"
-  report_stream_url   = var.environment == "prod" ? "https://prime-data-hub-prod.azurefd.net/api/reports?option=SkipInvalidItems" : "https://staging.prime.cdc.gov/api/reports?option=SkipInvalidItems&verbose=true"
+  report_stream_url = "https://${var.environment == "prod" ? "" : "staging."}prime.cdc.gov/api/reports?option=SkipInvalidItems&verbose=true"
   management_tags = {
     prime-app      = "simple-report"
     environment    = var.environment
