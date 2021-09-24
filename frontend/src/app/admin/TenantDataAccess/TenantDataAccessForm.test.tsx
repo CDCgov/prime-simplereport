@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 
 import { OrganizationOption } from "../Components/OrganizationDropDown";
@@ -28,23 +29,18 @@ describe("TenantDataAccessForm", () => {
         />
       </MemoryRouter>
     );
-    const organizationDropdown = screen.getByTestId("organization-dropdown");
-    fireEvent.change(organizationDropdown, {
-      target: { selectedValue: organizations[0].externalId },
-    });
-    fireEvent.change(organizationDropdown, {
-      target: { value: organizations[0].externalId },
-    });
-    await waitFor(async () => {
-      fireEvent.blur(organizationDropdown);
-    });
-    fireEvent.change(screen.getByLabelText("Justification", { exact: false }), {
-      target: { value: "sample justification text" },
-    });
+    userEvent.selectOptions(
+      screen.getByTestId("organization-dropdown"),
+      "Org 1 Name"
+    );
+    userEvent.type(
+      screen.getByLabelText("Justification", { exact: false }),
+      "sample justification text"
+    );
     const saveButton = await screen.getAllByText("Access data")[0];
     expect(saveButton).toBeEnabled();
     await waitFor(async () => {
-      fireEvent.click(saveButton);
+      userEvent.click(saveButton);
     });
     expect(saveTenantDataAccess).toBeCalledTimes(1);
   });
@@ -60,23 +56,18 @@ describe("TenantDataAccessForm", () => {
         />
       </MemoryRouter>
     );
-    const organizationDropdown = screen.getByTestId("organization-dropdown");
-    fireEvent.change(organizationDropdown, {
-      target: { selectedValue: organizations[0].externalId },
-    });
-    fireEvent.change(organizationDropdown, {
-      target: { value: organizations[0].externalId },
-    });
-    await waitFor(async () => {
-      fireEvent.blur(organizationDropdown);
-    });
-    fireEvent.change(screen.getByLabelText("Justification", { exact: false }), {
-      target: { value: "sample justification text" },
-    });
+    userEvent.selectOptions(
+      screen.getByTestId("organization-dropdown"),
+      "Org 1 Name"
+    );
+    userEvent.type(
+      screen.getByLabelText("Justification", { exact: false }),
+      "sample justification text"
+    );
     const cancelButton = await screen.getAllByText("Cancel access")[0];
     expect(cancelButton).toBeEnabled();
     await waitFor(async () => {
-      fireEvent.click(cancelButton);
+      userEvent.click(cancelButton);
     });
     expect(saveTenantDataAccess).toBeCalledTimes(1);
   });
@@ -95,7 +86,7 @@ describe("TenantDataAccessForm", () => {
     const cancelButton = await screen.getAllByText("Cancel access")[0];
     expect(cancelButton).toBeEnabled();
     await waitFor(async () => {
-      fireEvent.click(cancelButton);
+      userEvent.click(cancelButton);
     });
     expect(saveTenantDataAccess).toBeCalledTimes(1);
   });

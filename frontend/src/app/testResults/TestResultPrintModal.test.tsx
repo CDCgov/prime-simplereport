@@ -1,4 +1,5 @@
-import { act, fireEvent, render, RenderResult } from "@testing-library/react";
+import { act, render, RenderResult } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import MockDate from "mockdate";
 import ReactDOM from "react-dom";
 
@@ -70,7 +71,7 @@ describe("TestResultPrintModal", () => {
     expect(container).toMatchSnapshot();
 
     await act(async () => {
-      await fireEvent.click(component.getAllByRole("button")[2]);
+      await userEvent.click(component.getAllByRole("button")[2]);
     });
 
     expect(printSpy).toBeCalled();

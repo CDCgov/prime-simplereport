@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import PersonalDetailsForm from "./PersonalDetailsForm";
 
@@ -32,7 +33,10 @@ describe("PersonalDetailsForm", () => {
 
   describe("Filling out the form", () => {
     beforeEach(() => {
-      fillInText("Email *", "bob@bob.bob");
+      userEvent.type(
+        screen.getByLabelText("Email *", { exact: false }),
+        "bob@bob.bob"
+      );
     });
 
     it("enables the submit button", () => {
@@ -58,8 +62,11 @@ describe("PersonalDetailsForm", () => {
     describe("On submitting with an invalid phone number", () => {
       beforeEach(async () => {
         await act(async () => {
-          fillInText("Phone number", "123");
-          fireEvent.click(screen.getByText("Submit"));
+          userEvent.type(
+            screen.getByLabelText("Phone number", { exact: false }),
+            "123"
+          );
+          userEvent.click(screen.getByText("Submit"));
         });
       });
       it("shows an error", () => {
@@ -71,10 +78,13 @@ describe("PersonalDetailsForm", () => {
     describe("On submitting an invalid street address 1", () => {
       beforeEach(async () => {
         await act(async () => {
-          fillInText("Street address 1", "111 greendale dr,");
+          userEvent.type(
+            screen.getByLabelText("Street address 1", { exact: false }),
+            "111 greendale dr,"
+          );
         });
         await act(async () => {
-          fireEvent.click(screen.getByText("Submit"));
+          userEvent.click(screen.getByText("Submit"));
         });
       });
       it("shows an error", () => {
@@ -85,17 +95,17 @@ describe("PersonalDetailsForm", () => {
     });
     describe("On clicking an invalid date of birth and submitting", () => {
       beforeEach(async () => {
-        fireEvent.click(screen.getByTestId("date-picker-button"));
+        userEvent.click(screen.getByTestId("date-picker-button"));
         const nextMonthButton = screen.getByTestId("next-month");
         expect(nextMonthButton).toHaveClass(
           "usa-date-picker__calendar__next-month"
         );
-        fireEvent.click(nextMonthButton);
+        userEvent.click(nextMonthButton);
         const dateButton = screen.getByText("15");
         expect(dateButton).toHaveClass("usa-date-picker__calendar__date");
-        fireEvent.click(dateButton);
+        userEvent.click(dateButton);
         await act(async () => {
-          fireEvent.click(screen.getByText("Submit"));
+          userEvent.click(screen.getByText("Submit"));
         });
       });
       it("shows an error", () => {
@@ -106,17 +116,17 @@ describe("PersonalDetailsForm", () => {
     });
     describe("On clicking a valid date of birth and submitting", () => {
       beforeEach(async () => {
-        fireEvent.click(screen.getByTestId("date-picker-button"));
+        userEvent.click(screen.getByTestId("date-picker-button"));
         const previousMonthButton = screen.getByTestId("previous-month");
         expect(previousMonthButton).toHaveClass(
           "usa-date-picker__calendar__previous-month"
         );
-        fireEvent.click(previousMonthButton);
+        userEvent.click(previousMonthButton);
         const dateButton = screen.getByText("15");
         expect(dateButton).toHaveClass("usa-date-picker__calendar__date");
-        fireEvent.click(dateButton);
+        userEvent.click(dateButton);
         await act(async () => {
-          fireEvent.click(screen.getByText("Submit"));
+          userEvent.click(screen.getByText("Submit"));
         });
       });
       it("shows an error", () => {
@@ -128,10 +138,13 @@ describe("PersonalDetailsForm", () => {
     describe("On submitting an invalid street address 2", () => {
       beforeEach(async () => {
         await act(async () => {
-          fillInText("Street address 2", "111 greendale dr,");
+          userEvent.type(
+            screen.getByLabelText("Street address 2", { exact: false }),
+            "111 greendale dr,"
+          );
         });
         await act(async () => {
-          fireEvent.click(screen.getByText("Submit"));
+          userEvent.click(screen.getByText("Submit"));
         });
       });
       it("shows an error", () => {
@@ -143,10 +156,13 @@ describe("PersonalDetailsForm", () => {
     describe("On submitting an invalid zip code", () => {
       beforeEach(async () => {
         await act(async () => {
-          fillInText("ZIP code", "1234");
+          userEvent.type(
+            screen.getByLabelText("ZIP code", { exact: false }),
+            "1234"
+          );
         });
         await act(async () => {
-          fireEvent.click(screen.getByText("Submit"));
+          userEvent.click(screen.getByText("Submit"));
         });
       });
       it("shows an error", () => {
@@ -159,7 +175,7 @@ describe("PersonalDetailsForm", () => {
       beforeEach(async () => {
         await act(async () => {
           fillInText("Email", "bob@bob.bob");
-          fireEvent.click(screen.getByText("Submit"));
+          userEvent.click(screen.getByText("Submit"));
         });
       });
       it("shows an error", () => {
@@ -172,10 +188,10 @@ describe("PersonalDetailsForm", () => {
 
   describe("Completed form", () => {
     beforeEach(() => {
-      fireEvent.click(screen.getByTestId("date-picker-button"));
+      userEvent.click(screen.getByTestId("date-picker-button"));
       const dateButton = screen.getByText("15");
       expect(dateButton).toHaveClass("usa-date-picker__calendar__date");
-      fireEvent.click(dateButton);
+      userEvent.click(dateButton);
       fillInText("Email", "bob@bob.bob");
       fillInText("Phone number", "530-867-5309");
       fillInText("Street address 1", "123 Bob St");
@@ -187,7 +203,7 @@ describe("PersonalDetailsForm", () => {
     describe("On submit", () => {
       beforeEach(async () => {
         await act(async () => {
-          fireEvent.click(screen.getByText("Submit"));
+          userEvent.click(screen.getByText("Submit"));
         });
       });
       it("does not shows an error", () => {

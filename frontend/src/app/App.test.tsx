@@ -2,7 +2,8 @@ import { BrowserRouter as Router, MemoryRouter, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import createMockStore, { MockStoreEnhanced } from "redux-mock-store";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import App, { WHOAMI_QUERY } from "./App";
 import { queueQuery } from "./testQueue/TestQueue";
@@ -218,7 +219,7 @@ describe("App", () => {
     });
     expect(trainingWelcome).toBeInTheDocument();
     await waitFor(() => {
-      fireEvent.click(screen.getByText("Got it", { exact: false }));
+      userEvent.click(screen.getByText("Got it", { exact: false }));
     });
     expect(trainingWelcome).not.toBeInTheDocument();
   });
