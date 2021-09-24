@@ -62,6 +62,14 @@ type DeviceType {
   testLength: Int
 }
 
+type SpecimenType {
+  internalId: ID!
+  name: String!
+  typeCode: String!
+  collectionLocationName: String
+  collectionLocationCode: String
+}
+
 type TestDescription {
   name(nameType: String = "long"): String!
   loincCode: String!
@@ -256,6 +264,7 @@ type Query {
   ): Boolean
   queue(facilityId: ID!): [TestOrder]
     @requiredPermissions(anyOf: ["START_TEST", "UPDATE_TEST", "SUBMIT_TEST"])
+  specimenTypes: [SpecimenType!]!
   testResults(
     facilityId: ID
     patientId: ID

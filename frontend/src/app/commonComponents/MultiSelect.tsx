@@ -26,14 +26,17 @@ type Props = {
 };
 
 type PillProps = {
-  text: string;
+  option: ComboBoxOption;
   onDelete: (value: string) => void;
 };
 
 const Pill = (props: PillProps) => (
   <div className="pill">
-    {props.text}
-    <div className="close-button" onClick={() => props.onDelete(props.text)}>
+    {props.option.label}
+    <div
+      className="close-button"
+      onClick={() => props.onDelete(props.option.value)}
+    >
       <FontAwesomeIcon fontSize={24} icon={"times"} />
     </div>
   </div>
@@ -112,9 +115,16 @@ export const MultiSelect = ({
           />
 
           <div className="pill-container">
-            {selectedItems.map((item) => {
+            {selectedItems.map((value) => {
+              const option = options.find((option) => option.value === value);
               return (
-                <Pill key={item} text={item} onDelete={onItemUnSelected} />
+                option && (
+                  <Pill
+                    key={option.value}
+                    option={option}
+                    onDelete={onItemUnSelected}
+                  />
+                )
               );
             })}
           </div>

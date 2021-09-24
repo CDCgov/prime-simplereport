@@ -152,4 +152,8 @@ public class DeviceTypeService {
                         "Inexplicable inability to find device for ID " + defaultId.toString()));
     return new DeviceSpecimenTypeHolder(defaultType, configuredTypes);
   }
+
+  public List<SpecimenType> getSpecimenTypes() {
+    return _specimenTypeRepo.findAll();
+  }
 }

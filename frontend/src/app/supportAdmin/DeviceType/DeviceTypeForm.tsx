@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Button from "../../commonComponents/Button/Button";
 import TextInput from "../../commonComponents/TextInput";
 import MultiSelect from "../../commonComponents/MultiSelect";
 import { ComboBoxOption } from "../../commonComponents/ComboBox/ComboBox";
+import { useGetSpecimenTypesQuery } from "../../../generated/graphql";
 
 import { Device } from "./DeviceTypeFormContainer";
 
@@ -12,11 +13,24 @@ interface Props {
 }
 
 const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType }) => {
-  const swabOptions: ComboBoxOption[] = [
-    { label: "Nasopharyngeal swab", value: "Nasopharyngeal swab" },
-    { label: "Throat swab", value: "Throat swab" },
-    { label: "Mid-turbinate swab", value: "Mid-turbinate swab" },
-  ];
+  const { data, loading, error } = useGetSpecimenTypesQuery();
+
+  const [swabOptions, setSwabOptions] = useState<Array<ComboBoxOption>>([]);
+
+  useEffect(() => {
+    if (data && data.specimenTypes) {
+      setSwabOptions(
+        Array.from(
+          data.specimenTypes.map((type) => {
+            return {
+              label: `${type?.name} (${type?.typeCode})`,
+              value: type?.internalId,
+            } as ComboBoxOption;
+          })
+        )
+      );
+    }
+  }, [data]);
 
   const [device, updateDevice] = useState<Device>({
     name: "",
