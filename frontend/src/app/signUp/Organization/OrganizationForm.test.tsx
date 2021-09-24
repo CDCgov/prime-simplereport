@@ -51,7 +51,7 @@ jest.mock("../SignUpApi", () => ({
         );
       } else if (request.name === "InternalError") {
         throw new Error(
-          "An unknown error occured when creating this organization in Okta."
+          "An unknown error occurred when creating this organization in Okta."
         );
       } else {
         throw new Error("This is an error.");
@@ -221,7 +221,7 @@ describe("OrganizationForm", () => {
 
     expect(
       screen.getByText(
-        "An unexpected error occured. Please resubmit this form",
+        "An unexpected error occurred. Please resubmit this form",
         { exact: false }
       )
     ).toBeInTheDocument();
