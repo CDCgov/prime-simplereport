@@ -104,7 +104,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     const responseBody = await postResult.text();
     const errorText = `Failed to upload to ReportStream with response code ${postResult.status}`;
     context.log.error(
-      `${errorText}. Response body (${postResult.size}b): `, responseBody
+      `${errorText}. Response body (${postResult.size} bytes): `, responseBody
     );
     telemetry.trackEvent({
       name: "ReportStream Upload Failed",
