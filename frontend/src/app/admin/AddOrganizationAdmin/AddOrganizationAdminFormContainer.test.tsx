@@ -1,12 +1,7 @@
-import {
-  render,
-  screen,
-  waitFor,
-  fireEvent,
-  act,
-} from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router";
+import userEvent from "@testing-library/user-event";
 
 import {
   AddUserDocument,
@@ -97,9 +92,11 @@ describe("AddOrganizationAdminFormContainer", () => {
       describe("Blank value for first name", () => {
         beforeEach(async () => {
           await waitFor(async () => {
-            await fireEvent.blur(
-              screen.getByLabelText("First name", { exact: false })
-            );
+            const firstName = screen.getByLabelText("First name", {
+              exact: false,
+            });
+            userEvent.clear(firstName);
+            userEvent.tab();
           });
         });
         it("show an error", () => {
@@ -110,7 +107,7 @@ describe("AddOrganizationAdminFormContainer", () => {
         describe("Form submission", () => {
           beforeEach(async () => {
             await act(async () => {
-              await fireEvent.click(screen.getByText("Save Changes"));
+              await userEvent.click(screen.getByText("Save Changes"));
             });
           });
           it("shows the form title", () => {
@@ -123,31 +120,21 @@ describe("AddOrganizationAdminFormContainer", () => {
       describe("All required fields filled", () => {
         beforeEach(async () => {
           await waitFor(async () => {
-            await fireEvent.change(
+            await userEvent.selectOptions(
               screen.getByTestId("organization-dropdown"),
-              {
-                target: {
-                  value: "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0",
-                },
-              }
+              "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
             );
-            await fireEvent.change(
+            await userEvent.type(
               screen.getByLabelText("First name", { exact: false }),
-              {
-                target: { value: "Flora" },
-              }
+              "Flora"
             );
-            await fireEvent.change(
+            await userEvent.type(
               screen.getByLabelText("Last name", { exact: false }),
-              {
-                target: { value: "Murray" },
-              }
+              "Murray"
             );
-            await fireEvent.change(
+            await userEvent.type(
               screen.getByLabelText("Email", { exact: false }),
-              {
-                target: { value: "Flora.Murray@example.com" },
-              }
+              "Flora.Murray@example.com"
             );
           });
         });
@@ -160,7 +147,7 @@ describe("AddOrganizationAdminFormContainer", () => {
           let redirected: HTMLElement;
           beforeEach(async () => {
             await act(async () => {
-              await fireEvent.click(screen.getByText("Save Changes"));
+              await userEvent.click(screen.getByText("Save Changes"));
             });
             await waitFor(async () => {
               redirected = await screen.getByText("Redirected");

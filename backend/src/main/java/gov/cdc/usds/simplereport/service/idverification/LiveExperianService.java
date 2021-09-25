@@ -19,8 +19,7 @@ import gov.cdc.usds.simplereport.service.errors.ExperianNullNodeException;
 import gov.cdc.usds.simplereport.service.errors.ExperianPersonMatchException;
 import gov.cdc.usds.simplereport.service.errors.ExperianSubmitAnswersException;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpEntity;
@@ -32,10 +31,9 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 @ConditionalOnProperty("simple-report.experian.enabled")
+@Slf4j
 public class LiveExperianService
     implements gov.cdc.usds.simplereport.service.idverification.ExperianService {
-
-  private static final Logger LOG = LoggerFactory.getLogger(LiveExperianService.class);
 
   private static final String KBA_RESULT_CODE_PATH =
       "/clientResponsePayload/decisionElements/0/otherData/json/fraudSolutions/response/products/preciseIDServer/kbascore/general/kbaresultCode";
@@ -117,7 +115,7 @@ public class LiveExperianService
               _experianProperties.getPreciseidClientReferenceId(),
               userData);
 
-      LOG.info("EXPERIAN_QUESTION_REQUEST_SUBMITTED");
+      log.info("EXPERIAN_QUESTION_REQUEST_SUBMITTED");
       ObjectNode responseEntity = submitExperianRequest(initialRequestBody);
 
       // KIQ response may a kbaresultCode that indicates failure, this seems to only be present
@@ -148,7 +146,7 @@ public class LiveExperianService
               _experianProperties.getPreciseidTenantId(),
               _experianProperties.getPreciseidClientReferenceId(),
               answersRequest);
-      LOG.info("EXPERIAN_ANSWER_REQUEST_SUBMITTED");
+      log.info("EXPERIAN_ANSWER_REQUEST_SUBMITTED");
       ObjectNode responseEntity = submitExperianRequest(finalRequestBody);
 
       // look for errors in KIQ response ("CrossCore - PreciseId (Option 24).pdf" page 79)
@@ -173,7 +171,7 @@ public class LiveExperianService
 
       // Generate a searchable log message so we can monitor decisions from Experian
       String requestData = _objectMapper.writeValueAsString(answersRequest);
-      LOG.info("EXPERIAN_DECISION ({}): {}", passed, requestData);
+      log.info("EXPERIAN_DECISION ({}): {}", passed, requestData);
 
       return new IdentityVerificationAnswersResponse(passed);
     } catch (RestClientException | JsonProcessingException e) {
@@ -199,7 +197,7 @@ public class LiveExperianService
   private JsonNode findNodeInResponse(final JsonNode responseEntity, final String path) {
     final JsonNode fetchedNode = responseEntity.at(path);
     if (fetchedNode.isMissingNode()) {
-      LOG.error("EXPERIAN_NULL_NODE: {}", path);
+      log.error("EXPERIAN_NULL_NODE: {}", path);
       throw new ExperianNullNodeException("Could not find data in response from Experian");
     }
     return fetchedNode;

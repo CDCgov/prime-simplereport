@@ -1,11 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import DeviceTypeForm from "./DeviceTypeForm";
 
 const addValue = (name: string, value: string) => {
-  fireEvent.change(screen.getByLabelText(name, { exact: false }), {
-    target: { value },
-  });
+  userEvent.type(screen.getByLabelText(name, { exact: false }), value);
 };
 
 describe("DeviceTypeForm", () => {
@@ -35,7 +34,7 @@ describe("DeviceTypeForm", () => {
     describe("on form submission", () => {
       beforeEach(async () => {
         await waitFor(async () => {
-          fireEvent.click(screen.getByText("Save Changes"));
+          userEvent.click(screen.getByText("Save Changes"));
         });
       });
 

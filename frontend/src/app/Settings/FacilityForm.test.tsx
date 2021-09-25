@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 
 import * as clia from "../utils/clia";
@@ -108,11 +109,11 @@ describe("FacilityForm", () => {
       </MemoryRouter>
     );
     const saveButton = await screen.getAllByText("Save changes")[0];
-    fireEvent.change(
+    userEvent.type(
       screen.getByLabelText("Testing facility name", { exact: false }),
-      { target: { value: "Bar Facility" } }
+      "Bar Facility"
     );
-    fireEvent.click(saveButton);
+    userEvent.click(saveButton);
     await validateAddress(saveFacility);
   });
   it("provides validation feedback during form completion", async () => {
@@ -128,8 +129,8 @@ describe("FacilityForm", () => {
     const facilityNameInput = screen.getByLabelText("Testing facility name", {
       exact: false,
     });
-    fireEvent.change(facilityNameInput, { target: { value: "" } });
-    fireEvent.blur(facilityNameInput);
+    userEvent.clear(facilityNameInput);
+    userEvent.tab();
     const warning = await screen.findByText("Facility name is missing");
     expect(warning).toBeInTheDocument();
   });
@@ -148,10 +149,8 @@ describe("FacilityForm", () => {
       exact: false,
     });
     await waitFor(() => {
-      fireEvent.change(facilityNameInput, { target: { value: "" } });
-    });
-    await waitFor(async () => {
-      fireEvent.click(saveButton);
+      userEvent.clear(facilityNameInput);
+      userEvent.click(saveButton);
     });
     expect(saveFacility).toBeCalledTimes(0);
   });
@@ -169,8 +168,8 @@ describe("FacilityForm", () => {
     const emailInput = screen.getByLabelText("Email", {
       exact: false,
     });
-    fireEvent.change(emailInput, { target: { value: "123-456-7890" } });
-    fireEvent.blur(emailInput);
+    userEvent.type(emailInput, "123-456-7890");
+    userEvent.tab();
 
     expect(
       await screen.findByText("Email is incorrectly formatted", {
@@ -179,15 +178,13 @@ describe("FacilityForm", () => {
     ).toBeInTheDocument();
 
     await waitFor(async () => {
-      fireEvent.click(saveButton);
+      userEvent.click(saveButton);
     });
     expect(saveFacility).toBeCalledTimes(0);
 
-    fireEvent.change(emailInput, {
-      target: { value: "foofacility@example.com" },
-    });
+    userEvent.type(emailInput, "foofacility@example.com");
     await waitFor(async () => {
-      fireEvent.click(saveButton);
+      userEvent.click(saveButton);
     });
     await validateAddress(saveFacility);
   });
@@ -202,12 +199,8 @@ describe("FacilityForm", () => {
       </MemoryRouter>
     );
     const stateDropdownElement = screen.getByTestId("facility-state-dropdown");
-    fireEvent.change(stateDropdownElement, { target: { selectedValue: "PW" } });
-    fireEvent.change(stateDropdownElement, { target: { value: "PW" } });
-    await waitFor(async () => {
-      fireEvent.blur(stateDropdownElement);
-    });
-
+    userEvent.selectOptions(stateDropdownElement, "PW");
+    userEvent.tab();
     // There's a line break between these two statements, so they have to be separated
     const warning = await screen.findByText(
       "SimpleReport isn’t currently supported in",
@@ -245,10 +238,8 @@ describe("FacilityForm", () => {
           exact: false,
         });
 
-        fireEvent.change(cliaInput, {
-          target: { value: "12F3456789" },
-        });
-        fireEvent.blur(cliaInput);
+        userEvent.type(cliaInput, "12F3456789");
+        userEvent.tab();
 
         const expectedError = "CLIA number should be 10 characters";
 
@@ -260,7 +251,7 @@ describe("FacilityForm", () => {
 
         const saveButton = screen.getAllByText("Save changes")[0];
         await waitFor(async () => {
-          fireEvent.click(saveButton);
+          userEvent.click(saveButton);
         });
         expect(saveFacility).toBeCalledTimes(0);
       });
@@ -291,13 +282,11 @@ describe("FacilityForm", () => {
         const cliaInput = screen.getByLabelText("CLIA number", {
           exact: false,
         });
-        fireEvent.change(cliaInput, {
-          target: { value: "invalid-clia-number" },
-        });
-        fireEvent.blur(cliaInput);
+        userEvent.type(cliaInput, "invalid-clia-number");
+        userEvent.tab();
 
         const saveButton = await screen.getAllByText("Save changes")[0];
-        fireEvent.click(saveButton);
+        userEvent.click(saveButton);
         await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
@@ -332,13 +321,12 @@ describe("FacilityForm", () => {
           exact: false,
         });
 
-        fireEvent.change(cliaInput, {
-          target: { value: "12Z3456789" },
-        });
-        fireEvent.blur(cliaInput);
+        userEvent.clear(cliaInput);
+        userEvent.type(cliaInput, "12Z3456789");
+        userEvent.tab();
 
         const saveButton = await screen.getAllByText("Save changes")[0];
-        fireEvent.click(saveButton);
+        userEvent.click(saveButton);
         await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
@@ -359,10 +347,9 @@ describe("FacilityForm", () => {
           exact: false,
         });
 
-        fireEvent.change(cliaInput, {
-          target: { value: "12Z3456789" },
-        });
-        fireEvent.blur(cliaInput);
+        userEvent.clear(cliaInput);
+        userEvent.type(cliaInput, "12Z3456789");
+        userEvent.tab();
 
         const expectedError = "Special Z CLIAs are only valid in WA";
 
@@ -374,7 +361,7 @@ describe("FacilityForm", () => {
 
         const saveButton = screen.getAllByText("Save changes")[0];
         await waitFor(async () => {
-          fireEvent.click(saveButton);
+          userEvent.click(saveButton);
         });
         expect(saveFacility).toBeCalledTimes(0);
       });
@@ -409,10 +396,8 @@ describe("FacilityForm", () => {
           exact: false,
         });
 
-        fireEvent.change(npiInput, {
-          target: { value: null },
-        });
-        fireEvent.blur(npiInput);
+        userEvent.clear(npiInput);
+        userEvent.tab();
 
         const expectedError = "Ordering provider NPI is incorrectly formatted";
 
@@ -426,7 +411,7 @@ describe("FacilityForm", () => {
 
         const saveButton = screen.getAllByText("Save changes")[0];
         await waitFor(async () => {
-          fireEvent.click(saveButton);
+          userEvent.click(saveButton);
         });
         expect(saveFacility).toBeCalledTimes(0);
       });
@@ -458,16 +443,14 @@ describe("FacilityForm", () => {
         const npiInput = screen.getByLabelText("NPI", {
           exact: false,
         });
-        fireEvent.change(npiInput, {
-          target: { value: null },
-        });
-        fireEvent.blur(npiInput);
+        userEvent.clear(npiInput);
+        userEvent.tab();
 
         // The spy function was called at least once
         expect(spy.mock.calls.length).toBeGreaterThan(0);
 
         const saveButton = await screen.getAllByText("Save changes")[0];
-        fireEvent.click(saveButton);
+        userEvent.click(saveButton);
         await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
@@ -494,11 +477,12 @@ describe("FacilityForm", () => {
         </MemoryRouter>
       );
       const saveButton = screen.getAllByText("Save changes")[0];
-      fireEvent.change(
-        screen.getByLabelText("Testing facility name", { exact: false }),
-        { target: { value: "La Croix Facility" } }
-      );
-      fireEvent.click(saveButton);
+      const facilityName = screen.getByLabelText("Testing facility name", {
+        exact: false,
+      });
+      userEvent.clear(facilityName);
+      userEvent.type(facilityName, "La Croix Facility");
+      userEvent.click(saveButton);
       await validateAddress(saveFacility, "suggested address");
       expect(saveFacility).toBeCalledWith({
         ...validFacility,
@@ -526,11 +510,11 @@ describe("FacilityForm", () => {
       // Delete default device
       const deleteButtons = await screen.findAllByLabelText("Delete device");
       await waitFor(() => {
-        fireEvent.click(deleteButtons[0]);
+        userEvent.click(deleteButtons[0]);
       });
       // Attempt save
       const saveButtons = await screen.findAllByText("Save changes");
-      fireEvent.click(saveButtons[0]);
+      userEvent.click(saveButtons[0]);
       const warning = await screen.findByText(
         "A default device must be selected",
         { exact: false }
@@ -546,9 +530,9 @@ async function validateAddress(
 ) {
   await screen.findByText("Address validation");
   const radios = screen.getAllByLabelText(selection, { exact: false });
-  radios.forEach(fireEvent.click);
+  radios.forEach((r) => userEvent.click(r));
   const button = screen.getAllByText("Save changes")[2];
   expect(button).not.toBeDisabled();
-  fireEvent.click(button);
+  userEvent.click(button);
   expect(saveFacility).toBeCalledTimes(1);
 }

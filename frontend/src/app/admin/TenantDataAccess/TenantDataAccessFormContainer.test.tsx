@@ -1,4 +1,5 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { Provider } from "react-redux";
 import { MockedProvider } from "@apollo/client/testing";
@@ -136,7 +137,7 @@ describe("TenantDataAccessFormContainer", () => {
   it("Redirects on successful save", async () => {
     await act(async () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
-      await fireEvent.click(screen.getByRole("button"));
+      await userEvent.click(screen.getByRole("button"));
       await new Promise((resolve) => setTimeout(resolve, 0));
       expect(await screen.findByText("Redirected")).toBeDefined();
     });

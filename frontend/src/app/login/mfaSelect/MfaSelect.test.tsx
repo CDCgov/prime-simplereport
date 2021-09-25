@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { MfaSelect } from "./MfaSelect";
 
@@ -11,12 +12,12 @@ describe("MfaSelect", () => {
     const smsRadio = screen.getByLabelText("Text message (SMS)", {
       exact: false,
     });
-    fireEvent.click(smsRadio);
+    userEvent.click(smsRadio);
     expect(smsRadio).toBeChecked();
   });
 
   it("requires an mfa option", () => {
-    fireEvent.click(screen.getByText("Sign in"));
+    userEvent.click(screen.getByText("Sign in"));
     expect(
       screen.getByText("Select an authentication option")
     ).toBeInTheDocument();

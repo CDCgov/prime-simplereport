@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -40,7 +41,7 @@ public abstract class BaseFullStackTest {
   @Autowired private DbTruncator _truncator;
   @Autowired private AuditService _auditService;
   @Autowired protected TestDataFactory _dataFactory;
-  @Autowired protected OrganizationService _orgService;
+  @SpyBean protected OrganizationService _orgService;
   @Autowired protected DemoOktaRepository _oktaRepo;
 
   protected Date _testStart;

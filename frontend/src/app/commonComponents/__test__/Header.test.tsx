@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router";
 import createMockStore from "redux-mock-store";
@@ -55,11 +56,11 @@ describe("Header.tsx", () => {
     process.env.REACT_APP_IS_TRAINING_SITE = "false";
     render(<WrappedHeader />);
     await waitFor(() => {
-      fireEvent.click(screen.getByTestId("user-button"));
+      userEvent.click(screen.getByTestId("user-button"));
     });
     expect(screen.getByTestId("support-link")).toBeVisible();
     await waitFor(() => {
-      fireEvent.click(screen.getByTestId("support-link"));
+      userEvent.click(screen.getByTestId("support-link"));
     });
     expect(useTrackEvent).toHaveBeenCalledWith(undefined, "Support", {});
   });
@@ -77,9 +78,7 @@ describe("Header.tsx", () => {
       );
       const dropdown = await screen.findAllByRole("option");
       await waitFor(() => {
-        fireEvent.change(dropdown[1].closest("select")!, {
-          target: { value: "2" },
-        });
+        userEvent.selectOptions(dropdown[1].closest("select")!, "2");
       });
       expect(
         await screen.findByText("Facility 2 is selected")

@@ -19,9 +19,8 @@ import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,9 +48,8 @@ import org.springframework.web.bind.annotation.SessionAttribute;
  */
 @RestController
 @RequestMapping(USER_ACCOUNT_REQUEST)
+@Slf4j
 public class UserAccountCreationController {
-  private static final Logger LOG = LoggerFactory.getLogger(UserAccountCreationController.class);
-
   private static final String USER_ID_KEY = "userId";
   private static final String FACTOR_ID_KEY = "factorId";
 
@@ -59,7 +57,7 @@ public class UserAccountCreationController {
 
   @PostConstruct
   private void init() {
-    LOG.info("User account request creation REST endpoint enabled.");
+    log.info("User account request creation REST endpoint enabled.");
   }
 
   @ExceptionHandler(InvalidActivationLinkException.class)
