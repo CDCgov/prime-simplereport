@@ -1,9 +1,5 @@
 import * as appInsights from "applicationinsights";
 import { AzureFunction, Context } from "@azure/functions";
-import {
-  QueueServiceClient,
-  StorageSharedKeyCredential,
-} from "@azure/storage-queue";
 import fetch, { Headers } from "node-fetch";
 import { ENV } from "./config";
 import {
