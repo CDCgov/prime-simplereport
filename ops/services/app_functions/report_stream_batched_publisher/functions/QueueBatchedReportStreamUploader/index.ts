@@ -83,12 +83,11 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
 
   if (postResult.ok) {
     const response: ReportStreamResponse = await postResult.json();
-    // TODO: interpret errors & warnings
+    // TODO in 2363: push errors & warnings onto another queue
 
     context.log(
       `Upload to ${response.destinationCount} reporting destinations successful; deleting messages`
     );
-    // TODO: integrate w/ AppInsights ?
 
     await deleteSuccessfullyParsedMessages(
       context,
