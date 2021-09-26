@@ -16,7 +16,7 @@ const {
   REPORT_STREAM_TOKEN,
 } = ENV;
 
-const uploaderVersion = "2021-08-17";
+const uploaderVersion = "2021-09-21";
 
 appInsights.setup();
 const telemetry = appInsights.defaultClient;
