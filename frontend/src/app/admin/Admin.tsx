@@ -34,6 +34,11 @@ const Admin = () => {
                   Organization data
                 </LinkWithQuery>
               </div>
+              <div>
+                <LinkWithQuery to="/admin/analytics">
+                  Organization analytics
+                </LinkWithQuery>
+              </div>
             </div>
           </div>
         </div>

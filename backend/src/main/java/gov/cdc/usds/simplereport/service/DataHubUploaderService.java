@@ -184,8 +184,8 @@ public class DataHubUploaderService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public void dataHubUploaderTask(List<UUID> testEventIds) {
-    uploaderTask(
+  public boolean dataHubUploaderTask(List<UUID> testEventIds) {
+    return uploaderTask(
         () -> {
           try {
             return createTestEventCSV(_testReportEventsRepo.findAllByInternalIdIn(testEventIds));
@@ -225,12 +225,12 @@ public class DataHubUploaderService {
     uploaderTask(testEventSupplier, true);
   }
 
-  private void uploaderTask(Supplier<List<TestEvent>> testEventSupplier, boolean withTracking) {
+  private boolean uploaderTask(Supplier<List<TestEvent>> testEventSupplier, boolean withTracking) {
     // sanity check everything is configured correctly (dev likely will not be)
     if (!_config.getUploadEnabled()) {
       log.warn(
           "DataHubUploaderTask not running because simple-report.data-hub.uploadEnabled is false");
-      return;
+      return false;
     }
 
     if (_dataHubUploadRepo
@@ -239,7 +239,7 @@ public class DataHubUploaderService {
       log.info("Data hub upload lock obtained: commencing upload processing.");
     } else {
       log.info("Data hub upload locked out by mutex: aborting");
-      return;
+      return false;
     }
 
     this.init();
@@ -253,7 +253,7 @@ public class DataHubUploaderService {
     }
     if (!msgs.isEmpty()) {
       _slack.sendSlackChannelMessage("DataHubUploader not run", msgs, true);
-      return;
+      return false;
     }
 
     // The start date is the last end date. Can be null for empty database.
@@ -261,7 +261,7 @@ public class DataHubUploaderService {
     if (lastTimestamp == null) {
       // this happens if EVERYTHING in the db would be matched.
       log.error("No earliest_recorded_timestamp found. EVERYTHING would be matched and sent");
-      return;
+      return false;
     }
 
     Optional<DataHubUpload> tracking =
@@ -285,6 +285,7 @@ public class DataHubUploaderService {
       _testEventReportingService.markTestEventsAsReported(new HashSet<>(eventsReported));
     } catch (RestClientException | UnexpectedIOException err) {
       tracking.ifPresent(upload -> _trackingService.markFailed(upload, _resultJson, err));
+      return false;
     }
 
     tracking.ifPresent(
@@ -306,5 +307,6 @@ public class DataHubUploaderService {
 
     // should this sleep for some period of time? If no rows match it may be really fast
     // and other server instances not overlap and get blocked by tryUploadLock() otherwise.
+    return true;
   }
 }
