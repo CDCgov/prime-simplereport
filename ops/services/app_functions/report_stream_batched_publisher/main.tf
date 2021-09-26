@@ -1,6 +1,6 @@
 locals {
   resource_group_name = "${var.resource_group_name_prefix}${var.environment}"
-  report_stream_url = "https://${var.environment == "prod" ? "" : "staging."}prime.cdc.gov/api/reports?option=SkipInvalidItems&verbose=true"
+  report_stream_url   = "https://${var.environment == "prod" ? "" : "staging."}prime.cdc.gov/api/reports?option=SkipInvalidItems&verbose=true"
   management_tags = {
     prime-app      = "simple-report"
     environment    = var.environment
@@ -64,9 +64,9 @@ resource "azurerm_function_app" "functions" {
     REPORT_STREAM_URL              = local.report_stream_url
     ### TODO: Figure out the KeyVault permissioning issue that prevents this reference from working
     # REPORT_STREAM_TOKEN            = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
-    REPORT_STREAM_TOKEN            = var.report_stream_api_token
-    REPORT_STREAM_BATCH_MINIMUM    = "1"
-    REPORT_STREAM_BATCH_MAXIMUM    = "5000"
+    REPORT_STREAM_TOKEN         = var.report_stream_api_token
+    REPORT_STREAM_BATCH_MINIMUM = "1"
+    REPORT_STREAM_BATCH_MAXIMUM = "5000"
   }
 }
 
