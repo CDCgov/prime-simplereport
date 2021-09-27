@@ -18,7 +18,7 @@ const {
   AZ_STORAGE_QUEUE_SVC_URL,
   TEST_EVENT_QUEUE_NAME,
 } = ENV;
-const DEQUEUE_BATCH_SIZE = 25;
+const DEQUEUE_BATCH_SIZE = 32;
 
 export function getQueueClient() {
   const credential = new StorageSharedKeyCredential(
