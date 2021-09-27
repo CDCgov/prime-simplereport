@@ -24,19 +24,6 @@ jest.mock("./config", () => ({
   },
 }));
 
-import { enableFetchMocks, FetchMock } from "jest-fetch-mock";
-enableFetchMocks();
-
-// jest.mock("./lib", () => ({
-//   getQueueClient: jest.fn(),
-//   minimumMessagesAvailable: jest.fn(() => {
-//     console.info("hello");
-//   }),
-//   dequeueMessages: jest.fn(),
-//   convertToCsv: jest.fn(),
-//   deleteSuccessfullyParsedMessages: jest.fn(),
-// }));
-
 describe("main function export", () => {
   const context: Context = {
     log: jest.fn(),
@@ -64,7 +51,6 @@ describe("main function export", () => {
 
   beforeEach(() => {
     (context.log as any as jest.Mock).mockReset();
-    (fetch as FetchMock).resetMocks();
   });
 
   describe("minimum messages", () => {

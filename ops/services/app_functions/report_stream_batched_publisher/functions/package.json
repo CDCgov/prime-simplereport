@@ -6,7 +6,7 @@
     "func": "func",
     "clean": "rimraf build",
     "build:compile": "tsc",
-    "build:production": "npm run prestart && npm prune --production && npm run build:zip",
+    "build:production": "jest --coverage && npm run prestart && npm prune --production && npm run build:zip",
     "prebuild:zip": "mkdir -m700 -p build",
     "build:zip": "zip -r build/batched-rs-publisher.zip . -x \"*.zip\" -x \".terraform\" -x \"terraform.*\" -x \"*.tf\" -x \"local.settings.json\" -x \"*.map\"",
     "build": "npm run clean && npm run build:compile",
