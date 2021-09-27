@@ -1,7 +1,6 @@
 import fn from "./index";
 import * as lib from "./lib";
 import * as appInsights from "applicationinsights";
-import * as config from "./config";
 import { Context } from "@azure/functions";
 import { DequeuedMessageItem } from "@azure/storage-queue";
 

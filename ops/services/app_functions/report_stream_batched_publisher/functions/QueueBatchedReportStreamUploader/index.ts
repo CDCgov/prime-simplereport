@@ -1,6 +1,5 @@
 import * as appInsights from "applicationinsights";
 import { AzureFunction, Context } from "@azure/functions";
-import fetch, { Headers } from "node-fetch";
 import { ENV } from "./config";
 import {
   convertToCsv,
