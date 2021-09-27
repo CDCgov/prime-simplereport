@@ -69,16 +69,6 @@ public class DeviceTypeService {
 
     return deviceSpecimenTypes;
   }
-  /*
-  public DeviceSpecimenType getDeviceSpecimenType(UUID deviceSpecimenTypeId) {
-    return _deviceSpecimenRepo
-        .findById(deviceSpecimenTypeId)
-        .orElseThrow(
-            () ->
-                new IllegalGraphqlArgumentException(
-                    "Device is not configured with a specimen type"));
-  }
-  */
 
   public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
     return _deviceSpecimenRepo.findAll();

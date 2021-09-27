@@ -238,6 +238,7 @@ public class OrganizationService {
       facility.addDeviceSpecimenType(ds);
     }
 
+    // remove all existing devices
     for (DeviceSpecimenType ds : facility.getDeviceSpecimenTypes()) {
       if (!deviceSpecimenTypes.getFullList().contains(ds)) {
         facility.removeDeviceSpecimenType(ds);

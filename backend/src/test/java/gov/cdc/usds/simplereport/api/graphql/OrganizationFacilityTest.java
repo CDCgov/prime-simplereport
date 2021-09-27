@@ -112,7 +112,14 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
 
   private ObjectNode getDeviceArgs() {
     String someDeviceType = _deviceService.fetchDeviceTypes().get(0).getInternalId().toString();
-    ObjectNode variables = JsonNodeFactory.instance.objectNode().put("deviceId", someDeviceType);
+    String someDeviceSpecimenTypes =
+        _deviceService.getDeviceSpecimenTypes().get(0).getInternalId().toString();
+    ObjectNode variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("deviceId", someDeviceType)
+            .put("deviceSpecimenTypes", someDeviceSpecimenTypes);
+
     return variables;
   }
 }

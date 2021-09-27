@@ -65,22 +65,17 @@ type DeviceType {
 }
 
 type SpecimenType {
-  internalId: ID
-  name: String
+  internalId: ID!
+  name: String!
   typeCode: String
   collectionLocationName: String
   collectionLocationCode: String
 }
 
 type DeviceSpecimenType {
-  internalId: ID
+  internalId: ID!
   deviceType: DeviceType!
   specimenType: SpecimenType!
-}
-
-input DeviceSpecimenTypeInput {
-  deviceType: ID!
-  specimenType: ID!
 }
 
 type TestDescription {

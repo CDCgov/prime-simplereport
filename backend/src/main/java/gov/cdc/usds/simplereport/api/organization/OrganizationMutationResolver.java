@@ -14,9 +14,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
-import gov.cdc.usds.simplereport.service.FacilityDeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
-import gov.cdc.usds.simplereport.service.SpecimenTypeService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.util.List;
@@ -35,8 +33,6 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   public OrganizationMutationResolver(
       OrganizationService os,
       DeviceTypeService dts,
-      FacilityDeviceTypeService fdts,
-      SpecimenTypeService sts,
       AddressValidationService avs,
       ApiUserService aus) {
     _os = os;
@@ -72,7 +68,20 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       List<String> deviceSpecimenTypes,
       String defaultDeviceId) {
     _os.assertFacilityNameAvailable(testingFacilityName);
-    DeviceSpecimenTypeHolder dsts = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+
+    List<DeviceSpecimenType> dsts = _dts.getDeviceSpecimenTypesByIds(deviceSpecimenTypes);
+
+    DeviceSpecimenType defaultDeviceSpecimenType =
+        dsts.stream()
+            .filter(dst -> defaultDeviceId.equals(dst.getDeviceType().getInternalId().toString()))
+            .findAny()
+            .orElseThrow(
+                () ->
+                    new IllegalGraphqlArgumentException(
+                        "No default device specimen type selected"));
+
+    DeviceSpecimenTypeHolder dstHolder =
+        new DeviceSpecimenTypeHolder(defaultDeviceSpecimenType, dsts);
 
     StreetAddress facilityAddress =
         _avs.getValidatedAddress(
@@ -98,7 +107,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             facilityAddress,
             Translators.parsePhoneNumber(phone),
             Translators.parseEmail(email),
-            dsts,
+            dstHolder,
             providerName,
             providerAddress,
             orderingProviderTelephone,
