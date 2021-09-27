@@ -37,7 +37,6 @@ export type AggregateFacilityMetrics = {
   __typename?: 'AggregateFacilityMetrics';
   facilityName?: Maybe<Scalars['String']>;
   negativeTestCount?: Maybe<Scalars['Int']>;
-  peopleTestedCount?: Maybe<Scalars['Int']>;
   positiveTestCount?: Maybe<Scalars['Int']>;
   totalTestCount?: Maybe<Scalars['Int']>;
 };
@@ -520,6 +519,14 @@ export type Organization = {
   type: Scalars['String'];
 };
 
+export type OrganizationLevelDashboardMetrics = {
+  __typename?: 'OrganizationLevelDashboardMetrics';
+  facilityMetrics?: Maybe<Array<Maybe<AggregateFacilityMetrics>>>;
+  organizationNegativeTestCount?: Maybe<Scalars['Int']>;
+  organizationPositiveTestCount?: Maybe<Scalars['Int']>;
+  organizationTotalTestCount?: Maybe<Scalars['Int']>;
+};
+
 export type Patient = {
   __typename?: 'Patient';
   address?: Maybe<AddressInfo>;
@@ -600,12 +607,12 @@ export type Provider = {
 
 export type Query = {
   __typename?: 'Query';
-  aggregateFacilityMetrics?: Maybe<Array<Maybe<AggregateFacilityMetrics>>>;
   /** @deprecated use the pluralized form to reduce confusion */
   deviceType?: Maybe<Array<Maybe<DeviceType>>>;
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
   /** @deprecated this information is already loaded from the 'whoami' endpoint */
   organization?: Maybe<Organization>;
+  organizationLevelDashboardMetrics?: Maybe<OrganizationLevelDashboardMetrics>;
   organizations: Array<Organization>;
   patient?: Maybe<Patient>;
   patientExists?: Maybe<Scalars['Boolean']>;
@@ -623,7 +630,7 @@ export type Query = {
 };
 
 
-export type QueryAggregateFacilityMetricsArgs = {
+export type QueryOrganizationLevelDashboardMetricsArgs = {
   endDate: Scalars['DateTime'];
   startDate: Scalars['DateTime'];
 };
@@ -1019,19 +1026,13 @@ export type SetCurrentUserTenantDataAccessOpMutationVariables = Exact<{
 export type SetCurrentUserTenantDataAccessOpMutation = { __typename?: 'Mutation', setCurrentUserTenantDataAccess?: Maybe<{ __typename?: 'User', id: string, email: string, permissions: Array<UserPermission>, role?: Maybe<Role>, organization?: Maybe<{ __typename?: 'Organization', name: string, externalId: string }> }> };
 
 export type GetTopLevelDashboardMetricsQueryVariables = Exact<{
-  facilityId?: Maybe<Scalars["ID"]>;
-  startDate: Scalars["DateTime"];
-  endDate: Scalars["DateTime"];
+  facilityId?: Maybe<Scalars['ID']>;
+  startDate: Scalars['DateTime'];
+  endDate: Scalars['DateTime'];
 }>;
 
-export type GetTopLevelDashboardMetricsQuery = {
-  __typename?: "Query";
-  topLevelDashboardMetrics?: Maybe<{
-    __typename?: "TopLevelDashboardMetrics";
-    positiveTestCount?: Maybe<number>;
-    totalTestCount?: Maybe<number>;
-  }>;
-};
+
+export type GetTopLevelDashboardMetricsQuery = { __typename?: 'Query', topLevelDashboardMetrics?: Maybe<{ __typename?: 'TopLevelDashboardMetrics', positiveTestCount?: Maybe<number>, totalTestCount?: Maybe<number> }> };
 
 export type PatientExistsQueryVariables = Exact<{
   firstName: Scalars['String'];
@@ -2217,26 +2218,19 @@ export function useSetCurrentUserTenantDataAccessOpMutation(baseOptions?: Apollo
       }
 export type SetCurrentUserTenantDataAccessOpMutationHookResult = ReturnType<typeof useSetCurrentUserTenantDataAccessOpMutation>;
 export type SetCurrentUserTenantDataAccessOpMutationResult = Apollo.MutationResult<SetCurrentUserTenantDataAccessOpMutation>;
-export type SetCurrentUserTenantDataAccessOpMutationOptions = Apollo.BaseMutationOptions<
-  SetCurrentUserTenantDataAccessOpMutation,
-  SetCurrentUserTenantDataAccessOpMutationVariables
->;
+export type SetCurrentUserTenantDataAccessOpMutationOptions = Apollo.BaseMutationOptions<SetCurrentUserTenantDataAccessOpMutation, SetCurrentUserTenantDataAccessOpMutationVariables>;
 export const GetTopLevelDashboardMetricsDocument = gql`
-  query GetTopLevelDashboardMetrics(
-    $facilityId: ID
-    $startDate: DateTime!
-    $endDate: DateTime!
+    query GetTopLevelDashboardMetrics($facilityId: ID, $startDate: DateTime!, $endDate: DateTime!) {
+  topLevelDashboardMetrics(
+    facilityId: $facilityId
+    startDate: $startDate
+    endDate: $endDate
   ) {
-    topLevelDashboardMetrics(
-      facilityId: $facilityId
-      startDate: $startDate
-      endDate: $endDate
-    ) {
-      positiveTestCount
-      totalTestCount
-    }
+    positiveTestCount
+    totalTestCount
   }
-`;
+}
+    `;
 
 /**
  * __useGetTopLevelDashboardMetricsQuery__
@@ -2256,40 +2250,17 @@ export const GetTopLevelDashboardMetricsDocument = gql`
  *   },
  * });
  */
-export function useGetTopLevelDashboardMetricsQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetTopLevelDashboardMetricsQuery,
-    GetTopLevelDashboardMetricsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetTopLevelDashboardMetricsQuery,
-    GetTopLevelDashboardMetricsQueryVariables
-  >(GetTopLevelDashboardMetricsDocument, options);
-}
-export function useGetTopLevelDashboardMetricsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetTopLevelDashboardMetricsQuery,
-    GetTopLevelDashboardMetricsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetTopLevelDashboardMetricsQuery,
-    GetTopLevelDashboardMetricsQueryVariables
-  >(GetTopLevelDashboardMetricsDocument, options);
-}
-export type GetTopLevelDashboardMetricsQueryHookResult = ReturnType<
-  typeof useGetTopLevelDashboardMetricsQuery
->;
-export type GetTopLevelDashboardMetricsLazyQueryHookResult = ReturnType<
-  typeof useGetTopLevelDashboardMetricsLazyQuery
->;
-export type GetTopLevelDashboardMetricsQueryResult = Apollo.QueryResult<
-  GetTopLevelDashboardMetricsQuery,
-  GetTopLevelDashboardMetricsQueryVariables
->;
+export function useGetTopLevelDashboardMetricsQuery(baseOptions: Apollo.QueryHookOptions<GetTopLevelDashboardMetricsQuery, GetTopLevelDashboardMetricsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetTopLevelDashboardMetricsQuery, GetTopLevelDashboardMetricsQueryVariables>(GetTopLevelDashboardMetricsDocument, options);
+      }
+export function useGetTopLevelDashboardMetricsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTopLevelDashboardMetricsQuery, GetTopLevelDashboardMetricsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTopLevelDashboardMetricsQuery, GetTopLevelDashboardMetricsQueryVariables>(GetTopLevelDashboardMetricsDocument, options);
+        }
+export type GetTopLevelDashboardMetricsQueryHookResult = ReturnType<typeof useGetTopLevelDashboardMetricsQuery>;
+export type GetTopLevelDashboardMetricsLazyQueryHookResult = ReturnType<typeof useGetTopLevelDashboardMetricsLazyQuery>;
+export type GetTopLevelDashboardMetricsQueryResult = Apollo.QueryResult<GetTopLevelDashboardMetricsQuery, GetTopLevelDashboardMetricsQueryVariables>;
 export const PatientExistsDocument = gql`
     query PatientExists($firstName: String!, $lastName: String!, $birthDate: LocalDate!, $zipCode: String!, $facilityId: ID) {
   patientExists(
