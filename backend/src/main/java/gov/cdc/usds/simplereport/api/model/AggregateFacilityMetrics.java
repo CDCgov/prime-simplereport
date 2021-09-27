@@ -8,7 +8,6 @@ import lombok.Getter;
 public class AggregateFacilityMetrics {
   private String facilityName;
   private long totalTestCount;
-  private long peopleTestedCount;
   private long positiveTestCount;
   private long negativeTestCount;
 }

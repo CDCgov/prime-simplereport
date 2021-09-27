@@ -4,6 +4,7 @@ import com.twilio.exception.ApiException;
 import com.twilio.exception.TwilioException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.AggregateFacilityMetrics;
+import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -33,6 +34,7 @@ import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -461,6 +463,47 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionEditOrganization
+  public OrganizationLevelDashboardMetrics getOrganizationLevelDashboardMetrics(
+      Date startDate, Date endDate) {
+    Organization org = _os.getCurrentOrganization();
+    List<UUID> facilityIds =
+        _os.getFacilities(org).stream().map(Facility::getInternalId).collect(Collectors.toList());
+
+    List<AggregateFacilityMetrics> facilityMetrics = new ArrayList<AggregateFacilityMetrics>();
+
+    for (UUID facilityId : facilityIds) {
+      List<TestResultWithCount> results =
+          _terepo.countByResultForFacility(facilityId, startDate, endDate);
+      Facility facility = _os.getFacilityInCurrentOrg(facilityId);
+      Map<TestResult, Long> testResultMap =
+          results.stream()
+              .collect(
+                  Collectors.toMap(TestResultWithCount::getResult, TestResultWithCount::getCount));
+      long negativeTestCount = testResultMap.getOrDefault(TestResult.NEGATIVE, 0L);
+      long positiveTestCount = testResultMap.getOrDefault(TestResult.POSITIVE, 0L);
+      long totalTestCount = testResultMap.values().stream().reduce(0L, Long::sum);
+
+      facilityMetrics.add(
+          new AggregateFacilityMetrics(
+              facility.getFacilityName(), totalTestCount, positiveTestCount, negativeTestCount));
+    }
+
+    long organizationNegativeTestCount =
+        facilityMetrics.stream().map(m -> m.getNegativeTestCount()).reduce(0L, Long::sum);
+    long organizationPositiveTestCount =
+        facilityMetrics.stream().map(m -> m.getPositiveTestCount()).reduce(0L, Long::sum);
+    long organizationTotalTestCount =
+        facilityMetrics.stream().map(m -> m.getTotalTestCount()).reduce(0L, Long::sum);
+
+    return new OrganizationLevelDashboardMetrics(
+        organizationPositiveTestCount,
+        organizationNegativeTestCount,
+        organizationTotalTestCount,
+        facilityMetrics);
+  }
+
+  @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionEditOrganization
   public TopLevelDashboardMetrics getTopLevelDashboardMetrics(
       UUID facilityId, Date startDate, Date endDate) {
     Set<UUID> facilityIds;
@@ -485,38 +528,6 @@ public class TestOrderService {
     long positiveTestCount = testResultMap.getOrDefault(TestResult.POSITIVE, 0L);
 
     return new TopLevelDashboardMetrics(positiveTestCount, totalTestCount);
-  }
-
-  @Transactional(readOnly = true)
-  @AuthorizationConfiguration.RequirePermissionEditOrganization
-  public List<AggregateFacilityMetrics> getAggregateFacilityMetrics(Date startDate, Date endDate) {
-    // todo here:
-    // get the full list of facilites in the organization.
-    // for each facility, run the countByResultByFacility query.
-    // take those results and input them into an AggregateFacilityMetrics object.
-    // (need to make sure order is preserved throughout.)
-    // Once that's been done for each facility, return the list of aggregate metrics.
-
-    // ok there's a wrench in the operations here.
-    // we don't want to double-query each facility for every single page load, which is what will happen with the current configuration.
-    // is graphQL smart enough to cache the results for the table queries? probably not.
-    
-    // new plan:
-    // have one "initial load" query that returns metrics for _each_ facility. This will return org-level and facility-level metrics for a week. 
-    // that data will be passed back to the frontend, which will use it to populate both the boxes and table.
-    // if the datepicker is changed on either object, we'll call the query _for that object_. 
-    // this will require a new dashboard-level query in graphQL.
-    // this method should still be written out to account for those changes, but it won't be used on initial table load.
-    List<AggregateFacilityMetrics> aggregateMetrics;
-
-    Organization org = _os.getCurrentOrganization();
-    List<UUID> facilityIds = _os.getFacilities(org).stream().map(Facility::getInternalId).collect(Collectors.toList());
-
-    for (UUID facilityId : facilityIds) {
-      _terepo.countByResultByFacility(facilityId, startDate, endDate);
-    }
-
-    return List.of();
   }
 
   private void lockOrder(UUID orderId) throws IllegalGraphqlArgumentException {

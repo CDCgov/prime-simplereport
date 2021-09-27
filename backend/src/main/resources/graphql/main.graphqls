@@ -204,6 +204,13 @@ type TestResult {
   patientLink: PatientLink
 }
 
+type OrganizationLevelDashboardMetrics {
+  organizationPositiveTestCount: Int,
+  organizationNegativeTestCount: Int,
+  organizationTotalTestCount: Int,
+  facilityMetrics: [AggregateFacilityMetrics]
+}
+
 type TopLevelDashboardMetrics {
   positiveTestCount: Int,
   totalTestCount: Int
@@ -212,7 +219,7 @@ type TopLevelDashboardMetrics {
 type AggregateFacilityMetrics {
   facilityName: String,
   totalTestCount: Int,
-  peopleTestedCount: Int,
+  # peopleTestedCount: Int,
   positiveTestCount: Int,
   negativeTestCount: Int
 }
@@ -284,9 +291,9 @@ type Query {
   ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
-  topLevelDashboardMetrics(facilityId: ID, startDate: DateTime!, endDate: DateTime!): TopLevelDashboardMetrics
+  organizationLevelDashboardMetrics(startDate: DateTime!, endDate: DateTime!): OrganizationLevelDashboardMetrics
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
-  aggregateFacilityMetrics(startDate: DateTime!, endDate: DateTime!): [AggregateFacilityMetrics]
+  topLevelDashboardMetrics(facilityId: ID, startDate: DateTime!, endDate: DateTime!): TopLevelDashboardMetrics
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
   usersWithStatus: [ApiUserWithStatus!] @requiredPermissions(allOf: ["MANAGE_USERS"])
