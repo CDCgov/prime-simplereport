@@ -14,6 +14,17 @@ const devices: DeviceType[] = [
   { internalId: "device-2", name: "Device 2" },
 ];
 
+const deviceSpecimenTypes: DeviceSpecimenType[] = devices.map((device, idx) => {
+  return {
+    internalId: idx,
+    deviceType: device,
+    specimenType: {
+      internalId: "fake-specimen-id",
+      name: "Fake Specimen",
+    },
+  };
+});
+
 const validFacility: Facility = {
   name: "Foo Facility",
   cliaNumber: "12D4567890",
@@ -40,6 +51,7 @@ const validFacility: Facility = {
   },
   deviceTypes: devices.map(({ internalId }) => internalId),
   defaultDevice: devices[0].internalId,
+  deviceSpecimenTypes,
 };
 
 // Hardcoded suggestion scenarios
@@ -102,7 +114,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceOptions={devices}
+          deviceSpecimenTypeOptions={deviceSpecimenTypes}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -120,7 +132,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceOptions={devices}
+          deviceSpecimenTypeOptions={deviceSpecimenTypes}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -138,7 +150,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceOptions={devices}
+          deviceSpecimenTypeOptions={deviceSpecimenTypes}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -160,7 +172,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceOptions={devices}
+          deviceSpecimenTypeOptions={deviceSpecimenTypes}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -196,7 +208,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceOptions={devices}
+          deviceSpecimenTypeOptions={deviceSpecimenTypes}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -235,7 +247,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceOptions={devices}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -282,7 +294,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceOptions={devices}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -322,7 +334,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={washingtonFacility}
-              deviceOptions={devices}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -349,7 +361,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={californiaFacility}
-              deviceOptions={devices}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -399,7 +411,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceOptions={devices}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -449,7 +461,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceOptions={devices}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -488,7 +500,7 @@ describe("FacilityForm", () => {
         <MemoryRouter>
           <FacilityForm
             facility={facility}
-            deviceOptions={devices}
+            deviceSpecimenTypeOptions={deviceSpecimenTypes}
             saveFacility={saveFacility}
           />
         </MemoryRouter>
@@ -518,7 +530,7 @@ describe("FacilityForm", () => {
         <MemoryRouter>
           <FacilityForm
             facility={validFacility}
-            deviceOptions={devices}
+            deviceSpecimenTypeOptions={deviceSpecimenTypes}
             saveFacility={saveFacility}
           />
         </MemoryRouter>

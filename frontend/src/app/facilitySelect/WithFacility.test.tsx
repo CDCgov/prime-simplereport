@@ -37,6 +37,20 @@ const mocks = [
             name: "Abbott IDNow",
           },
         ],
+        specimenType: [],
+        deviceSpecimenTypes: [
+          {
+            internalId: "fake-id",
+            deviceType: {
+              internalId: "a9bd36fe-0df1-4256-93e8-9e503cabdc8b",
+              name: "Abbott IDNow",
+            },
+            specimenType: {
+              internalId: "fake-specimen-id",
+              name: "Fake Specimen Type",
+            },
+          },
+        ],
       },
     },
   },
