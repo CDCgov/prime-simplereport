@@ -2957,6 +2957,8 @@ databaseChangeLog:
       author: brett.m.maden@omb.eop.gov
       comment: Add table for newly requested, unverified organizations
       changes:
+        - tagDatabase:
+            tag: add-organization-queue-table
         - createTable:
             tableName: organization_queue
             remarks: Organizations that have requested to start using SimpleReport
@@ -3001,3 +3003,8 @@ databaseChangeLog:
             selectQuery: SELECT internal_id, created_at, updated_at, organization_name, organization_external_id, verified_organization_id FROM ${database.defaultSchemaName}.organization_queue
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.organization_queue_no_phi_view TO ${noPhiUsername};
+      rollback:
+        - dropView:
+            viewName: organization_queue_no_phi_view
+        - dropTable:
+            tableName: organization_queue
