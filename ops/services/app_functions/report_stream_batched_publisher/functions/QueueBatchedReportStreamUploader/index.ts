@@ -17,8 +17,7 @@ appInsights.setup();
 const telemetry = appInsights.defaultClient;
 
 const QueueBatchedTestEventPublisher: AzureFunction = async function (
-  context: Context,
-  myTimer: any
+  context: Context
 ): Promise<void> {
   const tagOverrides = { "ai.operation.id": context.traceContext.traceparent };
   const queueClient = getQueueClient();
