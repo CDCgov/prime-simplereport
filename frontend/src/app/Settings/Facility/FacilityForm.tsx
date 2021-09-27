@@ -120,11 +120,7 @@ type AddressOptions = "facility" | "provider";
 
 export interface Props {
   facility: Facility;
-  /*
-  deviceOptions: DeviceType[];
-  specimenOptions: SpecimenType[];
-  */
-  deviceSpecimenTypeOptions: DeviceSpecimenTypes[];
+  deviceSpecimenTypeOptions: DeviceSpecimenType[];
   saveFacility: (facility: Facility) => void;
   newOrg?: boolean;
 }
@@ -157,11 +153,24 @@ const FacilityForm: React.FC<Props> = (props) => {
   };
 
   const updateDeviceSpecimenTypes = (
-    deviceSpecimenTypes: DeviceSpecimenTypes[]
+    deviceSpecimenTypes: DeviceSpecimenTypeIds[]
   ) => {
+    const dst = deviceSpecimenTypes.map(({ deviceType, specimenType }) => {
+      const deviceSpecimenType = props.deviceSpecimenTypeOptions.find(
+        (options) => {
+          return (
+            options.deviceType.internalId === deviceType &&
+            options.specimenType.internalId === specimenType
+          );
+        }
+      );
+
+      return deviceSpecimenType || props.deviceSpecimenTypeOptions[0];
+    });
+
     updateForm((facility) => ({
       ...facility,
-      deviceSpecimenTypes,
+      deviceSpecimenTypes: dst,
     }));
   };
 
@@ -367,10 +376,6 @@ const FacilityForm: React.FC<Props> = (props) => {
           defaultDevice={facility.defaultDevice}
           updateDeviceSpecimenTypes={updateDeviceSpecimenTypes}
           updateDefaultDevice={updateDefaultDevice}
-          /*
-          deviceOptions={props.deviceOptions}
-          specimenOptions={props.specimenOptions}
-          */
           deviceSpecimenTypeOptions={props.deviceSpecimenTypeOptions}
           errors={errors}
           validateField={validateField}

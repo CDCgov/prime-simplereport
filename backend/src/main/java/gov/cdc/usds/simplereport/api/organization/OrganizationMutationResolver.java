@@ -9,7 +9,6 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.auxiliary.DeviceSpecimenTypeInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
@@ -22,7 +21,6 @@ import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 /** Created by nickrobison on 11/17/20 */
@@ -30,9 +28,7 @@ import org.springframework.stereotype.Component;
 public class OrganizationMutationResolver implements GraphQLMutationResolver {
 
   private final OrganizationService _os;
-  private final SpecimenTypeService _sts;
   private final DeviceTypeService _dts;
-  private final FacilityDeviceTypeService _fdts;
   private final AddressValidationService _avs;
   private final ApiUserService _aus;
 
@@ -44,9 +40,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       AddressValidationService avs,
       ApiUserService aus) {
     _os = os;
-    _sts = sts;
     _dts = dts;
-    _fdts = fdts;
     _avs = avs;
     _aus = aus;
   }
@@ -75,10 +69,9 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String orderingProviderZipCode,
       String orderingProviderTelephone,
       List<String> deviceIds,
-      List<DeviceSpecimenTypeInput> deviceSpecimenTypes,
+      List<String> deviceSpecimenTypes,
       String defaultDeviceId) {
     _os.assertFacilityNameAvailable(testingFacilityName);
-    // DeviceSpecimenTypeHolder deviceSpecimenTypes =
     DeviceSpecimenTypeHolder dsts = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
 
     StreetAddress facilityAddress =
@@ -105,7 +98,6 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             facilityAddress,
             Translators.parsePhoneNumber(phone),
             Translators.parseEmail(email),
-            // deviceSpecimenTypes,
             dsts,
             providerName,
             providerAddress,
@@ -139,19 +131,10 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String orderingProviderZipCode,
       String orderingProviderTelephone,
       List<String> deviceIds,
-      List<DeviceSpecimenTypeInput> deviceSpecimenTypes,
+      List<String> deviceSpecimenTypes,
       String defaultDeviceId) {
 
-    /**
-     * TODO: - Currently _all_ swab types are in the dropdown - should just be for device - Do we
-     * need to return _all_ device_specimen_types in GraphQL response and group specimens by device
-     * type on the frontend? - Frontend bug - no "success" toast alert on-save; changes don't appear
-     * until refresh
-     */
-    List<DeviceSpecimenType> dsts =
-        deviceSpecimenTypes.stream()
-            .map(dst -> _dts.getDeviceSpecimenType(dst.getDeviceType(), dst.getSpecimenType()))
-            .collect(Collectors.toList());
+    List<DeviceSpecimenType> dsts = _dts.getDeviceSpecimenTypesByIds(deviceSpecimenTypes);
 
     DeviceSpecimenType defaultDeviceSpecimenType =
         dsts.stream()
@@ -191,7 +174,6 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             orderingProviderNPI,
             providerAddress,
             Translators.parsePhoneNumber(orderingProviderTelephone),
-            // deviceSpecimenTypes);
             dstHolder);
     return new ApiFacility(facility);
   }

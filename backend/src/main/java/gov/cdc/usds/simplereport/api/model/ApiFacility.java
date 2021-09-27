@@ -8,7 +8,6 @@ import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.service.model.WrappedEntity;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public class ApiFacility extends WrappedEntity<Facility> implements LocatedWrapper<Facility> {
 
@@ -32,7 +31,7 @@ public class ApiFacility extends WrappedEntity<Facility> implements LocatedWrapp
     return getWrapped().getEmail();
   }
 
-  public List<UUID> getDeviceSpecimenTypes() {
+  public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
     return getWrapped().getDeviceSpecimenTypes();
   }
   /*

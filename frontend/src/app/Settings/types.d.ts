@@ -12,9 +12,6 @@ interface DeviceTypes {
 interface SpecimenType {
   internalId: string;
   name: string;
-  typeCode?: string;
-  collectionLocationName?: string;
-  collectionLocationCode?: string;
 }
 
 interface DeviceSpecimenTypeIds {
@@ -176,8 +173,7 @@ interface FacilityData {
             internalId: string;
           }
         ];
-        //deviceSpecimenTypes: DeviceSpecimenType[];
-        deviceSpecimenTypes: ID[];
+        deviceSpecimenTypes: DeviceSpecimenType[];
         orderingProvider: {
           firstName: string;
           middleName: string;
@@ -195,21 +191,7 @@ interface FacilityData {
       }
     ];
   };
-  deviceSpecimenTypes: DeviceSpecimenType[]
-  /*
-  deviceType: [
-    {
-      internalId: string;
-      name: string;
-    }
-  ];
-  specimenType: [
-    {
-      internalId: string;
-      name: string;
-    }
-  ];
-  */
+  deviceSpecimenTypes: DeviceSpecimenType[];
 }
 
 type TestCorrectionStatus = "ORIGINAL" | "CORRECTED" | "REMOVED";

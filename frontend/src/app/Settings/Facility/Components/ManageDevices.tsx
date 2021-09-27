@@ -1,5 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { uniqBy } from "lodash";
 
 import Button from "../../../commonComponents/Button/Button";
 import Dropdown from "../../../commonComponents/Dropdown";
@@ -7,15 +8,26 @@ import Checkboxes from "../../../commonComponents/Checkboxes";
 import { FacilityErrors } from "../facilitySchema";
 import { ValidateField } from "../FacilityForm";
 
+const getSpecimenTypesForDevice = (
+  device: string,
+  deviceSpecimenOptions: DeviceSpecimenType[]
+) => {
+  return deviceSpecimenOptions.reduce(
+    (acc: string[], deviceSpecimenType: DeviceSpecimenType) => {
+      if (deviceSpecimenType.deviceType.internalId === device) {
+        acc.push(deviceSpecimenType.specimenType.internalId);
+      }
+
+      return acc;
+    },
+    []
+  );
+};
 interface Props {
-  deviceSpecimenTypes: DeviceSpecimenType[];
+  deviceSpecimenTypes: DeviceSpecimenTypeIds[];
   defaultDevice: string;
-  updateDeviceSpecimenTypes: (deviceTypes: DeviceSpecimenType[]) => void;
+  updateDeviceSpecimenTypes: (deviceTypes: DeviceSpecimenTypeIds[]) => void;
   updateDefaultDevice: (defaultDevice: string) => void;
-  /*
-  deviceOptions: DeviceType[];
-  specimenOptions: SpecimenType[];
-  */
   deviceSpecimenTypeOptions: DeviceSpecimenType[];
   errors: FacilityErrors;
   validateField: ValidateField;
@@ -26,10 +38,6 @@ const ManageDevices: React.FC<Props> = ({
   defaultDevice,
   updateDeviceSpecimenTypes,
   updateDefaultDevice,
-  /*
-  deviceOptions,
-  specimenOptions,
-  */
   deviceSpecimenTypeOptions,
   errors,
   validateField,
@@ -44,23 +52,33 @@ const ManageDevices: React.FC<Props> = ({
 
   const deviceTypeIds = deviceSpecimenTypes.map((dst) => dst.deviceType);
 
-  const onDeviceTypeChange = (oldDeviceId: string, newDeviceId: string) => {
+  const onDeviceTypeChange = (
+    oldDeviceId: string,
+    newDeviceId: string,
+    idx: number
+  ) => {
     const newDeviceSpecimenTypes = [...deviceSpecimenTypes];
-    const deviceIndex = newDeviceSpecimenTypes.findIndex(
-      (el) => el.deviceType === oldDeviceId
+
+    const deviceSpecimens = getSpecimenTypesForDevice(
+      newDeviceId,
+      deviceSpecimenTypeOptions
     );
-    newDeviceSpecimenTypes[deviceIndex] = {
-      ...newDeviceSpecimenTypes[deviceIndex],
+    const currentSpecimenType = newDeviceSpecimenTypes[idx].specimenType;
+
+    newDeviceSpecimenTypes[idx] = {
+      // Not all specimen types are available on each device, so we may also
+      // have to reset the specimen type if the previous one is not supported
+      // by the selected device
+      specimenType: deviceSpecimens.includes(currentSpecimenType)
+        ? currentSpecimenType
+        : deviceSpecimens[0],
       deviceType: newDeviceId,
     };
 
     updateDeviceSpecimenTypes(newDeviceSpecimenTypes);
   };
 
-  const onSpecimenTypeChange = (
-    index: number,
-    newSpecimenId: string
-  ) => {
+  const onSpecimenTypeChange = (index: number, newSpecimenId: string) => {
     const newDeviceSpecimenTypes = [...deviceSpecimenTypes];
     newDeviceSpecimenTypes[index] = {
       ...newDeviceSpecimenTypes[index],
@@ -70,12 +88,10 @@ const ManageDevices: React.FC<Props> = ({
     updateDeviceSpecimenTypes(newDeviceSpecimenTypes);
   };
 
-  const onDeviceRemove = (id: string) => {
+  const onDeviceRemove = (id: string, idx: number) => {
     const newDeviceSpecimenTypes = [...deviceSpecimenTypes];
-    const deviceIndex = newDeviceSpecimenTypes.findIndex(
-      (el) => el.deviceType === id
-    );
-    newDeviceSpecimenTypes.splice(deviceIndex, 1);
+
+    newDeviceSpecimenTypes.splice(idx, 1);
 
     updateDeviceSpecimenTypes(newDeviceSpecimenTypes);
     // Unset default device if ID matches
@@ -86,14 +102,16 @@ const ManageDevices: React.FC<Props> = ({
 
   // returns a list of deviceIds that have *not* been selected so far
   const _getRemainingDeviceOptions = () =>
-    deviceOptions.filter((d) => !deviceTypeIds.includes(d.internalId));
+    deviceSpecimenTypeOptions
+      .map((dst) => dst.deviceType)
+      .filter((dst) => !deviceTypeIds.includes(dst));
 
   const onAddDevice = () => {
     const remainingDeviceOptions = _getRemainingDeviceOptions();
     const newDeviceSpecimenTypes = [...deviceSpecimenTypes];
     newDeviceSpecimenTypes.push({
       deviceType: remainingDeviceOptions[0].internalId,
-      specimenType: specimenOptions[0].internalId
+      specimenType: deviceSpecimenTypeOptions[0].specimenType,
     });
 
     updateDeviceSpecimenTypes(newDeviceSpecimenTypes);
@@ -103,29 +121,32 @@ const ManageDevices: React.FC<Props> = ({
     return deviceSpecimenTypes.map((dst, idx) => {
       const deviceId = dst.deviceType;
 
-      const deviceDropdownOptions = deviceOptions.map(
-        ({ name, internalId }) => {
+      const devices = deviceSpecimenTypeOptions.map((dst) => dst.deviceType);
+      const specimenTypes = deviceSpecimenTypeOptions
+        .filter((dst) => dst.deviceType.internalId === deviceId)
+        .map((dst) => dst.specimenType);
+
+      const deviceDropdownOptions = uniqBy(devices, "internalId").map(
+        (deviceType) => {
           return {
-            label: name,
-            value: internalId,
+            label: deviceType.name,
+            value: deviceType.internalId,
             disabled: deviceSpecimenTypes
               .map((d) => d.deviceType)
-              .includes(internalId),
+              .includes(deviceType.internalId),
           };
         }
       );
 
-      const specimenDropdownOptions = specimenOptions.map(
-        ({ name, internalId }) => {
-          return {
-            label: name,
-            value: internalId,
-          };
-        }
-      );
+      const specimenDropdownOptions = specimenTypes.map((specimenType) => {
+        return {
+          label: specimenType.name,
+          value: specimenType.internalId,
+        };
+      });
 
       return (
-        <tr key={deviceId}>
+        <tr key={idx}>
           <td>
             <Dropdown
               options={deviceDropdownOptions}
@@ -133,7 +154,8 @@ const ManageDevices: React.FC<Props> = ({
               onChange={(e) =>
                 onDeviceTypeChange(
                   deviceId,
-                  (e.target as HTMLSelectElement).value
+                  (e.target as HTMLSelectElement).value,
+                  idx
                 )
               }
             />
@@ -165,7 +187,7 @@ const ManageDevices: React.FC<Props> = ({
           <td>
             <button
               className="usa-button--unstyled"
-              onClick={() => onDeviceRemove(deviceId)}
+              onClick={() => onDeviceRemove(deviceId, idx)}
               aria-label="Delete device"
             >
               <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />

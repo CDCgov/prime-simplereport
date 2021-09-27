@@ -11,6 +11,7 @@ import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -55,15 +56,29 @@ public class DeviceTypeService {
         .orElseThrow(() -> new IllegalGraphqlArgumentException("invalid device type ID"));
   }
 
-  public DeviceSpecimenType getDeviceSpecimenType(UUID deviceTypeId, UUID specimenTypeId) {
+  public List<DeviceSpecimenType> getDeviceSpecimenTypesByIds(List<String> deviceSpecimenTypeIds) {
+    List<DeviceSpecimenType> deviceSpecimenTypes = new ArrayList<DeviceSpecimenType>();
+
+    Iterable<DeviceSpecimenType> results =
+        _deviceSpecimenRepo.findAllById(
+            deviceSpecimenTypeIds.stream()
+                .map(dst -> UUID.fromString(dst))
+                .collect(Collectors.toList()));
+
+    results.forEach(deviceSpecimenTypes::add);
+
+    return deviceSpecimenTypes;
+  }
+  /*
+  public DeviceSpecimenType getDeviceSpecimenType(UUID deviceSpecimenTypeId) {
     return _deviceSpecimenRepo
-        .findById(deviceTypeId, specimenTypeId)
+        .findById(deviceSpecimenTypeId)
         .orElseThrow(
             () ->
                 new IllegalGraphqlArgumentException(
                     "Device is not configured with a specimen type"));
   }
-
+  */
 
   public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
     return _deviceSpecimenRepo.findAll();

@@ -35,6 +35,7 @@ export const GET_FACILITY_QUERY = gql`
         deviceSpecimenTypes {
           internalId
           deviceType {
+            name
             internalId
           }
           specimenType {
@@ -103,7 +104,7 @@ export const UPDATE_FACILITY_MUTATION = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
-    $deviceSpecimenTypes: [DeviceSpecimenTypeInput]!
+    $deviceSpecimenTypes: [String]!
     $defaultDevice: String!
   ) {
     updateFacility(
@@ -158,7 +159,7 @@ const ADD_FACILITY_MUTATION = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
-    $deviceSpecimenTypes: [DeviceSpecimenTypeInput]!
+    $deviceSpecimenTypes: [String]!
     $defaultDevice: String!
   ) {
     addFacility(
@@ -251,7 +252,9 @@ const FacilityFormContainer: any = (props: Props) => {
         orderingProviderZipCode: provider.zipCode,
         orderingProviderPhone: provider.phone || null,
         devices: facility.deviceTypes,
-        deviceSpecimenTypes: facility.deviceSpecimenTypes,
+        deviceSpecimenTypes: facility.deviceSpecimenTypes.map(
+          (dst) => dst.internalId
+        ),
         defaultDevice: facility.defaultDevice,
       },
     });
@@ -273,25 +276,20 @@ const FacilityFormContainer: any = (props: Props) => {
       (f) => f.id === props.facilityId
     );
     if (facility) {
-      let deviceTypes = Object.values(facility.deviceSpecimenTypes).map(
+      let deviceTypes = facility.deviceSpecimenTypes.map(
         (dst) => dst.deviceType.internalId
       );
       return {
         ...facility,
         deviceTypes: deviceTypes,
         deviceSpecimenTypes: facility.deviceSpecimenTypes,
-        /*
-        deviceSpecimenTypes: facility.deviceSpecimenTypes.map((dst) => ({
-          deviceType: dst.deviceType.internalId,
-          specimenType: dst.specimenType.internalId,
-        })),
-        */
         defaultDevice: facility.defaultDeviceType
           ? facility.defaultDeviceType.internalId
           : "",
       };
     }
-    const defaultDevice = data.deviceSpecimenTypes[0].deviceType.internalId;
+    const dropdownDefaultDeviceSpecimen = data.deviceSpecimenTypes[0];
+
     return {
       id: "",
       name: "",
@@ -316,18 +314,9 @@ const FacilityFormContainer: any = (props: Props) => {
         zipCode: "",
         phone: "",
       },
-      deviceTypes: [defaultDevice],
-      deviceSpecimenTypes: [],
-      /*
-      deviceSpecimenTypes: [
-        {
-          internalId: "",
-          deviceType: defaultDevice,
-          specimenType: "",
-        },
-      ],
-      */
-      defaultDevice,
+      deviceTypes: [dropdownDefaultDeviceSpecimen.deviceType.internalId],
+      deviceSpecimenTypes: [dropdownDefaultDeviceSpecimen],
+      defaultDevice: dropdownDefaultDeviceSpecimen.deviceType.internalId,
     };
   };
 
@@ -335,10 +324,6 @@ const FacilityFormContainer: any = (props: Props) => {
     <FacilityForm
       facility={getFacilityData()}
       deviceSpecimenTypeOptions={data.deviceSpecimenTypes}
-      /*
-      deviceOptions={data.deviceSpecimenTypes.map(dst => dst.deviceType)}
-      specimenOptions={data.deviceSpecimenTypes.map(dst => dst.specimenType)}
-      */
       saveFacility={saveFacility}
       newOrg={props.newOrg}
     />

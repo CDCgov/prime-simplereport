@@ -8,8 +8,6 @@ import {
 } from "../../utils/clia";
 import { isEmptyString } from "../../utils";
 
-import { DeviceSpecimenType } from "./FacilityForm";
-
 const phoneUtil = PhoneNumberUtil.getInstance();
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -72,9 +70,20 @@ const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
   zipCode: yup.string().nullable(),
 });
 
+const deviceTypeSchema: yup.SchemaOf<DeviceType> = yup.object({
+  internalId: yup.string().required(),
+  name: yup.string().required(),
+});
+
+const specimenTypeSchema: yup.SchemaOf<SpecimenType> = yup.object({
+  internalId: yup.string().required(),
+  name: yup.string().required(),
+});
+
 export const deviceSchema: yup.SchemaOf<DeviceSpecimenType> = yup.object({
-  deviceType: yup.string().required(),
-  specimenType: yup.string().required(),
+  internalId: yup.string().required(),
+  deviceType: deviceTypeSchema,
+  specimenType: specimenTypeSchema,
 });
 
 export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({

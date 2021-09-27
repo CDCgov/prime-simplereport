@@ -21,12 +21,6 @@ public interface DeviceSpecimenTypeRepository
   @Query(BASE_QUERY + " and e.deviceType = :deviceType and e.specimenType = :specimenType")
   Optional<DeviceSpecimenType> find(DeviceType deviceType, SpecimenType specimenType);
 
-  @EntityGraph(attributePaths = {"deviceType", "specimenType"})
-  @Query(
-      BASE_QUERY
-          + " and e.deviceType.internalId = :deviceTypeId and e.specimenType.internalId = :specimenTypeId")
-  Optional<DeviceSpecimenType> findById(UUID deviceTypeId, UUID specimenTypeId);
-
   // INSTA-DEPRECATION: this should only be used until we fix the API to not need
   // it
   @Deprecated
