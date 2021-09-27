@@ -12,6 +12,8 @@ export function fetchFromEnvironmentOrThrow(
   );
 }
 
+export const uploaderVersion = "2021-09-21";
+
 export const ENV = (() => {
   const CONFIG_VALUES = {
     AZ_STORAGE_QUEUE_SVC_URL: "Azure Storage Queue service URL",

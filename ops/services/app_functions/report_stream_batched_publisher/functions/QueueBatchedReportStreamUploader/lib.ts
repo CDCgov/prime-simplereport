@@ -6,11 +6,13 @@ import {
   StorageSharedKeyCredential,
 } from "@azure/storage-queue";
 import * as csvStringify from "csv-stringify/lib/sync";
-import { ENV } from "./config";
+import { ENV, uploaderVersion } from "./config";
 
 const {
   REPORT_STREAM_BATCH_MINIMUM,
   REPORT_STREAM_BATCH_MAXIMUM,
+  REPORT_STREAM_TOKEN,
+  REPORT_STREAM_URL,
   AZ_STORAGE_ACCOUNT_KEY,
   AZ_STORAGE_ACCOUNT_NAME,
   AZ_STORAGE_QUEUE_SVC_URL,
@@ -102,6 +104,20 @@ export function convertToCsv(messages: DequeuedMessageItem[]) {
     parseFailureCount,
     parseSuccessCount: messageTexts.length,
   };
+}
+
+export async function uploadResult(body) {
+  const headers = new Headers({
+    "x-functions-key": REPORT_STREAM_TOKEN,
+    "x-api-version": uploaderVersion,
+    "content-type": "text/csv",
+    client: "simple_report",
+  });
+  return fetch(REPORT_STREAM_URL, {
+    method: "POST",
+    headers,
+    body
+  });
 }
 
 export async function deleteSuccessfullyParsedMessages(

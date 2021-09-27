@@ -8,15 +8,11 @@ import {
   dequeueMessages,
   getQueueClient,
   minimumMessagesAvailable,
+  uploadResult,
 } from "./lib";
 import { ReportStreamResponse } from "./rs-response";
 
-const {
-  REPORT_STREAM_URL,
-  REPORT_STREAM_TOKEN,
-} = ENV;
-
-const uploaderVersion = "2021-09-21";
+const { REPORT_STREAM_URL } = ENV;
 
 appInsights.setup();
 const telemetry = appInsights.defaultClient;
@@ -54,31 +50,23 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   }
 
   const uploadStart = new Date().getTime();
-  context.log(`Starting upload of ${parseSuccessCount} records to ReportStream`);
+  context.log(
+    `Starting upload of ${parseSuccessCount} records to ReportStream`
+  );
 
-  const headers = new Headers({
-    "x-functions-key": REPORT_STREAM_TOKEN,
-    "x-api-version": uploaderVersion,
-    "content-type": "text/csv",
-    client: "simple_report",
-  });
-  const postResult = await fetch(REPORT_STREAM_URL, {
-    method: "POST",
-    headers,
-    body: csvPayload,
-  });
+  const postResult = await uploadResult(csvPayload);
 
   telemetry.trackDependency({
     dependencyTypeName: "HTTP",
     name: "ReportStream",
     data: REPORT_STREAM_URL,
     properties: {
-      recordCount: parseSuccessCount
+      recordCount: parseSuccessCount,
     },
     duration: new Date().getTime() - uploadStart,
     resultCode: postResult.status,
     success: postResult.ok,
-    tagOverrides
+    tagOverrides,
   });
 
   if (postResult.ok) {
@@ -99,13 +87,14 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     const responseBody = await postResult.text();
     const errorText = `Failed to upload to ReportStream with response code ${postResult.status}`;
     context.log.error(
-      `${errorText}. Response body (${postResult.size} bytes): `, responseBody
+      `${errorText}. Response body (${responseBody.length} bytes): `,
+      responseBody
     );
     telemetry.trackEvent({
       name: "ReportStream Upload Failed",
-      properties: { 
+      properties: {
         status: postResult.status,
-        responseBody
+        responseBody,
       },
       tagOverrides,
     });
