@@ -30,8 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.security.auth.Subject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Wiring for a schema directive that enforces that a user must have certain permissions to traverse
@@ -39,10 +38,8 @@ import org.slf4j.LoggerFactory;
  * or more permissions, any of several permissions, or both. The directive can be applied to
  * queries, mutations, field definitions, and argument definitions.
  */
+@Slf4j
 public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
-  private static final Logger LOG =
-      LoggerFactory.getLogger(RequiredPermissionsDirectiveWiring.class);
-
   @Override
   public GraphQLArgument onArgument(SchemaDirectiveWiringEnvironment<GraphQLArgument> environment) {
     GraphQLArgument argument = environment.getElement();
@@ -145,7 +142,7 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
     var userPermissions = subject.getPrincipals(UserPermission.class);
 
     if (!userPermissions.containsAll(requiredPermissions.getAllOf())) {
-      LOG.info(
+      log.info(
           "User does not have all of {}; denying access at {}",
           requiredPermissions.getAllOf(),
           path);
@@ -154,7 +151,7 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
 
     for (var clause : requiredPermissions.getAnyOfClauses()) {
       if (clause.stream().noneMatch(userPermissions::contains)) {
-        LOG.info("User does not have at least one of {}; denying access at {}", clause, path);
+        log.info("User does not have at least one of {}; denying access at {}", clause, path);
         return false;
       }
     }

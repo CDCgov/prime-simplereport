@@ -28,6 +28,7 @@ module "simple_report_api" {
     SPRING_PROFILES_ACTIVE                = "azure-dev"
     SPRING_DATASOURCE_URL                 = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sr_dev_db_jdbc.id})"
     APPLICATIONINSIGHTS_CONNECTION_STRING = data.azurerm_application_insights.app_insights.connection_string
+    AZ_REPORTING_QUEUE_CXN_STRING         = data.azurerm_storage_account.app.primary_connection_string
     DATAHUB_API_KEY                       = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
     SECRET_SLACK_NOTIFY_WEBHOOK_URL       = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.slack_notify_webhook_url.id})"
     OKTA_OAUTH2_CLIENT_SECRET             = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.okta_client_secret.id})"

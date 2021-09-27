@@ -1018,6 +1018,21 @@ export type SetCurrentUserTenantDataAccessOpMutationVariables = Exact<{
 
 export type SetCurrentUserTenantDataAccessOpMutation = { __typename?: 'Mutation', setCurrentUserTenantDataAccess?: Maybe<{ __typename?: 'User', id: string, email: string, permissions: Array<UserPermission>, role?: Maybe<Role>, organization?: Maybe<{ __typename?: 'Organization', name: string, externalId: string }> }> };
 
+export type GetTopLevelDashboardMetricsQueryVariables = Exact<{
+  facilityId?: Maybe<Scalars["ID"]>;
+  startDate: Scalars["DateTime"];
+  endDate: Scalars["DateTime"];
+}>;
+
+export type GetTopLevelDashboardMetricsQuery = {
+  __typename?: "Query";
+  topLevelDashboardMetrics?: Maybe<{
+    __typename?: "TopLevelDashboardMetrics";
+    positiveTestCount?: Maybe<number>;
+    totalTestCount?: Maybe<number>;
+  }>;
+};
+
 export type PatientExistsQueryVariables = Exact<{
   firstName: Scalars['String'];
   lastName: Scalars['String'];
@@ -2202,7 +2217,79 @@ export function useSetCurrentUserTenantDataAccessOpMutation(baseOptions?: Apollo
       }
 export type SetCurrentUserTenantDataAccessOpMutationHookResult = ReturnType<typeof useSetCurrentUserTenantDataAccessOpMutation>;
 export type SetCurrentUserTenantDataAccessOpMutationResult = Apollo.MutationResult<SetCurrentUserTenantDataAccessOpMutation>;
-export type SetCurrentUserTenantDataAccessOpMutationOptions = Apollo.BaseMutationOptions<SetCurrentUserTenantDataAccessOpMutation, SetCurrentUserTenantDataAccessOpMutationVariables>;
+export type SetCurrentUserTenantDataAccessOpMutationOptions = Apollo.BaseMutationOptions<
+  SetCurrentUserTenantDataAccessOpMutation,
+  SetCurrentUserTenantDataAccessOpMutationVariables
+>;
+export const GetTopLevelDashboardMetricsDocument = gql`
+  query GetTopLevelDashboardMetrics(
+    $facilityId: ID
+    $startDate: DateTime!
+    $endDate: DateTime!
+  ) {
+    topLevelDashboardMetrics(
+      facilityId: $facilityId
+      startDate: $startDate
+      endDate: $endDate
+    ) {
+      positiveTestCount
+      totalTestCount
+    }
+  }
+`;
+
+/**
+ * __useGetTopLevelDashboardMetricsQuery__
+ *
+ * To run a query within a React component, call `useGetTopLevelDashboardMetricsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTopLevelDashboardMetricsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTopLevelDashboardMetricsQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      startDate: // value for 'startDate'
+ *      endDate: // value for 'endDate'
+ *   },
+ * });
+ */
+export function useGetTopLevelDashboardMetricsQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTopLevelDashboardMetricsQuery,
+    GetTopLevelDashboardMetricsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetTopLevelDashboardMetricsQuery,
+    GetTopLevelDashboardMetricsQueryVariables
+  >(GetTopLevelDashboardMetricsDocument, options);
+}
+export function useGetTopLevelDashboardMetricsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTopLevelDashboardMetricsQuery,
+    GetTopLevelDashboardMetricsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetTopLevelDashboardMetricsQuery,
+    GetTopLevelDashboardMetricsQueryVariables
+  >(GetTopLevelDashboardMetricsDocument, options);
+}
+export type GetTopLevelDashboardMetricsQueryHookResult = ReturnType<
+  typeof useGetTopLevelDashboardMetricsQuery
+>;
+export type GetTopLevelDashboardMetricsLazyQueryHookResult = ReturnType<
+  typeof useGetTopLevelDashboardMetricsLazyQuery
+>;
+export type GetTopLevelDashboardMetricsQueryResult = Apollo.QueryResult<
+  GetTopLevelDashboardMetricsQuery,
+  GetTopLevelDashboardMetricsQueryVariables
+>;
 export const PatientExistsDocument = gql`
     query PatientExists($firstName: String!, $lastName: String!, $birthDate: LocalDate!, $zipCode: String!, $facilityId: ID) {
   patientExists(

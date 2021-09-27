@@ -54,6 +54,11 @@
       "name": "simple-report.ordering-providers",
       "type": "gov.cdc.usds.simplereport.properties.OrderingProviderProperties",
       "description": "Properties for configuring state requirements for facility Ordering Providers"
+    },
+    {
+      "name": "simple-report.azure-reporting-queue",
+      "type": "gov.cdc.usds.simplereport.properties.AzureStorageQueueReportingProperties",
+      "description": "Properties for Azure Storage Queue for Test Event reporting to ReportStream."
     }
   ]
 }

@@ -1,5 +1,6 @@
 import renderer from "react-test-renderer";
-import { render, fireEvent, RenderResult } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import "../../i18n";
@@ -32,31 +33,21 @@ describe("DOB", () => {
   });
 
   describe("behavior", () => {
-    let utils: RenderResult;
-
-    async function setup(utils: RenderResult) {
-      const input = await utils.findByLabelText("Date of birth");
-      const button = await utils.findByRole("button");
-      return { input, button };
-    }
-
     beforeEach(() => {
       const store = mockStore({
         plid: "foo",
       });
-      utils = render(mockContainer(store));
+      render(mockContainer(store));
     });
 
     it("validates birthdays", async () => {
-      // GIVEN
-      const { input, button } = await setup(utils);
+      userEvent.type(
+        await screen.findByLabelText("Date of birth"),
+        "99-99-9999"
+      );
+      userEvent.click(await screen.findByRole("button"));
+      const error = await screen.findByRole("alert");
 
-      // WHEN
-      fireEvent.change(input, { target: { value: "99-99-9999" } });
-      fireEvent.submit(button);
-      const error = await utils.findByRole("alert");
-
-      // THEN
       expect(error.textContent).toEqual("Error: Enter your date of birth");
     });
   });

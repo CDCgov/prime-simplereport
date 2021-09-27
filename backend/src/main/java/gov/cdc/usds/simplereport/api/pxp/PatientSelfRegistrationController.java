@@ -20,8 +20,7 @@ import gov.cdc.usds.simplereport.service.model.ExistingPatientCheckRequestBody;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -37,10 +36,8 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("@patientSelfRegistrationLinkService.flagSelfRegistrationRequest()")
 @PostAuthorize("@restAuditLogManager.logRestSuccess(#request, returnObject)")
 @Validated
+@Slf4j
 public class PatientSelfRegistrationController {
-  private static final Logger LOG =
-      LoggerFactory.getLogger(PatientSelfRegistrationController.class);
-
   private final PatientSelfRegistrationLinkService _patientRegLinkService;
   private final PersonService _personService;
   private final CurrentPatientContextHolder _currentPatientContextHolder;
@@ -89,7 +86,7 @@ public class PatientSelfRegistrationController {
             parseString(body.getPreferredLanguage()),
             body.getTestResultDelivery());
 
-    LOG.info(
+    log.info(
         "Patient={} self-registered from link={}", p.getInternalId(), registrationLink.getLink());
   }
 
