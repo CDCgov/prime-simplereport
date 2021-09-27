@@ -122,18 +122,4 @@ describe("lib", () => {
       expect(result.length).toBe(5);
     });
   });
-
-  // describe("uploadResult", () => {
-  //   it("does whatever", async () => {
-  //     // GIVEN
-  //     // WHEN
-  //     // THEN
-  //     expect(0).toBe(1);
-  //   });
-  // });
-  // describe("deleteSuccessfullyParsedMessages", () => {
-  //   it("does whatever", async () => {
-  //     expect(0).toBe(1);
-  //   });
-  // });
 });
