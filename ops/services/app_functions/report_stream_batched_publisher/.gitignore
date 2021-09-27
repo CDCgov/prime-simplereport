@@ -1,6 +1,3 @@
-# Terraform lockfile
-.terraform.lock.hcl
-
 # Logs
 logs
 *.log
