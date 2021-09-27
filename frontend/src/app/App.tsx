@@ -14,9 +14,9 @@ import TestQueueContainer from "./testQueue/TestQueueContainer";
 import ManagePatientsContainer from "./patients/ManagePatientsContainer";
 import EditPatientContainer from "./patients/EditPatientContainer";
 import AddPatient from "./patients/AddPatient";
-import AdminRoutes from "./admin/AdminRoutes";
+import SupportAdminRoutes from "./supportAdmin/SupportAdminRoutes";
 import WithFacility from "./facilitySelect/WithFacility";
-import { appPermissions } from "./permissions";
+import { appPermissions, hasPermission } from "./permissions";
 import Settings from "./Settings/Settings";
 import { getAppInsights } from "./TelemetryService";
 import VersionEnforcer from "./VersionEnforcer";
@@ -91,6 +91,24 @@ const App = () => {
     }
     return <p>Server connection error...</p>;
   }
+
+  const isSupportAdmin = data.whoami.isAdmin;
+
+  const isOrgAdmin = hasPermission(
+    data.whoami.permissions,
+    appPermissions.settings.canView
+  );
+
+  let homepagePath: string;
+
+  if (isSupportAdmin) {
+    homepagePath = "/admin";
+  } else if (isOrgAdmin) {
+    homepagePath = "/settings";
+  } else {
+    homepagePath = "/queue";
+  }
+
   return (
     <>
       <VersionEnforcer />
@@ -115,7 +133,7 @@ const App = () => {
                 <Redirect
                   to={{
                     ...location,
-                    pathname: data.whoami.isAdmin ? "/admin" : "/queue",
+                    pathname: homepagePath,
                   }}
                 />
               )}
@@ -165,7 +183,10 @@ const App = () => {
             <Route
               path={"/admin"}
               render={({ match }) => (
-                <AdminRoutes match={match} isAdmin={data.whoami.isAdmin} />
+                <SupportAdminRoutes
+                  match={match}
+                  isAdmin={data.whoami.isAdmin}
+                />
               )}
             />
           </Switch>

@@ -1,12 +1,10 @@
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
 
-import { Analytics } from "../analytics/Analytics";
-
 import AddOrganizationAdminFormContainer from "./AddOrganizationAdmin/AddOrganizationAdminFormContainer";
 import DeviceTypeFormContainer from "./DeviceType/DeviceTypeFormContainer";
 import TenantDataAccessFormContainer from "./TenantDataAccess/TenantDataAccessFormContainer";
-import Admin from "./Admin";
+import SupportAdmin from "./SupportAdmin";
 import PendingOrganizationsContainer from "./PendingOrganizations/PendingOrganizationsContainer";
 
 interface Props {
@@ -14,7 +12,7 @@ interface Props {
   isAdmin: boolean;
 }
 
-const AdminRoutes: React.FC<Props> = ({ match, isAdmin }) => {
+const SupportAdminRoutes: React.FC<Props> = ({ match, isAdmin }) => {
   if (!isAdmin) {
     return (
       <Route
@@ -43,10 +41,9 @@ const AdminRoutes: React.FC<Props> = ({ match, isAdmin }) => {
         path={`${match.url}/tenant-data-access`}
         component={TenantDataAccessFormContainer}
       />
-      <Route path={`${match.url}/analytics`} component={Analytics} />
-      <Route path={"/admin"} exact={true} component={Admin} />
+      <Route path={"/admin"} exact={true} component={SupportAdmin} />
     </>
   );
 };
 
-export default AdminRoutes;
+export default SupportAdminRoutes;

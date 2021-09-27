@@ -15,6 +15,15 @@ exports[`SettingsNav displays the nav order correctly and defaults to 'Manage Us
         <a
           href="/settings"
         >
+          Testing data
+        </a>
+      </li>
+      <li
+        class="usa-nav__secondary-item"
+      >
+        <a
+          href="/settings/manage-users"
+        >
           Manage users
         </a>
       </li>

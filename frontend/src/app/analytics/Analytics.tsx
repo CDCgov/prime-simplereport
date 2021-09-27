@@ -114,10 +114,12 @@ export const Analytics = () => {
     totalTests > 0 ? (positiveTests / totalTests) * 100 : null;
 
   return (
-    <main className="prime-home">
-      <div id="analytics-page" className="grid-container">
-        <h2 className="position-relative">COVID-19 testing data</h2>
-        <div className="prime-container card-container padding-2">
+    <div className="prime-container card-container">
+      <div className="usa-card__header">
+        <h2>COVID-19 testing data</h2>
+      </div>
+      <div id="analytics-page">
+        <div className="prime-container padding-3">
           <div className="grid-row grid-gap">
             <div className="grid-col-4">
               <Dropdown
@@ -234,6 +236,6 @@ export const Analytics = () => {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 };

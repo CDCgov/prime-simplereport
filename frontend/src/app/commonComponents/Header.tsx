@@ -31,7 +31,7 @@ const Header: React.FC<{}> = () => {
     }
   };
 
-  const isAdmin = useSelector<RootState, boolean>(
+  const isSupportAdmin = useSelector<RootState, boolean>(
     (state) => state.user.isAdmin
   );
   const organization = useSelector(
@@ -78,7 +78,15 @@ const Header: React.FC<{}> = () => {
     appPermissions.tests.canView
   );
 
-  const siteLogoLinkPath = isAdmin ? "/admin" : "/queue";
+  let siteLogoLinkPath: string;
+
+  if (isSupportAdmin) {
+    siteLogoLinkPath = "/admin";
+  } else if (canViewSettings) {
+    siteLogoLinkPath = "/settings";
+  } else {
+    siteLogoLinkPath = "/queue";
+  }
 
   const logout = () => {
     // Fetch the id_token from local storage
