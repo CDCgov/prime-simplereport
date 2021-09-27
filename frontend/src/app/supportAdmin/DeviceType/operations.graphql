@@ -16,6 +16,24 @@ mutation createDeviceType(
   }
 }
 
+mutation createDeviceTypeNew(
+  $name: String!
+  $manufacturer: String!
+  $model: String!
+  $loincCode: String!
+  $swabTypes: [ID!]!
+) {
+  createDeviceTypeNew(
+    name: $name
+    manufacturer: $manufacturer
+    model: $model
+    loincCode: $loincCode
+    swabTypes: $swabTypes
+  ) {
+    internalId
+  }
+}
+
 query getSpecimenTypes{
   specimenTypes {
     internalId,

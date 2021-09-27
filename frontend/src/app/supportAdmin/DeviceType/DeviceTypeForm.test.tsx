@@ -7,12 +7,23 @@ const addValue = (name: string, value: string) => {
   userEvent.type(screen.getByLabelText(name, { exact: false }), value);
 };
 
+const selectValue = (name: string, value: string) => {
+  fireEvent.click(
+    screen.getByTestId("combo-box-option-445297001", { exact: false })
+  );
+};
+
 describe("DeviceTypeForm", () => {
   let saveDeviceType: jest.Mock;
 
   beforeEach(() => {
     saveDeviceType = jest.fn();
-    render(<DeviceTypeForm saveDeviceType={saveDeviceType} />);
+    render(
+      <DeviceTypeForm
+        saveDeviceType={saveDeviceType}
+        swabOptions={[{ label: "Swab (445297001)", value: "445297001" }]}
+      />
+    );
   });
 
   it("Disables the save button", () => {
@@ -25,7 +36,9 @@ describe("DeviceTypeForm", () => {
       addValue("Manufacturer", "Mesa Biotech");
       addValue("Model", "Accula SARS-Cov-2 Test*");
       addValue("Loinc Code", "95409-9");
-      addValue("SNOMED code of Swab Type", "445297001");
+      selectValue("SNOMED code of Swab Type", "445297001");
+
+      screen.debug(undefined, 900000);
     });
 
     it("enables the save button", async () => {
@@ -39,6 +52,13 @@ describe("DeviceTypeForm", () => {
       });
 
       it("calls the save callback once", async () => {
+        expect(saveDeviceType).toHaveBeenNthCalledWith(1, {
+          loincCode: "95409-9",
+          manufacturer: "Mesa Biotech",
+          model: "Accula SARS-Cov-2 Test*",
+          name: "Accula",
+          swabTypes: ["445297001"],
+        });
         expect(saveDeviceType).toBeCalledTimes(1);
       });
     });

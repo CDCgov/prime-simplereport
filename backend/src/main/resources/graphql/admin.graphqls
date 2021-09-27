@@ -14,6 +14,13 @@ extend type Mutation {
     loincCode: String!
     swabType: String!
   ): DeviceType
+  createDeviceTypeNew(
+    name: String!
+    manufacturer: String!
+    model: String!
+    loincCode: String!
+    swabTypes: [ID!]!
+  ): DeviceType
   updateDeviceType(
     id: String!
     name: String

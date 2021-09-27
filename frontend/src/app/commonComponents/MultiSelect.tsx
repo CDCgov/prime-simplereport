@@ -74,7 +74,8 @@ export const MultiSelect = ({
 
   useEffect(() => {
     onChange(selectedItems);
-  }, [selectedItems, onChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedItems]);
 
   return (
     <UIDConsumer>

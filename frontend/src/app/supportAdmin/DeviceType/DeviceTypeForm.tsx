@@ -4,47 +4,33 @@ import Button from "../../commonComponents/Button/Button";
 import TextInput from "../../commonComponents/TextInput";
 import MultiSelect from "../../commonComponents/MultiSelect";
 import { ComboBoxOption } from "../../commonComponents/ComboBox/ComboBox";
-import { useGetSpecimenTypesQuery } from "../../../generated/graphql";
 
 import { Device } from "./DeviceTypeFormContainer";
 
 interface Props {
   saveDeviceType: (device: Device) => void;
+  swabOptions: Array<ComboBoxOption>;
 }
 
-const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType }) => {
-  const { data, loading, error } = useGetSpecimenTypesQuery();
-
-  const [swabOptions, setSwabOptions] = useState<Array<ComboBoxOption>>([]);
-
-  useEffect(() => {
-    if (data && data.specimenTypes) {
-      setSwabOptions(
-        Array.from(
-          data.specimenTypes.map((type) => {
-            return {
-              label: `${type?.name} (${type?.typeCode})`,
-              value: type?.internalId,
-            } as ComboBoxOption;
-          })
-        )
-      );
-    }
-  }, [data]);
-
+const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
   const [device, updateDevice] = useState<Device>({
     name: "",
     manufacturer: "",
     model: "",
     loincCode: "",
-    swabType: "",
+    swabTypes: [],
   });
   const [formChanged, updateFormChanged] = useState<boolean>(false);
+
+  function updateDeviceAttribute(name: string, value: any) {
+    updateDevice({ ...device, [name]: value });
+    updateFormChanged(true);
+  }
+
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    updateDevice({ ...device, [e.target.name]: e.target.value });
-    updateFormChanged(true);
+    updateDeviceAttribute(e.target.name, e.target.value);
   };
   return (
     <main className="prime-home">
@@ -140,9 +126,11 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType }) => {
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
                   <MultiSelect
-                    label="SNOMED code of Swab Type"
-                    name="swabType"
-                    onChange={() => {}}
+                    label="SNOMED code of Swab Type(s)"
+                    name="swabTypes"
+                    onChange={(swabTypes) => {
+                      updateDeviceAttribute("swabTypes", swabTypes);
+                    }}
                     options={swabOptions}
                     required
                   />
