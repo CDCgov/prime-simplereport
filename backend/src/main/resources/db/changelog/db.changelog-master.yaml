@@ -2925,3 +2925,23 @@ databaseChangeLog:
                   remarks: patient_has_prior_tests will track whether a patient has prior test events
                   constraints:
                     nullable: true
+  - changeSet:
+      id: add-indexes-top_level_dashboard_metrics
+      author: brett.m.maden@omb.eop.gov
+      changes:
+        - createIndex:
+            tableName: test_event
+            indexName: ix__test_event__prior_corrected_test_event_id
+            columns:
+              - column:
+                  name: prior_corrected_test_event_id
+        - createIndex:
+            tableName: test_event
+            indexName: ix__test_event__fac_id-coal_test_date-test-corr_status
+            columns:
+              - column:
+                  name: facility_id
+              - column:
+                  name: COALESCE(date_tested_backdate, created_at)
+              - column:
+                  name: correction_status
