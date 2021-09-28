@@ -68,6 +68,12 @@ public class ApiUserService {
 
   @Autowired private ApiUserContextHolder _apiUserContextHolder;
 
+  public boolean userExists(String username) {
+    Optional<ApiUser> found =
+        _apiUserRepo.findByLoginEmailIncludeArchived(username.toLowerCase().strip());
+    return found.isPresent();
+  }
+
   public UserInfo createUser(
       String username, PersonName name, String organizationExternalId, Role role) {
     Organization org = _orgService.getOrganization(organizationExternalId);

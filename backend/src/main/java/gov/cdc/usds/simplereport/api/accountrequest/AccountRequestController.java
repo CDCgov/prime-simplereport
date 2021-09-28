@@ -122,12 +122,16 @@ public class AccountRequestController {
       @Valid @RequestBody OrganizationAccountRequest request) throws IOException {
     try {
       logOrganizationAccountRequest(request);
-      //      Organization org = checkAccountRequestAndCreateOrg(request);
 
       String parsedStateCode = Translators.parseState(request.getState());
       String organizationName =
           checkForDuplicateOrg(request.getName(), parsedStateCode, request.getEmail());
       String orgExternalId = createOrgExternalId(organizationName, parsedStateCode);
+
+      boolean userExists = _aus.userExists(request.getEmail());
+      if (userExists) {
+        throw new BadRequestException("User already exists");
+      }
 
       OrganizationQueueItem item = _os.queueNewRequest(organizationName, orgExternalId, request);
 
