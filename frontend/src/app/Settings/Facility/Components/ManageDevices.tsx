@@ -163,6 +163,7 @@ const ManageDevices: React.FC<Props> = ({
                   idx
                 )
               }
+              data-testid={`device-dropdown-${idx}`}
             />
           </td>
           <td>
@@ -172,6 +173,7 @@ const ManageDevices: React.FC<Props> = ({
               onChange={(e) =>
                 onSpecimenTypeChange(idx, (e.target as HTMLSelectElement).value)
               }
+              data-testid={`swab-dropdown-${idx}`}
             />
           </td>
           <td>
