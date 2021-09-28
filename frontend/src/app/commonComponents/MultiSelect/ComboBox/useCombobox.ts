@@ -16,7 +16,6 @@ export enum ActionTypes {
 export type Action =
   | {
       type: ActionTypes.SELECT_OPTION;
-      option: ComboBoxOption;
     }
   | {
       type: ActionTypes.CLEAR;
@@ -40,7 +39,6 @@ export type Action =
     };
 export interface State {
   isOpen: boolean;
-  selectedOption?: ComboBoxOption;
   focusedOption?: ComboBoxOption;
   focusMode: FocusMode;
   filter?: string;
@@ -50,8 +48,7 @@ export interface State {
 
 export const useCombobox = (
   initialState: State,
-  optionsList: ComboBoxOption[],
-  showInputValue: boolean
+  optionsList: ComboBoxOption[]
 ): [State, React.Dispatch<Action>] => {
   const isPartialMatch = (
     needle: string
@@ -66,9 +63,8 @@ export const useCombobox = (
         return {
           ...state,
           isOpen: false,
-          selectedOption: action.option,
           focusMode: FocusMode.Input,
-          inputValue: showInputValue ? action.option.label : "",
+          inputValue: "",
           filter: undefined,
           filteredOptions: optionsList.filter(isPartialMatch("")),
         };
@@ -81,13 +77,6 @@ export const useCombobox = (
           inputValue: action.value,
         };
 
-        if (
-          state.selectedOption &&
-          state.selectedOption.label !== action.value
-        ) {
-          newState.selectedOption = undefined;
-        }
-
         return newState;
       }
       case ActionTypes.OPEN_LIST:
@@ -95,7 +84,8 @@ export const useCombobox = (
           ...state,
           isOpen: true,
           focusMode: FocusMode.Input,
-          focusedOption: state.selectedOption,
+          focusedOption: undefined,
+          filteredOptions: optionsList,
         };
       case ActionTypes.CLOSE_LIST: {
         const newState = {
@@ -108,10 +98,6 @@ export const useCombobox = (
         if (state.filteredOptions.length === 0) {
           newState.filteredOptions = optionsList.filter(isPartialMatch(""));
           newState.inputValue = "";
-        }
-
-        if (state.selectedOption) {
-          newState.inputValue = state.selectedOption.label;
         }
 
         return newState;
@@ -130,7 +116,6 @@ export const useCombobox = (
           inputValue: "",
           isOpen: false,
           focusMode: FocusMode.Input,
-          selectedOption: undefined,
           filter: undefined,
           filteredOptions: optionsList.filter(isPartialMatch("")),
         };
@@ -138,16 +123,13 @@ export const useCombobox = (
         const newState = {
           ...state,
           isOpen: false,
+          inputValue: "",
           focusMode: FocusMode.None,
           focusedOption: undefined,
         };
 
         if (state.filteredOptions.length === 0) {
           newState.filteredOptions = optionsList.filter(isPartialMatch(""));
-        }
-
-        if (!state.selectedOption) {
-          newState.inputValue = "";
         }
 
         return newState;

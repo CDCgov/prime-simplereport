@@ -14,7 +14,7 @@ import { ActionTypes, Action, State, useCombobox } from "./useCombobox";
     The select is usa-sr-only and is always hidden via CSS. The input and dropdown list are the elements used for interaction.
 
     There is the ability to pass in custom props directly to the select and input.
-    This should be using sparingly and not with existing Combobox props such as disabled, onChange, defaultValue. 
+    This should be using sparingly and not with existing Combobox props such as disabled, onChange, defaultValue.
 */
 export interface ComboBoxOption {
   value: string;
@@ -37,14 +37,10 @@ interface ComboBoxProps {
   name: string;
   className?: string;
   options: ComboBoxOption[];
-  defaultValue?: string;
   disabled?: boolean;
-  onChange: (value?: string) => void;
-  assistiveHint?: string;
+  onChange: (option: ComboBoxOption) => void;
   noResults?: string;
   inputProps?: JSX.IntrinsicElements["input"];
-  selectProps?: JSX.IntrinsicElements["select"];
-  showSelectedValue?: boolean;
 }
 
 interface InputProps {
@@ -80,50 +76,33 @@ export const ComboBox = ({
   name,
   className,
   options,
-  defaultValue,
   disabled,
   onChange,
-  assistiveHint,
   noResults,
-  selectProps,
   inputProps,
-  showSelectedValue = true,
 }: ComboBoxProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
-  let defaultOption;
-  if (defaultValue) {
-    defaultOption = options.find((opt: ComboBoxOption): boolean => {
-      return opt.value === defaultValue;
-    });
-  }
-
   const initialState: State = {
     isOpen: false,
-    selectedOption: defaultOption ? defaultOption : undefined,
     focusedOption: undefined,
     focusMode: FocusMode.None,
     filteredOptions: options,
     filter: undefined,
-    inputValue: defaultOption ? defaultOption.label : "",
+    inputValue: "",
   };
 
-  const [state, dispatch] = useCombobox(
-    initialState,
-    options,
-    showSelectedValue
-  );
+  const [state, dispatch] = useCombobox(initialState, options);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRef = useRef<HTMLLIElement>(null);
 
-  useEffect(() => {
-    onChange && onChange(state.selectedOption?.value || undefined);
-    if (!showSelectedValue) {
-      dispatch({ type: ActionTypes.CLEAR });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.selectedOption]);
+  const selectOption = (option: ComboBoxOption) => {
+    onChange(option);
+    dispatch({
+      type: ActionTypes.SELECT_OPTION,
+    });
+  };
 
   useEffect(() => {
     if (
@@ -158,7 +137,7 @@ export const ComboBox = ({
       });
     } else if (event.key === "Tab") {
       // Clear button is not visible in this case so manually handle focus
-      if (state.isOpen && !state.selectedOption) {
+      if (state.isOpen) {
         // If there are filtered options, prevent default
         // If there are "No Results Found", tab over to prevent a keyboard trap
         if (state.filteredOptions.length > 0) {
@@ -174,22 +153,19 @@ export const ComboBox = ({
         }
       }
 
-      if (!state.isOpen && state.selectedOption) {
+      if (!state.isOpen) {
         dispatch({
           type: ActionTypes.BLUR,
         });
       }
-    } else if (event.key === "Enter" && !state.selectedOption) {
+    } else if (event.key === "Enter") {
       event.preventDefault();
-      const selectedOption = state.filteredOptions.find(
+      const selectedOptions = state.filteredOptions.find(
         (option) =>
           option.label.toLowerCase() === state.inputValue.toLowerCase()
       );
-      if (selectedOption) {
-        dispatch({
-          type: ActionTypes.SELECT_OPTION,
-          option: selectedOption,
-        });
+      if (selectedOptions) {
+        selectOption(selectedOptions);
       } else {
         dispatch({ type: ActionTypes.CLEAR });
       }
@@ -204,16 +180,6 @@ export const ComboBox = ({
 
     if (newTargetIsOutside) {
       dispatch({ type: ActionTypes.BLUR });
-    }
-  };
-
-  const handleClearKeyDown = (event: KeyboardEvent): void => {
-    if (event.key === "Tab" && state.isOpen && state.selectedOption) {
-      event.preventDefault();
-      dispatch({
-        type: ActionTypes.FOCUS_OPTION,
-        option: state.selectedOption,
-      });
     }
   };
 
@@ -232,7 +198,7 @@ export const ComboBox = ({
       dispatch({ type: ActionTypes.FOCUS_OPTION, option: firstOption });
     } else {
       const newIndex = currentIndex + change;
-      if (newIndex < 0 && state.selectedOption) {
+      if (newIndex < 0) {
         dispatch({ type: ActionTypes.FOCUS_OPTION, option: firstOption });
       } else if (newIndex < 0) {
         dispatch({ type: ActionTypes.CLOSE_LIST });
@@ -261,10 +227,7 @@ export const ComboBox = ({
     } else if (event.key === "Tab" || event.key === "Enter") {
       event.preventDefault();
       if (state.focusedOption) {
-        dispatch({
-          type: ActionTypes.SELECT_OPTION,
-          option: state.focusedOption,
-        });
+        selectOption(state.focusedOption);
       }
     } else if (event.key === "ArrowDown" || event.key === "Down") {
       event.preventDefault();
@@ -275,11 +238,11 @@ export const ComboBox = ({
     }
   };
 
-  const containerClasses = classnames("usa-combo-box", className, {
-    "usa-combo-box--pristine": state.selectedOption,
-  });
+  const containerClasses = classnames(
+    "usa-combo-box usa-combo-box--pristine",
+    className
+  );
   const listID = `combobox-${name}-list`;
-  const assistiveHintID = `combobox-${name}-assistive-hint`;
 
   return (
     <div
@@ -288,22 +251,6 @@ export const ComboBox = ({
       id={id}
       ref={containerRef}
     >
-      <select
-        className="usa-select usa-sr-only usa-combo-box__select"
-        name={name}
-        aria-hidden
-        tabIndex={-1}
-        defaultValue={state.selectedOption?.value}
-        data-testid="combo-box-select"
-        disabled={isDisabled}
-        {...selectProps}
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
       <Input
         onChange={(e): void =>
           dispatch({ type: ActionTypes.UPDATE_FILTER, value: e.target.value })
@@ -315,26 +262,10 @@ export const ComboBox = ({
         focused={state.focusMode === FocusMode.Input}
         role="combobox"
         aria-owns={listID}
-        aria-describedby={assistiveHintID}
         aria-expanded={state.isOpen}
         disabled={isDisabled}
         {...inputProps}
       />
-      {showSelectedValue && (
-        <span className="usa-combo-box__clear-input__wrapper" tabIndex={-1}>
-          <button
-            type="button"
-            className="usa-combo-box__clear-input"
-            aria-label="Clear the select contents"
-            onClick={(): void => dispatch({ type: ActionTypes.CLEAR })}
-            data-testid="combo-box-clear-button"
-            onKeyDown={handleClearKeyDown}
-            hidden={!state.selectedOption}
-          >
-            &nbsp;
-          </button>
-        </span>
-      )}
       <span className="usa-combo-box__input-button-separator">&nbsp;</span>
       <span className="usa-combo-box__toggle-list__wrapper" tabIndex={-1}>
         <button
@@ -365,11 +296,8 @@ export const ComboBox = ({
       >
         {state.filteredOptions.map((option, index) => {
           const focused = option === state.focusedOption;
-          const selected = option === state.selectedOption;
           const itemClasses = classnames("usa-combo-box__list-option", {
             "usa-combo-box__list-option--focused": focused,
-            "usa-combo-box__list-option--selected":
-              selected && showSelectedValue,
           });
 
           return (
@@ -380,7 +308,7 @@ export const ComboBox = ({
               className={itemClasses}
               tabIndex={focused ? 0 : -1}
               role="option"
-              aria-selected={selected}
+              aria-selected={focused}
               aria-setsize={64}
               aria-posinset={index + 1}
               id={listID + `--option-${index}`}
@@ -391,7 +319,7 @@ export const ComboBox = ({
                 dispatch({ type: ActionTypes.FOCUS_OPTION, option: option })
               }
               onClick={(): void => {
-                dispatch({ type: ActionTypes.SELECT_OPTION, option: option });
+                selectOption(option);
               }}
             >
               {option.label}
@@ -406,16 +334,6 @@ export const ComboBox = ({
       </ul>
 
       <div className="usa-combo-box__status usa-sr-only" role="status"></div>
-      <span
-        id={assistiveHintID}
-        className="usa-sr-only"
-        data-testid="combo-box-assistive-hint"
-      >
-        {assistiveHint ||
-          `When autocomplete results are available use up and down arrows to review
-           and enter to select. Touch device users, explore by touch or with swipe
-           gestures.`}
-      </span>
     </div>
   );
 };

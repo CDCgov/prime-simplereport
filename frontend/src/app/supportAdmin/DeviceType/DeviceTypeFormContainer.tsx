@@ -7,7 +7,7 @@ import {
 } from "../../../generated/graphql";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
-import { ComboBoxOption } from "../../commonComponents/ComboBox/ComboBox";
+import { ComboBoxOption } from "../../commonComponents/MultiSelect/ComboBox/ComboBox";
 
 import DeviceTypeForm from "./DeviceTypeForm";
 
@@ -60,6 +60,7 @@ const DeviceTypeFormContainer = () => {
     return <Redirect to="/admin" />;
   }
 
+  console.log(swabOptions);
   return (
     <DeviceTypeForm saveDeviceType={saveDeviceType} swabOptions={swabOptions} />
   );

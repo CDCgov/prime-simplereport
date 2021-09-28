@@ -8,7 +8,7 @@ const addValue = (name: string, value: string) => {
 };
 
 const selectValue = (name: string, value: string) => {
-  fireEvent.click(
+  userEvent.click(
     screen.getByTestId("combo-box-option-445297001", { exact: false })
   );
 };
@@ -37,8 +37,6 @@ describe("DeviceTypeForm", () => {
       addValue("Model", "Accula SARS-Cov-2 Test*");
       addValue("Loinc Code", "95409-9");
       selectValue("SNOMED code of Swab Type", "445297001");
-
-      screen.debug(undefined, 900000);
     });
 
     it("enables the save button", async () => {

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import Button from "../../commonComponents/Button/Button";
 import TextInput from "../../commonComponents/TextInput";
-import MultiSelect from "../../commonComponents/MultiSelect";
-import { ComboBoxOption } from "../../commonComponents/ComboBox/ComboBox";
+import MultiSelect from "../../commonComponents/MultiSelect/MultiSelect";
+import { ComboBoxOption } from "../../commonComponents/MultiSelect/ComboBox/ComboBox";
 
 import { Device } from "./DeviceTypeFormContainer";
 
