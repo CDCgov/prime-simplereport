@@ -1,0 +1,11 @@
+{
+  "bindings": [
+    {
+      "name": "QueueBatchedReportStreamUploadTimer",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 5/15 * * * *"
+    }
+  ],
+  "scriptFile": "../dist/QueueBatchedReportStreamUploader/index.js"
+}

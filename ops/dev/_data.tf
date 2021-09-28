@@ -46,11 +46,6 @@ data "azurerm_key_vault" "sr_global" {
   resource_group_name = data.azurerm_resource_group.rg_global.name
 }
 
-data "azurerm_key_vault_secret" "datahub_api_key" {
-  name         = "datahub-api-key-test"
-  key_vault_id = data.azurerm_key_vault.sr_global.id
-}
-
 data "azurerm_key_vault_secret" "slack_notify_webhook_url" {
   name         = "slack-notify-webhook-url-dev"
   key_vault_id = data.azurerm_key_vault.sr_global.id
