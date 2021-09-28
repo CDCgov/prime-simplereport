@@ -6,11 +6,6 @@
       "description": "The full configuration for initial setup on a blank database."
     },
     {
-      "name": "simple-report.data-hub",
-      "type": "gov.cdc.usds.simplereport.config.simplereport.DataHubConfig",
-      "description": "Configuration for data hub communications"
-    },
-    {
       "name": "simple-report.authorization",
       "type": "gov.cdc.usds.simplereport.config.AuthorizationProperties",
       "description": "Properties for configuring authorization claims mapping from the IDP"
