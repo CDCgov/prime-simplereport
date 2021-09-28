@@ -271,7 +271,7 @@ const Header: React.FC<{}> = () => {
                   onClick={() => setMenuVisible(false)}
                   activeClassName="active-nav-item"
                   className="prime-nav-link"
-                  id="conduct-test-nav-link"
+                  id="dashboard-nav-link"
                   activeStyle={{
                     color: "white",
                   }}
