@@ -88,7 +88,7 @@ export type Facility = {
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   defaultDeviceType?: Maybe<DeviceType>;
-  deviceSpecimenTypes: Array<Maybe<DeviceSpecimenType>>;
+  deviceSpecimenTypes?: Maybe<Array<Maybe<DeviceSpecimenType>>>;
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
   email?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
@@ -145,7 +145,7 @@ export type MutationAddFacilityArgs = {
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   defaultDevice: Scalars["String"];
-  deviceSpecimenTypes: Array<Maybe<Scalars["String"]>>;
+  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["String"]>>>;
   deviceTypes: Array<Maybe<Scalars["String"]>>;
   email?: Maybe<Scalars["String"]>;
   orderingProviderCity?: Maybe<Scalars["String"]>;
@@ -373,7 +373,7 @@ export type MutationUpdateFacilityArgs = {
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   defaultDevice: Scalars["String"];
-  deviceSpecimenTypes: Array<Maybe<Scalars["String"]>>;
+  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["String"]>>>;
   deviceTypes: Array<Maybe<Scalars["String"]>>;
   email?: Maybe<Scalars["String"]>;
   facilityId: Scalars["ID"];
@@ -839,21 +839,23 @@ export type GetFacilitiesQuery = {
       deviceTypes?: Maybe<
         Array<Maybe<{ __typename?: "DeviceType"; internalId?: Maybe<string> }>>
       >;
-      deviceSpecimenTypes: Array<
-        Maybe<{
-          __typename?: "DeviceSpecimenType";
-          internalId: string;
-          deviceType: {
-            __typename?: "DeviceType";
-            name?: Maybe<string>;
-            internalId?: Maybe<string>;
-          };
-          specimenType: {
-            __typename?: "SpecimenType";
+      deviceSpecimenTypes?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "DeviceSpecimenType";
             internalId: string;
-            name: string;
-          };
-        }>
+            deviceType: {
+              __typename?: "DeviceType";
+              name?: Maybe<string>;
+              internalId?: Maybe<string>;
+            };
+            specimenType: {
+              __typename?: "SpecimenType";
+              internalId: string;
+              name: string;
+            };
+          }>
+        >
       >;
       orderingProvider?: Maybe<{
         __typename?: "Provider";
@@ -999,12 +1001,17 @@ export type GetManagedFacilitiesQuery = {
       deviceTypes?: Maybe<
         Array<Maybe<{ __typename?: "DeviceType"; internalId?: Maybe<string> }>>
       >;
-      deviceSpecimenTypes: Array<
-        Maybe<{
-          __typename?: "DeviceSpecimenType";
-          deviceType: { __typename?: "DeviceType"; internalId?: Maybe<string> };
-          specimenType: { __typename?: "SpecimenType"; internalId: string };
-        }>
+      deviceSpecimenTypes?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "DeviceSpecimenType";
+            deviceType: {
+              __typename?: "DeviceType";
+              internalId?: Maybe<string>;
+            };
+            specimenType: { __typename?: "SpecimenType"; internalId: string };
+          }>
+        >
       >;
       orderingProvider?: Maybe<{
         __typename?: "Provider";
