@@ -17,8 +17,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -35,12 +34,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @Configuration
 @Profile(BeanProfiles.NO_SECURITY)
 @ConditionalOnWebApplication
+@Slf4j
 public class DemoAuthenticationConfiguration {
 
   public static final String DEMO_AUTHORIZATION_FLAG = "SR-DEMO-LOGIN ";
   private static final String DEMO_BEARER_PREFIX = "Bearer " + DEMO_AUTHORIZATION_FLAG;
-
-  private static final Logger LOG = LoggerFactory.getLogger(DemoAuthenticationConfiguration.class);
 
   /**
    * Creates and registers a {@link Filter} that runs before each request is processed by the
@@ -54,14 +52,14 @@ public class DemoAuthenticationConfiguration {
     Filter filter =
         (ServletRequest request, ServletResponse response, FilterChain chain) -> {
           SecurityContext securityContext = SecurityContextHolder.getContext();
-          LOG.debug(
+          log.debug(
               "Processing request for demo authentication: current auth is {}",
               securityContext.getAuthentication());
           HttpServletRequest req2 = (HttpServletRequest) request;
           String authHeader = req2.getHeader("Authorization");
-          LOG.info("Auth type is {}, header is {}", req2.getAuthType(), authHeader);
+          log.info("Auth type is {}, header is {}", req2.getAuthType(), authHeader);
           if (authHeader != null && authHeader.startsWith(DEMO_BEARER_PREFIX)) {
-            LOG.trace("Parsing authorization header [{}]", authHeader);
+            log.trace("Parsing authorization header [{}]", authHeader);
             String userName = authHeader.substring(DEMO_BEARER_PREFIX.length());
             securityContext.setAuthentication(
                 new TestingAuthenticationToken(userName, null, List.of()));
@@ -102,16 +100,16 @@ public class DemoAuthenticationConfiguration {
       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
       DemoUser found;
       if (auth == null) { // have to allow defaulting to work even when there is no authentication
-        LOG.warn("No authentication found: current user will be default (if available)");
+        log.warn("No authentication found: current user will be default (if available)");
         found = config.getDefaultUser();
       } else if (auth instanceof AnonymousAuthenticationToken) {
-        LOG.info("Unauthenticated user in demo mode: current user will be default (if available)");
+        log.info("Unauthenticated user in demo mode: current user will be default (if available)");
         found = config.getDefaultUser();
       } else {
         String userName = auth.getName();
         found = config.getByUsername(userName);
         if (found == null) {
-          LOG.error("Invalid user {} in demo mode", userName);
+          log.error("Invalid user {} in demo mode", userName);
           throw new BadCredentialsException("Invalid username supplied.");
         }
       }

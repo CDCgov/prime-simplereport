@@ -59,8 +59,10 @@ public interface TestEventRepository
   // Need to control how this query is built. "between" is too vague.
   // This is across all Orgs/facilities because datahub uploader users
   @Query(
-      "FROM #{#entityName} q WHERE q.createdAt > :before AND q.createdAt <= :after ORDER BY q.createdAt")
-  List<TestEvent> queryMatchAllBetweenDates(Date before, Date after, Pageable p);
+      "FROM #{#entityName} q WHERE q.createdAt > :begin AND q.createdAt <= :end ORDER BY q.createdAt")
+  List<TestEvent> queryMatchAllBetweenDates(Date begin, Date end, Pageable p);
+
+  List<TestEvent> findAllByInternalIdIn(Collection<UUID> ids);
 
   // @Query("FROM #{#entityName} q WHERE q.facility = :facility and q.createdAt >
   // :newerThanDate
@@ -83,4 +85,6 @@ public interface TestEventRepository
               + "GROUP BY te.result")
   List<TestResultWithCount> countByResultByFacility(
       Collection<UUID> facilityIds, Date startDate, Date endDate);
+
+  boolean existsByPatient(Person person);
 }

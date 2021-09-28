@@ -92,15 +92,18 @@ dependencies {
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    testCompileOnly 'org.projectlombok:lombok:1.18.20'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
 
     // WireMock (only used for testing)
     testCompile "com.github.tomakehurst:wiremock-jre8:2.28.1"
 
     // Forcing these version resolutions over the BOM of spring-cloud-dependencies below
-    runtimeOnly "com.azure:azure-core-http-netty:1.9.2"
-    runtimeOnly "com.azure:azure-core:1.14.1"
-    runtimeOnly "com.azure:azure-storage-common:12.11.1"
+    runtimeOnly 'com.azure:azure-core-http-netty:1.10.2'
+    runtimeOnly 'com.azure:azure-core:1.19.0'
+    runtimeOnly 'com.azure:azure-storage-common:12.12.0'
     runtimeOnly "com.azure:azure-storage-queue:12.9.1"
+
     runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
     runtimeOnly "io.zipkin.brave:brave:5.13.2"
     runtimeOnly "io.zipkin.reporter2:zipkin-reporter-brave:2.16.3"
@@ -181,10 +184,10 @@ sonarqube {
         property "sonar.organization", "cdcgov"
         property "sonar.host.url", "https://sonarcloud.io"
         // In order to get both the frontend and backend code to report, we need to set the sonar project to the root directory.
-        property "sonar.sources", "backend/src/main/java,frontend/src"
-        property "sonar.exclusions", "frontend/src/**/*.test.*,frontend/src/stories/**/*,frontend/src/**/*.stories.tsx,frontend/src/generated/*.tsx"
+        property "sonar.sources", "backend/src/main/java,frontend/src,ops/services/app_functions/"
+        property "sonar.exclusions", "frontend/src/**/*.test.*,frontend/src/stories/**/*,frontend/src/**/*.stories.tsx,frontend/src/generated/*.tsx,ops/services/app_functions/**/*.test.*,ops/services/app_functions/**/*config*"
         property "sonar.cpd.exclusions", "frontend/src/lang/*.ts"
-        property "sonar.javascript.lcov.reportPaths", "frontend/coverage/lcov.info"
+        property "sonar.javascript.lcov.reportPaths", "frontend/coverage/lcov.info,ops/services/app_functions/report_stream_batched_publisher/functions/coverage/lcov.info"
     }
 }
 

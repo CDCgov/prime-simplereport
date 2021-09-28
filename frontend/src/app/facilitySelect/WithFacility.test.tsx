@@ -1,13 +1,8 @@
 import { Provider } from "react-redux";
 import renderer from "react-test-renderer";
 import configureStore from "redux-mock-store";
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter as Router } from "react-router";
 import { I18nextProvider } from "react-i18next";
@@ -152,7 +147,7 @@ describe("WithFacility", () => {
       beforeEach(async () => {
         const options = await screen.findAllByRole("button");
         await waitFor(() => {
-          fireEvent.click(options[0]);
+          userEvent.click(options[0]);
         });
       });
       it("should show the app", async () => {

@@ -1,6 +1,8 @@
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
 
+import { Analytics } from "../analytics/Analytics";
+
 import AddOrganizationAdminFormContainer from "./AddOrganizationAdmin/AddOrganizationAdminFormContainer";
 import DeviceTypeFormContainer from "./DeviceType/DeviceTypeFormContainer";
 import TenantDataAccessFormContainer from "./TenantDataAccess/TenantDataAccessFormContainer";
@@ -27,21 +29,22 @@ const AdminRoutes: React.FC<Props> = ({ match, isAdmin }) => {
     <>
       <Route
         path={`${match.url}/pending-organizations`}
-        render={() => <PendingOrganizationsContainer />}
+        component={PendingOrganizationsContainer}
       />
       <Route
         path={`${match.url}/add-organization-admin`}
-        render={() => <AddOrganizationAdminFormContainer />}
+        component={AddOrganizationAdminFormContainer}
       />
       <Route
         path={`${match.url}/create-device-type`}
-        render={() => <DeviceTypeFormContainer />}
+        component={DeviceTypeFormContainer}
       />
       <Route
         path={`${match.url}/tenant-data-access`}
-        render={() => <TenantDataAccessFormContainer />}
+        component={TenantDataAccessFormContainer}
       />
-      <Route path={"/admin"} exact={true} render={() => <Admin />} />
+      <Route path={`${match.url}/analytics`} component={Analytics} />
+      <Route path={"/admin"} exact={true} component={Admin} />
     </>
   );
 };

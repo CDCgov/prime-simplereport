@@ -14,16 +14,14 @@ import graphql.validation.ValidationError;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 /** Created by nickrobison on 11/27/20 */
 @Component
+@Slf4j
 public class QueryLoggingInstrumentation extends SimpleInstrumentation {
-
-  private static final Logger LOG = LoggerFactory.getLogger(QueryLoggingInstrumentation.class);
 
   private final TelemetryClient client;
 
@@ -45,7 +43,7 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
             .filter(selection -> selection instanceof Field)
             .flatMap(selection -> GraphQLLoggingHelpers.walkFields("", selection))
             .collect(Collectors.toSet());
-    LOG.info("Selecting fields: {}", fieldSet);
+    log.info("Selecting fields: {}", fieldSet);
     return super.beginValidation(parameters);
   }
 
@@ -66,11 +64,11 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
     // Try to get the operation name, if one exists
     final String name = parameters.getExecutionInput().getOperationName();
     if (name == null || "".equals(name)) {
-      LOG.warn("Anonymous GraphQL operation submitted, we'll be missing interesting data");
+      log.warn("Anonymous GraphQL operation submitted, we'll be missing interesting data");
     } else {
       requestTelemetry.setName(name);
     }
-    LOG.trace("Done initializing graphql query logging.");
+    log.trace("Done initializing graphql query logging.");
     return GraphQLLoggingHelpers.createInstrumentationContext(queryStart, client, requestTelemetry);
   }
 }

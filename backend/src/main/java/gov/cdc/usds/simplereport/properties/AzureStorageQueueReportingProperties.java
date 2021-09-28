@@ -1,37 +1,33 @@
 package gov.cdc.usds.simplereport.properties;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
+@Slf4j
 @ConfigurationProperties(prefix = "simple-report.azure-reporting-queue")
-@ConditionalOnProperty("simple-report.azure-reporting-queue.sas-token")
 public final class AzureStorageQueueReportingProperties {
-  private final String accountName;
-  private final String sasToken;
-  private final String queueName;
+  private final String connectionString;
+  private final String enabled;
+  private final String name;
 
   @ConstructorBinding
   public AzureStorageQueueReportingProperties(
-      String accountName, String sasToken, String queueName) {
-    this.accountName = accountName;
-    this.sasToken = sasToken;
-    this.queueName = queueName;
+      String connectionString, String enabled, String name) {
+    this.enabled = enabled;
+    this.connectionString = connectionString;
+    this.name = name;
   }
 
-  public String getAccountName() {
-    return accountName;
+  public String getConnectionString() {
+    return connectionString;
   }
 
-  public String getQueueUrl() {
-    return "https://" + getAccountName() + ".queue.core.windows.net";
+  public String getEnabled() {
+    return enabled;
   }
 
-  public String getSasToken() {
-    return sasToken;
-  }
-
-  public String getQueueName() {
-    return queueName;
+  public String getName() {
+    return name;
   }
 }

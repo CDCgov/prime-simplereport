@@ -1,5 +1,6 @@
 import { MockedProvider } from "@apollo/client/testing";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import {
   ManageSelfRegistrationLinksContainer,
@@ -63,7 +64,7 @@ describe("ManageSelfRegistrationLinks", () => {
     const orgUrl = `${process.env.REACT_APP_BASE_URL}/register/${expectedOrgSlug}`;
     const [orgBtn] = screen.getAllByRole("button");
     await waitFor(() => {
-      fireEvent.click(orgBtn);
+      userEvent.click(orgBtn);
     });
     expect(navigator.clipboard.writeText).toBeCalledWith(orgUrl);
   });
@@ -72,7 +73,7 @@ describe("ManageSelfRegistrationLinks", () => {
     const facilityUrl = `${process.env.REACT_APP_BASE_URL}/register/${expectedFacilitySlug}`;
     const btns = screen.getAllByRole("button");
     await waitFor(() => {
-      fireEvent.click(btns[2]);
+      userEvent.click(btns[2]);
     });
     expect(navigator.clipboard.writeText).toBeCalledWith(facilityUrl);
   });

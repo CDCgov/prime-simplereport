@@ -194,10 +194,6 @@ type TestOrder {
   noSymptoms: Boolean
   symptoms: String
   symptomOnset: LocalDate
-  firstTest: Boolean
-  priorTestDate: LocalDate
-  priorTestType: String
-  priorTestResult: String
   deviceType: DeviceType
   result: String
   dateTested: DateTime
@@ -214,10 +210,6 @@ type TestResult {
   noSymptoms: Boolean
   symptoms: String
   symptomOnset: LocalDate
-  firstTest: Boolean
-  priorTestDate: String
-  priorTestType: String
-  priorTestResult: String
   deviceType: DeviceType
   result: String
   dateTested: DateTime
@@ -315,7 +307,6 @@ type Query {
 }
 
 type Mutation {
-  uploadPatients(patientList: Upload!): String
   updateFacility(
     facilityId: ID!
     testingFacilityName: String!
@@ -493,10 +484,6 @@ type Mutation {
     patientId: ID!
     pregnancy: String
     symptoms: String @Size(min: 0, max: 1024)
-    firstTest: Boolean
-    priorTestDate: LocalDate
-    priorTestType: String
-    priorTestResult: String
     symptomOnset: LocalDate
     noSymptoms: Boolean
     testResultDelivery: TestResultDeliveryPreference
@@ -507,10 +494,6 @@ type Mutation {
     patientId: ID!
     pregnancy: String
     symptoms: String @Size(min: 0, max: 1024)
-    firstTest: Boolean
-    priorTestDate: LocalDate
-    priorTestType: String
-    priorTestResult: String
     symptomOnset: LocalDate
     noSymptoms: Boolean
     testResultDelivery: TestResultDeliveryPreference

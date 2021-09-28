@@ -23,6 +23,8 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,7 @@ class AccountRequestControllerTest extends BaseFullStackTest {
 
   @Captor private ArgumentCaptor<TemplateVariablesProvider> contentCaptor;
   @Captor private ArgumentCaptor<Mail> mail;
+  @Captor private ArgumentCaptor<String> orgNameCaptor;
   @Captor private ArgumentCaptor<String> externalIdCaptor;
   @Captor private ArgumentCaptor<PersonName> nameCaptor;
 
@@ -151,6 +154,79 @@ class AccountRequestControllerTest extends BaseFullStackTest {
     assertThat(nameCaptor.getValue().getLastName()).isEqualTo("Lopez");
     assertNull(nameCaptor.getValue().getSuffix());
     assertThat(externalIdCaptor.getValue()).contains("RI-Day-Hayes-Trading-");
+  }
+
+  @Test
+  void submitOrganizationAccountRequest_nameCleaning_success() throws Exception {
+    String requestBody =
+        createAccountRequest(
+            " Central   Schools  ",
+            "AZ",
+            "k12",
+            "Mary",
+            "",
+            "Lopez",
+            "kyvuzoxy@mailinator.com",
+            "+1 (969) 768-2863");
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+    this._mockMvc.perform(builder).andExpect(status().isOk());
+
+    verify(_orgService)
+        .createOrganization(orgNameCaptor.capture(), eq("k12"), externalIdCaptor.capture());
+
+    assertThat(orgNameCaptor.getValue()).isEqualTo("Central Schools");
+    assertThat(externalIdCaptor.getValue()).startsWith("AZ-Central-Schools-");
+  }
+
+  @Test
+  void submitOrganizationAccountRequest_emptyOrgName_failure() throws Exception {
+    // failures when cleaning and checking organization name
+    String requestBody =
+        createAccountRequest(
+            " ", "AZ", "k12", "Mary", "", "Lopez", "kyvuzoxy@mailinator.com", "+1 (969) 768-2863");
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    MvcResult result = this._mockMvc.perform(builder).andReturn();
+    assertThat(result.getResponse().getStatus()).isEqualTo(400);
+    assertThat(result.getResponse().getContentAsString())
+        .contains("The organization name is empty.");
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"% ^ #", "-", "  --- --- ---"})
+  void submitOrganizationAccountRequest_invalidOrgName_failure(String orgName) throws Exception {
+    // failures when cleaning and checking organization external id
+    String requestBody =
+        createAccountRequest(
+            orgName,
+            "AZ",
+            "k12",
+            "Mary",
+            "",
+            "Lopez",
+            "kyvuzoxy@mailinator.com",
+            "+1 (969) 768-2863");
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    MvcResult result = this._mockMvc.perform(builder).andReturn();
+    assertThat(result.getResponse().getStatus()).isEqualTo(400);
+    assertThat(result.getResponse().getContentAsString())
+        .contains("The organization name is invalid.");
   }
 
   @Test
@@ -302,6 +378,55 @@ class AccountRequestControllerTest extends BaseFullStackTest {
     List<Organization> duplicateOrg = _orgService.getOrganizationsByName("Central Schools-CA");
     assertThat(duplicateOrg.size()).isEqualTo(1);
     assertThat(duplicateOrg.get(0).getExternalId()).startsWith("CA-Central-Schools-CA-");
+  }
+
+  @Test
+  @DisplayName("Duplicate org with admin re-signing up fails")
+  void duplicateOrgWithAdminFails() throws Exception {
+    // given
+    String originalRequestBody =
+        createAccountRequest(
+            "Central Schools",
+            "AZ",
+            "k12",
+            "Mary",
+            "",
+            "Lopez",
+            "mlopez@mailinator.com",
+            "+1 (969) 768-2863");
+    MockHttpServletRequestBuilder originalBuilder =
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(originalRequestBody);
+    this._mockMvc.perform(originalBuilder).andExpect(status().isOk());
+
+    // when
+    String duplicateRequestBody =
+        createAccountRequest(
+            "Central Schools",
+            "AZ",
+            "k12",
+            "Mary",
+            "",
+            "Lopez",
+            "mlopez@mailinator.com",
+            "+1 (969) 768-2863");
+
+    MockHttpServletRequestBuilder duplicateBuilder =
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(duplicateRequestBody);
+
+    // then
+    MvcResult result = this._mockMvc.perform(duplicateBuilder).andReturn();
+    assertThat(result.getResponse().getStatus()).isEqualTo(400);
+    assertThat(result.getResponse().getContentAsString())
+        .contains(
+            "Duplicate organization with admin user that has not completed identity verification.");
   }
 
   @Test

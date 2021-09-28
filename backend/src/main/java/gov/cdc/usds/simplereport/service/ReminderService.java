@@ -15,14 +15,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
+@Slf4j
 public class ReminderService {
-
-  private static final Logger LOG = LoggerFactory.getLogger(ReminderService.class);
 
   private final OktaRepository _oktaRepo;
   private final OrganizationRepository _orgRepo;
@@ -40,6 +40,14 @@ public class ReminderService {
    * were created and did not complete id verification
    */
   public Map<Organization, Set<String>> sendAccountReminderEmails() {
+    // take the advisory lock for this process. auto released after transaction
+    if (_orgRepo.tryOrgReminderLock()) {
+      log.info("Reminder lock obtained: commencing email sending");
+    } else {
+      log.info("Reminders locked out by mutex: aborting");
+      return new HashMap<>();
+    }
+
     TimeZone tz = TimeZone.getTimeZone("America/New_York");
     LocalDate now = LocalDate.now(tz.toZoneId());
 
@@ -47,7 +55,7 @@ public class ReminderService {
     Date rangeStartDate = localDateTimeToDate(tz.toZoneId(), now.minusDays(1).atStartOfDay());
     Date rangeStopDate = localDateTimeToDate(tz.toZoneId(), now.atStartOfDay());
 
-    LOG.info("CRON -- account reminder emails for {} - {}", rangeStartDate, rangeStopDate);
+    log.info("CRON -- account reminder emails for {} - {}", rangeStartDate, rangeStopDate);
 
     List<Organization> organizations =
         _orgRepo.findAllByIdentityVerifiedAndCreatedAtRange(false, rangeStartDate, rangeStopDate);
@@ -55,14 +63,14 @@ public class ReminderService {
     Map<Organization, Set<String>> orgReminderMap = new HashMap<>();
 
     for (Organization org : organizations) {
-      LOG.info("sending reminders for org: {}", org.getExternalId());
+      log.info("sending reminders for org: {}", org.getExternalId());
 
       // This could be problematic depending on the number of unverified organizations created
       // on the previous day.  It will make 2 requests to okta per organization.
       Set<String> emailsInOrg = _oktaRepo.getAllUsersForOrganization(org);
 
       if (emailsInOrg.isEmpty()) {
-        LOG.info(
+        log.info(
             "no emails sent: organization \"{}\" has no members in default group",
             org.getExternalId());
       }
@@ -73,11 +81,19 @@ public class ReminderService {
           _emailService.sendWithProviderTemplate(
               email, EmailProviderTemplate.ORGANIZATION_ID_VERIFICATION_REMINDER);
         } catch (IOException e) {
-          LOG.warn("Failed to send id verification reminder email to: {}", email);
+          log.warn("Failed to send id verification reminder email to: {}", email);
         }
       }
 
       orgReminderMap.put(org, emailsInOrg);
+    }
+
+    try {
+      // hold the lock a little extra so other instances have a chance to fail to acquire it
+      Thread.sleep(1L);
+    } catch (InterruptedException e) {
+      log.debug("sendAccountReminderEmails: sleep interrupted");
+      Thread.currentThread().interrupt();
     }
 
     return orgReminderMap;

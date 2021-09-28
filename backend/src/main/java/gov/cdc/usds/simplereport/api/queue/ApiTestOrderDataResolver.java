@@ -5,7 +5,6 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.dataloader.PatientAnswersDataLoader;
 import gov.cdc.usds.simplereport.service.dataloader.TestOrderDeviceTypeDataLoader;
 import gov.cdc.usds.simplereport.service.dataloader.TestOrderPatientDataLoader;
@@ -63,26 +62,6 @@ public class ApiTestOrderDataResolver implements GraphQLResolver<ApiTestOrder> {
   public CompletableFuture<LocalDate> getSymptomOnset(
       ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
     return getSurvey(apiTestOrder, dfe).thenApply(AskOnEntrySurvey::getSymptomOnsetDate);
-  }
-
-  public CompletableFuture<Boolean> getFirstTest(
-      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return getSurvey(apiTestOrder, dfe).thenApply(AskOnEntrySurvey::getFirstTest);
-  }
-
-  public CompletableFuture<LocalDate> getPriorTestDate(
-      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return getSurvey(apiTestOrder, dfe).thenApply(AskOnEntrySurvey::getPriorTestDate);
-  }
-
-  public CompletableFuture<String> getPriorTestType(
-      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return getSurvey(apiTestOrder, dfe).thenApply(AskOnEntrySurvey::getPriorTestType);
-  }
-
-  public CompletableFuture<TestResult> getPriorTestResult(
-      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return getSurvey(apiTestOrder, dfe).thenApply(AskOnEntrySurvey::getPriorTestResult);
   }
 
   public CompletableFuture<DeviceType> getDeviceType(

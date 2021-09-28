@@ -16,13 +16,13 @@ import org.springframework.web.servlet.ModelAndView;
 @ConditionalOnWebApplication
 public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
 
-  private static final Logger LOG =
+  private static final Logger log =
       LoggerFactory.getLogger(PatientExperienceLoggingInterceptor.class);
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
       throws Exception {
-    LOG.trace(
+    log.trace(
         "Pre-handling a method={} request for uri={} using handler={}",
         request.getMethod(),
         request.getRequestURI(),
@@ -49,7 +49,7 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
   public void afterCompletion(
       HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
       throws Exception {
-    LOG.trace("Final logging cleanup step.");
+    log.trace("Final logging cleanup step.");
     MDC.remove(LoggingConstants.REQUEST_ID_MDC_KEY);
   }
 }

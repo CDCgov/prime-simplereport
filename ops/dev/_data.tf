@@ -46,11 +46,6 @@ data "azurerm_key_vault" "sr_global" {
   resource_group_name = data.azurerm_resource_group.rg_global.name
 }
 
-data "azurerm_key_vault_secret" "datahub_api_key" {
-  name         = "datahub-api-key-test"
-  key_vault_id = data.azurerm_key_vault.sr_global.id
-}
-
 data "azurerm_key_vault_secret" "slack_notify_webhook_url" {
   name         = "slack-notify-webhook-url-dev"
   key_vault_id = data.azurerm_key_vault.sr_global.id
@@ -169,5 +164,10 @@ data "azurerm_log_analytics_workspace" "log_analytics" {
 
 data "azurerm_application_insights" "app_insights" {
   name                = "prime-simple-report-${local.env}-insights"
+  resource_group_name = data.azurerm_resource_group.rg.name
+}
+
+data "azurerm_storage_account" "app" {
+  name                = "simplereport${local.env}app"
   resource_group_name = data.azurerm_resource_group.rg.name
 }

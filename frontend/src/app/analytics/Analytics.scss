@@ -1,0 +1,54 @@
+#analytics-page {
+  padding-bottom: 2em;
+
+  .card-container {
+    h3 {
+      margin-bottom: 0;
+      margin-top: 2rem;
+    }
+
+    p {
+      margin-top: 5px;
+    }
+
+    .red-pointing-up {
+      color: red;
+    }
+
+    .green-pointing-down {
+      color: green;
+    }
+
+    .usa-form-group {
+      margin-top: 0;
+    }
+
+    .usa-date-picker__button {
+      margin-left: -48px;
+    }
+  }
+
+  .card {
+    aspect-ratio: 1 / 1;
+    height: 100%;
+    text-align: center;
+
+    h1 {
+      font-size: 48px;
+      margin: auto;
+    }
+
+    h2 {
+      height: 25px;
+      font-weight: 400;
+      margin: 0;
+      font-size: 20px;
+    }
+
+    p {
+      height: 25px;
+      font-size: 20px;
+      margin: 0;
+    }
+  }
+}

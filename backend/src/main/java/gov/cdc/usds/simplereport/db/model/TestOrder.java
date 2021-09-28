@@ -104,23 +104,6 @@ public class TestOrder extends BaseTestInfo {
     return askOnEntrySurvey.getSurvey().getSymptomsJSON();
   }
 
-  public Boolean getFirstTest() {
-    return askOnEntrySurvey.getSurvey().getFirstTest();
-  }
-
-  public LocalDate getPriorTestDate() {
-    return askOnEntrySurvey.getSurvey().getPriorTestDate();
-  }
-
-  public String getPriorTestType() {
-    return askOnEntrySurvey.getSurvey().getPriorTestType();
-  }
-
-  public String getPriorTestResult() {
-    TestResult result = askOnEntrySurvey.getSurvey().getPriorTestResult();
-    return result == null ? "" : result.toString();
-  }
-
   public LocalDate getSymptomOnset() {
     return askOnEntrySurvey.getSurvey().getSymptomOnsetDate();
   }

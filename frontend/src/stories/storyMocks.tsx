@@ -16,6 +16,8 @@ import {
 
 import { exampleQuestionSet } from "../app/signUp/IdentityVerification/constants";
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
 const mocks = {
   EditQueueItem: graphql.mutation("EditQueueItem", (req, res, ctx) => {
     return res(
@@ -64,8 +66,20 @@ const mocks = {
     "RemovePatientFromQueue",
     (req, res, ctx) => res(ctx.data({}))
   ),
+  GetTopLevelDashboardMetrics: graphql.query(
+    "GetTopLevelDashboardMetrics",
+    (req, res, ctx) =>
+      res(
+        ctx.data({
+          topLevelDashboardMetrics: {
+            positiveTestCount: Math.floor(Math.random() * 10 + 1),
+            totalTestCount: Math.floor(Math.random() * 100 + 11),
+          },
+        })
+      )
+  ),
   enrollSecurityKeyMfa: rest.post(
-    "http://localhost:8080/user-account/enroll-security-key-mfa",
+    `${BACKEND_URL}/user-account/enroll-security-key-mfa`,
     (req, res, ctx) => {
       return res(
         ctx.status(200),
@@ -74,7 +88,7 @@ const mocks = {
     }
   ),
   enrollTotpMfa: rest.post(
-    "http://localhost:8080/user-account/authenticator-qr",
+    `${BACKEND_URL}/user-account/authenticator-qr`,
     (req, res, ctx) => {
       return res(
         ctx.status(200),
@@ -83,7 +97,7 @@ const mocks = {
     }
   ),
   getQuestions: rest.post(
-    "http://localhost:8080/identity-verification/get-questions",
+    `${BACKEND_URL}/identity-verification/get-questions`,
     (req, res, ctx) => {
       return res(
         ctx.status(200),
@@ -92,24 +106,24 @@ const mocks = {
     }
   ),
   getEntityName: rest.get(
-    "http://localhost:8080/pxp/register/entity-name*",
+    `${BACKEND_URL}/pxp/register/entity-name*`,
     (_, res, ctx) => {
       return res(ctx.status(200), ctx.text("Shady Oaks"));
     }
   ),
   duplicateRegistration: rest.post(
-    "http://localhost:8080/pxp/register/existing-patient",
+    `${BACKEND_URL}/pxp/register/existing-patient`,
     (_, rest, ctx) => {
       return rest(ctx.status(200), ctx.json(true));
     }
   ),
   uniqueRegistration: rest.post(
-    "http://localhost:8080/pxp/register/existing-patient",
+    `${BACKEND_URL}/pxp/register/existing-patient`,
     (_, rest, ctx) => {
       return rest(ctx.status(200), ctx.json(false));
     }
   ),
-  register: rest.post("http://localhost:8080/pxp/register", (_, rest, ctx) => {
+  register: rest.post(`${BACKEND_URL}/pxp/register`, (_, rest, ctx) => {
     return rest(ctx.status(200));
   }),
 };
@@ -123,7 +137,7 @@ export const getMocks = (
 
 const cache = new InMemoryCache();
 const link = new HttpLink({
-  uri: "http://localhost:3000/graphql",
+  uri: `${BACKEND_URL}/graphql`,
   fetch: (...args) => fetch(...args),
 });
 const client = new ApolloClient({

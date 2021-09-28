@@ -1,6 +1,7 @@
 import React from "react";
 import renderer from "react-test-renderer";
-import { render, fireEvent, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import TestResultInputForm from "./TestResultInputForm";
 
@@ -45,7 +46,7 @@ describe("TestResultInputForm", () => {
       />
     );
 
-    fireEvent.click(screen.getByLabelText("Negative (-)"));
+    userEvent.click(screen.getByLabelText("Negative (-)"));
 
     expect(onChange).toBeCalledWith("NEGATIVE");
   });
@@ -61,7 +62,7 @@ describe("TestResultInputForm", () => {
       />
     );
 
-    fireEvent.click(screen.getByLabelText("Positive (+)"));
+    userEvent.click(screen.getByLabelText("Positive (+)"));
 
     expect(onChange).toBeCalledWith(undefined);
   });
@@ -77,7 +78,7 @@ describe("TestResultInputForm", () => {
       />
     );
 
-    fireEvent.click(screen.getByText("Submit"));
+    userEvent.click(screen.getByText("Submit"));
 
     expect(onSubmit).toHaveBeenCalledTimes(0);
   });
@@ -94,7 +95,7 @@ describe("TestResultInputForm", () => {
       />
     );
 
-    fireEvent.click(screen.getByText("Submit"));
+    userEvent.click(screen.getByText("Submit"));
 
     expect(onSubmit).toHaveBeenCalledTimes(0);
   });
@@ -111,7 +112,7 @@ describe("TestResultInputForm", () => {
       />
     );
 
-    fireEvent.click(screen.getByText("Submit"));
+    userEvent.click(screen.getByText("Submit"));
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
   });
@@ -127,7 +128,7 @@ describe("TestResultInputForm", () => {
       />
     );
 
-    fireEvent.click(screen.getByText("Submit"));
+    userEvent.click(screen.getByText("Submit"));
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
   });

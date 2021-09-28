@@ -11,18 +11,18 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Getter
 @Entity
 @Immutable
 @AttributeOverride(name = "result", column = @Column(nullable = false))
+@Slf4j
 public class TestEvent extends BaseTestInfo {
-  private static final Logger LOG = LoggerFactory.getLogger(TestEvent.class);
-
   @Column
   @Type(type = "jsonb")
   private Person patientData;
@@ -42,6 +42,8 @@ public class TestEvent extends BaseTestInfo {
   @Column(columnDefinition = "uuid")
   private UUID priorCorrectedTestEventId; // used to chain events
 
+  private Boolean patientHasPriorTests;
+
   public TestEvent() {}
 
   public TestEvent(
@@ -49,7 +51,17 @@ public class TestEvent extends BaseTestInfo {
       DeviceSpecimenType deviceType,
       Person patient,
       Facility facility,
-      TestOrder order) {
+      TestOrder testOrder) {
+    this(result, deviceType, patient, facility, testOrder, false);
+  }
+
+  public TestEvent(
+      TestResult result,
+      DeviceSpecimenType deviceType,
+      Person patient,
+      Facility facility,
+      TestOrder order,
+      Boolean hasPriorTests) {
     super(patient, facility, deviceType, result);
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
@@ -61,23 +73,29 @@ public class TestEvent extends BaseTestInfo {
     this.patientData = patient;
     this.providerData = getFacility().getOrderingProvider();
     this.order = order;
+    this.patientHasPriorTests = hasPriorTests;
     setDateTestedBackdate(order.getDateTestedBackdate());
     PatientAnswers answers = order.getAskOnEntrySurvey();
     if (answers != null) {
       this.surveyData = order.getAskOnEntrySurvey().getSurvey();
     } else {
       // this can happen during unit tests, but never in prod.
-      LOG.error("Order {} missing PatientAnswers", order.getInternalId());
+      log.error("Order {} missing PatientAnswers", order.getInternalId());
     }
   }
 
-  public TestEvent(TestOrder order) {
+  public TestEvent(TestOrder testOrder) {
+    this(testOrder, false);
+  }
+
+  public TestEvent(TestOrder testOrder, Boolean hasPriorTests) {
     this(
-        order.getResult(),
-        order.getDeviceSpecimen(),
-        order.getPatient(),
-        order.getFacility(),
-        order);
+        testOrder.getResult(),
+        testOrder.getDeviceSpecimen(),
+        testOrder.getPatient(),
+        testOrder.getFacility(),
+        testOrder,
+        hasPriorTests);
   }
 
   // Constructor for creating corrections. Copy the original event

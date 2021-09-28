@@ -24,16 +24,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
+@Slf4j
 public class OrganizationService {
-
-  private static final Logger LOG = LoggerFactory.getLogger(OrganizationService.class);
 
   private OrganizationRepository _repo;
   private FacilityRepository _facilityRepo;
@@ -85,7 +83,7 @@ public class OrganizationService {
     List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
     if (validOrgs == null || validOrgs.size() != 1) {
       int numOrgs = (validOrgs == null) ? 0 : validOrgs.size();
-      LOG.warn("Found {} organizations for user", numOrgs);
+      log.warn("Found {} organizations for user", numOrgs);
       return Optional.empty();
     }
     Organization foundOrg = validOrgs.get(0);

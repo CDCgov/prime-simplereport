@@ -29,13 +29,12 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -56,10 +55,9 @@ import org.springframework.test.context.TestPropertySource;
  * Since MockMvc does not wrap error handling, this uses TestRestTemplate for PXP requests (this is
  * in any case what the graphql tests use, so there is no additional cost).
  */
+@Slf4j
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class AuditLoggingFailuresTest extends BaseGraphqlTest {
-
-  private static final Logger LOG = LoggerFactory.getLogger(AuditLoggingFailuresTest.class);
 
   @Autowired private TestRestTemplate _restTemplate;
   @Autowired private OrganizationService _orgService;
@@ -122,7 +120,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     ResponseEntity<String> resp =
         _restTemplate.exchange(
             ResourceLinks.VERIFY_LINK, HttpMethod.POST, requestEntity, String.class);
-    LOG.info("Response body is {}", resp.getBody());
+    log.info("Response body is {}", resp.getBody());
     verify(_auditRepo).save(_eventCaptor.capture());
     assertThat(_eventCaptor.getValue())
         .as("Saved audit event")

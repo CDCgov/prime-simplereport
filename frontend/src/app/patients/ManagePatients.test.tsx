@@ -1,10 +1,10 @@
 import { MockedProvider, MockedProviderProps } from "@apollo/client/testing";
 import {
-  fireEvent,
   render,
   screen,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router";
 import createMockStore from "redux-mock-store";
@@ -53,9 +53,9 @@ describe("ManagePatients", () => {
     );
     expect(await screen.findByText(patients[0].lastName, { exact: false }));
     const btn = await screen.findByText("Filter", { exact: false });
-    fireEvent.click(btn);
+    userEvent.click(btn);
     const input = await screen.findByLabelText("Person");
-    fireEvent.change(input, { target: { value: "Al" } });
+    userEvent.type(input, "Al");
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Abramcik", { exact: false })
     );

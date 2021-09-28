@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.api.model;
 
+import static java.lang.Boolean.TRUE;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -292,7 +294,7 @@ public class TestEventExport {
 
   @JsonProperty("First_test")
   public String getFirstTest() {
-    return boolToYesNoUnk(survey.map(AskOnEntrySurvey::getFirstTest));
+    return TRUE.equals(testEvent.getPatientHasPriorTests()) ? "N" : "UNK";
   }
 
   @JsonProperty("Symptomatic_for_disease")

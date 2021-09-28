@@ -365,7 +365,7 @@ describe("ComboBox component", () => {
       // We are sure the first child exists
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const firstItem = getByTestId("combo-box-option-list").firstChild!;
-      fireEvent.click(firstItem);
+      userEvent.click(firstItem);
 
       expect(getByTestId("combo-box-clear-button")).toBeVisible();
     });
@@ -400,7 +400,7 @@ describe("ComboBox component", () => {
         />
       );
 
-      fireEvent.click(getByTestId("combo-box-clear-button"));
+      userEvent.click(getByTestId("combo-box-clear-button"));
 
       expect(onChange).toHaveBeenCalledWith(undefined);
     });
@@ -435,7 +435,7 @@ describe("ComboBox component", () => {
       );
       expect(getByTestId("combo-box-clear-button")).toBeVisible();
 
-      fireEvent.click(getByTestId("combo-box-clear-button"));
+      userEvent.click(getByTestId("combo-box-clear-button"));
 
       expect(getByTestId("combo-box-clear-button")).not.toBeVisible();
       expect(getByTestId("combo-box-input")).toHaveValue("");
@@ -726,7 +726,7 @@ describe("ComboBox component", () => {
         />
       );
 
-      fireEvent.click(getByTestId("combo-box-input"));
+      userEvent.click(getByTestId("combo-box-input"));
       userEvent.hover(getByTestId("combo-box-option-yuzu"));
       fireEvent.keyDown(getByTestId("combo-box-option-yuzu"), {
         key: "ArrowDown",
@@ -877,7 +877,7 @@ describe("ComboBox component", () => {
         />
       );
 
-      fireEvent.click(getByTestId("combo-box-input"));
+      userEvent.click(getByTestId("combo-box-input"));
 
       expect(getByTestId("combo-box-input")).toHaveAttribute(
         "aria-expanded",
@@ -918,7 +918,7 @@ describe("ComboBox component", () => {
         />
       );
 
-      fireEvent.click(getByTestId("combo-box-input"));
+      userEvent.click(getByTestId("combo-box-input"));
       fireEvent.blur(getByTestId("combo-box-input"));
 
       expect(getByTestId("combo-box-input")).toHaveAttribute(
@@ -938,7 +938,7 @@ describe("ComboBox component", () => {
         />
       );
 
-      fireEvent.click(getByTestId("combo-box-input"));
+      userEvent.click(getByTestId("combo-box-input"));
       userEvent.hover(getByTestId("combo-box-option-blackberry"));
 
       fireEvent.blur(getByTestId("combo-box-option-blackberry"));
@@ -960,7 +960,7 @@ describe("ComboBox component", () => {
         />
       );
 
-      fireEvent.click(getByTestId("combo-box-toggle"));
+      userEvent.click(getByTestId("combo-box-toggle"));
 
       expect(getByTestId("combo-box-input")).toHaveAttribute(
         "aria-expanded",
@@ -968,7 +968,7 @@ describe("ComboBox component", () => {
       );
       expect(getByTestId("combo-box-option-list")).toBeVisible();
 
-      fireEvent.click(getByTestId("combo-box-toggle"));
+      userEvent.click(getByTestId("combo-box-toggle"));
 
       expect(getByTestId("combo-box-input")).toHaveAttribute(
         "aria-expanded",
@@ -988,8 +988,8 @@ describe("ComboBox component", () => {
         />
       );
 
-      fireEvent.click(getByTestId("combo-box-toggle"));
-      fireEvent.click(getByTestId("combo-box-option-apple"));
+      userEvent.click(getByTestId("combo-box-toggle"));
+      userEvent.click(getByTestId("combo-box-option-apple"));
 
       expect(onChange).toHaveBeenLastCalledWith("apple");
       expect(getByTestId("combo-box-input")).toHaveValue("Apple");
@@ -1050,7 +1050,7 @@ describe("ComboBox component", () => {
 
       const input = getByTestId("combo-box-input");
       userEvent.type(input, "yu");
-      fireEvent.click(getByTestId("combo-box-option-yuzu"));
+      userEvent.click(getByTestId("combo-box-option-yuzu"));
 
       expect(input).toHaveValue("Yuzu");
       expect(onChange).toHaveBeenLastCalledWith("yuzu");
@@ -1115,7 +1115,7 @@ describe("ComboBox component", () => {
       const list = getByTestId("combo-box-option-list");
 
       // open options list
-      fireEvent.click(getByTestId("combo-box-input"));
+      userEvent.click(getByTestId("combo-box-input"));
 
       Object.values(list.children).forEach((node) => {
         if (node === getByTestId("combo-box-option-apricot")) {
