@@ -57,11 +57,6 @@ data "azurerm_key_vault_secret" "datahub_api_key" {
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
-data "azurerm_key_vault_secret" "slack_notify_webhook_url" {
-  name         = "slack-notify-webhook-url-dev"
-  key_vault_id = data.azurerm_key_vault.global.id
-}
-
 data "azurerm_key_vault_secret" "twilio_account_sid" {
   name         = "twilio-account-sid"
   key_vault_id = data.azurerm_key_vault.global.id
