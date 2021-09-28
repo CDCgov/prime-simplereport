@@ -148,6 +148,28 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
   }
 
   @Test
+  void countByResultForFacility_singleFacility_success() {
+    Date d1 = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
+    final Date DATE_1MIN_FUTURE =
+        new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
+    Organization org = _dataFactory.createValidOrg();
+    Facility place = createTestEventsForMetricsTests(org);
+
+    List<TestResultWithCount> results =
+        _repo.countByResultForFacility(place.getInternalId(), d1, DATE_1MIN_FUTURE);
+
+    assertEquals(2, results.size());
+
+    Map<TestResult, Long> resultMap =
+        results.stream()
+            .collect(
+                Collectors.toMap(TestResultWithCount::getResult, TestResultWithCount::getCount));
+
+    assertEquals(1L, resultMap.get(TestResult.POSITIVE));
+    assertEquals(1L, resultMap.get(TestResult.UNDETERMINED));
+  }
+
+  @Test
   void countByResultByFacility_singleFacility_success() {
     Date d1 = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
     final Date DATE_1MIN_FUTURE =
