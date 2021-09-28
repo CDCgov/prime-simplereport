@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountReq
 import gov.cdc.usds.simplereport.api.model.accountrequest.WaitlistRequest;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
@@ -87,6 +88,50 @@ public class AccountRequestController {
       createAdminUser(
           request.getFirstName(), request.getLastName(), request.getEmail(), org.getExternalId());
       return new AccountResponse(org.getExternalId());
+    } catch (ResourceException e) {
+      // The `ResourceException` is mostly thrown when a user requests an account with an email
+      // address that's already in Okta, but can be thrown for other Okta internal errors as well.
+      // We rethrow it as a BadRequestException so that users get a toast informing them of the
+      // error.
+      if (e.getMessage().contains("An object with this field already exists")) {
+        throw new BadRequestException(
+            "This email address is already associated with a SimpleReport user.");
+      } else {
+        throw new BadRequestException(
+            "An unknown error occurred when creating this organization in Okta.");
+      }
+    } catch (BadRequestException e) {
+      // Need to catch and re-throw these BadRequestExceptions or they get rethrown as
+      // AccountRequestFailureExceptions
+      throw e;
+    } catch (UnexpectedRollbackException e) {
+      // This `UnexpectedRollbackException` is thrown if a duplicate org somehow slips past our
+      // checks and is attempted to be committed to the database.
+      // We rethrow it as a BadRequestException so that users get a toast informing them of the
+      // error.
+      throw new BadRequestException("This organization has already registered with SimpleReport.");
+    } catch (IOException | RuntimeException e) {
+      throw new AccountRequestFailureException(e);
+    }
+  }
+
+  @SuppressWarnings("checkstyle:illegalcatch")
+  @PostMapping("/organization-add-to-queue")
+  @Transactional(readOnly = false)
+  public AccountResponse submitOrganizationAccountRequestAddToQueue(
+      @Valid @RequestBody OrganizationAccountRequest request) throws IOException {
+    try {
+      logOrganizationAccountRequest(request);
+      //      Organization org = checkAccountRequestAndCreateOrg(request);
+
+      String parsedStateCode = Translators.parseState(request.getState());
+      String organizationName =
+          checkForDuplicateOrg(request.getName(), parsedStateCode, request.getEmail());
+      String orgExternalId = createOrgExternalId(organizationName, parsedStateCode);
+
+      OrganizationQueueItem item = _os.queueNewRequest(organizationName, orgExternalId, request);
+
+      return new AccountResponse(item.getExternalId());
     } catch (ResourceException e) {
       // The `ResourceException` is mostly thrown when a user requests an account with an email
       // address that's already in Okta, but can be thrown for other Okta internal errors as well.
