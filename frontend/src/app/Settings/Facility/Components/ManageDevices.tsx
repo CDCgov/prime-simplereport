@@ -121,10 +121,15 @@ const ManageDevices: React.FC<Props> = ({
     return deviceSpecimenTypes.map((dst, idx) => {
       const deviceId = dst.deviceType;
 
-      const devices = deviceSpecimenTypeOptions.map((dst) => dst.deviceType);
+      const devices = deviceSpecimenTypeOptions.map(
+        (deviceSpecimenType) => deviceSpecimenType.deviceType
+      );
       const specimenTypes = deviceSpecimenTypeOptions
-        .filter((dst) => dst.deviceType.internalId === deviceId)
-        .map((dst) => dst.specimenType);
+        .filter(
+          (deviceSpecimenType) =>
+            deviceSpecimenType.deviceType.internalId === deviceId
+        )
+        .map((deviceSpecimenType) => deviceSpecimenType.specimenType);
 
       const deviceDropdownOptions = uniqBy(devices, "internalId").map(
         (deviceType) => {

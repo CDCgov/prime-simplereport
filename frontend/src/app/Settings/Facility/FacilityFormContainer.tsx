@@ -276,7 +276,7 @@ const FacilityFormContainer: any = (props: Props) => {
       (f) => f.id === props.facilityId
     );
     if (facility) {
-      let deviceTypes = facility.deviceSpecimenTypes.map(
+      const deviceTypes = facility.deviceSpecimenTypes.map(
         (dst) => dst.deviceType.internalId
       );
       return {

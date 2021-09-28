@@ -57,13 +57,11 @@ public class DeviceTypeService {
   }
 
   public List<DeviceSpecimenType> getDeviceSpecimenTypesByIds(List<String> deviceSpecimenTypeIds) {
-    List<DeviceSpecimenType> deviceSpecimenTypes = new ArrayList<DeviceSpecimenType>();
+    List<DeviceSpecimenType> deviceSpecimenTypes = new ArrayList();
 
     Iterable<DeviceSpecimenType> results =
         _deviceSpecimenRepo.findAllById(
-            deviceSpecimenTypeIds.stream()
-                .map(dst -> UUID.fromString(dst))
-                .collect(Collectors.toList()));
+            deviceSpecimenTypeIds.stream().map(UUID::fromString).collect(Collectors.toList()));
 
     results.forEach(deviceSpecimenTypes::add);
 
