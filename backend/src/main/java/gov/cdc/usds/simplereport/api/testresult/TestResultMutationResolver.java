@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.testresult;
 
-import gov.cdc.usds.simplereport.service.DataHubUploaderService;
+import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
+import gov.cdc.usds.simplereport.service.TestEventReportingService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.util.List;
 import java.util.UUID;
@@ -10,13 +11,13 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class TestResultMutationResolver implements GraphQLMutationResolver {
-  private final DataHubUploaderService _dataHubUploaderService;
+  private final TestEventRepository testEventRepository;
+  private final TestEventReportingService testEventReportingService;
 
   public boolean resendToReportStream(List<UUID> testEventIds) {
-    /*
-     * NOTE: This when the DataHubUploaderService is decommissioned, this will need to be replaced with some logic like:
-     * TestEventRepository.findAllByInternalIdIn(testEventIds).forEach(testEvent -> TestEventReportingService.report(testEvent))
-     */
-    return _dataHubUploaderService.dataHubUploaderTask(testEventIds);
+    testEventRepository
+        .findAllByInternalIdIn(testEventIds)
+        .forEach(testEventReportingService::report);
+    return true;
   }
 }
