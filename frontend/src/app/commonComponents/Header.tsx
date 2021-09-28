@@ -21,6 +21,8 @@ import useComponentVisible from "./ComponentVisible";
 import { LinkWithQuery } from "./LinkWithQuery";
 import ChangeUser from "./ChangeUser";
 
+import "./Header.scss";
+
 const Header: React.FC<{}> = () => {
   const appInsights = useAppInsightsContext();
   const trackSupport = useTrackEvent(appInsights, "Support", {});
@@ -83,7 +85,7 @@ const Header: React.FC<{}> = () => {
   if (isSupportAdmin) {
     siteLogoLinkPath = "/admin";
   } else if (canViewSettings) {
-    siteLogoLinkPath = "/settings";
+    siteLogoLinkPath = "/dashboard";
   } else {
     siteLogoLinkPath = "/queue";
   }
@@ -107,7 +109,7 @@ const Header: React.FC<{}> = () => {
 
   return (
     <header className="usa-header usa-header--basic">
-      <div className="usa-nav-container">
+      <div className="usa-nav-container prime-header">
         <div className="usa-navbar">
           <div className="usa-logo" id="basic-logo">
             <LinkWithQuery to={siteLogoLinkPath} title="Home" aria-label="Home">
@@ -147,6 +149,21 @@ const Header: React.FC<{}> = () => {
           </button>
 
           <ul className="usa-nav__primary usa-accordion">
+            {canViewSettings ? (
+              <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
+                <LinkWithQuery
+                  to={`/dashboard`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  className="prime-nav-link"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  Dashboard
+                </LinkWithQuery>
+              </li>
+            ) : null}
             {canViewTestQueue ? (
               <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
                 <LinkWithQuery
@@ -247,6 +264,22 @@ const Header: React.FC<{}> = () => {
 
         <nav aria-label="Primary navigation" className="usa-nav prime-nav">
           <ul className="usa-nav__primary usa-accordion">
+            {canViewSettings ? (
+              <li className="usa-nav__primary-item">
+                <LinkWithQuery
+                  to={`/dashboard`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  className="prime-nav-link"
+                  id="conduct-test-nav-link"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  Dashboard
+                </LinkWithQuery>
+              </li>
+            ) : null}
             {canViewTestQueue ? (
               <li className="usa-nav__primary-item">
                 <LinkWithQuery

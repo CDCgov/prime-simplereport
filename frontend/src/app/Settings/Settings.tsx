@@ -1,7 +1,6 @@
 import { Route, RouteComponentProps, Switch } from "react-router-dom";
 
 import { useDocumentTitle } from "../utils/hooks";
-import { Analytics } from "../analytics/Analytics";
 
 import ManageOrganizationContainer from "./ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";
@@ -45,11 +44,7 @@ const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
             path={match.url + "/self-registration"}
             component={ManageSelfRegistrationLinksContainer}
           />
-          <Route
-            path={match.url + "/manage-users"}
-            component={ManageUsersContainer}
-          />
-          <Route component={Analytics} />
+          <Route component={ManageUsersContainer} />
         </Switch>
       </div>
     </main>

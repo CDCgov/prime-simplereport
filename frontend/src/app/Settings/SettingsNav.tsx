@@ -8,11 +8,6 @@ const SettingsNav = () => {
       <ul className="usa-nav__secondary-links prime-nav">
         <li className="usa-nav__secondary-item">
           <LinkWithQuery to={`/settings`} activeClassName="active" exact={true}>
-            Testing data
-          </LinkWithQuery>
-        </li>
-        <li className="usa-nav__secondary-item">
-          <LinkWithQuery to={`/settings/manage-users`} activeClassName="active">
             Manage users
           </LinkWithQuery>
         </li>

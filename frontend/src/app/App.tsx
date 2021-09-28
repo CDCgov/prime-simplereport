@@ -22,6 +22,7 @@ import { getAppInsights } from "./TelemetryService";
 import VersionEnforcer from "./VersionEnforcer";
 import { TrainingNotification } from "./commonComponents/TrainingNotification";
 import { MaintenanceBanner } from "./commonComponents/MaintenanceBanner";
+import { Analytics } from "./analytics/Analytics";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -104,7 +105,7 @@ const App = () => {
   if (isSupportAdmin) {
     homepagePath = "/admin";
   } else if (isOrgAdmin) {
-    homepagePath = "/settings";
+    homepagePath = "/dashboard";
   } else {
     homepagePath = "/queue";
   }
@@ -177,6 +178,12 @@ const App = () => {
             <ProtectedRoute
               path="/settings"
               component={Settings}
+              requiredPermissions={appPermissions.settings.canView}
+              userPermissions={data.whoami.permissions}
+            />
+            <ProtectedRoute
+              path="/dashboard"
+              component={Analytics}
               requiredPermissions={appPermissions.settings.canView}
               userPermissions={data.whoami.permissions}
             />
