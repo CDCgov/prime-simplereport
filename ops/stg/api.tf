@@ -30,7 +30,6 @@ module "simple_report_api" {
     SPRING_DATASOURCE_URL                 = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sr_db_jdbc.id})"
     OKTA_OAUTH2_CLIENT_SECRET             = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.okta_client_secret.id})"
     APPLICATIONINSIGHTS_CONNECTION_STRING = data.azurerm_application_insights.app_insights.connection_string
-    DATAHUB_API_KEY                       = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
     OKTA_API_KEY                          = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.okta_api_key.id})"
     ORG_FACILITY_NAME                     = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.org_facility_name.id})"
     ORG_EXTERNAL_ID                       = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.org_external_id.id})"
