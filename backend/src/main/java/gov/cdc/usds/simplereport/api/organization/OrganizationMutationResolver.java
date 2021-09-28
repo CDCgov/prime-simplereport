@@ -69,19 +69,24 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String defaultDeviceId) {
     _os.assertFacilityNameAvailable(testingFacilityName);
 
-    List<DeviceSpecimenType> dsts = _dts.getDeviceSpecimenTypesByIds(deviceSpecimenTypes);
+    DeviceSpecimenTypeHolder dstHolder;
 
-    DeviceSpecimenType defaultDeviceSpecimenType =
-        dsts.stream()
-            .filter(dst -> defaultDeviceId.equals(dst.getDeviceType().getInternalId().toString()))
-            .findAny()
-            .orElseThrow(
-                () ->
-                    new IllegalGraphqlArgumentException(
-                        "No default device specimen type selected"));
+    if (deviceSpecimenTypes == null) {
+      dstHolder = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+    } else {
+      List<DeviceSpecimenType> dsts = _dts.getDeviceSpecimenTypesByIds(deviceSpecimenTypes);
 
-    DeviceSpecimenTypeHolder dstHolder =
-        new DeviceSpecimenTypeHolder(defaultDeviceSpecimenType, dsts);
+      DeviceSpecimenType defaultDeviceSpecimenType =
+          dsts.stream()
+              .filter(dst -> defaultDeviceId.equals(dst.getDeviceType().getInternalId().toString()))
+              .findAny()
+              .orElseThrow(
+                  () ->
+                      new IllegalGraphqlArgumentException(
+                          "No default device specimen type selected"));
+
+      dstHolder = new DeviceSpecimenTypeHolder(defaultDeviceSpecimenType, dsts);
+    }
 
     StreetAddress facilityAddress =
         _avs.getValidatedAddress(
@@ -143,23 +148,28 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       List<String> deviceSpecimenTypes,
       String defaultDeviceId) {
 
-    List<DeviceSpecimenType> dsts = _dts.getDeviceSpecimenTypesByIds(deviceSpecimenTypes);
+    DeviceSpecimenTypeHolder dstHolder;
+    if (deviceSpecimenTypes == null) {
+      dstHolder = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+    } else {
+      List<DeviceSpecimenType> dsts = _dts.getDeviceSpecimenTypesByIds(deviceSpecimenTypes);
 
-    DeviceSpecimenType defaultDeviceSpecimenType =
-        dsts.stream()
-            .filter(dst -> defaultDeviceId.equals(dst.getDeviceType().getInternalId().toString()))
-            .findAny()
-            .orElseThrow(
-                () ->
-                    new IllegalGraphqlArgumentException(
-                        "No default device specimen type selected"));
+      DeviceSpecimenType defaultDeviceSpecimenType =
+          dsts.stream()
+              .filter(dst -> defaultDeviceId.equals(dst.getDeviceType().getInternalId().toString()))
+              .findAny()
+              .orElseThrow(
+                  () ->
+                      new IllegalGraphqlArgumentException(
+                          "No default device specimen type selected"));
 
-    DeviceSpecimenTypeHolder dstHolder =
-        new DeviceSpecimenTypeHolder(defaultDeviceSpecimenType, dsts);
+      dstHolder = new DeviceSpecimenTypeHolder(defaultDeviceSpecimenType, dsts);
+    }
 
     StreetAddress facilityAddress =
         _avs.getValidatedAddress(
             street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
+
     StreetAddress providerAddress =
         new StreetAddress(
             Translators.parseString(orderingProviderStreet),

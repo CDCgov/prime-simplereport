@@ -31,7 +31,7 @@ type Facility {
   email: String
   deviceTypes: [DeviceType]
   specimenTypes: [SpecimenType]
-  deviceSpecimenTypes: [DeviceSpecimenType]!
+  deviceSpecimenTypes: [DeviceSpecimenType]
   defaultDeviceType: DeviceType
   orderingProvider: Provider
   patientSelfRegistrationLink: String
@@ -334,7 +334,7 @@ type Mutation {
     orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
-    deviceSpecimenTypes: [String]!
+    deviceSpecimenTypes: [String]
     defaultDevice: String!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addFacility(
@@ -363,7 +363,7 @@ type Mutation {
     orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
-    deviceSpecimenTypes: [String]!
+    deviceSpecimenTypes: [String]
     defaultDevice: String!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addUserToCurrentOrg(
