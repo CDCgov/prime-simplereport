@@ -124,10 +124,6 @@ public class DeviceTypeService {
   public DeviceType createDeviceTypeNew(
       String name, String model, String manufacturer, String loincCode, List<UUID> swabTypes) {
 
-    DeviceType dt =
-        _repo.save(
-            new DeviceType(name, manufacturer, model, loincCode, null, determineTestLength(name)));
-
     List<SpecimenType> specimenTypes =
         swabTypes.stream()
             .map(uuid -> _specimenTypeRepo.findById(uuid).get())
@@ -140,6 +136,10 @@ public class DeviceTypeService {
                 "swab type has been deleted and cannot be used");
           }
         });
+
+    DeviceType dt =
+        _repo.save(
+            new DeviceType(name, manufacturer, model, loincCode, null, determineTestLength(name)));
 
     specimenTypes.forEach(
         specimenType -> {
