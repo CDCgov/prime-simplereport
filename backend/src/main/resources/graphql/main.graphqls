@@ -219,7 +219,6 @@ type TopLevelDashboardMetrics {
 type AggregateFacilityMetrics {
   facilityName: String,
   totalTestCount: Int,
-  # peopleTestedCount: Int,
   positiveTestCount: Int,
   negativeTestCount: Int
 }
