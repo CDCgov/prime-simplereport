@@ -7,5 +7,6 @@
     "rootDir": ".",
     "sourceMap": true,
     "strict": false
-  }
+  },
+  "exclude": ["node_modules", "**/*.test.ts"]
 }
