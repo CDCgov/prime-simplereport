@@ -7,6 +7,7 @@ import {
 } from "@azure/storage-queue";
 import * as csvStringify from "csv-stringify/lib/sync";
 import { ENV, uploaderVersion } from "./config";
+import fetch, { Headers } from "node-fetch";
 
 const {
   REPORT_STREAM_BATCH_MINIMUM,
