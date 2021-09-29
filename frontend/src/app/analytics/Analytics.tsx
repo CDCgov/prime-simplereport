@@ -232,7 +232,7 @@ export const Analytics = () => {
                     <h1>
                       {positivityRate ? positivityRate.toFixed(1) + "%" : "N/A"}
                     </h1>
-                    <p className="font-ui-2xs">Positives / Total tests</p>
+                    <p className="font-ui-2xs">Positives ÷ Total tests</p>
                   </div>
                 </div>
               </div>
