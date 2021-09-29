@@ -120,6 +120,16 @@ describe("ManageDevices", () => {
       expect(checkboxes[1]).not.toBeChecked();
     });
 
+    it("allows user to change the swab or device type on an existing device", async () => {
+      const [deviceDropdown] = await screen.findAllByRole("combobox");
+
+      await waitFor(() => {
+        fireEvent.click(deviceDropdown, { target: { value: "device-3" } });
+      });
+
+      expect(deviceDropdown).toHaveValue("device-3");
+    });
+
     it("prevents selecting a device type more than once", () => {
       const [devices] = screen.getAllByRole("combobox");
 

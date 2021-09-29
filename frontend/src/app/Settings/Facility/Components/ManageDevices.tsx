@@ -7,22 +7,8 @@ import Dropdown from "../../../commonComponents/Dropdown";
 import Checkboxes from "../../../commonComponents/Checkboxes";
 import { FacilityErrors } from "../facilitySchema";
 import { ValidateField } from "../FacilityForm";
+import { getSpecimenTypesForDevice } from "../../../utils/devices";
 
-const getSpecimenTypesForDevice = (
-  device: string,
-  deviceSpecimenOptions: DeviceSpecimenType[]
-) => {
-  return deviceSpecimenOptions.reduce(
-    (acc: string[], deviceSpecimenType: DeviceSpecimenType) => {
-      if (deviceSpecimenType.deviceType.internalId === device) {
-        acc.push(deviceSpecimenType.specimenType.internalId);
-      }
-
-      return acc;
-    },
-    []
-  );
-};
 interface Props {
   deviceSpecimenTypes: DeviceSpecimenTypeIds[];
   defaultDevice: string;
