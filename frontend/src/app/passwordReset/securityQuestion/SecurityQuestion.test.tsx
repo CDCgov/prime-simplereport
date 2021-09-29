@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { SecurityAnswer } from "./SecurityQuestion";
 import "../../../i18n";
@@ -9,20 +10,18 @@ describe("Verify Email MFA", () => {
   });
 
   it("can enter a security code", () => {
-    fireEvent.change(
+    userEvent.type(
       screen.getByLabelText("Where did you go for your favorite vacation?", {
         exact: false,
       }),
-      {
-        target: { value: "Hawaii" },
-      }
+      "Hawaii"
     );
-    fireEvent.click(screen.getByText("Continue"));
+    userEvent.click(screen.getByText("Continue"));
     expect(screen.queryByText("Enter your answer")).not.toBeInTheDocument();
   });
 
   it("requires a security code", () => {
-    fireEvent.click(screen.getByText("Continue"));
+    userEvent.click(screen.getByText("Continue"));
     expect(screen.getByText("Enter your answer")).toBeInTheDocument();
   });
 });

@@ -28,8 +28,7 @@ import java.util.function.Predicate;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,6 +45,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(ACCOUNT_REQUEST)
 @RequiredArgsConstructor
+@Slf4j
 public class AccountRequestController {
   private final OrganizationService _os;
   private final ApiUserService _aus;
@@ -54,8 +54,6 @@ public class AccountRequestController {
   private final ObjectMapper objectMapper = new ObjectMapper();
   private final OktaRepository _oktaRepo;
 
-  private static final Logger LOG = LoggerFactory.getLogger(AccountRequestController.class);
-
   @ExceptionHandler(BadRequestException.class)
   public ResponseEntity<String> handleException(BadRequestException e) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -63,15 +61,15 @@ public class AccountRequestController {
 
   @PostConstruct
   private void init() {
-    LOG.info("Account request REST endpoint enabled");
+    log.info("Account request REST endpoint enabled");
   }
 
   /** Read the waitlist request and generate an email body, then send with the emailService */
   @PostMapping("/waitlist")
   public void submitWaitlistRequest(@Valid @RequestBody WaitlistRequest request)
       throws IOException {
-    if (LOG.isInfoEnabled()) {
-      LOG.info("Waitlist request submitted: {}", objectMapper.writeValueAsString(request));
+    if (log.isInfoEnabled()) {
+      log.info("Waitlist request submitted: {}", objectMapper.writeValueAsString(request));
     }
     String subject = "New waitlist request";
     _es.send(sendGridProperties.getWaitlistRecipient(), subject, request);
@@ -188,8 +186,8 @@ public class AccountRequestController {
 
   private void logOrganizationAccountRequest(@RequestBody @Valid OrganizationAccountRequest request)
       throws JsonProcessingException {
-    if (LOG.isInfoEnabled()) {
-      LOG.info("Account request submitted: {}", objectMapper.writeValueAsString(request));
+    if (log.isInfoEnabled()) {
+      log.info("Account request submitted: {}", objectMapper.writeValueAsString(request));
     }
   }
 }

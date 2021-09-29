@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { MfaPhone } from "./MfaPhone";
 
@@ -8,18 +9,16 @@ describe("Submit Email MFA", () => {
   });
 
   it("can enter a security code", () => {
-    fireEvent.change(
+    userEvent.type(
       screen.getByLabelText("One-time security code", { exact: false }),
-      {
-        target: { value: "123" },
-      }
+      "123"
     );
-    fireEvent.click(screen.getByText("Submit"));
+    userEvent.click(screen.getByText("Submit"));
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("requires a security code", () => {
-    fireEvent.click(screen.getByText("Submit"));
+    userEvent.click(screen.getByText("Submit"));
     const error = screen.getByRole("alert");
     expect(error.textContent).toEqual("Error: Enter your security code");
   });

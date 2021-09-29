@@ -4,8 +4,7 @@ import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import java.net.URI;
 import javax.annotation.PostConstruct;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Primary;
@@ -18,15 +17,14 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty(name = "twilio.enabled", havingValue = "true")
 @Primary
 @Component
+@Slf4j
 public class TwilioWrapper implements SmsProviderWrapper {
-  private static final Logger LOG = LoggerFactory.getLogger(TwilioWrapper.class);
-
   @Value("${simple-report.twilio-callback-url:https://simplereport.gov/api/pxp/callback}")
   private String twilioCallbackUrl;
 
   @PostConstruct
   void init() {
-    LOG.info("Twilio is enabled!");
+    log.info("Twilio is enabled!");
   }
 
   @Override

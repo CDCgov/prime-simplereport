@@ -57,15 +57,6 @@ smarty-streets:
   id: ${SMARTY_AUTH_ID}
   token: ${SMARTY_AUTH_TOKEN}
 simple-report:
-  data-hub:
-    # these are overridden by application-dev, -prod, -test, etc
-    upload-enabled: false
-    upload-url: ""
-    max-csv-rows: 5000
-    api-key: ${DATAHUB_API_KEY:MISSING}
-    secret-slack-notify-webhook-url: ${SECRET_SLACK_NOTIFY_WEBHOOK_URL:MISSING}
-    upload-schedule: "0 0 11 * * *" # Daily at 11:00 AM Eastern Time
-    upload-timezone: America/New_York
   id-verification-reminders:
     enabled: false
   authorization:
@@ -107,9 +98,9 @@ simple-report:
     preciseid-username: ${EXPERIAN_PID_USERNAME}
     preciseid-password: ${EXPERIAN_PID_PASSWORD}
   azure-reporting-queue:
-    account-name: ${AZURE_REPORTING_QUEUE_ACCOUNT_NAME}
-    sas-token: ${AZURE_REPORTING_QUEUE_SAS_TOKEN}
-    queue-name: ${AZURE_REPORTING_QUEUE_QUEUE_NAME}
+    enabled: false
+    name: ${AZ_REPORTING_QUEUE_NAME}
+    connection-string: ${AZ_REPORTING_QUEUE_CXN_STRING}
   cors:
     allowed-methods:
       - GET

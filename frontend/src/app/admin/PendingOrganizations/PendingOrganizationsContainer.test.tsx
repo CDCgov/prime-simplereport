@@ -1,10 +1,5 @@
-import {
-  waitFor,
-  render,
-  screen,
-  fireEvent,
-  act,
-} from "@testing-library/react";
+import { waitFor, render, screen, act } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 
 import {
@@ -107,7 +102,7 @@ describe("PendingOrganizationsContainer", () => {
     describe("marking an organization as verified", () => {
       beforeEach(async () => {
         await act(async () => {
-          await fireEvent.click(screen.getByText("Identity Verified"));
+          await userEvent.click(screen.getByText("Identity Verified"));
         });
       });
       it("enables submit", () => {
@@ -118,7 +113,7 @@ describe("PendingOrganizationsContainer", () => {
       describe("submitting the form", () => {
         beforeEach(async () => {
           await act(async () => {
-            await fireEvent.click(screen.getByText("Save Changes"));
+            await userEvent.click(screen.getByText("Save Changes"));
           });
           await waitFor(() =>
             expect(
@@ -135,7 +130,7 @@ describe("PendingOrganizationsContainer", () => {
       describe("then mark as unverified", () => {
         beforeEach(async () => {
           await act(async () => {
-            await fireEvent.click(screen.getByText("Identity Verified"));
+            await userEvent.click(screen.getByText("Identity Verified"));
           });
         });
         it("disables submit", () => {

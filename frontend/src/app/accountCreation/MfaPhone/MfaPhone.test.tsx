@@ -1,4 +1,5 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { MfaPhone } from "./MfaPhone";
 
@@ -9,13 +10,11 @@ describe("Phone call MFA", () => {
 
   it("can enter a valid phone number", async () => {
     await waitFor(() => {
-      fireEvent.change(
+      userEvent.type(
         screen.getByLabelText("Phone number", { exact: false }),
-        {
-          target: { value: "(910) 867-5309" },
-        }
+        "(910) 867-5309"
       );
-      fireEvent.click(screen.getByText("Send code"));
+      userEvent.click(screen.getByText("Send code"));
     });
 
     expect(
@@ -24,15 +23,16 @@ describe("Phone call MFA", () => {
   });
 
   it("requires a phone number", () => {
-    fireEvent.click(screen.getByText("Send code"));
+    userEvent.click(screen.getByText("Send code"));
     expect(screen.getByText("Enter your phone number")).toBeInTheDocument();
   });
 
   it("requires a valid phone number", () => {
-    fireEvent.change(screen.getByLabelText("Phone number", { exact: false }), {
-      target: { value: "(555) 555-5555" },
-    });
-    fireEvent.click(screen.getByText("Send code"));
+    userEvent.type(
+      screen.getByLabelText("Phone number", { exact: false }),
+      "(555) 555-5555"
+    );
+    userEvent.click(screen.getByText("Send code"));
     expect(screen.getByText("Enter a valid phone number")).toBeInTheDocument();
   });
 });

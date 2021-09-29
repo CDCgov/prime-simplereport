@@ -12,19 +12,17 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Getter
 @Entity
 @Immutable
 @AttributeOverride(name = "result", column = @Column(nullable = false))
+@Slf4j
 public class TestEvent extends BaseTestInfo {
-  private static final Logger LOG = LoggerFactory.getLogger(TestEvent.class);
-
   @Column
   @Type(type = "jsonb")
   private Person patientData;
@@ -82,7 +80,7 @@ public class TestEvent extends BaseTestInfo {
       this.surveyData = order.getAskOnEntrySurvey().getSurvey();
     } else {
       // this can happen during unit tests, but never in prod.
-      LOG.error("Order {} missing PatientAnswers", order.getInternalId());
+      log.error("Order {} missing PatientAnswers", order.getInternalId());
     }
   }
 

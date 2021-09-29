@@ -12,14 +12,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class UserMutationResolver implements GraphQLMutationResolver {
-
-  private static final Logger LOG = LoggerFactory.getLogger(UserMutationResolver.class);
 
   private final ApiUserService _us;
 

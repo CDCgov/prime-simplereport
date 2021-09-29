@@ -1,4 +1,5 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { getAppInsights } from "../TelemetryService";
 
@@ -95,7 +96,7 @@ describe("TestTimerWidget", () => {
       const startTimer = await screen.findByRole("button");
 
       act(() => {
-        fireEvent.click(startTimer);
+        userEvent.click(startTimer);
       });
       expect(trackEventMock).toHaveBeenCalled();
       expect(trackEventMock).toHaveBeenCalledTimes(1);
@@ -112,7 +113,7 @@ describe("TestTimerWidget", () => {
 
       // Start timer
       act(() => {
-        fireEvent.click(timerButton);
+        userEvent.click(timerButton);
       });
 
       // The timer does not enter the countdown state instantly, so clicking the
@@ -122,7 +123,7 @@ describe("TestTimerWidget", () => {
 
       // Reset timer
       act(() => {
-        fireEvent.click(timerButton);
+        userEvent.click(timerButton);
       });
 
       expect(trackEventMock).toHaveBeenCalledWith(
@@ -137,7 +138,7 @@ describe("TestTimerWidget", () => {
       const timerButton = await screen.findByRole("button");
 
       act(() => {
-        fireEvent.click(timerButton);
+        userEvent.click(timerButton);
       });
 
       // This is a 0-second timer, but it takes ~1 second to enter the

@@ -6,11 +6,6 @@
       "description": "The full configuration for initial setup on a blank database."
     },
     {
-      "name": "simple-report.data-hub",
-      "type": "gov.cdc.usds.simplereport.config.simplereport.DataHubConfig",
-      "description": "Configuration for data hub communications"
-    },
-    {
       "name": "simple-report.authorization",
       "type": "gov.cdc.usds.simplereport.config.AuthorizationProperties",
       "description": "Properties for configuring authorization claims mapping from the IDP"
@@ -54,6 +49,11 @@
       "name": "simple-report.ordering-providers",
       "type": "gov.cdc.usds.simplereport.properties.OrderingProviderProperties",
       "description": "Properties for configuring state requirements for facility Ordering Providers"
+    },
+    {
+      "name": "simple-report.azure-reporting-queue",
+      "type": "gov.cdc.usds.simplereport.properties.AzureStorageQueueReportingProperties",
+      "description": "Properties for Azure Storage Queue for Test Event reporting to ReportStream."
     }
   ]
 }

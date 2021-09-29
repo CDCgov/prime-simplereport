@@ -18,17 +18,15 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 public class SmsService {
-  private static final Logger LOG = LoggerFactory.getLogger(SmsService.class);
-
   @Value("${twilio.from-number}")
   private String rawFromNumber;
 
@@ -45,7 +43,7 @@ public class SmsService {
   @PostConstruct
   void init() throws NumberParseException {
     this.fromNumber = new PhoneNumber(formatNumber(rawFromNumber));
-    LOG.debug("SmsService will send from {}", rawFromNumber);
+    log.debug("SmsService will send from {}", rawFromNumber);
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestWithPatientLink
@@ -76,14 +74,14 @@ public class SmsService {
                 String msgId =
                     sms.send(
                         new PhoneNumber(formatNumber(phoneNumber.getNumber())), fromNumber, text);
-                LOG.debug("SMS send initiated {}", msgId);
+                log.debug("SMS send initiated {}", msgId);
 
                 return new SmsAPICallResult(phoneNumber.getNumber(), msgId, true);
               } catch (NumberParseException npe) {
-                LOG.warn("Failed to parse phone number for patient={}", p.getInternalId());
+                log.warn("Failed to parse phone number for patient={}", p.getInternalId());
                 return new SmsAPICallResult(phoneNumber.getNumber(), null, false);
               } catch (ApiException apiException) {
-                LOG.warn("Failed to send text message to patient={}", p.getInternalId());
+                log.warn("Failed to send text message to patient={}", p.getInternalId());
                 return new SmsAPICallResult(phoneNumber.getNumber(), null, false);
               }
             })

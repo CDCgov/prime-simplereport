@@ -1,0 +1,37 @@
+{
+  "name": "report-stream-batched-publisher",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "func": "func",
+    "coverage": "jest --coverage",
+    "clean": "rimraf build",
+    "build:compile": "tsc",
+    "build:production": "npm run coverage && npm run prestart && npm prune --production && npm run build:zip",
+    "prebuild:zip": "mkdir -m700 -p build",
+    "build:zip": "zip -r build/batched-rs-publisher.zip . -x \"*.zip\" -x \".terraform\" -x \"terraform.*\" -x \"*.tf\" -x \"local.settings.json\" -x \"*.map\"",
+    "build": "npm run clean && npm run build:compile",
+    "predeploy": "npm run build:production",
+    "deploy": "terraform apply",
+    "prestart": "npm run build && func extensions install",
+    "start": "func start",
+    "test": "jest --watch"
+  },
+  "dependencies": {
+    "@azure/functions": "^1.2.3",
+    "@azure/identity": "^1.5.2",
+    "@azure/storage-queue": "^12.6.0",
+    "applicationinsights": "^2.1.6",
+    "csv-stringify": "^5.6.5",
+    "node-fetch": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.0.2",
+    "azure-functions-core-tools": "^3.0.3734",
+    "jest": "^27.2.1",
+    "jest-fetch-mock": "^3.0.3",
+    "rimraf": "^3.0.0",
+    "ts-jest": "^27.0.5",
+    "typescript": "^4.0.0"
+  }
+}

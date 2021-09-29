@@ -10,14 +10,12 @@ import graphql.language.Field;
 import graphql.language.Selection;
 import graphql.language.SelectionSet;
 import java.util.stream.Stream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 
 /** Collection of helpers for parsing and logging the GraphQL queries and results */
+@Slf4j
 public class GraphQLLoggingHelpers {
-
-  private static final Logger LOG = LoggerFactory.getLogger(GraphQLLoggingHelpers.class);
 
   private GraphQLLoggingHelpers() {
     // Not used
@@ -70,22 +68,22 @@ public class GraphQLLoggingHelpers {
       long queryStart, TelemetryClient client, RequestTelemetry request) {
     return SimpleInstrumentationContext.whenCompleted(
         (ExecutionResult result, Throwable t) -> {
-          LOG.trace("Entered logging instrumentation callback.");
+          log.trace("Entered logging instrumentation callback.");
           final long queryEnd = System.currentTimeMillis();
           final Duration queryDuration = new Duration(queryEnd - queryStart);
           request.setDuration(queryDuration);
 
           if (t != null) {
-            LOG.error("GraphQL execution failed: {}", t.getMessage(), t);
-            LOG.info("GraphQL execution FAILED in {}ms", queryDuration.getMilliseconds());
+            log.error("GraphQL execution failed: {}", t.getMessage(), t);
+            log.info("GraphQL execution FAILED in {}ms", queryDuration.getMilliseconds());
             request.setSuccess(false);
             client.trackException((Exception) t);
           } else if (!result.getErrors().isEmpty()) {
-            result.getErrors().forEach(error -> LOG.error("Query failed with error {}", error));
-            LOG.info("GraphQL execution FAILED in {}ms", queryDuration.getMilliseconds());
+            result.getErrors().forEach(error -> log.error("Query failed with error {}", error));
+            log.info("GraphQL execution FAILED in {}ms", queryDuration.getMilliseconds());
             request.setSuccess(false);
           } else {
-            LOG.info("GraphQL execution COMPLETED in {}ms", queryDuration.getMilliseconds());
+            log.info("GraphQL execution COMPLETED in {}ms", queryDuration.getMilliseconds());
             request.setSuccess(true);
           }
           // Clear the MDC context
