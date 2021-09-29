@@ -27,7 +27,7 @@ const DeviceTypeFormContainer = () => {
   const { data } = useGetSpecimenTypesQuery();
 
   useEffect(() => {
-    if (data && data.specimenTypes) {
+    if (data && data.specimenTypes && swabOptions.length === 0) {
       setSwabOptions(
         Array.from(
           data.specimenTypes.map((type) => ({
@@ -37,7 +37,7 @@ const DeviceTypeFormContainer = () => {
         )
       );
     }
-  }, [data]);
+  }, [data, swabOptions]);
 
   const saveDeviceType = (device: Device) => {
     createDeviceType({
@@ -60,7 +60,6 @@ const DeviceTypeFormContainer = () => {
     return <Redirect to="/admin" />;
   }
 
-  console.log(swabOptions);
   return (
     <DeviceTypeForm saveDeviceType={saveDeviceType} swabOptions={swabOptions} />
   );

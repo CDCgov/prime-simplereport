@@ -69,15 +69,13 @@ export const useCombobox = (
           filteredOptions: optionsList.filter(isPartialMatch("")),
         };
       case ActionTypes.UPDATE_FILTER: {
-        const newState = {
+        return {
           ...state,
           isOpen: true,
           filter: action.value,
           filteredOptions: optionsList.filter(isPartialMatch(action.value)),
           inputValue: action.value,
         };
-
-        return newState;
       }
       case ActionTypes.OPEN_LIST:
         return {

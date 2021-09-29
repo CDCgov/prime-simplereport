@@ -3,14 +3,8 @@ import userEvent from "@testing-library/user-event";
 
 import DeviceTypeForm from "./DeviceTypeForm";
 
-const addValue = (name: string, value: string) => {
+export const addValue = (name: string, value: string) => {
   userEvent.type(screen.getByLabelText(name, { exact: false }), value);
-};
-
-const selectValue = (name: string, value: string) => {
-  userEvent.click(
-    screen.getByTestId("combo-box-option-445297001", { exact: false })
-  );
 };
 
 describe("DeviceTypeForm", () => {
@@ -36,7 +30,7 @@ describe("DeviceTypeForm", () => {
       addValue("Manufacturer", "Mesa Biotech");
       addValue("Model", "Accula SARS-Cov-2 Test*");
       addValue("LOINC code", "95409-9");
-      selectValue("SNOMED code for swab type", "445297001");
+      userEvent.click(screen.getByText("Swab (445297001)", { exact: false }));
     });
 
     it("enables the save button", async () => {

@@ -47,7 +47,7 @@ interface InputProps {
   focused: boolean;
 }
 
-const Input = ({
+const ComboBoxInput = ({
   focused,
   ...inputProps
 }: InputProps & JSX.IntrinsicElements["input"]): React.ReactElement => {
@@ -69,6 +69,102 @@ const Input = ({
       ref={inputRef}
     />
   );
+};
+
+const focusSibling = (
+  dispatch: React.Dispatch<Action>,
+  state: State,
+  change: Direction
+): void => {
+  const currentIndex = state.focusedOption
+    ? state.filteredOptions.indexOf(state.focusedOption)
+    : -1;
+  const firstOption = state.filteredOptions[0];
+  const lastOption = state.filteredOptions[state.filteredOptions.length - 1];
+
+  if (currentIndex === -1) {
+    dispatch({ type: ActionTypes.FOCUS_OPTION, option: firstOption });
+  } else {
+    const newIndex = currentIndex + change;
+    if (newIndex < 0) {
+      dispatch({ type: ActionTypes.FOCUS_OPTION, option: firstOption });
+    } else if (newIndex >= state.filteredOptions.length) {
+      dispatch({ type: ActionTypes.FOCUS_OPTION, option: lastOption });
+    } else {
+      const newOption = state.filteredOptions[newIndex];
+      dispatch({ type: ActionTypes.FOCUS_OPTION, option: newOption });
+    }
+  }
+};
+
+const handleInputKeyDown = (
+  dispatch: React.Dispatch<Action>,
+  state: State,
+  selectOption: (option: ComboBoxOption) => void
+) => (event: KeyboardEvent): void => {
+  if (event.key === "Escape") {
+    dispatch({ type: ActionTypes.CLOSE_LIST });
+  } else if (["ArrowDown", "Down"].includes(event.key)) {
+    event.preventDefault();
+    dispatch({
+      type: ActionTypes.FOCUS_OPTION,
+      option: state.filteredOptions[0],
+    });
+  } else if (event.key === "Tab") {
+    // Clear button is not visible in this case so manually handle focus
+    if (state.isOpen) {
+      // If there are filtered options, prevent default
+      // If there are "No Results Found", tab over to prevent a keyboard trap
+      if (state.filteredOptions.length > 0) {
+        event.preventDefault();
+        dispatch({
+          type: ActionTypes.FOCUS_OPTION,
+          option: state.filteredOptions[0],
+        });
+      } else {
+        dispatch({
+          type: ActionTypes.BLUR,
+        });
+      }
+    }
+
+    if (!state.isOpen) {
+      dispatch({
+        type: ActionTypes.BLUR,
+      });
+    }
+  } else if (event.key === "Enter") {
+    event.preventDefault();
+    const selectedOptions = state.filteredOptions.find(
+      (option) => option.label.toLowerCase() === state.inputValue.toLowerCase()
+    );
+    if (selectedOptions) {
+      selectOption(selectedOptions);
+    } else {
+      dispatch({ type: ActionTypes.CLEAR });
+    }
+  }
+};
+
+const handleListItemKeyDown = (
+  dispatch: React.Dispatch<Action>,
+  state: State,
+  selectOption: (option: ComboBoxOption) => void
+) => (event: KeyboardEvent): void => {
+  if (event.key === "Escape") {
+    dispatch({ type: ActionTypes.CLOSE_LIST });
+  } else if (event.key === "Tab" || event.key === "Enter") {
+    event.preventDefault();
+    if (state.focusedOption) {
+      selectOption(state.focusedOption);
+    }
+  } else if (event.key === "ArrowDown" || event.key === "Down") {
+    event.preventDefault();
+    focusSibling(dispatch, state, Direction.Next);
+  } else if (event.key === "ArrowUp" || event.key === "Up") {
+    event.preventDefault();
+    focusSibling(dispatch, state, Direction.Previous);
+  }
 };
 
 export const ComboBox = ({
@@ -126,52 +222,6 @@ export const ComboBox = ({
     }
   });
 
-  const handleInputKeyDown = (event: KeyboardEvent): void => {
-    if (event.key === "Escape") {
-      dispatch({ type: ActionTypes.CLOSE_LIST });
-    } else if (event.key === "ArrowDown" || event.key === "Down") {
-      event.preventDefault();
-      dispatch({
-        type: ActionTypes.FOCUS_OPTION,
-        option: state.filteredOptions[0],
-      });
-    } else if (event.key === "Tab") {
-      // Clear button is not visible in this case so manually handle focus
-      if (state.isOpen) {
-        // If there are filtered options, prevent default
-        // If there are "No Results Found", tab over to prevent a keyboard trap
-        if (state.filteredOptions.length > 0) {
-          event.preventDefault();
-          dispatch({
-            type: ActionTypes.FOCUS_OPTION,
-            option: state.filteredOptions[0],
-          });
-        } else {
-          dispatch({
-            type: ActionTypes.BLUR,
-          });
-        }
-      }
-
-      if (!state.isOpen) {
-        dispatch({
-          type: ActionTypes.BLUR,
-        });
-      }
-    } else if (event.key === "Enter") {
-      event.preventDefault();
-      const selectedOptions = state.filteredOptions.find(
-        (option) =>
-          option.label.toLowerCase() === state.inputValue.toLowerCase()
-      );
-      if (selectedOptions) {
-        selectOption(selectedOptions);
-      } else {
-        dispatch({ type: ActionTypes.CLEAR });
-      }
-    }
-  };
-
   const handleInputBlur = (event: FocusEvent<HTMLInputElement>): void => {
     const { relatedTarget: newTarget } = event;
     const newTargetIsOutside =
@@ -183,33 +233,6 @@ export const ComboBox = ({
     }
   };
 
-  const focusSibling = (
-    dispatch: React.Dispatch<Action>,
-    state: State,
-    change: Direction
-  ): void => {
-    const currentIndex = state.focusedOption
-      ? state.filteredOptions.indexOf(state.focusedOption)
-      : -1;
-    const firstOption = state.filteredOptions[0];
-    const lastOption = state.filteredOptions[state.filteredOptions.length - 1];
-
-    if (currentIndex === -1) {
-      dispatch({ type: ActionTypes.FOCUS_OPTION, option: firstOption });
-    } else {
-      const newIndex = currentIndex + change;
-      if (newIndex < 0) {
-        dispatch({ type: ActionTypes.FOCUS_OPTION, option: firstOption });
-      } else if (newIndex < 0) {
-        dispatch({ type: ActionTypes.CLOSE_LIST });
-      } else if (newIndex >= state.filteredOptions.length) {
-        dispatch({ type: ActionTypes.FOCUS_OPTION, option: lastOption });
-      } else {
-        const newOption = state.filteredOptions[newIndex];
-        dispatch({ type: ActionTypes.FOCUS_OPTION, option: newOption });
-      }
-    }
-  };
   const handleListItemBlur = (event: FocusEvent<HTMLLIElement>): void => {
     const { relatedTarget: newTarget } = event;
 
@@ -218,23 +241,6 @@ export const ComboBox = ({
       (newTarget instanceof Node && !containerRef.current?.contains(newTarget))
     ) {
       dispatch({ type: ActionTypes.BLUR });
-    }
-  };
-
-  const handleListItemKeyDown = (event: KeyboardEvent): void => {
-    if (event.key === "Escape") {
-      dispatch({ type: ActionTypes.CLOSE_LIST });
-    } else if (event.key === "Tab" || event.key === "Enter") {
-      event.preventDefault();
-      if (state.focusedOption) {
-        selectOption(state.focusedOption);
-      }
-    } else if (event.key === "ArrowDown" || event.key === "Down") {
-      event.preventDefault();
-      focusSibling(dispatch, state, Direction.Next);
-    } else if (event.key === "ArrowUp" || event.key === "Up") {
-      event.preventDefault();
-      focusSibling(dispatch, state, Direction.Previous);
     }
   };
 
@@ -251,13 +257,13 @@ export const ComboBox = ({
       id={id}
       ref={containerRef}
     >
-      <Input
+      <ComboBoxInput
         onChange={(e): void =>
           dispatch({ type: ActionTypes.UPDATE_FILTER, value: e.target.value })
         }
         onClick={(): void => dispatch({ type: ActionTypes.OPEN_LIST })}
         onBlur={handleInputBlur}
-        onKeyDown={handleInputKeyDown}
+        onKeyDown={handleInputKeyDown(dispatch, state, selectOption)}
         value={state.inputValue}
         focused={state.focusMode === FocusMode.Input}
         role="combobox"
@@ -312,7 +318,7 @@ export const ComboBox = ({
               aria-setsize={64}
               aria-posinset={index + 1}
               id={listID + `--option-${index}`}
-              onKeyDown={handleListItemKeyDown}
+              onKeyDown={handleListItemKeyDown(dispatch, state, selectOption)}
               onBlur={handleListItemBlur}
               data-testid={`combo-box-option-${option.value}`}
               onMouseMove={(): void =>

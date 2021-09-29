@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import static gov.cdc.usds.simplereport.db.model.DeviceType_.swabType;
 import static gov.cdc.usds.simplereport.utils.DeviceTestLengthConverter.determineTestLength;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -142,9 +141,7 @@ public class DeviceTypeService {
             new DeviceType(name, manufacturer, model, loincCode, null, determineTestLength(name)));
 
     specimenTypes.forEach(
-        specimenType -> {
-          _deviceSpecimenRepo.save(new DeviceSpecimenType(dt, specimenType));
-        });
+        specimenType -> _deviceSpecimenRepo.save(new DeviceSpecimenType(dt, specimenType)));
 
     return dt;
   }

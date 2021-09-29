@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import classnames from "classnames";
 import { UIDConsumer } from "react-uid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import _ from "lodash";
 
 import Required from "../Required";
 import Optional from "../Optional";
@@ -46,6 +47,9 @@ const Pill = (props: PillProps) => (
   </div>
 );
 
+const getSortedOptions = (options: ComboBoxOption[]) =>
+  _.orderBy(options, ["label"], ["asc"]);
+
 export const MultiSelect = ({
   name,
   label,
@@ -64,7 +68,7 @@ export const MultiSelect = ({
   const isDisabled = !!disabled;
 
   const [availableOptions, setAvailableOptions] = useState<ComboBoxOption[]>(
-    options
+    getSortedOptions(options)
   );
   const [selectedItems, setSelectedItems] = useState<string[] | undefined>(
     undefined
@@ -84,17 +88,51 @@ export const MultiSelect = ({
     const selectedItemsSet = new Set(selectedItems);
     selectedItemsSet.delete(option.value);
     setSelectedItems(Array.from(selectedItemsSet));
-    setAvailableOptions([...availableOptions, option]);
+    const sortedOptions = getSortedOptions([...availableOptions, option]);
+    setAvailableOptions(sortedOptions);
   };
 
   useEffect(() => {
-    setAvailableOptions([...options]);
+    const sortedOptions = getSortedOptions([...options]);
+    setAvailableOptions(sortedOptions);
   }, [options, setAvailableOptions]);
 
   useEffect(() => {
-    if (selectedItems) onChange(selectedItems);
+    if (selectedItems) {
+      onChange(selectedItems);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedItems]);
+
+  const getLabel = (id: string) => (
+    <label
+      className={classnames(
+        "usa-label",
+        labelSrOnly && "usa-sr-only",
+        validationStatus === "error" && "usa-label--error",
+        labelClassName
+      )}
+      htmlFor={id}
+      aria-describedby={ariaDescribedBy}
+    >
+      {required ? <Required label={label} /> : <Optional label={label} />}
+    </label>
+  );
+
+  const getErrorMessage = (id: string) => (
+    <>
+      {validationStatus === "error" && (
+        <span className="usa-error-message" id={`error_${id}`} role="alert">
+          <span className="usa-sr-only">Error: </span>
+          {errorMessage}
+        </span>
+      )}
+    </>
+  );
+
+  const getHintText = () => (
+    <>{hintText && <span className="usa-hint">{hintText}</span>}</>
+  );
 
   return (
     <UIDConsumer>
@@ -106,25 +144,10 @@ export const MultiSelect = ({
             validationStatus === "error" && "usa-form-group--error"
           )}
         >
-          <label
-            className={classnames(
-              "usa-label",
-              labelSrOnly && "usa-sr-only",
-              validationStatus === "error" && "usa-label--error",
-              labelClassName
-            )}
-            htmlFor={id}
-            aria-describedby={ariaDescribedBy}
-          >
-            {required ? <Required label={label} /> : <Optional label={label} />}
-          </label>
-          {validationStatus === "error" && (
-            <span className="usa-error-message" id={`error_${id}`} role="alert">
-              <span className="usa-sr-only">Error: </span>
-              {errorMessage}
-            </span>
-          )}
-          {hintText && <span className="usa-hint">{hintText}</span>}
+          {getLabel(id)}
+          {getErrorMessage(id)}
+          {getHintText()}
+
           <ComboBox
             id={id}
             name={name}
@@ -136,7 +159,7 @@ export const MultiSelect = ({
           <div className="pill-container" data-testid="pill-container">
             {selectedItems &&
               selectedItems.map((value) => {
-                const option = options.find((option) => option.value === value);
+                const option = options.find((item) => item.value === value);
                 return (
                   option && (
                     <Pill
