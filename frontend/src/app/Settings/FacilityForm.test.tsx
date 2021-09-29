@@ -20,8 +20,8 @@ const deviceSpecimenTypes: DeviceSpecimenType[] = devices.map((device, idx) => {
     internalId: idx,
     deviceType: device,
     specimenType: {
-      internalId: "fake-specimen-id",
-      name: "Fake Specimen",
+      internalId: "fake-specimen-id-1",
+      name: "Fake Specimen 1",
     },
   };
 });

@@ -6,12 +6,13 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import ManageDevices from "./ManageDevices";
 
 const devices: DeviceType[] = [
+  { internalId: "device-0", name: "Device 0" },
   { internalId: "device-1", name: "Device 1" },
-  { internalId: "device-2", name: "Device 2" },
 ];
 
 const deviceSpecimenTypes: DeviceSpecimenType[] = devices.map(
@@ -19,8 +20,8 @@ const deviceSpecimenTypes: DeviceSpecimenType[] = devices.map(
     internalId: idx.toString(),
     deviceType: device,
     specimenType: {
-      internalId: "fake-specimen-id-1",
-      name: "Fake Specimen 1",
+      internalId: `fake-specimen-id-${idx}`,
+      name: `Fake Specimen ${idx}`,
     },
   })
 );
@@ -35,10 +36,21 @@ const deviceSpecimenTypeIds: DeviceSpecimenTypeIds[] = deviceSpecimenTypes.map(
 const deviceSpecimenTypeOptions = [
   ...deviceSpecimenTypes,
   {
+    internalId: "2",
+    deviceType: {
+      internalId: "device-0",
+      name: "Device 0",
+    },
+    specimenType: {
+      internalId: "fake-specimen-id-2",
+      name: "Fake Specimen 2",
+    },
+  },
+  {
     internalId: "3",
     deviceType: {
-      internalId: "device-3",
-      name: "Device 3",
+      internalId: "device-2",
+      name: "Device 2",
     },
     specimenType: {
       internalId: "fake-specimen-id-2",
@@ -120,14 +132,35 @@ describe("ManageDevices", () => {
       expect(checkboxes[1]).not.toBeChecked();
     });
 
-    it("allows user to change the swab or device type on an existing device", async () => {
+    it("allows user to change the device type on an existing device", async () => {
       const [deviceDropdown] = await screen.findAllByRole("combobox");
 
       await waitFor(() => {
-        fireEvent.click(deviceDropdown, { target: { value: "device-3" } });
+        userEvent.selectOptions(deviceDropdown, "device-2");
       });
 
-      expect(deviceDropdown).toHaveValue("device-3");
+      expect(
+        (screen.getAllByRole("option", {
+          name: "Device 2",
+        })[0] as HTMLOptionElement).selected
+      ).toBeTruthy();
+    });
+
+    it("allows user to change the swab type on an existing device", async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const [_deviceDropdown, swabDropdown] = await screen.findAllByRole(
+        "combobox"
+      );
+
+      await waitFor(() => {
+        userEvent.selectOptions(swabDropdown, "fake-specimen-id-2");
+      });
+
+      expect(
+        (screen.getAllByRole("option", {
+          name: "Fake Specimen 2",
+        })[0] as HTMLOptionElement).selected
+      ).toBeTruthy();
     });
 
     it("prevents selecting a device type more than once", () => {
@@ -163,6 +196,31 @@ describe("ManageDevices", () => {
 
       const updatedDropdowns = await screen.findAllByRole("combobox");
       expect(updatedDropdowns.length).toBe(2);
+    });
+
+    it("only swab types configured for use with a specific device appear in dropdown", async () => {
+      // Row is populated via props; check that only swab types in the dropdown are
+      // allowable for the device
+      const deviceDropdownElement = screen.getByTestId(
+        "device-dropdown-0"
+      ) as HTMLSelectElement;
+
+      expect(
+        (screen.getAllByRole("option", {
+          name: "Fake Specimen 0",
+        })[0] as HTMLOptionElement).selected
+      ).toBeTruthy();
+
+      // Change device to one with _different_ configured swab types
+      await waitFor(() => {
+        userEvent.selectOptions(deviceDropdownElement, "device-1");
+      });
+
+      expect(
+        (screen.getAllByRole("option", {
+          name: "Fake Specimen 1",
+        })[0] as HTMLOptionElement).selected
+      ).toBeTruthy();
     });
   });
 });
