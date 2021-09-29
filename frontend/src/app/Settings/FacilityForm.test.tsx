@@ -521,6 +521,32 @@ describe("FacilityForm", () => {
       );
       expect(warning).toBeInTheDocument();
     });
+
+    it("properly unsets default device when the default device is changed", async () => {
+      const unusedDevice = { internalId: "device-3", name: "Device 3" };
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceOptions={devices.concat(unusedDevice)}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+      // Change default device
+      const dropdown = await screen.getByDisplayValue(devices[0].name);
+      await waitFor(() => {
+        userEvent.selectOptions(dropdown, unusedDevice.name);
+      });
+      // Attempt save
+      const saveButtons = await screen.findAllByText("Save changes");
+      userEvent.click(saveButtons[0]);
+      const warning = await screen.findByText(
+        "A default device must be selected",
+        { exact: false }
+      );
+      expect(warning).toBeInTheDocument();
+    });
   });
 });
 
