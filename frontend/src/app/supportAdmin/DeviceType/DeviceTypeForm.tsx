@@ -39,7 +39,7 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h2>Device Type</h2>
+                <h2>Device type</h2>
               </div>
               <div
                 style={{
@@ -51,7 +51,7 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
                 <Button
                   type="button"
                   onClick={() => saveDeviceType(device)}
-                  label="Save Changes"
+                  label="Save changes"
                   disabled={!formChanged}
                 />
               </div>
@@ -70,17 +70,19 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
                       >
                         #prime-reportstream
                       </a>
+                      .
                     </p>
                     <p>
-                      Device details can be found by downloading the excel file
-                      published at{" "}
+                      Device details can be found by downloading the mapping
+                      tool (Excel file) from the{" "}
                       <a
                         href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
                         target="_blank"
                         rel="noreferrer"
                       >
-                        https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html
+                        CDC test code mapping for COVID-19 page
                       </a>
+                      .
                     </p>
                   </div>
                 </div>
@@ -88,7 +90,7 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
                   <TextInput
-                    label="Name"
+                    label="Device name"
                     name="name"
                     value={device.name}
                     onChange={onChange}
@@ -115,7 +117,7 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
                 </div>
                 <div className="tablet:grid-col">
                   <TextInput
-                    label="Loinc Code"
+                    label="LOINC code"
                     name="loincCode"
                     value={device.loincCode}
                     onChange={onChange}
@@ -124,9 +126,12 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
                 </div>
               </div>
               <div className="grid-row grid-gap">
-                <div className="tablet:grid-col">
+                <div
+                  className="tablet:grid-col"
+                  style={{ marginBottom: "56px" }}
+                >
                   <MultiSelect
-                    label="SNOMED code of Swab Type(s)"
+                    label="SNOMED code for swab type(s)"
                     name="swabTypes"
                     onChange={(swabTypes) => {
                       updateDeviceAttribute("swabTypes", swabTypes);

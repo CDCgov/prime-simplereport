@@ -133,10 +133,9 @@ export const MultiSelect = ({
             className="combo-box"
             disabled={isDisabled}
           />
-
-          {selectedItems && (
-            <div className="pill-container" data-testid="pill-container">
-              {selectedItems.map((value) => {
+          <div className="pill-container" data-testid="pill-container">
+            {selectedItems &&
+              selectedItems.map((value) => {
                 const option = options.find((option) => option.value === value);
                 return (
                   option && (
@@ -148,8 +147,7 @@ export const MultiSelect = ({
                   )
                 );
               })}
-            </div>
-          )}
+          </div>
         </div>
       )}
     </UIDConsumer>
