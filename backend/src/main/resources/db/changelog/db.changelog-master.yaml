@@ -3008,3 +3008,30 @@ databaseChangeLog:
             viewName: organization_queue_no_phi_view
         - dropTable:
             tableName: organization_queue
+  - changeSet:
+      id: add-reportstream-exception-table
+      author: adam@skylight.digital
+      comment: Adds a non-audited table to track publish exceptions from ReportStream
+      changes:
+        - createTable:
+            tableName: report_stream_exception
+            remarks: A non-audited table to track publish exceptions from ReportStream
+            columns:
+              - column:
+                  name: test_event_internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity, and a foreign key to test_event
+                  constraints:
+                    primaryKey: false
+                    nullable: false
+                    foreignKeyName: fk__report_stream_exception__test_event
+                    references: test_event
+              - column:
+                  name: details
+                  type: text
+                  remarks: Explanatory details about the failure
+              - column:
+                  name: is_error
+                  type: boolean
+                  remarks: Is this exception an error? If not, it's a warning
+              - column: *created_at_column
