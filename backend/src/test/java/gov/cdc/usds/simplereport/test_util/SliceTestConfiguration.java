@@ -11,7 +11,6 @@ import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
-import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
@@ -97,11 +96,7 @@ import org.springframework.security.test.context.support.WithMockUser;
   TenantDataAccessService.class,
   PatientSelfRegistrationLinkService.class
 })
-@EnableConfigurationProperties({
-  InitialSetupProperties.class,
-  AuthorizationProperties.class,
-  DataHubConfig.class,
-})
+@EnableConfigurationProperties({InitialSetupProperties.class, AuthorizationProperties.class})
 public class SliceTestConfiguration {
 
   private static final String DEFAULT_ROLE_PREFIX =

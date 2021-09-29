@@ -51,12 +51,6 @@ data "azurerm_key_vault_secret" "sr_db_jdbc" {
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
-
-data "azurerm_key_vault_secret" "slack_notify_webhook_url" {
-  name         = "slack-notify-webhook-url-dev"
-  key_vault_id = data.azurerm_key_vault.global.id
-}
-
 data "azurerm_key_vault_secret" "okta_api_key" {
   name         = "okta-api-key"
   key_vault_id = data.azurerm_key_vault.global.id
