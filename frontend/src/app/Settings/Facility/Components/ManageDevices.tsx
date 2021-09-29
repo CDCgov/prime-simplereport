@@ -38,6 +38,10 @@ const ManageDevices: React.FC<Props> = ({
     const newDeviceTypes = Array.from(deviceTypes);
     newDeviceTypes[newDeviceTypes.indexOf(oldDeviceId)] = newDeviceId;
     updateDeviceTypes(newDeviceTypes);
+    // If the changed device was previously the default device, unset default device
+    if (oldDeviceId === defaultDevice) {
+      updateDefaultDevice("");
+    }
   };
 
   const onDeviceRemove = (id: string) => {
