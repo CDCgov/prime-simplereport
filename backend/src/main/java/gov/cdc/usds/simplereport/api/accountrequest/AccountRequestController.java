@@ -154,12 +154,6 @@ public class AccountRequestController {
       // Need to catch and re-throw these BadRequestExceptions or they get rethrown as
       // AccountRequestFailureExceptions
       throw e;
-    } catch (UnexpectedRollbackException e) {
-      // This `UnexpectedRollbackException` is thrown if a duplicate org somehow slips past our
-      // checks and is attempted to be committed to the database.
-      // We rethrow it as a BadRequestException so that users get a toast informing them of the
-      // error.
-      throw new BadRequestException("This organization has already registered with SimpleReport.");
     } catch (IllegalGraphqlArgumentException e) {
       throw new BadRequestException("Invalid email address");
     } catch (IOException | RuntimeException e) {

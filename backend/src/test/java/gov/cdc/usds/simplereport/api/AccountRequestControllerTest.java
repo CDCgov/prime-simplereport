@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -475,6 +476,80 @@ class AccountRequestControllerTest extends BaseFullStackTest {
     assertThat(result.getResponse().getStatus()).isEqualTo(400);
     assertThat(result.getResponse().getContentAsString())
         .contains("This email address is already associated with a SimpleReport user.");
+  }
+
+  @Test
+  void submitOrganizationAccountRequestAddToQueue_nameCleaning_success() throws Exception {
+    String requestBody =
+        createAccountRequest(
+            " Central   Schools  ",
+            "AZ",
+            "k12",
+            "Mary",
+            "",
+            "Lopez",
+            "kyvuzoxy@mailinator.com",
+            "+1 (969) 768-2863");
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_ADD_TO_QUEUE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+    this._mockMvc.perform(builder).andExpect(status().isOk());
+
+    verify(_orgService).queueNewRequest(orgNameCaptor.capture(), externalIdCaptor.capture(), any());
+
+    assertThat(orgNameCaptor.getValue()).isEqualTo("Central Schools");
+    assertThat(externalIdCaptor.getValue()).startsWith("AZ-Central-Schools-");
+  }
+
+  @Test
+  void submitOrganizationAccountRequestAddToQueue_duplicateOrgInSameState_failure()
+      throws Exception {
+    // given
+    String originalRequestBody =
+        createAccountRequest(
+            "Central Schools",
+            "AZ",
+            "k12",
+            "Mary",
+            "",
+            "Lopez",
+            "kyvuzoxy@mailinator.com",
+            "+1 (969) 768-2863");
+    MockHttpServletRequestBuilder originalBuilder =
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(originalRequestBody);
+    this._mockMvc.perform(originalBuilder).andExpect(status().isOk());
+
+    // when
+    String duplicateRequestBody =
+        createAccountRequest(
+            "Central Schools",
+            "AZ",
+            "k12",
+            "Susie",
+            "",
+            "Smith",
+            "susie@example.com",
+            "760-858-9900");
+
+    MockHttpServletRequestBuilder duplicateBuilder =
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_ADD_TO_QUEUE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(duplicateRequestBody);
+
+    // then
+    MvcResult result = this._mockMvc.perform(duplicateBuilder).andReturn();
+    assertThat(result.getResponse().getStatus()).isEqualTo(400);
+    assertThat(result.getResponse().getContentAsString())
+        .contains("This organization has already registered with SimpleReport.");
   }
 
   private String createAccountRequest(
