@@ -3035,3 +3035,5 @@ databaseChangeLog:
                   type: boolean
                   remarks: Is this exception an error? If not, it's a warning
               - column: *created_at_column
+        - sql: |
+          GRANT SELECT ON TABLE ${database.defaultSchemaName}.report_stream_exception TO ${noPhiUsername};
