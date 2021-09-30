@@ -199,7 +199,7 @@ export const Analytics = () => {
               )}
               <h3>{facilityName}</h3>
               <p className="margin-bottom-0">All people tested</p>
-              <p>{`${startDate} \u2013 ${endDate}`}</p>
+              <p className="padding-top-1">{`${startDate} \u2013 ${endDate}`}</p>
               <div className="grid-row grid-gap">
                 <div className="grid-col-3">
                   <div className="card display-flex flex-column flex-row">
