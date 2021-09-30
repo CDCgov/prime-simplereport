@@ -5,8 +5,12 @@ import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
 import java.util.HashMap;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class OrganizationAccountRequest implements TemplateVariablesProvider {
 

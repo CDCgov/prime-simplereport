@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.AccountResponse;
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.WaitlistRequest;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -128,7 +129,8 @@ public class AccountRequestController {
           checkForDuplicateOrg(request.getName(), parsedStateCode, request.getEmail());
       String orgExternalId = createOrgExternalId(organizationName, parsedStateCode);
 
-      boolean userExists = _aus.userExists(request.getEmail());
+      String requestEmail = Translators.parseEmail(request.getEmail());
+      boolean userExists = _aus.userExists(requestEmail);
       if (userExists) {
         throw new BadRequestException("User already exists");
       }
@@ -158,6 +160,8 @@ public class AccountRequestController {
       // We rethrow it as a BadRequestException so that users get a toast informing them of the
       // error.
       throw new BadRequestException("This organization has already registered with SimpleReport.");
+    } catch (IllegalGraphqlArgumentException e) {
+      throw new BadRequestException("Invalid email address");
     } catch (IOException | RuntimeException e) {
       throw new AccountRequestFailureException(e);
     }

@@ -8,5 +8,5 @@ public interface OrganizationQueueRepository
     extends EternalAuditedEntityRepository<OrganizationQueueItem> {
 
   @Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.verifiedOrganization IS NULL")
-  List<OrganizationQueueItem> findAllByIdentityVerified();
+  List<OrganizationQueueItem> findAllNotIdentityVerified();
 }
