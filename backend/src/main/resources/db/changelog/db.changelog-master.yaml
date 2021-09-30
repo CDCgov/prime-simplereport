@@ -2952,3 +2952,69 @@ databaseChangeLog:
             indexName: ix__test_event__fac_id-coal_test_date-test-corr_status
         - dropIndex:
             indexName: ix__test_event__prior_corrected_test_event_id
+  - changeSet:
+      id: add-organization-queue-table
+      author: brett.m.maden@omb.eop.gov
+      comment: Add table for newly requested, unverified organizations
+      changes:
+        - tagDatabase:
+            tag: add-organization-queue-table
+        - createTable:
+            tableName: organization_queue
+            remarks: Organizations that have requested to start using SimpleReport
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+              - column: *soft_delete_column
+              - column:
+                  name: organization_name
+                  type: text
+                  remarks: Organization name (cleaned)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: organization_external_id
+                  type: text
+                  remarks: Organization external id (cleaned)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: request_data
+                  type: jsonb
+                  remarks: The original request data (including name, email, phone, etc)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: verified_organization_id
+                  type: uuid
+                  remarks: A foreign key to an organization created when this queue item was identity verified
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__internal_id__organization
+                    references: organization
+        - createView:
+            viewName: organization_queue_no_phi_view
+            remarks: A subset of the organization_queue table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: SELECT internal_id, created_at, updated_at, organization_name, organization_external_id, verified_organization_id FROM ${database.defaultSchemaName}.organization_queue
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.organization_queue_no_phi_view TO ${noPhiUsername};
+      rollback:
+        - dropView:
+            viewName: organization_queue_no_phi_view
+        - dropTable:
+            tableName: organization_queue
+  - changeSet:
+      id: drop-not-null-constraint-swab_type
+      author: zedd@skylight.digital
+      comment: Drop the not null constraint for swab_type in device_type
+      changes:
+        - tagDatabase:
+            tag: drop-not-null-constraint-swab_type
+        - dropNotNullConstraint:
+            columnName: swab_type
+            tableName: device_type

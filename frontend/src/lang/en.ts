@@ -329,7 +329,7 @@ export const en = {
           intro: {
             p0:
               "As a Testing Facility (Facility) or its user (Facility User) accessing or using SimpleReport (Application) provided by the " +
-              "Centers for Disease Control and Prevention (CDC) and the U.S.Department of Health and Human Services (HHS), in a CDC cloud " +
+              "Centers for Disease Control and Prevention (CDC) and the U.S. Department of Health and Human Services (HHS), in a CDC cloud " +
               'environment (" CDC Platform"), you acknowledge and agree that you are solely responsible for and shall abide by these Terms ' +
               "of Service, as well as any relevant sections of <0>CDC's Privacy Policies</0> (collectively, Terms).",
           },

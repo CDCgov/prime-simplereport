@@ -122,7 +122,7 @@ class ReminderServiceTest extends BaseServiceTest<ReminderService> {
     // created_at to noon gmt the previous day, which will fall in the range of times the id
     // verification reminder email will be sent to.
     String query =
-        "UPDATE simple_report.organization SET created_at = (created_at - INTERVAL '1 DAY')::date + INTERVAL '12 hour' WHERE internal_id = ?";
+        "UPDATE simple_report.organization SET created_at = (NOW() + AGE(NOW() AT TIME ZONE 'America/New_York', NOW()) - INTERVAL '1 DAY')::date + INTERVAL '12 hour' WHERE internal_id = ?";
     Connection conn = _jdbc.getDataSource().getConnection();
     PreparedStatement statement = conn.prepareStatement(query);
     statement.setObject(1, org.getInternalId());
