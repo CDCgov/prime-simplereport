@@ -4,9 +4,7 @@ import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.Role;
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -69,24 +67,10 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String defaultDeviceId) {
     _os.assertFacilityNameAvailable(testingFacilityName);
 
-    DeviceSpecimenTypeHolder dstHolder;
-
-    if (deviceSpecimenTypes == null) {
-      dstHolder = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
-    } else {
-      List<DeviceSpecimenType> dsts = _dts.getDeviceSpecimenTypesByIds(deviceSpecimenTypes);
-
-      DeviceSpecimenType defaultDeviceSpecimenType =
-          dsts.stream()
-              .filter(dst -> defaultDeviceId.equals(dst.getDeviceType().getInternalId().toString()))
-              .findAny()
-              .orElseThrow(
-                  () ->
-                      new IllegalGraphqlArgumentException(
-                          "No default device specimen type selected"));
-
-      dstHolder = new DeviceSpecimenTypeHolder(defaultDeviceSpecimenType, dsts);
-    }
+    DeviceSpecimenTypeHolder dstHolder =
+        deviceSpecimenTypes == null
+            ? _dts.getTypesForFacility(defaultDeviceId, deviceIds)
+            : _dts.getDeviceSpecimenTypesForFacility(defaultDeviceId, deviceSpecimenTypes);
 
     StreetAddress facilityAddress =
         _avs.getValidatedAddress(
@@ -117,6 +101,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             providerAddress,
             orderingProviderTelephone,
             orderingProviderNPI);
+
     return new ApiFacility(created);
   }
 
@@ -148,23 +133,10 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       List<String> deviceSpecimenTypes,
       String defaultDeviceId) {
 
-    DeviceSpecimenTypeHolder dstHolder;
-    if (deviceSpecimenTypes == null) {
-      dstHolder = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
-    } else {
-      List<DeviceSpecimenType> dsts = _dts.getDeviceSpecimenTypesByIds(deviceSpecimenTypes);
-
-      DeviceSpecimenType defaultDeviceSpecimenType =
-          dsts.stream()
-              .filter(dst -> defaultDeviceId.equals(dst.getDeviceType().getInternalId().toString()))
-              .findAny()
-              .orElseThrow(
-                  () ->
-                      new IllegalGraphqlArgumentException(
-                          "No default device specimen type selected"));
-
-      dstHolder = new DeviceSpecimenTypeHolder(defaultDeviceSpecimenType, dsts);
-    }
+    DeviceSpecimenTypeHolder dstHolder =
+        deviceSpecimenTypes == null
+            ? _dts.getTypesForFacility(defaultDeviceId, deviceIds)
+            : _dts.getDeviceSpecimenTypesForFacility(defaultDeviceId, deviceSpecimenTypes);
 
     StreetAddress facilityAddress =
         _avs.getValidatedAddress(

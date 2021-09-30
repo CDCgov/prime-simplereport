@@ -57,7 +57,7 @@ public class DeviceTypeService {
   }
 
   public List<DeviceSpecimenType> getDeviceSpecimenTypesByIds(List<String> deviceSpecimenTypeIds) {
-    List<DeviceSpecimenType> deviceSpecimenTypes = new ArrayList();
+    List<DeviceSpecimenType> deviceSpecimenTypes = new ArrayList<DeviceSpecimenType>();
 
     Iterable<DeviceSpecimenType> results =
         _deviceSpecimenRepo.findAllById(
@@ -168,5 +168,30 @@ public class DeviceTypeService {
                     new RuntimeException(
                         "Inexplicable inability to find device for ID " + defaultId.toString()));
     return new DeviceSpecimenTypeHolder(defaultType, configuredTypes);
+  }
+
+  public DeviceSpecimenTypeHolder getDeviceSpecimenTypesForFacility(
+      String defaultDeviceSpecimenTypeId, List<String> configuredDeviceSpecimenTypeIds) {
+    if (!configuredDeviceSpecimenTypeIds.contains(defaultDeviceSpecimenTypeId)) {
+      throw new IllegalGraphqlArgumentException(
+          "default device type must be included in device type list");
+    }
+
+    List<DeviceSpecimenType> dsts =
+        this.getDeviceSpecimenTypesByIds(configuredDeviceSpecimenTypeIds);
+
+    DeviceSpecimenType defaultDeviceSpecimenType =
+        dsts.stream()
+            .filter(
+                dst ->
+                    defaultDeviceSpecimenTypeId.equals(
+                        dst.getDeviceType().getInternalId().toString()))
+            .findAny()
+            .orElseThrow(
+                () ->
+                    new IllegalGraphqlArgumentException(
+                        "No default device specimen type selected"));
+
+    return new DeviceSpecimenTypeHolder(defaultDeviceSpecimenType, dsts);
   }
 }
