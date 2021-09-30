@@ -643,9 +643,9 @@ export type QueryTestResultsCountArgs = {
 };
 
 export type QueryTopLevelDashboardMetricsArgs = {
-  endDate: Scalars["DateTime"];
+  endDate?: Maybe<Scalars["DateTime"]>;
   facilityId?: Maybe<Scalars["ID"]>;
-  startDate: Scalars["DateTime"];
+  startDate?: Maybe<Scalars["DateTime"]>;
 };
 
 export type QueryUserArgs = {
