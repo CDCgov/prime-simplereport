@@ -28,5 +28,5 @@ provider "azurerm" {
 
 provider "okta" {
   org_name = "hhs-prime"
-  base_url = "okta.com"
+  base_url = "oktapreview.com"
 }
