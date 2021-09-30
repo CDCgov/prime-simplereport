@@ -7,7 +7,7 @@ import {
 } from "../../../generated/graphql";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
-import { ComboBoxOption } from "../../commonComponents/MultiSelect/ComboBox/ComboBox";
+import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 
 import DeviceTypeForm from "./DeviceTypeForm";
 
@@ -21,7 +21,9 @@ export interface Device {
 
 const DeviceTypeFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
-  const [swabOptions, setSwabOptions] = useState<Array<ComboBoxOption>>([]);
+  const [swabOptions, setSwabOptions] = useState<
+    Array<MultiSelectDropdownOption>
+  >([]);
 
   const [createDeviceType] = useCreateDeviceTypeNewMutation();
   const { data } = useGetSpecimenTypesQuery();

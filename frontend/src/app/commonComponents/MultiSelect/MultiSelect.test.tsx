@@ -2,13 +2,13 @@ import { render, screen, cleanup, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import MultiSelect from "./MultiSelect";
-import { ComboBoxOption } from "./ComboBox/ComboBox";
+import { MultiSelectDropdownOption } from "./MultiSelectDropdown/MultiSelectDropdown";
 
 jest.mock("@fortawesome/react-fontawesome", () => ({
   FontAwesomeIcon: () => <p>x</p>,
 }));
 
-const fruitOptions: ComboBoxOption[] = [
+const fruitOptions: MultiSelectDropdownOption[] = [
   { label: "Apples", value: "Apples" },
   { label: "Bananas", value: "Bananas" },
   { label: "Blueberries", value: "Blueberries" },
@@ -36,7 +36,7 @@ describe("Multi Select", () => {
   });
 
   it("should display the option list when clicking on the input", () => {
-    const optionList = screen.getByTestId("combo-box-option-list");
+    const optionList = screen.getByTestId("multi-select-option-list");
     expect(optionList).toBeInTheDocument();
     expect(optionList.children.length).toEqual(6);
     expect(within(optionList).getByText("Apples")).toBeInTheDocument();
@@ -49,8 +49,8 @@ describe("Multi Select", () => {
 
   describe("when selecting an item", () => {
     beforeEach(() => {
-      userEvent.click(screen.getByTestId("combo-box-input"));
-      const optionList = screen.getByTestId("combo-box-option-list");
+      userEvent.click(screen.getByTestId("multi-select-input"));
+      const optionList = screen.getByTestId("multi-select-option-list");
       userEvent.click(within(optionList).getByText("Apples"));
       userEvent.click(within(optionList).getByText("Oranges"));
     });
@@ -64,7 +64,7 @@ describe("Multi Select", () => {
       within(pillContainer).getByText("Oranges");
     });
     it("should show the remove the selected options from the options list", () => {
-      const optionList = screen.getByTestId("combo-box-option-list");
+      const optionList = screen.getByTestId("multi-select-option-list");
       expect(optionList).toBeInTheDocument();
       expect(optionList.children.length).toEqual(4);
       expect(within(optionList).queryByText("Apples")).not.toBeInTheDocument();
@@ -78,7 +78,7 @@ describe("Multi Select", () => {
         userEvent.click(
           within(pillContainer).getByTestId("Apples-pill-delete")
         );
-        userEvent.click(screen.getByTestId("combo-box-input"));
+        userEvent.click(screen.getByTestId("multi-select-input"));
       });
 
       it("should remove the pill ", () => {
@@ -89,7 +89,7 @@ describe("Multi Select", () => {
         within(pillContainer).getByText("Oranges");
       });
       it("should make the option available to select", () => {
-        const optionList = screen.getByTestId("combo-box-option-list");
+        const optionList = screen.getByTestId("multi-select-option-list");
         expect(optionList).toBeInTheDocument();
         expect(optionList.children.length).toEqual(5);
         expect(

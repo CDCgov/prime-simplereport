@@ -3,13 +3,13 @@ import React, { useState } from "react";
 import Button from "../../commonComponents/Button/Button";
 import TextInput from "../../commonComponents/TextInput";
 import MultiSelect from "../../commonComponents/MultiSelect/MultiSelect";
-import { ComboBoxOption } from "../../commonComponents/MultiSelect/ComboBox/ComboBox";
+import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 
 import { Device } from "./DeviceTypeFormContainer";
 
 interface Props {
   saveDeviceType: (device: Device) => void;
-  swabOptions: Array<ComboBoxOption>;
+  swabOptions: Array<MultiSelectDropdownOption>;
 }
 
 const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {

@@ -1,7 +1,7 @@
 import React, { useReducer } from "react";
 
-import type { ComboBoxOption } from "./ComboBox";
-import { FocusMode } from "./ComboBox";
+import type { MultiSelectDropdownOption } from "./MultiSelectDropdown";
+import { FocusMode } from "./MultiSelectDropdown";
 
 export enum ActionTypes {
   SELECT_OPTION,
@@ -28,7 +28,7 @@ export type Action =
     }
   | {
       type: ActionTypes.FOCUS_OPTION;
-      option: ComboBoxOption;
+      option: MultiSelectDropdownOption;
     }
   | {
       type: ActionTypes.UPDATE_FILTER;
@@ -39,21 +39,21 @@ export type Action =
     };
 export interface State {
   isOpen: boolean;
-  focusedOption?: ComboBoxOption;
+  focusedOption?: MultiSelectDropdownOption;
   focusMode: FocusMode;
   filter?: string;
-  filteredOptions: ComboBoxOption[];
+  filteredOptions: MultiSelectDropdownOption[];
   inputValue: string;
 }
 
-export const useCombobox = (
+export const useMultiSelectDropdown = (
   initialState: State,
-  optionsList: ComboBoxOption[]
+  optionsList: MultiSelectDropdownOption[]
 ): [State, React.Dispatch<Action>] => {
   const isPartialMatch = (
     needle: string
-  ): ((event: ComboBoxOption) => boolean) => {
-    return (option: ComboBoxOption): boolean =>
+  ): ((event: MultiSelectDropdownOption) => boolean) => {
+    return (option: MultiSelectDropdownOption): boolean =>
       option.label.toLowerCase().includes(needle.toLowerCase());
   };
 

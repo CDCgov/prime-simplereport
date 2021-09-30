@@ -1,22 +1,21 @@
 import React, { KeyboardEvent, FocusEvent, useEffect, useRef } from "react";
 import classnames from "classnames";
 
-import { ActionTypes, Action, State, useCombobox } from "./useCombobox";
+import {
+  ActionTypes,
+  Action,
+  State,
+  useMultiSelectDropdown,
+} from "./useMultiSelectDropdown";
 
 /*
 
-  This code is from the TrussWorks react-uswds library: https://github.com/trussworks/react-uswds
+  This component is Based on ComboBox from the TrussWorks react-uswds library: https://github.com/trussworks/react-uswds
   It is licensed under Apache 2.0: https://github.com/trussworks/react-uswds/blob/main/LICENSE
 
 */
 
-/*  As per USWDS spec, ComboBox includes a HTML <select> with options AND a separate <input> and dropdown <ul> with items.
-    The select is usa-sr-only and is always hidden via CSS. The input and dropdown list are the elements used for interaction.
-
-    There is the ability to pass in custom props directly to the select and input.
-    This should be using sparingly and not with existing Combobox props such as disabled, onChange, defaultValue.
-*/
-export interface ComboBoxOption {
+export interface MultiSelectDropdownOption {
   value: string;
   label: string;
 }
@@ -32,13 +31,13 @@ export enum FocusMode {
   Item,
 }
 
-interface ComboBoxProps {
+interface MultiSelectDropDownProps {
   id: string;
   name: string;
   className?: string;
-  options: ComboBoxOption[];
+  options: MultiSelectDropdownOption[];
   disabled?: boolean;
-  onChange: (option: ComboBoxOption) => void;
+  onChange: (option: MultiSelectDropdownOption) => void;
   noResults?: string;
   inputProps?: JSX.IntrinsicElements["input"];
 }
@@ -47,7 +46,7 @@ interface InputProps {
   focused: boolean;
 }
 
-const ComboBoxInput = ({
+const MultiSelectInput = ({
   focused,
   ...inputProps
 }: InputProps & JSX.IntrinsicElements["input"]): React.ReactElement => {
@@ -62,7 +61,7 @@ const ComboBoxInput = ({
     <input
       type="text"
       className="usa-combo-box__input"
-      data-testid="combo-box-input"
+      data-testid="multi-select-input"
       {...inputProps}
       autoCapitalize="off"
       autoComplete="off"
@@ -100,7 +99,7 @@ const focusSibling = (
 const handleInputKeyDown = (
   dispatch: React.Dispatch<Action>,
   state: State,
-  selectOption: (option: ComboBoxOption) => void
+  selectOption: (option: MultiSelectDropdownOption) => void
 ) => (event: KeyboardEvent): void => {
   if (event.key === "Escape") {
     dispatch({ type: ActionTypes.CLOSE_LIST });
@@ -149,7 +148,7 @@ const handleInputKeyDown = (
 const handleListItemKeyDown = (
   dispatch: React.Dispatch<Action>,
   state: State,
-  selectOption: (option: ComboBoxOption) => void
+  selectOption: (option: MultiSelectDropdownOption) => void
 ) => (event: KeyboardEvent): void => {
   if (event.key === "Escape") {
     dispatch({ type: ActionTypes.CLOSE_LIST });
@@ -167,7 +166,7 @@ const handleListItemKeyDown = (
   }
 };
 
-export const ComboBox = ({
+export const MultiSelectDropdown = ({
   id,
   name,
   className,
@@ -176,7 +175,7 @@ export const ComboBox = ({
   onChange,
   noResults,
   inputProps,
-}: ComboBoxProps): React.ReactElement => {
+}: MultiSelectDropDownProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
   const initialState: State = {
@@ -188,12 +187,12 @@ export const ComboBox = ({
     inputValue: "",
   };
 
-  const [state, dispatch] = useCombobox(initialState, options);
+  const [state, dispatch] = useMultiSelectDropdown(initialState, options);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRef = useRef<HTMLLIElement>(null);
 
-  const selectOption = (option: ComboBoxOption) => {
+  const selectOption = (option: MultiSelectDropdownOption) => {
     onChange(option);
     dispatch({
       type: ActionTypes.SELECT_OPTION,
@@ -248,16 +247,16 @@ export const ComboBox = ({
     "usa-combo-box usa-combo-box--pristine",
     className
   );
-  const listID = `combobox-${name}-list`;
+  const listID = `multi-select-${name}-list`;
 
   return (
     <div
-      data-testid="combo-box"
+      data-testid="multi-select"
       className={containerClasses}
       id={id}
       ref={containerRef}
     >
-      <ComboBoxInput
+      <MultiSelectInput
         onChange={(e): void =>
           dispatch({ type: ActionTypes.UPDATE_FILTER, value: e.target.value })
         }
@@ -266,7 +265,7 @@ export const ComboBox = ({
         onKeyDown={handleInputKeyDown(dispatch, state, selectOption)}
         value={state.inputValue}
         focused={state.focusMode === FocusMode.Input}
-        role="combobox"
+        role="multi-select-input"
         aria-owns={listID}
         aria-expanded={state.isOpen}
         disabled={isDisabled}
@@ -275,7 +274,7 @@ export const ComboBox = ({
       <span className="usa-combo-box__input-button-separator">&nbsp;</span>
       <span className="usa-combo-box__toggle-list__wrapper" tabIndex={-1}>
         <button
-          data-testid="combo-box-toggle"
+          data-testid="multi-select-toggle"
           type="button"
           className="usa-combo-box__toggle-list"
           tabIndex={-1}
@@ -293,7 +292,7 @@ export const ComboBox = ({
         </button>
       </span>
       <ul
-        data-testid="combo-box-option-list"
+        data-testid="multi-select-option-list"
         tabIndex={-1}
         id={listID}
         className="usa-combo-box__list"
@@ -320,7 +319,7 @@ export const ComboBox = ({
               id={listID + `--option-${index}`}
               onKeyDown={handleListItemKeyDown(dispatch, state, selectOption)}
               onBlur={handleListItemBlur}
-              data-testid={`combo-box-option-${option.value}`}
+              data-testid={`multi-select-option-${option.value}`}
               onMouseMove={(): void =>
                 dispatch({ type: ActionTypes.FOCUS_OPTION, option: option })
               }
@@ -344,4 +343,4 @@ export const ComboBox = ({
   );
 };
 
-export default ComboBox;
+export default MultiSelectDropdown;

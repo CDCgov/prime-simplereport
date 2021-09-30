@@ -1,7 +1,7 @@
 import { Story, Meta } from "@storybook/react";
 import React from "react";
 
-import { ComboBoxOption } from "./ComboBox/ComboBox";
+import { MultiSelectDropdownOption } from "./MultiSelectDropdown/MultiSelectDropdown";
 import MultiSelect, { MultiSelectProps } from "./MultiSelect";
 
 export default {
@@ -19,7 +19,7 @@ export default {
       { label: "Grapes", value: "Grapes" },
       { label: "Oranges", value: "Oranges" },
       { label: "Strawberries", value: "Strawberries" },
-    ] as Array<ComboBoxOption>,
+    ] as Array<MultiSelectDropdownOption>,
   } as MultiSelectProps,
 } as Meta;
 

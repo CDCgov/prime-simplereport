@@ -7,7 +7,9 @@ import _ from "lodash";
 import Required from "../Required";
 import Optional from "../Optional";
 
-import ComboBox, { ComboBoxOption } from "./ComboBox/ComboBox";
+import MultiSelectDropdown, {
+  MultiSelectDropdownOption,
+} from "./MultiSelectDropdown/MultiSelectDropdown";
 
 import "./MultiSelect.scss";
 
@@ -22,7 +24,7 @@ export type MultiSelectProps = {
   hintText?: string | React.ReactNode;
   onChange: (selectedItems: string[]) => void;
   labelClassName?: string;
-  options: ComboBoxOption[];
+  options: MultiSelectDropdownOption[];
   className?: string;
   initalSelectedOptions?: Array<string>;
   disabled?: boolean;
@@ -30,8 +32,8 @@ export type MultiSelectProps = {
 };
 
 type PillProps = {
-  option: ComboBoxOption;
-  onDelete: (option: ComboBoxOption) => void;
+  option: MultiSelectDropdownOption;
+  onDelete: (option: MultiSelectDropdownOption) => void;
 };
 
 const Pill = (props: PillProps) => (
@@ -47,7 +49,7 @@ const Pill = (props: PillProps) => (
   </div>
 );
 
-const getSortedOptions = (options: ComboBoxOption[]) =>
+const getSortedOptions = (options: MultiSelectDropdownOption[]) =>
   _.orderBy(options, ["label"], ["asc"]);
 
 export const MultiSelect = ({
@@ -67,14 +69,14 @@ export const MultiSelect = ({
 }: MultiSelectProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
-  const [availableOptions, setAvailableOptions] = useState<ComboBoxOption[]>(
-    getSortedOptions(options)
-  );
+  const [availableOptions, setAvailableOptions] = useState<
+    MultiSelectDropdownOption[]
+  >(getSortedOptions(options));
   const [selectedItems, setSelectedItems] = useState<string[] | undefined>(
     undefined
   );
 
-  const onItemSelected = (option: ComboBoxOption) => {
+  const onItemSelected = (option: MultiSelectDropdownOption) => {
     const newSelectedItems = selectedItems
       ? [...selectedItems, option.value]
       : [option.value];
@@ -84,7 +86,7 @@ export const MultiSelect = ({
     );
   };
 
-  const onItemUnSelected = (option: ComboBoxOption) => {
+  const onItemUnSelected = (option: MultiSelectDropdownOption) => {
     const selectedItemsSet = new Set(selectedItems);
     selectedItemsSet.delete(option.value);
     setSelectedItems(Array.from(selectedItemsSet));
@@ -148,12 +150,12 @@ export const MultiSelect = ({
           {getErrorMessage(id)}
           {getHintText()}
 
-          <ComboBox
+          <MultiSelectDropdown
             id={id}
             name={name}
             options={availableOptions}
             onChange={onItemSelected}
-            className="combo-box"
+            className="multi-select-dropdown"
             disabled={isDisabled}
           />
           <div className="pill-container" data-testid="pill-container">

@@ -52,7 +52,7 @@ describe("DeviceTypeFormContainer", () => {
     addValue("LOINC code", "95409-9");
 
     act(() => {
-      userEvent.click(screen.getByTestId("combo-box-input"));
+      userEvent.click(screen.getByTestId("multi-select-input"));
     });
 
     act(() => {
