@@ -1,8 +1,6 @@
-import React from "react";
-
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
-const Admin = () => {
+const SupportAdmin = () => {
   return (
     <main className="prime-home">
       <div className="grid-container">
@@ -10,7 +8,7 @@ const Admin = () => {
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h2>Admin</h2>
+                <h2>Support Admin</h2>
               </div>
             </div>
             <div className="usa-card__body">
@@ -34,11 +32,6 @@ const Admin = () => {
                   Organization data
                 </LinkWithQuery>
               </div>
-              <div>
-                <LinkWithQuery to="/admin/analytics">
-                  Organization analytics
-                </LinkWithQuery>
-              </div>
             </div>
           </div>
         </div>
@@ -47,4 +40,4 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+export default SupportAdmin;

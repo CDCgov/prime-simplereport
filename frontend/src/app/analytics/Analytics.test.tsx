@@ -215,7 +215,7 @@ describe("Analytics", () => {
   it("allows filtering by Lincoln Middle School", async () => {
     await act(async () => {
       await screen.findByText("COVID-19 testing data");
-      userEvent.selectOptions(screen.getByLabelText("Facility"), [
+      userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
         "Lincoln Middle School",
       ]);
     });
@@ -227,7 +227,7 @@ describe("Analytics", () => {
   it("allows filtering by Rosa Parks High School", async () => {
     await act(async () => {
       await screen.findByText("COVID-19 testing data");
-      userEvent.selectOptions(screen.getByLabelText("Facility"), [
+      userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
         "Rosa Parks High School",
       ]);
     });
@@ -294,7 +294,7 @@ describe("Analytics", () => {
   it("shows N/A for positivity rate at Empty School", async () => {
     await act(async () => {
       await screen.findByText("COVID-19 testing data");
-      userEvent.selectOptions(screen.getByLabelText("Facility"), [
+      userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
         "Empty School",
       ]);
     });

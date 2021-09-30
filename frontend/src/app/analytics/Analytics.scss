@@ -1,7 +1,7 @@
 #analytics-page {
   padding-bottom: 2em;
 
-  .card-container {
+  .prime-container {
     h3 {
       margin-bottom: 0;
       margin-top: 2rem;
@@ -42,13 +42,17 @@
       height: 25px;
       font-weight: 400;
       margin: 0;
-      font-size: 20px;
+      font-size: 19px;
     }
 
     p {
       height: 25px;
       font-size: 20px;
       margin: 0;
+
+      span {
+        font-size: 18px;
+      }
     }
   }
 }
