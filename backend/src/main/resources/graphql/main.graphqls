@@ -59,6 +59,7 @@ type DeviceType {
   model: String
   loincCode: String
   swabType: String
+  swabTypes: String
   testLength: Int
 }
 
