@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConfiguredReportStreamExceptionCallbackService
     implements ReportStreamExceptionCallbackService {
-  private final String TOKEN_HEADER = "x-functions-key";
+  private static final String TOKEN_HEADER = "x-functions-key";
   private final String apiToken;
   private final ReportStreamExceptionRepository reportStreamExceptionRepository;
 
