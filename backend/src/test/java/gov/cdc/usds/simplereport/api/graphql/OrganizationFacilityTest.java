@@ -9,6 +9,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -16,6 +18,7 @@ import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,13 +115,18 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
 
   private ObjectNode getDeviceArgs() {
     String someDeviceType = _deviceService.fetchDeviceTypes().get(0).getInternalId().toString();
-    String someDeviceSpecimenTypes =
-        _deviceService.getDeviceSpecimenTypes().get(0).getInternalId().toString();
+    List<String> someDeviceSpecimenTypes =
+        List.of(_deviceService.getDeviceSpecimenTypes().get(0).getInternalId().toString());
+
+    final ObjectMapper mapper = new ObjectMapper();
+
     ObjectNode variables =
         JsonNodeFactory.instance
             .objectNode()
             .put("deviceId", someDeviceType)
-            .put("deviceSpecimenTypes", someDeviceSpecimenTypes);
+            .set(
+                "deviceSpecimenTypes",
+                mapper.convertValue(someDeviceSpecimenTypes, JsonNode.class));
 
     return variables;
   }
