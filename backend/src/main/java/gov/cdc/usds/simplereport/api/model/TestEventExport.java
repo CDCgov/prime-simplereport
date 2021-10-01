@@ -296,7 +296,7 @@ public class TestEventExport {
     return dateToHealthCareString(
         convertToLocalDateTime(
             Date.from(
-                testEvent.getDateTested().toInstant().plus(Duration.ofMinutes(testDuration)))));
+                testEvent.getDateTested().toInstant().minus(Duration.ofMinutes(testDuration)))));
   }
 
   @JsonProperty("Ordering_provider_ID")

@@ -156,16 +156,16 @@ class TestEventExportTest {
     Facility f = _dataFactory.createValidFacility(o);
     Person p = _dataFactory.createFullPerson(o);
 
-    var dStr = "20201215";
     TestEvent te =
         _dataFactory.createTestEvent(
             p,
             f,
             AskOnEntrySurvey.builder().symptoms(Collections.emptyMap()).build(),
             TestResult.NEGATIVE,
-            new SimpleDateFormat("yyyyMMdd").parse(dStr));
+            new SimpleDateFormat("yyyyMMdd").parse("20201215"));
     TestEventExport sut = new TestEventExport(te);
 
-    assertEquals(dStr + "001500", sut.getSpecimenCollectionDateTime());
+    assertEquals("20201215000000", sut.getTestDate());
+    assertEquals("20201214234500", sut.getSpecimenCollectionDateTime());
   }
 }
