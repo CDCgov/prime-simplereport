@@ -3,10 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import classNames from "classnames";
 import { v4 as uuidv4 } from "uuid";
 import { useSelector, connect } from "react-redux";
-import {
-  useAppInsightsContext,
-  useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
 
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import { formatFullName, formatRole } from "../utils/user";
@@ -14,6 +10,7 @@ import siteLogo from "../../img/simplereport-logo-color.svg";
 import { hasPermission, appPermissions } from "../permissions";
 import { RootState } from "../store";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
+import { getAppInsights } from "../TelemetryService";
 
 import Button from "./Button/Button";
 import Dropdown from "./Dropdown";
@@ -24,12 +21,13 @@ import ChangeUser from "./ChangeUser";
 import "./Header.scss";
 
 const Header: React.FC<{}> = () => {
-  const appInsights = useAppInsightsContext();
-  const trackSupport = useTrackEvent(appInsights, "Support", {});
+  const appInsights = getAppInsights();
 
   const handleSupportClick = (e: MouseEvent) => {
+    console.info("Preparing tracking...");
     if (appInsights) {
-      trackSupport(e);
+      console.info("Tracking...");
+      appInsights.trackEvent({ name: "Support" });
     }
   };
 

@@ -2,10 +2,6 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
-import {
-  useAppInsightsContext,
-  useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
 import classnames from "classnames";
 import moment from "moment";
 import { DatePicker, Label } from "@trussworks/react-uswds";
@@ -34,6 +30,8 @@ import "./QueueItem.scss";
 import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
 import { QueueItemSubmitLoader } from "./QueueItemSubmitLoader";
 import { UPDATE_AOE } from "./addToQueue/AddToQueueSearch";
+
+import { getAppInsights } from "../TelemetryService";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
 
@@ -185,22 +183,13 @@ const QueueItem = ({
   facilityId,
   dateTestedProp,
 }: QueueItemProps) => {
-  const appInsights = useAppInsightsContext();
-  const trackRemovePatientFromQueue = useTrackEvent(
-    appInsights,
-    "Remove Patient From Queue",
-    {}
-  );
-  const trackSubmitTestResult = useTrackEvent(
-    appInsights,
-    "Submit Test Result",
-    {}
-  );
-  const trackUpdateAoEResponse = useTrackEvent(
-    appInsights,
-    "Update AoE Response",
-    {}
-  );
+  const appInsights = getAppInsights();
+  const trackRemovePatientFromQueue = () =>
+    appInsights?.trackEvent({ name: "Remove Patient From Queue" });
+  const trackSubmitTestResult = () =>
+    appInsights?.trackEvent({ name: "Submit Test Result" });
+  const trackUpdateAoEResponse = () =>
+    appInsights?.trackEvent({ name: "Update AoE Response" });
 
   const [mutationError, updateMutationError] = useState(null);
   const [removePatientFromQueue] = useMutation(REMOVE_PATIENT_FROM_QUEUE);
@@ -305,7 +294,7 @@ const QueueItem = ({
 
     setSaveState("saving");
     if (appInsights) {
-      trackSubmitTestResult({});
+      trackSubmitTestResult();
     }
     setConfirmationType("none");
     try {
@@ -412,7 +401,7 @@ const QueueItem = ({
   const removeFromQueue = () => {
     setConfirmationType("none");
     if (appInsights) {
-      trackRemovePatientFromQueue({});
+      trackRemovePatientFromQueue();
     }
     removePatientFromQueue({
       variables: {
@@ -440,7 +429,7 @@ const QueueItem = ({
   const saveAoeCallback = (answers: AoEAnswers) => {
     setAoeAnswers(answers);
     if (appInsights) {
-      trackUpdateAoEResponse({});
+      trackUpdateAoEResponse();
     }
 
     const symptomOnset = answers.symptomOnset

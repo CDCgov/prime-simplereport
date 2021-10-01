@@ -3,9 +3,9 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router";
 import createMockStore from "redux-mock-store";
-import { useTrackEvent } from "@microsoft/applicationinsights-react-js";
 
 import Header from "../Header";
+import { getAppInsights } from "../../TelemetryService";
 import "../../../i18n";
 import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 
@@ -26,20 +26,23 @@ const store = mockStore({
   ],
 });
 
-jest.mock("@microsoft/applicationinsights-react-js", () => ({
-  useAppInsightsContext: () => {},
-  useTrackEvent: jest.fn(),
+jest.mock("../../TelemetryService", () => ({
+  getAppInsights: jest.fn(),
 }));
 
 describe("Header.tsx", () => {
   const OLD_ENV = process.env;
+  const trackEventMock = jest.fn();
 
   beforeEach(() => {
-    jest.resetModules();
+    (getAppInsights as jest.Mock).mockImplementation(() => ({
+      trackEvent: trackEventMock,
+    }));
     process.env = { ...OLD_ENV };
   });
 
   afterAll(() => {
+    (getAppInsights as jest.Mock).mockReset();
     process.env = OLD_ENV;
   });
 
@@ -62,7 +65,7 @@ describe("Header.tsx", () => {
     await waitFor(() => {
       userEvent.click(screen.getByTestId("support-link"));
     });
-    expect(useTrackEvent).toHaveBeenCalledWith(undefined, "Support", {});
+    expect(trackEventMock).toHaveBeenCalledWith({ name: "Support" });
   });
   it("it does not render login links", () => {
     expect(

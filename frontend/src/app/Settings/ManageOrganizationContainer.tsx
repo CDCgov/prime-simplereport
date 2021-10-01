@@ -1,12 +1,9 @@
 import React, { ComponentProps } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { gql, useQuery, useMutation } from "@apollo/client";
-import {
-  useAppInsightsContext,
-  useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
 
 import Alert from "../commonComponents/Alert";
+import { getAppInsights } from "../TelemetryService";
 import { showNotification } from "../utils";
 import { RootState, updateOrganization } from "../store";
 
@@ -52,12 +49,7 @@ const ManageOrganizationContainer: any = () => {
   );
   const [adminSetOrganization] = useMutation(ADMIN_SET_ORGANIZATION);
   const [setOrganization] = useMutation(SET_ORGANIZATION);
-  const appInsights = useAppInsightsContext();
-  const trackSaveSettings = useTrackEvent(
-    appInsights,
-    "Save Organization",
-    null
-  );
+  const appInsights = getAppInsights();
 
   if (loading) {
     return <p> Loading... </p>;
@@ -72,7 +64,7 @@ const ManageOrganizationContainer: any = () => {
 
   const onSave = async ({ name, type }: EditableOrganization) => {
     if (appInsights) {
-      trackSaveSettings(null);
+      appInsights.trackEvent({ name: "Save Organization" });
     }
     const mutation = isSuperUser
       ? () => adminSetOrganization({ variables: { name, type } })
