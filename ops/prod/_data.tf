@@ -191,7 +191,7 @@ data "azurerm_key_vault_secret" "experian_preciseid_password" {
 
 data "azurerm_key_vault_secret" "report_stream_exception_callback_token" {
   name         = "report-stream-exception-callback-prod"
-  key_vault_id = data.azurerm_key_vault.sr_global.id
+  key_vault_id = data.azurerm_key_vault.global.id
 }
 
 # logs
