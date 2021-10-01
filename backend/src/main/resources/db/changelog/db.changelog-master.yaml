@@ -3027,6 +3027,7 @@ databaseChangeLog:
             tableName: report_stream_response
             remarks: A non-audited table to track exceptional publish responses from ReportStream
             columns:
+              - column: *pk_column
               - column:
                   name: test_event_internal_id
                   type: uuid
