@@ -132,24 +132,13 @@ public class AccountRequestController {
       String requestEmail = Translators.parseEmail(request.getEmail());
       boolean userExists = _aus.userExists(requestEmail);
       if (userExists) {
-        throw new BadRequestException("User already exists");
+        throw new BadRequestException(
+            "This email address is already associated with a SimpleReport user.");
       }
 
       OrganizationQueueItem item = _os.queueNewRequest(organizationName, orgExternalId, request);
 
       return new AccountResponse(item.getExternalId());
-    } catch (ResourceException e) {
-      // The `ResourceException` is mostly thrown when a user requests an account with an email
-      // address that's already in Okta, but can be thrown for other Okta internal errors as well.
-      // We rethrow it as a BadRequestException so that users get a toast informing them of the
-      // error.
-      if (e.getMessage().contains("An object with this field already exists")) {
-        throw new BadRequestException(
-            "This email address is already associated with a SimpleReport user.");
-      } else {
-        throw new BadRequestException(
-            "An unknown error occurred when creating this organization in Okta.");
-      }
     } catch (BadRequestException e) {
       // Need to catch and re-throw these BadRequestExceptions or they get rethrown as
       // AccountRequestFailureExceptions
