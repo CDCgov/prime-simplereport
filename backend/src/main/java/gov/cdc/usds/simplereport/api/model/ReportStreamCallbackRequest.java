@@ -1,11 +1,11 @@
 package gov.cdc.usds.simplereport.api.model;
 
 import java.util.UUID;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class ReportStreamCallbackRequest {
-  private final UUID testEventInternalId;
-  private final Boolean isError;
-  private final String details;
+  private UUID testEventInternalId;
+  private Boolean isError;
+  private String details;
 }
