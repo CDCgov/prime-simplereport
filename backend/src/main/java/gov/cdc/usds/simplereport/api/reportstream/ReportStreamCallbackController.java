@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.reportstream;
 
 import gov.cdc.usds.simplereport.api.WebhookContextHolder;
+import gov.cdc.usds.simplereport.api.model.ReportStreamCallbackRequest;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
 import gov.cdc.usds.simplereport.db.model.ReportStreamResponse;
 import gov.cdc.usds.simplereport.service.ReportStreamCallbackService;
@@ -26,8 +27,8 @@ public class ReportStreamCallbackController {
 
   @PostMapping(value = "")
   public void callback(
-      @RequestBody ReportStreamResponse reportStreamResponse, HttpServletRequest request) {
+      @RequestBody ReportStreamCallbackRequest requestBody, HttpServletRequest request) {
     webhookContextHolder.setIsWebhook(true);
-    reportStreamCallbackService.log(reportStreamResponse);
+    reportStreamCallbackService.log(ReportStreamResponse.from(requestBody));
   }
 }

@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import gov.cdc.usds.simplereport.api.model.ReportStreamCallbackRequest;
 import java.util.Date;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -19,14 +19,19 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @NoArgsConstructor
 public class ReportStreamResponse {
   /** This is foreign-keyed to TestEvent.internal_id */
-  @JsonProperty @NonNull @Id private UUID testEventInternalId;
+  @NonNull @Id private UUID testEventInternalId;
 
   /** If it's not an error, it's a warning */
-  @JsonProperty @NonNull private Boolean isError;
+  @NonNull private Boolean isError;
 
-  @JsonProperty @NonNull private String details;
+  @NonNull private String details;
 
   @Column(updatable = false)
   @CreatedDate
   private Date createdAt;
+
+  public static ReportStreamResponse from(ReportStreamCallbackRequest request) {
+    return new ReportStreamResponse(
+        request.getTestEventInternalId(), request.getIsError(), request.getDetails());
+  }
 }
