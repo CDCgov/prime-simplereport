@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.api.pxp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.cdc.usds.simplereport.api.SmsWebhookContextHolder;
+import gov.cdc.usds.simplereport.api.WebhookContextHolder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.SmsStatusCallback;
 import gov.cdc.usds.simplereport.service.sms.TextMessageStatusService;
 import java.util.Arrays;
@@ -23,18 +23,18 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class SmsCallbackController {
   private final TextMessageStatusService statusService;
-  private final SmsWebhookContextHolder smsWebhookContextHolder;
+  private final WebhookContextHolder webhookContextHolder;
 
   public SmsCallbackController(
-      TextMessageStatusService statusService, SmsWebhookContextHolder smsWebhookContextHolder) {
+      TextMessageStatusService statusService, WebhookContextHolder webhookContextHolder) {
     this.statusService = statusService;
-    this.smsWebhookContextHolder = smsWebhookContextHolder;
+    this.webhookContextHolder = webhookContextHolder;
   }
 
   @PostMapping(value = "")
   public void callback(
       @RequestBody MultiValueMap<String, String> paramMap, HttpServletRequest request) {
-    smsWebhookContextHolder.setIsSmsWebhook(true);
+    webhookContextHolder.setIsWebhook(true);
     SmsStatusCallback body = mapToTextMessageSent(paramMap);
     statusService.saveTextMessageStatus(body.getMessageSid(), body.getMessageStatus());
   }

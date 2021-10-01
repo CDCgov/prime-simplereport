@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.reportstream;
 
+import gov.cdc.usds.simplereport.api.WebhookContextHolder;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
 import gov.cdc.usds.simplereport.db.model.ReportStreamException;
 import gov.cdc.usds.simplereport.service.ReportStreamExceptionCallbackService;
@@ -15,21 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(WebConfiguration.REPORT_STREAM_EXCEPTION_CALLBACK)
 @PreAuthorize("@reportStreamExceptionCallbackService.validateCallback(#request)")
-// TODO: wire up audit log
-// @PostAuthorize("@restAuditLogManager.logWebhookSuccess(#request)")
+@PostAuthorize("@restAuditLogManager.logWebhookSuccess(#request)")
 @Validated
 @RequiredArgsConstructor
 public class ReportStreamExceptionCallbackController {
   private final ReportStreamExceptionCallbackService reportStreamExceptionCallbackService;
+  private final WebhookContextHolder webhookContextHolder;
 
   @PostMapping(value = "")
   public void callback(
       @RequestBody ReportStreamException reportStreamException, HttpServletRequest request) {
+    webhookContextHolder.setIsWebhook(true);
     reportStreamExceptionCallbackService.log(reportStreamException);
-    /*
-            smsWebhookContextHolder.setIsSmsWebhook(true);
-            SmsStatusCallback body = mapToTextMessageSent(paramMap);
-            statusService.saveTextMessageStatus(body.getMessageSid(), body.getMessageStatus());
-    */
   }
 }

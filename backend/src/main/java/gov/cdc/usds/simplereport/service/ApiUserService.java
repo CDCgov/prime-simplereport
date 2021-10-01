@@ -3,7 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
-import gov.cdc.usds.simplereport.api.SmsWebhookContextHolder;
+import gov.cdc.usds.simplereport.api.WebhookContextHolder;
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
@@ -64,7 +64,7 @@ public class ApiUserService {
 
   @Autowired private CurrentAccountRequestContextHolder _accountRequestContextHolder;
 
-  @Autowired private SmsWebhookContextHolder _smsWebhookContextHolder;
+  @Autowired private WebhookContextHolder _WebhookContextHolder;
 
   @Autowired private ApiUserContextHolder _apiUserContextHolder;
 
@@ -307,7 +307,7 @@ public class ApiUserService {
   private static final String PATIENT_SELF_REGISTRATION_EMAIL =
       "patient-self-registration" + NOREPLY;
   private static final String ACCOUNT_REQUEST_EMAIL = "account-request" + NOREPLY;
-  private static final String SMS_WEBHOOK_EMAIL = "sms-webhook" + NOREPLY;
+  private static final String WEBHOOK_EMAIL = "webhook" + NOREPLY;
   private static final String ANONYMOUS_EMAIL = "anonymous-user" + NOREPLY;
 
   private String getPatientIdEmail(Person patient) {
@@ -352,12 +352,12 @@ public class ApiUserService {
   }
 
   /** The SMS Webhook API User should <em>always</em> exist. */
-  public ApiUser getSmsWebhookApiUser() {
-    Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(SMS_WEBHOOK_EMAIL);
+  public ApiUser getWebhookApiUser() {
+    Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(WEBHOOK_EMAIL);
     return found.orElseGet(
         () -> {
           ApiUser magicUser =
-              new ApiUser(SMS_WEBHOOK_EMAIL, new PersonName("", "", "SMS Webhook User", ""));
+              new ApiUser(WEBHOOK_EMAIL, new PersonName("", "", "Webhook User", ""));
           _apiUserRepo.save(magicUser);
           log.info(
               "Magic account SMS webhook user not found. Created Person={}",
@@ -392,8 +392,8 @@ public class ApiUserService {
       if (_accountRequestContextHolder.isAccountRequest()) {
         return Optional.of(getAccountRequestApiUser());
       }
-      if (_smsWebhookContextHolder.isSmsWebhook()) {
-        return Optional.of(getSmsWebhookApiUser());
+      if (_WebhookContextHolder.isWebhook()) {
+        return Optional.of(getWebhookApiUser());
       }
       throw new UnidentifiedUserException();
     }
