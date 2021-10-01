@@ -26,6 +26,8 @@ public class ReportStreamResponse {
 
   @NonNull private String details;
 
+  private String resolutionNote;
+
   @Column(updatable = false)
   @CreatedDate
   private Date createdAt;
