@@ -403,8 +403,6 @@ public class OrganizationService {
   @Transactional(readOnly = false)
   public OrganizationQueueItem queueNewRequest(
       String organizationName, String orgExternalId, OrganizationAccountRequest request) {
-    OrganizationQueueItem queueItem =
-        _orgQueueRepo.save(new OrganizationQueueItem(organizationName, orgExternalId, request));
-    return queueItem;
+    return _orgQueueRepo.save(new OrganizationQueueItem(organizationName, orgExternalId, request));
   }
 }
