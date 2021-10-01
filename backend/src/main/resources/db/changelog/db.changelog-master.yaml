@@ -3009,6 +3009,16 @@ databaseChangeLog:
         - dropTable:
             tableName: organization_queue
   - changeSet:
+      id: drop-not-null-constraint-swab_type
+      author: zedd@skylight.digital
+      comment: Drop the not null constraint for swab_type in device_type
+      changes:
+        - tagDatabase:
+            tag: drop-not-null-constraint-swab_type
+        - dropNotNullConstraint:
+            columnName: swab_type
+            tableName: device_type
+  - changeSet:
       id: add-reportstream-exception-table
       author: adam@skylight.digital
       comment: Adds a non-audited table to track publish exceptions from ReportStream
