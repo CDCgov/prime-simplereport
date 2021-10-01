@@ -14,7 +14,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ReportStreamExceptionCallbackConfig {
   @Bean(name = "reportStreamExceptionCallbackService")
-  @ConditionalOnProperty(value = "simple-report.azure-reporting-queue.exception-callback-token")
+  @ConditionalOnProperty(
+      value = "simple-report.azure-reporting-queue.enabled",
+      havingValue = "true")
   ReportStreamExceptionCallbackService configuredService(
       AzureStorageQueueReportingProperties properties,
       ReportStreamExceptionRepository reportStreamExceptionRepository) {
