@@ -122,8 +122,19 @@ const ManageDevices: React.FC<Props> = ({
         )
         .map((deviceSpecimenType) => deviceSpecimenType.specimenType);
 
-      const deviceDropdownOptions = uniqBy(devices, "internalId").map(
-        (deviceType) => {
+      const deviceDropdownOptions = uniqBy(devices, "internalId")
+        .sort(function alphabetize(a, b) {
+          if (a.name < b.name) {
+            return -1;
+          }
+
+          if (a.name > b.name) {
+            return 1;
+          }
+
+          return 0;
+        })
+        .map((deviceType) => {
           return {
             label: deviceType.name,
             value: deviceType.internalId,
@@ -131,8 +142,7 @@ const ManageDevices: React.FC<Props> = ({
               .map((d) => d.deviceType)
               .includes(deviceType.internalId),
           };
-        }
-      );
+        });
 
       const specimenDropdownOptions = specimenTypes.map((specimenType) => {
         return {

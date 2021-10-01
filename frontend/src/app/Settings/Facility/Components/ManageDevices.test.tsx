@@ -10,10 +10,11 @@ import userEvent from "@testing-library/user-event";
 
 import ManageDevices from "./ManageDevices";
 
-const devices: DeviceType[] = [
-  { internalId: "device-0", name: "Device 0" },
-  { internalId: "device-1", name: "Device 1" },
-];
+const deviceA = { internalId: "device-a", name: "Device A" };
+const deviceB = { internalId: "device-b", name: "Device B" };
+const deviceC = { internalId: "device-c", name: "Device C" };
+
+const devices: DeviceType[] = [deviceB, deviceA];
 
 const deviceSpecimenTypes: DeviceSpecimenType[] = devices.map(
   (device, idx) => ({
@@ -37,10 +38,7 @@ const deviceSpecimenTypeOptions = [
   ...deviceSpecimenTypes,
   {
     internalId: "2",
-    deviceType: {
-      internalId: "device-0",
-      name: "Device 0",
-    },
+    deviceType: deviceC,
     specimenType: {
       internalId: "fake-specimen-id-2",
       name: "Fake Specimen 2",
@@ -48,10 +46,7 @@ const deviceSpecimenTypeOptions = [
   },
   {
     internalId: "3",
-    deviceType: {
-      internalId: "device-2",
-      name: "Device 2",
-    },
+    deviceType: deviceB,
     specimenType: {
       internalId: "fake-specimen-id-2",
       name: "Fake Specimen 2",
@@ -114,6 +109,26 @@ describe("ManageDevices", () => {
       expect(swabTwo).toHaveValue(deviceSpecimenTypeIds[1].specimenType);
     });
 
+    it("renders the device dropdown in alphabetical order", async () => {
+      const dropdowns = screen.getAllByRole("combobox");
+
+      expect(dropdowns.length).toBe(4);
+
+      const [deviceOne] = dropdowns;
+
+      const deviceOptions = await within(deviceOne).findAllByRole("option");
+
+      expect(
+        deviceOptions.map(
+          (deviceOption) => (deviceOption as HTMLOptionElement).value
+        )
+      ).toStrictEqual([
+        deviceA.internalId,
+        deviceB.internalId,
+        deviceC.internalId,
+      ]);
+    });
+
     it("correctly indicates the device selected as the default", () => {
       const checkboxes = screen.getAllByRole("checkbox");
 
@@ -126,12 +141,12 @@ describe("ManageDevices", () => {
       const [deviceDropdown] = await screen.findAllByRole("combobox");
 
       await waitFor(() => {
-        userEvent.selectOptions(deviceDropdown, "device-2");
+        userEvent.selectOptions(deviceDropdown, "device-c");
       });
 
       expect(
         (screen.getAllByRole("option", {
-          name: "Device 2",
+          name: "Device C",
         })[0] as HTMLOptionElement).selected
       ).toBeTruthy();
     });
@@ -156,7 +171,7 @@ describe("ManageDevices", () => {
     it("prevents selecting a device type more than once", () => {
       const [devices] = screen.getAllByRole("combobox");
 
-      const option = within(devices).getByText("Device 1") as HTMLOptionElement;
+      const option = within(devices).getByText("Device A") as HTMLOptionElement;
       expect(option.disabled).toBeTruthy();
     });
 
@@ -203,7 +218,7 @@ describe("ManageDevices", () => {
 
       // Change device to one with _different_ configured swab types
       await waitFor(() => {
-        userEvent.selectOptions(deviceDropdownElement, "device-1");
+        userEvent.selectOptions(deviceDropdownElement, "device-b");
       });
 
       expect(
