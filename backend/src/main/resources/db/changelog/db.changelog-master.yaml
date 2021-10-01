@@ -3019,13 +3019,13 @@ databaseChangeLog:
             columnName: swab_type
             tableName: device_type
   - changeSet:
-      id: add-reportstream-exception-table
+      id: add-reportstream-response-table
       author: adam@skylight.digital
-      comment: Adds a non-audited table to track publish exceptions from ReportStream
+      comment: Adds a non-audited table to track publish responses (warnings & errors) from ReportStream
       changes:
         - createTable:
-            tableName: report_stream_exception
-            remarks: A non-audited table to track publish exceptions from ReportStream
+            tableName: report_stream_response
+            remarks: A non-audited table to track exceptional publish responses from ReportStream
             columns:
               - column:
                   name: test_event_internal_id
@@ -3034,7 +3034,7 @@ databaseChangeLog:
                   constraints:
                     primaryKey: false
                     nullable: false
-                    foreignKeyName: fk__report_stream_exception__test_event
+                    foreignKeyName: fk__report_stream_response__test_event
                     references: test_event
               - column:
                   name: details
@@ -3046,4 +3046,4 @@ databaseChangeLog:
                   remarks: Is this exception an error? If not, it's a warning
               - column: *created_at_column
         - sql: |
-            GRANT SELECT ON TABLE ${database.defaultSchemaName}.report_stream_exception TO ${noPhiUsername};
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.report_stream_response TO ${noPhiUsername};
