@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.db.model.ReportStreamException;
 import gov.cdc.usds.simplereport.service.ReportStreamExceptionCallbackService;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;

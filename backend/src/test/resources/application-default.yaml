@@ -46,6 +46,7 @@ simple-report:
     waitlist-recipient:
       - support@simplereport.gov
   azure-reporting-queue:
+    callback-enabled: true
     exception-callback-token: WATERMELON
   demo-users:
     site-admin-emails:

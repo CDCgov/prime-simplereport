@@ -16,7 +16,7 @@ public class ConfiguredReportStreamExceptionCallbackService
 
   @Override
   public boolean validateCallback(HttpServletRequest request) {
-    if (request.getHeader(TOKEN_HEADER).equals(apiToken)) {
+    if (apiToken.equals(request.getHeader(TOKEN_HEADER))) {
       return true;
     }
     log.error("Bad token provided: {}", request.getHeader(TOKEN_HEADER));
