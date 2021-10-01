@@ -64,7 +64,7 @@ public class ApiUserService {
 
   @Autowired private CurrentAccountRequestContextHolder _accountRequestContextHolder;
 
-  @Autowired private WebhookContextHolder _WebhookContextHolder;
+  @Autowired private WebhookContextHolder _webhookContextHolder;
 
   @Autowired private ApiUserContextHolder _apiUserContextHolder;
 
@@ -392,7 +392,7 @@ public class ApiUserService {
       if (_accountRequestContextHolder.isAccountRequest()) {
         return Optional.of(getAccountRequestApiUser());
       }
-      if (_WebhookContextHolder.isWebhook()) {
+      if (_webhookContextHolder.isWebhook()) {
         return Optional.of(getWebhookApiUser());
       }
       throw new UnidentifiedUserException();
