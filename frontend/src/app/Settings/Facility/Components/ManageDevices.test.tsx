@@ -119,16 +119,6 @@ describe("ManageDevices", () => {
 
       // The first device row represents the default device from props
       expect(checkboxes[0]).toBeChecked();
-
-      expect(checkboxes[1]).not.toBeChecked();
-    });
-
-    it("allows user to change the default device", () => {
-      const checkboxes = screen.getAllByRole("checkbox");
-
-      // The first device row represents the default device from props
-      expect(checkboxes[0]).toBeChecked();
-
       expect(checkboxes[1]).not.toBeChecked();
     });
 

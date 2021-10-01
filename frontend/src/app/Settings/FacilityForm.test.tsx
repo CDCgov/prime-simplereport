@@ -536,27 +536,53 @@ describe("FacilityForm", () => {
 
     it("properly unsets default device when the default device is changed", async () => {
       const unusedDevice = { internalId: "device-3", name: "Device 3" };
+
       render(
         <MemoryRouter>
           <FacilityForm
             facility={validFacility}
-            deviceOptions={devices.concat(unusedDevice)}
+            deviceSpecimenTypeOptions={deviceSpecimenTypes.concat({
+              internalId: "4",
+              deviceType: unusedDevice,
+              specimenType: {
+                internalId: "fake-specimen-id-3",
+                name: "Fake Specimen 3",
+              },
+            })}
             saveFacility={saveFacility}
           />
         </MemoryRouter>
       );
       // Change default device
-      const dropdown = await screen.getByDisplayValue(devices[0].name);
+      const dropdown = screen.getByTestId(
+        "device-dropdown-0"
+      ) as HTMLSelectElement;
+
       await waitFor(() => {
-        userEvent.selectOptions(dropdown, unusedDevice.name);
+        userEvent.selectOptions(dropdown, unusedDevice.internalId);
       });
+
+      expect(
+        (screen.getAllByRole("option", {
+          name: unusedDevice.name,
+        })[0] as HTMLOptionElement).selected
+      ).toBeTruthy();
+
+      const checkboxes = screen.getAllByRole("checkbox");
+
+      checkboxes.forEach((checkbox) => expect(checkbox).not.toBeChecked());
+
       // Attempt save
       const saveButtons = await screen.findAllByText("Save changes");
-      userEvent.click(saveButtons[0]);
+
+      await waitFor(async () => {
+        userEvent.click(saveButtons[0]);
+      });
       const warning = await screen.findByText(
         "A default device must be selected",
         { exact: false }
       );
+
       expect(warning).toBeInTheDocument();
     });
   });

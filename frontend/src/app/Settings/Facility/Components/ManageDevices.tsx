@@ -62,6 +62,11 @@ const ManageDevices: React.FC<Props> = ({
     };
 
     updateDeviceSpecimenTypes(newDeviceSpecimenTypes);
+
+    // If the changed device was previously the default device, unset default device
+    if (oldDeviceId === defaultDevice) {
+      updateDefaultDevice("");
+    }
   };
 
   const onSpecimenTypeChange = (index: number, newSpecimenId: string) => {
