@@ -89,8 +89,9 @@ export const Analytics = () => {
   const { data, loading, error } = useGetTopLevelDashboardMetricsQuery({
     variables: {
       facilityId,
-      startDate: getDateWithCurrentTimeFromString(startDate),
-      endDate: getDateWithCurrentTimeFromString(endDate),
+      startDate:
+        getDateWithCurrentTimeFromString(startDate) || getDateFromDaysAgo(7),
+      endDate: getDateWithCurrentTimeFromString(endDate) || new Date(),
     },
     fetchPolicy: "no-cache",
   });
@@ -230,7 +231,9 @@ export const Analytics = () => {
                   <div className="card display-flex flex-column flex-align-center">
                     <h2>Positivity rate</h2>
                     <h1>
-                      {positivityRate ? positivityRate.toFixed(1) + "%" : "N/A"}
+                      {positivityRate !== null
+                        ? positivityRate.toFixed(1) + "%"
+                        : "N/A"}
                     </h1>
                     <p className="font-ui-2xs">
                       Positives <span>÷</span> total tests

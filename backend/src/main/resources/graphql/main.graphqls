@@ -296,8 +296,8 @@ type Query {
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   topLevelDashboardMetrics(
     facilityId: ID
-    startDate: DateTime!
-    endDate: DateTime!
+    startDate: DateTime
+    endDate: DateTime
   ): TopLevelDashboardMetrics @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
   usersWithStatus: [ApiUserWithStatus!]

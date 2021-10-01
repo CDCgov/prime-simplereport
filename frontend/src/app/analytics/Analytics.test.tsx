@@ -175,6 +175,24 @@ const getMocks = () => [
       },
     },
   },
+  {
+    request: {
+      query: GetTopLevelDashboardMetricsDocument,
+      variables: {
+        facilityId: "3",
+        startDate: getDateFromDaysAgo(30),
+        endDate: new Date(),
+      },
+    },
+    result: {
+      data: {
+        topLevelDashboardMetrics: {
+          totalTestCount: 5,
+          positiveTestCount: 0,
+        },
+      },
+    },
+  },
 ];
 
 describe("Analytics", () => {
@@ -299,5 +317,18 @@ describe("Analytics", () => {
       ]);
     });
     expect(await screen.findByText("N/A")).toBeInTheDocument();
+  });
+  it("shows 0% for positivity rate at Empty School over last month", async () => {
+    await act(async () => {
+      await screen.findByText("COVID-19 testing data");
+      userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
+        "Empty School",
+      ]);
+      await screen.findByText("COVID-19 testing data");
+      userEvent.selectOptions(screen.getByLabelText("Date range"), [
+        "Last month (30 days)",
+      ]);
+    });
+    expect(await screen.findByText("0.0%")).toBeInTheDocument();
   });
 });
