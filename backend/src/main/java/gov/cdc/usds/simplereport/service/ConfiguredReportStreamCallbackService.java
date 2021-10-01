@@ -1,18 +1,17 @@
 package gov.cdc.usds.simplereport.service;
 
-import gov.cdc.usds.simplereport.db.model.ReportStreamException;
-import gov.cdc.usds.simplereport.db.repository.ReportStreamExceptionRepository;
+import gov.cdc.usds.simplereport.db.model.ReportStreamResponse;
+import gov.cdc.usds.simplereport.db.repository.ReportStreamResponseRepository;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Slf4j
-public class ConfiguredReportStreamExceptionCallbackService
-    implements ReportStreamExceptionCallbackService {
+public class ConfiguredReportStreamCallbackService implements ReportStreamCallbackService {
   private static final String TOKEN_HEADER = "x-functions-key";
   private final String apiToken;
-  private final ReportStreamExceptionRepository reportStreamExceptionRepository;
+  private final ReportStreamResponseRepository reportStreamResponseRepository;
 
   @Override
   public boolean validateCallback(HttpServletRequest request) {
@@ -24,7 +23,7 @@ public class ConfiguredReportStreamExceptionCallbackService
   }
 
   @Override
-  public void log(ReportStreamException exception) {
-    reportStreamExceptionRepository.save(exception);
+  public void log(ReportStreamResponse exception) {
+    reportStreamResponseRepository.save(exception);
   }
 }

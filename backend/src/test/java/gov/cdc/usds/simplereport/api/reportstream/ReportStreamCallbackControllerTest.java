@@ -22,11 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
-public class ReportStreamExceptionCallbackControllerTest extends BaseFullStackTest {
+public class ReportStreamCallbackControllerTest extends BaseFullStackTest {
   @Autowired private MockMvc mockMvc;
 
-  @Autowired
-  private ReportStreamExceptionCallbackController reportStreamExceptionCallbackController;
+  @Autowired private ReportStreamCallbackController reportStreamCallbackController;
 
   private Organization org;
   private Facility site;

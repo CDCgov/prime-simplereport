@@ -2,8 +2,8 @@ package gov.cdc.usds.simplereport.api.reportstream;
 
 import gov.cdc.usds.simplereport.api.WebhookContextHolder;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
-import gov.cdc.usds.simplereport.db.model.ReportStreamException;
-import gov.cdc.usds.simplereport.service.ReportStreamExceptionCallbackService;
+import gov.cdc.usds.simplereport.db.model.ReportStreamResponse;
+import gov.cdc.usds.simplereport.service.ReportStreamCallbackService;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -16,18 +16,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(WebConfiguration.REPORT_STREAM_EXCEPTION_CALLBACK)
-@PreAuthorize("@reportStreamExceptionCallbackService.validateCallback(#request)")
+@PreAuthorize("@reportStreamCallbackService.validateCallback(#request)")
 @PostAuthorize("@restAuditLogManager.logWebhookSuccess(#request)")
 @Validated
 @RequiredArgsConstructor
-public class ReportStreamExceptionCallbackController {
-  private final ReportStreamExceptionCallbackService reportStreamExceptionCallbackService;
+public class ReportStreamCallbackController {
+  private final ReportStreamCallbackService reportStreamCallbackService;
   private final WebhookContextHolder webhookContextHolder;
 
   @PostMapping(value = "")
   public void callback(
-      @RequestBody ReportStreamException reportStreamException, HttpServletRequest request) {
+      @RequestBody ReportStreamResponse reportStreamResponse, HttpServletRequest request) {
     webhookContextHolder.setIsWebhook(true);
-    reportStreamExceptionCallbackService.log(reportStreamException);
+    reportStreamCallbackService.log(reportStreamResponse);
   }
 }

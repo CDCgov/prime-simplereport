@@ -17,7 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @RequiredArgsConstructor
 @NoArgsConstructor
-public class ReportStreamException {
+public class ReportStreamResponse {
   /** This is foreign-keyed to TestEvent.internal_id */
   @JsonProperty @NonNull @Id private UUID testEventInternalId;
 

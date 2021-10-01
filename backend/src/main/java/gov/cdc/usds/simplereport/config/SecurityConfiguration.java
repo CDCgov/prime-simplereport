@@ -75,7 +75,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
         .antMatchers(HttpMethod.POST, WebConfiguration.TWILIO_CALLBACK)
         .permitAll()
 
-        // ReportStreamException callback authorization is handled in the controller
+        // ReportStreamResponse callback authorization is handled in the controller
         .antMatchers(HttpMethod.POST, WebConfiguration.REPORT_STREAM_EXCEPTION_CALLBACK)
         .permitAll()
 
