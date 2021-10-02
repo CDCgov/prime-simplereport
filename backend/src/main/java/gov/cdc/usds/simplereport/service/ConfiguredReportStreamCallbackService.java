@@ -18,7 +18,7 @@ public class ConfiguredReportStreamCallbackService implements ReportStreamCallba
     if (apiToken.equals(request.getHeader(TOKEN_HEADER))) {
       return true;
     }
-    log.error("Bad token provided: {}", request.getHeader(TOKEN_HEADER));
+    log.error("Bad token provided");
     return false;
   }
 
