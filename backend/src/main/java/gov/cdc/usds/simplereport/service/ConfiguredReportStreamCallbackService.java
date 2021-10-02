@@ -23,7 +23,7 @@ public class ConfiguredReportStreamCallbackService implements ReportStreamCallba
   }
 
   @Override
-  public void log(ReportStreamResponse exception) {
-    reportStreamResponseRepository.save(exception);
+  public void log(ReportStreamResponse response) {
+    reportStreamResponseRepository.save(response);
   }
 }

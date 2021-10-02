@@ -100,7 +100,7 @@ simple-report:
   azure-reporting-queue:
     enabled: false
     callback-enabled: false
-    exception-callback-token: ${RS_EXCEPTION_CB_TOKEN}
+    callback-token: ${RS_QUEUE_CALLBACK_TOKEN}
     name: ${AZ_REPORTING_QUEUE_NAME}
     connection-string: ${AZ_REPORTING_QUEUE_CXN_STRING}
   cors:

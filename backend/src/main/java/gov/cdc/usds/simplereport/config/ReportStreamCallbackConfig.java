@@ -23,7 +23,7 @@ public class ReportStreamCallbackConfig {
       AzureStorageQueueReportingProperties properties,
       ReportStreamResponseRepository reportStreamResponseRepository) {
     return new ConfiguredReportStreamCallbackService(
-        properties.getExceptionCallbackToken(), reportStreamResponseRepository);
+        properties.getCallbackToken(), reportStreamResponseRepository);
   }
 
   @Bean(name = "reportStreamCallbackService")
@@ -37,7 +37,7 @@ public class ReportStreamCallbackConfig {
       }
 
       @Override
-      public void log(ReportStreamResponse exception) {
+      public void log(ReportStreamResponse response) {
         log.warn("No ReportStreamCallbackService configured; defaulting to no-op reporting");
       }
     };

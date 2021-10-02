@@ -6,5 +6,5 @@ import javax.servlet.http.HttpServletRequest;
 public interface ReportStreamCallbackService {
   boolean validateCallback(HttpServletRequest request);
 
-  void log(ReportStreamResponse exception);
+  void log(ReportStreamResponse response);
 }

@@ -46,7 +46,7 @@ module "simple_report_api" {
     EXPERIAN_PID_CLIENT_REFERENCE_ID      = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.experian_preciseid_client_reference_id.id})"
     EXPERIAN_PID_USERNAME                 = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.experian_preciseid_username.id})"
     EXPERIAN_PID_PASSWORD                 = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.experian_preciseid_password.id})"
-    RS_EXCEPTION_CB_TOKEN                 = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.report_stream_exception_callback_token.id})"
+    RS_QUEUE_CALLBACK_TOKEN               = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.report_stream_exception_callback_token.id})"
     # true by default, can be disabled quickly here
     # SPRING_LIQUIBASE_ENABLED                       = "true"
     # this shadows/overrides an identical declaration in application.yaml
