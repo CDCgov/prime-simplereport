@@ -76,7 +76,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
         .permitAll()
 
         // ReportStreamResponse callback authorization is handled in the controller
-        .antMatchers(HttpMethod.POST, WebConfiguration.REPORT_STREAM_EXCEPTION_CALLBACK)
+        .antMatchers(HttpMethod.POST, WebConfiguration.RS_QUEUE_CALLBACK)
         .permitAll()
 
         // Account requests are unauthorized

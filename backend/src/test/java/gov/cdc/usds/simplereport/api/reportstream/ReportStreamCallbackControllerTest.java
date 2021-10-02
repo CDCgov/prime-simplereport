@@ -47,7 +47,7 @@ class ReportStreamCallbackControllerTest extends BaseFullStackTest {
   @Test
   void validationFailure() throws Exception {
     MockHttpServletRequestBuilder builder =
-        post(WebConfiguration.REPORT_STREAM_EXCEPTION_CALLBACK)
+        post(WebConfiguration.RS_QUEUE_CALLBACK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -68,7 +68,7 @@ class ReportStreamCallbackControllerTest extends BaseFullStackTest {
             "{\"testEventInternalId\":\"%s\", \"isError\": false, \"details\":\"%s\"}",
             testEvent.getInternalId(), "nope");
     MockHttpServletRequestBuilder builder =
-        post(WebConfiguration.REPORT_STREAM_EXCEPTION_CALLBACK)
+        post(WebConfiguration.RS_QUEUE_CALLBACK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -76,7 +76,6 @@ class ReportStreamCallbackControllerTest extends BaseFullStackTest {
             .content(requestBody);
 
     String requestId = runBuilderReturningRequestId(mockMvc, builder, status().isOk());
-    assertLastAuditEntry(
-        HttpStatus.OK, WebConfiguration.REPORT_STREAM_EXCEPTION_CALLBACK, requestId);
+    assertLastAuditEntry(HttpStatus.OK, WebConfiguration.RS_QUEUE_CALLBACK, requestId);
   }
 }

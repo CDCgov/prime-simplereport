@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(WebConfiguration.REPORT_STREAM_EXCEPTION_CALLBACK)
+@RequestMapping(WebConfiguration.RS_QUEUE_CALLBACK)
 @PreAuthorize("@reportStreamCallbackService.validateCallback(#request)")
 @PostAuthorize("@restAuditLogManager.logWebhookSuccess(#request)")
 @Validated
