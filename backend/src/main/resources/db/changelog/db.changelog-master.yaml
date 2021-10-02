@@ -3018,3 +3018,37 @@ databaseChangeLog:
         - dropNotNullConstraint:
             columnName: swab_type
             tableName: device_type
+  - changeSet:
+      id: add-reportstream-response-table
+      author: adam@skylight.digital
+      comment: Adds a non-audited table to track publish responses (warnings & errors) from ReportStream
+      changes:
+        - createTable:
+            tableName: report_stream_response
+            remarks: A non-audited table to track exceptional publish responses from ReportStream
+            columns:
+              - column: *pk_column
+              - column:
+                  name: test_event_internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity, and a foreign key to test_event
+                  constraints:
+                    primaryKey: false
+                    nullable: false
+                    foreignKeyName: fk__report_stream_response__test_event
+                    references: test_event
+              - column:
+                  name: details
+                  type: text
+                  remarks: Explanatory details about the failure
+              - column:
+                  name: is_error
+                  type: boolean
+                  remarks: Is this exception an error? If not, it's a warning
+              - column:
+                  name: resolution_note
+                  type: text
+                  remarks: When this warning or error has been manually resolved, leave a note
+              - column: *created_at_column
+        - sql: |
+            GRANT SELECT ON TABLE ${database.defaultSchemaName}.report_stream_response TO ${noPhiUsername};
