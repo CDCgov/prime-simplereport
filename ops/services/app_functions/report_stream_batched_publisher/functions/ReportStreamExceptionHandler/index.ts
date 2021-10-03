@@ -22,6 +22,7 @@ const queueTrigger: AzureFunction = async function (
   if (!result.ok) {
     throw new Error(`${result.status}: ${await result.text()}`);
   }
+  context.log(`Successfully processed exception for record ${message.testEventInternalId}`);
 };
 
 export default queueTrigger;
