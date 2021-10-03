@@ -12,7 +12,7 @@ import {
 } from "./lib";
 import { ReportStreamResponse } from "./rs-response";
 
-const { REPORT_STREAM_URL, TEST_EVENT_QUEUE_NAME, TEST_EVENT_EXCEPTION_QUEUE_NAME } = ENV;
+const { REPORT_STREAM_URL, TEST_EVENT_QUEUE_NAME, REPORTING_EXCEPTION_QUEUE_NAME } = ENV;
 
 appInsights.setup();
 const telemetry = appInsights.defaultClient;
@@ -22,7 +22,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
 ): Promise<void> {
   const tagOverrides = { "ai.operation.id": context.traceContext.traceparent };
   const publishingQueue = getQueueClient(TEST_EVENT_QUEUE_NAME);
-  const exceptionQueue = getQueueClient(TEST_EVENT_EXCEPTION_QUEUE_NAME);
+  const exceptionQueue = getQueueClient(REPORTING_EXCEPTION_QUEUE_NAME);
 
   if (!(await minimumMessagesAvailable(context, publishingQueue))) {
     return;
