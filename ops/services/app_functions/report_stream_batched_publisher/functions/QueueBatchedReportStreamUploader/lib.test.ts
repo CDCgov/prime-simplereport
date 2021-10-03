@@ -1,6 +1,7 @@
 import { Context } from "@azure/functions";
-import { QueueClient, QueueServiceClient, StorageSharedKeyCredential } from "@azure/storage-queue";
+import { DequeuedMessageItem, QueueClient, QueueServiceClient, StorageSharedKeyCredential } from "@azure/storage-queue";
 import {
+  deleteSuccessfullyParsedMessages,
   dequeueMessages,
   getQueueClient,
   minimumMessagesAvailable,
@@ -153,6 +154,57 @@ describe("lib", () => {
       // THEN
       expect(queueClientMock.receiveMessages).toHaveBeenCalledTimes(4);
       expect(result.length).toBe(5);
+    });
+  });
+
+  describe("deleteSuccessfullyParsedMessages", () => {
+    it('calls queueClient.deleteMessage appropriately', async () => {
+      // GIVEN
+      const queueClientMock: QueueClient = {
+        deleteMessage: jest.fn().mockResolvedValue(true),
+      } as any; 
+      const messages: DequeuedMessageItem[] = [{
+        messageId: '1234',
+        popReceipt: 'abcd'
+      },{
+        messageId: '1234',
+        popReceipt: 'abcd'
+      },{
+        messageId: '1234',
+        popReceipt: 'abcd'
+      }] as any;
+
+      // WHEN
+      await deleteSuccessfullyParsedMessages(context, queueClientMock, messages, {});
+      
+      // THEN
+      expect(queueClientMock.deleteMessage).toHaveBeenCalledTimes(messages.length);
+    });
+
+    it("does't call queueClient.deleteMessage for parse failures", async () => {
+      // GIVEN
+      const queueClientMock: QueueClient = {
+        deleteMessage: jest.fn().mockResolvedValue(true),
+      } as any; 
+      const messages: DequeuedMessageItem[] = [{
+        messageId: 'apple',
+        popReceipt: 'abcd'
+      },{
+        messageId: 'banana',
+        popReceipt: 'abcd'
+      },{
+        messageId: 'grape',
+        popReceipt: 'abcd'
+      }] as any;
+      const parseFailure = {
+        'grape': true
+      };
+
+      // WHEN
+      await deleteSuccessfullyParsedMessages(context, queueClientMock, messages, parseFailure);
+      
+      // THEN
+      expect(queueClientMock.deleteMessage).toHaveBeenCalledTimes(messages.length - 1);
     });
   });
 
