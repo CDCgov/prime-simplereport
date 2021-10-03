@@ -2,7 +2,6 @@ import { Context } from "@azure/functions";
 import {
   DequeuedMessageItem,
   QueueClient,
-  QueueSendMessageResponse,
   QueueServiceClient,
   StorageSharedKeyCredential,
 } from "@azure/storage-queue";

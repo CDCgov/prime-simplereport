@@ -28,7 +28,7 @@ variable "test_event_queue_name" {
 }
 
 variable "reporting_exception_queue_name" {
-  type = string
+  type    = string
   default = "test-event-publishing-exceptions"
 }
 
