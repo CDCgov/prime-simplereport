@@ -1,5 +1,5 @@
 locals {
-  simple_report_callback_url = "https://${var.environment}.simplereport.gov/api/reportstream/callback"
+  simple_report_callback_url = "https://${var.environment == "prod" ? "" : var.environment + "."}simplereport.gov/api/reportstream/callback"
   resource_group_name        = "${var.resource_group_name_prefix}${var.environment}"
   report_stream_url          = "https://${var.environment == "prod" ? "" : "staging."}prime.cdc.gov/api/reports?option=SkipInvalidItems&verbose=true"
   management_tags = {
