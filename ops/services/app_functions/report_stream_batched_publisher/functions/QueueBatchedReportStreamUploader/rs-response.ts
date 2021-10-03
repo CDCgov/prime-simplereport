@@ -31,3 +31,9 @@ export interface ReportStreamResponse {
   errors: ReportStreamError[];
   warnings: ReportStreamError[];
 }
+
+export interface SimpleReportReportStreamResponse {
+  testEventInternalId: string;
+  isError: boolean;
+  details: string;
+}

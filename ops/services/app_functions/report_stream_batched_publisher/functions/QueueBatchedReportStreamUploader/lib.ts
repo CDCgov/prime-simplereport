@@ -2,13 +2,17 @@ import { Context } from "@azure/functions";
 import {
   DequeuedMessageItem,
   QueueClient,
+  QueueSendMessageResponse,
   QueueServiceClient,
   StorageSharedKeyCredential,
 } from "@azure/storage-queue";
 import * as csvStringify from "csv-stringify/lib/sync";
 import { ENV, uploaderVersion } from "./config";
 import fetch, { Headers } from "node-fetch";
-import { ReportStreamResponse } from "./rs-response";
+import {
+  ReportStreamResponse,
+  SimpleReportReportStreamResponse,
+} from "./rs-response";
 
 const {
   REPORT_STREAM_BATCH_MINIMUM,
@@ -18,25 +22,24 @@ const {
   AZ_STORAGE_ACCOUNT_KEY,
   AZ_STORAGE_ACCOUNT_NAME,
   AZ_STORAGE_QUEUE_SVC_URL,
-  TEST_EVENT_QUEUE_NAME,
 } = ENV;
 const DEQUEUE_BATCH_SIZE = 32;
 
 const getQueueServiceClient = (() => {
   let queueServiceClient: QueueServiceClient;
   return function getQueueServiceClient() {
-    if(queueServiceClient !== undefined) {
+    if (queueServiceClient !== undefined) {
       return queueServiceClient;
     }
     const credential = new StorageSharedKeyCredential(
       AZ_STORAGE_ACCOUNT_NAME,
       AZ_STORAGE_ACCOUNT_KEY
     );
-    return queueServiceClient = new QueueServiceClient(
+    return (queueServiceClient = new QueueServiceClient(
       AZ_STORAGE_QUEUE_SVC_URL,
       credential
-    );
-  }
+    ));
+  };
 })();
 
 export function getQueueClient(queueName: string) {
@@ -127,7 +130,7 @@ export async function uploadResult(body) {
   return fetch(REPORT_STREAM_URL, {
     method: "POST",
     headers,
-    body
+    body,
   });
 }
 
@@ -163,6 +166,27 @@ export async function deleteSuccessfullyParsedMessages(
   context.log("Deletion complete");
 }
 
-export async function reportExceptions(context: Context, queueClient: QueueClient, response: ReportStreamResponse) {
-
+export async function reportExceptions(
+  context: Context,
+  queueClient: QueueClient,
+  response: ReportStreamResponse
+) {
+  context.log(`ReportStream response errors: ${response.errorCount}`);
+  context.log(`ReportStream response warnings: ${response.warningCount}`);
+  const payloads: SimpleReportReportStreamResponse[] = response.warnings
+    .map(({ id, details }) => ({
+      testEventInternalId: id,
+      isError: false,
+      details,
+    }))
+    .concat(
+      response.errors.map(({ id, details }) => ({
+        testEventInternalId: id,
+        isError: true,
+        details,
+      }))
+    );
+  return Promise.all(
+    payloads.map((p) => queueClient.sendMessage(JSON.stringify(p)))
+  );
 }
