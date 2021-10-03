@@ -1,12 +1,13 @@
 import { AzureFunction, Context } from "@azure/functions";
 import fetch, { Headers } from "node-fetch";
 import { ENV } from "../config";
+import { SimpleReportReportStreamResponse } from "../QueueBatchedReportStreamUploader/rs-response";
 
 const { SIMPLE_REPORT_CB_TOKEN, SIMPLE_REPORT_CB_URL } = ENV;
 
 const queueTrigger: AzureFunction = async function (
   context: Context,
-  body: string
+  message: SimpleReportReportStreamResponse
 ): Promise<void> {
   const headers = new Headers({
     Accept: "application/json",
@@ -16,7 +17,7 @@ const queueTrigger: AzureFunction = async function (
   const result = await fetch(SIMPLE_REPORT_CB_URL, {
     method: "POST",
     headers,
-    body,
+    body: JSON.stringify(message),
   });
   if (!result.ok) {
     throw new Error(`${result.status}: ${await result.text()}`);
