@@ -12,7 +12,11 @@ import {
 } from "./lib";
 import { ReportStreamResponse } from "./rs-response";
 
-const { REPORT_STREAM_URL, TEST_EVENT_QUEUE_NAME, REPORTING_EXCEPTION_QUEUE_NAME } = ENV;
+const {
+  REPORT_STREAM_URL,
+  TEST_EVENT_QUEUE_NAME,
+  REPORTING_EXCEPTION_QUEUE_NAME,
+} = ENV;
 
 appInsights.setup();
 const telemetry = appInsights.defaultClient;
@@ -71,7 +75,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
 
   if (postResult.ok) {
     const response: ReportStreamResponse = await postResult.json();
-    // TODO: better parallelize w/ dequeuing 
+    // TODO: better parallelize w/ dequeuing
     await reportExceptions(context, exceptionQueue, response);
 
     context.log(
