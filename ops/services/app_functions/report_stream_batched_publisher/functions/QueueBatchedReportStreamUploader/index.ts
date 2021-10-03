@@ -72,7 +72,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   if (postResult.ok) {
     const response: ReportStreamResponse = await postResult.json();
     // TODO: better parallelize w/ dequeuing 
-    await reportExceptions(context, publishingQueue, response);
+    await reportExceptions(context, exceptionQueue, response);
 
     context.log(
       `Upload to ${response.destinationCount} reporting destinations successful; deleting messages`
