@@ -8,6 +8,7 @@ import {
 import * as csvStringify from "csv-stringify/lib/sync";
 import { ENV, uploaderVersion } from "./config";
 import fetch, { Headers } from "node-fetch";
+import { ReportStreamResponse } from "./rs-response";
 
 const {
   REPORT_STREAM_BATCH_MINIMUM,
@@ -21,16 +22,25 @@ const {
 } = ENV;
 const DEQUEUE_BATCH_SIZE = 32;
 
-export function getQueueClient() {
-  const credential = new StorageSharedKeyCredential(
-    AZ_STORAGE_ACCOUNT_NAME,
-    AZ_STORAGE_ACCOUNT_KEY
-  );
-  const queueServiceClient = new QueueServiceClient(
-    AZ_STORAGE_QUEUE_SVC_URL,
-    credential
-  );
-  return queueServiceClient.getQueueClient(TEST_EVENT_QUEUE_NAME);
+const getQueueServiceClient = (() => {
+  let queueServiceClient: QueueServiceClient;
+  return function getQueueServiceClient() {
+    if(queueServiceClient !== undefined) {
+      return queueServiceClient;
+    }
+    const credential = new StorageSharedKeyCredential(
+      AZ_STORAGE_ACCOUNT_NAME,
+      AZ_STORAGE_ACCOUNT_KEY
+    );
+    return queueServiceClient = new QueueServiceClient(
+      AZ_STORAGE_QUEUE_SVC_URL,
+      credential
+    );
+  }
+})();
+
+export function getQueueClient(queueName: string) {
+  return getQueueServiceClient().getQueueClient(queueName);
 }
 
 export async function minimumMessagesAvailable(
@@ -135,6 +145,7 @@ export async function deleteSuccessfullyParsedMessages(
       continue;
     }
     try {
+      // TODO: parallelize processing these API calls; do not await each one
       const deleteResponse = await queueClient.deleteMessage(
         message.messageId,
         message.popReceipt
@@ -150,4 +161,8 @@ export async function deleteSuccessfullyParsedMessages(
     }
   }
   context.log("Deletion complete");
+}
+
+export async function reportExceptions(context: Context, queueClient: QueueClient, response: ReportStreamResponse) {
+
 }

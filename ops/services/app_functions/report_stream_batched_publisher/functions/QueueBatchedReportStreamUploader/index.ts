@@ -7,11 +7,12 @@ import {
   dequeueMessages,
   getQueueClient,
   minimumMessagesAvailable,
+  reportExceptions,
   uploadResult,
 } from "./lib";
 import { ReportStreamResponse } from "./rs-response";
 
-const { REPORT_STREAM_URL } = ENV;
+const { REPORT_STREAM_URL, TEST_EVENT_QUEUE_NAME, TEST_EVENT_EXCEPTION_QUEUE_NAME } = ENV;
 
 appInsights.setup();
 const telemetry = appInsights.defaultClient;
@@ -20,13 +21,14 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   context: Context
 ): Promise<void> {
   const tagOverrides = { "ai.operation.id": context.traceContext.traceparent };
-  const queueClient = getQueueClient();
+  const publishingQueue = getQueueClient(TEST_EVENT_QUEUE_NAME);
+  const exceptionQueue = getQueueClient(TEST_EVENT_EXCEPTION_QUEUE_NAME);
 
-  if (!(await minimumMessagesAvailable(context, queueClient))) {
+  if (!(await minimumMessagesAvailable(context, publishingQueue))) {
     return;
   }
 
-  const messages = await dequeueMessages(context, queueClient);
+  const messages = await dequeueMessages(context, publishingQueue);
   telemetry.trackEvent({
     name: "Messages Dequeued",
     properties: { messagesDequeued: messages.length },
@@ -69,7 +71,8 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
 
   if (postResult.ok) {
     const response: ReportStreamResponse = await postResult.json();
-    // TODO in 2363: push errors & warnings onto another queue
+    // TODO: better parallelize w/ dequeuing 
+    await reportExceptions(context, publishingQueue, response);
 
     context.log(
       `Upload to ${response.destinationCount} reporting destinations successful; deleting messages`
@@ -77,7 +80,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
 
     await deleteSuccessfullyParsedMessages(
       context,
-      queueClient,
+      publishingQueue,
       messages,
       parseFailure
     );
