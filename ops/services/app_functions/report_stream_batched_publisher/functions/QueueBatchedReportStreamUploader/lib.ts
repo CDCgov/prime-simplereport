@@ -26,7 +26,7 @@ const DEQUEUE_BATCH_SIZE = 32;
 
 const getQueueServiceClient = (() => {
   let queueServiceClient: QueueServiceClient;
-  return function getQueueServiceClient() {
+  return function getQueueServiceClientInner() {
     if (queueServiceClient !== undefined) {
       return queueServiceClient;
     }
@@ -34,10 +34,11 @@ const getQueueServiceClient = (() => {
       AZ_STORAGE_ACCOUNT_NAME,
       AZ_STORAGE_ACCOUNT_KEY
     );
-    return (queueServiceClient = new QueueServiceClient(
+    queueServiceClient = new QueueServiceClient(
       AZ_STORAGE_QUEUE_SVC_URL,
       credential
-    ));
+    );
+    return queueServiceClient;
   };
 })();
 
