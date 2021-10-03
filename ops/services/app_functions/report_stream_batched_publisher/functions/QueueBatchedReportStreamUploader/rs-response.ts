@@ -6,7 +6,7 @@ interface ReportingDestination {
   itemCount: number;
 }
 
-interface ReportStreamError {
+export interface ReportStreamError {
   id: string;
   scope: "ITEM" | "REPORT";
   details: string;

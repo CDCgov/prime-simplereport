@@ -1,6 +1,11 @@
 import { Context } from "@azure/functions";
 import { QueueClient } from "@azure/storage-queue";
-import { dequeueMessages, minimumMessagesAvailable } from "./lib";
+import {
+  dequeueMessages,
+  minimumMessagesAvailable,
+  reportExceptions,
+} from "./lib";
+import { ReportStreamError, ReportStreamResponse } from "./rs-response";
 
 jest.mock("./config", () => ({
   ENV: {
@@ -120,6 +125,96 @@ describe("lib", () => {
       // THEN
       expect(queueClientMock.receiveMessages).toHaveBeenCalledTimes(4);
       expect(result.length).toBe(5);
+    });
+  });
+
+  describe("reportExceptions", () => {
+    it("produces sendMessage promises for warnings", async () => {
+      // GIVEN
+      const warnings: ReportStreamError[] = [
+        {
+          id: "1234",
+          details: "hello",
+          scope: "ITEM",
+        },
+        {
+          id: "1234",
+          details: "hello",
+          scope: "ITEM",
+        },
+        {
+          id: "1234",
+          details: "hello",
+          scope: "ITEM",
+        },
+      ];
+      const response: ReportStreamResponse = {
+        errorCount: 0,
+        errors: [],
+        warningCount: warnings.length,
+        warnings,
+      } as any;
+      const queueClientMock: QueueClient = {
+        sendMessage: jest.fn().mockResolvedValue(true),
+      } as any;
+
+      // WHEN
+      await reportExceptions(context, queueClientMock, response);
+
+      // THEN
+      expect(queueClientMock.sendMessage).toHaveBeenCalledTimes(
+        warnings.length
+      );
+    });
+
+    it("produces sendMessage promises for errors", async () => {
+      // GIVEN
+      const warnings: ReportStreamError[] = [
+        {
+          id: "1234",
+          details: "hello",
+          scope: "ITEM",
+        },
+        {
+          id: "1234",
+          details: "hello",
+          scope: "ITEM",
+        },
+        {
+          id: "1234",
+          details: "hello",
+          scope: "ITEM",
+        },
+      ];
+      const errors: ReportStreamError[] = [
+        {
+          id: "1234",
+          details: "hello",
+          scope: "ITEM",
+        },
+        {
+          id: "1234",
+          details: "hello",
+          scope: "ITEM",
+        },
+      ];
+      const response: ReportStreamResponse = {
+        errorCount: errors.length,
+        errors,
+        warningCount: warnings.length,
+        warnings,
+      } as any;
+      const queueClientMock: QueueClient = {
+        sendMessage: jest.fn().mockResolvedValue(true),
+      } as any;
+
+      // WHEN
+      await reportExceptions(context, queueClientMock, response);
+
+      // THEN
+      expect(queueClientMock.sendMessage).toHaveBeenCalledTimes(
+        warnings.length + errors.length
+      );
     });
   });
 });
