@@ -19,6 +19,7 @@ public class WebConfiguration implements WebMvcConfigurer {
   public static final String HEALTH_CHECK = "/health";
   public static final String PATIENT_EXPERIENCE = "/pxp/**";
   public static final String TWILIO_CALLBACK = "/pxp/callback";
+  public static final String RS_QUEUE_CALLBACK = "/reportstream/callback";
   public static final String ACCOUNT_REQUEST = "/account-request";
   public static final String USER_ACCOUNT_REQUEST = "/user-account";
   public static final String IDENTITY_VERIFICATION = "/identity-verification";

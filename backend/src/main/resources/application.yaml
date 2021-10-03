@@ -99,6 +99,8 @@ simple-report:
     preciseid-password: ${EXPERIAN_PID_PASSWORD}
   azure-reporting-queue:
     enabled: false
+    callback-enabled: false
+    callback-token: ${RS_QUEUE_CALLBACK_TOKEN}
     name: ${AZ_REPORTING_QUEUE_NAME}
     connection-string: ${AZ_REPORTING_QUEUE_CXN_STRING}
   cors:

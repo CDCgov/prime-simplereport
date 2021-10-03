@@ -151,6 +151,11 @@ data "azurerm_key_vault_secret" "experian_preciseid_password" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
+data "azurerm_key_vault_secret" "report_stream_exception_callback_token" {
+  name         = "report-stream-exception-callback-test"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
 # logs
 data "azurerm_log_analytics_workspace" "log_analytics" {
   name                = "simple-report-log-workspace-global"

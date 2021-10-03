@@ -1,10 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import java.util.Date;
-import java.util.UUID;
 import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -19,13 +16,7 @@ import org.hibernate.annotations.UpdateTimestamp;
  * UpdateTimestamp}, and feel kind of weird about it.
  */
 @MappedSuperclass
-public abstract class SystemManagedEntity implements DatabaseEntity {
-
-  @Column(updatable = false, nullable = false)
-  @Id
-  @GeneratedValue(generator = "UUID4")
-  private UUID internalId;
-
+public abstract class SystemManagedEntity extends IdentifiedEntity {
   @Column(updatable = false)
   @Temporal(TemporalType.TIMESTAMP)
   @CreationTimestamp
@@ -38,10 +29,6 @@ public abstract class SystemManagedEntity implements DatabaseEntity {
 
   protected SystemManagedEntity() {
     super();
-  }
-
-  public UUID getInternalId() {
-    return internalId;
   }
 
   public Date getCreatedAt() {

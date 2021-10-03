@@ -3,6 +3,7 @@ spring:
 simple-report:
   azure-reporting-queue:
     enabled: true
+    callback-enabled: true
     name: test-event-publishing
   patient-link-url: https://dev.simplereport.gov/app/pxp?plid=
   twilio-callback-url: https://dev.simplereport.gov/api/pxp/callback
