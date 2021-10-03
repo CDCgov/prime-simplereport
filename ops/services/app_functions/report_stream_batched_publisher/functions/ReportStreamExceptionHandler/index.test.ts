@@ -1,7 +1,12 @@
 import queueTrigger from "./index";
-import fetchMock, { enableFetchMocks } from "jest-fetch-mock";
 import { Context } from "@azure/functions";
-enableFetchMocks();
+
+import fetch from "node-fetch";
+import fetchMock from "jest-fetch-mock";
+jest.mock(
+  "node-fetch",
+  jest.fn(() => require("jest-fetch-mock"))
+);
 
 jest.mock("../config", () => ({
   ENV: {
