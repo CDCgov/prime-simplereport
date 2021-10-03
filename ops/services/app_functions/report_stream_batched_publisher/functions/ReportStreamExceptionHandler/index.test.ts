@@ -3,6 +3,13 @@ import fetchMock, { enableFetchMocks } from "jest-fetch-mock";
 import { Context } from "@azure/functions";
 enableFetchMocks();
 
+jest.mock("../config", () => ({
+  ENV: {
+    SIMPLE_REPORT_CB_URL: "https://nope.url/1234",
+    SIMPLE_REPORT_CB_TOKEN: "octopus",
+  },
+}));
+
 describe("main function export", () => {
   const context: Context = {
     log: jest.fn(),
