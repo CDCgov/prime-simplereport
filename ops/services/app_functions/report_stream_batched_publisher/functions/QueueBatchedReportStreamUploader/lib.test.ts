@@ -1,7 +1,8 @@
 import { Context } from "@azure/functions";
-import { QueueClient } from "@azure/storage-queue";
+import { QueueClient, QueueServiceClient, StorageSharedKeyCredential } from "@azure/storage-queue";
 import {
   dequeueMessages,
+  getQueueClient,
   minimumMessagesAvailable,
   reportExceptions,
 } from "./lib";
@@ -20,6 +21,10 @@ jest.mock("./config", () => ({
   },
 }));
 
+const queueServiceClientMock = QueueServiceClient as jest.MockedClass<typeof QueueServiceClient>;
+const storageSharedKeyCredentialMock = StorageSharedKeyCredential as jest.MockedClass<typeof StorageSharedKeyCredential>;
+jest.mock("@azure/storage-queue"); 
+
 const context: Context = {
   log: jest.fn(),
   traceContext: { traceparent: "asdf" },
@@ -27,6 +32,29 @@ const context: Context = {
 context.log.error = jest.fn();
 
 describe("lib", () => {
+  describe('getQueueClient', () => {
+    it("creates a StorageSharedKeyCredential and QueueServiceClient", async () => {
+      // WHEN
+      getQueueClient("whatever");
+
+      // THEN
+      expect(queueServiceClientMock).toHaveBeenCalledTimes(1);
+      expect(storageSharedKeyCredentialMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("is memoized", async () => {
+      // WHEN
+      getQueueClient("whatever");
+      getQueueClient("whatever");
+      getQueueClient("whatever");
+
+      // THEN
+      expect(queueServiceClientMock).toHaveBeenCalledTimes(1);
+      expect(storageSharedKeyCredentialMock).toHaveBeenCalledTimes(1);
+    })
+  })
+
+
   describe("minimumMessagesAvailable", () => {
     it("returns false for 0 messages", async () => {
       // GIVEN
