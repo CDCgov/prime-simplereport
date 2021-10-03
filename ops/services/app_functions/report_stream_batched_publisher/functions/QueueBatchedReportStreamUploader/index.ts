@@ -1,6 +1,6 @@
 import * as appInsights from "applicationinsights";
 import { AzureFunction, Context } from "@azure/functions";
-import { ENV } from "./config";
+import { ENV } from "../config";
 import {
   convertToCsv,
   deleteSuccessfullyParsedMessages,

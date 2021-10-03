@@ -9,7 +9,7 @@ import {
 } from "./lib";
 import { ReportStreamError, ReportStreamResponse } from "./rs-response";
 
-jest.mock("./config", () => ({
+jest.mock("../config", () => ({
   ENV: {
     AZ_STORAGE_QUEUE_SVC_URL: "hello",
     AZ_STORAGE_ACCOUNT_NAME: "hola",

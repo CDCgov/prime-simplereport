@@ -11,7 +11,7 @@ jest.mock("applicationinsights", jest.fn().mockImplementation(() => ({
     trackDependency: jest.fn(),
   },
 })));
-jest.mock("./config", () => ({
+jest.mock("../config", () => ({
   ENV: {
     AZ_STORAGE_QUEUE_SVC_URL: "hello",
     AZ_STORAGE_ACCOUNT_NAME: "hola",
