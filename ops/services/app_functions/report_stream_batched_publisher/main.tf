@@ -1,6 +1,7 @@
 locals {
-  resource_group_name = "${var.resource_group_name_prefix}${var.environment}"
-  report_stream_url   = "https://${var.environment == "prod" ? "" : "staging."}prime.cdc.gov/api/reports?option=SkipInvalidItems&verbose=true"
+  simple_report_callback_url = "https://${var.environment}.simplereport.gov/api/reportstream/callback"
+  resource_group_name        = "${var.resource_group_name_prefix}${var.environment}"
+  report_stream_url          = "https://${var.environment == "prod" ? "" : "staging."}prime.cdc.gov/api/reports?option=SkipInvalidItems&verbose=true"
   management_tags = {
     prime-app      = "simple-report"
     environment    = var.environment
@@ -60,6 +61,7 @@ resource "azurerm_function_app" "functions" {
     AZ_STORAGE_QUEUE_SVC_URL       = "https://${data.azurerm_storage_account.app.name}.queue.core.windows.net/"
     AZ_STORAGE_ACCOUNT_NAME        = data.azurerm_storage_account.app.name
     AZ_STORAGE_ACCOUNT_KEY         = data.azurerm_storage_account.app.primary_access_key
+    AZ_STORAGE_QUEUE_CXN_STRING    = data.azurerm_storage_account.app.primary_connection_string
     TEST_EVENT_QUEUE_NAME          = var.test_event_queue_name
     REPORTING_EXCEPTION_QUEUE_NAME = var.reporting_exception_queue_name
     REPORT_STREAM_URL              = local.report_stream_url
@@ -68,6 +70,8 @@ resource "azurerm_function_app" "functions" {
     REPORT_STREAM_TOKEN         = var.report_stream_api_token
     REPORT_STREAM_BATCH_MINIMUM = "1"
     REPORT_STREAM_BATCH_MAXIMUM = "5000"
+    SIMPLE_REPORT_CB_URL        = local.simple_report_callback_url
+    SIMPLE_REPORT_CB_TOKEN      = var.simple_report_cb_token
   }
 }
 
