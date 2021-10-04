@@ -15,6 +15,6 @@ public final class AzureStorageQueueReportingProperties {
   private final String connectionString;
   private final String enabled;
   private final String name;
-  private final String callbackEnabled;
-  private final String callbackToken;
+  private final String exceptionWebhookEnabled;
+  private final String exceptionWebhookToken;
 }

@@ -17,13 +17,13 @@ import org.springframework.context.annotation.Configuration;
 public class ReportStreamCallbackConfig {
   @Bean(name = "reportStreamCallbackService")
   @ConditionalOnProperty(
-      value = "simple-report.azure-reporting-queue.callback-enabled",
+      value = "simple-report.azure-reporting-queue.exception-webhook-enabled",
       havingValue = "true")
   ReportStreamCallbackService configuredService(
       AzureStorageQueueReportingProperties properties,
       ReportStreamResponseRepository reportStreamResponseRepository) {
     return new ConfiguredReportStreamCallbackService(
-        properties.getCallbackToken(), reportStreamResponseRepository);
+        properties.getExceptionWebhookToken(), reportStreamResponseRepository);
   }
 
   @Bean(name = "reportStreamCallbackService")
