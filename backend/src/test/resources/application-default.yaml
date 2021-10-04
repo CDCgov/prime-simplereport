@@ -47,7 +47,7 @@ simple-report:
       - support@simplereport.gov
   azure-reporting-queue:
     exception-webhook-enabled: true
-    callback-token: WATERMELON
+    exception-webhook-token: WATERMELON
   demo-users:
     site-admin-emails:
       - ruby@example.com
