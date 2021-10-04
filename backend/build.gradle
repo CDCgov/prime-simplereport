@@ -182,6 +182,7 @@ spotless {
         importOrder()
         removeUnusedImports()
         googleJavaFormat()
+        targetExclude("build/generated/sources/**/*.java")
     }
 }
 
