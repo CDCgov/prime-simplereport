@@ -69,7 +69,9 @@ class DeviceManagementTest extends BaseGraphqlTest {
   void getSpecimenTypes_adminUser_success() {
     useSuperUser();
     ArrayNode deviceRecords = (ArrayNode) runQuery("specimen-type-query").get("specimenTypes");
-    assertThat(deviceRecords.size()).isEqualTo(1);
+    assertThat(deviceRecords.size()).isEqualTo(2);
+    assertThat(deviceRecords.get(0).get("name").asText()).isEqualTo("Swab of the Nose");
+    assertThat(deviceRecords.get(1).get("name").asText()).isEqualTo("Swab of the Ear");
   }
 
   @Test
@@ -111,9 +113,11 @@ class DeviceManagementTest extends BaseGraphqlTest {
     return variables;
   }
 
-  private String fetchFirstSpecimenTypeId() {
+  private List<String> fetchSpecimenTypeIds() {
     ArrayNode deviceRecords = (ArrayNode) runQuery("specimen-type-query").get("specimenTypes");
-    return deviceRecords.get(0).findValue("internalId").asText();
+    String specimenId1 = deviceRecords.get(0).findValue("internalId").asText();
+    String specimenId2 = deviceRecords.get(1).findValue("internalId").asText();
+    return List.of(specimenId1, specimenId2);
   }
 
   private ObjectNode sillyDeviceArgsNew() {
@@ -123,12 +127,16 @@ class DeviceManagementTest extends BaseGraphqlTest {
             .put("name", "Funny")
             .put("manufacturer", "Acme")
             .put("model", "Test-A-Lot")
-            .put("loincCode", "123456")
-            .put("swabType", "0987654321");
+            .put("loincCode", "123456");
 
+    List<String> specimenTypeIds = fetchSpecimenTypeIds();
     variables
         .putArray("swabTypes")
-        .addAll(JsonNodeFactory.instance.arrayNode().add(fetchFirstSpecimenTypeId()));
+        .addAll(
+            JsonNodeFactory.instance
+                .arrayNode()
+                .add(specimenTypeIds.get(0))
+                .add(specimenTypeIds.get(1)));
     return variables;
   }
 }

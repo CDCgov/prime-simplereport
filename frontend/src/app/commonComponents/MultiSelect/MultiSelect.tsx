@@ -103,6 +103,7 @@ export const MultiSelect = ({
     if (selectedItems) {
       onChange(selectedItems);
     }
+    // adding onChange to dependency list will cause an infinite loop of state updates
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedItems]);
 

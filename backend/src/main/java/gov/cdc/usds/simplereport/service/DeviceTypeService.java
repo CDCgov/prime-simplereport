@@ -140,8 +140,9 @@ public class DeviceTypeService {
         _repo.save(
             new DeviceType(name, manufacturer, model, loincCode, null, determineTestLength(name)));
 
-    specimenTypes.forEach(
-        specimenType -> _deviceSpecimenRepo.save(new DeviceSpecimenType(dt, specimenType)));
+    specimenTypes.stream()
+        .map(specimenType -> new DeviceSpecimenType(dt, specimenType))
+        .forEach(_deviceSpecimenRepo::save);
 
     return dt;
   }
