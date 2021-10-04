@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   private static final String FAKE_SWAB_TYPE = "012345678";
   private static final int STANDARD_TEST_LENGTH = 15;
   @Autowired private DeviceTypeRepository _deviceTypeRepo;
+  @Autowired private SpecimenTypeRepository specimenTypeRepository;
 
   @Test
   void fetchDeviceTypes() {
@@ -77,6 +80,26 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     _service.removeDeviceType(devB);
     found = _service.fetchDeviceTypes();
     assertEquals(1, found.size());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void createAndDeleteDeviceTypes2_adminUser_success() {
+
+    SpecimenType swab1 =
+        specimenTypeRepository.save(new SpecimenType("internal swab", "111222333"));
+    SpecimenType swab2 =
+        specimenTypeRepository.save(new SpecimenType("external swab", "555666444"));
+
+    DeviceType devA =
+        _service.createDeviceTypeNew(
+            "A", "B", "C", "D", List.of(swab1.getInternalId(), swab2.getInternalId()));
+    assertNotNull(devA);
+    List<DeviceType> found = _service.fetchDeviceTypes();
+    assertEquals(1, found.size());
+    _service.removeDeviceType(devA);
+    found = _service.fetchDeviceTypes();
+    assertEquals(0, found.size());
   }
 
   @Test

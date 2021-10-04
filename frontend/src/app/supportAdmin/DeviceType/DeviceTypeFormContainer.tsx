@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 
-import { useCreateDeviceTypeMutation } from "../../../generated/graphql";
+import {
+  useCreateDeviceTypeNewMutation,
+  useGetSpecimenTypesQuery,
+} from "../../../generated/graphql";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
+import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 
 import DeviceTypeForm from "./DeviceTypeForm";
 
@@ -12,16 +16,35 @@ export interface Device {
   manufacturer: string;
   model: string;
   loincCode: string;
-  swabType: string;
+  swabTypes: Array<string>;
 }
 
 const DeviceTypeFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
-  const [createDeviceType] = useCreateDeviceTypeMutation();
+  const [swabOptions, setSwabOptions] = useState<
+    Array<MultiSelectDropdownOption>
+  >([]);
+
+  const [createDeviceType] = useCreateDeviceTypeNewMutation();
+  const { data } = useGetSpecimenTypesQuery();
+
+  useEffect(() => {
+    if (data && data.specimenTypes && swabOptions.length === 0) {
+      setSwabOptions(
+        Array.from(
+          data.specimenTypes.map((type) => ({
+            label: `${type?.name} (${type?.typeCode})`,
+            value: type?.internalId,
+          }))
+        )
+      );
+    }
+  }, [data, swabOptions]);
 
   const saveDeviceType = (device: Device) => {
     createDeviceType({
       variables: device,
+      fetchPolicy: "no-cache",
     }).then(() => {
       let alert = (
         <Alert
@@ -39,7 +62,9 @@ const DeviceTypeFormContainer = () => {
     return <Redirect to="/admin" />;
   }
 
-  return <DeviceTypeForm saveDeviceType={saveDeviceType} />;
+  return (
+    <DeviceTypeForm saveDeviceType={saveDeviceType} swabOptions={swabOptions} />
+  );
 };
 
 export default DeviceTypeFormContainer;

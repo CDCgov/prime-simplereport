@@ -1,9 +1,10 @@
-package gov.cdc.usds.simplereport.api.deviceType;
+package gov.cdc.usds.simplereport.api.devicetype;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,12 @@ public class DeviceTypeMutationResolver implements GraphQLMutationResolver {
       String name, String manufacturer, String model, String loincCode, String swabType)
       throws IllegalGraphqlArgumentException {
     return _dts.createDeviceType(name, model, manufacturer, loincCode, swabType);
+  }
+
+  public DeviceType createDeviceTypeNew(
+      String name, String manufacturer, String model, String loincCode, List<UUID> swabTypes)
+      throws IllegalGraphqlArgumentException {
+    return _dts.createDeviceTypeNew(name, model, manufacturer, loincCode, swabTypes);
   }
 
   public DeviceType updateDeviceType(
