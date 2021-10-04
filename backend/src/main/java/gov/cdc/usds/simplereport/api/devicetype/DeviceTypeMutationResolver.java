@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api.deviceType;
+package gov.cdc.usds.simplereport.api.devicetype;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
