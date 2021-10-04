@@ -57,7 +57,7 @@ public class DeviceTypeService {
   }
 
   public List<DeviceSpecimenType> getDeviceSpecimenTypesByIds(List<String> deviceSpecimenTypeIds) {
-    List<DeviceSpecimenType> deviceSpecimenTypes = new ArrayList<DeviceSpecimenType>();
+    List<DeviceSpecimenType> deviceSpecimenTypes = new ArrayList<>();
 
     Iterable<DeviceSpecimenType> results =
         _deviceSpecimenRepo.findAllById(
