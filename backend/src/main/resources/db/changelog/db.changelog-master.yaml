@@ -3053,10 +3053,12 @@ databaseChangeLog:
         - sql: |
             GRANT SELECT ON TABLE ${database.defaultSchemaName}.report_stream_response TO ${noPhiUsername};
   - changeSet:
-      id: add-indexes-patient_link-test_order
+      id: add-index-patient_link-test_order
       author: adam@skylight.digital
       comment: Adds an index on the test_order_internal_id field of patient_link
       changes:
+        - tagDatabase:
+            tag: add-index-patient_link-test_order
         - createIndex:
             tableName: patient_link
             indexName: ix__patient_link__test_order_id
