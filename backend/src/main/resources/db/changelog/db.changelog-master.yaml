@@ -3052,3 +3052,14 @@ databaseChangeLog:
               - column: *created_at_column
         - sql: |
             GRANT SELECT ON TABLE ${database.defaultSchemaName}.report_stream_response TO ${noPhiUsername};
+  - changeSet:
+      id: add-indexes-patient_link-test_order
+      author: adam@skylight.digital
+      comment: Adds an index on the test_order_internal_id field of patient_link
+      changes:
+        - createIndex:
+            tableName: patient_link
+            indexName: ix__patient_link__test_order_id
+            columns:
+              - column:
+                  name: test_order_id
