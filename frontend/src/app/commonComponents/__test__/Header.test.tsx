@@ -64,8 +64,8 @@ describe("Header.tsx", () => {
     expect(screen.getByTestId("support-link")).toBeVisible();
     await waitFor(() => {
       userEvent.click(screen.getByTestId("support-link"));
+      expect(trackEventMock).toHaveBeenCalledWith({ name: "Support" });
     });
-    expect(trackEventMock).toHaveBeenCalledWith({ name: "Support" });
   });
   it("it does not render login links", () => {
     expect(
