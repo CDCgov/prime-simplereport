@@ -98,7 +98,7 @@ const UserDetail: React.FC<Props> = ({
             disabled={isUpdating}
           />
         ) : null}
-        {user.status === "ACTIVE" ? (
+        {user.status === "PROVISIONED" ? (
           <Button
             variant="outline"
             className="margin-left-auto margin-bottom-1"
