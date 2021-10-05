@@ -324,7 +324,6 @@ const ManageUsers: React.FC<Props> = ({
         userWithPermissions?.lastName
       );
       updateShowResendUserActivationEmailModal(false);
-      reload();
       showNotification(
         <Alert
           type="success"

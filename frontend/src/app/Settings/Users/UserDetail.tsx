@@ -98,7 +98,7 @@ const UserDetail: React.FC<Props> = ({
             disabled={isUpdating}
           />
         ) : null}
-        {user.status === "PROVISIONED" ? (
+        {user.status === "ACTIVE" ? (
           <Button
             variant="outline"
             className="margin-left-auto margin-bottom-1"
@@ -194,7 +194,7 @@ const UserDetail: React.FC<Props> = ({
       {showResendUserActivationEmailModal ? (
         <ResendActivationEmailModal
           user={user}
-          onClose={() => updateShowReactivateUserModal(false)}
+          onClose={() => updateShowResendUserActivationEmailModal(false)}
           onResendActivationEmail={handleResendUserActivationEmail}
         />
       ) : null}
