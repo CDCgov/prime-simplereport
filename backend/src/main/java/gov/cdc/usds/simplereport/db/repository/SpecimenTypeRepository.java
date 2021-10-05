@@ -14,4 +14,6 @@ public interface SpecimenTypeRepository extends EternalAuditedEntityRepository<S
   @Deprecated // this doesn't check for soft-deletion! But we need that behavior for the
   // backward-compatibility shim code.
   Optional<SpecimenType> findByTypeCode(String swabType);
+
+  List<SpecimenType> findAllByIsDeletedFalse();
 }

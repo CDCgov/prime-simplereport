@@ -20,6 +20,7 @@ export const ENV = (() => {
     AZ_STORAGE_ACCOUNT_NAME: "Azure Account Name",
     AZ_STORAGE_ACCOUNT_KEY: "Azure Account Key",
     TEST_EVENT_QUEUE_NAME: "storage queue resource name for Test Events",
+    REPORTING_EXCEPTION_QUEUE_NAME: "storage queue resource name for exceptions in publishing to ReportStream",
     REPORT_STREAM_URL: "ReportStream URL to which tests should be reported",
     REPORT_STREAM_TOKEN: "ReportStream API key",
     REPORT_STREAM_BATCH_MINIMUM: "minimum # of messages to read from the queue",

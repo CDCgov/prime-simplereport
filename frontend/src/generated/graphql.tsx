@@ -78,6 +78,7 @@ export type DeviceType = {
   model?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
   swabType?: Maybe<Scalars["String"]>;
+  swabTypes?: Maybe<Scalars["String"]>;
   testLength?: Maybe<Scalars["Int"]>;
 };
 
@@ -115,6 +116,7 @@ export type Mutation = {
   adminUpdateOrganization?: Maybe<Scalars["String"]>;
   correctTestMarkAsError?: Maybe<TestResult>;
   createDeviceType?: Maybe<DeviceType>;
+  createDeviceTypeNew?: Maybe<DeviceType>;
   createFacilityRegistrationLink?: Maybe<Scalars["String"]>;
   createOrganization?: Maybe<Organization>;
   createOrganizationRegistrationLink?: Maybe<Scalars["String"]>;
@@ -257,6 +259,14 @@ export type MutationCreateDeviceTypeArgs = {
   model: Scalars["String"];
   name: Scalars["String"];
   swabType: Scalars["String"];
+};
+
+export type MutationCreateDeviceTypeNewArgs = {
+  loincCode: Scalars["String"];
+  manufacturer: Scalars["String"];
+  model: Scalars["String"];
+  name: Scalars["String"];
+  swabTypes: Array<Scalars["ID"]>;
 };
 
 export type MutationCreateFacilityRegistrationLinkArgs = {
@@ -587,6 +597,7 @@ export type Query = {
   patientsCount?: Maybe<Scalars["Int"]>;
   queue?: Maybe<Array<Maybe<TestOrder>>>;
   specimenType?: Maybe<Array<Maybe<SpecimenType>>>;
+  specimenTypes: Array<SpecimenType>;
   testResult?: Maybe<TestResult>;
   testResults?: Maybe<Array<Maybe<TestResult>>>;
   testResultsCount?: Maybe<Scalars["Int"]>;
@@ -683,7 +694,7 @@ export type SpecimenType = {
   collectionLocationName?: Maybe<Scalars["String"]>;
   internalId: Scalars["ID"];
   name: Scalars["String"];
-  typeCode?: Maybe<Scalars["String"]>;
+  typeCode: Scalars["String"];
 };
 
 export enum TestCorrectionStatus {
@@ -1409,6 +1420,34 @@ export type CreateDeviceTypeMutation = {
   createDeviceType?: Maybe<{
     __typename?: "DeviceType";
     internalId?: Maybe<string>;
+  }>;
+};
+
+export type CreateDeviceTypeNewMutationVariables = Exact<{
+  name: Scalars["String"];
+  manufacturer: Scalars["String"];
+  model: Scalars["String"];
+  loincCode: Scalars["String"];
+  swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
+}>;
+
+export type CreateDeviceTypeNewMutation = {
+  __typename?: "Mutation";
+  createDeviceTypeNew?: Maybe<{
+    __typename?: "DeviceType";
+    internalId?: Maybe<string>;
+  }>;
+};
+
+export type GetSpecimenTypesQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetSpecimenTypesQuery = {
+  __typename?: "Query";
+  specimenTypes: Array<{
+    __typename?: "SpecimenType";
+    internalId: string;
+    name: string;
+    typeCode: string;
   }>;
 };
 
@@ -3834,6 +3873,130 @@ export type CreateDeviceTypeMutationResult = Apollo.MutationResult<CreateDeviceT
 export type CreateDeviceTypeMutationOptions = Apollo.BaseMutationOptions<
   CreateDeviceTypeMutation,
   CreateDeviceTypeMutationVariables
+>;
+export const CreateDeviceTypeNewDocument = gql`
+  mutation createDeviceTypeNew(
+    $name: String!
+    $manufacturer: String!
+    $model: String!
+    $loincCode: String!
+    $swabTypes: [ID!]!
+  ) {
+    createDeviceTypeNew(
+      name: $name
+      manufacturer: $manufacturer
+      model: $model
+      loincCode: $loincCode
+      swabTypes: $swabTypes
+    ) {
+      internalId
+    }
+  }
+`;
+export type CreateDeviceTypeNewMutationFn = Apollo.MutationFunction<
+  CreateDeviceTypeNewMutation,
+  CreateDeviceTypeNewMutationVariables
+>;
+
+/**
+ * __useCreateDeviceTypeNewMutation__
+ *
+ * To run a mutation, you first call `useCreateDeviceTypeNewMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateDeviceTypeNewMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createDeviceTypeNewMutation, { data, loading, error }] = useCreateDeviceTypeNewMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      manufacturer: // value for 'manufacturer'
+ *      model: // value for 'model'
+ *      loincCode: // value for 'loincCode'
+ *      swabTypes: // value for 'swabTypes'
+ *   },
+ * });
+ */
+export function useCreateDeviceTypeNewMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateDeviceTypeNewMutation,
+    CreateDeviceTypeNewMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    CreateDeviceTypeNewMutation,
+    CreateDeviceTypeNewMutationVariables
+  >(CreateDeviceTypeNewDocument, options);
+}
+export type CreateDeviceTypeNewMutationHookResult = ReturnType<
+  typeof useCreateDeviceTypeNewMutation
+>;
+export type CreateDeviceTypeNewMutationResult = Apollo.MutationResult<CreateDeviceTypeNewMutation>;
+export type CreateDeviceTypeNewMutationOptions = Apollo.BaseMutationOptions<
+  CreateDeviceTypeNewMutation,
+  CreateDeviceTypeNewMutationVariables
+>;
+export const GetSpecimenTypesDocument = gql`
+  query getSpecimenTypes {
+    specimenTypes {
+      internalId
+      name
+      typeCode
+    }
+  }
+`;
+
+/**
+ * __useGetSpecimenTypesQuery__
+ *
+ * To run a query within a React component, call `useGetSpecimenTypesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSpecimenTypesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSpecimenTypesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetSpecimenTypesQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetSpecimenTypesQuery,
+    GetSpecimenTypesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetSpecimenTypesQuery, GetSpecimenTypesQueryVariables>(
+    GetSpecimenTypesDocument,
+    options
+  );
+}
+export function useGetSpecimenTypesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetSpecimenTypesQuery,
+    GetSpecimenTypesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetSpecimenTypesQuery,
+    GetSpecimenTypesQueryVariables
+  >(GetSpecimenTypesDocument, options);
+}
+export type GetSpecimenTypesQueryHookResult = ReturnType<
+  typeof useGetSpecimenTypesQuery
+>;
+export type GetSpecimenTypesLazyQueryHookResult = ReturnType<
+  typeof useGetSpecimenTypesLazyQuery
+>;
+export type GetSpecimenTypesQueryResult = Apollo.QueryResult<
+  GetSpecimenTypesQuery,
+  GetSpecimenTypesQueryVariables
 >;
 export const SetOrgIdentityVerifiedDocument = gql`
   mutation SetOrgIdentityVerified($externalId: String!, $verified: Boolean!) {

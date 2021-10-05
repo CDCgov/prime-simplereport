@@ -1,6 +1,13 @@
 import { Context } from "@azure/functions";
-import { QueueClient } from "@azure/storage-queue";
-import { dequeueMessages, minimumMessagesAvailable } from "./lib";
+import { DequeuedMessageItem, QueueClient, QueueServiceClient, StorageSharedKeyCredential } from "@azure/storage-queue";
+import {
+  deleteSuccessfullyParsedMessages,
+  dequeueMessages,
+  getQueueClient,
+  minimumMessagesAvailable,
+  reportExceptions,
+} from "./lib";
+import { ReportStreamError, ReportStreamResponse } from "./rs-response";
 
 jest.mock("./config", () => ({
   ENV: {
@@ -15,6 +22,10 @@ jest.mock("./config", () => ({
   },
 }));
 
+const queueServiceClientMock = QueueServiceClient as jest.MockedClass<typeof QueueServiceClient>;
+const storageSharedKeyCredentialMock = StorageSharedKeyCredential as jest.MockedClass<typeof StorageSharedKeyCredential>;
+jest.mock("@azure/storage-queue"); 
+
 const context: Context = {
   log: jest.fn(),
   traceContext: { traceparent: "asdf" },
@@ -22,6 +33,29 @@ const context: Context = {
 context.log.error = jest.fn();
 
 describe("lib", () => {
+  describe('getQueueClient', () => {
+    it("creates a StorageSharedKeyCredential and QueueServiceClient", async () => {
+      // WHEN
+      getQueueClient("whatever");
+
+      // THEN
+      expect(queueServiceClientMock).toHaveBeenCalledTimes(1);
+      expect(storageSharedKeyCredentialMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("is memoized", async () => {
+      // WHEN
+      getQueueClient("whatever");
+      getQueueClient("whatever");
+      getQueueClient("whatever");
+
+      // THEN
+      expect(queueServiceClientMock).toHaveBeenCalledTimes(1);
+      expect(storageSharedKeyCredentialMock).toHaveBeenCalledTimes(1);
+    })
+  })
+
+
   describe("minimumMessagesAvailable", () => {
     it("returns false for 0 messages", async () => {
       // GIVEN
@@ -120,6 +154,148 @@ describe("lib", () => {
       // THEN
       expect(queueClientMock.receiveMessages).toHaveBeenCalledTimes(4);
       expect(result.length).toBe(5);
+    });
+  });
+
+  describe("deleteSuccessfullyParsedMessages", () => {
+    it('calls queueClient.deleteMessage appropriately', async () => {
+      // GIVEN
+      const queueClientMock: QueueClient = {
+        deleteMessage: jest.fn().mockResolvedValue(true),
+      } as any; 
+      const messages: DequeuedMessageItem[] = [{
+        messageId: '1234',
+        popReceipt: 'abcd'
+      },{
+        messageId: '1234',
+        popReceipt: 'abcd'
+      },{
+        messageId: '1234',
+        popReceipt: 'abcd'
+      }] as any;
+
+      // WHEN
+      await deleteSuccessfullyParsedMessages(context, queueClientMock, messages, {});
+      
+      // THEN
+      expect(queueClientMock.deleteMessage).toHaveBeenCalledTimes(messages.length);
+    });
+
+    it("does't call queueClient.deleteMessage for parse failures", async () => {
+      // GIVEN
+      const queueClientMock: QueueClient = {
+        deleteMessage: jest.fn().mockResolvedValue(true),
+      } as any; 
+      const messages: DequeuedMessageItem[] = [{
+        messageId: 'apple',
+        popReceipt: 'abcd'
+      },{
+        messageId: 'banana',
+        popReceipt: 'abcd'
+      },{
+        messageId: 'grape',
+        popReceipt: 'abcd'
+      }] as any;
+      const parseFailure = {
+        'grape': true
+      };
+
+      // WHEN
+      await deleteSuccessfullyParsedMessages(context, queueClientMock, messages, parseFailure);
+      
+      // THEN
+      expect(queueClientMock.deleteMessage).toHaveBeenCalledTimes(messages.length - 1);
+      expect(queueClientMock.deleteMessage).not.toHaveBeenCalledWith('grape');
+    });
+  });
+
+  describe("reportExceptions", () => {
+    it("produces sendMessage promises for warnings", async () => {
+      // GIVEN
+      const warnings: ReportStreamError[] = [
+        {
+          id: "1234",
+          details: "hello",
+          scope: "ITEM",
+        },
+        {
+          id: "1234",
+          details: "hello",
+          scope: "ITEM",
+        },
+        {
+          id: "1234",
+          details: "hello",
+          scope: "ITEM",
+        },
+      ];
+      const response: ReportStreamResponse = {
+        errorCount: 0,
+        errors: [],
+        warningCount: warnings.length,
+        warnings,
+      } as any;
+      const queueClientMock: QueueClient = {
+        sendMessage: jest.fn().mockResolvedValue(true),
+      } as any;
+
+      // WHEN
+      await reportExceptions(context, queueClientMock, response);
+
+      // THEN
+      expect(queueClientMock.sendMessage).toHaveBeenCalledTimes(
+        warnings.length
+      );
+    });
+
+    it("produces sendMessage promises for errors", async () => {
+      // GIVEN
+      const warnings: ReportStreamError[] = [
+        {
+          id: "1234",
+          details: "hello",
+          scope: "ITEM",
+        },
+        {
+          id: "1234",
+          details: "hello",
+          scope: "ITEM",
+        },
+        {
+          id: "1234",
+          details: "hello",
+          scope: "ITEM",
+        },
+      ];
+      const errors: ReportStreamError[] = [
+        {
+          id: "1234",
+          details: "hello",
+          scope: "ITEM",
+        },
+        {
+          id: "1234",
+          details: "hello",
+          scope: "ITEM",
+        },
+      ];
+      const response: ReportStreamResponse = {
+        errorCount: errors.length,
+        errors,
+        warningCount: warnings.length,
+        warnings,
+      } as any;
+      const queueClientMock: QueueClient = {
+        sendMessage: jest.fn().mockResolvedValue(true),
+      } as any;
+
+      // WHEN
+      await reportExceptions(context, queueClientMock, response);
+
+      // THEN
+      expect(queueClientMock.sendMessage).toHaveBeenCalledTimes(
+        warnings.length + errors.length
+      );
     });
   });
 });

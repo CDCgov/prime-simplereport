@@ -6,10 +6,10 @@ interface ReportingDestination {
   itemCount: number;
 }
 
-interface ReportStreamError {
-    id: string;
-    scope: "ITEM"|"REPORT";
-    details: string;
+export interface ReportStreamError {
+  id: string;
+  scope: "ITEM" | "REPORT";
+  details: string;
 }
 
 export interface ReportStreamResponse {
@@ -30,4 +30,10 @@ export interface ReportStreamResponse {
   errorCount: number;
   errors: ReportStreamError[];
   warnings: ReportStreamError[];
+}
+
+export interface SimpleReportReportStreamResponse {
+  testEventInternalId: string;
+  isError: boolean;
+  details: string;
 }

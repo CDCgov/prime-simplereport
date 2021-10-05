@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.graphql;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -32,6 +33,12 @@ class DeviceManagementTest extends BaseGraphqlTest {
   }
 
   @Test
+  void createDeviceTypeNew_orgUser_failure() {
+    ObjectNode variables = sillyDeviceArgsNew();
+    runQuery("device-type-add-new", variables, ACCESS_ERROR);
+  }
+
+  @Test
   void updateDeviceType_orgUser_failure() {
     ObjectNode someDeviceType = (ObjectNode) fetchSorted().get(0);
     ObjectNode variables = sillyDeviceArgs().put("id", someDeviceType.get("internalId").asText());
@@ -39,9 +46,32 @@ class DeviceManagementTest extends BaseGraphqlTest {
   }
 
   @Test
+  void updateDeviceTypeNew_orgUser_failure() {
+    ObjectNode someDeviceType = (ObjectNode) fetchSorted().get(0);
+    ObjectNode variables =
+        sillyDeviceArgsNew().put("id", someDeviceType.get("internalId").asText());
+    runQuery("device-type-add-new", variables, ACCESS_ERROR);
+  }
+
+  @Test
   void createDeviceType_adminUser_success() {
     useSuperUser();
     runQuery("device-type-add", sillyDeviceArgs());
+  }
+
+  @Test
+  void createDeviceTypeNew_adminUser_success() {
+    useSuperUser();
+    runQuery("device-type-add-new", sillyDeviceArgsNew());
+  }
+
+  @Test
+  void getSpecimenTypes_adminUser_success() {
+    useSuperUser();
+    ArrayNode deviceRecords = (ArrayNode) runQuery("specimen-type-query").get("specimenTypes");
+    assertThat(deviceRecords.size()).isEqualTo(2);
+    assertThat(deviceRecords.get(0).get("name").asText()).isEqualTo("Swab of the Nose");
+    assertThat(deviceRecords.get(1).get("name").asText()).isEqualTo("Swab of the Ear");
   }
 
   @Test
@@ -80,6 +110,33 @@ class DeviceManagementTest extends BaseGraphqlTest {
             .put("model", "Test-A-Lot")
             .put("loincCode", "123456")
             .put("swabType", "0987654321");
+    return variables;
+  }
+
+  private List<String> fetchSpecimenTypeIds() {
+    ArrayNode deviceRecords = (ArrayNode) runQuery("specimen-type-query").get("specimenTypes");
+    String specimenId1 = deviceRecords.get(0).findValue("internalId").asText();
+    String specimenId2 = deviceRecords.get(1).findValue("internalId").asText();
+    return List.of(specimenId1, specimenId2);
+  }
+
+  private ObjectNode sillyDeviceArgsNew() {
+    ObjectNode variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("name", "Funny")
+            .put("manufacturer", "Acme")
+            .put("model", "Test-A-Lot")
+            .put("loincCode", "123456");
+
+    List<String> specimenTypeIds = fetchSpecimenTypeIds();
+    variables
+        .putArray("swabTypes")
+        .addAll(
+            JsonNodeFactory.instance
+                .arrayNode()
+                .add(specimenTypeIds.get(0))
+                .add(specimenTypeIds.get(1)));
     return variables;
   }
 }

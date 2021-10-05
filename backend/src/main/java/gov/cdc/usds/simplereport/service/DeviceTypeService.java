@@ -135,6 +135,35 @@ public class DeviceTypeService {
     return dt;
   }
 
+  @Transactional(readOnly = false)
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public DeviceType createDeviceTypeNew(
+      String name, String model, String manufacturer, String loincCode, List<UUID> swabTypes) {
+
+    List<SpecimenType> specimenTypes =
+        swabTypes.stream()
+            .map(uuid -> _specimenTypeRepo.findById(uuid).get())
+            .collect(Collectors.toList());
+
+    specimenTypes.forEach(
+        specimenType -> {
+          if (specimenType.isDeleted()) {
+            throw new IllegalGraphqlArgumentException(
+                "swab type has been deleted and cannot be used");
+          }
+        });
+
+    DeviceType dt =
+        _repo.save(
+            new DeviceType(name, manufacturer, model, loincCode, null, determineTestLength(name)));
+
+    specimenTypes.stream()
+        .map(specimenType -> new DeviceSpecimenType(dt, specimenType))
+        .forEach(_deviceSpecimenRepo::save);
+
+    return dt;
+  }
+
   /**
    * Retrieve the {@link DeviceSpecimenTypeHolder} that this operation needs based on the <b>DEVICE
    * TYPE</b> IDs supplied to a mutation.
@@ -186,5 +215,9 @@ public class DeviceTypeService {
                         "No default device specimen type selected"));
 
     return new DeviceSpecimenTypeHolder(defaultDeviceSpecimenType, dsts);
+  }
+
+  public List<SpecimenType> getSpecimenTypes() {
+    return _specimenTypeRepo.findAllByIsDeletedFalse();
   }
 }

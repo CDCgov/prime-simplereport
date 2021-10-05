@@ -61,6 +61,7 @@ resource "azurerm_function_app" "functions" {
     AZ_STORAGE_ACCOUNT_NAME        = data.azurerm_storage_account.app.name
     AZ_STORAGE_ACCOUNT_KEY         = data.azurerm_storage_account.app.primary_access_key
     TEST_EVENT_QUEUE_NAME          = var.test_event_queue_name
+    REPORTING_EXCEPTION_QUEUE_NAME = var.reporting_exception_queue_name
     REPORT_STREAM_URL              = local.report_stream_url
     ### TODO: Figure out the KeyVault permissioning issue that prevents this reference from working
     # REPORT_STREAM_TOKEN            = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
