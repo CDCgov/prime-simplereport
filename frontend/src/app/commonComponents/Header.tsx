@@ -88,12 +88,12 @@ const Header: React.FC<{}> = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("id_token");
     window.location.replace(
-      "https://hhs-prime.okta.com/oauth2/default/v1/logout" +
-        `?id_token_hint=${encodeURIComponent(id_token || "")}` +
-        `&post_logout_redirect_uri=${encodeURIComponent(
-          process.env.REACT_APP_BASE_URL || ""
-        )}` +
-        `&state=${state}`
+      "https://hhs-prime.oktapreview.com/oauth2/default/v1/logout" +
+      `?id_token_hint=${encodeURIComponent(id_token || "")}` +
+      `&post_logout_redirect_uri=${encodeURIComponent(
+        process.env.REACT_APP_BASE_URL || ""
+      )}` +
+      `&state=${state}`
     );
   };
 
