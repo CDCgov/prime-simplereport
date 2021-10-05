@@ -205,6 +205,7 @@ describe("lib", () => {
       
       // THEN
       expect(queueClientMock.deleteMessage).toHaveBeenCalledTimes(messages.length - 1);
+      expect(queueClientMock.deleteMessage).not.toHaveBeenCalledWith('grape');
     });
   });
 
