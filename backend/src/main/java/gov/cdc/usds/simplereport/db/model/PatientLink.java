@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -13,7 +14,7 @@ import javax.persistence.ManyToOne;
 public class PatientLink extends EternalAuditedEntity {
   private static final int SHELF_LIFE = 3;
 
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "test_order_id", nullable = false)
   private TestOrder testOrder;
 
