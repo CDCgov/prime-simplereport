@@ -1,13 +1,11 @@
 <?xml version="1.0"?>
 
-<!DOCTYPE suppressions PUBLIC
-    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
-    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+<!DOCTYPE suppressions PUBLIC "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN" "https://checkstyle.org/dtds/suppressions_1_2.dtd">
 
 <suppressions>
-    <!--  REMOVE ENTRIES FROM THIS AS POSSIBLE -->
-    <!--  NEVER ADD NEW ENTRIES UNLESS A NEW CHECK IS BEING ADDED THAT NOT ALL FILES PASS -->
-    <suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/AuthTestController.java" />
+	<!--  REMOVE ENTRIES FROM THIS AS POSSIBLE -->
+	<!--  NEVER ADD NEW ENTRIES UNLESS A NEW CHECK IS BEING ADDED THAT NOT ALL FILES PASS -->
+	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/AuthTestController.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/Translators.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/apiuser/ApiUserResolver.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/model/ApiFacility.java" />
@@ -49,6 +47,7 @@
 	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/EternalSystemManagedEntity_.java" />
 	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/FacilityDeviceSpecimenType_.java" />
 	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/Facility_.java" />
+	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/IdentifiedEntity_.java" />
 	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/OrganizationQueueItem_.java" />
 	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/OrganizationScopedEternalEntity_.java" />
 	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/Organization_.java" />
@@ -59,6 +58,7 @@
 	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/Person_.java" />
 	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/PhoneNumber_.java" />
 	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/Provider_.java" />
+	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/ReportStreamResponse_.java" />
 	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/SpecimenType_.java" />
 	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/SystemManagedEntity_.java" />
 	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/TenantDataAccess_.java" />
@@ -69,6 +69,6 @@
 	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/TimeOfConsent_.java" />
 	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/auxiliary/PersonName_.java" />
 	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/auxiliary/StreetAddress_.java" />
-	
+
 	<!-- IF AND WHEN THIS COMMENT LINE MEETS THE COMMENTS AT THE TOP, PLEASE DELETE THIS FILE -->
 </suppressions>
