@@ -6,7 +6,7 @@ import reload from "./utils/reload";
 export const LOCAL_STORAGE_KEY = "mostRecentVersionReload";
 export class VersionService {
   public static async enforce() {
-    if (!this.localStorageIsAvailable()) {
+    if (!VersionService.localStorageIsAvailable()) {
       return;
     }
 
