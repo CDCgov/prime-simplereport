@@ -6,6 +6,10 @@ import reload from "./utils/reload";
 export const LOCAL_STORAGE_KEY = "mostRecentVersionReload";
 export class VersionService {
   public static async enforce() {
+    if (!this.localStorageIsAvailable()) {
+      return;
+    }
+
     const mostRecentReload = VersionService.getMostRecentReload();
     if (mostRecentReload != null) {
       if (moment().isBefore(moment(mostRecentReload).add(15, "minutes"))) {
@@ -42,5 +46,19 @@ export class VersionService {
       return (await result.text()).trim();
     }
     return process.env.REACT_APP_CURRENT_COMMIT || "";
+  }
+
+  /**
+   * from: https://stackoverflow.com/a/16427747/15155214
+   */
+  static localStorageIsAvailable() {
+    const key = "localStorageTestKey";
+    try {
+      localStorage.setItem(key, key);
+      localStorage.removeItem(key);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }
