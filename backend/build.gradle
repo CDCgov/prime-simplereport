@@ -150,10 +150,6 @@ checkstyleTest {
    configFile = file("config/checkstyle/checkstyleTest.xml")
 }
 
-checkstyleMain {
-  exclude('build/generated/**')
-}
-
 jacocoTestReport {
     reports {
         xml.enabled = true
