@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 /** The durable (and non-deletable) representation of a POC test device model. */
@@ -25,6 +26,9 @@ public class DeviceType extends EternalAuditedEntity {
 
   @Column(nullable = false)
   private String swabType;
+
+  /** This is temporary and will be used when we fully support multiple swab types */
+  @Transient private String swabTypes;
 
   @Column(nullable = false)
   private int testLength;

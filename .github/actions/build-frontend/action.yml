@@ -28,7 +28,7 @@ runs:
       working-directory: ./frontend
       run: |
           echo "::group::Set build variables"
-          az config set extension.use_dynamic_install=yes_without_prompt > /dev/null 2>&1
+          az config set extension.use_dynamic_install=yes_without_prompt
           INSIGHTS_KEY=$(
             az monitor app-insights component show \
               -g prime-simple-report-${{inputs.deploy-env}} \

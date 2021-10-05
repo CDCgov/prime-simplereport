@@ -2,6 +2,7 @@ import React, { useCallback, useState, useEffect, useRef } from "react";
 import { Prompt } from "react-router-dom";
 import { SchemaOf } from "yup";
 import { useTranslation } from "react-i18next";
+import { ComboBox } from "@trussworks/react-uswds";
 
 import { stateCodes } from "../../../config/constants";
 import getLanguages from "../../utils/languages";
@@ -27,7 +28,6 @@ import {
   suggestionIsCloseEnough,
 } from "../../utils/smartyStreets";
 import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
-import ComboBox from "../../commonComponents/ComboBox";
 import { formatDate } from "../../utils/date";
 
 import FacilitySelect from "./FacilitySelect";
