@@ -45,6 +45,9 @@ simple-report:
       - support@simplereport.gov
     waitlist-recipient:
       - support@simplereport.gov
+  azure-reporting-queue:
+    exception-webhook-enabled: true
+    exception-webhook-token: WATERMELON
   demo-users:
     site-admin-emails:
       - ruby@example.com

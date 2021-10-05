@@ -99,7 +99,9 @@ simple-report:
     preciseid-password: ${EXPERIAN_PID_PASSWORD}
   azure-reporting-queue:
     enabled: false
-    name: ${AZ_REPORTING_QUEUE_NAME}
+    exception-webhook-enabled: false
+    exception-webhook-token: ${RS_QUEUE_CALLBACK_TOKEN}
+    name: ${AZ_REPORTING_QUEUE_NAME:test-event-publishing}
     connection-string: ${AZ_REPORTING_QUEUE_CXN_STRING}
   cors:
     allowed-methods:
