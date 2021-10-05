@@ -46,8 +46,8 @@ simple-report:
     waitlist-recipient:
       - support@simplereport.gov
   azure-reporting-queue:
-    callback-enabled: true
-    callback-token: WATERMELON
+    exception-webhook-enabled: true
+    exception-webhook-token: WATERMELON
   demo-users:
     site-admin-emails:
       - ruby@example.com
@@ -180,6 +180,10 @@ simple-report-initialization:
       type-code: "445297001"
       collection-location-name: "NOSE"
       collection-location-code: "71836000"
+    - name: Swab of the Ear
+      type-code: "445297999"
+      collection-location-name: "EAR"
+      collection-location-code: "71836099"
   device-types:
     - name: Abbott IDNow
       manufacturer: Abbott

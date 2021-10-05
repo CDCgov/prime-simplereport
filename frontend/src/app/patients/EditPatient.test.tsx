@@ -17,7 +17,9 @@ import { ToastContainer } from "react-toastify";
 import EditPatient, { GET_PATIENT } from "./EditPatient";
 import EditPatientContainer from "./EditPatientContainer";
 
-jest.mock("../commonComponents/ComboBox", () => () => <></>);
+jest.mock("@trussworks/react-uswds", () => ({
+  ComboBox: () => <></>,
+}));
 const mockStore = configureStore([]);
 
 describe("EditPatient", () => {
