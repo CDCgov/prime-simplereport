@@ -405,6 +405,23 @@ public class LiveOktaRepository implements OktaRepository {
     user.unsuspend();
   }
 
+  public void resendActivationEmail(String username) {
+    UserList users = _client.listUsers(username, null, null, null, null);
+    if (users.stream().count() == 0) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot reactivate Okta user with unrecognized username");
+    }
+    User user = users.single();
+    if (user.getStatus() == UserStatus.PROVISIONED) {
+      user.reactivate(true);
+    } else if (user.getStatus() == UserStatus.STAGED) {
+      user.activate(true);
+    } else {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot reactivate user with status: " + user.getStatus());
+    }
+  }
+
   /**
    * Iterates over all OrganizationRole's, creating new corresponding Okta groups for this
    * organization where they do not already exist. For those OrganizationRole's that are in

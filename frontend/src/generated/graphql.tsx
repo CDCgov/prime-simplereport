@@ -114,6 +114,7 @@ export type Mutation = {
   editQueueItem?: Maybe<TestOrder>;
   reactivateUser?: Maybe<User>;
   removePatientFromQueue?: Maybe<Scalars["String"]>;
+  resendActivationEmail?: Maybe<User>;
   resendToReportStream?: Maybe<Scalars["Boolean"]>;
   resetUserPassword?: Maybe<User>;
   sendPatientLinkSms?: Maybe<Scalars["String"]>;
@@ -320,6 +321,10 @@ export type MutationReactivateUserArgs = {
 
 export type MutationRemovePatientFromQueueArgs = {
   patientId: Scalars["ID"];
+};
+
+export type MutationResendActivationEmailArgs = {
+  id: Scalars["ID"];
 };
 
 export type MutationResendToReportStreamArgs = {
