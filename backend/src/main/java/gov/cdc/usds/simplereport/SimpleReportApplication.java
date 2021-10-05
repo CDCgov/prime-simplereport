@@ -22,7 +22,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.info.GitProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Slf4j
@@ -39,7 +38,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
   CorsProperties.class,
   AzureStorageQueueReportingProperties.class
 })
-@EnableAsync
 @EnableScheduling
 public class SimpleReportApplication {
   public static void main(String[] args) {
