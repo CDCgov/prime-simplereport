@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api.deviceType;
+package gov.cdc.usds.simplereport.api.devicetype;
 
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.service.SpecimenTypeService;
