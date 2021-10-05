@@ -7,11 +7,15 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 @Entity
 @Table(name = "organization_queue")
+@Getter
+@NoArgsConstructor
 public class OrganizationQueueItem extends EternalAuditedEntity {
 
   @Column(nullable = false)
@@ -28,10 +32,6 @@ public class OrganizationQueueItem extends EternalAuditedEntity {
   @JoinColumn(name = "verified_organization_id")
   private Organization verifiedOrganization;
 
-  protected OrganizationQueueItem() {
-    /* for hibernate */
-  }
-
   @ConstructorBinding
   public OrganizationQueueItem(
       String orgName, String externalId, OrganizationAccountRequest requestData) {
@@ -39,17 +39,5 @@ public class OrganizationQueueItem extends EternalAuditedEntity {
     this.organizationName = orgName;
     this.externalId = externalId;
     this.requestData = requestData;
-  }
-
-  public String getOrganizationName() {
-    return organizationName;
-  }
-
-  public String getExternalId() {
-    return externalId;
-  }
-
-  public OrganizationAccountRequest getRequestData() {
-    return requestData;
   }
 }

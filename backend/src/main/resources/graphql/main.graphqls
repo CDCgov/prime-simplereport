@@ -221,6 +221,13 @@ type PatientLink {
   testOrder: TestOrder
 }
 
+type PendingOrganization {
+  name: String!
+  adminName: String!
+  adminEmail: String!
+  adminPhone: String
+}
+
 # Queries and mutations for everyday use
 
 type Query {
@@ -228,6 +235,7 @@ type Query {
     @deprecated(
       reason: "this information is already loaded from the 'whoami' endpoint"
     )
+  pendingOrganization: [PendingOrganization] @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   deviceType: [DeviceType]
     @deprecated(reason: "use the pluralized form to reduce confusion")
   deviceTypes: [DeviceType]

@@ -12,6 +12,7 @@ import com.okta.sdk.resource.group.GroupType;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserBuilder;
 import com.okta.sdk.resource.user.UserList;
+import com.okta.sdk.resource.user.UserProfile;
 import com.okta.sdk.resource.user.UserStatus;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
@@ -207,6 +208,28 @@ public class LiveOktaRepository implements OktaRepository {
     return orgDefaultOktaGroup.listUsers().stream()
         .map(u -> u.getProfile().getEmail())
         .collect(Collectors.toUnmodifiableSet());
+  }
+
+  public UserProfile getAdminUserForPendingOrganization(Organization org) {
+    if (org.getIdentityVerified()) {
+      throw new IllegalGraphqlArgumentException("Can only get admin user for pending organization");
+    }
+
+    final String orgDefaultGroupName =
+        generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
+    final GroupList oktaGroupList =
+        _client.listGroups(orgDefaultGroupName, FILTER_TYPE_EQ_OKTA_GROUP, null);
+
+    Group orgDefaultOktaGroup =
+        oktaGroupList.stream()
+            .filter(g -> orgDefaultGroupName.equals(g.getProfile().getName()))
+            .findFirst()
+            .orElseThrow(
+                () ->
+                    new IllegalGraphqlArgumentException(
+                        "Okta group not found for this organization"));
+
+    return orgDefaultOktaGroup.listUsers().single().getProfile();
   }
 
   public Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org) {

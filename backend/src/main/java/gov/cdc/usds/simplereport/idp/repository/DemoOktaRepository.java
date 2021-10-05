@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.idp.repository;
 import com.okta.sdk.error.Error;
 import com.okta.sdk.error.ErrorCause;
 import com.okta.sdk.resource.ResourceException;
+import com.okta.sdk.resource.user.UserProfile;
 import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -187,6 +188,10 @@ public class DemoOktaRepository implements OktaRepository {
     return orgUsernamesMap.get(org.getExternalId()).stream()
         .filter(u -> !inactiveUsernames.contains(u))
         .collect(Collectors.toUnmodifiableSet());
+  }
+
+  public UserProfile getAdminUserForPendingOrganization(Organization org) {
+    return null;
   }
 
   public Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org) {
