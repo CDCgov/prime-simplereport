@@ -41,3 +41,14 @@ query getSpecimenTypes{
     typeCode
   }
 }
+
+query getDeviceTypeList{
+  deviceTypes {
+    internalId,
+    name,
+    loincCode,
+    manufacturer,
+    model,
+    swabTypes
+  }
+}

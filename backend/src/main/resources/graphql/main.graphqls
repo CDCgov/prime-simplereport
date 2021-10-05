@@ -54,13 +54,13 @@ type Provider {
 }
 
 type DeviceType {
-  internalId: ID
-  name: String
-  manufacturer: String
-  model: String
-  loincCode: String
+  internalId: ID!
+  name: String!
+  manufacturer: String!
+  model: String!
+  loincCode: String!
   swabType: String
-  swabTypes: String
+  swabTypes: [ID!]!
   testLength: Int
 }
 

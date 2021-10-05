@@ -28,7 +28,9 @@ public class DeviceType extends EternalAuditedEntity {
   private String swabType;
 
   /** This is temporary and will be used when we fully support multiple swab types */
-  @Transient private String swabTypes;
+  @OneToMany(fetch = FetchType.LAZY)
+  @Transient
+  private SpecimenType swabTypes;
 
   @Column(nullable = false)
   private int testLength;
