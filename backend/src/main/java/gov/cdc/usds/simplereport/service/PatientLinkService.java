@@ -33,12 +33,11 @@ public class PatientLinkService {
   @Autowired private CurrentPatientContextHolder contextHolder;
 
   public PatientLink getPatientLink(UUID internalId) {
-    return plrepo.findById(internalId).orElseThrow(() -> new InvalidPatientLinkException());
+    return plrepo.findById(internalId).orElseThrow(InvalidPatientLinkException::new);
   }
 
   public PatientLink getRefreshedPatientLink(UUID internalId) {
-    PatientLink pl =
-        plrepo.findById(internalId).orElseThrow(() -> new InvalidPatientLinkException());
+    PatientLink pl = plrepo.findById(internalId).orElseThrow(InvalidPatientLinkException::new);
     PatientLinkFailedAttempt patientLinkFailedAttempt =
         plfarepo.findById(pl.getInternalId()).orElse(new PatientLinkFailedAttempt(pl));
     patientLinkFailedAttempt.resetFailedAttempts();
@@ -91,8 +90,7 @@ public class PatientLinkService {
   }
 
   public PatientLink createPatientLink(UUID testOrderUuid) {
-    TestOrder to =
-        torepo.findById(testOrderUuid).orElseThrow(() -> new InvalidPatientLinkException());
+    TestOrder to = torepo.findById(testOrderUuid).orElseThrow(InvalidPatientLinkException::new);
     PatientLink pl = new PatientLink(to);
     return plrepo.save(pl);
   }

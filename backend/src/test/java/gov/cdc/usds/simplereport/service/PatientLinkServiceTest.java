@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.service.dataloader.PatientLinkDataLoader;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -80,10 +81,10 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
 
   @Test
   void patientLinkLockout() throws Exception {
+    UUID patientId = _patientLink.getInternalId();
+    LocalDate patientBirthDate = _person.getBirthDate();
     BooleanSupplier failToVerify =
-        () ->
-            _service.verifyPatientLink(
-                _patientLink.getInternalId(), _person.getBirthDate().plusDays(1));
+        () -> _service.verifyPatientLink(patientId, patientBirthDate.plusDays(1));
 
     assertFalse(failToVerify.getAsBoolean());
     assertFalse(failToVerify.getAsBoolean());
@@ -92,7 +93,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
     assertFalse(failToVerify.getAsBoolean());
     assertThrows(
         ExpiredPatientLinkException.class,
-        () -> _service.verifyPatientLink(_patientLink.getInternalId(), _person.getBirthDate()));
+        () -> _service.verifyPatientLink(patientId, patientBirthDate));
   }
 
   @Test
