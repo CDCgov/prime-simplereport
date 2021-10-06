@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.IncorrectBirthDateException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
@@ -40,11 +39,7 @@ public class PatientLinkService {
 
   public PatientLink getRefreshedPatientLink(UUID internalId) {
     PatientLink pl =
-        plrepo
-            .findById(internalId)
-            .orElseThrow(
-                () ->
-                    new IllegalGraphqlArgumentException("No patient link with that ID was found"));
+        plrepo.findById(internalId).orElseThrow(() -> new InvalidPatientLinkException());
     PatientLinkFailedAttempt patientLinkFailedAttempt =
         plfarepo.findById(pl.getInternalId()).orElse(new PatientLinkFailedAttempt(pl));
     patientLinkFailedAttempt.resetFailedAttempts();
@@ -85,7 +80,7 @@ public class PatientLinkService {
       patientLinkFailedAttempt.addFailedAttempt();
       plfarepo.save(patientLinkFailedAttempt);
       throw new IncorrectBirthDateException();
-    } catch (IllegalGraphqlArgumentException e) {
+    } catch (InvalidPatientLinkException e) {
       // patient link id was invalid
       return false;
     }
@@ -98,10 +93,7 @@ public class PatientLinkService {
 
   public PatientLink createPatientLink(UUID testOrderUuid) {
     TestOrder to =
-        torepo
-            .findById(testOrderUuid)
-            .orElseThrow(
-                () -> new IllegalGraphqlArgumentException("No test order with that ID was found"));
+        torepo.findById(testOrderUuid).orElseThrow(() -> new InvalidPatientLinkException());
     PatientLink pl = new PatientLink(to);
     return plrepo.save(pl);
   }
