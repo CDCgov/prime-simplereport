@@ -210,10 +210,10 @@ export const en = {
           "When you arrive for your test, check in by giving your first and last name.",
       },
       duplicate: {
-        heading: "You already have a profile at",
+        heading: "You're already registered at",
         message:
           "Our records show someone has registered with the same name, date of birth, and ZIP code. Please check in with " +
-          "your testing site staff. You do not need to register again.",
+          "your testing facility staff. You don't need to register again.",
         exit: "Exit sign up",
       },
     },
