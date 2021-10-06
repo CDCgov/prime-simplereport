@@ -127,7 +127,7 @@ describe("SelfRegistration", () => {
     });
     fireEvent.blur(firstNameInput);
     // Duplicate modal shows
-    await screen.findByText("You already have a profile", { exact: false });
+    await screen.findByText("You're already registered at", { exact: false });
     const exitButton = await screen.findByText("Exit sign up");
     fireEvent.click(exitButton);
     expect(

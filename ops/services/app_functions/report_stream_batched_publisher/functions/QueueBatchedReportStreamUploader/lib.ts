@@ -6,7 +6,7 @@ import {
   StorageSharedKeyCredential,
 } from "@azure/storage-queue";
 import * as csvStringify from "csv-stringify/lib/sync";
-import { ENV, uploaderVersion } from "./config";
+import { ENV, uploaderVersion } from "../config";
 import fetch, { Headers } from "node-fetch";
 import {
   ReportStreamResponse,
@@ -187,6 +187,8 @@ export async function reportExceptions(
       }))
     );
   return Promise.all(
-    payloads.map((p) => queueClient.sendMessage(JSON.stringify(p)))
+    payloads.map((p) =>
+      queueClient.sendMessage(Buffer.from(JSON.stringify(p)).toString("base64"))
+    )
   );
 }
