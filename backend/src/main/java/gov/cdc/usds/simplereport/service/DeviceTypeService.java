@@ -11,10 +11,10 @@ import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,15 +57,12 @@ public class DeviceTypeService {
   }
 
   public List<DeviceSpecimenType> getDeviceSpecimenTypesByIds(List<String> deviceSpecimenTypeIds) {
-    List<DeviceSpecimenType> deviceSpecimenTypes = new ArrayList<>();
-
-    Iterable<DeviceSpecimenType> results =
+    var deviceSpecimenTypes =
         _deviceSpecimenRepo.findAllById(
             deviceSpecimenTypeIds.stream().map(UUID::fromString).collect(Collectors.toList()));
 
-    results.forEach(deviceSpecimenTypes::add);
-
-    return deviceSpecimenTypes;
+    return StreamSupport.stream(deviceSpecimenTypes.spliterator(), false)
+        .collect(Collectors.toList());
   }
 
   public List<DeviceSpecimenType> getDeviceSpecimenTypes() {

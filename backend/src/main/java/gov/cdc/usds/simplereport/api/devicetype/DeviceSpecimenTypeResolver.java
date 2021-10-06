@@ -4,13 +4,13 @@ import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class DeviceSpecimenTypeResolver implements GraphQLQueryResolver {
-
-  @Autowired private DeviceTypeService dts;
+  private final DeviceTypeService dts;
 
   public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
     return dts.getDeviceSpecimenTypes();
