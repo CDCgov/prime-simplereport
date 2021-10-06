@@ -1715,7 +1715,11 @@ export type GetTestResultForPrintQuery = {
     dateTested?: Maybe<any>;
     result?: Maybe<string>;
     correctionStatus?: Maybe<string>;
-    deviceType?: Maybe<{ __typename?: "DeviceType"; name?: Maybe<string> }>;
+    deviceType?: Maybe<{
+      __typename?: "DeviceType";
+      name?: Maybe<string>;
+      model?: Maybe<string>;
+    }>;
     patient?: Maybe<{
       __typename?: "Patient";
       firstName?: Maybe<string>;
@@ -1741,11 +1745,6 @@ export type GetTestResultForPrintQuery = {
         NPI?: Maybe<string>;
       }>;
     }>;
-    testPerformed: {
-      __typename?: "TestDescription";
-      name: string;
-      loincCode: string;
-    };
   }>;
 };
 
@@ -4828,6 +4827,7 @@ export const GetTestResultForPrintDocument = gql`
       correctionStatus
       deviceType {
         name
+        model
       }
       patient {
         firstName
@@ -4850,10 +4850,6 @@ export const GetTestResultForPrintDocument = gql`
           lastName
           NPI
         }
-      }
-      testPerformed {
-        name
-        loincCode
       }
     }
   }
