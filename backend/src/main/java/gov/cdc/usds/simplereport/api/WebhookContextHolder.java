@@ -7,14 +7,14 @@ import org.springframework.web.context.WebApplicationContext;
 
 @Repository
 @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class SmsWebhookContextHolder {
-  private boolean _isSmsWebhook = false;
+public class WebhookContextHolder {
+  private boolean _isWebhook = false;
 
-  public void setIsSmsWebhook(boolean status) {
-    this._isSmsWebhook = status;
+  public void setIsWebhook(boolean status) {
+    this._isWebhook = status;
   }
 
-  public boolean isSmsWebhook() {
-    return _isSmsWebhook;
+  public boolean isWebhook() {
+    return _isWebhook;
   }
 }

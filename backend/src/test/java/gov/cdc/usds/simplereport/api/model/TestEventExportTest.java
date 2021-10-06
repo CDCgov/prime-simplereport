@@ -6,11 +6,15 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -144,5 +148,24 @@ class TestEventExportTest {
     TestEventExport sut = new TestEventExport(te);
 
     assertEquals("UNK", sut.getFirstTest());
+  }
+
+  @Test
+  void specimenCollectionSubtractsDeviceOffset() throws ParseException {
+    Organization o = _dataFactory.createValidOrg();
+    Facility f = _dataFactory.createValidFacility(o);
+    Person p = _dataFactory.createFullPerson(o);
+
+    TestEvent te =
+        _dataFactory.createTestEvent(
+            p,
+            f,
+            AskOnEntrySurvey.builder().symptoms(Collections.emptyMap()).build(),
+            TestResult.NEGATIVE,
+            new SimpleDateFormat("yyyyMMdd").parse("20201215"));
+    TestEventExport sut = new TestEventExport(te);
+
+    assertEquals("20201215000000", sut.getTestDate());
+    assertEquals("20201214234500", sut.getSpecimenCollectionDateTime());
   }
 }

@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.logging;
 
-import gov.cdc.usds.simplereport.api.SmsWebhookContextHolder;
+import gov.cdc.usds.simplereport.api.WebhookContextHolder;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -21,14 +21,14 @@ public class RestAuditLogManager {
 
   private final AuditService _auditService;
   private final CurrentPatientContextHolder _contextHolder;
-  private final SmsWebhookContextHolder _webhookContextHolder;
+  private final WebhookContextHolder _webhookContextHolder;
 
   private static final int DEFAULT_SUCCESS = HttpStatus.OK.value();
 
   public RestAuditLogManager(
       AuditService auditService,
       CurrentPatientContextHolder contextHolder,
-      SmsWebhookContextHolder webhookContextHolder) {
+      WebhookContextHolder webhookContextHolder) {
     this._auditService = auditService;
     this._contextHolder = contextHolder;
     this._webhookContextHolder = webhookContextHolder;
@@ -65,13 +65,13 @@ public class RestAuditLogManager {
   }
 
   public boolean logWebhookSuccess(HttpServletRequest request) {
-    if (!_webhookContextHolder.isSmsWebhook()) {
+    if (!_webhookContextHolder.isWebhook()) {
       log.error("Somehow reached success handler without webhook context being true");
       return false;
     }
     try {
       String requestId = MDC.get(LoggingConstants.REQUEST_ID_MDC_KEY);
-      _auditService.logSmsWebhookRestEvent(requestId, request, DEFAULT_SUCCESS);
+      _auditService.logWebhookRestEvent(requestId, request, DEFAULT_SUCCESS);
     } catch (Exception e) {
       throw new RestAuditFailureException(e);
     }

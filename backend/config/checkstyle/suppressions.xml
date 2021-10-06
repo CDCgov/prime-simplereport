@@ -7,36 +7,6 @@
 <suppressions>
     <!--  REMOVE ENTRIES FROM THIS AS POSSIBLE -->
     <!--  NEVER ADD NEW ENTRIES UNLESS A NEW CHECK IS BEING ADDED THAT NOT ALL FILES PASS -->
-    <suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/AuthTestController.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/Translators.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/apiuser/ApiUserResolver.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/model/ApiFacility.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/model/ApiProvider.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/model/TestEventExport.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/model/errors/IllegalGraphqlArgumentException.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/organization/OrganizationDataResolver.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/organization/OrganizationResolver.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/queue/QueueResolver.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/config/AuditingConfig.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/config/SecurityConfiguration.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/Organization.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/OrganizationScoped.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/PatientAnswers.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/Person.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/Provider.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/auxiliary/AskOnEntrySurvey.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/auxiliary/OptionalBoolean.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/auxiliary/OrderStatus.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/auxiliary/PersonName.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/auxiliary/RaceArrayConverter.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/auxiliary/TestResult.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/package-info.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/repository/ApiUserRepository.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/repository/EternalAuditedEntityRepository.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/repository/FacilityRepository.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/repository/OrganizationRepository.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/repository/TestEventRepository.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/service/TestOrderService.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/service/UploadService.java" />
+	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/.+_\.java" />
 	<!-- IF AND WHEN THIS COMMENT LINE MEETS THE COMMENTS AT THE TOP, PLEASE DELETE THIS FILE -->
 </suppressions>
