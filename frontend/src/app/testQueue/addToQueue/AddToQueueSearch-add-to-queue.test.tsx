@@ -7,6 +7,7 @@ import { MemoryRouter } from "react-router-dom";
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { Patient } from "../../patients/ManagePatients";
 import { TestResult } from "../QueueItem";
+import { getAppInsights } from "../../TelemetryService";
 
 import AddToQueueSearch, {
   ADD_PATIENT_TO_QUEUE,
@@ -15,6 +16,10 @@ import AddToQueueSearch, {
 import { QueueProps } from "./SearchResults";
 
 let refetchQueueMock;
+
+jest.mock("../../TelemetryService", () => ({
+  getAppInsights: jest.fn(),
+}));
 
 const facilityId = "fake-facility-id";
 const dummyTest = {
@@ -115,8 +120,14 @@ jest.mock("./SearchResults", () => {
 });
 
 describe("AddToSearchQueue - add to queue", () => {
+  const trackEventMock = jest.fn();
+
   beforeEach(async () => {
     refetchQueueMock = jest.fn();
+
+    (getAppInsights as jest.Mock).mockImplementation(() => ({
+      trackEvent: trackEventMock,
+    }));
 
     render(
       <MemoryRouter>
@@ -131,6 +142,10 @@ describe("AddToSearchQueue - add to queue", () => {
     );
   });
 
+  afterEach(() => {
+    (getAppInsights as jest.Mock).mockReset();
+  });
+
   it("adds patient to queue from search form", async () => {
     userEvent.type(screen.getByRole("searchbox", { exact: false }), "bar");
 
@@ -140,5 +155,15 @@ describe("AddToSearchQueue - add to queue", () => {
 
     expect(queryPatientMockIsDone).toBe(true);
     expect(addPatientMockIsDone).toBe(true);
+  });
+
+  it("tracks custom telemetry event", async () => {
+    userEvent.type(screen.getByRole("searchbox", { exact: false }), "bar");
+
+    await waitFor(async () => {
+      userEvent.click(screen.getAllByRole("button")[1]);
+    });
+
+    expect(trackEventMock).toBeCalledWith({ name: "Add Patient To Queue" });
   });
 });
