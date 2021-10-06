@@ -579,7 +579,7 @@ describe("AddPatient", () => {
       fireEvent.blur(zip);
 
       expect(
-        await screen.findByText("This person is already registered", {
+        await screen.findByText("This patient is already registered", {
           exact: false,
         })
       ).toBeInTheDocument();

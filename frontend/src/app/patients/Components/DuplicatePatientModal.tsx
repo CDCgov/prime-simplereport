@@ -44,7 +44,7 @@ export const DuplicatePatientModal: React.FC<DuplicateModalProps> = ({
     >
       <Modal.Header>
         {onClose
-          ? `This person is already registered at ${entityName}`
+          ? `This patient is already registered at ${entityName}`
           : `${t("selfRegistration.duplicate.heading")} ${entityName}`}
       </Modal.Header>
       <p>
