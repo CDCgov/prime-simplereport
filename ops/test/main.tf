@@ -37,59 +37,6 @@ resource "azurerm_storage_queue" "test_event_exceptions_queue" {
   storage_account_name = azurerm_storage_account.app.name
 }
 
-resource "azurerm_cdn_profile" "cdn_profile" {
-  name                = "${local.name}-${local.env}"
-  resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
-  sku                 = "Standard_Microsoft"
-  tags                = local.management_tags
-}
-
-resource "azurerm_cdn_endpoint" "cdn_endpoint" {
-  name                          = "${local.name}-${local.env}"
-  profile_name                  = azurerm_cdn_profile.cdn_profile.name
-  resource_group_name           = data.azurerm_resource_group.rg.name
-  location                      = data.azurerm_resource_group.rg.location
-  origin_host_header            = azurerm_storage_account.app.primary_web_host
-  querystring_caching_behaviour = "IgnoreQueryString"
-
-  origin {
-    name      = "${local.name}-${local.env}-static"
-    host_name = azurerm_storage_account.app.primary_web_host
-  }
-
-  delivery_rule {
-    name  = "bypassIndexHtmlCache"
-    order = 1
-
-    cache_expiration_action {
-      behavior = "BypassCache"
-    }
-
-    url_file_name_condition {
-      operator     = "Equal"
-      match_values = ["index.html", "commit.txt"]
-      transforms   = ["Lowercase"]
-    }
-  }
-
-  delivery_rule {
-    name  = "bypassMaintenanceJsonCache"
-    order = 2
-
-    cache_expiration_action {
-      behavior = "BypassCache"
-    }
-
-    url_file_name_condition {
-      operator     = "Equal"
-      match_values = ["maintenance.json"]
-      transforms   = ["Lowercase"]
-    }
-  }
-}
-
-
 # Manually configured rules/rewrite sets
 module "app_gateway" {
   source                  = "../services/app_gateway"
@@ -97,8 +44,6 @@ module "app_gateway" {
   env                     = local.env
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
-
-  cdn_hostname      = azurerm_cdn_endpoint.cdn_endpoint.host_name
   blob_endpoint     = azurerm_storage_account.app.primary_web_host
   subnet_id         = data.terraform_remote_state.persistent_test.outputs.subnet_lbs_id
   key_vault_id      = data.azurerm_key_vault.sr_global.id
