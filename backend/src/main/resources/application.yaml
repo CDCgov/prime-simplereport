@@ -46,12 +46,12 @@ graphql:
         scalarName: MyLocalDate # graphql-datetime injects the LocalDate scalar no matter what. this rename allows us to reuse the LocalDate in FlexibleDateScalar
 okta:
   oauth2:
-    #issuer: https://hhs-prime.okta.com/oauth2/default
+    issuer: https://hhs-prime.okta.com/oauth2/default
     client-id: ${OKTA_OAUTH2_CLIENT_ID}
     client-secret: ${OKTA_OAUTH2_CLIENT_SECRET:MISSING}
     groups-claim: ${simple-report.authorization.role-claim}
   client:
-    #org-url: https://hhs-prime.okta.com
+    org-url: https://hhs-prime.okta.com
     token: ${OKTA_API_KEY:MISSING}
 smarty-streets:
   id: ${SMARTY_AUTH_ID}
