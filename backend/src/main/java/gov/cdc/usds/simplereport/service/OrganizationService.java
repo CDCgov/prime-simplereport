@@ -241,12 +241,14 @@ public class OrganizationService {
     for (DeviceSpecimenType ds : deviceSpecimenTypes.getFullList()) {
       facility.addDeviceSpecimenType(ds);
     }
+
     // remove all existing devices
     for (DeviceSpecimenType ds : facility.getDeviceSpecimenTypes()) {
       if (!deviceSpecimenTypes.getFullList().contains(ds)) {
         facility.removeDeviceSpecimenType(ds);
       }
     }
+
     facility.addDefaultDeviceSpecimen(deviceSpecimenTypes.getDefault());
     return _facilityRepo.save(facility);
   }

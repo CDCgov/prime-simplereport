@@ -30,6 +30,7 @@ type Facility {
   phone: String
   email: String
   deviceTypes: [DeviceType]
+  deviceSpecimenTypes: [DeviceSpecimenType]
   defaultDeviceType: DeviceType
   orderingProvider: Provider
   patientSelfRegistrationLink: String
@@ -69,6 +70,12 @@ type SpecimenType {
   typeCode: String!
   collectionLocationName: String
   collectionLocationCode: String
+}
+
+type DeviceSpecimenType {
+  internalId: ID!
+  deviceType: DeviceType!
+  specimenType: SpecimenType!
 }
 
 type TestDescription {
@@ -214,7 +221,7 @@ type TestResult {
 }
 
 type TopLevelDashboardMetrics {
-  positiveTestCount: Int,
+  positiveTestCount: Int
   totalTestCount: Int
 }
 
@@ -240,6 +247,8 @@ type Query {
   deviceType: [DeviceType]
     @deprecated(reason: "use the pluralized form to reduce confusion")
   deviceTypes: [DeviceType]
+  specimenType: [SpecimenType]
+  deviceSpecimenTypes: [DeviceSpecimenType]
   patients(
     facilityId: ID
     pageNumber: Int
@@ -286,10 +295,14 @@ type Query {
   ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
-  topLevelDashboardMetrics(facilityId: ID, startDate: DateTime, endDate: DateTime): TopLevelDashboardMetrics
-    @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
+  topLevelDashboardMetrics(
+    facilityId: ID
+    startDate: DateTime
+    endDate: DateTime
+  ): TopLevelDashboardMetrics @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
-  usersWithStatus: [ApiUserWithStatus!] @requiredPermissions(allOf: ["MANAGE_USERS"])
+  usersWithStatus: [ApiUserWithStatus!]
+    @requiredPermissions(allOf: ["MANAGE_USERS"])
   user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
 }
@@ -322,6 +335,7 @@ type Mutation {
     orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
+    deviceSpecimenTypes: [ID]
     defaultDevice: String!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addFacility(
@@ -350,6 +364,7 @@ type Mutation {
     orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
+    deviceSpecimenTypes: [ID]
     defaultDevice: String!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addUserToCurrentOrg(

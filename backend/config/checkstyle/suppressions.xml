@@ -1,12 +1,10 @@
 <?xml version="1.0"?>
 
-<!DOCTYPE suppressions PUBLIC
-    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
-    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+<!DOCTYPE suppressions PUBLIC "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN" "https://checkstyle.org/dtds/suppressions_1_2.dtd">
 
 <suppressions>
-    <!--  REMOVE ENTRIES FROM THIS AS POSSIBLE -->
-    <!--  NEVER ADD NEW ENTRIES UNLESS A NEW CHECK IS BEING ADDED THAT NOT ALL FILES PASS -->
+	<!--  REMOVE ENTRIES FROM THIS AS POSSIBLE -->
+	<!--  NEVER ADD NEW ENTRIES UNLESS A NEW CHECK IS BEING ADDED THAT NOT ALL FILES PASS -->
 	<suppress checks="FileTabCharacter" files="build/generated/sources/annotationProcessor/java/main/gov/cdc/usds/simplereport/db/model/.+_\.java" />
 	<!-- IF AND WHEN THIS COMMENT LINE MEETS THE COMMENTS AT THE TOP, PLEASE DELETE THIS FILE -->
 </suppressions>

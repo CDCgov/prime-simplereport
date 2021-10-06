@@ -1,0 +1,27 @@
+mutation updateFacility($facilityId: ID!, $deviceId: String!, $deviceSpecimenTypes: [ID]!) {
+    updateFacility(
+        facilityId: $facilityId
+        testingFacilityName: "Fake Facility"
+        cliaNumber: "123457890987654321"
+        street: "123 Main Street"
+        city: "Nowheresville"
+        county: "N/A"
+        state: "NY"
+        zipCode: "11238"
+        phone: "(202) 555-1212"
+        email: "nobody@example.com"
+        orderingProviderFirstName: "Meenie"
+        orderingProviderMiddleName: "Moe"
+        orderingProviderLastName: "Eenie"
+        orderingProviderSuffix: "Jr."
+        orderingProviderNPI: "1223334444"
+        orderingProviderStreet: "345 1st Avenue"
+        orderingProviderCity: "Hicksville"
+        orderingProviderState: "NY"
+        orderingProviderZipCode: "11801"
+        orderingProviderPhone: "(646) 5432123"
+        deviceTypes: [$deviceId]
+        deviceSpecimenTypes: $deviceSpecimenTypes
+        defaultDevice: $deviceId
+    )
+}
