@@ -17,11 +17,7 @@ logging:
     gov.cdc.usds: DEBUG
 okta:
   oauth2:
-    issuer: https://hhs-prime.oktapreview.com/oauth2/default
     client-id: 0oa1k0163nAwfVxNW1d7
-    #client-secret: ${OKTA_OAUTH2_CLIENT_SECRET:MISSING}
-    client-secret: -Ak1v2LkDsIxC_GAD_Dwbb7xU0BYIAX91QaOYsp8
-    #groups-claim: ${simple-report.authorization.role-claim}
+    issuer: https://hhs-prime.oktapreview.com/oauth2/default
   client:
     org-url: https://hhs-prime.oktapreview.com
-    token: ${OKTA_API_KEY:MISSING}
