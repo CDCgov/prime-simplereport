@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
+import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -8,10 +9,12 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
+import gov.cdc.usds.simplereport.db.repository.OrganizationQueueRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
@@ -24,18 +27,17 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
+@Slf4j
 public class OrganizationService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(OrganizationService.class);
-
   private OrganizationRepository _repo;
+  private OrganizationQueueRepository _orgQueueRepo;
   private FacilityRepository _facilityRepo;
   private ProviderRepository _providerRepo;
   private AuthorizationService _authService;
@@ -46,6 +48,7 @@ public class OrganizationService {
 
   public OrganizationService(
       OrganizationRepository repo,
+      OrganizationQueueRepository orgQueueRepo,
       FacilityRepository facilityRepo,
       AuthorizationService authService,
       ProviderRepository providerRepo,
@@ -54,6 +57,7 @@ public class OrganizationService {
       OrderingProviderRequiredValidator orderingProviderRequiredValidator,
       PatientSelfRegistrationLinkService patientSelfRegistrationLinkService) {
     _repo = repo;
+    _orgQueueRepo = orgQueueRepo;
     _facilityRepo = facilityRepo;
     _authService = authService;
     _providerRepo = providerRepo;
@@ -85,7 +89,7 @@ public class OrganizationService {
     List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
     if (validOrgs == null || validOrgs.size() != 1) {
       int numOrgs = (validOrgs == null) ? 0 : validOrgs.size();
-      LOG.warn("Found {} organizations for user", numOrgs);
+      log.warn("Found {} organizations for user", numOrgs);
       return Optional.empty();
     }
     Organization foundOrg = validOrgs.get(0);
@@ -394,5 +398,11 @@ public class OrganizationService {
         providerAddress,
         providerTelephone,
         providerNPI);
+  }
+
+  @Transactional(readOnly = false)
+  public OrganizationQueueItem queueNewRequest(
+      String organizationName, String orgExternalId, OrganizationAccountRequest request) {
+    return _orgQueueRepo.save(new OrganizationQueueItem(organizationName, orgExternalId, request));
   }
 }

@@ -1,9 +1,9 @@
 import {
-  fireEvent,
   render,
   screen,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
@@ -66,9 +66,9 @@ describe("TestQueue", () => {
     );
     expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
     const removeButton = (await screen.findAllByLabelText("Close"))[0];
-    fireEvent.click(removeButton);
+    userEvent.click(removeButton);
     const confirmButton = await screen.findByText("Yes", { exact: false });
-    fireEvent.click(confirmButton);
+    userEvent.click(confirmButton);
     await waitForElementToBeRemoved(() => screen.queryByText("Doe, John A"));
     expect(screen.queryByText("Doe, John A")).not.toBeInTheDocument();
   });

@@ -37,8 +37,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -51,9 +50,8 @@ import org.springframework.stereotype.Service;
  */
 @Profile("!" + BeanProfiles.NO_OKTA_MGMT)
 @Service
+@Slf4j
 public class LiveOktaRepository implements OktaRepository {
-
-  private static final Logger LOG = LoggerFactory.getLogger(LiveOktaRepository.class);
 
   private static final String FILTER_TYPE_EQ_OKTA_GROUP =
       "type eq \"" + GroupType.OKTA_GROUP + "\"";
@@ -185,7 +183,7 @@ public class LiveOktaRepository implements OktaRepository {
 
     List<OrganizationRoleClaims> claims = _extractor.convertClaims(groupNamesToAdd);
     if (claims.size() != 1) {
-      LOG.warn("User is in {} Okta organizations, not 1", claims.size());
+      log.warn("User is in {} Okta organizations, not 1", claims.size());
       return Optional.empty();
     }
     return Optional.of(claims.get(0));
@@ -344,7 +342,7 @@ public class LiveOktaRepository implements OktaRepository {
 
       for (String groupName : groupNamesToRemove) {
         Group group = fullOrgGroupMap.get(groupName);
-        LOG.info("Removing {} from Okta group: {}", username, group.getProfile().getName());
+        log.info("Removing {} from Okta group: {}", username, group.getProfile().getName());
         group.removeUser(user.getId());
       }
 
@@ -354,7 +352,7 @@ public class LiveOktaRepository implements OktaRepository {
               String.format("Cannot add Okta user to nonexistent group=%s", groupName));
         }
         Group group = fullOrgGroupMap.get(groupName);
-        LOG.info("Adding {} to Okta group: {}", username, group.getProfile().getName());
+        log.info("Adding {} to Okta group: {}", username, group.getProfile().getName());
         user.addToGroup(group.getId());
       }
     }
@@ -430,7 +428,7 @@ public class LiveOktaRepository implements OktaRepository {
               .buildAndCreate(_client);
       _app.createApplicationGroupAssignment(g.getId());
 
-      LOG.info("Created Okta group={}", roleGroupName);
+      log.info("Created Okta group={}", roleGroupName);
     }
 
     _app.update();
@@ -471,9 +469,9 @@ public class LiveOktaRepository implements OktaRepository {
     return activateUser(user);
   }
 
-  public String fetchAdminUserEmail(Organization org) {
-    User user = getOrgAdminUsers(org).single();
-    return user.getProfile().getLogin();
+  public List<String> fetchAdminUserEmail(Organization org) {
+    UserList admins = getOrgAdminUsers(org);
+    return admins.stream().map(u -> u.getProfile().getLogin()).collect(Collectors.toList());
   }
 
   public void createFacility(Facility facility) {
@@ -498,7 +496,7 @@ public class LiveOktaRepository implements OktaRepository {
             .buildAndCreate(_client);
     _app.createApplicationGroupAssignment(g.getId());
 
-    LOG.info("Created Okta group={}", facilityGroupName);
+    log.info("Created Okta group={}", facilityGroupName);
 
     _app.update();
   }
@@ -543,7 +541,7 @@ public class LiveOktaRepository implements OktaRepository {
     List<OrganizationRoleClaims> claims = _extractor.convertClaims(authorities);
 
     if (claims.size() != 1) {
-      LOG.warn("User's Tenant Data Access has claims in {} organizations, not 1", claims.size());
+      log.warn("User's Tenant Data Access has claims in {} organizations, not 1", claims.size());
       return Optional.empty();
     }
     return Optional.of(claims.get(0));
@@ -558,7 +556,7 @@ public class LiveOktaRepository implements OktaRepository {
     List<OrganizationRoleClaims> claims = _extractor.convertClaims(groupNames);
 
     if (claims.size() != 1) {
-      LOG.warn("User is in {} Okta organizations, not 1", claims.size());
+      log.warn("User is in {} Okta organizations, not 1", claims.size());
       return Optional.empty();
     }
     return Optional.of(claims.get(0));

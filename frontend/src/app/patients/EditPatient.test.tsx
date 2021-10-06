@@ -6,6 +6,7 @@ import {
   within,
   waitFor,
 } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
@@ -16,7 +17,9 @@ import { ToastContainer } from "react-toastify";
 import EditPatient, { GET_PATIENT } from "./EditPatient";
 import EditPatientContainer from "./EditPatientContainer";
 
-jest.mock("../commonComponents/ComboBox", () => () => <></>);
+jest.mock("@trussworks/react-uswds", () => ({
+  ComboBox: () => <></>,
+}));
 const mockStore = configureStore([]);
 
 describe("EditPatient", () => {
@@ -145,7 +148,7 @@ describe("EditPatient", () => {
 
     it("displays a validation failure alert if phone type not entered", async () => {
       await act(async () => {
-        fireEvent.click(
+        userEvent.click(
           screen.queryAllByText("Add another number", {
             exact: false,
           })[0]
@@ -162,7 +165,7 @@ describe("EditPatient", () => {
       });
 
       await waitFor(() => {
-        fireEvent.click(screen.getAllByText("Save changes")[0]);
+        userEvent.click(screen.getAllByText("Save changes")[0]);
       });
 
       expect(

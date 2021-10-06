@@ -25,8 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -34,9 +33,8 @@ import org.springframework.stereotype.Service;
 /** Handles all user/organization management in Okta */
 @Profile(BeanProfiles.NO_OKTA_MGMT)
 @Service
+@Slf4j
 public class DemoOktaRepository implements OktaRepository {
-
-  private static final Logger LOG = LoggerFactory.getLogger(DemoOktaRepository.class);
 
   private final OrganizationExtractor organizationExtractor;
   private final CurrentTenantDataAccessContextHolder tenantDataContextHolder;
@@ -58,7 +56,7 @@ public class DemoOktaRepository implements OktaRepository {
     this.organizationExtractor = extractor;
     this.tenantDataContextHolder = contextHolder;
 
-    LOG.info("Done initializing Demo Okta repository.");
+    log.info("Done initializing Demo Okta repository.");
   }
 
   public Optional<OrganizationRoleClaims> createUser(
@@ -218,14 +216,12 @@ public class DemoOktaRepository implements OktaRepository {
     return "activationToken";
   }
 
-  public String fetchAdminUserEmail(Organization org) {
-    Optional<Entry<String, OrganizationRoleClaims>> admin =
+  public List<String> fetchAdminUserEmail(Organization org) {
+    Set<Entry<String, OrganizationRoleClaims>> admins =
         usernameOrgRolesMap.entrySet().stream()
             .filter(e -> e.getValue().getGrantedRoles().contains(OrganizationRole.ADMIN))
-            .findFirst();
-    return admin
-        .map(Entry::getKey)
-        .orElseThrow(() -> new IllegalStateException("Organization does not have an admin."));
+            .collect(Collectors.toSet());
+    return admins.stream().map(Entry::getKey).collect(Collectors.toList());
   }
 
   public void createFacility(Facility facility) {
@@ -277,7 +273,7 @@ public class DemoOktaRepository implements OktaRepository {
     List<OrganizationRoleClaims> claims = organizationExtractor.convertClaims(groupNames);
 
     if (claims.size() != 1) {
-      LOG.warn("User is in {} Okta organizations, not 1", claims.size());
+      log.warn("User is in {} Okta organizations, not 1", claims.size());
       return Optional.empty();
     }
     return Optional.of(claims.get(0));

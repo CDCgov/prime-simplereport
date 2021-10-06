@@ -11,8 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -20,13 +19,12 @@ import org.springframework.stereotype.Component;
 // Note: will be renaming `OrganizationRoleClaims` in a PR soon, and will change this class name to
 // mimic that
 @Component
+@Slf4j
 public class OrganizationExtractor
     implements Converter<Collection<? extends GrantedAuthority>, List<OrganizationRoleClaims>> {
 
   public static final String FACILITY_ACCESS_MARKER = "FACILITY_ACCESS";
   private static final String CLAIM_SEPARATOR = ":";
-  private static final Logger LOG = LoggerFactory.getLogger(OrganizationExtractor.class);
-
   private AuthorizationProperties properties;
 
   public OrganizationExtractor(AuthorizationProperties properties) {
@@ -64,7 +62,7 @@ public class OrganizationExtractor
               existingFacilities.add(claimedFacilityValidated);
             }
           } catch (IllegalArgumentException e) {
-            LOG.warn("Invalid facility_id={} for organization={}", claimedFacility, claimedOrg);
+            log.warn("Invalid facility_id={} for organization={}", claimedFacility, claimedOrg);
           }
         } else {
           int roleOffset = claimed.lastIndexOf(CLAIM_SEPARATOR);
@@ -81,20 +79,20 @@ public class OrganizationExtractor
               existingRoles.add(claimedRoleValidated);
             }
           } catch (IllegalArgumentException e) {
-            LOG.warn("Unexpected role_constant={}", claimedRole);
+            log.warn("Unexpected role_constant={}", claimedRole);
           }
         }
       } catch (IndexOutOfBoundsException e) {
-        LOG.error("Cannot process unexpected claim={}", claimed);
+        log.error("Cannot process unexpected claim={}", claimed);
       }
     }
     if (facilitiesFound.isEmpty()
         && rolesFound.entrySet().stream()
             .noneMatch(e -> PermissionHolder.grantsAllFacilityAccess(e.getValue()))) {
-      LOG.error("No tenant organization facilities found!");
+      log.error("No tenant organization facilities found!");
     }
     if (rolesFound.isEmpty()) {
-      LOG.error("No tenant organization roles found!");
+      log.error("No tenant organization roles found!");
     }
     Set<String> orgsFound = new HashSet<>();
     orgsFound.addAll(facilitiesFound.keySet());

@@ -46,11 +46,14 @@ data "azurerm_key_vault" "sr_global" {
   resource_group_name = data.azurerm_resource_group.rg_global.name
 }
 
+<<<<<<< HEAD
 data "azurerm_key_vault_secret" "datahub_api_key" {
   name         = "datahub-api-key-test"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
+=======
+>>>>>>> main
 data "azurerm_key_vault_secret" "sr_dev_db_jdbc" {
   name         = "simple-report-dev-db-jdbc"
   key_vault_id = data.azurerm_key_vault.sr_global.id
@@ -156,6 +159,11 @@ data "azurerm_key_vault_secret" "experian_preciseid_password" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
+data "azurerm_key_vault_secret" "report_stream_exception_callback_token" {
+  name         = "report-stream-exception-callback-test"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
 # logs
 data "azurerm_log_analytics_workspace" "log_analytics" {
   name                = "simple-report-log-workspace-global"
@@ -164,5 +172,10 @@ data "azurerm_log_analytics_workspace" "log_analytics" {
 
 data "azurerm_application_insights" "app_insights" {
   name                = "prime-simple-report-${local.env}-insights"
+  resource_group_name = data.azurerm_resource_group.rg.name
+}
+
+data "azurerm_storage_account" "app" {
+  name                = "simplereport${local.env}app"
   resource_group_name = data.azurerm_resource_group.rg.name
 }

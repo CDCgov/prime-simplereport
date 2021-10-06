@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.ResourceLinks;
-import gov.cdc.usds.simplereport.api.SmsWebhookContextHolder;
+import gov.cdc.usds.simplereport.api.WebhookContextHolder;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -39,7 +39,7 @@ class SmsCallbackControllerTest extends BaseFullStackTest {
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private TextMessageSentRepository _textMessageSentRepo;
 
-  @MockBean private SmsWebhookContextHolder contextHolder;
+  @MockBean private WebhookContextHolder contextHolder;
   @MockBean private CurrentAccountRequestContextHolder accountContextHolder;
   @MockBean private CurrentPatientContextHolder patientContextHolder;
 
@@ -88,7 +88,7 @@ class SmsCallbackControllerTest extends BaseFullStackTest {
 
   @Test
   void successfulCallback() throws Exception {
-    when(contextHolder.isSmsWebhook()).thenReturn(true);
+    when(contextHolder.isWebhook()).thenReturn(true);
 
     String messageId = "some-message-id";
     String messageStatus = "delivered";

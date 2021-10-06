@@ -1,36 +1,34 @@
 package gov.cdc.usds.simplereport.logging;
 
-import gov.cdc.usds.simplereport.api.SmsWebhookContextHolder;
+import gov.cdc.usds.simplereport.api.WebhookContextHolder;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.service.AuditService;
 import gov.cdc.usds.simplereport.service.errors.RestAuditFailureException;
 import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 /** Wrapper around {@link AuditService} to catch exceptions and rethrow them */
 @Service
+@Slf4j
 // NOT TRANSACTIONAL (must catch errors at transaction boundaries)
 @SuppressWarnings("checkstyle:IllegalCatch")
 public class RestAuditLogManager {
 
-  private static final Logger LOG = LoggerFactory.getLogger(RestAuditLogManager.class);
-
   private final AuditService _auditService;
   private final CurrentPatientContextHolder _contextHolder;
-  private final SmsWebhookContextHolder _webhookContextHolder;
+  private final WebhookContextHolder _webhookContextHolder;
 
   private static final int DEFAULT_SUCCESS = HttpStatus.OK.value();
 
   public RestAuditLogManager(
       AuditService auditService,
       CurrentPatientContextHolder contextHolder,
-      SmsWebhookContextHolder webhookContextHolder) {
+      WebhookContextHolder webhookContextHolder) {
     this._auditService = auditService;
     this._contextHolder = contextHolder;
     this._webhookContextHolder = webhookContextHolder;
@@ -52,7 +50,7 @@ public class RestAuditLogManager {
   public boolean logRestSuccess(HttpServletRequest request, Object resultObject) {
     PatientLink patientLink = _contextHolder.getPatientLink();
     if (patientLink == null && !_contextHolder.isPatientSelfRegistrationRequest()) {
-      LOG.error(
+      log.error(
           "Somehow reached PXP success handler outside of registration & with no patient link");
       return false;
     }
@@ -67,13 +65,13 @@ public class RestAuditLogManager {
   }
 
   public boolean logWebhookSuccess(HttpServletRequest request) {
-    if (!_webhookContextHolder.isSmsWebhook()) {
-      LOG.error("Somehow reached success handler without webhook context being true");
+    if (!_webhookContextHolder.isWebhook()) {
+      log.error("Somehow reached success handler without webhook context being true");
       return false;
     }
     try {
       String requestId = MDC.get(LoggingConstants.REQUEST_ID_MDC_KEY);
-      _auditService.logSmsWebhookRestEvent(requestId, request, DEFAULT_SUCCESS);
+      _auditService.logWebhookRestEvent(requestId, request, DEFAULT_SUCCESS);
     } catch (Exception e) {
       throw new RestAuditFailureException(e);
     }

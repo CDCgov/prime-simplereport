@@ -30,18 +30,17 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /** Created by nickrobison on 11/21/20 */
 @Service
 @Transactional
+@Slf4j
 public class UploadService {
   private static final String FACILITY_ID = "facilityId";
   private static final int MAX_LINE_LENGTH = 1024 * 6;
-  private static final Logger LOG = LoggerFactory.getLogger(UploadService.class);
 
   private final PersonService _ps;
   private final AddressValidationService _avs;
@@ -146,7 +145,7 @@ public class UploadService {
 
         Duration rowElapsed = Duration.between(rowStartTime, Instant.now());
         Duration totalElapsed = Duration.between(startTime, Instant.now());
-        LOG.debug(
+        log.debug(
             "Processed row {} in {}ms; {} minutes total",
             rowNumber,
             rowElapsed.toMillis(),
@@ -157,7 +156,7 @@ public class UploadService {
       }
     }
 
-    LOG.info(
+    log.info(
         "CSV Patient upload completed for {} records in {} minutes",
         rowNumber,
         Duration.between(startTime, Instant.now()).toMinutes());

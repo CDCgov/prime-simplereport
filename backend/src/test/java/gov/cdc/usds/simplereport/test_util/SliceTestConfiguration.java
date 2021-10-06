@@ -4,14 +4,13 @@ import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
-import gov.cdc.usds.simplereport.api.SmsWebhookContextHolder;
+import gov.cdc.usds.simplereport.api.WebhookContextHolder;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuditingConfig;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
-import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
@@ -93,15 +92,11 @@ import org.springframework.security.test.context.support.WithMockUser;
   CurrentOrganizationRolesContextHolder.class,
   OrderingProviderRequiredValidator.class,
   CurrentTenantDataAccessContextHolder.class,
-  SmsWebhookContextHolder.class,
+  WebhookContextHolder.class,
   TenantDataAccessService.class,
   PatientSelfRegistrationLinkService.class
 })
-@EnableConfigurationProperties({
-  InitialSetupProperties.class,
-  AuthorizationProperties.class,
-  DataHubConfig.class,
-})
+@EnableConfigurationProperties({InitialSetupProperties.class, AuthorizationProperties.class})
 public class SliceTestConfiguration {
 
   private static final String DEFAULT_ROLE_PREFIX =

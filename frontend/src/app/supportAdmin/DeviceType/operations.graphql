@@ -1,0 +1,43 @@
+mutation createDeviceType(
+  $name: String!
+  $manufacturer: String!
+  $model: String!
+  $loincCode: String!
+  $swabType: String!
+) {
+  createDeviceType(
+    name: $name
+    manufacturer: $manufacturer
+    model: $model
+    loincCode: $loincCode
+    swabType: $swabType
+  ) {
+    internalId
+  }
+}
+
+mutation createDeviceTypeNew(
+  $name: String!
+  $manufacturer: String!
+  $model: String!
+  $loincCode: String!
+  $swabTypes: [ID!]!
+) {
+  createDeviceTypeNew(
+    name: $name
+    manufacturer: $manufacturer
+    model: $model
+    loincCode: $loincCode
+    swabTypes: $swabTypes
+  ) {
+    internalId
+  }
+}
+
+query getSpecimenTypes{
+  specimenTypes {
+    internalId,
+    name,
+    typeCode
+  }
+}

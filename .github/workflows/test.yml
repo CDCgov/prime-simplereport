@@ -89,6 +89,12 @@ jobs:
       - name: Test
         working-directory: ./frontend
         run: yarn test:ci
+      - name: "Function Apps: npm install"
+        working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
+        run: npm ci
+      - name: "Function Apps: Test"
+        working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
+        run: npm run coverage
       - name: Sonar analysis
         if: ${{ github.actor != 'dependabot[bot]' }}
         env:
