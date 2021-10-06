@@ -44,7 +44,7 @@ module "app_gateway" {
   env                     = local.env
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
-  
+
   blob_endpoint     = azurerm_storage_account.app.primary_web_host
   subnet_id         = data.terraform_remote_state.persistent_test.outputs.subnet_lbs_id
   key_vault_id      = data.azurerm_key_vault.sr_global.id
