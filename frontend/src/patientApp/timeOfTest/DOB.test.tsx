@@ -38,7 +38,7 @@ describe("DOB", () => {
 
     // THEN
     expect(error.textContent).toEqual(
-      "Error: The birth date provided is in an incorrect format"
+      "Error: Date of birth must be in MM/DD/YYYY format"
     );
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
   });
@@ -53,7 +53,7 @@ describe("DOB", () => {
 
     // THEN
     expect(error.textContent).toEqual(
-      "Error: The birth date provided is in an incorrect format"
+      "Error: Date of birth must be in MM/DD/YYYY format"
     );
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
   });
@@ -68,7 +68,7 @@ describe("DOB", () => {
 
     // THEN
     expect(error.textContent).toEqual(
-      "Error: The birth date provided is not a possible date"
+      "Error: Date of birth must be a valid date"
     );
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
   });
@@ -83,7 +83,7 @@ describe("DOB", () => {
 
     // THEN
     expect(error.textContent).toEqual(
-      "Error: Birth date must be after 1900 and before the current year"
+      "Error: Date of birth must be after 1900 and before the current year"
     );
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
   });
@@ -98,7 +98,7 @@ describe("DOB", () => {
 
     // THEN
     expect(error.textContent).toEqual(
-      "Error: Birth date must be after 1900 and before the current year"
+      "Error: Date of birth must be after 1900 and before the current year"
     );
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
   });
@@ -114,7 +114,7 @@ describe("DOB", () => {
 
     // THEN
     expect(error.textContent).toEqual(
-      "Error: The birth date provided is incorrect."
+      "Error: The date of birth entered is incorrect"
     );
     expect(validateDateOfBirthSpy).toHaveBeenCalled();
   });
