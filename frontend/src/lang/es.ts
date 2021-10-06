@@ -546,13 +546,11 @@ export const es: LanguageConfig = {
           "Ingrese su fecha de nacimiento para acceder a su portal de pruebas de COVID-19.",
         format: "MM/DD/AAAA",
         invalidFormat:
-          "La fecha de nacimiento proporcionada tiene un formato incorrecto",
+          "La fecha de nacimiento debe estar en formato MM/DD/AAAA",
         invalidYear:
-          "La fecha de nacimiento debe ser posterior a 1900 y anterior al año actual.",
-        invalidDate:
-          "La fecha de nacimiento proporcionada no es una fecha posible",
-        error:
-          "No se encontró el resultado de la prueba o la fecha de nacimiento proporcionada es incorrecta.",
+          "La fecha de nacimiento debe ser posterior a 1900 y anterior al año actual",
+        invalidDate: "La fecha de nacimiento debe ser una fecha válida",
+        error: "La fecha de nacimiento ingresada es incorrecta",
         validating: "Validación de la fecha de nacimiento...",
         linkExpired:
           "Este enlace ha caducado. Comuníquese con su proveedor de pruebas.",
