@@ -71,6 +71,7 @@ export type DeviceType = {
   model?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
   swabType?: Maybe<Scalars["String"]>;
+  swabTypes?: Maybe<Scalars["String"]>;
   testLength?: Maybe<Scalars["Int"]>;
 };
 
@@ -106,6 +107,7 @@ export type Mutation = {
   adminUpdateOrganization?: Maybe<Scalars["String"]>;
   correctTestMarkAsError?: Maybe<TestResult>;
   createDeviceType?: Maybe<DeviceType>;
+  createDeviceTypeNew?: Maybe<DeviceType>;
   createFacilityRegistrationLink?: Maybe<Scalars["String"]>;
   createOrganization?: Maybe<Organization>;
   createOrganizationRegistrationLink?: Maybe<Scalars["String"]>;
@@ -247,6 +249,14 @@ export type MutationCreateDeviceTypeArgs = {
   model: Scalars["String"];
   name: Scalars["String"];
   swabType: Scalars["String"];
+};
+
+export type MutationCreateDeviceTypeNewArgs = {
+  loincCode: Scalars["String"];
+  manufacturer: Scalars["String"];
+  model: Scalars["String"];
+  name: Scalars["String"];
+  swabTypes: Array<Scalars["ID"]>;
 };
 
 export type MutationCreateFacilityRegistrationLinkArgs = {
@@ -574,6 +584,7 @@ export type Query = {
   patients?: Maybe<Array<Maybe<Patient>>>;
   patientsCount?: Maybe<Scalars["Int"]>;
   queue?: Maybe<Array<Maybe<TestOrder>>>;
+  specimenTypes: Array<SpecimenType>;
   testResult?: Maybe<TestResult>;
   testResults?: Maybe<Array<Maybe<TestResult>>>;
   testResultsCount?: Maybe<Scalars["Int"]>;
@@ -643,9 +654,9 @@ export type QueryTestResultsCountArgs = {
 };
 
 export type QueryTopLevelDashboardMetricsArgs = {
-  endDate: Scalars["DateTime"];
+  endDate?: Maybe<Scalars["DateTime"]>;
   facilityId?: Maybe<Scalars["ID"]>;
-  startDate: Scalars["DateTime"];
+  startDate?: Maybe<Scalars["DateTime"]>;
 };
 
 export type QueryUserArgs = {
@@ -663,6 +674,15 @@ export enum Role {
   EntryOnly = "ENTRY_ONLY",
   User = "USER",
 }
+
+export type SpecimenType = {
+  __typename?: "SpecimenType";
+  collectionLocationCode?: Maybe<Scalars["String"]>;
+  collectionLocationName?: Maybe<Scalars["String"]>;
+  internalId: Scalars["ID"];
+  name: Scalars["String"];
+  typeCode: Scalars["String"];
+};
 
 export enum TestCorrectionStatus {
   Corrected = "CORRECTED",
@@ -1097,81 +1117,6 @@ export type GetUsersAndStatusQuery = {
   >;
 };
 
-export type AddUserMutationVariables = Exact<{
-  firstName?: Maybe<Scalars["String"]>;
-  middleName?: Maybe<Scalars["String"]>;
-  lastName?: Maybe<Scalars["String"]>;
-  suffix?: Maybe<Scalars["String"]>;
-  email: Scalars["String"];
-  organizationExternalId: Scalars["String"];
-  role: Role;
-}>;
-
-export type AddUserMutation = {
-  __typename?: "Mutation";
-  addUser?: Maybe<{ __typename?: "User"; id: string }>;
-};
-
-export type CreateDeviceTypeMutationVariables = Exact<{
-  name: Scalars["String"];
-  manufacturer: Scalars["String"];
-  model: Scalars["String"];
-  loincCode: Scalars["String"];
-  swabType: Scalars["String"];
-}>;
-
-export type CreateDeviceTypeMutation = {
-  __typename?: "Mutation";
-  createDeviceType?: Maybe<{
-    __typename?: "DeviceType";
-    internalId?: Maybe<string>;
-  }>;
-};
-
-export type SetOrgIdentityVerifiedMutationVariables = Exact<{
-  externalId: Scalars["String"];
-  verified: Scalars["Boolean"];
-}>;
-
-export type SetOrgIdentityVerifiedMutation = {
-  __typename?: "Mutation";
-  setOrganizationIdentityVerified?: Maybe<boolean>;
-};
-
-export type GetOrganizationsQueryVariables = Exact<{
-  identityVerified?: Maybe<Scalars["Boolean"]>;
-}>;
-
-export type GetOrganizationsQuery = {
-  __typename?: "Query";
-  organizations: Array<{
-    __typename?: "Organization";
-    externalId: string;
-    name: string;
-  }>;
-};
-
-export type SetCurrentUserTenantDataAccessOpMutationVariables = Exact<{
-  organizationExternalId?: Maybe<Scalars["String"]>;
-  justification?: Maybe<Scalars["String"]>;
-}>;
-
-export type SetCurrentUserTenantDataAccessOpMutation = {
-  __typename?: "Mutation";
-  setCurrentUserTenantDataAccess?: Maybe<{
-    __typename?: "User";
-    id: string;
-    email: string;
-    permissions: Array<UserPermission>;
-    role?: Maybe<Role>;
-    organization?: Maybe<{
-      __typename?: "Organization";
-      name: string;
-      externalId: string;
-    }>;
-  }>;
-};
-
 export type GetTopLevelDashboardMetricsQueryVariables = Exact<{
   facilityId?: Maybe<Scalars["ID"]>;
   startDate: Scalars["DateTime"];
@@ -1373,6 +1318,109 @@ export type UploadPatientsMutationVariables = Exact<{
 export type UploadPatientsMutation = {
   __typename?: "Mutation";
   uploadPatients?: Maybe<string>;
+};
+
+export type AddUserMutationVariables = Exact<{
+  firstName?: Maybe<Scalars["String"]>;
+  middleName?: Maybe<Scalars["String"]>;
+  lastName?: Maybe<Scalars["String"]>;
+  suffix?: Maybe<Scalars["String"]>;
+  email: Scalars["String"];
+  organizationExternalId: Scalars["String"];
+  role: Role;
+}>;
+
+export type AddUserMutation = {
+  __typename?: "Mutation";
+  addUser?: Maybe<{ __typename?: "User"; id: string }>;
+};
+
+export type CreateDeviceTypeMutationVariables = Exact<{
+  name: Scalars["String"];
+  manufacturer: Scalars["String"];
+  model: Scalars["String"];
+  loincCode: Scalars["String"];
+  swabType: Scalars["String"];
+}>;
+
+export type CreateDeviceTypeMutation = {
+  __typename?: "Mutation";
+  createDeviceType?: Maybe<{
+    __typename?: "DeviceType";
+    internalId?: Maybe<string>;
+  }>;
+};
+
+export type CreateDeviceTypeNewMutationVariables = Exact<{
+  name: Scalars["String"];
+  manufacturer: Scalars["String"];
+  model: Scalars["String"];
+  loincCode: Scalars["String"];
+  swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
+}>;
+
+export type CreateDeviceTypeNewMutation = {
+  __typename?: "Mutation";
+  createDeviceTypeNew?: Maybe<{
+    __typename?: "DeviceType";
+    internalId?: Maybe<string>;
+  }>;
+};
+
+export type GetSpecimenTypesQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetSpecimenTypesQuery = {
+  __typename?: "Query";
+  specimenTypes: Array<{
+    __typename?: "SpecimenType";
+    internalId: string;
+    name: string;
+    typeCode: string;
+  }>;
+};
+
+export type SetOrgIdentityVerifiedMutationVariables = Exact<{
+  externalId: Scalars["String"];
+  verified: Scalars["Boolean"];
+}>;
+
+export type SetOrgIdentityVerifiedMutation = {
+  __typename?: "Mutation";
+  setOrganizationIdentityVerified?: Maybe<boolean>;
+};
+
+export type GetOrganizationsQueryVariables = Exact<{
+  identityVerified?: Maybe<Scalars["Boolean"]>;
+}>;
+
+export type GetOrganizationsQuery = {
+  __typename?: "Query";
+  organizations: Array<{
+    __typename?: "Organization";
+    externalId: string;
+    name: string;
+  }>;
+};
+
+export type SetCurrentUserTenantDataAccessOpMutationVariables = Exact<{
+  organizationExternalId?: Maybe<Scalars["String"]>;
+  justification?: Maybe<Scalars["String"]>;
+}>;
+
+export type SetCurrentUserTenantDataAccessOpMutation = {
+  __typename?: "Mutation";
+  setCurrentUserTenantDataAccess?: Maybe<{
+    __typename?: "User";
+    id: string;
+    email: string;
+    permissions: Array<UserPermission>;
+    role?: Maybe<Role>;
+    organization?: Maybe<{
+      __typename?: "Organization";
+      name: string;
+      externalId: string;
+    }>;
+  }>;
 };
 
 export type RemovePatientFromQueueMutationVariables = Exact<{
@@ -1667,7 +1715,11 @@ export type GetTestResultForPrintQuery = {
     dateTested?: Maybe<any>;
     result?: Maybe<string>;
     correctionStatus?: Maybe<string>;
-    deviceType?: Maybe<{ __typename?: "DeviceType"; name?: Maybe<string> }>;
+    deviceType?: Maybe<{
+      __typename?: "DeviceType";
+      name?: Maybe<string>;
+      model?: Maybe<string>;
+    }>;
     patient?: Maybe<{
       __typename?: "Patient";
       firstName?: Maybe<string>;
@@ -1693,11 +1745,6 @@ export type GetTestResultForPrintQuery = {
         NPI?: Maybe<string>;
       }>;
     }>;
-    testPerformed: {
-      __typename?: "TestDescription";
-      name: string;
-      loincCode: string;
-    };
   }>;
 };
 
@@ -2855,315 +2902,6 @@ export type GetUsersAndStatusQueryResult = Apollo.QueryResult<
   GetUsersAndStatusQuery,
   GetUsersAndStatusQueryVariables
 >;
-export const AddUserDocument = gql`
-  mutation AddUser(
-    $firstName: String
-    $middleName: String
-    $lastName: String
-    $suffix: String
-    $email: String!
-    $organizationExternalId: String!
-    $role: Role!
-  ) {
-    addUser(
-      name: {
-        firstName: $firstName
-        middleName: $middleName
-        lastName: $lastName
-        suffix: $suffix
-      }
-      email: $email
-      organizationExternalId: $organizationExternalId
-      role: $role
-    ) {
-      id
-    }
-  }
-`;
-export type AddUserMutationFn = Apollo.MutationFunction<
-  AddUserMutation,
-  AddUserMutationVariables
->;
-
-/**
- * __useAddUserMutation__
- *
- * To run a mutation, you first call `useAddUserMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAddUserMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [addUserMutation, { data, loading, error }] = useAddUserMutation({
- *   variables: {
- *      firstName: // value for 'firstName'
- *      middleName: // value for 'middleName'
- *      lastName: // value for 'lastName'
- *      suffix: // value for 'suffix'
- *      email: // value for 'email'
- *      organizationExternalId: // value for 'organizationExternalId'
- *      role: // value for 'role'
- *   },
- * });
- */
-export function useAddUserMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    AddUserMutation,
-    AddUserMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<AddUserMutation, AddUserMutationVariables>(
-    AddUserDocument,
-    options
-  );
-}
-export type AddUserMutationHookResult = ReturnType<typeof useAddUserMutation>;
-export type AddUserMutationResult = Apollo.MutationResult<AddUserMutation>;
-export type AddUserMutationOptions = Apollo.BaseMutationOptions<
-  AddUserMutation,
-  AddUserMutationVariables
->;
-export const CreateDeviceTypeDocument = gql`
-  mutation createDeviceType(
-    $name: String!
-    $manufacturer: String!
-    $model: String!
-    $loincCode: String!
-    $swabType: String!
-  ) {
-    createDeviceType(
-      name: $name
-      manufacturer: $manufacturer
-      model: $model
-      loincCode: $loincCode
-      swabType: $swabType
-    ) {
-      internalId
-    }
-  }
-`;
-export type CreateDeviceTypeMutationFn = Apollo.MutationFunction<
-  CreateDeviceTypeMutation,
-  CreateDeviceTypeMutationVariables
->;
-
-/**
- * __useCreateDeviceTypeMutation__
- *
- * To run a mutation, you first call `useCreateDeviceTypeMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateDeviceTypeMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createDeviceTypeMutation, { data, loading, error }] = useCreateDeviceTypeMutation({
- *   variables: {
- *      name: // value for 'name'
- *      manufacturer: // value for 'manufacturer'
- *      model: // value for 'model'
- *      loincCode: // value for 'loincCode'
- *      swabType: // value for 'swabType'
- *   },
- * });
- */
-export function useCreateDeviceTypeMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    CreateDeviceTypeMutation,
-    CreateDeviceTypeMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    CreateDeviceTypeMutation,
-    CreateDeviceTypeMutationVariables
-  >(CreateDeviceTypeDocument, options);
-}
-export type CreateDeviceTypeMutationHookResult = ReturnType<
-  typeof useCreateDeviceTypeMutation
->;
-export type CreateDeviceTypeMutationResult = Apollo.MutationResult<CreateDeviceTypeMutation>;
-export type CreateDeviceTypeMutationOptions = Apollo.BaseMutationOptions<
-  CreateDeviceTypeMutation,
-  CreateDeviceTypeMutationVariables
->;
-export const SetOrgIdentityVerifiedDocument = gql`
-  mutation SetOrgIdentityVerified($externalId: String!, $verified: Boolean!) {
-    setOrganizationIdentityVerified(
-      externalId: $externalId
-      verified: $verified
-    )
-  }
-`;
-export type SetOrgIdentityVerifiedMutationFn = Apollo.MutationFunction<
-  SetOrgIdentityVerifiedMutation,
-  SetOrgIdentityVerifiedMutationVariables
->;
-
-/**
- * __useSetOrgIdentityVerifiedMutation__
- *
- * To run a mutation, you first call `useSetOrgIdentityVerifiedMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSetOrgIdentityVerifiedMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [setOrgIdentityVerifiedMutation, { data, loading, error }] = useSetOrgIdentityVerifiedMutation({
- *   variables: {
- *      externalId: // value for 'externalId'
- *      verified: // value for 'verified'
- *   },
- * });
- */
-export function useSetOrgIdentityVerifiedMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    SetOrgIdentityVerifiedMutation,
-    SetOrgIdentityVerifiedMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    SetOrgIdentityVerifiedMutation,
-    SetOrgIdentityVerifiedMutationVariables
-  >(SetOrgIdentityVerifiedDocument, options);
-}
-export type SetOrgIdentityVerifiedMutationHookResult = ReturnType<
-  typeof useSetOrgIdentityVerifiedMutation
->;
-export type SetOrgIdentityVerifiedMutationResult = Apollo.MutationResult<SetOrgIdentityVerifiedMutation>;
-export type SetOrgIdentityVerifiedMutationOptions = Apollo.BaseMutationOptions<
-  SetOrgIdentityVerifiedMutation,
-  SetOrgIdentityVerifiedMutationVariables
->;
-export const GetOrganizationsDocument = gql`
-  query GetOrganizations($identityVerified: Boolean) {
-    organizations(identityVerified: $identityVerified) {
-      externalId
-      name
-    }
-  }
-`;
-
-/**
- * __useGetOrganizationsQuery__
- *
- * To run a query within a React component, call `useGetOrganizationsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetOrganizationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetOrganizationsQuery({
- *   variables: {
- *      identityVerified: // value for 'identityVerified'
- *   },
- * });
- */
-export function useGetOrganizationsQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetOrganizationsQuery,
-    GetOrganizationsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetOrganizationsQuery, GetOrganizationsQueryVariables>(
-    GetOrganizationsDocument,
-    options
-  );
-}
-export function useGetOrganizationsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetOrganizationsQuery,
-    GetOrganizationsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetOrganizationsQuery,
-    GetOrganizationsQueryVariables
-  >(GetOrganizationsDocument, options);
-}
-export type GetOrganizationsQueryHookResult = ReturnType<
-  typeof useGetOrganizationsQuery
->;
-export type GetOrganizationsLazyQueryHookResult = ReturnType<
-  typeof useGetOrganizationsLazyQuery
->;
-export type GetOrganizationsQueryResult = Apollo.QueryResult<
-  GetOrganizationsQuery,
-  GetOrganizationsQueryVariables
->;
-export const SetCurrentUserTenantDataAccessOpDocument = gql`
-  mutation SetCurrentUserTenantDataAccessOp(
-    $organizationExternalId: String
-    $justification: String
-  ) {
-    setCurrentUserTenantDataAccess(
-      organizationExternalId: $organizationExternalId
-      justification: $justification
-    ) {
-      id
-      email
-      permissions
-      role
-      organization {
-        name
-        externalId
-      }
-    }
-  }
-`;
-export type SetCurrentUserTenantDataAccessOpMutationFn = Apollo.MutationFunction<
-  SetCurrentUserTenantDataAccessOpMutation,
-  SetCurrentUserTenantDataAccessOpMutationVariables
->;
-
-/**
- * __useSetCurrentUserTenantDataAccessOpMutation__
- *
- * To run a mutation, you first call `useSetCurrentUserTenantDataAccessOpMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSetCurrentUserTenantDataAccessOpMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [setCurrentUserTenantDataAccessOpMutation, { data, loading, error }] = useSetCurrentUserTenantDataAccessOpMutation({
- *   variables: {
- *      organizationExternalId: // value for 'organizationExternalId'
- *      justification: // value for 'justification'
- *   },
- * });
- */
-export function useSetCurrentUserTenantDataAccessOpMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    SetCurrentUserTenantDataAccessOpMutation,
-    SetCurrentUserTenantDataAccessOpMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    SetCurrentUserTenantDataAccessOpMutation,
-    SetCurrentUserTenantDataAccessOpMutationVariables
-  >(SetCurrentUserTenantDataAccessOpDocument, options);
-}
-export type SetCurrentUserTenantDataAccessOpMutationHookResult = ReturnType<
-  typeof useSetCurrentUserTenantDataAccessOpMutation
->;
-export type SetCurrentUserTenantDataAccessOpMutationResult = Apollo.MutationResult<SetCurrentUserTenantDataAccessOpMutation>;
-export type SetCurrentUserTenantDataAccessOpMutationOptions = Apollo.BaseMutationOptions<
-  SetCurrentUserTenantDataAccessOpMutation,
-  SetCurrentUserTenantDataAccessOpMutationVariables
->;
 export const GetTopLevelDashboardMetricsDocument = gql`
   query GetTopLevelDashboardMetrics(
     $facilityId: ID
@@ -3886,6 +3624,439 @@ export type UploadPatientsMutationResult = Apollo.MutationResult<UploadPatientsM
 export type UploadPatientsMutationOptions = Apollo.BaseMutationOptions<
   UploadPatientsMutation,
   UploadPatientsMutationVariables
+>;
+export const AddUserDocument = gql`
+  mutation AddUser(
+    $firstName: String
+    $middleName: String
+    $lastName: String
+    $suffix: String
+    $email: String!
+    $organizationExternalId: String!
+    $role: Role!
+  ) {
+    addUser(
+      name: {
+        firstName: $firstName
+        middleName: $middleName
+        lastName: $lastName
+        suffix: $suffix
+      }
+      email: $email
+      organizationExternalId: $organizationExternalId
+      role: $role
+    ) {
+      id
+    }
+  }
+`;
+export type AddUserMutationFn = Apollo.MutationFunction<
+  AddUserMutation,
+  AddUserMutationVariables
+>;
+
+/**
+ * __useAddUserMutation__
+ *
+ * To run a mutation, you first call `useAddUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addUserMutation, { data, loading, error }] = useAddUserMutation({
+ *   variables: {
+ *      firstName: // value for 'firstName'
+ *      middleName: // value for 'middleName'
+ *      lastName: // value for 'lastName'
+ *      suffix: // value for 'suffix'
+ *      email: // value for 'email'
+ *      organizationExternalId: // value for 'organizationExternalId'
+ *      role: // value for 'role'
+ *   },
+ * });
+ */
+export function useAddUserMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    AddUserMutation,
+    AddUserMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<AddUserMutation, AddUserMutationVariables>(
+    AddUserDocument,
+    options
+  );
+}
+export type AddUserMutationHookResult = ReturnType<typeof useAddUserMutation>;
+export type AddUserMutationResult = Apollo.MutationResult<AddUserMutation>;
+export type AddUserMutationOptions = Apollo.BaseMutationOptions<
+  AddUserMutation,
+  AddUserMutationVariables
+>;
+export const CreateDeviceTypeDocument = gql`
+  mutation createDeviceType(
+    $name: String!
+    $manufacturer: String!
+    $model: String!
+    $loincCode: String!
+    $swabType: String!
+  ) {
+    createDeviceType(
+      name: $name
+      manufacturer: $manufacturer
+      model: $model
+      loincCode: $loincCode
+      swabType: $swabType
+    ) {
+      internalId
+    }
+  }
+`;
+export type CreateDeviceTypeMutationFn = Apollo.MutationFunction<
+  CreateDeviceTypeMutation,
+  CreateDeviceTypeMutationVariables
+>;
+
+/**
+ * __useCreateDeviceTypeMutation__
+ *
+ * To run a mutation, you first call `useCreateDeviceTypeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateDeviceTypeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createDeviceTypeMutation, { data, loading, error }] = useCreateDeviceTypeMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      manufacturer: // value for 'manufacturer'
+ *      model: // value for 'model'
+ *      loincCode: // value for 'loincCode'
+ *      swabType: // value for 'swabType'
+ *   },
+ * });
+ */
+export function useCreateDeviceTypeMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateDeviceTypeMutation,
+    CreateDeviceTypeMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    CreateDeviceTypeMutation,
+    CreateDeviceTypeMutationVariables
+  >(CreateDeviceTypeDocument, options);
+}
+export type CreateDeviceTypeMutationHookResult = ReturnType<
+  typeof useCreateDeviceTypeMutation
+>;
+export type CreateDeviceTypeMutationResult = Apollo.MutationResult<CreateDeviceTypeMutation>;
+export type CreateDeviceTypeMutationOptions = Apollo.BaseMutationOptions<
+  CreateDeviceTypeMutation,
+  CreateDeviceTypeMutationVariables
+>;
+export const CreateDeviceTypeNewDocument = gql`
+  mutation createDeviceTypeNew(
+    $name: String!
+    $manufacturer: String!
+    $model: String!
+    $loincCode: String!
+    $swabTypes: [ID!]!
+  ) {
+    createDeviceTypeNew(
+      name: $name
+      manufacturer: $manufacturer
+      model: $model
+      loincCode: $loincCode
+      swabTypes: $swabTypes
+    ) {
+      internalId
+    }
+  }
+`;
+export type CreateDeviceTypeNewMutationFn = Apollo.MutationFunction<
+  CreateDeviceTypeNewMutation,
+  CreateDeviceTypeNewMutationVariables
+>;
+
+/**
+ * __useCreateDeviceTypeNewMutation__
+ *
+ * To run a mutation, you first call `useCreateDeviceTypeNewMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateDeviceTypeNewMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createDeviceTypeNewMutation, { data, loading, error }] = useCreateDeviceTypeNewMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      manufacturer: // value for 'manufacturer'
+ *      model: // value for 'model'
+ *      loincCode: // value for 'loincCode'
+ *      swabTypes: // value for 'swabTypes'
+ *   },
+ * });
+ */
+export function useCreateDeviceTypeNewMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateDeviceTypeNewMutation,
+    CreateDeviceTypeNewMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    CreateDeviceTypeNewMutation,
+    CreateDeviceTypeNewMutationVariables
+  >(CreateDeviceTypeNewDocument, options);
+}
+export type CreateDeviceTypeNewMutationHookResult = ReturnType<
+  typeof useCreateDeviceTypeNewMutation
+>;
+export type CreateDeviceTypeNewMutationResult = Apollo.MutationResult<CreateDeviceTypeNewMutation>;
+export type CreateDeviceTypeNewMutationOptions = Apollo.BaseMutationOptions<
+  CreateDeviceTypeNewMutation,
+  CreateDeviceTypeNewMutationVariables
+>;
+export const GetSpecimenTypesDocument = gql`
+  query getSpecimenTypes {
+    specimenTypes {
+      internalId
+      name
+      typeCode
+    }
+  }
+`;
+
+/**
+ * __useGetSpecimenTypesQuery__
+ *
+ * To run a query within a React component, call `useGetSpecimenTypesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSpecimenTypesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSpecimenTypesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetSpecimenTypesQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetSpecimenTypesQuery,
+    GetSpecimenTypesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetSpecimenTypesQuery, GetSpecimenTypesQueryVariables>(
+    GetSpecimenTypesDocument,
+    options
+  );
+}
+export function useGetSpecimenTypesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetSpecimenTypesQuery,
+    GetSpecimenTypesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetSpecimenTypesQuery,
+    GetSpecimenTypesQueryVariables
+  >(GetSpecimenTypesDocument, options);
+}
+export type GetSpecimenTypesQueryHookResult = ReturnType<
+  typeof useGetSpecimenTypesQuery
+>;
+export type GetSpecimenTypesLazyQueryHookResult = ReturnType<
+  typeof useGetSpecimenTypesLazyQuery
+>;
+export type GetSpecimenTypesQueryResult = Apollo.QueryResult<
+  GetSpecimenTypesQuery,
+  GetSpecimenTypesQueryVariables
+>;
+export const SetOrgIdentityVerifiedDocument = gql`
+  mutation SetOrgIdentityVerified($externalId: String!, $verified: Boolean!) {
+    setOrganizationIdentityVerified(
+      externalId: $externalId
+      verified: $verified
+    )
+  }
+`;
+export type SetOrgIdentityVerifiedMutationFn = Apollo.MutationFunction<
+  SetOrgIdentityVerifiedMutation,
+  SetOrgIdentityVerifiedMutationVariables
+>;
+
+/**
+ * __useSetOrgIdentityVerifiedMutation__
+ *
+ * To run a mutation, you first call `useSetOrgIdentityVerifiedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetOrgIdentityVerifiedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setOrgIdentityVerifiedMutation, { data, loading, error }] = useSetOrgIdentityVerifiedMutation({
+ *   variables: {
+ *      externalId: // value for 'externalId'
+ *      verified: // value for 'verified'
+ *   },
+ * });
+ */
+export function useSetOrgIdentityVerifiedMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    SetOrgIdentityVerifiedMutation,
+    SetOrgIdentityVerifiedMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    SetOrgIdentityVerifiedMutation,
+    SetOrgIdentityVerifiedMutationVariables
+  >(SetOrgIdentityVerifiedDocument, options);
+}
+export type SetOrgIdentityVerifiedMutationHookResult = ReturnType<
+  typeof useSetOrgIdentityVerifiedMutation
+>;
+export type SetOrgIdentityVerifiedMutationResult = Apollo.MutationResult<SetOrgIdentityVerifiedMutation>;
+export type SetOrgIdentityVerifiedMutationOptions = Apollo.BaseMutationOptions<
+  SetOrgIdentityVerifiedMutation,
+  SetOrgIdentityVerifiedMutationVariables
+>;
+export const GetOrganizationsDocument = gql`
+  query GetOrganizations($identityVerified: Boolean) {
+    organizations(identityVerified: $identityVerified) {
+      externalId
+      name
+    }
+  }
+`;
+
+/**
+ * __useGetOrganizationsQuery__
+ *
+ * To run a query within a React component, call `useGetOrganizationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOrganizationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOrganizationsQuery({
+ *   variables: {
+ *      identityVerified: // value for 'identityVerified'
+ *   },
+ * });
+ */
+export function useGetOrganizationsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetOrganizationsQuery,
+    GetOrganizationsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetOrganizationsQuery, GetOrganizationsQueryVariables>(
+    GetOrganizationsDocument,
+    options
+  );
+}
+export function useGetOrganizationsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetOrganizationsQuery,
+    GetOrganizationsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetOrganizationsQuery,
+    GetOrganizationsQueryVariables
+  >(GetOrganizationsDocument, options);
+}
+export type GetOrganizationsQueryHookResult = ReturnType<
+  typeof useGetOrganizationsQuery
+>;
+export type GetOrganizationsLazyQueryHookResult = ReturnType<
+  typeof useGetOrganizationsLazyQuery
+>;
+export type GetOrganizationsQueryResult = Apollo.QueryResult<
+  GetOrganizationsQuery,
+  GetOrganizationsQueryVariables
+>;
+export const SetCurrentUserTenantDataAccessOpDocument = gql`
+  mutation SetCurrentUserTenantDataAccessOp(
+    $organizationExternalId: String
+    $justification: String
+  ) {
+    setCurrentUserTenantDataAccess(
+      organizationExternalId: $organizationExternalId
+      justification: $justification
+    ) {
+      id
+      email
+      permissions
+      role
+      organization {
+        name
+        externalId
+      }
+    }
+  }
+`;
+export type SetCurrentUserTenantDataAccessOpMutationFn = Apollo.MutationFunction<
+  SetCurrentUserTenantDataAccessOpMutation,
+  SetCurrentUserTenantDataAccessOpMutationVariables
+>;
+
+/**
+ * __useSetCurrentUserTenantDataAccessOpMutation__
+ *
+ * To run a mutation, you first call `useSetCurrentUserTenantDataAccessOpMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetCurrentUserTenantDataAccessOpMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setCurrentUserTenantDataAccessOpMutation, { data, loading, error }] = useSetCurrentUserTenantDataAccessOpMutation({
+ *   variables: {
+ *      organizationExternalId: // value for 'organizationExternalId'
+ *      justification: // value for 'justification'
+ *   },
+ * });
+ */
+export function useSetCurrentUserTenantDataAccessOpMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    SetCurrentUserTenantDataAccessOpMutation,
+    SetCurrentUserTenantDataAccessOpMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    SetCurrentUserTenantDataAccessOpMutation,
+    SetCurrentUserTenantDataAccessOpMutationVariables
+  >(SetCurrentUserTenantDataAccessOpDocument, options);
+}
+export type SetCurrentUserTenantDataAccessOpMutationHookResult = ReturnType<
+  typeof useSetCurrentUserTenantDataAccessOpMutation
+>;
+export type SetCurrentUserTenantDataAccessOpMutationResult = Apollo.MutationResult<SetCurrentUserTenantDataAccessOpMutation>;
+export type SetCurrentUserTenantDataAccessOpMutationOptions = Apollo.BaseMutationOptions<
+  SetCurrentUserTenantDataAccessOpMutation,
+  SetCurrentUserTenantDataAccessOpMutationVariables
 >;
 export const RemovePatientFromQueueDocument = gql`
   mutation RemovePatientFromQueue($patientId: ID!) {
@@ -4656,6 +4827,7 @@ export const GetTestResultForPrintDocument = gql`
       correctionStatus
       deviceType {
         name
+        model
       }
       patient {
         firstName
@@ -4678,10 +4850,6 @@ export const GetTestResultForPrintDocument = gql`
           lastName
           NPI
         }
-      }
-      testPerformed {
-        name
-        loincCode
       }
     }
   }

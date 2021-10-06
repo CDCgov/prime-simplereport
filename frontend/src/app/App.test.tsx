@@ -5,10 +5,13 @@ import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
+import { GetTopLevelDashboardMetricsDocument } from "../generated/graphql";
+
 import App, { WHOAMI_QUERY } from "./App";
 import { queueQuery } from "./testQueue/TestQueue";
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import { TRAINING_PURPOSES_ONLY } from "./commonComponents/TrainingNotification";
+import { getDateFromDaysAgo } from "./analytics/Analytics";
 
 jest.mock("uuid");
 jest.mock("./VersionService", () => ({
@@ -162,6 +165,24 @@ const WhoAmIErrorQueryMock = {
   },
   error: new Error("Server connection error"),
 };
+const getAnalyticsQueryMock = () => ({
+  request: {
+    query: GetTopLevelDashboardMetricsDocument,
+    variables: {
+      facilityId: "",
+      startDate: getDateFromDaysAgo(7),
+      endDate: new Date(),
+    },
+  },
+  result: {
+    data: {
+      topLevelDashboardMetrics: {
+        totalTestCount: 124820,
+        positiveTestCount: 2270,
+      },
+    },
+  },
+});
 const renderApp = (
   newStore: MockStoreEnhanced<unknown, {}>,
   queryMocks: MockedResponse[]
@@ -182,6 +203,15 @@ const renderApp = (
 const MODAL_TEXT = "Welcome to the SimpleReport";
 
 describe("App", () => {
+  beforeEach(() => {
+    jest
+      .useFakeTimers("modern")
+      .setSystemTime(new Date("2021-08-01").getTime());
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
   it("Render first loading screen", async () => {
     const mockedStore = mockStore({});
     renderApp(mockedStore, [WhoAmIQueryMock]);
@@ -196,12 +226,17 @@ describe("App", () => {
 
   it("Render main screen", async () => {
     const mockedStore = mockStore({ ...store, dataLoaded: true });
-    const { container } = renderApp(mockedStore, [
+    renderApp(mockedStore, [
       WhoAmIQueryMock,
       facilityQueryMock,
+      getAnalyticsQueryMock(),
     ]);
-    await screen.findByText("There are no tests running", { exact: false });
-    expect(container).toMatchSnapshot();
+    await waitFor(() => {
+      userEvent.click(screen.getByText("Testing Site", { exact: false }));
+    });
+    expect(
+      await screen.findByText("COVID-19 testing data")
+    ).toBeInTheDocument();
   });
   it("should show error UI", async () => {
     const mockedStore = mockStore({ ...store, dataLoaded: true });
@@ -212,7 +247,11 @@ describe("App", () => {
   it("displays the training header and modal and dismisses the modal", async () => {
     process.env.REACT_APP_IS_TRAINING_SITE = "true";
     const mockedStore = mockStore({ ...store, dataLoaded: true });
-    renderApp(mockedStore, [WhoAmIQueryMock, facilityQueryMock]);
+    renderApp(mockedStore, [
+      WhoAmIQueryMock,
+      facilityQueryMock,
+      getAnalyticsQueryMock(),
+    ]);
     expect(await screen.findAllByText(TRAINING_PURPOSES_ONLY)).toHaveLength(2);
     const trainingWelcome = await screen.findByText(MODAL_TEXT, {
       exact: false,

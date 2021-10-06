@@ -59,7 +59,16 @@ type DeviceType {
   model: String
   loincCode: String
   swabType: String
+  swabTypes: String
   testLength: Int
+}
+
+type SpecimenType {
+  internalId: ID!
+  name: String!
+  typeCode: String!
+  collectionLocationName: String
+  collectionLocationCode: String
 }
 
 type TestDescription {
@@ -256,6 +265,7 @@ type Query {
   ): Boolean
   queue(facilityId: ID!): [TestOrder]
     @requiredPermissions(anyOf: ["START_TEST", "UPDATE_TEST", "SUBMIT_TEST"])
+  specimenTypes: [SpecimenType!]!
   testResults(
     facilityId: ID
     patientId: ID
@@ -276,7 +286,7 @@ type Query {
   ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
-  topLevelDashboardMetrics(facilityId: ID, startDate: DateTime!, endDate: DateTime!): TopLevelDashboardMetrics
+  topLevelDashboardMetrics(facilityId: ID, startDate: DateTime, endDate: DateTime): TopLevelDashboardMetrics
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
   usersWithStatus: [ApiUserWithStatus!] @requiredPermissions(allOf: ["MANAGE_USERS"])

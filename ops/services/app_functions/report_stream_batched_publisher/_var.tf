@@ -27,6 +27,15 @@ variable "test_event_queue_name" {
   default = "test-event-publishing"
 }
 
+variable "reporting_exception_queue_name" {
+  type    = string
+  default = "test-event-publishing-exceptions"
+}
+
 variable "report_stream_api_token" {
+  type = string
+}
+
+variable "simple_report_cb_token" {
   type = string
 }

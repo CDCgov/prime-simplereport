@@ -1,12 +1,9 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import java.util.Date;
-import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
@@ -25,13 +22,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @DynamicUpdate
-public abstract class AuditedEntity implements DatabaseEntity {
-
-  @Column(updatable = false, nullable = false)
-  @Id
-  @GeneratedValue(generator = "UUID4")
-  private UUID internalId;
-
+public abstract class AuditedEntity extends IdentifiedEntity {
   @Column(updatable = false)
   @CreatedDate
   private Date createdAt;
@@ -48,10 +39,6 @@ public abstract class AuditedEntity implements DatabaseEntity {
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "updated_by")
   private ApiUser updatedBy;
-
-  public UUID getInternalId() {
-    return internalId;
-  }
 
   public Date getCreatedAt() {
     return createdAt;

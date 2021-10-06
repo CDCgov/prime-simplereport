@@ -23,6 +23,7 @@ export const testQuery = gql`
       correctionStatus
       deviceType {
         name
+        model
       }
       patient {
         firstName
@@ -45,10 +46,6 @@ export const testQuery = gql`
           lastName
           NPI
         }
-      }
-      testPerformed {
-        name
-        loincCode
       }
     }
   }
@@ -79,13 +76,7 @@ export const DetachedTestResultPrintModal = ({
       <Button label={t("testResult.print")} onClick={() => window.print()} />
     </div>
   );
-  const {
-    patient,
-    facility,
-    deviceType,
-    testPerformed,
-    correctionStatus,
-  } = data.testResult;
+  const { patient, facility, deviceType, correctionStatus } = data.testResult;
 
   return (
     <Modal
@@ -178,11 +169,11 @@ export const DetachedTestResultPrintModal = ({
               </li>
               <li>
                 <b>{t("testResult.testName")}</b>
-                <div>{testPerformed.name}</div>
+                <div>{deviceType.name}</div>
               </li>
               <li>
                 <b>{t("testResult.testDevice")}</b>
-                <div>{deviceType.name}</div>
+                <div>{deviceType.model}</div>
               </li>
               <li>
                 <b>{t("testResult.testDate")}</b>
