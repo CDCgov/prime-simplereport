@@ -54,7 +54,11 @@ export function QueryWrapper<ComponentProps>({
   };
   const props = ({
     ...componentProps,
-    trackAction: appInsights?.trackEvent({ name: "User Action" }),
+    trackAction: appInsights
+      ? appInsights.trackEvent({ name: "User Action" })
+      : () => {
+          // no-op
+        },
     data,
     loading,
     refetch: passOnRefetch,

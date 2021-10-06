@@ -233,7 +233,7 @@ const Header: React.FC<{}> = () => {
                 <a
                   href="https://simplereport.gov/support"
                   target="none"
-                  onClick={handleSupportClick}
+                  onClick={() => handleSupportClick()}
                 >
                   Support
                 </a>
@@ -378,7 +378,7 @@ const Header: React.FC<{}> = () => {
                     <a
                       href="https://simplereport.gov/support"
                       target="none"
-                      onClick={handleSupportClick}
+                      onClick={() => handleSupportClick()}
                       data-testid="support-link"
                     >
                       Support
