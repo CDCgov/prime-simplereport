@@ -1,11 +1,10 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import "../../i18n";
-
 import { act } from "react-dom/test-utils";
 
+import "../../i18n";
 import { PxpApi } from "../PxpApiService";
 
 import DOB from "./DOB";
