@@ -2,6 +2,8 @@ package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.model.errors.IncorrectBirthDateException;
+import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.PatientLinkFailedAttempt;
@@ -33,10 +35,7 @@ public class PatientLinkService {
   @Autowired private CurrentPatientContextHolder contextHolder;
 
   public PatientLink getPatientLink(UUID internalId) {
-    return plrepo
-        .findById(internalId)
-        .orElseThrow(
-            () -> new IllegalGraphqlArgumentException("No patient link with that ID was found"));
+    return plrepo.findById(internalId).orElseThrow(() -> new InvalidPatientLinkException());
   }
 
   public PatientLink getRefreshedPatientLink(UUID internalId) {
@@ -55,7 +54,7 @@ public class PatientLinkService {
   }
 
   public boolean verifyPatientLink(UUID internalId, LocalDate birthDate)
-      throws ExpiredPatientLinkException {
+      throws ExpiredPatientLinkException, IncorrectBirthDateException {
     try {
       PatientLink patientLink = getPatientLink(internalId);
       log.trace("Found a patient link for id={}", internalId);
@@ -85,7 +84,7 @@ public class PatientLinkService {
 
       patientLinkFailedAttempt.addFailedAttempt();
       plfarepo.save(patientLinkFailedAttempt);
-      return false;
+      throw new IncorrectBirthDateException();
     } catch (IllegalGraphqlArgumentException e) {
       // patient link id was invalid
       return false;

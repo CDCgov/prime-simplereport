@@ -556,6 +556,8 @@ export const es: LanguageConfig = {
         validating: "Validación de la fecha de nacimiento...",
         linkExpired:
           "Este enlace ha caducado. Comuníquese con su proveedor de pruebas.",
+        linkInvalid:
+          "Este enlace no es válido. Comuníquese con su proveedor de pruebas.",
         submit: "Continuar",
       },
     },

@@ -532,11 +532,11 @@ export const en = {
         invalidYear:
           "Birth date must be after 1900 and before the current year",
         invalidDate: "The birth date provided is not a possible date",
-        error:
-          "Test result not found, or the birth date provided is incorrect.",
+        error: "The birth date provided is incorrect.",
         validating: "Validating birth date...",
         linkExpired:
           "This link has expired. Please contact your test provider.",
+        linkInvalid: "This link is invalid. Please contact your test provider.",
         submit: "Continue",
       },
     },

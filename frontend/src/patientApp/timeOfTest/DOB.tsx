@@ -1,16 +1,9 @@
-import React, {
-  FormEvent,
-  useEffect,
-  useState,
-  useRef,
-  MouseEventHandler,
-} from "react";
+import { useEffect, useState, useRef } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 
-import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import Button from "../../app/commonComponents/Button/Button";
 import TextInput from "../../app/commonComponents/TextInput";
 import { setPatient, updateOrganization } from "../../app/store";
@@ -25,6 +18,7 @@ const DOB = () => {
   const [birthDateError, setBirthDateError] = useState("");
   const [birthDateHidden, setBirthDateHidden] = useState(true);
   const [linkExpiredError, setLinkExpiredError] = useState(false);
+  const [linkInvalidError, setLinkInvalidError] = useState(false);
   const dobRef = useRef<HTMLInputElement>(null);
   const plid = useSelector((state: any) => state.plid);
   const patient = useSelector((state: any) => state.patient);
@@ -74,10 +68,12 @@ const DOB = () => {
         })
       );
       dispatch(setPatient(response));
-    } catch (error) {
+    } catch (error: any) {
       if (error?.status === 410) {
         setLinkExpiredError(true);
-      } else {
+      } else if (error?.status === 403) {
+        setLinkInvalidError(true);
+      } else if (error?.status === 401) {
         setBirthDateError(t("testResult.dob.error"));
       }
     } finally {
@@ -114,57 +110,72 @@ const DOB = () => {
     );
   }
 
-  return (
-    <>
+  if (linkExpiredError) {
+    return (
       <main>
         <div className="grid-container maxw-tablet">
-          {!linkExpiredError ? (
-            <>
-              <p className="margin-top-3">{t("testResult.dob.enterDOB2")}</p>
-              <TextInput
-                className="width-mobile"
-                label={t("testResult.dob.dateOfBirth")}
-                name={"birthDate"}
-                type={birthDateHidden ? "password" : "text"}
-                autoComplete={"on"}
-                value={birthDate}
-                ariaDescribedBy={"bdayFormat"}
-                hintText={t("testResult.dob.format")}
-                onBlur={validateBirthDate}
-                errorMessage={birthDateError}
-                validationStatus={birthDateError ? "error" : undefined}
-                onChange={(evt) => setBirthDate(evt.currentTarget.value)}
-                inputRef={dobRef}
-              />
-              <div className="margin-top-1 margin-bottom-2">
-                <button
-                  className="usa-button usa-button--unstyled margin-top-0"
-                  aria-controls="birthDate"
-                  onClick={() => setBirthDateHidden(!birthDateHidden)}
-                >
-                  {birthDateHidden ? "Show my typing" : "Hide my typing"}
-                </button>
-              </div>
-              <Button
-                id="dob-submit-button"
-                data-testid="dob-submit-button"
-                label={t("testResult.dob.submit")}
-                onClick={confirmBirthDate}
-              />
-            </>
-          ) : (
-            <>
-              <p></p>
-              <Alert
-                type="error"
-                title="Link expired"
-                body={t("testResult.dob.linkExpired")}
-              />
-            </>
-          )}
+          <p></p>
+          <Alert
+            type="error"
+            title="Link expired"
+            body={t("testResult.dob.linkExpired")}
+          />
         </div>
       </main>
-    </>
+    );
+  }
+
+  if (linkInvalidError) {
+    return (
+      <main>
+        <div className="grid-container maxw-tablet">
+          <p></p>
+          <Alert
+            type="error"
+            title="Link invalid"
+            body={t("testResult.dob.linkInvalid")}
+          />
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main>
+      <div className="grid-container maxw-tablet">
+        <p className="margin-top-3">{t("testResult.dob.enterDOB2")}</p>
+        <TextInput
+          className="width-mobile"
+          label={t("testResult.dob.dateOfBirth")}
+          name={"birthDate"}
+          type={birthDateHidden ? "password" : "text"}
+          autoComplete={"on"}
+          value={birthDate}
+          ariaDescribedBy={"bdayFormat"}
+          hintText={t("testResult.dob.format")}
+          onBlur={validateBirthDate}
+          errorMessage={birthDateError}
+          validationStatus={birthDateError ? "error" : undefined}
+          onChange={(evt) => setBirthDate(evt.currentTarget.value)}
+          inputRef={dobRef}
+        />
+        <div className="margin-top-1 margin-bottom-2">
+          <button
+            className="usa-button usa-button--unstyled margin-top-0"
+            aria-controls="birthDate"
+            onClick={() => setBirthDateHidden(!birthDateHidden)}
+          >
+            {birthDateHidden ? "Show my typing" : "Hide my typing"}
+          </button>
+        </div>
+        <Button
+          id="dob-submit-button"
+          data-testid="dob-submit-button"
+          label={t("testResult.dob.submit")}
+          onClick={confirmBirthDate}
+        />
+      </div>
+    </main>
   );
 };
 
