@@ -98,14 +98,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
         .collect(Collectors.toList());
   }
 
-  public List<SpecimenType> getSpecimenTypes() {
-    return configuredDeviceSpecimenTypes.stream()
-        .filter(e -> !e.isDeleted())
-        .map(DeviceSpecimenType::getSpecimenType)
-        .filter(e -> !e.isDeleted())
-        .collect(Collectors.toList());
-  }
-
   public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
     return configuredDeviceSpecimenTypes.stream()
         .filter(
