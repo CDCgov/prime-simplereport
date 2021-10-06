@@ -48,7 +48,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
     var org = _dataFactory.createValidOrg();
     var facility = _dataFactory.createValidFacility(org);
     var genericDeviceSpecimen = _dataFactory.getGenericDeviceSpecimen();
-    var deviceId = genericDeviceSpecimen.getDeviceType().getInternalId().toString();
+    var deviceId = genericDeviceSpecimen.getDeviceType().getInternalId();
     var dstHolder =
         new DeviceSpecimenTypeHolder(genericDeviceSpecimen, List.of(genericDeviceSpecimen));
 
@@ -87,9 +87,9 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
         facility.getOrderingProvider().getAddress().getState(),
         facility.getOrderingProvider().getAddress().getPostalCode(),
         facility.getOrderingProvider().getTelephone(),
-        List.of(deviceId),
+        List.of(deviceId.toString()),
         null,
-        deviceId);
+        deviceId.toString());
 
     verify(_os)
         .createFacility(
@@ -120,13 +120,13 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
     var address = facility.getAddress();
 
     var deviceSpecimenType = _dataFactory.getGenericDeviceSpecimen();
-    var deviceSpecimenTypeId = deviceSpecimenType.getInternalId().toString();
+    var deviceSpecimenTypeId = deviceSpecimenType.getInternalId();
     var deviceSpecimenTypeIds = List.of(deviceSpecimenTypeId);
     var holder = new DeviceSpecimenTypeHolder(deviceSpecimenType, List.of(deviceSpecimenType));
 
     doNothing().when(_os).assertFacilityNameAvailable(facility.getFacilityName());
     when(_dts.getDeviceSpecimenTypesForFacility(
-            deviceSpecimenType.getDeviceType().getInternalId().toString(), deviceSpecimenTypeIds))
+            deviceSpecimenType.getDeviceType().getInternalId(), deviceSpecimenTypeIds))
         .thenReturn(holder);
     when(_avs.getValidatedAddress(
             address.getStreetOne(),

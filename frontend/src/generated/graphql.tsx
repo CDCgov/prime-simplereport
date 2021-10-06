@@ -97,7 +97,6 @@ export type Facility = {
   orderingProvider?: Maybe<Provider>;
   patientSelfRegistrationLink?: Maybe<Scalars["String"]>;
   phone?: Maybe<Scalars["String"]>;
-  specimenTypes?: Maybe<Array<Maybe<SpecimenType>>>;
   state?: Maybe<Scalars["String"]>;
   street?: Maybe<Scalars["String"]>;
   streetTwo?: Maybe<Scalars["String"]>;
@@ -147,7 +146,7 @@ export type MutationAddFacilityArgs = {
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   defaultDevice: Scalars["String"];
-  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["String"]>>>;
+  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
   deviceTypes: Array<Maybe<Scalars["String"]>>;
   email?: Maybe<Scalars["String"]>;
   orderingProviderCity?: Maybe<Scalars["String"]>;
@@ -383,7 +382,7 @@ export type MutationUpdateFacilityArgs = {
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   defaultDevice: Scalars["String"];
-  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["String"]>>>;
+  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
   deviceTypes: Array<Maybe<Scalars["String"]>>;
   email?: Maybe<Scalars["String"]>;
   facilityId: Scalars["ID"];
@@ -941,9 +940,7 @@ export type UpdateFacilityMutationVariables = Exact<{
   orderingProviderZipCode?: Maybe<Scalars["String"]>;
   orderingProviderPhone?: Maybe<Scalars["String"]>;
   devices: Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>;
-  deviceSpecimenTypes:
-    | Array<Maybe<Scalars["String"]>>
-    | Maybe<Scalars["String"]>;
+  deviceSpecimenTypes: Array<Maybe<Scalars["ID"]>> | Maybe<Scalars["ID"]>;
   defaultDevice: Scalars["String"];
 }>;
 
@@ -974,9 +971,7 @@ export type AddFacilityMutationVariables = Exact<{
   orderingProviderZipCode?: Maybe<Scalars["String"]>;
   orderingProviderPhone?: Maybe<Scalars["String"]>;
   devices: Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>;
-  deviceSpecimenTypes:
-    | Array<Maybe<Scalars["String"]>>
-    | Maybe<Scalars["String"]>;
+  deviceSpecimenTypes: Array<Maybe<Scalars["ID"]>> | Maybe<Scalars["ID"]>;
   defaultDevice: Scalars["String"];
 }>;
 
@@ -2095,7 +2090,7 @@ export const UpdateFacilityDocument = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
-    $deviceSpecimenTypes: [String]!
+    $deviceSpecimenTypes: [ID]!
     $defaultDevice: String!
   ) {
     updateFacility(
@@ -2214,7 +2209,7 @@ export const AddFacilityDocument = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
-    $deviceSpecimenTypes: [String]!
+    $deviceSpecimenTypes: [ID]!
     $defaultDevice: String!
   ) {
     addFacility(

@@ -104,7 +104,7 @@ export const UPDATE_FACILITY_MUTATION = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
-    $deviceSpecimenTypes: [String]!
+    $deviceSpecimenTypes: [ID]!
     $defaultDevice: String!
   ) {
     updateFacility(
@@ -159,7 +159,7 @@ const ADD_FACILITY_MUTATION = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
-    $deviceSpecimenTypes: [String]!
+    $deviceSpecimenTypes: [ID]!
     $defaultDevice: String!
   ) {
     addFacility(
@@ -197,11 +197,18 @@ interface Props {
 
 const FacilityFormContainer: any = (props: Props) => {
   const { data, loading, error } = useQuery<FacilityData, {}>(
-    GET_FACILITY_QUERY
+    GET_FACILITY_QUERY,
+    {
+      fetchPolicy: "no-cache",
+    }
   );
   const appInsights = useAppInsightsContext();
-  const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION);
-  const [addFacility] = useMutation(ADD_FACILITY_MUTATION);
+  const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION, {
+    fetchPolicy: "no-cache",
+  });
+  const [addFacility] = useMutation(ADD_FACILITY_MUTATION, {
+    fetchPolicy: "no-cache",
+  });
   const trackSaveSettings = useTrackEvent(appInsights, "Save Settings", null);
   const [saveSuccess, updateSaveSuccess] = useState(false);
 

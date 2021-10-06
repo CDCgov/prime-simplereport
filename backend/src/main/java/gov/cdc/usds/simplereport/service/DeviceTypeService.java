@@ -56,12 +56,9 @@ public class DeviceTypeService {
         .orElseThrow(() -> new IllegalGraphqlArgumentException("invalid device type ID"));
   }
 
-  public List<DeviceSpecimenType> getDeviceSpecimenTypesByIds(List<String> deviceSpecimenTypeIds) {
-    var deviceSpecimenTypes =
-        _deviceSpecimenRepo.findAllById(
-            deviceSpecimenTypeIds.stream().map(UUID::fromString).collect(Collectors.toList()));
-
-    return StreamSupport.stream(deviceSpecimenTypes.spliterator(), false)
+  public List<DeviceSpecimenType> getDeviceSpecimenTypesByIds(List<UUID> deviceSpecimenTypeIds) {
+    return StreamSupport.stream(
+            _deviceSpecimenRepo.findAllById(deviceSpecimenTypeIds).spliterator(), false)
         .collect(Collectors.toList());
   }
 
@@ -75,10 +72,9 @@ public class DeviceTypeService {
    * types for a given device type.
    */
   @Deprecated // this is a backward-compatibility shim!
-  public DeviceSpecimenType getDefaultForDeviceId(String deviceId) {
-    UUID actualDeviceId = UUID.fromString(deviceId);
+  public DeviceSpecimenType getDefaultForDeviceId(UUID deviceId) {
     return _deviceSpecimenRepo
-        .findFirstByDeviceTypeInternalIdOrderByCreatedAt(actualDeviceId)
+        .findFirstByDeviceTypeInternalIdOrderByCreatedAt(deviceId)
         .orElseThrow(
             () ->
                 new IllegalGraphqlArgumentException(
@@ -175,7 +171,7 @@ public class DeviceTypeService {
    */
   @Deprecated
   public DeviceSpecimenTypeHolder getTypesForFacility(
-      String defaultDeviceTypeId, List<String> configuredDeviceTypeIds) {
+      UUID defaultDeviceTypeId, List<UUID> configuredDeviceTypeIds) {
     if (!configuredDeviceTypeIds.contains(defaultDeviceTypeId)) {
       throw new IllegalGraphqlArgumentException(
           "default device type must be included in device type list");
@@ -184,27 +180,27 @@ public class DeviceTypeService {
         configuredDeviceTypeIds.stream()
             .map(this::getDefaultForDeviceId)
             .collect(Collectors.toList());
-    UUID defaultId = UUID.fromString(defaultDeviceTypeId);
+
     DeviceSpecimenType defaultType =
         configuredTypes.stream()
-            .filter(dt -> dt.getDeviceType().getInternalId().equals(defaultId))
+            .filter(dt -> dt.getDeviceType().getInternalId().equals(defaultDeviceTypeId))
             .findFirst()
             .orElseThrow(
                 () ->
                     new RuntimeException(
-                        "Inexplicable inability to find device for ID " + defaultId.toString()));
+                        "Inexplicable inability to find device for ID "
+                            + defaultDeviceTypeId.toString()));
     return new DeviceSpecimenTypeHolder(defaultType, configuredTypes);
   }
 
   public DeviceSpecimenTypeHolder getDeviceSpecimenTypesForFacility(
-      String defaultDeviceTypeId, List<String> configuredDeviceSpecimenTypeIds) {
+      UUID defaultDeviceTypeId, List<UUID> configuredDeviceSpecimenTypeIds) {
     List<DeviceSpecimenType> dsts =
         this.getDeviceSpecimenTypesByIds(configuredDeviceSpecimenTypeIds);
 
     DeviceSpecimenType defaultDeviceSpecimenType =
         dsts.stream()
-            .filter(
-                dst -> defaultDeviceTypeId.equals(dst.getDeviceType().getInternalId().toString()))
+            .filter(dst -> defaultDeviceTypeId.equals(dst.getDeviceType().getInternalId()))
             .findAny()
             .orElseThrow(
                 () ->

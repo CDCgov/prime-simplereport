@@ -1,4 +1,4 @@
-mutation updateFacility($facilityId: ID!, $deviceId: String!, $deviceSpecimenTypes: [String]!) {
+mutation updateFacility($facilityId: ID!, $deviceId: String!, $deviceSpecimenTypes: [ID]!) {
     updateFacility(
         facilityId: $facilityId
         testingFacilityName: "Fake Facility"

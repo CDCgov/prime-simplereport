@@ -22,6 +22,7 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,8 +137,8 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
 
   private ObjectNode getDeviceArgs() {
     String someDeviceType = _deviceService.fetchDeviceTypes().get(0).getInternalId().toString();
-    List<String> someDeviceSpecimenTypes =
-        List.of(_deviceService.getDeviceSpecimenTypes().get(0).getInternalId().toString());
+    List<UUID> someDeviceSpecimenTypes =
+        List.of(_deviceService.getDeviceSpecimenTypes().get(0).getInternalId());
 
     final ObjectMapper mapper = new ObjectMapper();
 
