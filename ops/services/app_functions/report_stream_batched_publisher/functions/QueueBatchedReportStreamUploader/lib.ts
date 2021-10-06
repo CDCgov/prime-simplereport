@@ -187,6 +187,8 @@ export async function reportExceptions(
       }))
     );
   return Promise.all(
-    payloads.map((p) => queueClient.sendMessage(JSON.stringify(p)))
+    payloads.map((p) =>
+      queueClient.sendMessage(Buffer.from(JSON.stringify(p)).toString("base64"))
+    )
   );
 }
