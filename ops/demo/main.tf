@@ -89,6 +89,7 @@ module "app_gateway" {
   resource_group_name     = data.azurerm_resource_group.rg.name
 
   cdn_hostname      = azurerm_cdn_endpoint.cdn_endpoint.host_name
+  blob_endpoint     = azurerm_storage_account.primary_blob_endpoint
   subnet_id         = data.terraform_remote_state.persistent_demo.outputs.subnet_lbs_id
   key_vault_id      = data.azurerm_key_vault.global.id
   log_workspace_uri = data.azurerm_log_analytics_workspace.log_analytics.id
