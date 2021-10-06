@@ -527,7 +527,11 @@ export const en = {
         enterDOB: "Enter your date of birth",
         enterDOB2:
           "Enter your date of birth to access your COVID-19 Testing Portal.",
-        format: "MM/DD/YYYY or MMDDYYYY",
+        format: "MM/DD/YYYY",
+        invalidFormat: "The birth date provided is in an incorrect format",
+        invalidYear:
+          "Birth date must be after 1900 and before the current year",
+        invalidDate: "The birth date provided is not a possible date",
         error:
           "Test result not found, or the birth date provided is incorrect.",
         validating: "Validating birth date...",

@@ -10,47 +10,52 @@ exports[`DOB snapshot matches 1`] = `
     >
       Enter your date of birth to access your COVID-19 Testing Portal.
     </p>
-    <form
-      className="usa-form"
-      onSubmit={[Function]}
+    <div
+      className="usa-form-group width-mobile"
     >
-      <div
-        className="usa-form-group"
+      <label
+        aria-describedby="bdayFormat"
+        className="usa-label"
+        htmlFor="1"
       >
-        <label
-          aria-describedby="bdayFormat"
-          className="usa-label"
-          htmlFor="1"
-        >
-          Date of birth
-        </label>
-        <span
-          className="usa-hint"
-        >
-          MM/DD/YYYY or MMDDYYYY
-        </span>
-        <input
-          aria-required="false"
-          autoComplete="on"
-          className="usa-input"
-          id="1"
-          inputMode="numeric"
-          name="birthDate"
-          onChange={[Function]}
-          pattern="([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})|([0-9]{8})"
-          size={8}
-          type="password"
-          value=""
-        />
-      </div>
+        Date of birth
+      </label>
+      <span
+        className="usa-hint"
+      >
+        MM/DD/YYYY
+      </span>
+      <input
+        aria-required="false"
+        autoComplete="on"
+        className="usa-input"
+        id="1"
+        name="birthDate"
+        onBlur={[Function]}
+        onChange={[Function]}
+        type="password"
+        value=""
+      />
+    </div>
+    <div
+      className="margin-top-1 margin-bottom-2"
+    >
       <button
-        className="usa-button"
-        id="dob-submit-button"
-        type="submit"
+        aria-controls="birthDate"
+        className="usa-button usa-button--unstyled margin-top-0"
+        onClick={[Function]}
       >
-        Continue
+        Show my typing
       </button>
-    </form>
+    </div>
+    <button
+      className="usa-button"
+      id="dob-submit-button"
+      onClick={[Function]}
+      type="button"
+    >
+      Continue
+    </button>
   </div>
 </main>
 `;

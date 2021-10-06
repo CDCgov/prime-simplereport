@@ -1,9 +1,16 @@
-import React, { FormEvent, useEffect, useState, useRef } from "react";
+import React, {
+  FormEvent,
+  useEffect,
+  useState,
+  useRef,
+  MouseEventHandler,
+} from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 
+import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import Button from "../../app/commonComponents/Button/Button";
 import TextInput from "../../app/commonComponents/TextInput";
 import { setPatient, updateOrganization } from "../../app/store";
@@ -16,6 +23,7 @@ const DOB = () => {
   const dispatch = useDispatch();
   const [birthDate, setBirthDate] = useState("");
   const [birthDateError, setBirthDateError] = useState("");
+  const [birthDateHidden, setBirthDateHidden] = useState(true);
   const [linkExpiredError, setLinkExpiredError] = useState(false);
   const dobRef = useRef<HTMLInputElement>(null);
   const plid = useSelector((state: any) => state.plid);
@@ -26,16 +34,34 @@ const DOB = () => {
     dobRef?.current?.focus();
   }, []);
 
-  const confirmBirthDate = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const validPattern = new RegExp("([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})");
 
-    const date = moment(birthDate.replace("/", ""), "MMDDYYYY");
-    if (!date.isValid()) {
-      setBirthDateError(t("testResult.dob.enterDOB"));
+  const validateBirthDate = () => {
+    const date = moment(birthDate, "MM/DD/YYYY");
+    if (!validPattern.test(birthDate)) {
+      setBirthDateError(t("testResult.dob.invalidFormat"));
       dobRef?.current?.focus();
+      return false;
+    } else if (date.year() < 1900 || date.year() > moment().year()) {
+      setBirthDateError(t("testResult.dob.invalidYear"));
+      dobRef?.current?.focus();
+      return false;
+    } else if (!date.isValid()) {
+      setBirthDateError(t("testResult.dob.invalidDate"));
+      dobRef?.current?.focus();
+      return false;
+    } else {
+      setBirthDateError("");
+      return true;
+    }
+  };
+
+  const confirmBirthDate = async () => {
+    if (!validateBirthDate()) {
       return;
     }
 
+    const date = moment(birthDate, "MM/DD/YYYY");
     setLoading(true);
     try {
       const response = await PxpApi.validateDateOfBirth(
@@ -95,29 +121,36 @@ const DOB = () => {
           {!linkExpiredError ? (
             <>
               <p className="margin-top-3">{t("testResult.dob.enterDOB2")}</p>
-              <form className="usa-form" onSubmit={confirmBirthDate}>
-                <TextInput
-                  label={t("testResult.dob.dateOfBirth")}
-                  name={"birthDate"}
-                  type={"password"}
-                  autoComplete={"on"}
-                  value={birthDate}
-                  size={8}
-                  pattern={"([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})|([0-9]{8})"}
-                  inputMode={"numeric"}
-                  ariaDescribedBy={"bdayFormat"}
-                  hintText={t("testResult.dob.format")}
-                  errorMessage={birthDateError}
-                  validationStatus={birthDateError ? "error" : undefined}
-                  onChange={(evt) => setBirthDate(evt.currentTarget.value)}
-                  inputRef={dobRef}
-                />
-                <Button
-                  id="dob-submit-button"
-                  label={t("testResult.dob.submit")}
-                  type={"submit"}
-                />
-              </form>
+              <TextInput
+                className="width-mobile"
+                label={t("testResult.dob.dateOfBirth")}
+                name={"birthDate"}
+                type={birthDateHidden ? "password" : "text"}
+                autoComplete={"on"}
+                value={birthDate}
+                ariaDescribedBy={"bdayFormat"}
+                hintText={t("testResult.dob.format")}
+                onBlur={validateBirthDate}
+                errorMessage={birthDateError}
+                validationStatus={birthDateError ? "error" : undefined}
+                onChange={(evt) => setBirthDate(evt.currentTarget.value)}
+                inputRef={dobRef}
+              />
+              <div className="margin-top-1 margin-bottom-2">
+                <button
+                  className="usa-button usa-button--unstyled margin-top-0"
+                  aria-controls="birthDate"
+                  onClick={() => setBirthDateHidden(!birthDateHidden)}
+                >
+                  {birthDateHidden ? "Show my typing" : "Hide my typing"}
+                </button>
+              </div>
+              <Button
+                id="dob-submit-button"
+                data-testid="dob-submit-button"
+                label={t("testResult.dob.submit")}
+                onClick={confirmBirthDate}
+              />
             </>
           ) : (
             <>
