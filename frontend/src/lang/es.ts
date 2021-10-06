@@ -550,8 +550,8 @@ export const es: LanguageConfig = {
         invalidYear:
           "La fecha de nacimiento debe ser posterior a 1900 y anterior al año actual",
         invalidDate: "La fecha de nacimiento debe ser una fecha válida",
-        error: "La fecha de nacimiento ingresada es incorrecta",
-        validating: "Validación de la fecha de nacimiento...",
+        error: "La fecha de nacimiento proporcionada es incorrecta",
+        validating: "Validación de la fecha de nacimiento ... ",
         linkExpired:
           "Este enlace ha caducado. Comuníquese con su proveedor de pruebas.",
         linkNotFound:
