@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
-import gov.cdc.usds.simplereport.api.model.errors.IncorrectBirthDateException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -49,7 +48,7 @@ public class PatientLinkService {
   }
 
   public boolean verifyPatientLink(UUID internalId, LocalDate birthDate)
-      throws ExpiredPatientLinkException, IncorrectBirthDateException {
+      throws ExpiredPatientLinkException {
     try {
       PatientLink patientLink = getPatientLink(internalId);
       log.trace("Found a patient link for id={}", internalId);
@@ -79,7 +78,7 @@ public class PatientLinkService {
 
       patientLinkFailedAttempt.addFailedAttempt();
       plfarepo.save(patientLinkFailedAttempt);
-      throw new IncorrectBirthDateException();
+      return false;
     } catch (InvalidPatientLinkException e) {
       // patient link id was invalid
       return false;

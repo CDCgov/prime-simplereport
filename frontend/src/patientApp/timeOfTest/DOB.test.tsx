@@ -106,7 +106,7 @@ describe("DOB", () => {
 
   it("Rejects the wrong date (not what is stored for the user)", async () => {
     // GIVEN
-    validateDateOfBirthSpy.mockRejectedValue({ status: 401 });
+    validateDateOfBirthSpy.mockRejectedValue({ status: 403 });
     userEvent.type(await screen.findByLabelText("Date of birth"), "08/22/1987");
     userEvent.click(await screen.findByText("Continue"));
 
@@ -155,7 +155,7 @@ describe("DOB", () => {
 
   it("Rejects an invalid link", async () => {
     // GIVEN
-    validateDateOfBirthSpy.mockRejectedValue({ status: 403 });
+    validateDateOfBirthSpy.mockRejectedValue({ status: 404 });
     userEvent.type(await screen.findByLabelText("Date of birth"), "08/21/1987");
 
     // WHEN

@@ -18,7 +18,7 @@ const DOB = () => {
   const [birthDateError, setBirthDateError] = useState("");
   const [birthDateHidden, setBirthDateHidden] = useState(true);
   const [linkExpiredError, setLinkExpiredError] = useState(false);
-  const [linkInvalidError, setLinkInvalidError] = useState(false);
+  const [linkNotFoundError, setLinkNotFoundError] = useState(false);
   const dobRef = useRef<HTMLInputElement>(null);
   const plid = useSelector((state: any) => state.plid);
   const patient = useSelector((state: any) => state.patient);
@@ -71,9 +71,9 @@ const DOB = () => {
     } catch (error: any) {
       if (error?.status === 410) {
         setLinkExpiredError(true);
+      } else if (error?.status === 404) {
+        setLinkNotFoundError(true);
       } else if (error?.status === 403) {
-        setLinkInvalidError(true);
-      } else if (error?.status === 401) {
         setBirthDateError(t("testResult.dob.error"));
       }
     } finally {
@@ -125,15 +125,15 @@ const DOB = () => {
     );
   }
 
-  if (linkInvalidError) {
+  if (linkNotFoundError) {
     return (
       <main>
         <div className="grid-container maxw-tablet">
           <p></p>
           <Alert
             type="error"
-            title="Link invalid"
-            body={t("testResult.dob.linkInvalid")}
+            title="Link not found"
+            body={t("testResult.dob.linkNotFound")}
           />
         </div>
       </main>

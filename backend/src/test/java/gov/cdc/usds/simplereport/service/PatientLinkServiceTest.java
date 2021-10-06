@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
-import gov.cdc.usds.simplereport.api.model.errors.IncorrectBirthDateException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -74,25 +73,17 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
   @Test
   void verifyPatientLink() throws Exception {
     assertTrue(_service.verifyPatientLink(_patientLink.getInternalId(), _person.getBirthDate()));
-    assertThrows(
-        IncorrectBirthDateException.class,
-        () ->
-            _service.verifyPatientLink(
-                _patientLink.getInternalId(), _person.getBirthDate().plusDays(1)));
+    assertFalse(
+        _service.verifyPatientLink(
+            _patientLink.getInternalId(), _person.getBirthDate().plusDays(1)));
   }
 
   @Test
   void patientLinkLockout() throws Exception {
     BooleanSupplier failToVerify =
-        () -> {
-          try {
+        () ->
             _service.verifyPatientLink(
                 _patientLink.getInternalId(), _person.getBirthDate().plusDays(1));
-          } catch (IncorrectBirthDateException e) {
-            return false;
-          }
-          return true;
-        };
 
     assertFalse(failToVerify.getAsBoolean());
     assertFalse(failToVerify.getAsBoolean());
@@ -101,9 +92,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
     assertFalse(failToVerify.getAsBoolean());
     assertThrows(
         ExpiredPatientLinkException.class,
-        () ->
-            _service.verifyPatientLink(
-                _patientLink.getInternalId(), _person.getBirthDate().plusDays(1)));
+        () -> _service.verifyPatientLink(_patientLink.getInternalId(), _person.getBirthDate()));
   }
 
   @Test

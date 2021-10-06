@@ -536,7 +536,8 @@ export const en = {
         validating: "Validating birth date...",
         linkExpired:
           "This link has expired. Please contact your test provider.",
-        linkInvalid: "This link is invalid. Please contact your test provider.",
+        linkNotFound:
+          "This link is invalid. Please contact your test provider.",
         submit: "Continue",
       },
     },
