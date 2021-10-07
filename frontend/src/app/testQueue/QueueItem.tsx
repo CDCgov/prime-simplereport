@@ -183,12 +183,21 @@ const QueueItem = ({
   dateTestedProp,
 }: QueueItemProps) => {
   const appInsights = getAppInsights();
-  const trackRemovePatientFromQueue = () =>
-    appInsights?.trackEvent({ name: "Remove Patient From Queue" });
-  const trackSubmitTestResult = () =>
-    appInsights?.trackEvent({ name: "Submit Test Result" });
-  const trackUpdateAoEResponse = () =>
-    appInsights?.trackEvent({ name: "Update AoE Response" });
+  const trackRemovePatientFromQueue = () => {
+    if (appInsights) {
+      appInsights.trackEvent({ name: "Remove Patient From Queue" });
+    }
+  };
+  const trackSubmitTestResult = () => {
+    if (appInsights) {
+      appInsights.trackEvent({ name: "Submit Test Result" });
+    }
+  };
+  const trackUpdateAoEResponse = () => {
+    if (appInsights) {
+      appInsights.trackEvent({ name: "Update AoE Response" });
+    }
+  };
 
   const [mutationError, updateMutationError] = useState(null);
   const [removePatientFromQueue] = useMutation(REMOVE_PATIENT_FROM_QUEUE);
