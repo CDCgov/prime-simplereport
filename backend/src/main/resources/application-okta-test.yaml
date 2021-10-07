@@ -2,7 +2,10 @@
 # for TEST deployments.
 okta:
   oauth2:
-    client-id: 0oa6fl5n8ARasjheq4h6
+    client-id: 0oa1khettjHnj3EPT1d7
+    issuer: https://hhs-prime.oktapreview.com/oauth2/default
+  client:
+    org-url: https://hhs-prime.oktapreview.com
 simple-report:
   authorization:
     role-claim: test_roles

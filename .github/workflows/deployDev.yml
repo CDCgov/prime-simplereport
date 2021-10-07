@@ -34,7 +34,7 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
-      OKTA_API_TOKEN: ${{ secrets.OKTA_API_TOKEN }}
+      OKTA_API_TOKEN: ${{ secrets.OKTA_API_TOKEN_NONPROD }}
     steps:
       - uses: actions/checkout@v2
       - uses: azure/login@v1
