@@ -123,7 +123,8 @@ public class IdentityVerificationController {
      * prior to January 2011"
      */
     Optional<OrganizationQueueItem> optItem =
-        _orgQueueService.getQueuedOrganizationByExternalId(requestBody.getOrgExternalId());
+        _orgQueueService.getUnverifiedQueuedOrganizationByExternalId(
+            requestBody.getOrgExternalId());
     if (optItem.isPresent()) {
       return checkAnswersAndCreateQueuedOrganization(requestBody, optItem.get());
     }

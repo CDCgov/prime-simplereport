@@ -33,7 +33,8 @@ public class OrganizationQueueService {
     return _orgQueueRepo.save(new OrganizationQueueItem(organizationName, orgExternalId, request));
   }
 
-  public Optional<OrganizationQueueItem> getQueuedOrganizationByExternalId(String orgExternalId) {
+  public Optional<OrganizationQueueItem> getUnverifiedQueuedOrganizationByExternalId(
+      String orgExternalId) {
     return _orgQueueRepo.findUnverifiedByExternalId(orgExternalId);
   }
 
@@ -57,6 +58,7 @@ public class OrganizationQueueService {
 
     // this queue item is now used
     queueItem.setVerifiedOrganization(org);
+    _orgQueueRepo.save(queueItem);
 
     return activationToken;
   }
