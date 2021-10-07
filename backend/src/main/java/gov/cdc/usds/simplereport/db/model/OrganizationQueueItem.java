@@ -52,4 +52,8 @@ public class OrganizationQueueItem extends EternalAuditedEntity {
   public OrganizationAccountRequest getRequestData() {
     return requestData;
   }
+
+  public void setVerifiedOrganization(Organization org) {
+    verifiedOrganization = org;
+  }
 }

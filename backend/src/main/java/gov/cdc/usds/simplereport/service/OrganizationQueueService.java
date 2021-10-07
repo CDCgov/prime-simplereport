@@ -7,7 +7,6 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.OrganizationQueueRepository;
-import gov.cdc.usds.simplereport.service.model.UserInfo;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,10 +50,14 @@ public class OrganizationQueueService {
     PersonName adminName =
         Translators.consolidateNameArguments(
             null, request.getFirstName(), null, request.getLastName(), null);
-    UserInfo adminUser =
-        _apiUserService.createUser(request.getEmail(), adminName, org.getExternalId(), Role.ADMIN);
+    _apiUserService.createUser(request.getEmail(), adminName, org.getExternalId(), Role.ADMIN);
 
-    // identity verify and activate, returning activation token)
-    return _orgService.verifyOrganizationNoPermissions(org.getExternalId());
+    // mark id verified and activate
+    String activationToken = _orgService.verifyOrganizationNoPermissions(org.getExternalId());
+
+    // this queue item is now used
+    queueItem.setVerifiedOrganization(org);
+
+    return activationToken;
   }
 }
