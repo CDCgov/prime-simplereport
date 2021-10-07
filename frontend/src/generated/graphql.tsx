@@ -63,6 +63,13 @@ export type ApiUserWithStatus = {
   suffix?: Maybe<Scalars["String"]>;
 };
 
+export type DeviceSpecimenType = {
+  __typename?: "DeviceSpecimenType";
+  deviceType: DeviceType;
+  internalId: Scalars["ID"];
+  specimenType: SpecimenType;
+};
+
 export type DeviceType = {
   __typename?: "DeviceType";
   internalId?: Maybe<Scalars["ID"]>;
@@ -71,6 +78,7 @@ export type DeviceType = {
   model?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
   swabType?: Maybe<Scalars["String"]>;
+  swabTypes?: Maybe<Scalars["String"]>;
   testLength?: Maybe<Scalars["Int"]>;
 };
 
@@ -81,6 +89,7 @@ export type Facility = {
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   defaultDeviceType?: Maybe<DeviceType>;
+  deviceSpecimenTypes?: Maybe<Array<Maybe<DeviceSpecimenType>>>;
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
   email?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
@@ -106,6 +115,7 @@ export type Mutation = {
   adminUpdateOrganization?: Maybe<Scalars["String"]>;
   correctTestMarkAsError?: Maybe<TestResult>;
   createDeviceType?: Maybe<DeviceType>;
+  createDeviceTypeNew?: Maybe<DeviceType>;
   createFacilityRegistrationLink?: Maybe<Scalars["String"]>;
   createOrganization?: Maybe<Organization>;
   createOrganizationRegistrationLink?: Maybe<Scalars["String"]>;
@@ -136,6 +146,7 @@ export type MutationAddFacilityArgs = {
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   defaultDevice: Scalars["String"];
+  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
   deviceTypes: Array<Maybe<Scalars["String"]>>;
   email?: Maybe<Scalars["String"]>;
   orderingProviderCity?: Maybe<Scalars["String"]>;
@@ -247,6 +258,14 @@ export type MutationCreateDeviceTypeArgs = {
   model: Scalars["String"];
   name: Scalars["String"];
   swabType: Scalars["String"];
+};
+
+export type MutationCreateDeviceTypeNewArgs = {
+  loincCode: Scalars["String"];
+  manufacturer: Scalars["String"];
+  model: Scalars["String"];
+  name: Scalars["String"];
+  swabTypes: Array<Scalars["ID"]>;
 };
 
 export type MutationCreateFacilityRegistrationLinkArgs = {
@@ -363,6 +382,7 @@ export type MutationUpdateFacilityArgs = {
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   defaultDevice: Scalars["String"];
+  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
   deviceTypes: Array<Maybe<Scalars["String"]>>;
   email?: Maybe<Scalars["String"]>;
   facilityId: Scalars["ID"];
@@ -563,6 +583,7 @@ export type Provider = {
 
 export type Query = {
   __typename?: "Query";
+  deviceSpecimenTypes?: Maybe<Array<Maybe<DeviceSpecimenType>>>;
   /** @deprecated use the pluralized form to reduce confusion */
   deviceType?: Maybe<Array<Maybe<DeviceType>>>;
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
@@ -574,6 +595,8 @@ export type Query = {
   patients?: Maybe<Array<Maybe<Patient>>>;
   patientsCount?: Maybe<Scalars["Int"]>;
   queue?: Maybe<Array<Maybe<TestOrder>>>;
+  specimenType?: Maybe<Array<Maybe<SpecimenType>>>;
+  specimenTypes: Array<SpecimenType>;
   testResult?: Maybe<TestResult>;
   testResults?: Maybe<Array<Maybe<TestResult>>>;
   testResultsCount?: Maybe<Scalars["Int"]>;
@@ -663,6 +686,15 @@ export enum Role {
   EntryOnly = "ENTRY_ONLY",
   User = "USER",
 }
+
+export type SpecimenType = {
+  __typename?: "SpecimenType";
+  collectionLocationCode?: Maybe<Scalars["String"]>;
+  collectionLocationName?: Maybe<Scalars["String"]>;
+  internalId: Scalars["ID"];
+  name: Scalars["String"];
+  typeCode: Scalars["String"];
+};
 
 export enum TestCorrectionStatus {
   Corrected = "CORRECTED",
@@ -817,6 +849,24 @@ export type GetFacilitiesQuery = {
       deviceTypes?: Maybe<
         Array<Maybe<{ __typename?: "DeviceType"; internalId?: Maybe<string> }>>
       >;
+      deviceSpecimenTypes?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "DeviceSpecimenType";
+            internalId: string;
+            deviceType: {
+              __typename?: "DeviceType";
+              name?: Maybe<string>;
+              internalId?: Maybe<string>;
+            };
+            specimenType: {
+              __typename?: "SpecimenType";
+              internalId: string;
+              name: string;
+            };
+          }>
+        >
+      >;
       orderingProvider?: Maybe<{
         __typename?: "Provider";
         firstName?: Maybe<string>;
@@ -839,6 +889,29 @@ export type GetFacilitiesQuery = {
         __typename?: "DeviceType";
         internalId?: Maybe<string>;
         name?: Maybe<string>;
+      }>
+    >
+  >;
+  specimenType?: Maybe<
+    Array<
+      Maybe<{ __typename?: "SpecimenType"; internalId: string; name: string }>
+    >
+  >;
+  deviceSpecimenTypes?: Maybe<
+    Array<
+      Maybe<{
+        __typename?: "DeviceSpecimenType";
+        internalId: string;
+        deviceType: {
+          __typename?: "DeviceType";
+          internalId?: Maybe<string>;
+          name?: Maybe<string>;
+        };
+        specimenType: {
+          __typename?: "SpecimenType";
+          internalId: string;
+          name: string;
+        };
       }>
     >
   >;
@@ -867,6 +940,7 @@ export type UpdateFacilityMutationVariables = Exact<{
   orderingProviderZipCode?: Maybe<Scalars["String"]>;
   orderingProviderPhone?: Maybe<Scalars["String"]>;
   devices: Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>;
+  deviceSpecimenTypes: Array<Maybe<Scalars["ID"]>> | Maybe<Scalars["ID"]>;
   defaultDevice: Scalars["String"];
 }>;
 
@@ -897,6 +971,7 @@ export type AddFacilityMutationVariables = Exact<{
   orderingProviderZipCode?: Maybe<Scalars["String"]>;
   orderingProviderPhone?: Maybe<Scalars["String"]>;
   devices: Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>;
+  deviceSpecimenTypes: Array<Maybe<Scalars["ID"]>> | Maybe<Scalars["ID"]>;
   defaultDevice: Scalars["String"];
 }>;
 
@@ -931,6 +1006,18 @@ export type GetManagedFacilitiesQuery = {
       }>;
       deviceTypes?: Maybe<
         Array<Maybe<{ __typename?: "DeviceType"; internalId?: Maybe<string> }>>
+      >;
+      deviceSpecimenTypes?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "DeviceSpecimenType";
+            deviceType: {
+              __typename?: "DeviceType";
+              internalId?: Maybe<string>;
+            };
+            specimenType: { __typename?: "SpecimenType"; internalId: string };
+          }>
+        >
       >;
       orderingProvider?: Maybe<{
         __typename?: "Provider";
@@ -1331,6 +1418,34 @@ export type CreateDeviceTypeMutation = {
   }>;
 };
 
+export type CreateDeviceTypeNewMutationVariables = Exact<{
+  name: Scalars["String"];
+  manufacturer: Scalars["String"];
+  model: Scalars["String"];
+  loincCode: Scalars["String"];
+  swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
+}>;
+
+export type CreateDeviceTypeNewMutation = {
+  __typename?: "Mutation";
+  createDeviceTypeNew?: Maybe<{
+    __typename?: "DeviceType";
+    internalId?: Maybe<string>;
+  }>;
+};
+
+export type GetSpecimenTypesQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetSpecimenTypesQuery = {
+  __typename?: "Query";
+  specimenTypes: Array<{
+    __typename?: "SpecimenType";
+    internalId: string;
+    name: string;
+    typeCode: string;
+  }>;
+};
+
 export type SetOrgIdentityVerifiedMutationVariables = Exact<{
   externalId: Scalars["String"];
   verified: Scalars["Boolean"];
@@ -1667,7 +1782,11 @@ export type GetTestResultForPrintQuery = {
     dateTested?: Maybe<any>;
     result?: Maybe<string>;
     correctionStatus?: Maybe<string>;
-    deviceType?: Maybe<{ __typename?: "DeviceType"; name?: Maybe<string> }>;
+    deviceType?: Maybe<{
+      __typename?: "DeviceType";
+      name?: Maybe<string>;
+      model?: Maybe<string>;
+    }>;
     patient?: Maybe<{
       __typename?: "Patient";
       firstName?: Maybe<string>;
@@ -1693,11 +1812,6 @@ export type GetTestResultForPrintQuery = {
         NPI?: Maybe<string>;
       }>;
     }>;
-    testPerformed: {
-      __typename?: "TestDescription";
-      name: string;
-      loincCode: string;
-    };
   }>;
 };
 
@@ -1854,6 +1968,17 @@ export const GetFacilitiesDocument = gql`
         deviceTypes {
           internalId
         }
+        deviceSpecimenTypes {
+          internalId
+          deviceType {
+            name
+            internalId
+          }
+          specimenType {
+            internalId
+            name
+          }
+        }
         orderingProvider {
           firstName
           middleName
@@ -1872,6 +1997,21 @@ export const GetFacilitiesDocument = gql`
     deviceType {
       internalId
       name
+    }
+    specimenType {
+      internalId
+      name
+    }
+    deviceSpecimenTypes {
+      internalId
+      deviceType {
+        internalId
+        name
+      }
+      specimenType {
+        internalId
+        name
+      }
     }
   }
 `;
@@ -1949,6 +2089,7 @@ export const UpdateFacilityDocument = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
+    $deviceSpecimenTypes: [ID]!
     $defaultDevice: String!
   ) {
     updateFacility(
@@ -1974,6 +2115,7 @@ export const UpdateFacilityDocument = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceTypes: $devices
+      deviceSpecimenTypes: $deviceSpecimenTypes
       defaultDevice: $defaultDevice
     )
   }
@@ -2018,6 +2160,7 @@ export type UpdateFacilityMutationFn = Apollo.MutationFunction<
  *      orderingProviderZipCode: // value for 'orderingProviderZipCode'
  *      orderingProviderPhone: // value for 'orderingProviderPhone'
  *      devices: // value for 'devices'
+ *      deviceSpecimenTypes: // value for 'deviceSpecimenTypes'
  *      defaultDevice: // value for 'defaultDevice'
  *   },
  * });
@@ -2065,6 +2208,7 @@ export const AddFacilityDocument = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
+    $deviceSpecimenTypes: [ID]!
     $defaultDevice: String!
   ) {
     addFacility(
@@ -2089,6 +2233,7 @@ export const AddFacilityDocument = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceTypes: $devices
+      deviceSpecimenTypes: $deviceSpecimenTypes
       defaultDevice: $defaultDevice
     )
   }
@@ -2132,6 +2277,7 @@ export type AddFacilityMutationFn = Apollo.MutationFunction<
  *      orderingProviderZipCode: // value for 'orderingProviderZipCode'
  *      orderingProviderPhone: // value for 'orderingProviderPhone'
  *      devices: // value for 'devices'
+ *      deviceSpecimenTypes: // value for 'deviceSpecimenTypes'
  *      defaultDevice: // value for 'defaultDevice'
  *   },
  * });
@@ -2175,6 +2321,14 @@ export const GetManagedFacilitiesDocument = gql`
         }
         deviceTypes {
           internalId
+        }
+        deviceSpecimenTypes {
+          deviceType {
+            internalId
+          }
+          specimenType {
+            internalId
+          }
         }
         orderingProvider {
           firstName
@@ -3714,6 +3868,130 @@ export type CreateDeviceTypeMutationOptions = Apollo.BaseMutationOptions<
   CreateDeviceTypeMutation,
   CreateDeviceTypeMutationVariables
 >;
+export const CreateDeviceTypeNewDocument = gql`
+  mutation createDeviceTypeNew(
+    $name: String!
+    $manufacturer: String!
+    $model: String!
+    $loincCode: String!
+    $swabTypes: [ID!]!
+  ) {
+    createDeviceTypeNew(
+      name: $name
+      manufacturer: $manufacturer
+      model: $model
+      loincCode: $loincCode
+      swabTypes: $swabTypes
+    ) {
+      internalId
+    }
+  }
+`;
+export type CreateDeviceTypeNewMutationFn = Apollo.MutationFunction<
+  CreateDeviceTypeNewMutation,
+  CreateDeviceTypeNewMutationVariables
+>;
+
+/**
+ * __useCreateDeviceTypeNewMutation__
+ *
+ * To run a mutation, you first call `useCreateDeviceTypeNewMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateDeviceTypeNewMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createDeviceTypeNewMutation, { data, loading, error }] = useCreateDeviceTypeNewMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      manufacturer: // value for 'manufacturer'
+ *      model: // value for 'model'
+ *      loincCode: // value for 'loincCode'
+ *      swabTypes: // value for 'swabTypes'
+ *   },
+ * });
+ */
+export function useCreateDeviceTypeNewMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateDeviceTypeNewMutation,
+    CreateDeviceTypeNewMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    CreateDeviceTypeNewMutation,
+    CreateDeviceTypeNewMutationVariables
+  >(CreateDeviceTypeNewDocument, options);
+}
+export type CreateDeviceTypeNewMutationHookResult = ReturnType<
+  typeof useCreateDeviceTypeNewMutation
+>;
+export type CreateDeviceTypeNewMutationResult = Apollo.MutationResult<CreateDeviceTypeNewMutation>;
+export type CreateDeviceTypeNewMutationOptions = Apollo.BaseMutationOptions<
+  CreateDeviceTypeNewMutation,
+  CreateDeviceTypeNewMutationVariables
+>;
+export const GetSpecimenTypesDocument = gql`
+  query getSpecimenTypes {
+    specimenTypes {
+      internalId
+      name
+      typeCode
+    }
+  }
+`;
+
+/**
+ * __useGetSpecimenTypesQuery__
+ *
+ * To run a query within a React component, call `useGetSpecimenTypesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSpecimenTypesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSpecimenTypesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetSpecimenTypesQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetSpecimenTypesQuery,
+    GetSpecimenTypesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetSpecimenTypesQuery, GetSpecimenTypesQueryVariables>(
+    GetSpecimenTypesDocument,
+    options
+  );
+}
+export function useGetSpecimenTypesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetSpecimenTypesQuery,
+    GetSpecimenTypesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetSpecimenTypesQuery,
+    GetSpecimenTypesQueryVariables
+  >(GetSpecimenTypesDocument, options);
+}
+export type GetSpecimenTypesQueryHookResult = ReturnType<
+  typeof useGetSpecimenTypesQuery
+>;
+export type GetSpecimenTypesLazyQueryHookResult = ReturnType<
+  typeof useGetSpecimenTypesLazyQuery
+>;
+export type GetSpecimenTypesQueryResult = Apollo.QueryResult<
+  GetSpecimenTypesQuery,
+  GetSpecimenTypesQueryVariables
+>;
 export const SetOrgIdentityVerifiedDocument = gql`
   mutation SetOrgIdentityVerified($externalId: String!, $verified: Boolean!) {
     setOrganizationIdentityVerified(
@@ -4656,6 +4934,7 @@ export const GetTestResultForPrintDocument = gql`
       correctionStatus
       deviceType {
         name
+        model
       }
       patient {
         firstName
@@ -4678,10 +4957,6 @@ export const GetTestResultForPrintDocument = gql`
           lastName
           NPI
         }
-      }
-      testPerformed {
-        name
-        loincCode
       }
     }
   }

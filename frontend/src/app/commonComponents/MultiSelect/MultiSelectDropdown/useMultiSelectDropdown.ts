@@ -1,7 +1,7 @@
 import React, { useReducer } from "react";
 
-import type { ComboBoxOption } from "./ComboBox";
-import { FocusMode } from "./ComboBox";
+import type { MultiSelectDropdownOption } from "./MultiSelectDropdown";
+import { FocusMode } from "./MultiSelectDropdown";
 
 export enum ActionTypes {
   SELECT_OPTION,
@@ -16,7 +16,6 @@ export enum ActionTypes {
 export type Action =
   | {
       type: ActionTypes.SELECT_OPTION;
-      option: ComboBoxOption;
     }
   | {
       type: ActionTypes.CLEAR;
@@ -29,7 +28,7 @@ export type Action =
     }
   | {
       type: ActionTypes.FOCUS_OPTION;
-      option: ComboBoxOption;
+      option: MultiSelectDropdownOption;
     }
   | {
       type: ActionTypes.UPDATE_FILTER;
@@ -40,22 +39,21 @@ export type Action =
     };
 export interface State {
   isOpen: boolean;
-  selectedOption?: ComboBoxOption;
-  focusedOption?: ComboBoxOption;
+  focusedOption?: MultiSelectDropdownOption;
   focusMode: FocusMode;
   filter?: string;
-  filteredOptions: ComboBoxOption[];
+  filteredOptions: MultiSelectDropdownOption[];
   inputValue: string;
 }
 
-export const useCombobox = (
+export const useMultiSelectDropdown = (
   initialState: State,
-  optionsList: ComboBoxOption[]
+  optionsList: MultiSelectDropdownOption[]
 ): [State, React.Dispatch<Action>] => {
   const isPartialMatch = (
     needle: string
-  ): ((event: ComboBoxOption) => boolean) => {
-    return (option: ComboBoxOption): boolean =>
+  ): ((event: MultiSelectDropdownOption) => boolean) => {
+    return (option: MultiSelectDropdownOption): boolean =>
       option.label.toLowerCase().includes(needle.toLowerCase());
   };
 
@@ -65,36 +63,27 @@ export const useCombobox = (
         return {
           ...state,
           isOpen: false,
-          selectedOption: action.option,
           focusMode: FocusMode.Input,
-          inputValue: action.option.label,
+          inputValue: "",
           filter: undefined,
           filteredOptions: optionsList.filter(isPartialMatch("")),
         };
       case ActionTypes.UPDATE_FILTER: {
-        const newState = {
+        return {
           ...state,
           isOpen: true,
           filter: action.value,
           filteredOptions: optionsList.filter(isPartialMatch(action.value)),
           inputValue: action.value,
         };
-
-        if (
-          state.selectedOption &&
-          state.selectedOption.label !== action.value
-        ) {
-          newState.selectedOption = undefined;
-        }
-
-        return newState;
       }
       case ActionTypes.OPEN_LIST:
         return {
           ...state,
           isOpen: true,
           focusMode: FocusMode.Input,
-          focusedOption: state.selectedOption,
+          focusedOption: undefined,
+          filteredOptions: optionsList,
         };
       case ActionTypes.CLOSE_LIST: {
         const newState = {
@@ -107,10 +96,6 @@ export const useCombobox = (
         if (state.filteredOptions.length === 0) {
           newState.filteredOptions = optionsList.filter(isPartialMatch(""));
           newState.inputValue = "";
-        }
-
-        if (state.selectedOption) {
-          newState.inputValue = state.selectedOption.label;
         }
 
         return newState;
@@ -129,7 +114,6 @@ export const useCombobox = (
           inputValue: "",
           isOpen: false,
           focusMode: FocusMode.Input,
-          selectedOption: undefined,
           filter: undefined,
           filteredOptions: optionsList.filter(isPartialMatch("")),
         };
@@ -137,16 +121,13 @@ export const useCombobox = (
         const newState = {
           ...state,
           isOpen: false,
+          inputValue: "",
           focusMode: FocusMode.None,
           focusedOption: undefined,
         };
 
         if (state.filteredOptions.length === 0) {
           newState.filteredOptions = optionsList.filter(isPartialMatch(""));
-        }
-
-        if (!state.selectedOption) {
-          newState.inputValue = "";
         }
 
         return newState;

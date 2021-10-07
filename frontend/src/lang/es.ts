@@ -544,12 +544,18 @@ export const es: LanguageConfig = {
         enterDOB: "Ingrese su fecha de nacimiento",
         enterDOB2:
           "Ingrese su fecha de nacimiento para acceder a su portal de pruebas de COVID-19.",
-        format: "MM/DD/AAAA o MMDDAAAA",
-        error:
-          "No se encontró el resultado de la prueba o la fecha de nacimiento proporcionada es incorrecta.",
-        validating: "Validación de la fecha de nacimiento...",
+        format: "MM/DD/AAAA",
+        invalidFormat:
+          "La fecha de nacimiento debe estar en formato MM/DD/AAAA",
+        invalidYear:
+          "La fecha de nacimiento debe ser posterior a 1900 y anterior al año actual",
+        invalidDate: "La fecha de nacimiento debe ser una fecha válida",
+        error: "La fecha de nacimiento proporcionada es incorrecta",
+        validating: "Validación de la fecha de nacimiento ... ",
         linkExpired:
           "Este enlace ha caducado. Comuníquese con su proveedor de pruebas.",
+        linkNotFound:
+          "Este enlace no es válido. Comuníquese con su proveedor de pruebas.",
         submit: "Continuar",
       },
     },

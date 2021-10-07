@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
+import gov.cdc.usds.simplereport.logging.LoggingConstants;
 import gov.cdc.usds.simplereport.service.AuditService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
@@ -25,6 +26,9 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 /**
@@ -159,5 +163,15 @@ public abstract class BaseFullStackTest {
         .accept(MediaType.APPLICATION_JSON)
         .characterEncoding("UTF-8")
         .content(jsonContent);
+  }
+
+  public static String runBuilderReturningRequestId(
+      MockMvc mockMvc, RequestBuilder builder, ResultMatcher statusMatcher) throws Exception {
+    return mockMvc
+        .perform(builder)
+        .andExpect(statusMatcher)
+        .andReturn()
+        .getResponse()
+        .getHeader(LoggingConstants.REQUEST_ID_HEADER);
   }
 }

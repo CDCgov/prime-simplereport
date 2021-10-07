@@ -72,8 +72,8 @@ const mocks = {
       res(
         ctx.data({
           topLevelDashboardMetrics: {
-            positiveTestCount: Math.floor(Math.random() * 10 + 1),
-            totalTestCount: Math.floor(Math.random() * 100 + 11),
+            positiveTestCount: 64,
+            totalTestCount: 562,
           },
         })
       )

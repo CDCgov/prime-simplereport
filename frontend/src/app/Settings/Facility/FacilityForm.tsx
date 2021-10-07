@@ -120,7 +120,7 @@ type AddressOptions = "facility" | "provider";
 
 export interface Props {
   facility: Facility;
-  deviceOptions: DeviceType[];
+  deviceSpecimenTypeOptions: DeviceSpecimenType[];
   saveFacility: (facility: Facility) => void;
   newOrg?: boolean;
 }
@@ -137,24 +137,43 @@ const FacilityForm: React.FC<Props> = (props) => {
     updateFormData(data);
     updateFormChanged(true);
   };
+
   const updateFacility = (newFacility: Facility) => {
     updateForm({
       ...facility,
       ...newFacility,
     });
   };
+
   const updateProvider = (orderingProvider: Provider) => {
     updateForm({
       ...facility,
       orderingProvider,
     });
   };
-  const updateDeviceTypes = (deviceTypes: string[]) => {
+
+  const updateDeviceSpecimenTypes = (
+    deviceSpecimenTypes: DeviceSpecimenTypeIds[]
+  ) => {
+    const dst = deviceSpecimenTypes.map(({ deviceType, specimenType }) => {
+      const deviceSpecimenType = props.deviceSpecimenTypeOptions.find(
+        (options) => {
+          return (
+            options.deviceType.internalId === deviceType &&
+            options.specimenType.internalId === specimenType
+          );
+        }
+      );
+
+      return deviceSpecimenType || props.deviceSpecimenTypeOptions[0];
+    });
+
     updateForm((facility) => ({
       ...facility,
-      deviceTypes,
+      deviceSpecimenTypes: dst,
     }));
   };
+
   const updateDefaultDevice = (defaultDevice: string) => {
     updateForm((facility) => ({
       ...facility,
@@ -350,11 +369,14 @@ const FacilityForm: React.FC<Props> = (props) => {
           validateField={validateField}
         />
         <ManageDevices
-          deviceTypes={facility.deviceTypes}
+          deviceSpecimenTypes={facility.deviceSpecimenTypes.map((dst) => ({
+            deviceType: dst.deviceType.internalId,
+            specimenType: dst.specimenType.internalId,
+          }))}
           defaultDevice={facility.defaultDevice}
-          updateDeviceTypes={updateDeviceTypes}
+          updateDeviceSpecimenTypes={updateDeviceSpecimenTypes}
           updateDefaultDevice={updateDefaultDevice}
-          deviceOptions={props.deviceOptions}
+          deviceSpecimenTypeOptions={props.deviceSpecimenTypeOptions}
           errors={errors}
           validateField={validateField}
         />

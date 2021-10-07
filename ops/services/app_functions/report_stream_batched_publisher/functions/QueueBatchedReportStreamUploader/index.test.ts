@@ -2,7 +2,7 @@ import fn from "./index";
 import * as lib from "./lib";
 import * as appInsights from "applicationinsights";
 import { Context } from "@azure/functions";
-import { DequeuedMessageItem } from "@azure/storage-queue";
+import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
 
 jest.mock("applicationinsights", jest.fn().mockImplementation(() => ({
   setup: jest.fn(),
@@ -11,7 +11,7 @@ jest.mock("applicationinsights", jest.fn().mockImplementation(() => ({
     trackDependency: jest.fn(),
   },
 })));
-jest.mock("./config", () => ({
+jest.mock("../config", () => ({
   ENV: {
     AZ_STORAGE_QUEUE_SVC_URL: "hello",
     AZ_STORAGE_ACCOUNT_NAME: "hola",
@@ -31,10 +31,12 @@ describe("main function export", () => {
   } as any;
   context.log.error = jest.fn();
 
+  let getQueueClientMock;
   let dequeueMessagesMock;
   let minimumMessagesAvailableMock;
   let uploadResultMock;
   let deleteMessagesMock;
+  let reportExceptionsMock;
 
   function prepareQueue(items: Array<{ messageText: string }>): void {
     minimumMessagesAvailableMock = jest
@@ -46,10 +48,16 @@ describe("main function export", () => {
     uploadResultMock = jest
       .spyOn(lib, "uploadResult")
       .mockResolvedValue({ ok: true, json: () => Promise.resolve({ destinationCount: 4 }) } as any);
-    deleteMessagesMock = jest.spyOn(lib, 'deleteSuccessfullyParsedMessages');
   }
 
+  beforeAll(() => {
+    getQueueClientMock = jest.spyOn(lib, "getQueueClient").mockReturnValue({} as QueueClient);
+    deleteMessagesMock = jest.spyOn(lib, 'deleteSuccessfullyParsedMessages');
+    reportExceptionsMock = jest.spyOn(lib, "reportExceptions");
+  });
+
   beforeEach(() => {
+    jest.resetAllMocks();
     (context.log as any as jest.Mock).mockReset();
   });
 
@@ -62,6 +70,7 @@ describe("main function export", () => {
       await fn(context);
 
       // THEN
+      expect(getQueueClientMock).toHaveBeenCalledTimes(2);
       expect(minimumMessagesAvailableMock).toHaveBeenCalled();
       expect(dequeueMessagesMock).not.toHaveBeenCalled();
     });
@@ -78,10 +87,12 @@ describe("main function export", () => {
     await fn(context);
 
     // THEN
+    expect(getQueueClientMock).toHaveBeenCalledTimes(2);
     expect(minimumMessagesAvailableMock).toHaveBeenCalled();
     expect(dequeueMessagesMock).toHaveBeenCalled();
     expect(uploadResultMock).toHaveBeenCalled();
     expect(deleteMessagesMock).toHaveBeenCalled();
+    expect(reportExceptionsMock).toHaveBeenCalled();
   });
 
   it("throws on upload failure", async () => {
@@ -101,6 +112,7 @@ describe("main function export", () => {
     }
 
     // THEN
+    expect(getQueueClientMock).toHaveBeenCalledTimes(2);
     expect(minimumMessagesAvailableMock).toHaveBeenCalled();
     expect(dequeueMessagesMock).toHaveBeenCalled();
     expect(uploadResultMock).toHaveBeenCalled();
@@ -117,6 +129,7 @@ describe("main function export", () => {
     await fn(context);
 
     // THEN
+    expect(getQueueClientMock).toHaveBeenCalledTimes(2);
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalled();
     expect(deleteMessagesMock).toHaveBeenCalled();
   });

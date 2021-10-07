@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,16 +56,25 @@ public class DeviceTypeService {
         .orElseThrow(() -> new IllegalGraphqlArgumentException("invalid device type ID"));
   }
 
+  public List<DeviceSpecimenType> getDeviceSpecimenTypesByIds(List<UUID> deviceSpecimenTypeIds) {
+    return StreamSupport.stream(
+            _deviceSpecimenRepo.findAllById(deviceSpecimenTypeIds).spliterator(), false)
+        .collect(Collectors.toList());
+  }
+
+  public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
+    return _deviceSpecimenRepo.findAll();
+  }
+
   /**
    * Find the original device/specimen type combination created for this DeviceType, since that will
    * be the one that is assumed by callers who aren't aware that you can have multiple specimen
    * types for a given device type.
    */
   @Deprecated // this is a backward-compatibility shim!
-  public DeviceSpecimenType getDefaultForDeviceId(String deviceId) {
-    UUID actualDeviceId = UUID.fromString(deviceId);
+  public DeviceSpecimenType getDefaultForDeviceId(UUID deviceId) {
     return _deviceSpecimenRepo
-        .findFirstByDeviceTypeInternalIdOrderByCreatedAt(actualDeviceId)
+        .findFirstByDeviceTypeInternalIdOrderByCreatedAt(deviceId)
         .orElseThrow(
             () ->
                 new IllegalGraphqlArgumentException(
@@ -118,6 +128,35 @@ public class DeviceTypeService {
     return dt;
   }
 
+  @Transactional(readOnly = false)
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public DeviceType createDeviceTypeNew(
+      String name, String model, String manufacturer, String loincCode, List<UUID> swabTypes) {
+
+    List<SpecimenType> specimenTypes =
+        swabTypes.stream()
+            .map(uuid -> _specimenTypeRepo.findById(uuid).get())
+            .collect(Collectors.toList());
+
+    specimenTypes.forEach(
+        specimenType -> {
+          if (specimenType.isDeleted()) {
+            throw new IllegalGraphqlArgumentException(
+                "swab type has been deleted and cannot be used");
+          }
+        });
+
+    DeviceType dt =
+        _repo.save(
+            new DeviceType(name, manufacturer, model, loincCode, null, determineTestLength(name)));
+
+    specimenTypes.stream()
+        .map(specimenType -> new DeviceSpecimenType(dt, specimenType))
+        .forEach(_deviceSpecimenRepo::save);
+
+    return dt;
+  }
+
   /**
    * Retrieve the {@link DeviceSpecimenTypeHolder} that this operation needs based on the <b>DEVICE
    * TYPE</b> IDs supplied to a mutation.
@@ -132,7 +171,7 @@ public class DeviceTypeService {
    */
   @Deprecated
   public DeviceSpecimenTypeHolder getTypesForFacility(
-      String defaultDeviceTypeId, List<String> configuredDeviceTypeIds) {
+      UUID defaultDeviceTypeId, List<UUID> configuredDeviceTypeIds) {
     if (!configuredDeviceTypeIds.contains(defaultDeviceTypeId)) {
       throw new IllegalGraphqlArgumentException(
           "default device type must be included in device type list");
@@ -141,15 +180,37 @@ public class DeviceTypeService {
         configuredDeviceTypeIds.stream()
             .map(this::getDefaultForDeviceId)
             .collect(Collectors.toList());
-    UUID defaultId = UUID.fromString(defaultDeviceTypeId);
+
     DeviceSpecimenType defaultType =
         configuredTypes.stream()
-            .filter(dt -> dt.getDeviceType().getInternalId().equals(defaultId))
+            .filter(dt -> dt.getDeviceType().getInternalId().equals(defaultDeviceTypeId))
             .findFirst()
             .orElseThrow(
                 () ->
                     new RuntimeException(
-                        "Inexplicable inability to find device for ID " + defaultId.toString()));
+                        "Inexplicable inability to find device for ID "
+                            + defaultDeviceTypeId.toString()));
     return new DeviceSpecimenTypeHolder(defaultType, configuredTypes);
+  }
+
+  public DeviceSpecimenTypeHolder getDeviceSpecimenTypesForFacility(
+      UUID defaultDeviceTypeId, List<UUID> configuredDeviceSpecimenTypeIds) {
+    List<DeviceSpecimenType> dsts =
+        this.getDeviceSpecimenTypesByIds(configuredDeviceSpecimenTypeIds);
+
+    DeviceSpecimenType defaultDeviceSpecimenType =
+        dsts.stream()
+            .filter(dst -> defaultDeviceTypeId.equals(dst.getDeviceType().getInternalId()))
+            .findAny()
+            .orElseThrow(
+                () ->
+                    new IllegalGraphqlArgumentException(
+                        "No default device specimen type selected"));
+
+    return new DeviceSpecimenTypeHolder(defaultDeviceSpecimenType, dsts);
+  }
+
+  public List<SpecimenType> getSpecimenTypes() {
+    return _specimenTypeRepo.findAllByIsDeletedFalse();
   }
 }

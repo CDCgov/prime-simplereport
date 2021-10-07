@@ -186,16 +186,14 @@ exports[`TestResultPrintModal should render the test result print view 1`] = `
                   Test name
                 </b>
                 <div>
-                  Name
+                  Fake device
                 </div>
               </li>
               <li>
                 <b>
                   Test device
                 </b>
-                <div>
-                  Fake device
-                </div>
+                <div />
               </li>
               <li>
                 <b>

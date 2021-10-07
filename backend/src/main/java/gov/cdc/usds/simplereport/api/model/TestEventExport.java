@@ -4,6 +4,7 @@ import static java.lang.Boolean.TRUE;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -15,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -35,6 +37,7 @@ import java.util.UUID;
  */
 public class TestEventExport {
   public static final String CSV_API_VERSION = "05Aug2021"; // last time we changed something
+  private static final int FALLBACK_DEFAULT_TEST_MINUTES = 15;
   private final TestEvent testEvent;
   private final Optional<Person> patient;
   private final Optional<AskOnEntrySurvey> survey;
@@ -50,6 +53,7 @@ public class TestEventExport {
     this.provider = Optional.ofNullable(testEvent.getProviderData());
     this.facility = Optional.ofNullable(testEvent.getFacility());
     this.organization = Optional.ofNullable(testEvent.getOrganization());
+
     this.deviceSpecimenType = Optional.ofNullable(testEvent.getDeviceSpecimen());
   }
 
@@ -284,7 +288,15 @@ public class TestEventExport {
 
   @JsonProperty("Specimen_collection_date_time")
   public String getSpecimenCollectionDateTime() {
-    return dateToHealthCareString(convertToLocalDateTime(testEvent.getDateTested()));
+    var testDuration =
+        deviceSpecimenType
+            .map(DeviceSpecimenType::getDeviceType)
+            .map(DeviceType::getTestLength)
+            .orElse(FALLBACK_DEFAULT_TEST_MINUTES);
+    return dateToHealthCareString(
+        convertToLocalDateTime(
+            Date.from(
+                testEvent.getDateTested().toInstant().minus(Duration.ofMinutes(testDuration)))));
   }
 
   @JsonProperty("Ordering_provider_ID")

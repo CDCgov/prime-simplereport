@@ -56,6 +56,11 @@ data "azurerm_key_vault_secret" "okta_api_key" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
+data "azurerm_key_vault_secret" "okta_api_key_nonprod" {
+  name         = "okta-api-key-nonprod"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
 data "azurerm_key_vault_secret" "okta_client_id" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
   name         = "okta-${local.env}-client-id"
@@ -148,6 +153,11 @@ data "azurerm_key_vault_secret" "experian_preciseid_username" {
 
 data "azurerm_key_vault_secret" "experian_preciseid_password" {
   name         = "experian-preciseid-password-dev"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "report_stream_exception_callback_token" {
+  name         = "report-stream-exception-callback-test"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 

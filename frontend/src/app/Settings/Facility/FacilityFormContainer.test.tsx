@@ -11,7 +11,32 @@ import FacilityFormContainer, {
   UPDATE_FACILITY_MUTATION,
 } from "./FacilityFormContainer";
 
-const facility: Facility = {
+const deviceSpecimenTypes: DeviceSpecimenType[] = [
+  {
+    internalId: "1",
+    deviceType: {
+      internalId: "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
+      name: "Fake Device 1",
+    },
+    specimenType: {
+      internalId: "fake-specimen-id-1",
+      name: "Fake Specimen 1",
+    },
+  },
+  {
+    internalId: "2",
+    deviceType: {
+      internalId: "ee85bdfb-b6c9-4951-ae30-6c025be4580e",
+      name: "Fake Device 2",
+    },
+    specimenType: {
+      internalId: "fake-specimen-id-1",
+      name: "Fake Specimen 1",
+    },
+  },
+];
+
+const mockFacility: Facility = {
   id: "12345",
   cliaNumber: "99D1234567",
   name: "Testing Site",
@@ -27,6 +52,7 @@ const facility: Facility = {
     "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
     "ee85bdfb-b6c9-4951-ae30-6c025be4580e",
   ],
+  deviceSpecimenTypes: deviceSpecimenTypes,
   orderingProvider: {
     firstName: "Fred",
     middleName: null,
@@ -45,7 +71,7 @@ const facility: Facility = {
 jest.mock("./FacilityForm", () => {
   return (f: FacilityFormProps) => {
     return (
-      <button type="submit" onClick={() => f.saveFacility(facility)}>
+      <button type="submit" onClick={() => f.saveFacility(mockFacility)}>
         I'm a magic fake button click me please
       </button>
     );
@@ -64,10 +90,10 @@ const store = configureStore([])({
     lastName: "Mendoza",
   },
   facilities: [
-    { id: facility.id, name: "Testing Site" },
+    { id: mockFacility.id, name: "Testing Site" },
     { id: "2", name: "Facility 2" },
   ],
-  facility: { id: facility.id, name: "Testing Site" },
+  facility: { id: mockFacility.id, name: "Testing Site" },
 });
 
 const mocks = [
@@ -81,7 +107,7 @@ const mocks = [
           internalId: "30b1d934-a877-4b1d-9565-575afd4d797e",
           testingFacility: [
             {
-              id: facility.id,
+              id: mockFacility.id,
               cliaNumber: "99D1234567",
               name: "Testing Site",
               street: "1001 Rodeo Dr",
@@ -102,6 +128,7 @@ const mocks = [
                   internalId: "ee85bdfb-b6c9-4951-ae30-6c025be4580e",
                 },
               ],
+              deviceSpecimenTypes,
               orderingProvider: {
                 firstName: "Fred",
                 middleName: null,
@@ -124,6 +151,13 @@ const mocks = [
             name: "Abbott IDNow",
           },
         ],
+        deviceSpecimenTypes,
+        specimenType: [
+          {
+            internalId: "fake-specimen-id-1",
+            name: "Fake Specimen 1",
+          },
+        ],
       },
     },
   },
@@ -131,29 +165,32 @@ const mocks = [
     request: {
       query: UPDATE_FACILITY_MUTATION,
       variables: {
-        facilityId: facility.id,
-        testingFacilityName: facility.name,
-        cliaNumber: facility.cliaNumber,
-        street: facility.street,
-        streetTwo: facility.streetTwo,
-        city: facility.city,
-        state: facility.state,
-        zipCode: facility.zipCode,
-        phone: facility.phone,
-        email: facility.email,
-        orderingProviderFirstName: facility.orderingProvider.firstName,
-        orderingProviderMiddleName: facility.orderingProvider.middleName,
-        orderingProviderLastName: facility.orderingProvider.lastName,
-        orderingProviderSuffix: facility.orderingProvider.suffix,
-        orderingProviderNPI: facility.orderingProvider.NPI,
-        orderingProviderStreet: facility.orderingProvider.street,
-        orderingProviderStreetTwo: facility.orderingProvider.streetTwo,
-        orderingProviderCity: facility.orderingProvider.city,
-        orderingProviderState: facility.orderingProvider.state,
-        orderingProviderZipCode: facility.orderingProvider.zipCode,
-        orderingProviderPhone: facility.orderingProvider.phone || null,
-        devices: facility.deviceTypes,
-        defaultDevice: facility.defaultDevice,
+        facilityId: mockFacility.id,
+        testingFacilityName: mockFacility.name,
+        cliaNumber: mockFacility.cliaNumber,
+        street: mockFacility.street,
+        streetTwo: mockFacility.streetTwo,
+        city: mockFacility.city,
+        state: mockFacility.state,
+        zipCode: mockFacility.zipCode,
+        phone: mockFacility.phone,
+        email: mockFacility.email,
+        orderingProviderFirstName: mockFacility.orderingProvider.firstName,
+        orderingProviderMiddleName: mockFacility.orderingProvider.middleName,
+        orderingProviderLastName: mockFacility.orderingProvider.lastName,
+        orderingProviderSuffix: mockFacility.orderingProvider.suffix,
+        orderingProviderNPI: mockFacility.orderingProvider.NPI,
+        orderingProviderStreet: mockFacility.orderingProvider.street,
+        orderingProviderStreetTwo: mockFacility.orderingProvider.streetTwo,
+        orderingProviderCity: mockFacility.orderingProvider.city,
+        orderingProviderState: mockFacility.orderingProvider.state,
+        orderingProviderZipCode: mockFacility.orderingProvider.zipCode,
+        orderingProviderPhone: mockFacility.orderingProvider.phone || null,
+        devices: mockFacility.deviceTypes,
+        defaultDevice: mockFacility.defaultDevice,
+        deviceSpecimenTypes: mockFacility.deviceSpecimenTypes.map(
+          (dst) => dst.internalId
+        ),
       },
     },
     result: {
@@ -171,7 +208,7 @@ describe("FacilityFormContainer", () => {
       <MemoryRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
-            <FacilityFormContainer facilityId={facility.id} />
+            <FacilityFormContainer facilityId={mockFacility.id} />
           </MockedProvider>
         </Provider>
       </MemoryRouter>
