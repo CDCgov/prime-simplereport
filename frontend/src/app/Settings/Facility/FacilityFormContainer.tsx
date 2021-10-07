@@ -1,13 +1,10 @@
 import React, { useState } from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
-import {
-  useAppInsightsContext,
-  useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
 import { Redirect } from "react-router-dom";
 
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
+import { getAppInsights } from "../../TelemetryService";
 
 import FacilityForm from "./FacilityForm";
 
@@ -202,14 +199,9 @@ const FacilityFormContainer: any = (props: Props) => {
       fetchPolicy: "no-cache",
     }
   );
-  const appInsights = useAppInsightsContext();
-  const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION, {
-    fetchPolicy: "no-cache",
-  });
-  const [addFacility] = useMutation(ADD_FACILITY_MUTATION, {
-    fetchPolicy: "no-cache",
-  });
-  const trackSaveSettings = useTrackEvent(appInsights, "Save Settings", null);
+  const appInsights = getAppInsights();
+  const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION);
+  const [addFacility] = useMutation(ADD_FACILITY_MUTATION);
   const [saveSuccess, updateSaveSuccess] = useState(false);
 
   if (loading) {
@@ -231,7 +223,7 @@ const FacilityFormContainer: any = (props: Props) => {
 
   const saveFacility = async (facility: Facility) => {
     if (appInsights) {
-      trackSaveSettings(null);
+      appInsights.trackEvent({ name: "Save Settings" });
     }
     const provider = facility.orderingProvider;
     const saveFacility = props.facilityId ? updateFacility : addFacility;

@@ -215,12 +215,21 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
 
   const appInsights = getAppInsights();
 
-  const trackTimerStart = () =>
-    appInsights?.trackEvent({ name: "Test timer started" }, context);
-  const trackTimerReset = () =>
-    appInsights?.trackEvent({ name: "Test timer reset" }, context);
-  const trackTimerFinish = () =>
-    appInsights?.trackEvent({ name: "Test timer finished" }, context);
+  const trackTimerStart = () => {
+    if (appInsights) {
+      appInsights.trackEvent({ name: "Test timer started" }, context);
+    }
+  };
+  const trackTimerReset = () => {
+    if (appInsights) {
+      appInsights.trackEvent({ name: "Test timer reset" }, context);
+    }
+  };
+  const trackTimerFinish = () => {
+    if (appInsights) {
+      appInsights.trackEvent({ name: "Test timer finished" }, context);
+    }
+  };
 
   if (!running) {
     return (
