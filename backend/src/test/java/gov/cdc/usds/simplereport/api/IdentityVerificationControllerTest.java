@@ -25,6 +25,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
 import gov.cdc.usds.simplereport.service.ApiUserService;
+import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
@@ -67,6 +68,8 @@ class IdentityVerificationControllerTest {
   @MockBean private OktaRepository _oktaRepo;
   @MockBean private EmailService _emailService;
   @MockBean private OrganizationService _orgService;
+
+  @MockBean private OrganizationQueueService _orgQueueService;
 
   // Dependencies of TenantDataAccessFilter
   @MockBean private ApiUserService _mockApiUserService;
