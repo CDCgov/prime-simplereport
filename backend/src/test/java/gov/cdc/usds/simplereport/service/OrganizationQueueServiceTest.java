@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
-public class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueService> {
+class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueService> {
 
   @Autowired private TestDataFactory _dataFactory;
 

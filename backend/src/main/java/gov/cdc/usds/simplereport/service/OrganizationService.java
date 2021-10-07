@@ -12,7 +12,6 @@ import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
-import gov.cdc.usds.simplereport.db.repository.OrganizationQueueRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
@@ -35,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrganizationService {
 
   private OrganizationRepository _repo;
-  private OrganizationQueueRepository _orgQueueRepo;
   private FacilityRepository _facilityRepo;
   private ProviderRepository _providerRepo;
   private AuthorizationService _authService;
@@ -46,7 +44,6 @@ public class OrganizationService {
 
   public OrganizationService(
       OrganizationRepository repo,
-      OrganizationQueueRepository orgQueueRepo,
       FacilityRepository facilityRepo,
       AuthorizationService authService,
       ProviderRepository providerRepo,
@@ -55,7 +52,6 @@ public class OrganizationService {
       OrderingProviderRequiredValidator orderingProviderRequiredValidator,
       PatientSelfRegistrationLinkService patientSelfRegistrationLinkService) {
     _repo = repo;
-    _orgQueueRepo = orgQueueRepo;
     _facilityRepo = facilityRepo;
     _authService = authService;
     _providerRepo = providerRepo;
@@ -399,21 +395,4 @@ public class OrganizationService {
         providerTelephone,
         providerNPI);
   }
-
-  //  @Transactional(readOnly = false)
-  //  public OrganizationQueueItem queueNewRequest(
-  //      String organizationName, String orgExternalId, OrganizationAccountRequest request) {
-  //    return _orgQueueRepo.save(new OrganizationQueueItem(organizationName, orgExternalId,
-  // request));
-  //  }
-  //
-  //  @Transactional(readOnly = false)
-  //  public void activateQueuedOrganization(String orgExternalId) {
-  //    Optional<OrganizationQueueItem> optQueueItem =
-  // _orgQueueRepo.findByExternalId(orgExternalId);
-  //
-  //    // generate org and users (okta + our db)
-  //
-  //    // activate users
-  //  }
 }
