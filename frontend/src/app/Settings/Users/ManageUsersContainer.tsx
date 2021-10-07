@@ -6,6 +6,7 @@ import { Role } from "../../permissions";
 import {
   Maybe,
   useGetUsersAndStatusQuery,
+  useResendActivationEmailMutation,
   UserPermission,
 } from "../../../generated/graphql";
 
@@ -83,14 +84,6 @@ const REACTIVATE_USER = gql`
   }
 `;
 
-const RESEND_ACTIVATION_EMAIL = gql`
-  mutation ResendActivationEmail($id: ID!) {
-    resendActivationEmail(id: $id) {
-      id
-    }
-  }
-`;
-
 const ADD_USER_TO_ORG = gql`
   mutation AddUserToCurrentOrg(
     $firstName: String
@@ -124,7 +117,7 @@ const ManageUsersContainer = () => {
   const [reactivateUser] = useMutation(REACTIVATE_USER);
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
   const [resetPassword] = useMutation(RESET_USER_PASSWORD);
-  const [resendUserActivationEmail] = useMutation(RESEND_ACTIVATION_EMAIL);
+  const [resendUserActivationEmail] = useResendActivationEmailMutation();
 
   const {
     data,
