@@ -36,7 +36,7 @@ const ResendActivationEmailModal: React.FC<Props> = ({
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">
           <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-            Resend account set up email
+            Resend account setup email
           </h1>
           <button onClick={onClose} className="close-button" aria-label="Close">
             <span className="fa-layers">
@@ -48,7 +48,7 @@ const ResendActivationEmailModal: React.FC<Props> = ({
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
         <div className="grid-row grid-gap">
           <p>
-            Do you want to resend an account set up email to{" "}
+            Do you want to resend an account setup email to{" "}
             <strong>
               {displayFullName(user.firstName, user.middleName, user.lastName)}
             </strong>
@@ -69,7 +69,7 @@ const ResendActivationEmailModal: React.FC<Props> = ({
             <Button
               className="margin-right-205"
               onClick={() => onResendActivationEmail(user.id)}
-              label="Yes, I'm sure"
+              label="Yes, send email"
             />
           </div>
         </div>

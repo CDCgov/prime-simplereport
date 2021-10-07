@@ -103,7 +103,7 @@ const UserDetail: React.FC<Props> = ({
             variant="outline"
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateShowResendUserActivationEmailModal(true)}
-            label="Resend account set up email"
+            label="Resend account setup email"
             disabled={isUpdating}
           />
         ) : null}
