@@ -11,6 +11,8 @@ public interface OrganizationQueueRepository
   @Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.verifiedOrganization IS NULL")
   List<OrganizationQueueItem> findAllNotIdentityVerified();
 
-  @Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.externalId = :orgExternalId")
-  Optional<OrganizationQueueItem> findByExternalId(String orgExternalId);
+  @Query(
+      EternalAuditedEntityRepository.BASE_QUERY
+          + " and e.verifiedOrganization IS NULL and e.externalId = :orgExternalId")
+  Optional<OrganizationQueueItem> findUnverifiedByExternalId(String orgExternalId);
 }
