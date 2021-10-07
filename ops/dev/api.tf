@@ -30,7 +30,7 @@ module "simple_report_api" {
     APPLICATIONINSIGHTS_CONNECTION_STRING = data.azurerm_application_insights.app_insights.connection_string
     AZ_REPORTING_QUEUE_CXN_STRING         = data.azurerm_storage_account.app.primary_connection_string
     OKTA_OAUTH2_CLIENT_SECRET             = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.okta_client_secret.id})"
-    OKTA_API_KEY                          = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.okta_api_key.id})"
+    OKTA_API_KEY                          = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.okta_api_key_nonprod.id})"
     TWILIO_ACCOUNT_SID                    = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.twilio_account_sid.id})"
     TWILIO_AUTH_TOKEN                     = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.twilio_auth_token.id})"
     SIMPLE_REPORT_SENDGRID_API_KEY        = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sendgrid_api_key.id})"

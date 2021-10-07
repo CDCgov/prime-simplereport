@@ -13,7 +13,7 @@ function verifyBirthDate(birthDate) {
   this.expect
     .section("@app")
     .to.contain.text(
-      "Enter your date of birth to access your COVID-19 Testing Portal."
+      "Enter your date of birth to access your COVID-19 testing portal."
     );
   this.section.app.expect.element("@dobInput").to.be.visible;
   this.section.app.setValue("@dobInput", birthDate);
