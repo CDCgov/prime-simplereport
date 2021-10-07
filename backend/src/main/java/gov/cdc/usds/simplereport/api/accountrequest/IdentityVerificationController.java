@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
+import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
@@ -51,6 +52,7 @@ public class IdentityVerificationController {
   @Autowired private ExperianService _experianService;
   @Autowired private OktaRepository _oktaRepo;
   @Autowired private OrganizationService _orgService;
+  @Autowired private OrganizationQueueService _orgQueueService;
   @Autowired private SendGridProperties sendGridProperties;
 
   @PostConstruct
@@ -118,6 +120,8 @@ public class IdentityVerificationController {
      * selecting "2002" for "Please select the model year of the vehicle you purchased or leased
      * prior to January 2011"
      */
+    String x = _orgQueueService.createAndActivateQueuedOrganization(requestBody.getOrgExternalId());
+
     Organization org = _orgService.getOrganization(requestBody.getOrgExternalId());
     String orgAdminEmail = checkOrgAndGetAdminEmail(org);
 

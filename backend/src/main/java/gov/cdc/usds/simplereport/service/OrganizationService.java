@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
-import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -9,7 +8,6 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
@@ -402,9 +400,20 @@ public class OrganizationService {
         providerNPI);
   }
 
-  @Transactional(readOnly = false)
-  public OrganizationQueueItem queueNewRequest(
-      String organizationName, String orgExternalId, OrganizationAccountRequest request) {
-    return _orgQueueRepo.save(new OrganizationQueueItem(organizationName, orgExternalId, request));
-  }
+  //  @Transactional(readOnly = false)
+  //  public OrganizationQueueItem queueNewRequest(
+  //      String organizationName, String orgExternalId, OrganizationAccountRequest request) {
+  //    return _orgQueueRepo.save(new OrganizationQueueItem(organizationName, orgExternalId,
+  // request));
+  //  }
+  //
+  //  @Transactional(readOnly = false)
+  //  public void activateQueuedOrganization(String orgExternalId) {
+  //    Optional<OrganizationQueueItem> optQueueItem =
+  // _orgQueueRepo.findByExternalId(orgExternalId);
+  //
+  //    // generate org and users (okta + our db)
+  //
+  //    // activate users
+  //  }
 }

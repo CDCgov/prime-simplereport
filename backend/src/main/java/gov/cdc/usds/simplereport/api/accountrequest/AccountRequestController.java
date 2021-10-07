@@ -20,6 +20,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.service.ApiUserService;
+import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import java.io.IOException;
@@ -50,6 +51,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AccountRequestController {
   private final OrganizationService _os;
+  private final OrganizationQueueService _oqs;
   private final ApiUserService _aus;
   private final EmailService _es;
   private final SendGridProperties sendGridProperties;
@@ -136,7 +138,7 @@ public class AccountRequestController {
             "This email address is already associated with a SimpleReport user.");
       }
 
-      OrganizationQueueItem item = _os.queueNewRequest(organizationName, orgExternalId, request);
+      OrganizationQueueItem item = _oqs.queueNewRequest(organizationName, orgExternalId, request);
 
       return new AccountResponse(item.getExternalId());
     } catch (BadRequestException e) {
