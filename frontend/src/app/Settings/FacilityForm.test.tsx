@@ -342,13 +342,14 @@ describe("FacilityForm", () => {
         await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
+
       it("doesn't allow a Z-CLIA for a non-Washington state", async () => {
-        const californiaFacility: Facility = validFacility;
-        californiaFacility.state = "CA";
+        const marylandFacility: Facility = validFacility;
+        marylandFacility.state = "MD";
         render(
           <MemoryRouter>
             <FacilityForm
-              facility={californiaFacility}
+              facility={marylandFacility}
               deviceSpecimenTypeOptions={deviceSpecimenTypes}
               saveFacility={saveFacility}
             />
@@ -377,6 +378,34 @@ describe("FacilityForm", () => {
           userEvent.click(saveButton);
         });
         expect(saveFacility).toBeCalledTimes(0);
+      });
+
+      it("allows alphanumeric characters for California", async () => {
+        const californiaFacility: Facility = validFacility;
+        californiaFacility.state = "CA";
+
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={californiaFacility}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const cliaInput = screen.getByLabelText("CLIA number", {
+          exact: false,
+        });
+
+        userEvent.clear(cliaInput);
+        userEvent.type(cliaInput, "CPDH000006");
+        userEvent.tab();
+
+        const saveButton = await screen.getAllByText("Save changes")[0];
+        userEvent.click(saveButton);
+        await validateAddress(saveFacility);
+        expect(saveFacility).toBeCalledTimes(1);
       });
     });
   });
