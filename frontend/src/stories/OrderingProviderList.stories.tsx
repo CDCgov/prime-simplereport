@@ -1,7 +1,6 @@
 import React from "react";
 import { MemoryRouter } from "react-router";
 import { Story, Meta } from "@storybook/react";
-import faker from "faker";
 
 import OrderingProviderList, {
   OrderingProviderListProps,
@@ -22,34 +21,46 @@ const Template = (): Story<OrderingProviderListProps> => (args) => (
   </RouterWithFacility>
 );
 
-const createOrderingProvider = () => ({
-  firstName: faker.name.firstName(),
-  middleName: faker.name.middleName(),
-  lastName: faker.name.lastName(),
-  suffix: faker.name.suffix(),
+const providerOne = {
+  firstName: "LeBron",
+  middleName: "Optimus",
+  lastName: "James",
+  suffix: "Sr",
   NPI: "0000000000",
-  phone: faker.phone.phoneNumber(),
-  city: faker.address.city(),
-  state: faker.address.state(),
-  street: faker.address.streetAddress(),
-  streetTwo: faker.address.secondaryAddress(),
-  zipCode: faker.address.zipCode(),
-});
+  phone: "6318675309",
+  city: "Los Angeles",
+  state: "CA",
+  street: "100 Fake St",
+  streetTwo: "Apt 2",
+  zipCode: "10001",
+};
 
-const provider = createOrderingProvider();
+const providerTwo = {
+  firstName: "Anthony",
+  middleName: "Joe",
+  lastName: "Davis",
+  suffix: "JR",
+  NPI: "0000000001",
+  phone: "2708675309",
+  city: "Los Angeles",
+  state: "CA",
+  street: "101 Fake St",
+  streetTwo: "Apt 3",
+  zipCode: "10001",
+};
 
 export const SingleProvider = Template();
 SingleProvider.args = {
-  providers: [provider],
-  defaultProvider: provider,
+  providers: [providerOne],
+  defaultProvider: providerOne,
   updateDefaultProvider: () => {},
   updateProviders: () => {},
 };
 
 export const MultipleProviders = Template();
 MultipleProviders.args = {
-  providers: [provider, createOrderingProvider()],
-  defaultProvider: provider,
+  providers: [providerOne, providerTwo],
+  defaultProvider: providerOne,
   updateDefaultProvider: () => {},
   updateProviders: () => {},
 };
