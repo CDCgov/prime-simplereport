@@ -25,6 +25,7 @@ export const liveJurisdictions = [
   "NJ",
   "NM",
   "OH",
+  "OR",
   "PA",
   "TX",
   "VT",
