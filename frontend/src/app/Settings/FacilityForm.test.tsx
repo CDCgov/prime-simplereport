@@ -342,9 +342,48 @@ describe("FacilityForm", () => {
         await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
+
       it("doesn't allow a Z-CLIA for a non-Washington state", async () => {
+        const marylandFacility: Facility = validFacility;
+        marylandFacility.state = "MD";
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={marylandFacility}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const cliaInput = screen.getByLabelText("CLIA number", {
+          exact: false,
+        });
+
+        userEvent.clear(cliaInput);
+        userEvent.type(cliaInput, "12Z3456789");
+        userEvent.tab();
+
+        const expectedError =
+          "Special temporary CLIAs are only valid in CA, IL, WA, and WY.";
+
+        expect(
+          await screen.findByText(expectedError, {
+            exact: false,
+          })
+        ).toBeInTheDocument();
+
+        const saveButton = screen.getAllByText("Save changes")[0];
+        await waitFor(async () => {
+          userEvent.click(saveButton);
+        });
+        expect(saveFacility).toBeCalledTimes(0);
+      });
+
+      it("allows alphanumeric characters for California", async () => {
         const californiaFacility: Facility = validFacility;
         californiaFacility.state = "CA";
+
         render(
           <MemoryRouter>
             <FacilityForm
@@ -360,22 +399,13 @@ describe("FacilityForm", () => {
         });
 
         userEvent.clear(cliaInput);
-        userEvent.type(cliaInput, "12Z3456789");
+        userEvent.type(cliaInput, "CPDH000006");
         userEvent.tab();
 
-        const expectedError = "Special Z CLIAs are only valid in WA";
-
-        expect(
-          await screen.findByText(expectedError, {
-            exact: false,
-          })
-        ).toBeInTheDocument();
-
-        const saveButton = screen.getAllByText("Save changes")[0];
-        await waitFor(async () => {
-          userEvent.click(saveButton);
-        });
-        expect(saveFacility).toBeCalledTimes(0);
+        const saveButton = await screen.getAllByText("Save changes")[0];
+        userEvent.click(saveButton);
+        await validateAddress(saveFacility);
+        expect(saveFacility).toBeCalledTimes(1);
       });
     });
   });
