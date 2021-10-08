@@ -5,6 +5,7 @@ import com.okta.sdk.resource.user.UserProfile;
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
+import java.util.Date;
 import lombok.Getter;
 
 @Getter
