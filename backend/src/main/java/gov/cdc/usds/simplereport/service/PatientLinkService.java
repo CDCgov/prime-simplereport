@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.PatientLinkFailedAttempt;
@@ -33,19 +33,11 @@ public class PatientLinkService {
   @Autowired private CurrentPatientContextHolder contextHolder;
 
   public PatientLink getPatientLink(UUID internalId) {
-    return plrepo
-        .findById(internalId)
-        .orElseThrow(
-            () -> new IllegalGraphqlArgumentException("No patient link with that ID was found"));
+    return plrepo.findById(internalId).orElseThrow(InvalidPatientLinkException::new);
   }
 
   public PatientLink getRefreshedPatientLink(UUID internalId) {
-    PatientLink pl =
-        plrepo
-            .findById(internalId)
-            .orElseThrow(
-                () ->
-                    new IllegalGraphqlArgumentException("No patient link with that ID was found"));
+    PatientLink pl = plrepo.findById(internalId).orElseThrow(InvalidPatientLinkException::new);
     PatientLinkFailedAttempt patientLinkFailedAttempt =
         plfarepo.findById(pl.getInternalId()).orElse(new PatientLinkFailedAttempt(pl));
     patientLinkFailedAttempt.resetFailedAttempts();
@@ -86,7 +78,7 @@ public class PatientLinkService {
       patientLinkFailedAttempt.addFailedAttempt();
       plfarepo.save(patientLinkFailedAttempt);
       return false;
-    } catch (IllegalGraphqlArgumentException e) {
+    } catch (InvalidPatientLinkException e) {
       // patient link id was invalid
       return false;
     }
@@ -98,11 +90,7 @@ public class PatientLinkService {
   }
 
   public PatientLink createPatientLink(UUID testOrderUuid) {
-    TestOrder to =
-        torepo
-            .findById(testOrderUuid)
-            .orElseThrow(
-                () -> new IllegalGraphqlArgumentException("No test order with that ID was found"));
+    TestOrder to = torepo.findById(testOrderUuid).orElseThrow(InvalidPatientLinkException::new);
     PatientLink pl = new PatientLink(to);
     return plrepo.save(pl);
   }

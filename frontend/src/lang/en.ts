@@ -210,10 +210,10 @@ export const en = {
           "When you arrive for your test, check in by giving your first and last name.",
       },
       duplicate: {
-        heading: "You already have a profile at",
+        heading: "You're already registered at",
         message:
           "Our records show someone has registered with the same name, date of birth, and ZIP code. Please check in with " +
-          "your testing site staff. You do not need to register again.",
+          "your testing facility staff. You don't need to register again.",
         exit: "Exit sign up",
       },
     },
@@ -526,13 +526,18 @@ export const en = {
         dateOfBirth: "Date of birth",
         enterDOB: "Enter your date of birth",
         enterDOB2:
-          "Enter your date of birth to access your COVID-19 Testing Portal.",
-        format: "MM/DD/YYYY or MMDDYYYY",
-        error:
-          "Test result not found, or the birth date provided is incorrect.",
+          "Enter your date of birth to access your COVID-19 testing portal.",
+        format: "MM/DD/YYYY",
+        invalidFormat: "Date of birth must be in MM/DD/YYYY format",
+        invalidYear:
+          "Date of birth must be after 1900 and before the current year",
+        invalidDate: "Date of birth must be a valid date",
+        error: "The date of birth entered is incorrect",
         validating: "Validating birth date...",
         linkExpired:
           "This link has expired. Please contact your test provider.",
+        linkNotFound:
+          "This link is invalid. Please contact your test provider.",
         submit: "Continue",
       },
     },

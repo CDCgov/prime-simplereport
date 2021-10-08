@@ -35,3 +35,7 @@ variable "reporting_exception_queue_name" {
 variable "report_stream_api_token" {
   type = string
 }
+
+variable "simple_report_cb_token" {
+  type = string
+}

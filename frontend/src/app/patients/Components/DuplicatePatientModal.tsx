@@ -37,15 +37,21 @@ export const DuplicatePatientModal: React.FC<DuplicateModalProps> = ({
 
   return (
     <Modal
-      onClose={typeof onClose === "function" ? onClose : noop}
+      onClose={onClose || noop}
       showModal={showModal}
       showClose={false}
       variant="warning"
     >
       <Modal.Header>
-        {`${t("selfRegistration.duplicate.heading")} ${entityName}`}
+        {onClose
+          ? `This patient is already registered at ${entityName}`
+          : `${t("selfRegistration.duplicate.heading")} ${entityName}`}
       </Modal.Header>
-      <p>{t("selfRegistration.duplicate.message")}</p>
+      <p>
+        {onClose
+          ? "Our records show someone has registered with the same name, date of birth, and ZIP code. You don't need to register this patient again."
+          : t("selfRegistration.duplicate.message")}
+      </p>
       <Modal.Footer>
         <Button onClick={onDuplicate}>
           {t("selfRegistration.duplicate.exit")}

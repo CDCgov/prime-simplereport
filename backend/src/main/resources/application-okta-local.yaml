@@ -15,3 +15,9 @@ logging:
   level:
     # NOTE: look in application-dev.yaml for other things that might be worth turning on
     gov.cdc.usds: DEBUG
+okta:
+  oauth2:
+    client-id: 0oa1k0163nAwfVxNW1d7
+    issuer: https://hhs-prime.oktapreview.com/oauth2/default
+  client:
+    org-url: https://hhs-prime.oktapreview.com

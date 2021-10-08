@@ -42,7 +42,7 @@ resource "okta_policy_signon" "mfa_require" {
 }
 
 resource "okta_policy_rule_signon" "app_mfa" {
-  policyid           = okta_policy_signon.mfa_require.id
+  policy_id          = okta_policy_signon.mfa_require.id
   name               = "simple-report-mfa-require"
   status             = "ACTIVE"
   mfa_required       = true

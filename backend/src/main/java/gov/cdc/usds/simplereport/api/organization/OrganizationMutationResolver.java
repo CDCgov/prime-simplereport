@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 /** Created by nickrobison on 11/17/20 */
@@ -63,10 +64,22 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String orderingProviderZipCode,
       String orderingProviderTelephone,
       List<String> deviceIds,
+      List<UUID> deviceSpecimenTypes,
       String defaultDeviceId) {
     _os.assertFacilityNameAvailable(testingFacilityName);
-    DeviceSpecimenTypeHolder deviceSpecimenTypes =
-        _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+
+    // For historical reasons, entities representing the internal database ID of a device type
+    // may be typed in the GraphQL schema as a String instead of an ID.
+    // Standardize on the UUID type for these IDs downstream of the mutation
+    List<UUID> deviceInternalIds =
+        deviceIds.stream().map(UUID::fromString).collect(Collectors.toList());
+    UUID defaultDeviceInternalId = UUID.fromString(defaultDeviceId);
+
+    DeviceSpecimenTypeHolder dstHolder =
+        deviceSpecimenTypes == null
+            ? _dts.getTypesForFacility(defaultDeviceInternalId, deviceInternalIds)
+            : _dts.getDeviceSpecimenTypesForFacility(defaultDeviceInternalId, deviceSpecimenTypes);
+
     StreetAddress facilityAddress =
         _avs.getValidatedAddress(
             street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
@@ -91,11 +104,12 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             facilityAddress,
             Translators.parsePhoneNumber(phone),
             Translators.parseEmail(email),
-            deviceSpecimenTypes,
+            dstHolder,
             providerName,
             providerAddress,
             orderingProviderTelephone,
             orderingProviderNPI);
+
     return new ApiFacility(created);
   }
 
@@ -124,12 +138,24 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String orderingProviderZipCode,
       String orderingProviderTelephone,
       List<String> deviceIds,
+      List<UUID> deviceSpecimenTypes,
       String defaultDeviceId) {
-    DeviceSpecimenTypeHolder deviceSpecimenTypes =
-        _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+
+    // For historical reasons, entities representing the internal database ID of a device type
+    // may be typed in the GraphQL schema as a String instead of an ID.
+    // Standardize on the UUID type for these IDs downstream of the mutation
+    List<UUID> deviceInternalIds =
+        deviceIds.stream().map(UUID::fromString).collect(Collectors.toList());
+    UUID defaultDeviceInternalId = UUID.fromString(defaultDeviceId);
+    DeviceSpecimenTypeHolder dstHolder =
+        deviceSpecimenTypes == null
+            ? _dts.getTypesForFacility(defaultDeviceInternalId, deviceInternalIds)
+            : _dts.getDeviceSpecimenTypesForFacility(defaultDeviceInternalId, deviceSpecimenTypes);
+
     StreetAddress facilityAddress =
         _avs.getValidatedAddress(
             street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
+
     StreetAddress providerAddress =
         new StreetAddress(
             Translators.parseString(orderingProviderStreet),
@@ -153,7 +179,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             orderingProviderNPI,
             providerAddress,
             Translators.parsePhoneNumber(orderingProviderTelephone),
-            deviceSpecimenTypes);
+            dstHolder);
     return new ApiFacility(facility);
   }
 
@@ -194,7 +220,9 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String adminSuffix,
       String adminEmail) {
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
-        _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+        _dts.getTypesForFacility(
+            UUID.fromString(defaultDeviceId),
+            deviceIds.stream().map(UUID::fromString).collect(Collectors.toList()));
     StreetAddress facilityAddress =
         _avs.getValidatedAddress(
             street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);

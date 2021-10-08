@@ -6,10 +6,18 @@ import {
   getQueueClient,
   minimumMessagesAvailable,
   reportExceptions,
+  uploadResult,
 } from "./lib";
 import { ReportStreamError, ReportStreamResponse } from "./rs-response";
 
-jest.mock("./config", () => ({
+import fetch from "node-fetch";
+import fetchMock from "jest-fetch-mock";
+jest.mock(
+  "node-fetch",
+  jest.fn(() => require("jest-fetch-mock"))
+);
+
+jest.mock("../config", () => ({
   ENV: {
     AZ_STORAGE_QUEUE_SVC_URL: "hello",
     AZ_STORAGE_ACCOUNT_NAME: "hola",
@@ -155,6 +163,19 @@ describe("lib", () => {
       expect(queueClientMock.receiveMessages).toHaveBeenCalledTimes(4);
       expect(result.length).toBe(5);
     });
+  });
+
+  describe("uploadResult", () => {
+    it("calls fetch", async () => {
+      // GIVEN
+      fetchMock.mockResponseOnce("yup");
+
+      // WHEN
+      await uploadResult("whatever");
+
+      // THEN
+      expect(fetch).toHaveBeenCalled();
+    })
   });
 
   describe("deleteSuccessfullyParsedMessages", () => {

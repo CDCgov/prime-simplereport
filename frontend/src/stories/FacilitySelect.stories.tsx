@@ -40,6 +40,7 @@ const createTestFacility = (name: string, id: string): Facility => ({
   city: "",
   defaultDevice: "",
   deviceTypes: [],
+  deviceSpecimenTypes: [],
   email: "",
   name,
   zipCode: "",

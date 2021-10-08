@@ -9,16 +9,24 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
+import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
+import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.TestPropertySource;
 
@@ -26,6 +34,8 @@ import org.springframework.test.context.TestPropertySource;
 class OrganizationFacilityTest extends BaseGraphqlTest {
 
   @Autowired private DeviceTypeService _deviceService;
+  @Autowired private OrganizationService _orgService;
+  @MockBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
 
   @SpyBean private OktaRepository _oktaRepo;
 
@@ -41,6 +51,21 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
   void createFacility_orgAdmin_success() {
     useOrgAdmin();
     runQuery("facility-create", getDeviceArgs());
+  }
+
+  @Test
+  void updateFacility_orgAdmin_success() {
+    ObjectNode args = getDeviceArgs();
+    TestUserIdentities.withStandardUser(
+        () -> {
+          Organization org = _orgService.getCurrentOrganizationNoCache();
+          Facility facility = _orgService.getFacilities(org).get(0);
+
+          args.put("facilityId", facility.getInternalId().toString());
+        });
+
+    useOrgAdmin();
+    runQuery("facility-update", args);
   }
 
   @Test
@@ -112,7 +137,19 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
 
   private ObjectNode getDeviceArgs() {
     String someDeviceType = _deviceService.fetchDeviceTypes().get(0).getInternalId().toString();
-    ObjectNode variables = JsonNodeFactory.instance.objectNode().put("deviceId", someDeviceType);
+    List<UUID> someDeviceSpecimenTypes =
+        List.of(_deviceService.getDeviceSpecimenTypes().get(0).getInternalId());
+
+    final ObjectMapper mapper = new ObjectMapper();
+
+    ObjectNode variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("deviceId", someDeviceType)
+            .set(
+                "deviceSpecimenTypes",
+                mapper.convertValue(someDeviceSpecimenTypes, JsonNode.class));
+
     return variables;
   }
 }

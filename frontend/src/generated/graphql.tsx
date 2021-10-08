@@ -63,6 +63,13 @@ export type ApiUserWithStatus = {
   suffix?: Maybe<Scalars["String"]>;
 };
 
+export type DeviceSpecimenType = {
+  __typename?: "DeviceSpecimenType";
+  deviceType: DeviceType;
+  internalId: Scalars["ID"];
+  specimenType: SpecimenType;
+};
+
 export type DeviceType = {
   __typename?: "DeviceType";
   internalId?: Maybe<Scalars["ID"]>;
@@ -82,6 +89,7 @@ export type Facility = {
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   defaultDeviceType?: Maybe<DeviceType>;
+  deviceSpecimenTypes?: Maybe<Array<Maybe<DeviceSpecimenType>>>;
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
   email?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
@@ -139,6 +147,7 @@ export type MutationAddFacilityArgs = {
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   defaultDevice: Scalars["String"];
+  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
   deviceTypes: Array<Maybe<Scalars["String"]>>;
   email?: Maybe<Scalars["String"]>;
   orderingProviderCity?: Maybe<Scalars["String"]>;
@@ -378,6 +387,7 @@ export type MutationUpdateFacilityArgs = {
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   defaultDevice: Scalars["String"];
+  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
   deviceTypes: Array<Maybe<Scalars["String"]>>;
   email?: Maybe<Scalars["String"]>;
   facilityId: Scalars["ID"];
@@ -578,6 +588,7 @@ export type Provider = {
 
 export type Query = {
   __typename?: "Query";
+  deviceSpecimenTypes?: Maybe<Array<Maybe<DeviceSpecimenType>>>;
   /** @deprecated use the pluralized form to reduce confusion */
   deviceType?: Maybe<Array<Maybe<DeviceType>>>;
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
@@ -589,6 +600,7 @@ export type Query = {
   patients?: Maybe<Array<Maybe<Patient>>>;
   patientsCount?: Maybe<Scalars["Int"]>;
   queue?: Maybe<Array<Maybe<TestOrder>>>;
+  specimenType?: Maybe<Array<Maybe<SpecimenType>>>;
   specimenTypes: Array<SpecimenType>;
   testResult?: Maybe<TestResult>;
   testResults?: Maybe<Array<Maybe<TestResult>>>;
@@ -842,6 +854,24 @@ export type GetFacilitiesQuery = {
       deviceTypes?: Maybe<
         Array<Maybe<{ __typename?: "DeviceType"; internalId?: Maybe<string> }>>
       >;
+      deviceSpecimenTypes?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "DeviceSpecimenType";
+            internalId: string;
+            deviceType: {
+              __typename?: "DeviceType";
+              name?: Maybe<string>;
+              internalId?: Maybe<string>;
+            };
+            specimenType: {
+              __typename?: "SpecimenType";
+              internalId: string;
+              name: string;
+            };
+          }>
+        >
+      >;
       orderingProvider?: Maybe<{
         __typename?: "Provider";
         firstName?: Maybe<string>;
@@ -864,6 +894,29 @@ export type GetFacilitiesQuery = {
         __typename?: "DeviceType";
         internalId?: Maybe<string>;
         name?: Maybe<string>;
+      }>
+    >
+  >;
+  specimenType?: Maybe<
+    Array<
+      Maybe<{ __typename?: "SpecimenType"; internalId: string; name: string }>
+    >
+  >;
+  deviceSpecimenTypes?: Maybe<
+    Array<
+      Maybe<{
+        __typename?: "DeviceSpecimenType";
+        internalId: string;
+        deviceType: {
+          __typename?: "DeviceType";
+          internalId?: Maybe<string>;
+          name?: Maybe<string>;
+        };
+        specimenType: {
+          __typename?: "SpecimenType";
+          internalId: string;
+          name: string;
+        };
       }>
     >
   >;
@@ -892,6 +945,7 @@ export type UpdateFacilityMutationVariables = Exact<{
   orderingProviderZipCode?: Maybe<Scalars["String"]>;
   orderingProviderPhone?: Maybe<Scalars["String"]>;
   devices: Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>;
+  deviceSpecimenTypes: Array<Maybe<Scalars["ID"]>> | Maybe<Scalars["ID"]>;
   defaultDevice: Scalars["String"];
 }>;
 
@@ -922,6 +976,7 @@ export type AddFacilityMutationVariables = Exact<{
   orderingProviderZipCode?: Maybe<Scalars["String"]>;
   orderingProviderPhone?: Maybe<Scalars["String"]>;
   devices: Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>;
+  deviceSpecimenTypes: Array<Maybe<Scalars["ID"]>> | Maybe<Scalars["ID"]>;
   defaultDevice: Scalars["String"];
 }>;
 
@@ -956,6 +1011,18 @@ export type GetManagedFacilitiesQuery = {
       }>;
       deviceTypes?: Maybe<
         Array<Maybe<{ __typename?: "DeviceType"; internalId?: Maybe<string> }>>
+      >;
+      deviceSpecimenTypes?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "DeviceSpecimenType";
+            deviceType: {
+              __typename?: "DeviceType";
+              internalId?: Maybe<string>;
+            };
+            specimenType: { __typename?: "SpecimenType"; internalId: string };
+          }>
+        >
       >;
       orderingProvider?: Maybe<{
         __typename?: "Provider";
@@ -1729,7 +1796,11 @@ export type GetTestResultForPrintQuery = {
     dateTested?: Maybe<any>;
     result?: Maybe<string>;
     correctionStatus?: Maybe<string>;
-    deviceType?: Maybe<{ __typename?: "DeviceType"; name?: Maybe<string> }>;
+    deviceType?: Maybe<{
+      __typename?: "DeviceType";
+      name?: Maybe<string>;
+      model?: Maybe<string>;
+    }>;
     patient?: Maybe<{
       __typename?: "Patient";
       firstName?: Maybe<string>;
@@ -1755,11 +1826,6 @@ export type GetTestResultForPrintQuery = {
         NPI?: Maybe<string>;
       }>;
     }>;
-    testPerformed: {
-      __typename?: "TestDescription";
-      name: string;
-      loincCode: string;
-    };
   }>;
 };
 
@@ -1916,6 +1982,17 @@ export const GetFacilitiesDocument = gql`
         deviceTypes {
           internalId
         }
+        deviceSpecimenTypes {
+          internalId
+          deviceType {
+            name
+            internalId
+          }
+          specimenType {
+            internalId
+            name
+          }
+        }
         orderingProvider {
           firstName
           middleName
@@ -1934,6 +2011,21 @@ export const GetFacilitiesDocument = gql`
     deviceType {
       internalId
       name
+    }
+    specimenType {
+      internalId
+      name
+    }
+    deviceSpecimenTypes {
+      internalId
+      deviceType {
+        internalId
+        name
+      }
+      specimenType {
+        internalId
+        name
+      }
     }
   }
 `;
@@ -2011,6 +2103,7 @@ export const UpdateFacilityDocument = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
+    $deviceSpecimenTypes: [ID]!
     $defaultDevice: String!
   ) {
     updateFacility(
@@ -2036,6 +2129,7 @@ export const UpdateFacilityDocument = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceTypes: $devices
+      deviceSpecimenTypes: $deviceSpecimenTypes
       defaultDevice: $defaultDevice
     )
   }
@@ -2080,6 +2174,7 @@ export type UpdateFacilityMutationFn = Apollo.MutationFunction<
  *      orderingProviderZipCode: // value for 'orderingProviderZipCode'
  *      orderingProviderPhone: // value for 'orderingProviderPhone'
  *      devices: // value for 'devices'
+ *      deviceSpecimenTypes: // value for 'deviceSpecimenTypes'
  *      defaultDevice: // value for 'defaultDevice'
  *   },
  * });
@@ -2127,6 +2222,7 @@ export const AddFacilityDocument = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
+    $deviceSpecimenTypes: [ID]!
     $defaultDevice: String!
   ) {
     addFacility(
@@ -2151,6 +2247,7 @@ export const AddFacilityDocument = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceTypes: $devices
+      deviceSpecimenTypes: $deviceSpecimenTypes
       defaultDevice: $defaultDevice
     )
   }
@@ -2194,6 +2291,7 @@ export type AddFacilityMutationFn = Apollo.MutationFunction<
  *      orderingProviderZipCode: // value for 'orderingProviderZipCode'
  *      orderingProviderPhone: // value for 'orderingProviderPhone'
  *      devices: // value for 'devices'
+ *      deviceSpecimenTypes: // value for 'deviceSpecimenTypes'
  *      defaultDevice: // value for 'defaultDevice'
  *   },
  * });
@@ -2237,6 +2335,14 @@ export const GetManagedFacilitiesDocument = gql`
         }
         deviceTypes {
           internalId
+        }
+        deviceSpecimenTypes {
+          deviceType {
+            internalId
+          }
+          specimenType {
+            internalId
+          }
         }
         orderingProvider {
           firstName
@@ -4891,6 +4997,7 @@ export const GetTestResultForPrintDocument = gql`
       correctionStatus
       deviceType {
         name
+        model
       }
       patient {
         firstName
@@ -4913,10 +5020,6 @@ export const GetTestResultForPrintDocument = gql`
           lastName
           NPI
         }
-      }
-      testPerformed {
-        name
-        loincCode
       }
     }
   }
