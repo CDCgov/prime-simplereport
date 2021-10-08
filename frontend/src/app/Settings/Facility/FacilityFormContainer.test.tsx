@@ -5,6 +5,8 @@ import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router";
 import configureStore from "redux-mock-store";
 
+import { getAppInsights } from "../../TelemetryService";
+
 import { Props as FacilityFormProps } from "./FacilityForm";
 import FacilityFormContainer, {
   GET_FACILITY_QUERY,
@@ -79,6 +81,10 @@ jest.mock("./FacilityForm", () => {
 });
 jest.mock("react-router-dom", () => ({
   Redirect: () => <p>Redirected</p>,
+}));
+
+jest.mock("../../TelemetryService", () => ({
+  getAppInsights: jest.fn(),
 }));
 
 const store = configureStore([])({
@@ -203,7 +209,13 @@ const mocks = [
 ];
 
 describe("FacilityFormContainer", () => {
+  const trackEventMock = jest.fn();
+
   beforeEach(() => {
+    (getAppInsights as jest.Mock).mockImplementation(() => ({
+      trackEvent: trackEventMock,
+    }));
+
     render(
       <MemoryRouter>
         <Provider store={store}>
@@ -215,12 +227,25 @@ describe("FacilityFormContainer", () => {
     );
   });
 
+  afterEach(() => {
+    (getAppInsights as jest.Mock).mockReset();
+  });
+
   it("redirects on successful save", async () => {
     await act(async () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
       await userEvent.click(screen.getByRole("button"));
       await new Promise((resolve) => setTimeout(resolve, 0));
       expect(await screen.findByText("Redirected")).toBeDefined();
+    });
+  });
+
+  it("tracks custom telemetry event on successful save", async () => {
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      await userEvent.click(screen.getByRole("button"));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(trackEventMock).toBeCalledWith({ name: "Save Settings" });
     });
   });
 });

@@ -6,10 +6,6 @@ import React, {
   useCallback,
 } from "react";
 import { gql, useMutation, useLazyQuery, useQuery } from "@apollo/client";
-import {
-  useAppInsightsContext,
-  useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
 import { useLocation } from "react-router";
 
 import Alert from "../../commonComponents/Alert";
@@ -23,6 +19,7 @@ import { showNotification } from "../../utils";
 import { useOutsideClick } from "../../utils/hooks";
 import { Patient } from "../../patients/ManagePatients";
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
+import { getAppInsights } from "../../TelemetryService";
 
 import SearchResults from "./SearchResults";
 import SearchInput from "./SearchInput";
@@ -137,12 +134,7 @@ const AddToQueueSearchBox = ({
   facilityId,
   patientsInQueue,
 }: Props) => {
-  const appInsights = useAppInsightsContext();
-  const trackAddPatientToQueue = useTrackEvent(
-    appInsights,
-    "Add Patient to Queue",
-    {}
-  );
+  const appInsights = getAppInsights();
 
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
@@ -222,7 +214,7 @@ const AddToQueueSearchBox = ({
     setDebounced("");
     setShowSuggestion(false);
     if (appInsights) {
-      trackAddPatientToQueue({});
+      appInsights.trackEvent({ name: "Add Patient To Queue" });
     }
     let callback;
     const variables: AoEAnswersForPatient = {

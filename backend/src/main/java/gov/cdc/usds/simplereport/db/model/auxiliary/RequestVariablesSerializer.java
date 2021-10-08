@@ -20,14 +20,23 @@ public class RequestVariablesSerializer extends JsonSerializer<Map<String, Objec
   private Object parseValue(Object value) {
     if (value instanceof Part) {
       Part part = (Part) value;
+      BufferedReader br = null;
       try {
-        return new BufferedReader(
-                new InputStreamReader(part.getInputStream(), StandardCharset.UTF_8))
-            .lines()
-            .collect(Collectors.joining("\n"));
+        br =
+            new BufferedReader(new InputStreamReader(part.getInputStream(), StandardCharset.UTF_8));
+        return br.lines().collect(Collectors.joining("\n"));
       } catch (IOException e) {
         log.error("Unable to read uploaded file while writing audit log", e);
         throw new AuditLogFailureException();
+      } finally {
+        if (br != null) {
+          try {
+            br.close();
+          } catch (IOException e) {
+            log.error(
+                "Error attempting to close input stream after reading uploaded file while writing audit log");
+          }
+        }
       }
     }
     return value;
