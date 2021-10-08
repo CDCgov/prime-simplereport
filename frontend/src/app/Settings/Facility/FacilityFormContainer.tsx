@@ -194,10 +194,7 @@ interface Props {
 
 const FacilityFormContainer: any = (props: Props) => {
   const { data, loading, error } = useQuery<FacilityData, {}>(
-    GET_FACILITY_QUERY,
-    {
-      fetchPolicy: "no-cache",
-    }
+    GET_FACILITY_QUERY
   );
   const appInsights = getAppInsights();
   const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION);
