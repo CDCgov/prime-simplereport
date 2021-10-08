@@ -19,6 +19,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.io.BufferedReader;
@@ -112,7 +113,8 @@ public class UploadService {
       rowNumber++;
       try {
         var facilityId = parseUUID(getRow(row, FACILITY_ID, false));
-        var facility = _os.getFacilityInCurrentOrg(facilityId);
+        Optional<Facility> facility =
+            Optional.ofNullable(facilityId).map(_os::getFacilityInCurrentOrg);
 
         StreetAddress address =
             _avs.getValidatedAddress(
@@ -128,7 +130,7 @@ public class UploadService {
         var dob = parseUserShortDate(getRow(row, "DOB", true));
 
         if (_ps.isDuplicatePatient(
-            firstName, lastName, dob, address.getPostalCode(), org, Optional.of(facility))) {
+            firstName, lastName, dob, address.getPostalCode(), org, facility)) {
           continue;
         }
 
@@ -136,8 +138,8 @@ public class UploadService {
             facilityId,
             null, // lookupID
             firstName,
-            lastName,
             parseString(getRow(row, "MiddleName", false)),
+            lastName,
             parseString(getRow(row, "Suffix", false)),
             dob,
             address,
