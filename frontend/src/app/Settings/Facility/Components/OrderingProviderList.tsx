@@ -43,59 +43,61 @@ const OrderingProviderList: React.FC<OrderingProviderListProps> = ({
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(providers) && providers.length === 0
-              ? "No ordering providers found"
-              : providers.map((provider, idx) => {
-                  return (
-                    <tr key={idx}>
-                      <td className="padding-y-2">
-                        {/* TODO: route to add/edit provider page in https://github.com/CDCgov/prime-simplereport/issues/2667 */}
-                        <LinkWithQuery
-                          to={`/provider`}
-                          className="sr-provider-edit-link"
-                        >
-                          {provider.firstName} {provider.lastName}
-                        </LinkWithQuery>
-                      </td>
-                      <td>{provider.phone}</td>
-                      <td>
-                        <Checkboxes
-                          onChange={() => updateDefaultProvider(provider)}
-                          legend="Set default"
-                          legendSrOnly
-                          name="default_device"
-                          boxes={[
-                            {
-                              value: "1",
-                              label: "Set as default",
-                              checked: provider === defaultProvider,
-                            },
-                          ]}
+            {Array.isArray(providers) && providers.length === 0 ? (
+              <p>No ordering providers found</p>
+            ) : (
+              providers.map((provider, idx) => {
+                return (
+                  <tr key={idx}>
+                    <td className="padding-y-2">
+                      {/* TODO: route to add/edit provider page after https://github.com/CDCgov/prime-simplereport/issues/2667 */}
+                      <LinkWithQuery
+                        to={`/provider`}
+                        className="sr-provider-edit-link"
+                      >
+                        {provider.firstName} {provider.lastName}
+                      </LinkWithQuery>
+                    </td>
+                    <td>{provider.phone}</td>
+                    <td>
+                      <Checkboxes
+                        onChange={() => updateDefaultProvider(provider)}
+                        legend="Set default"
+                        legendSrOnly
+                        name="default_device"
+                        boxes={[
+                          {
+                            value: "1",
+                            label: "Set as default",
+                            checked: provider === defaultProvider,
+                          },
+                        ]}
+                      />
+                    </td>
+                    <td>
+                      <button
+                        className="usa-button--unstyled"
+                        onClick={() => onProviderRemove(provider, idx)}
+                        aria-label="Delete device"
+                        disabled={providers.length <= 1}
+                      >
+                        <FontAwesomeIcon
+                          icon={"trash"}
+                          className={"prime-red-icon"}
                         />
-                      </td>
-                      <td>
-                        <button
-                          className="usa-button--unstyled"
-                          onClick={() => onProviderRemove(provider, idx)}
-                          aria-label="Delete device"
-                          disabled={providers.length <= 1}
-                        >
-                          <FontAwesomeIcon
-                            icon={"trash"}
-                            className={"prime-red-icon"}
-                          />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>
       <div className="usa-card__footer padding-top-2 padding-bottom-205">
         <LinkWithQuery
           className="usa-button usa-button--outline"
-          /* TODO: route to add/edit provider page in https://github.com/CDCgov/prime-simplereport/issues/2667 */
+          /* TODO: route to add/edit provider page after https://github.com/CDCgov/prime-simplereport/issues/2667 */
           to={`/provider`}
           id="add-provider-button"
         >

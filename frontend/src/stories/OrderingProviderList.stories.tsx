@@ -49,6 +49,14 @@ const providerTwo = {
   zipCode: "10001",
 };
 
+export const NoProviders = Template();
+NoProviders.args = {
+  providers: [],
+  defaultProvider: null,
+  updateDefaultProvider: () => {},
+  updateProviders: () => {},
+};
+
 export const SingleProvider = Template();
 SingleProvider.args = {
   providers: [providerOne],
