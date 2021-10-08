@@ -95,7 +95,7 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
       "facility-clia",
       ({ value }) => {
         if (value[2] === "Z" && value.length === 10) {
-          return "Special Z CLIAs are only valid in WA and WY";
+          return "Special temporary CLIAs are only valid in CA, IL, WA, and WY.";
         }
         return "CLIA number should be 10 characters (##D#######)";
       },
