@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.organization;
 
+import com.okta.sdk.resource.user.User;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.ApiPendingOrganization;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
 
 /** Resolver for {@link Organization} related queries */
@@ -61,18 +63,21 @@ public class OrganizationResolver implements GraphQLQueryResolver {
    * @return a list of pending organizations
    */
   public List<ApiPendingOrganization> getPendingOrganizations() {
-    // This is used to populate the list of organizations in a dropdown on some frontend admin
-    // pages (such as tenant data access).  The only uses of it so far query for the org name and
-    // external id.  To get around some n+1 problems, for now this will not return facilities even
-    // if they are included in the query.
-    //
-    // We really need a data loader for facilities, but it is non-trivial because the list of
-    // facilities is returned differently when querying permissions data vs listing facilities.
-    // Both use the same underlying classes, though.  A suggested fix is to add `allFacilities`
-    // for retrieving the list of facilities and continuing to use `facilities` for permissions.
     List<ApiPendingOrganization> pendingOrgsAlreadyCreated =
         _organizationService.getOrganizations(false).stream()
-            .map(o -> new ApiPendingOrganization(o))
+            .map(
+                org -> {
+                  User adminUser = _organizationService.getAdminUserForPendingOrganization(org);
+                  return new ApiPendingOrganization(org, adminUser);
+                })
             .collect(Collectors.toList());
+
+    List<ApiPendingOrganization> pendingOrgsInQueue =
+        _organizationService.getQueuedOrganizations().stream()
+            .map(org -> new ApiPendingOrganization(org))
+            .collect(Collectors.toList());
+
+    return Stream.concat(pendingOrgsAlreadyCreated.stream(), pendingOrgsInQueue.stream())
+        .collect(Collectors.toList());
   }
 }

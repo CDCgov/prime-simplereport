@@ -4,7 +4,7 @@ import "./PendingOrganizationsList.scss";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import {
-  useGetOrganizationsQuery,
+  useGetPendingOrganizationsQuery,
   useSetOrgIdentityVerifiedMutation,
 } from "../../../generated/graphql";
 
@@ -15,11 +15,7 @@ const PendingOrganizationsContainer = () => {
     Set<string>
   >(new Set());
   const [verifyIdentity] = useSetOrgIdentityVerifiedMutation();
-  const { data, refetch, loading, error } = useGetOrganizationsQuery({
-    variables: {
-      identityVerified: false,
-    },
-  });
+  const { data, refetch, loading, error } = useGetPendingOrganizationsQuery();
   if (error) {
     throw error;
   }
@@ -61,7 +57,7 @@ const PendingOrganizationsContainer = () => {
 
   return (
     <PendingOrganizations
-      organizations={data?.organizations || []}
+      organizations={data?.pendingOrganizations || []}
       verifiedOrgExternalIds={verifiedOrgExternalIds}
       submitIdentityVerified={submitIdentityVerified}
       setVerifiedOrganization={setVerifiedOrganization}

@@ -1,6 +1,14 @@
+query GetPendingOrganizations {
+  pendingOrganizations {
+    externalId
+    name
+    adminName
+    adminEmail
+    adminPhone
+    createdAt
+  }
+}
+
 mutation SetOrgIdentityVerified($externalId: String!, $verified: Boolean!) {
-    setOrganizationIdentityVerified(
-        externalId: $externalId
-        verified: $verified
-    )
+  setOrganizationIdentityVerified(externalId: $externalId, verified: $verified)
 }

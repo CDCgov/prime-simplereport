@@ -1,12 +1,10 @@
 import "./PendingOrganizationsList.scss";
 import Checkboxes from "../../commonComponents/Checkboxes";
 import Button from "../../commonComponents/Button/Button";
+import { PendingOrganization } from "../../../generated/graphql";
 
 interface Props {
-  organizations: {
-    externalId: string;
-    name: string;
-  }[];
+  organizations: PendingOrganization[];
   verifiedOrgExternalIds: Set<string>;
   submitIdentityVerified: () => void;
   setVerifiedOrganization: (externalId: string, verified: boolean) => void;
@@ -39,7 +37,11 @@ const PendingOrganizations = ({
     return [...organizations].map((o) => (
       <tr key={o.externalId} className="sr-org-row">
         <th scope="row">{o.name}</th>
+        <th scope="row">{o.adminName}</th>
+        <th scope="row">{o.adminEmail}</th>
+        <th scope="row">{o.adminPhone}</th>
         <th scope="row">{o.externalId}</th>
+        <th scope="row">{o.createdAt}</th>
         <td>
           <Checkboxes
             onChange={(e) =>

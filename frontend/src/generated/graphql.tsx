@@ -547,6 +547,16 @@ export type PatientLink = {
   testOrder?: Maybe<TestOrder>;
 };
 
+export type PendingOrganization = {
+  __typename?: "PendingOrganization";
+  adminEmail: Scalars["String"];
+  adminName: Scalars["String"];
+  adminPhone?: Maybe<Scalars["String"]>;
+  createdAt?: Maybe<Scalars["DateTime"]>;
+  externalId: Scalars["String"];
+  name: Scalars["String"];
+};
+
 export type PhoneNumber = {
   __typename?: "PhoneNumber";
   number?: Maybe<Scalars["String"]>;
@@ -594,6 +604,7 @@ export type Query = {
   patientExists?: Maybe<Scalars["Boolean"]>;
   patients?: Maybe<Array<Maybe<Patient>>>;
   patientsCount?: Maybe<Scalars["Int"]>;
+  pendingOrganizations: Array<PendingOrganization>;
   queue?: Maybe<Array<Maybe<TestOrder>>>;
   specimenType?: Maybe<Array<Maybe<SpecimenType>>>;
   specimenTypes: Array<SpecimenType>;
@@ -1443,6 +1454,23 @@ export type GetSpecimenTypesQuery = {
     internalId: string;
     name: string;
     typeCode: string;
+  }>;
+};
+
+export type GetPendingOrganizationsQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type GetPendingOrganizationsQuery = {
+  __typename?: "Query";
+  pendingOrganizations: Array<{
+    __typename?: "PendingOrganization";
+    externalId: string;
+    name: string;
+    adminName: string;
+    adminEmail: string;
+    adminPhone?: Maybe<string>;
+    createdAt?: Maybe<any>;
   }>;
 };
 
@@ -3991,6 +4019,68 @@ export type GetSpecimenTypesLazyQueryHookResult = ReturnType<
 export type GetSpecimenTypesQueryResult = Apollo.QueryResult<
   GetSpecimenTypesQuery,
   GetSpecimenTypesQueryVariables
+>;
+export const GetPendingOrganizationsDocument = gql`
+  query GetPendingOrganizations {
+    pendingOrganizations {
+      externalId
+      name
+      adminName
+      adminEmail
+      adminPhone
+      createdAt
+    }
+  }
+`;
+
+/**
+ * __useGetPendingOrganizationsQuery__
+ *
+ * To run a query within a React component, call `useGetPendingOrganizationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPendingOrganizationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPendingOrganizationsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetPendingOrganizationsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetPendingOrganizationsQuery,
+    GetPendingOrganizationsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetPendingOrganizationsQuery,
+    GetPendingOrganizationsQueryVariables
+  >(GetPendingOrganizationsDocument, options);
+}
+export function useGetPendingOrganizationsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetPendingOrganizationsQuery,
+    GetPendingOrganizationsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetPendingOrganizationsQuery,
+    GetPendingOrganizationsQueryVariables
+  >(GetPendingOrganizationsDocument, options);
+}
+export type GetPendingOrganizationsQueryHookResult = ReturnType<
+  typeof useGetPendingOrganizationsQuery
+>;
+export type GetPendingOrganizationsLazyQueryHookResult = ReturnType<
+  typeof useGetPendingOrganizationsLazyQuery
+>;
+export type GetPendingOrganizationsQueryResult = Apollo.QueryResult<
+  GetPendingOrganizationsQuery,
+  GetPendingOrganizationsQueryVariables
 >;
 export const SetOrgIdentityVerifiedDocument = gql`
   mutation SetOrgIdentityVerified($externalId: String!, $verified: Boolean!) {
