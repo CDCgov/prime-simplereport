@@ -7,7 +7,7 @@ import "./OrderingProvider.scss";
 
 export interface OrderingProviderListProps {
   providers: Provider[];
-  defaultProvider: Provider;
+  defaultProvider: Provider | null;
   updateProviders: (providers: Provider[]) => void;
   updateDefaultProvider: (provider: Provider) => void;
 }
@@ -43,50 +43,52 @@ const OrderingProviderList: React.FC<OrderingProviderListProps> = ({
             </tr>
           </thead>
           <tbody>
-            {providers.map((provider, idx) => {
-              return (
-                <tr key={idx}>
-                  <td className="padding-y-2">
-                    {/* TODO: route to add/edit provider page in https://github.com/CDCgov/prime-simplereport/issues/2667 */}
-                    <LinkWithQuery
-                      to={`/provider`}
-                      className="sr-provider-edit-link"
-                    >
-                      {provider.firstName} {provider.lastName}
-                    </LinkWithQuery>
-                  </td>
-                  <td>{provider.phone}</td>
-                  <td>
-                    <Checkboxes
-                      onChange={() => updateDefaultProvider(provider)}
-                      legend="Set default"
-                      legendSrOnly
-                      name="default_device"
-                      boxes={[
-                        {
-                          value: "1",
-                          label: "Set as default",
-                          checked: provider === defaultProvider,
-                        },
-                      ]}
-                    />
-                  </td>
-                  <td>
-                    <button
-                      className="usa-button--unstyled"
-                      onClick={() => onProviderRemove(provider, idx)}
-                      aria-label="Delete device"
-                      disabled={providers.length <= 1}
-                    >
-                      <FontAwesomeIcon
-                        icon={"trash"}
-                        className={"prime-red-icon"}
-                      />
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
+            {Array.isArray(providers) && providers.length === 0
+              ? "No ordering providers found"
+              : providers.map((provider, idx) => {
+                  return (
+                    <tr key={idx}>
+                      <td className="padding-y-2">
+                        {/* TODO: route to add/edit provider page in https://github.com/CDCgov/prime-simplereport/issues/2667 */}
+                        <LinkWithQuery
+                          to={`/provider`}
+                          className="sr-provider-edit-link"
+                        >
+                          {provider.firstName} {provider.lastName}
+                        </LinkWithQuery>
+                      </td>
+                      <td>{provider.phone}</td>
+                      <td>
+                        <Checkboxes
+                          onChange={() => updateDefaultProvider(provider)}
+                          legend="Set default"
+                          legendSrOnly
+                          name="default_device"
+                          boxes={[
+                            {
+                              value: "1",
+                              label: "Set as default",
+                              checked: provider === defaultProvider,
+                            },
+                          ]}
+                        />
+                      </td>
+                      <td>
+                        <button
+                          className="usa-button--unstyled"
+                          onClick={() => onProviderRemove(provider, idx)}
+                          aria-label="Delete device"
+                          disabled={providers.length <= 1}
+                        >
+                          <FontAwesomeIcon
+                            icon={"trash"}
+                            className={"prime-red-icon"}
+                          />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
           </tbody>
         </table>
       </div>
