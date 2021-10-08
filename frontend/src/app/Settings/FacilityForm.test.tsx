@@ -363,7 +363,8 @@ describe("FacilityForm", () => {
         userEvent.type(cliaInput, "12Z3456789");
         userEvent.tab();
 
-        const expectedError = "Special temporary CLIAs are only valid in CA, IL, WA, and WY.";
+        const expectedError =
+          "Special temporary CLIAs are only valid in CA, IL, WA, and WY.";
 
         expect(
           await screen.findByText(expectedError, {
