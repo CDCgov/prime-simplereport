@@ -3065,3 +3065,29 @@ databaseChangeLog:
             columns:
               - column:
                   name: test_order_id
+  - changeSet:
+      id: add-indexes-organization-queue
+      author: brett.m.maden@omb.eop.gov
+      comment: Adds unique indexes on the organization_queue fields organization_external_id and verified_organization_id
+      changes:
+        - tagDatabase:
+            tag: add-indexes-organization-queue
+        - createIndex:
+            tableName: organization_queue
+            indexName: uk__organization_queue__organization_external_id
+            columns:
+              - column:
+                  name: organization_external_id
+            unique: true
+        - createIndex:
+            tableName: organization_queue
+            indexName: uk__organization_queue__verified_organization_id
+            columns:
+              - column:
+                  name: verified_organization_id
+            unique: true
+      rollback:
+        - dropIndex:
+            indexName: uk__organization_queue__organization_external_id
+        - dropIndex:
+            indexName: uk__organization_queue__verified_organization_id
