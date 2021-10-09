@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class ReminderService {
 
+  private static final long LOCK_HOLD_MS = 1000L;
+
   private final OktaRepository _oktaRepo;
   private final OrganizationRepository _orgRepo;
   private final EmailService _emailService;
@@ -90,7 +92,7 @@ public class ReminderService {
 
     try {
       // hold the lock a little extra so other instances have a chance to fail to acquire it
-      Thread.sleep(1L);
+      Thread.sleep(LOCK_HOLD_MS);
     } catch (InterruptedException e) {
       log.debug("sendAccountReminderEmails: sleep interrupted");
       Thread.currentThread().interrupt();
