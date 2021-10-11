@@ -228,11 +228,28 @@ public class ApiUserService {
     return new UserInfo(apiUser, Optional.empty(), isAdmin(apiUser));
   }
 
+  // This method is used to reactivate users that have been suspended due to inactivity
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
   public UserInfo reactivateUser(UUID userId) {
     ApiUser apiUser = getApiUser(userId);
     String username = apiUser.getLoginEmail();
     _oktaRepo.reactivateUser(username);
+    OrganizationRoleClaims orgClaims =
+        _oktaRepo
+            .getOrganizationRoleClaimsForUser(username)
+            .orElseThrow(MisconfiguredUserException::new);
+    Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
+    OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
+    UserInfo user = new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
+    return user;
+  }
+
+  // This method is to re-send the invitation email to join SimpleReport
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
+  public UserInfo resendActivationEmail(UUID userId) {
+    ApiUser apiUser = getApiUser(userId);
+    String username = apiUser.getLoginEmail();
+    _oktaRepo.resendActivationEmail(username);
     OrganizationRoleClaims orgClaims =
         _oktaRepo
             .getOrganizationRoleClaimsForUser(username)

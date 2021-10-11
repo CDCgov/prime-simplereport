@@ -225,6 +225,19 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
   }
 
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void resendActivationEmail_orgAdmin_success() {
+    initSampleData();
+
+    final String email = "allfacilities@example.com";
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+
+    UserInfo userInfo = _service.resendActivationEmail(apiUser.getInternalId());
+
+    assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
+  }
+
   private void roleCheck(final UserInfo userInfo, final Set<OrganizationRole> expected) {
     EnumSet<OrganizationRole> actual = EnumSet.copyOf(userInfo.getRoles());
     assertEquals(expected, actual);

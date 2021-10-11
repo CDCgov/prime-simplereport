@@ -394,6 +394,7 @@ type Mutation {
   setUserIsDeleted(id: ID!, deleted: Boolean!): User
     @requiredPermissions(allOf: ["MANAGE_USERS"])
   reactivateUser(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
+  resendActivationEmail(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   setCurrentUserTenantDataAccess(
     organizationExternalId: String
     justification: String
