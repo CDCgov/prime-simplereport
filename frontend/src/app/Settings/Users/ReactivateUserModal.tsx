@@ -57,8 +57,8 @@ const ReactivateUserModal: React.FC<Props> = ({
           </p>
           <p>
             <strong>
-              Please note: Users will have 24 hours to log back in to
-              SimpleReport.
+              Please note: If this user doesn't log in to SimpleReport before
+              6AM EST, their account will be deactivated again.
             </strong>
           </p>
           <p>Are you sure you want to reactivate this account?</p>
