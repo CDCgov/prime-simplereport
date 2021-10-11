@@ -365,7 +365,7 @@ describe("FacilityForm", () => {
         userEvent.tab();
 
         const expectedError =
-          "Special temporary CLIAs are only valid in CA, IL, WA, and WY.";
+          "Special temporary CLIAs are only valid in CA, IL, VT, WA, and WY.";
 
         expect(
           await screen.findByText(expectedError, {
@@ -400,6 +400,34 @@ describe("FacilityForm", () => {
 
         userEvent.clear(cliaInput);
         userEvent.type(cliaInput, "CPDH000006");
+        userEvent.tab();
+
+        const saveButton = await screen.getAllByText("Save changes")[0];
+        userEvent.click(saveButton);
+        await validateAddress(saveFacility);
+        expect(saveFacility).toBeCalledTimes(1);
+      });
+
+      it("allows 47ZXXXXXXX pattern for VT", async () => {
+        const vermontFacility: Facility = validFacility;
+        vermontFacility.state = "VT";
+
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={vermontFacility}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const cliaInput = screen.getByLabelText("CLIA number", {
+          exact: false,
+        });
+
+        userEvent.clear(cliaInput);
+        userEvent.type(cliaInput, "47Z1234567");
         userEvent.tab();
 
         const saveButton = await screen.getAllByText("Save changes")[0];
