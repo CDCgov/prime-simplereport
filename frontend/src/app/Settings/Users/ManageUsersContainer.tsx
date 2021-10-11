@@ -84,14 +84,6 @@ const REACTIVATE_USER = gql`
   }
 `;
 
-// const RESEND_ACTIVATION_EMAIL = gql`
-//   mutation ResendActivationEmail($id: ID!) {
-//     resendActivationEmail(id: $id) {
-//       id
-//     }
-//   }
-// `;
-
 const ADD_USER_TO_ORG = gql`
   mutation AddUserToCurrentOrg(
     $firstName: String
