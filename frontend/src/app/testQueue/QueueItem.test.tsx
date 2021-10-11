@@ -5,9 +5,14 @@ import configureStore, { MockStoreEnhanced } from "redux-mock-store";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import moment from "moment";
 
+import { getAppInsights } from "../TelemetryService";
 import * as utils from "../utils/index";
 
 import QueueItem, { EDIT_QUEUE_ITEM, SUBMIT_TEST_RESULT } from "./QueueItem";
+
+jest.mock("../TelemetryService", () => ({
+  getAppInsights: jest.fn(),
+}));
 
 const initialDateString = "2021-02-14";
 const updatedDateString = "2021-03-10";
@@ -19,6 +24,7 @@ describe("QueueItem", () => {
   let nowFn = Date.now;
   let store: MockStoreEnhanced<unknown, {}>;
   const mockStore = configureStore([]);
+  const trackEventMock = jest.fn();
 
   beforeEach(() => {
     store = mockStore({
@@ -29,11 +35,18 @@ describe("QueueItem", () => {
 
     jest.useFakeTimers();
     Date.now = jest.fn(() => fakeDate);
+
+    (getAppInsights as jest.Mock).mockImplementation(() => ({
+      trackEvent: trackEventMock,
+    }));
   });
+
   afterEach(() => {
     jest.useRealTimers();
     Date.now = nowFn;
+    (getAppInsights as jest.Mock).mockReset();
   });
+
   it("correctly renders the test queue", () => {
     const { container, getByTestId } = render(
       <MockedProvider mocks={[]}>
@@ -261,6 +274,79 @@ describe("QueueItem", () => {
     expect(
       screen.queryByText(testProps.patient.phoneNumbers[1].number)
     ).not.toBeInTheDocument();
+  });
+
+  describe("telemetry", () => {
+    beforeEach(() => {
+      render(
+        <MockedProvider mocks={mocks} addTypename={false}>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedTestResult={testProps.selectedTestResult}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              patientLinkId={testProps.patientLinkId}
+            ></QueueItem>
+          </Provider>
+        </MockedProvider>
+      );
+    });
+
+    it("tracks removal of patient from queue as custom event", () => {
+      const button = screen.getByLabelText("Close");
+      fireEvent.click(button);
+      const iAmSure = screen.getByText("Yes, I'm sure");
+      fireEvent.click(iAmSure);
+      expect(trackEventMock).toHaveBeenCalledWith({
+        name: "Remove Patient From Queue",
+      });
+    });
+
+    it("tracks submitted test result as custom event", async () => {
+      // Submit
+      await waitFor(() => {
+        fireEvent.click(screen.getByText("Submit"));
+      });
+
+      await waitFor(() => {
+        fireEvent.click(
+          screen.getByText("Submit anyway", {
+            exact: false,
+          })
+        );
+      });
+
+      expect(trackEventMock).toHaveBeenCalledWith({
+        name: "Submit Test Result",
+      });
+    });
+
+    it("tracks AoE form updates as custom event", async () => {
+      // Update AoE questionnaire
+      const questionnaire = await screen.findByText("Test questionnaire");
+      fireEvent.click(questionnaire);
+      const symptomInput = await screen.findByText("No symptoms", {
+        exact: false,
+      });
+      await waitFor(() => {
+        fireEvent.click(symptomInput);
+      });
+
+      // Save changes
+      const continueButton = await screen.findByText("Continue");
+      fireEvent.click(continueButton);
+
+      expect(trackEventMock).toHaveBeenCalledWith({
+        name: "Update AoE Response",
+      });
+    });
   });
 });
 

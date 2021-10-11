@@ -31,8 +31,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
@@ -108,7 +106,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .content(requestBody);
 
     // THEN
-    String requestId = runBuilderReturningRequestId(builder, status().isOk());
+    String requestId = runBuilderReturningRequestId(_mockMvc, builder, status().isOk());
     assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK, requestId);
   }
 
@@ -167,7 +165,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .content(requestBody);
 
     // THEN
-    String requestId = runBuilderReturningRequestId(builder, status().isGone());
+    String requestId = runBuilderReturningRequestId(_mockMvc, builder, status().isGone());
     assertLastAuditEntry(HttpStatus.GONE, ResourceLinks.VERIFY_LINK, requestId);
   }
 
@@ -301,16 +299,6 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
         .perform(builder2)
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.zipCode", is(postalCode)));
-  }
-
-  private String runBuilderReturningRequestId(RequestBuilder builder, ResultMatcher statusMatcher)
-      throws Exception {
-    return _mockMvc
-        .perform(builder)
-        .andExpect(statusMatcher)
-        .andReturn()
-        .getResponse()
-        .getHeader(LoggingConstants.REQUEST_ID_HEADER);
   }
 
   @Test

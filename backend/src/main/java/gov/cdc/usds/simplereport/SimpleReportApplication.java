@@ -4,7 +4,6 @@ import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.CorsProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
-import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.properties.AzureStorageQueueReportingProperties;
 import gov.cdc.usds.simplereport.properties.ExperianProperties;
@@ -23,7 +22,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.info.GitProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Slf4j
@@ -32,7 +30,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableConfigurationProperties({
   InitialSetupProperties.class,
   AuthorizationProperties.class,
-  DataHubConfig.class,
   DemoUserConfiguration.class,
   ExperianProperties.class,
   SmartyStreetsProperties.class,
@@ -41,7 +38,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
   CorsProperties.class,
   AzureStorageQueueReportingProperties.class
 })
-@EnableAsync
 @EnableScheduling
 public class SimpleReportApplication {
   public static void main(String[] args) {
@@ -52,12 +48,6 @@ public class SimpleReportApplication {
   @Profile(BeanProfiles.CREATE_SAMPLE_DATA)
   public CommandLineRunner initDataOnStartup(OrganizationInitializingService initService) {
     return args -> initService.initAll();
-  }
-
-  @Bean
-  @ConditionalOnProperty("simple-report.data-hub.upload-enabled")
-  public CommandLineRunner scheduleUploads(DataHubConfig config, ScheduledTasksService scheduler) {
-    return args -> scheduler.scheduleUploads(config);
   }
 
   @Bean

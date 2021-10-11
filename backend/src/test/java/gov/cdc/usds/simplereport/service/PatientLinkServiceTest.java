@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.service.dataloader.PatientLinkDataLoader;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -54,7 +55,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
     PatientLink result = _service.getPatientLink(_patientLink.getInternalId());
     assertEquals(result.getInternalId(), _patientLink.getInternalId());
     assertThrows(
-        IllegalGraphqlArgumentException.class, () -> _service.getPatientLink(UUID.randomUUID()));
+        InvalidPatientLinkException.class, () -> _service.getPatientLink(UUID.randomUUID()));
   }
 
   @Test
@@ -80,16 +81,19 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
 
   @Test
   void patientLinkLockout() throws Exception {
+    UUID patientId = _patientLink.getInternalId();
+    LocalDate patientBirthDate = _person.getBirthDate();
     BooleanSupplier failToVerify =
-        () ->
-            _service.verifyPatientLink(
-                _patientLink.getInternalId(), _person.getBirthDate().plusDays(1));
+        () -> _service.verifyPatientLink(patientId, patientBirthDate.plusDays(1));
+
     assertFalse(failToVerify.getAsBoolean());
     assertFalse(failToVerify.getAsBoolean());
     assertFalse(failToVerify.getAsBoolean());
     assertFalse(failToVerify.getAsBoolean());
     assertFalse(failToVerify.getAsBoolean());
-    assertThrows(ExpiredPatientLinkException.class, () -> failToVerify.getAsBoolean());
+    assertThrows(
+        ExpiredPatientLinkException.class,
+        () -> _service.verifyPatientLink(patientId, patientBirthDate));
   }
 
   @Test

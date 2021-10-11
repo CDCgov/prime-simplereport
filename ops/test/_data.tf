@@ -76,13 +76,13 @@ data "azurerm_key_vault_secret" "postgres_nophi_password" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
-data "azurerm_key_vault_secret" "slack_notify_webhook_url" {
-  name         = "slack-notify-webhook-url-dev"
+data "azurerm_key_vault_secret" "okta_api_key" {
+  name         = "okta-api-key"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
-data "azurerm_key_vault_secret" "okta_api_key" {
-  name         = "okta-api-key"
+data "azurerm_key_vault_secret" "okta_api_key_nonprod" {
+  name         = "okta-api-key-nonprod"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
@@ -178,6 +178,11 @@ data "azurerm_key_vault_secret" "experian_preciseid_username" {
 
 data "azurerm_key_vault_secret" "experian_preciseid_password" {
   name         = "experian-preciseid-password-dev"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "report_stream_exception_callback_token" {
+  name         = "report-stream-exception-callback-test"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 

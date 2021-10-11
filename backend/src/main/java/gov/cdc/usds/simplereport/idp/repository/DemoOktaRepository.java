@@ -179,6 +179,13 @@ public class DemoOktaRepository implements OktaRepository {
     }
   }
 
+  public void resendActivationEmail(String username) {
+    if (!usernameOrgRolesMap.containsKey(username)) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot reset password for Okta user with unrecognized username");
+    }
+  }
+
   public Set<String> getAllUsersForOrganization(Organization org) {
     if (!orgUsernamesMap.containsKey(org.getExternalId())) {
       throw new IllegalGraphqlArgumentException(

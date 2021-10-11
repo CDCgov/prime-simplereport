@@ -244,7 +244,7 @@ public class TestOrderService {
       TestOrder order = this.getTestOrder(testOrderId);
 
       if (deviceId != null) {
-        order.setDeviceSpecimen(_dts.getDefaultForDeviceId(deviceId));
+        order.setDeviceSpecimen(_dts.getDefaultForDeviceId(UUID.fromString(deviceId)));
       }
 
       order.setResult(result == null ? null : TestResult.valueOf(result));
@@ -507,6 +507,11 @@ public class TestOrderService {
   public TopLevelDashboardMetrics getTopLevelDashboardMetrics(
       UUID facilityId, Date startDate, Date endDate) {
     Set<UUID> facilityIds;
+
+    if (startDate == null || endDate == null) {
+      // if null dates somehow get through, just return zeroes
+      return new TopLevelDashboardMetrics(0L, 0L);
+    }
 
     if (facilityId != null) {
       Facility fac = _os.getFacilityInCurrentOrg(facilityId);

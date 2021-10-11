@@ -15,6 +15,17 @@ const devices: DeviceType[] = [
   { internalId: "device-2", name: "Device 2" },
 ];
 
+const deviceSpecimenTypes: DeviceSpecimenType[] = devices.map((device, idx) => {
+  return {
+    internalId: idx,
+    deviceType: device,
+    specimenType: {
+      internalId: "fake-specimen-id-1",
+      name: "Fake Specimen 1",
+    },
+  };
+});
+
 const validFacility: Facility = {
   name: "Foo Facility",
   cliaNumber: "12D4567890",
@@ -41,6 +52,7 @@ const validFacility: Facility = {
   },
   deviceTypes: devices.map(({ internalId }) => internalId),
   defaultDevice: devices[0].internalId,
+  deviceSpecimenTypes,
 };
 
 // Hardcoded suggestion scenarios
@@ -103,7 +115,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceOptions={devices}
+          deviceSpecimenTypeOptions={deviceSpecimenTypes}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -121,7 +133,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceOptions={devices}
+          deviceSpecimenTypeOptions={deviceSpecimenTypes}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -139,7 +151,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceOptions={devices}
+          deviceSpecimenTypeOptions={deviceSpecimenTypes}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -159,7 +171,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceOptions={devices}
+          deviceSpecimenTypeOptions={deviceSpecimenTypes}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -193,7 +205,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceOptions={devices}
+          deviceSpecimenTypeOptions={deviceSpecimenTypes}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -228,7 +240,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceOptions={devices}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -273,7 +285,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceOptions={devices}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -311,7 +323,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={washingtonFacility}
-              deviceOptions={devices}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -330,14 +342,15 @@ describe("FacilityForm", () => {
         await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
+
       it("doesn't allow a Z-CLIA for a non-Washington state", async () => {
-        const californiaFacility: Facility = validFacility;
-        californiaFacility.state = "CA";
+        const marylandFacility: Facility = validFacility;
+        marylandFacility.state = "MD";
         render(
           <MemoryRouter>
             <FacilityForm
-              facility={californiaFacility}
-              deviceOptions={devices}
+              facility={marylandFacility}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -351,7 +364,8 @@ describe("FacilityForm", () => {
         userEvent.type(cliaInput, "12Z3456789");
         userEvent.tab();
 
-        const expectedError = "Special Z CLIAs are only valid in WA";
+        const expectedError =
+          "Special temporary CLIAs are only valid in CA, IL, VT, WA, and WY.";
 
         expect(
           await screen.findByText(expectedError, {
@@ -364,6 +378,62 @@ describe("FacilityForm", () => {
           userEvent.click(saveButton);
         });
         expect(saveFacility).toBeCalledTimes(0);
+      });
+
+      it("allows alphanumeric characters for California", async () => {
+        const californiaFacility: Facility = validFacility;
+        californiaFacility.state = "CA";
+
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={californiaFacility}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const cliaInput = screen.getByLabelText("CLIA number", {
+          exact: false,
+        });
+
+        userEvent.clear(cliaInput);
+        userEvent.type(cliaInput, "CPDH000006");
+        userEvent.tab();
+
+        const saveButton = await screen.getAllByText("Save changes")[0];
+        userEvent.click(saveButton);
+        await validateAddress(saveFacility);
+        expect(saveFacility).toBeCalledTimes(1);
+      });
+
+      it("allows 47ZXXXXXXX pattern for VT", async () => {
+        const vermontFacility: Facility = validFacility;
+        vermontFacility.state = "VT";
+
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={vermontFacility}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const cliaInput = screen.getByLabelText("CLIA number", {
+          exact: false,
+        });
+
+        userEvent.clear(cliaInput);
+        userEvent.type(cliaInput, "47Z1234567");
+        userEvent.tab();
+
+        const saveButton = await screen.getAllByText("Save changes")[0];
+        userEvent.click(saveButton);
+        await validateAddress(saveFacility);
+        expect(saveFacility).toBeCalledTimes(1);
       });
     });
   });
@@ -386,7 +456,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceOptions={devices}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -434,7 +504,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceOptions={devices}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -471,7 +541,7 @@ describe("FacilityForm", () => {
         <MemoryRouter>
           <FacilityForm
             facility={facility}
-            deviceOptions={devices}
+            deviceSpecimenTypeOptions={deviceSpecimenTypes}
             saveFacility={saveFacility}
           />
         </MemoryRouter>
@@ -502,7 +572,7 @@ describe("FacilityForm", () => {
         <MemoryRouter>
           <FacilityForm
             facility={validFacility}
-            deviceOptions={devices}
+            deviceSpecimenTypeOptions={deviceSpecimenTypes}
             saveFacility={saveFacility}
           />
         </MemoryRouter>
@@ -519,6 +589,58 @@ describe("FacilityForm", () => {
         "A default device must be selected",
         { exact: false }
       );
+      expect(warning).toBeInTheDocument();
+    });
+
+    it("properly unsets default device when the default device is changed", async () => {
+      const unusedDevice = { internalId: "device-3", name: "Device 3" };
+
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceSpecimenTypeOptions={deviceSpecimenTypes.concat({
+              internalId: "4",
+              deviceType: unusedDevice,
+              specimenType: {
+                internalId: "fake-specimen-id-3",
+                name: "Fake Specimen 3",
+              },
+            })}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+      // Change default device
+      const dropdown = screen.getByTestId(
+        "device-dropdown-0"
+      ) as HTMLSelectElement;
+
+      await waitFor(() => {
+        userEvent.selectOptions(dropdown, unusedDevice.internalId);
+      });
+
+      expect(
+        (screen.getAllByRole("option", {
+          name: unusedDevice.name,
+        })[0] as HTMLOptionElement).selected
+      ).toBeTruthy();
+
+      const checkboxes = screen.getAllByRole("checkbox");
+
+      checkboxes.forEach((checkbox) => expect(checkbox).not.toBeChecked());
+
+      // Attempt save
+      const saveButtons = await screen.findAllByText("Save changes");
+
+      await waitFor(async () => {
+        userEvent.click(saveButtons[0]);
+      });
+      const warning = await screen.findByText(
+        "A default device must be selected",
+        { exact: false }
+      );
+
       expect(warning).toBeInTheDocument();
     });
   });

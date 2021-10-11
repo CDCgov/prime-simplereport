@@ -30,6 +30,7 @@ type Facility {
   phone: String
   email: String
   deviceTypes: [DeviceType]
+  deviceSpecimenTypes: [DeviceSpecimenType]
   defaultDeviceType: DeviceType
   orderingProvider: Provider
   patientSelfRegistrationLink: String
@@ -59,7 +60,22 @@ type DeviceType {
   model: String
   loincCode: String
   swabType: String
+  swabTypes: String
   testLength: Int
+}
+
+type SpecimenType {
+  internalId: ID!
+  name: String!
+  typeCode: String!
+  collectionLocationName: String
+  collectionLocationCode: String
+}
+
+type DeviceSpecimenType {
+  internalId: ID!
+  deviceType: DeviceType!
+  specimenType: SpecimenType!
 }
 
 type TestDescription {
@@ -212,7 +228,7 @@ type OrganizationLevelDashboardMetrics {
 }
 
 type TopLevelDashboardMetrics {
-  positiveTestCount: Int,
+  positiveTestCount: Int
   totalTestCount: Int
 }
 
@@ -245,6 +261,8 @@ type Query {
   deviceType: [DeviceType]
     @deprecated(reason: "use the pluralized form to reduce confusion")
   deviceTypes: [DeviceType]
+  specimenType: [SpecimenType]
+  deviceSpecimenTypes: [DeviceSpecimenType]
   patients(
     facilityId: ID
     pageNumber: Int
@@ -270,6 +288,7 @@ type Query {
   ): Boolean
   queue(facilityId: ID!): [TestOrder]
     @requiredPermissions(anyOf: ["START_TEST", "UPDATE_TEST", "SUBMIT_TEST"])
+  specimenTypes: [SpecimenType!]!
   testResults(
     facilityId: ID
     patientId: ID
@@ -292,10 +311,14 @@ type Query {
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   organizationLevelDashboardMetrics(startDate: DateTime!, endDate: DateTime!): OrganizationLevelDashboardMetrics
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
-  topLevelDashboardMetrics(facilityId: ID, startDate: DateTime!, endDate: DateTime!): TopLevelDashboardMetrics
-    @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
+  topLevelDashboardMetrics(
+    facilityId: ID
+    startDate: DateTime
+    endDate: DateTime
+  ): TopLevelDashboardMetrics @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
-  usersWithStatus: [ApiUserWithStatus!] @requiredPermissions(allOf: ["MANAGE_USERS"])
+  usersWithStatus: [ApiUserWithStatus!]
+    @requiredPermissions(allOf: ["MANAGE_USERS"])
   user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
 }
@@ -328,6 +351,7 @@ type Mutation {
     orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
+    deviceSpecimenTypes: [ID]
     defaultDevice: String!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addFacility(
@@ -356,6 +380,7 @@ type Mutation {
     orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
+    deviceSpecimenTypes: [ID]
     defaultDevice: String!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addUserToCurrentOrg(
@@ -385,6 +410,7 @@ type Mutation {
   setUserIsDeleted(id: ID!, deleted: Boolean!): User
     @requiredPermissions(allOf: ["MANAGE_USERS"])
   reactivateUser(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
+  resendActivationEmail(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   setCurrentUserTenantDataAccess(
     organizationExternalId: String
     justification: String

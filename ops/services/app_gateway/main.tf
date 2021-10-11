@@ -44,7 +44,7 @@ resource "azurerm_application_gateway" "load_balancer" {
   # ------- Static -------------------------
   backend_address_pool {
     name  = local.static_backend_pool
-    fqdns = [var.cdn_hostname]
+    fqdns = [var.blob_endpoint]
   }
 
   backend_http_settings {

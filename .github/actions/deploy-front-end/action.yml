@@ -61,14 +61,3 @@ runs:
           --account-name simplereport${{ inputs.deploy-env }}app \
           --destination-path '/app'
         echo "::endgroup::"
-    - name: Purge CDN
-      shell: bash
-      working-directory: ./frontend
-      run: |
-        echo "::group::Purge CDN"
-        az cdn endpoint purge \
-          --resource-group prime-simple-report-${{ inputs.deploy-env }} \
-          --profile-name simple-report-${{ inputs.deploy-env }} \
-          --name simple-report-${{ inputs.deploy-env }} \
-          --content-paths "/app/*" --no-wait
-        echo "::endgroup::"

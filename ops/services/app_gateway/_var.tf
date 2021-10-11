@@ -4,7 +4,7 @@ variable "resource_group_name" {}
 variable "resource_group_location" {}
 variable "tags" {}
 
-variable "cdn_hostname" {}
+variable "blob_endpoint" {}
 variable "subnet_id" {}
 
 # https://docs.microsoft.com/en-us/azure/application-gateway/application-gateway-autoscaling-zone-redundant

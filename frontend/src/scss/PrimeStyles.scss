@@ -1,6 +1,7 @@
 .prime-home {
   background-color: color("base-lightest");
   padding-top: units(2);
+  padding-bottom: units(2);
 }
 
 .prime-container {
@@ -330,6 +331,10 @@
 
 .prime-orange-icon {
   color: orange;
+}
+
+.prime-blue-icon {
+  color: color($theme-color-primary);
 }
 
 // General group of related items on a form

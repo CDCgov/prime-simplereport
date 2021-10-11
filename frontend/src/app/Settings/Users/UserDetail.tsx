@@ -15,6 +15,7 @@ import UserRoleSettingsForm from "./UserRoleSettingsForm";
 import ReactivateUserModal from "./ReactivateUserModal";
 import ResetUserPasswordModal from "./ResetUserPasswordModal";
 import "./ManageUsers.scss";
+import ResendActivationEmailModal from "./ResendActivationEmailModal";
 
 interface Props {
   user: SettingsUser;
@@ -26,6 +27,10 @@ interface Props {
   updateUser: UpdateUser;
   showReactivateUserModal: boolean;
   updateShowReactivateUserModal: (showReactivateUserModal: boolean) => void;
+  showResendUserActivationEmailModal: boolean;
+  updateShowResendUserActivationEmailModal: (
+    showResendUserActivationEmail: boolean
+  ) => void;
   showResetUserPasswordModal: boolean;
   updateShowResetPasswordModal: (showResetPasswordModal: boolean) => void;
   showDeleteUserModal: boolean;
@@ -36,6 +41,7 @@ interface Props {
   onContinueChangeActiveUser: () => void;
   handleReactivateUser: (userId: string) => void;
   handleResetUserPassword: (userId: string) => void;
+  handleResendUserActivationEmail: (userId: string) => void;
 }
 const roles: Role[] = ["ADMIN", "ENTRY_ONLY", "USER"];
 
@@ -49,6 +55,8 @@ const UserDetail: React.FC<Props> = ({
   handleDeleteUser,
   showReactivateUserModal,
   updateShowReactivateUserModal,
+  showResendUserActivationEmailModal,
+  updateShowResendUserActivationEmailModal,
   showResetUserPasswordModal,
   updateShowResetPasswordModal,
   showDeleteUserModal,
@@ -59,6 +67,7 @@ const UserDetail: React.FC<Props> = ({
   onContinueChangeActiveUser,
   handleReactivateUser,
   handleResetUserPassword,
+  handleResendUserActivationEmail,
 }) => {
   return (
     <div className="tablet:grid-col padding-left-2">
@@ -89,7 +98,18 @@ const UserDetail: React.FC<Props> = ({
             disabled={isUpdating}
           />
         ) : null}
-        {user.status !== "SUSPENDED" && user?.id !== loggedInUser.id ? (
+        {user.status === "PROVISIONED" ? (
+          <Button
+            variant="outline"
+            className="margin-left-auto margin-bottom-1"
+            onClick={() => updateShowResendUserActivationEmailModal(true)}
+            label="Resend account setup email"
+            disabled={isUpdating}
+          />
+        ) : null}
+        {user.status !== "SUSPENDED" &&
+        user.status !== "PROVISIONED" &&
+        user?.id !== loggedInUser.id ? (
           <Button
             variant="outline"
             className="margin-left-auto margin-bottom-1"
@@ -169,6 +189,13 @@ const UserDetail: React.FC<Props> = ({
           user={user}
           onClose={() => updateShowReactivateUserModal(false)}
           onReactivateUser={handleReactivateUser}
+        />
+      ) : null}
+      {showResendUserActivationEmailModal ? (
+        <ResendActivationEmailModal
+          user={user}
+          onClose={() => updateShowResendUserActivationEmailModal(false)}
+          onResendActivationEmail={handleResendUserActivationEmail}
         />
       ) : null}
       {showResetUserPasswordModal ? (

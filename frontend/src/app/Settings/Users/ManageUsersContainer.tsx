@@ -6,6 +6,7 @@ import { Role } from "../../permissions";
 import {
   Maybe,
   useGetUsersAndStatusQuery,
+  useResendActivationEmailMutation,
   UserPermission,
 } from "../../../generated/graphql";
 
@@ -116,6 +117,7 @@ const ManageUsersContainer = () => {
   const [reactivateUser] = useMutation(REACTIVATE_USER);
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
   const [resetPassword] = useMutation(RESET_USER_PASSWORD);
+  const [resendUserActivationEmail] = useResendActivationEmailMutation();
 
   const {
     data,
@@ -146,6 +148,7 @@ const ManageUsersContainer = () => {
       resetUserPassword={resetPassword}
       deleteUser={deleteUser}
       reactivateUser={reactivateUser}
+      resendUserActivationEmail={resendUserActivationEmail}
       getUsers={getUsers}
     />
   );

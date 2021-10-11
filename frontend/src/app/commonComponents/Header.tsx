@@ -3,10 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import classNames from "classnames";
 import { v4 as uuidv4 } from "uuid";
 import { useSelector, connect } from "react-redux";
-import {
-  useAppInsightsContext,
-  useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
 
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import { formatFullName, formatRole } from "../utils/user";
@@ -14,6 +10,7 @@ import siteLogo from "../../img/simplereport-logo-color.svg";
 import { hasPermission, appPermissions } from "../permissions";
 import { RootState } from "../store";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
+import { getAppInsights } from "../TelemetryService";
 
 import Button from "./Button/Button";
 import Dropdown from "./Dropdown";
@@ -21,17 +18,18 @@ import useComponentVisible from "./ComponentVisible";
 import { LinkWithQuery } from "./LinkWithQuery";
 import ChangeUser from "./ChangeUser";
 
-const Header: React.FC<{}> = () => {
-  const appInsights = useAppInsightsContext();
-  const trackSupport = useTrackEvent(appInsights, "Support", {});
+import "./Header.scss";
 
-  const handleSupportClick = (e: MouseEvent) => {
+const Header: React.FC<{}> = () => {
+  const appInsights = getAppInsights();
+
+  const handleSupportClick = () => {
     if (appInsights) {
-      trackSupport(e);
+      appInsights.trackEvent({ name: "Support" });
     }
   };
 
-  const isAdmin = useSelector<RootState, boolean>(
+  const isSupportAdmin = useSelector<RootState, boolean>(
     (state) => state.user.isAdmin
   );
   const organization = useSelector(
@@ -78,7 +76,15 @@ const Header: React.FC<{}> = () => {
     appPermissions.tests.canView
   );
 
-  const siteLogoLinkPath = isAdmin ? "/admin" : "/queue";
+  let siteLogoLinkPath: string;
+
+  if (isSupportAdmin) {
+    siteLogoLinkPath = "/admin";
+  } else if (canViewSettings) {
+    siteLogoLinkPath = "/dashboard";
+  } else {
+    siteLogoLinkPath = "/queue";
+  }
 
   const logout = () => {
     // Fetch the id_token from local storage
@@ -87,8 +93,13 @@ const Header: React.FC<{}> = () => {
     // Remove auth data from local_storage
     localStorage.removeItem("access_token");
     localStorage.removeItem("id_token");
+    // Determine which Okta domain to use for logout
+    const oktaDomain =
+      process.env.NODE_ENV !== "development" ? "okta" : "oktapreview";
     window.location.replace(
-      "https://hhs-prime.okta.com/oauth2/default/v1/logout" +
+      "https://hhs-prime." +
+        encodeURIComponent(oktaDomain) +
+        ".com/oauth2/default/v1/logout" +
         `?id_token_hint=${encodeURIComponent(id_token || "")}` +
         `&post_logout_redirect_uri=${encodeURIComponent(
           process.env.REACT_APP_BASE_URL || ""
@@ -99,7 +110,7 @@ const Header: React.FC<{}> = () => {
 
   return (
     <header className="usa-header usa-header--basic">
-      <div className="usa-nav-container">
+      <div className="usa-nav-container prime-header">
         <div className="usa-navbar">
           <div className="usa-logo" id="basic-logo">
             <LinkWithQuery to={siteLogoLinkPath} title="Home" aria-label="Home">
@@ -139,6 +150,21 @@ const Header: React.FC<{}> = () => {
           </button>
 
           <ul className="usa-nav__primary usa-accordion">
+            {canViewSettings ? (
+              <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
+                <LinkWithQuery
+                  to={`/dashboard`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  className="prime-nav-link"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  Dashboard
+                </LinkWithQuery>
+              </li>
+            ) : null}
             {canViewTestQueue ? (
               <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
                 <LinkWithQuery
@@ -212,7 +238,7 @@ const Header: React.FC<{}> = () => {
                 <a
                   href="https://simplereport.gov/support"
                   target="none"
-                  onClick={() => handleSupportClick}
+                  onClick={() => handleSupportClick()}
                 >
                   Support
                 </a>
@@ -239,6 +265,22 @@ const Header: React.FC<{}> = () => {
 
         <nav aria-label="Primary navigation" className="usa-nav prime-nav">
           <ul className="usa-nav__primary usa-accordion">
+            {canViewSettings ? (
+              <li className="usa-nav__primary-item">
+                <LinkWithQuery
+                  to={`/dashboard`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  className="prime-nav-link"
+                  id="dashboard-nav-link"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  Dashboard
+                </LinkWithQuery>
+              </li>
+            ) : null}
             {canViewTestQueue ? (
               <li className="usa-nav__primary-item">
                 <LinkWithQuery
@@ -341,7 +383,7 @@ const Header: React.FC<{}> = () => {
                     <a
                       href="https://simplereport.gov/support"
                       target="none"
-                      onClick={() => handleSupportClick}
+                      onClick={() => handleSupportClick()}
                       data-testid="support-link"
                     >
                       Support

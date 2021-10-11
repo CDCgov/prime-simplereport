@@ -13,7 +13,9 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.AccountResponse;
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.WaitlistRequest;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
@@ -109,6 +111,40 @@ public class AccountRequestController {
       // We rethrow it as a BadRequestException so that users get a toast informing them of the
       // error.
       throw new BadRequestException("This organization has already registered with SimpleReport.");
+    } catch (IOException | RuntimeException e) {
+      throw new AccountRequestFailureException(e);
+    }
+  }
+
+  @SuppressWarnings("checkstyle:illegalcatch")
+  @PostMapping("/organization-add-to-queue")
+  @Transactional(readOnly = false)
+  public AccountResponse submitOrganizationAccountRequestAddToQueue(
+      @Valid @RequestBody OrganizationAccountRequest request) throws IOException {
+    try {
+      logOrganizationAccountRequest(request);
+
+      String parsedStateCode = Translators.parseState(request.getState());
+      String organizationName =
+          checkForDuplicateOrg(request.getName(), parsedStateCode, request.getEmail());
+      String orgExternalId = createOrgExternalId(organizationName, parsedStateCode);
+
+      String requestEmail = Translators.parseEmail(request.getEmail());
+      boolean userExists = _aus.userExists(requestEmail);
+      if (userExists) {
+        throw new BadRequestException(
+            "This email address is already associated with a SimpleReport user.");
+      }
+
+      OrganizationQueueItem item = _os.queueNewRequest(organizationName, orgExternalId, request);
+
+      return new AccountResponse(item.getExternalId());
+    } catch (BadRequestException e) {
+      // Need to catch and re-throw these BadRequestExceptions or they get rethrown as
+      // AccountRequestFailureExceptions
+      throw e;
+    } catch (IllegalGraphqlArgumentException e) {
+      throw new BadRequestException("Invalid email address");
     } catch (IOException | RuntimeException e) {
       throw new AccountRequestFailureException(e);
     }

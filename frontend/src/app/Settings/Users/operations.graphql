@@ -28,3 +28,16 @@ query GetUsersAndStatus {
     status
   }
 }
+
+mutation ResendActivationEmail($id: ID!) {
+  resendActivationEmail(
+    id: $id
+  ) {
+    id
+    firstName
+    middleName
+    lastName
+    email
+    status
+  }
+}

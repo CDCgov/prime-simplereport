@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import moment from "moment";
@@ -16,7 +16,9 @@ const DOB = () => {
   const dispatch = useDispatch();
   const [birthDate, setBirthDate] = useState("");
   const [birthDateError, setBirthDateError] = useState("");
+  const [birthDateHidden, setBirthDateHidden] = useState(true);
   const [linkExpiredError, setLinkExpiredError] = useState(false);
+  const [linkNotFoundError, setLinkNotFoundError] = useState(false);
   const dobRef = useRef<HTMLInputElement>(null);
   const plid = useSelector((state: any) => state.plid);
   const patient = useSelector((state: any) => state.patient);
@@ -26,16 +28,34 @@ const DOB = () => {
     dobRef?.current?.focus();
   }, []);
 
-  const confirmBirthDate = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const validPattern = new RegExp("([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})");
 
-    const date = moment(birthDate.replace("/", ""), "MMDDYYYY");
-    if (!date.isValid()) {
-      setBirthDateError(t("testResult.dob.enterDOB"));
+  const validateBirthDate = () => {
+    const date = moment(birthDate, "MM/DD/YYYY");
+    if (!validPattern.test(birthDate)) {
+      setBirthDateError(t("testResult.dob.invalidFormat"));
       dobRef?.current?.focus();
+      return false;
+    } else if (date.year() < 1900 || date.year() > moment().year()) {
+      setBirthDateError(t("testResult.dob.invalidYear"));
+      dobRef?.current?.focus();
+      return false;
+    } else if (!date.isValid()) {
+      setBirthDateError(t("testResult.dob.invalidDate"));
+      dobRef?.current?.focus();
+      return false;
+    } else {
+      setBirthDateError("");
+      return true;
+    }
+  };
+
+  const confirmBirthDate = async () => {
+    if (!validateBirthDate()) {
       return;
     }
 
+    const date = moment(birthDate, "MM/DD/YYYY");
     setLoading(true);
     try {
       const response = await PxpApi.validateDateOfBirth(
@@ -48,10 +68,12 @@ const DOB = () => {
         })
       );
       dispatch(setPatient(response));
-    } catch (error) {
+    } catch (error: any) {
       if (error?.status === 410) {
         setLinkExpiredError(true);
-      } else {
+      } else if (error?.status === 404) {
+        setLinkNotFoundError(true);
+      } else if (error?.status === 403) {
         setBirthDateError(t("testResult.dob.error"));
       }
     } finally {
@@ -88,50 +110,72 @@ const DOB = () => {
     );
   }
 
-  return (
-    <>
+  if (linkExpiredError) {
+    return (
       <main>
         <div className="grid-container maxw-tablet">
-          {!linkExpiredError ? (
-            <>
-              <p className="margin-top-3">{t("testResult.dob.enterDOB2")}</p>
-              <form className="usa-form" onSubmit={confirmBirthDate}>
-                <TextInput
-                  label={t("testResult.dob.dateOfBirth")}
-                  name={"birthDate"}
-                  type={"password"}
-                  autoComplete={"on"}
-                  value={birthDate}
-                  size={8}
-                  pattern={"([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})|([0-9]{8})"}
-                  inputMode={"numeric"}
-                  ariaDescribedBy={"bdayFormat"}
-                  hintText={t("testResult.dob.format")}
-                  errorMessage={birthDateError}
-                  validationStatus={birthDateError ? "error" : undefined}
-                  onChange={(evt) => setBirthDate(evt.currentTarget.value)}
-                  inputRef={dobRef}
-                />
-                <Button
-                  id="dob-submit-button"
-                  label={t("testResult.dob.submit")}
-                  type={"submit"}
-                />
-              </form>
-            </>
-          ) : (
-            <>
-              <p></p>
-              <Alert
-                type="error"
-                title="Link expired"
-                body={t("testResult.dob.linkExpired")}
-              />
-            </>
-          )}
+          <p></p>
+          <Alert
+            type="error"
+            title="Link expired"
+            body={t("testResult.dob.linkExpired")}
+          />
         </div>
       </main>
-    </>
+    );
+  }
+
+  if (linkNotFoundError) {
+    return (
+      <main>
+        <div className="grid-container maxw-tablet">
+          <p></p>
+          <Alert
+            type="error"
+            title="Link not found"
+            body={t("testResult.dob.linkNotFound")}
+          />
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main>
+      <div className="grid-container maxw-tablet">
+        <p className="margin-top-3">{t("testResult.dob.enterDOB2")}</p>
+        <TextInput
+          className="width-mobile"
+          label={t("testResult.dob.dateOfBirth")}
+          name={"birthDate"}
+          type={birthDateHidden ? "password" : "text"}
+          autoComplete={"on"}
+          value={birthDate}
+          ariaDescribedBy={"bdayFormat"}
+          hintText={t("testResult.dob.format")}
+          onBlur={validateBirthDate}
+          errorMessage={birthDateError}
+          validationStatus={birthDateError ? "error" : undefined}
+          onChange={(evt) => setBirthDate(evt.currentTarget.value)}
+          inputRef={dobRef}
+        />
+        <div className="margin-top-1 margin-bottom-2">
+          <button
+            className="usa-button usa-button--unstyled margin-top-0"
+            aria-controls="birthDate"
+            onClick={() => setBirthDateHidden(!birthDateHidden)}
+          >
+            {birthDateHidden ? "Show my typing" : "Hide my typing"}
+          </button>
+        </div>
+        <Button
+          id="dob-submit-button"
+          data-testid="dob-submit-button"
+          label={t("testResult.dob.submit")}
+          onClick={confirmBirthDate}
+        />
+      </div>
+    </main>
   );
 };
 

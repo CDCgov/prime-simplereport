@@ -1,9 +1,7 @@
 import React from "react";
 import { gql, QueryHookOptions, useQuery } from "@apollo/client";
-import {
-  useAppInsightsContext,
-  useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
+
+import { getAppInsights } from "../TelemetryService";
 
 export type InjectedQueryWrapperProps =
   | "data"
@@ -35,8 +33,8 @@ export function QueryWrapper<ComponentProps>({
   Component: React.ComponentType<ComponentProps>;
   componentProps: Omit<ComponentProps, InjectedQueryWrapperProps>;
 }): React.ReactElement {
-  const appInsights = useAppInsightsContext();
-  const trackAction = useTrackEvent(appInsights, "User Action", {});
+  const appInsights = getAppInsights();
+
   const { data, loading, error, refetch, startPolling, stopPolling } = useQuery(
     query,
     {
@@ -56,7 +54,11 @@ export function QueryWrapper<ComponentProps>({
   };
   const props = ({
     ...componentProps,
-    trackAction,
+    trackAction: appInsights
+      ? appInsights.trackEvent({ name: "User Action" })
+      : () => {
+          // no-op
+        },
     data,
     loading,
     refetch: passOnRefetch,

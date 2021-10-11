@@ -175,6 +175,24 @@ const getMocks = () => [
       },
     },
   },
+  {
+    request: {
+      query: GetTopLevelDashboardMetricsDocument,
+      variables: {
+        facilityId: "3",
+        startDate: getDateFromDaysAgo(30),
+        endDate: new Date(),
+      },
+    },
+    result: {
+      data: {
+        topLevelDashboardMetrics: {
+          totalTestCount: 5,
+          positiveTestCount: 0,
+        },
+      },
+    },
+  },
 ];
 
 describe("Analytics", () => {
@@ -215,7 +233,7 @@ describe("Analytics", () => {
   it("allows filtering by Lincoln Middle School", async () => {
     await act(async () => {
       await screen.findByText("COVID-19 testing data");
-      userEvent.selectOptions(screen.getByLabelText("Facility"), [
+      userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
         "Lincoln Middle School",
       ]);
     });
@@ -227,7 +245,7 @@ describe("Analytics", () => {
   it("allows filtering by Rosa Parks High School", async () => {
     await act(async () => {
       await screen.findByText("COVID-19 testing data");
-      userEvent.selectOptions(screen.getByLabelText("Facility"), [
+      userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
         "Rosa Parks High School",
       ]);
     });
@@ -294,10 +312,23 @@ describe("Analytics", () => {
   it("shows N/A for positivity rate at Empty School", async () => {
     await act(async () => {
       await screen.findByText("COVID-19 testing data");
-      userEvent.selectOptions(screen.getByLabelText("Facility"), [
+      userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
         "Empty School",
       ]);
     });
     expect(await screen.findByText("N/A")).toBeInTheDocument();
+  });
+  it("shows 0% for positivity rate at Empty School over last month", async () => {
+    await act(async () => {
+      await screen.findByText("COVID-19 testing data");
+      userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
+        "Empty School",
+      ]);
+      await screen.findByText("COVID-19 testing data");
+      userEvent.selectOptions(screen.getByLabelText("Date range"), [
+        "Last month (30 days)",
+      ]);
+    });
+    expect(await screen.findByText("0.0%")).toBeInTheDocument();
   });
 });

@@ -6,11 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.api.model.errors.OrderingProviderRequiredException;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -211,5 +213,22 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             () -> _service.verifyOrganizationNoPermissions(orgExternalId));
 
     assertEquals("Organization is already verified.", e.getMessage());
+  }
+
+  @Test
+  void queueNewRequest_newOrg_success() {
+    String orgName = "My House";
+    String orgExtId = "My-House-External-Id";
+    String email = "fake@email.org";
+    OrganizationQueueItem queueItem =
+        _service.queueNewRequest(
+            orgName,
+            orgExtId,
+            new OrganizationAccountRequest(
+                "First", "Last", email, "800-555-1212", "CA", null, null));
+
+    assertEquals(orgName, queueItem.getOrganizationName());
+    assertEquals(orgExtId, queueItem.getExternalId());
+    assertEquals(email, queueItem.getRequestData().getEmail());
   }
 }
