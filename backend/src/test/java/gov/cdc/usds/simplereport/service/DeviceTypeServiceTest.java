@@ -1,9 +1,11 @@
 package gov.cdc.usds.simplereport.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
+import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
+import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
@@ -12,7 +14,13 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(
+    properties = {
+      "hibernate.query.interceptor.error-level=ERROR",
+      "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
+    })
 class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
   private static final String FAKE_SWAB_TYPE = "012345678";
@@ -37,7 +45,15 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   @Test
   @WithSimpleReportSiteAdminUser
   void fetchDeviceType_carestartTestLength() {
-    _service.createDeviceType("CareStart", "B", "C", "D", FAKE_SWAB_TYPE);
+
+    _service.createDeviceTypeNew(
+        CreateDeviceType.builder()
+            .name("CareStart")
+            .model("B")
+            .manufacturer("C")
+            .loincCode("D")
+            .swabTypes(emptyList())
+            .build());
 
     DeviceType deviceType = _service.fetchDeviceTypes().get(0);
     System.out.print(deviceType.toString());
@@ -47,7 +63,16 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
   @Test
   void createDeviceType_baseUser_error() {
-    assertSecurityError(() -> _service.createDeviceType("A", "B", "C", "D", FAKE_SWAB_TYPE));
+    assertSecurityError(
+        () ->
+            _service.createDeviceTypeNew(
+                CreateDeviceType.builder()
+                    .name("A")
+                    .model("B")
+                    .manufacturer("C")
+                    .loincCode("D")
+                    .swabTypes(emptyList())
+                    .build()));
   }
 
   @Test
@@ -56,7 +81,9 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
         _deviceTypeRepo.save(
             new DeviceType("A", "B", "C", "D", FAKE_SWAB_TYPE, STANDARD_TEST_LENGTH));
     assertSecurityError(
-        () -> _service.updateDeviceType(deviceType.getInternalId(), "1", "2", "3", "4", "5"));
+        () ->
+            _service.updateDeviceType(
+                UpdateDeviceType.builder().internalId(deviceType.getInternalId()).build()));
   }
 
   @Test
@@ -70,11 +97,55 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   @Test
   @WithSimpleReportSiteAdminUser
   void createAndDeleteDeviceTypes_adminUser_success() {
-    DeviceType devA = _service.createDeviceType("A", "B", "C", "D", FAKE_SWAB_TYPE);
-    DeviceType devB = _service.createDeviceType("F", "G", "H", "I", "91234567");
-    assertNotNull(devA);
-    assertNotNull(devB);
+    // GIVEN
+    SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Hair", "000111222"));
+    SpecimenType swab2 = specimenTypeRepository.save(new SpecimenType("Mouth", "112233445"));
+
+    // WHEN
+    DeviceType devA =
+        _service.createDeviceTypeNew(
+            CreateDeviceType.builder()
+                .name("A")
+                .model("B")
+                .manufacturer("C")
+                .loincCode("D")
+                .swabTypes(List.of(swab1.getInternalId()))
+                .build());
+    DeviceType devB =
+        _service.createDeviceTypeNew(
+            CreateDeviceType.builder()
+                .name("F")
+                .model("G")
+                .manufacturer("H")
+                .loincCode("I")
+                .swabTypes(List.of(swab2.getInternalId()))
+                .build());
+
+    // THEN
     assertNotEquals(devA.getInternalId(), devB.getInternalId());
+
+    devA = _deviceTypeRepo.findById(devA.getInternalId()).get();
+    assertNotNull(devA);
+    assertEquals(devA.getName(), "A");
+    assertEquals(devA.getModel(), "B");
+    assertEquals(devA.getManufacturer(), "C");
+    assertEquals(devA.getLoincCode(), "D");
+    assertNull(devA.getSwabType());
+    List<SpecimenType> devASwabTypes = devA.getSwabTypes();
+    assertThat(devASwabTypes.size()).isEqualTo(1);
+    assertThat(devASwabTypes.get(0).getName()).isEqualTo("Hair");
+
+    devB = _deviceTypeRepo.findById(devB.getInternalId()).get();
+    assertNotNull(devB);
+    assertEquals(devB.getName(), "F");
+    assertEquals(devB.getModel(), "G");
+    assertEquals(devB.getManufacturer(), "H");
+    assertEquals(devB.getLoincCode(), "I");
+    assertNull(devB.getSwabType());
+    List<SpecimenType> devBSwabTypes = devB.getSwabTypes();
+    assertThat(devBSwabTypes.size()).isEqualTo(1);
+    assertThat(devBSwabTypes.get(0).getName()).isEqualTo("Mouth");
+
     List<DeviceType> found = _service.fetchDeviceTypes();
     assertEquals(2, found.size());
     _service.removeDeviceType(devB);
@@ -84,37 +155,42 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void createAndDeleteDeviceTypes2_adminUser_success() {
-
-    SpecimenType swab1 =
-        specimenTypeRepository.save(new SpecimenType("internal swab", "111222333"));
-    SpecimenType swab2 =
-        specimenTypeRepository.save(new SpecimenType("external swab", "555666444"));
-
-    DeviceType devA =
-        _service.createDeviceTypeNew(
-            "A", "B", "C", "D", List.of(swab1.getInternalId(), swab2.getInternalId()));
-    assertNotNull(devA);
-    List<DeviceType> found = _service.fetchDeviceTypes();
-    assertEquals(1, found.size());
-    _service.removeDeviceType(devA);
-    found = _service.fetchDeviceTypes();
-    assertEquals(0, found.size());
-  }
-
-  @Test
-  @WithSimpleReportSiteAdminUser
   void updateDeviceTypeName_adminUser_success() {
-    DeviceType device = _service.createDeviceType("A", "B", "C", "D", FAKE_SWAB_TYPE);
+    // GIVEN
+    SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Nose", "111222333"));
+    SpecimenType swab2 = specimenTypeRepository.save(new SpecimenType("Mouth", "555666444"));
+    DeviceType device =
+        _service.createDeviceTypeNew(
+            CreateDeviceType.builder()
+                .name("A")
+                .model("B")
+                .manufacturer("C")
+                .loincCode("D")
+                .swabTypes(List.of(swab1.getInternalId()))
+                .build());
 
+    // WHEN
     DeviceType updatedDevice =
-        _service.updateDeviceType(device.getInternalId(), "Tim", null, null, null, null);
+        _service.updateDeviceType(
+            UpdateDeviceType.builder()
+                .internalId(device.getInternalId())
+                .name("Z")
+                .model("Y")
+                .manufacturer("X")
+                .loincCode("W")
+                .swabTypes(List.of(swab2.getInternalId()))
+                .build());
 
+    // THEN
     assertEquals(updatedDevice.getInternalId(), device.getInternalId());
-    assertEquals(updatedDevice.getName(), "Tim");
-    assertEquals(updatedDevice.getModel(), "B");
-    assertEquals(updatedDevice.getManufacturer(), "C");
-    assertEquals(updatedDevice.getLoincCode(), "D");
-    assertEquals(updatedDevice.getSwabType(), FAKE_SWAB_TYPE);
+    assertEquals("Z", updatedDevice.getName());
+    assertEquals("Y", updatedDevice.getModel());
+    assertEquals("X", updatedDevice.getManufacturer());
+    assertEquals("W", updatedDevice.getLoincCode());
+    assertNull(updatedDevice.getSwabType());
+
+    List<SpecimenType> updatedSwabTypes = updatedDevice.getSwabTypes();
+    assertThat(updatedSwabTypes.size()).isEqualTo(1);
+    assertThat(updatedSwabTypes.get(0).getName()).isEqualTo("Mouth");
   }
 }

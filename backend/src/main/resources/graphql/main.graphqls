@@ -53,6 +53,23 @@ type Provider {
   phone: String
 }
 
+input CreateDeviceType {
+  name: String!
+  manufacturer: String!
+  model: String!
+  loincCode: String!
+  swabTypes: [ID!]!
+}
+
+input UpdateDeviceType {
+  internalId: ID!
+  name: String!
+  manufacturer: String!
+  model: String!
+  loincCode: String!
+  swabTypes: [ID!]!
+}
+
 type DeviceType {
   internalId: ID!
   name: String!
@@ -60,7 +77,7 @@ type DeviceType {
   model: String!
   loincCode: String!
   swabType: String
-  swabTypes: [ID!]!
+  swabTypes: [SpecimenType]
   testLength: Int
 }
 

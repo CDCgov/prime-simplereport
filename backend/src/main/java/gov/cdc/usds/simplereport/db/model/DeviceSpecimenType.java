@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -35,5 +36,23 @@ public class DeviceSpecimenType extends EternalAuditedEntity {
 
   public SpecimenType getSpecimenType() {
     return specimenType;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    DeviceSpecimenType that = (DeviceSpecimenType) o;
+    return Objects.equals(deviceType, that.deviceType)
+        && Objects.equals(specimenType, that.specimenType);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(deviceType, specimenType);
   }
 }
