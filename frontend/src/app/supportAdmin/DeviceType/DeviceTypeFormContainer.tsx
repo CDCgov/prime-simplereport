@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 
 import {
-  useCreateDeviceTypeNewMutation,
+  useCreateDeviceTypeMutation,
   useGetSpecimenTypesQuery,
 } from "../../../generated/graphql";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
+import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 import DeviceTypeForm from "./DeviceTypeForm";
 
@@ -21,25 +22,31 @@ export interface Device {
 
 const DeviceTypeFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
-  const [swabOptions, setSwabOptions] = useState<
-    Array<MultiSelectDropdownOption>
-  >([]);
+  const [swabOptions, setSwabOptions] = useState<MultiSelectDropdownOption[]>(
+    []
+  );
 
-  const [createDeviceType] = useCreateDeviceTypeNewMutation();
-  const { data } = useGetSpecimenTypesQuery();
+  const [createDeviceType] = useCreateDeviceTypeMutation();
+  const { data: specimenTypesResults } = useGetSpecimenTypesQuery({
+    fetchPolicy: "no-cache",
+  });
 
   useEffect(() => {
-    if (data && data.specimenTypes && swabOptions.length === 0) {
+    if (
+      specimenTypesResults &&
+      specimenTypesResults.specimenTypes &&
+      swabOptions.length === 0
+    ) {
       setSwabOptions(
         Array.from(
-          data.specimenTypes.map((type) => ({
+          specimenTypesResults.specimenTypes.map((type) => ({
             label: `${type?.name} (${type?.typeCode})`,
             value: type?.internalId,
           }))
         )
       );
     }
-  }, [data, swabOptions]);
+  }, [specimenTypesResults, swabOptions]);
 
   const saveDeviceType = (device: Device) => {
     createDeviceType({
@@ -62,9 +69,16 @@ const DeviceTypeFormContainer = () => {
     return <Redirect to="/admin" />;
   }
 
-  return (
-    <DeviceTypeForm saveDeviceType={saveDeviceType} swabOptions={swabOptions} />
-  );
+  if (!specimenTypesResults && swabOptions.length === 0) {
+    return <LoadingCard message="Loading" />;
+  } else {
+    return (
+      <DeviceTypeForm
+        saveDeviceType={saveDeviceType}
+        swabOptions={swabOptions}
+      />
+    );
+  }
 };
 
 export default DeviceTypeFormContainer;

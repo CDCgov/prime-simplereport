@@ -77,7 +77,7 @@ type DeviceType {
   model: String!
   loincCode: String!
   swabType: String
-  swabTypes: [SpecimenType]
+  swabTypes: [SpecimenType!]!
   testLength: Int
 }
 

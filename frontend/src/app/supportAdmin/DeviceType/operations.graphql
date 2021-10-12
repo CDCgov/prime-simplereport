@@ -3,32 +3,38 @@ mutation createDeviceType(
   $manufacturer: String!
   $model: String!
   $loincCode: String!
-  $swabType: String!
+  $swabTypes: [ID!]!
 ) {
   createDeviceType(
-    name: $name
-    manufacturer: $manufacturer
-    model: $model
-    loincCode: $loincCode
-    swabType: $swabType
+    input: {
+      name: $name
+      manufacturer: $manufacturer
+      model: $model
+      loincCode: $loincCode
+      swabTypes: $swabTypes
+    }
   ) {
     internalId
   }
 }
 
-mutation createDeviceTypeNew(
+mutation updateDeviceType(
+  $internalId: ID!
   $name: String!
   $manufacturer: String!
   $model: String!
   $loincCode: String!
   $swabTypes: [ID!]!
 ) {
-  createDeviceTypeNew(
-    name: $name
-    manufacturer: $manufacturer
-    model: $model
-    loincCode: $loincCode
-    swabTypes: $swabTypes
+  updateDeviceType(
+    input: {
+      internalId: $internalId
+      name: $name
+      manufacturer: $manufacturer
+      model: $model
+      loincCode: $loincCode
+      swabTypes: $swabTypes
+    }
   ) {
     internalId
   }
@@ -49,6 +55,9 @@ query getDeviceTypeList{
     loincCode,
     manufacturer,
     model,
-    swabTypes
+    swabTypes {
+      internalId,
+      name
+    }
   }
 }

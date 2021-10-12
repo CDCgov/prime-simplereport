@@ -2,17 +2,19 @@ import { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 
 import {
-  useCreateDeviceTypeNewMutation,
+  UpdateDeviceType,
   useGetDeviceTypeListQuery,
   useGetSpecimenTypesQuery,
+  useUpdateDeviceTypeMutation,
+  DeviceType,
+  useGetSpecimenTypesLazyQuery,
 } from "../../../generated/graphql";
-import Alert from "../../commonComponents/Alert";
-import { showNotification } from "../../utils";
 import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
+import { showNotification } from "../../utils";
+import Alert from "../../commonComponents/Alert";
 
 import ManageDevicesForm from "./ManageDevicesForm";
-import { DeviceType } from "./types";
 
 const DeviceTypeFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -22,9 +24,13 @@ const DeviceTypeFormContainer = () => {
 
   const [devices, setDevices] = useState<DeviceType[]>([]);
 
-  const [createDeviceType] = useCreateDeviceTypeNewMutation();
-  const { data: specimenTypesResults } = useGetSpecimenTypesQuery();
-  const { data: deviceTypeResults } = useGetDeviceTypeListQuery();
+  const [updateDeviceType] = useUpdateDeviceTypeMutation();
+  const { data: specimenTypesResults } = useGetSpecimenTypesQuery({
+    fetchPolicy: "no-cache",
+  });
+  const { data: deviceTypeResults } = useGetDeviceTypeListQuery({
+    fetchPolicy: "no-cache",
+  });
 
   useEffect(() => {
     if (deviceTypeResults && deviceTypeResults.deviceTypes) {
@@ -55,8 +61,9 @@ const DeviceTypeFormContainer = () => {
     }
   }, [specimenTypesResults, swabOptions]);
 
-  const saveDeviceType = (device: DeviceType) => {
-    createDeviceType({
+  const saveDeviceType = (device: UpdateDeviceType) => {
+    console.log(device);
+    updateDeviceType({
       variables: device,
       fetchPolicy: "no-cache",
     }).then(() => {
@@ -81,7 +88,7 @@ const DeviceTypeFormContainer = () => {
   } else {
     return (
       <ManageDevicesForm
-        saveDeviceType={saveDeviceType}
+        updateDeviceType={saveDeviceType}
         swabOptions={swabOptions}
         devices={devices}
       />

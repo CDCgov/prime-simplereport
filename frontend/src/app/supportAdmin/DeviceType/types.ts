@@ -1,5 +1,4 @@
 export interface DeviceType {
-  internalId: string;
   name: string;
   manufacturer: string;
   model: string;

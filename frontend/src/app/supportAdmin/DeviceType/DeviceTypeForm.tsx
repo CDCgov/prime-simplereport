@@ -9,7 +9,7 @@ import { Device } from "./DeviceTypeFormContainer";
 
 interface Props {
   saveDeviceType: (device: Device) => void;
-  swabOptions: Array<MultiSelectDropdownOption>;
+  swabOptions: MultiSelectDropdownOption[];
 }
 
 const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {

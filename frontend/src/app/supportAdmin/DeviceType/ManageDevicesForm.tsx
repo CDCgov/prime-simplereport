@@ -1,28 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import Button from "../../commonComponents/Button/Button";
 import TextInput from "../../commonComponents/TextInput";
 import MultiSelect from "../../commonComponents/MultiSelect/MultiSelect";
 import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
-import { ROLE_VALUES } from "../../constants";
 import Select from "../../commonComponents/Select";
-
-import { DeviceType } from "./types";
+import { UpdateDeviceType, DeviceType } from "../../../generated/graphql";
 
 interface Props {
-  saveDeviceType: (device: DeviceType) => void;
+  updateDeviceType: (device: UpdateDeviceType) => void;
   swabOptions: Array<MultiSelectDropdownOption>;
   devices: DeviceType[];
 }
 
 const ManageDevicesForm: React.FC<Props> = ({
-  saveDeviceType,
+  updateDeviceType,
   swabOptions,
   devices,
 }) => {
-  const [selectedDevice, setSelectedDevice] = useState<DeviceType | undefined>(
-    undefined
-  );
+  const [selectedDevice, setSelectedDevice] = useState<
+    UpdateDeviceType | undefined
+  >(undefined);
 
   const [formChanged, updateFormChanged] = useState<boolean>(false);
 
@@ -47,6 +45,20 @@ const ManageDevicesForm: React.FC<Props> = ({
       }))
     );
 
+  const getUpdateDeviceType = (device: DeviceType | undefined) => {
+    if (!device) {
+      return undefined;
+    }
+    return {
+      internalId: device.internalId,
+      name: device.name,
+      manufacturer: device.manufacturer,
+      model: device.model,
+      swabTypes: device.swabTypes?.map((swab) => swab.internalId),
+      loincCode: device.loincCode,
+    } as UpdateDeviceType;
+  };
+
   return (
     <main className="prime-home">
       <div className="grid-container">
@@ -66,7 +78,7 @@ const ManageDevicesForm: React.FC<Props> = ({
                 <Button
                   type="button"
                   onClick={() =>
-                    selectedDevice && saveDeviceType(selectedDevice)
+                    selectedDevice && updateDeviceType(selectedDevice)
                   }
                   label="Save changes"
                   disabled={!formChanged || !selectedDevice}
@@ -114,34 +126,19 @@ const ManageDevicesForm: React.FC<Props> = ({
                     defaultSelect
                     onChange={(id) => {
                       setSelectedDevice(
-                        devices.find((device) => id === device.internalId)
+                        getUpdateDeviceType(
+                          devices.find((device) => id === device.internalId)
+                        )
                       );
                     }}
                     required
                   />
-                  {/*<TextInput*/}
-                  {/*  label="Device name"*/}
-                  {/*  name="name"*/}
-                  {/*  value={device.name}*/}
-                  {/*  onChange={onChange}*/}
-                  {/*  required*/}
-                  {/*/>*/}
                 </div>
                 <div className="tablet:grid-col">
                   <TextInput
                     label="Manufacturer"
                     name="manufacturer"
                     value={selectedDevice?.manufacturer}
-                    onChange={onChange}
-                    disabled={!selectedDevice}
-                    required
-                  />
-                </div>
-                <div className="tablet:grid-col">
-                  <TextInput
-                    label="Model"
-                    name="model"
-                    value={selectedDevice?.model}
                     onChange={onChange}
                     disabled={!selectedDevice}
                     required
@@ -159,17 +156,32 @@ const ManageDevicesForm: React.FC<Props> = ({
                 </div>
               </div>
               <div className="grid-row grid-gap">
+                <div className="tablet:grid-col">
+                  <TextInput
+                    label="Model"
+                    name="model"
+                    value={selectedDevice?.model}
+                    onChange={onChange}
+                    disabled={!selectedDevice}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="grid-row grid-gap">
                 <div
                   className="tablet:grid-col"
                   style={{ marginBottom: "56px" }}
                 >
                   <MultiSelect
+                    key={selectedDevice?.internalId}
                     label="SNOMED code for swab type(s)"
                     name="swabTypes"
                     onChange={(swabTypes) => {
                       updateDeviceAttribute("swabTypes", swabTypes);
                     }}
                     options={swabOptions}
+                    initialSelectedValues={selectedDevice?.swabTypes}
+                    disabled={!selectedDevice}
                     required
                   />
                 </div>
