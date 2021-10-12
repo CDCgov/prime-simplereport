@@ -42,11 +42,13 @@ class TestResultTest extends BaseGraphqlTest {
 
   private Organization _org;
   private Facility _site;
+  private Facility _secondSite;
 
   @BeforeEach
   public void init() {
     _org = _orgService.getCurrentOrganizationNoCache();
     _site = _orgService.getFacilities(_org).get(0);
+    _secondSite = _orgService.getFacilities(_org).get(1);
   }
 
   @Test
@@ -186,6 +188,93 @@ class TestResultTest extends BaseGraphqlTest {
     updateSelfPrivileges(Role.USER, false, Set.of(_site.getInternalId()));
     fetchTestResult(fetchT1Variables, Optional.empty());
     fetchTestResult(fetchT2Variables, Optional.empty());
+  }
+
+  @Test
+  void getOrganizationLevelDashboardMetrics_orgAdmin_success() {
+    useOrgAdmin();
+
+    Person p1 = _dataFactory.createFullPerson(_org);
+    Person p2 = _dataFactory.createMinimalPerson(_org, _site);
+    Person p3 = _dataFactory.createMinimalPerson(_org, _secondSite, "Carl", "A", "Scheffer", "");
+    Person p4 =
+        _dataFactory.createMinimalPerson(_org, _secondSite, "Lindsay", "L", "Wasserman", "");
+
+    DeviceType d = _site.getDefaultDeviceType();
+    DeviceType secondSiteDevice = _secondSite.getDefaultDeviceType();
+
+    _dataFactory.createTestOrder(p1, _site);
+    _dataFactory.createTestOrder(p2, _site);
+    _dataFactory.createTestOrder(p3, _secondSite);
+    _dataFactory.createTestOrder(p4, _secondSite);
+    String dateTested = "2020-12-31T14:30:30.001Z";
+
+    ObjectNode submitP1Variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("deviceId", d.getInternalId().toString())
+            .put("patientId", p1.getInternalId().toString())
+            .put("result", TestResult.POSITIVE.toString())
+            .put("dateTested", dateTested);
+    ObjectNode submitP2Variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("deviceId", d.getInternalId().toString())
+            .put("patientId", p2.getInternalId().toString())
+            .put("result", TestResult.NEGATIVE.toString())
+            .put("dateTested", dateTested);
+    ObjectNode submitP3Variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("deviceId", secondSiteDevice.getInternalId().toString())
+            .put("patientId", p3.getInternalId().toString())
+            .put("result", TestResult.NEGATIVE.toString())
+            .put("dateTested", dateTested);
+    ObjectNode submitP4Variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("deviceId", secondSiteDevice.getInternalId().toString())
+            .put("patientId", p4.getInternalId().toString())
+            .put("result", TestResult.NEGATIVE.toString())
+            .put("dateTested", dateTested);
+    submitTestResult(submitP1Variables, Optional.empty());
+    submitTestResult(submitP2Variables, Optional.empty());
+    submitTestResult(submitP3Variables, Optional.empty());
+    submitTestResult(submitP4Variables, Optional.empty());
+
+    String startDate = "2020-01-01";
+    String endDate = new SimpleDateFormat("yyyy-MM-dd").format(Date.from(Instant.now()));
+
+    ObjectNode variables =
+        JsonNodeFactory.instance.objectNode().put("startDate", startDate).put("endDate", endDate);
+
+    ObjectNode result =
+        runQuery(
+            "organization-level-metrics", "GetOrganizationLevelDashboardMetrics", variables, null);
+
+    JsonNode metrics = result.get("organizationLevelDashboardMetrics");
+    System.out.println(metrics);
+    assertEquals(1L, metrics.get("organizationPositiveTestCount").asLong());
+    assertEquals(3L, metrics.get("organizationNegativeTestCount").asLong());
+    assertEquals(4L, metrics.get("organizationTotalTestCount").asLong());
+    assertEquals(2, metrics.get("facilityMetrics").size());
+  }
+
+  @Test
+  void getOrganizationLevelDashboardMetrics_orgUser_failure() {
+    String startDate = "2020-01-01";
+    String endDate = new SimpleDateFormat("yyyy-MM-dd").format(Date.from(Instant.now()));
+
+    ObjectNode variables =
+        JsonNodeFactory.instance.objectNode().put("startDate", startDate).put("endDate", endDate);
+
+    useOrgUser();
+
+    runQuery(
+        "organization-level-metrics",
+        "GetOrganizationLevelDashboardMetrics",
+        variables,
+        "Current user does not have permission to request [/organizationLevelDashboardMetrics]");
   }
 
   @Test

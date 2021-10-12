@@ -3,6 +3,8 @@ package gov.cdc.usds.simplereport.service;
 import com.twilio.exception.ApiException;
 import com.twilio.exception.TwilioException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
+import gov.cdc.usds.simplereport.api.model.AggregateFacilityMetrics;
+import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -32,6 +34,7 @@ import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -456,6 +459,47 @@ public class TestOrderService {
     _repo.save(order);
 
     return newRemoveEvent;
+  }
+
+  @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionEditOrganization
+  public OrganizationLevelDashboardMetrics getOrganizationLevelDashboardMetrics(
+      Date startDate, Date endDate) {
+    Organization org = _os.getCurrentOrganization();
+    List<UUID> facilityIds =
+        _os.getFacilities(org).stream().map(Facility::getInternalId).collect(Collectors.toList());
+
+    List<AggregateFacilityMetrics> facilityMetrics = new ArrayList<AggregateFacilityMetrics>();
+
+    for (UUID facilityId : facilityIds) {
+      List<TestResultWithCount> results =
+          _terepo.countByResultForFacility(facilityId, startDate, endDate);
+      Facility facility = _os.getFacilityInCurrentOrg(facilityId);
+      Map<TestResult, Long> testResultMap =
+          results.stream()
+              .collect(
+                  Collectors.toMap(TestResultWithCount::getResult, TestResultWithCount::getCount));
+      long negativeTestCount = testResultMap.getOrDefault(TestResult.NEGATIVE, 0L);
+      long positiveTestCount = testResultMap.getOrDefault(TestResult.POSITIVE, 0L);
+      long totalTestCount = testResultMap.values().stream().reduce(0L, Long::sum);
+
+      facilityMetrics.add(
+          new AggregateFacilityMetrics(
+              facility.getFacilityName(), totalTestCount, positiveTestCount, negativeTestCount));
+    }
+
+    long organizationNegativeTestCount =
+        facilityMetrics.stream().map(m -> m.getNegativeTestCount()).reduce(0L, Long::sum);
+    long organizationPositiveTestCount =
+        facilityMetrics.stream().map(m -> m.getPositiveTestCount()).reduce(0L, Long::sum);
+    long organizationTotalTestCount =
+        facilityMetrics.stream().map(m -> m.getTotalTestCount()).reduce(0L, Long::sum);
+
+    return new OrganizationLevelDashboardMetrics(
+        organizationPositiveTestCount,
+        organizationNegativeTestCount,
+        organizationTotalTestCount,
+        facilityMetrics);
   }
 
   @Transactional(readOnly = true)

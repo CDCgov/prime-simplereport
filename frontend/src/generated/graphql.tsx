@@ -38,6 +38,14 @@ export type AddressInfo = {
   streetTwo?: Maybe<Scalars["String"]>;
 };
 
+export type AggregateFacilityMetrics = {
+  __typename?: "AggregateFacilityMetrics";
+  facilityName?: Maybe<Scalars["String"]>;
+  negativeTestCount?: Maybe<Scalars["Int"]>;
+  positiveTestCount?: Maybe<Scalars["Int"]>;
+  totalTestCount?: Maybe<Scalars["Int"]>;
+};
+
 export type ApiUser = {
   __typename?: "ApiUser";
   email: Scalars["String"];
@@ -508,6 +516,14 @@ export type Organization = {
   type: Scalars["String"];
 };
 
+export type OrganizationLevelDashboardMetrics = {
+  __typename?: "OrganizationLevelDashboardMetrics";
+  facilityMetrics?: Maybe<Array<Maybe<AggregateFacilityMetrics>>>;
+  organizationNegativeTestCount?: Maybe<Scalars["Int"]>;
+  organizationPositiveTestCount?: Maybe<Scalars["Int"]>;
+  organizationTotalTestCount?: Maybe<Scalars["Int"]>;
+};
+
 export type Patient = {
   __typename?: "Patient";
   address?: Maybe<AddressInfo>;
@@ -594,6 +610,7 @@ export type Query = {
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
   /** @deprecated this information is already loaded from the 'whoami' endpoint */
   organization?: Maybe<Organization>;
+  organizationLevelDashboardMetrics?: Maybe<OrganizationLevelDashboardMetrics>;
   organizations: Array<Organization>;
   patient?: Maybe<Patient>;
   patientExists?: Maybe<Scalars["Boolean"]>;
@@ -610,6 +627,11 @@ export type Query = {
   users?: Maybe<Array<Maybe<ApiUser>>>;
   usersWithStatus?: Maybe<Array<ApiUserWithStatus>>;
   whoami: User;
+};
+
+export type QueryOrganizationLevelDashboardMetricsArgs = {
+  endDate: Scalars["DateTime"];
+  startDate: Scalars["DateTime"];
 };
 
 export type QueryOrganizationsArgs = {
