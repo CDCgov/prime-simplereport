@@ -66,7 +66,7 @@ export const MultiSelect = ({
   labelClassName,
   options,
   disabled,
-  initialSelectedValues = [],
+  initialSelectedValues,
 }: MultiSelectProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -74,7 +74,7 @@ export const MultiSelect = ({
     MultiSelectDropdownOption[]
   >(getSortedOptions(options));
 
-  const [selectedItems, setSelectedItems] = useState<string[]>(
+  const [selectedItems, setSelectedItems] = useState<string[] | undefined>(
     initialSelectedValues
   );
 

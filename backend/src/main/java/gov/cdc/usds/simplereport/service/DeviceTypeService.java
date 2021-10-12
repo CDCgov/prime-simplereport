@@ -27,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class DeviceTypeService {
 
+  public static final String SWAB_TYPE_DELETED_MESSAGE =
+      "swab type has been deleted and cannot be used";
   private DeviceTypeRepository _repo;
   private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
   private SpecimenTypeRepository _specimenTypeRepo;
@@ -110,8 +112,7 @@ public class DeviceTypeService {
       updatedSpecimenTypes.forEach(
           specimenType -> {
             if (specimenType.isDeleted()) {
-              throw new IllegalGraphqlArgumentException(
-                  "swab type has been deleted and cannot be used");
+              throw new IllegalGraphqlArgumentException(SWAB_TYPE_DELETED_MESSAGE);
             }
           });
 
@@ -151,7 +152,7 @@ public class DeviceTypeService {
                     _specimenTypeRepo.save(
                         new SpecimenType("Auto-generated " + swabType, swabType)));
     if (st.isDeleted()) {
-      throw new IllegalGraphqlArgumentException("swab type has been deleted and cannot be used");
+      throw new IllegalGraphqlArgumentException(SWAB_TYPE_DELETED_MESSAGE);
     }
     DeviceType dt =
         _repo.save(
@@ -173,8 +174,7 @@ public class DeviceTypeService {
     specimenTypes.forEach(
         specimenType -> {
           if (specimenType.isDeleted()) {
-            throw new IllegalGraphqlArgumentException(
-                "swab type has been deleted and cannot be used");
+            throw new IllegalGraphqlArgumentException(SWAB_TYPE_DELETED_MESSAGE);
           }
         });
 

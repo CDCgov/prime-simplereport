@@ -1,98 +1,129 @@
-import { useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
+import { act, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
-import {
-  UpdateDeviceType,
-  useGetDeviceTypeListQuery,
-  useGetSpecimenTypesQuery,
-  useUpdateDeviceTypeMutation,
-  DeviceType,
-} from "../../../generated/graphql";
-import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
-import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
-import { showNotification } from "../../utils";
-import Alert from "../../commonComponents/Alert";
+import { SpecimenType, DeviceType } from "../../../generated/graphql";
 
-import ManageDevicesForm from "./ManageDevicesForm";
+import ManageDeviceTypeFormContainer from "./ManageDeviceTypeFormContainer";
+import { addValue } from "./DeviceTypeForm.test";
 
-const DeviceTypeFormContainer = () => {
-  const [submitted, setSubmitted] = useState(false);
-  const [swabOptions, setSwabOptions] = useState<MultiSelectDropdownOption[]>(
-    []
-  );
+const mockUpdateDeviceType = jest.fn();
 
-  const [devices, setDevices] = useState<DeviceType[]>([]);
-
-  const [updateDeviceType] = useUpdateDeviceTypeMutation();
-  const { data: specimenTypesResults } = useGetSpecimenTypesQuery({
-    fetchPolicy: "no-cache",
-  });
-  const { data: deviceTypeResults } = useGetDeviceTypeListQuery({
-    fetchPolicy: "no-cache",
-  });
-
-  useEffect(() => {
-    if (deviceTypeResults && deviceTypeResults.deviceTypes) {
-      setDevices(
-        Array.from(
-          deviceTypeResults.deviceTypes.map(
-            (devicesTypes) => devicesTypes as DeviceType
-          )
-        )
-      );
-    }
-  }, [deviceTypeResults]);
-
-  useEffect(() => {
-    if (
-      specimenTypesResults &&
-      specimenTypesResults.specimenTypes &&
-      swabOptions.length === 0
-    ) {
-      setSwabOptions(
-        Array.from(
-          specimenTypesResults.specimenTypes.map((type) => ({
-            label: `${type?.name} (${type?.typeCode})`,
-            value: type?.internalId,
-          }))
-        )
-      );
-    }
-  }, [specimenTypesResults, swabOptions]);
-
-  const saveDeviceType = (device: UpdateDeviceType) => {
-    console.log(device);
-    updateDeviceType({
-      variables: device,
-      fetchPolicy: "no-cache",
-    }).then(() => {
-      let alert = (
-        <Alert
-          type="success"
-          title="Created Device"
-          body="The device has been created"
-        />
-      );
-      showNotification(alert);
-      setSubmitted(true);
-    });
+jest.mock("../../../generated/graphql", () => {
+  return {
+    useUpdateDeviceTypeMutation: () => [
+      (options: any) => {
+        mockUpdateDeviceType(options);
+        return Promise.resolve();
+      },
+    ],
+    useGetSpecimenTypesQuery: () => {
+      return {
+        data: {
+          specimenTypes: [
+            {
+              internalId: "123",
+              name: "nose",
+              typeCode: "123",
+            },
+            {
+              internalId: "456",
+              name: "eyes",
+              typeCode: "456",
+            },
+            {
+              internalId: "789",
+              name: "mouth",
+              typeCode: "789",
+            },
+          ] as SpecimenType[],
+        },
+      };
+    },
+    useGetDeviceTypeListQuery: () => {
+      return {
+        data: {
+          deviceTypes: [
+            {
+              internalId: "abc1",
+              name: "Tesla Emitter",
+              model: "Model A",
+              manufacturer: "Celoxitin",
+              loincCode: "1234-1",
+              swabTypes: [
+                { internalId: "123", name: "nose", typeCode: "n123" },
+              ],
+            },
+            {
+              internalId: "abc2",
+              name: "Fission Energizer",
+              model: "Model B",
+              manufacturer: "Curentz",
+              loincCode: "1234-2",
+              swabTypes: [{ internalId: "456", name: "eye", typeCode: "e456" }],
+            },
+            {
+              internalId: "abc3",
+              name: "Covalent Observer",
+              model: "Model C",
+              manufacturer: "Vitamin Tox",
+              loincCode: "1234-3",
+              swabTypes: [
+                { internalId: "789", name: "mouth", typeCode: "m789" },
+              ],
+            },
+          ] as DeviceType[],
+        },
+      };
+    },
   };
+});
 
-  if (submitted) {
-    return <Redirect to="/admin" />;
-  }
+jest.mock("react-router-dom", () => ({
+  Redirect: (props: any) => `Redirected to ${props.to}`,
+}));
 
-  if (!deviceTypeResults || !specimenTypesResults) {
-    return <LoadingCard message="Loading" />;
-  } else {
-    return (
-      <ManageDevicesForm
-        updateDeviceType={saveDeviceType}
-        swabOptions={swabOptions}
-        devices={devices}
-      />
-    );
-  }
-};
+describe("ManageDeviceTypeFormContainer", () => {
+  beforeEach(() => {
+    render(<ManageDeviceTypeFormContainer />);
+  });
 
-export default DeviceTypeFormContainer;
+  it("should show the device type form", () => {
+    screen.findByText("Manage Device");
+  });
+
+  it("should update the selected device", async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    act(() => {
+      userEvent.selectOptions(
+        screen.getByLabelText("Device name", { exact: false }),
+        "Covalent Observer"
+      );
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    addValue("Manufacturer", " LLC");
+
+    addValue("Model", "D");
+
+    act(() => {
+      userEvent.click(screen.getByText("Save changes"));
+    });
+
+    expect(mockUpdateDeviceType).toBeCalledTimes(1);
+    expect(mockUpdateDeviceType).toHaveBeenCalledWith({
+      fetchPolicy: "no-cache",
+      variables: {
+        internalId: "abc3",
+        name: "Covalent Observer",
+        loincCode: "1234-3",
+        manufacturer: "Vitamin Tox LLC",
+        model: "Model CD",
+        swabTypes: ["789"],
+      },
+    });
+
+    await screen.findByText("Redirected to /admin");
+  });
+});

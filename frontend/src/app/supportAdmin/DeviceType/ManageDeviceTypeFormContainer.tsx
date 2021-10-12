@@ -7,7 +7,6 @@ import {
   useGetSpecimenTypesQuery,
   useUpdateDeviceTypeMutation,
   DeviceType,
-  useGetSpecimenTypesLazyQuery,
 } from "../../../generated/graphql";
 import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
@@ -16,7 +15,7 @@ import Alert from "../../commonComponents/Alert";
 
 import ManageDevicesForm from "./ManageDevicesForm";
 
-const DeviceTypeFormContainer = () => {
+const ManageDeviceTypeFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
   const [swabOptions, setSwabOptions] = useState<MultiSelectDropdownOption[]>(
     []
@@ -33,7 +32,11 @@ const DeviceTypeFormContainer = () => {
   });
 
   useEffect(() => {
-    if (deviceTypeResults && deviceTypeResults.deviceTypes) {
+    if (
+      deviceTypeResults &&
+      deviceTypeResults.deviceTypes &&
+      devices.length === 0
+    ) {
       setDevices(
         Array.from(
           deviceTypeResults.deviceTypes.map(
@@ -42,7 +45,7 @@ const DeviceTypeFormContainer = () => {
         )
       );
     }
-  }, [deviceTypeResults]);
+  }, [deviceTypeResults, devices]);
 
   useEffect(() => {
     if (
@@ -62,12 +65,11 @@ const DeviceTypeFormContainer = () => {
   }, [specimenTypesResults, swabOptions]);
 
   const saveDeviceType = (device: UpdateDeviceType) => {
-    console.log(device);
     updateDeviceType({
       variables: device,
       fetchPolicy: "no-cache",
     }).then(() => {
-      let alert = (
+      const alert = (
         <Alert
           type="success"
           title="Created Device"
@@ -96,4 +98,4 @@ const DeviceTypeFormContainer = () => {
   }
 };
 
-export default DeviceTypeFormContainer;
+export default ManageDeviceTypeFormContainer;

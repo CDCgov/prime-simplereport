@@ -1,197 +1,161 @@
-import React, { useState } from "react";
+import { render, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
-import Button from "../../commonComponents/Button/Button";
-import TextInput from "../../commonComponents/TextInput";
-import MultiSelect from "../../commonComponents/MultiSelect/MultiSelect";
-import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
-import Select from "../../commonComponents/Select";
-import { UpdateDeviceType, DeviceType } from "../../../generated/graphql";
+import ManageDevicesForm from "./ManageDevicesForm";
+import { addValue } from "./DeviceTypeForm.test";
 
-interface Props {
-  updateDeviceType: (device: UpdateDeviceType) => void;
-  swabOptions: Array<MultiSelectDropdownOption>;
-  devices: DeviceType[];
-}
+describe("ManageDeviceTypeForm", () => {
+  let saveDeviceType: jest.Mock;
 
-const ManageDevicesForm: React.FC<Props> = ({
-  updateDeviceType,
-  swabOptions,
-  devices,
-}) => {
-  const [selectedDevice, setSelectedDevice] = useState<
-    UpdateDeviceType | undefined
-  >(undefined);
-
-  const [formChanged, updateFormChanged] = useState<boolean>(false);
-
-  function updateDeviceAttribute(name: string, value: any) {
-    if (selectedDevice) {
-      setSelectedDevice({ ...selectedDevice, [name]: value });
-      updateFormChanged(true);
-    }
-  }
-
-  const onChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    updateDeviceAttribute(e.target.name, e.target.value);
-  };
-
-  const getDeviceNames = () =>
-    Array.from(
-      devices.map((device) => ({
-        label: device.name,
-        value: device.internalId,
-      }))
+  beforeEach(() => {
+    saveDeviceType = jest.fn();
+    render(
+      <ManageDevicesForm
+        updateDeviceType={saveDeviceType}
+        swabOptions={[
+          { label: "nose", value: "123" },
+          { label: "eye", value: "456" },
+          { label: "mouth", value: "789" },
+        ]}
+        devices={[
+          {
+            internalId: "abc1",
+            name: "Tesla Emitter",
+            model: "Model A",
+            manufacturer: "Celoxitin",
+            loincCode: "1234-1",
+            swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
+          },
+          {
+            internalId: "abc2",
+            name: "Fission Energizer",
+            model: "Model B",
+            manufacturer: "Curentz",
+            loincCode: "1234-2",
+            swabTypes: [{ internalId: "456", name: "eye", typeCode: "e456" }],
+          },
+          {
+            internalId: "abc3",
+            name: "Covalent Observer",
+            model: "Model C",
+            manufacturer: "Vitamin Tox",
+            loincCode: "1234-3",
+            swabTypes: [{ internalId: "789", name: "mouth", typeCode: "m789" }],
+          },
+        ]}
+      />
     );
+  });
 
-  const getUpdateDeviceType = (device: DeviceType | undefined) => {
-    if (!device) {
-      return undefined;
-    }
-    return {
-      internalId: device.internalId,
-      name: device.name,
-      manufacturer: device.manufacturer,
-      model: device.model,
-      swabTypes: device.swabTypes?.map((swab) => swab.internalId),
-      loincCode: device.loincCode,
-    } as UpdateDeviceType;
-  };
+  it("Disables the save button", () => {
+    expect(screen.getByText("Save changes")).not.toBeEnabled();
+  });
 
-  return (
-    <main className="prime-home">
-      <div className="grid-container">
-        <div className="grid-row">
-          <div className="prime-container card-container">
-            <div className="usa-card__header">
-              <div>
-                <h2>Manage devices</h2>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Button
-                  type="button"
-                  onClick={() =>
-                    selectedDevice && updateDeviceType(selectedDevice)
-                  }
-                  label="Save changes"
-                  disabled={!formChanged || !selectedDevice}
-                />
-              </div>
-            </div>
-            <div className="usa-card__body margin-top-1">
-              <div>
-                <div className="usa-alert usa-alert--warning">
-                  <div className="usa-alert__body">
-                    <h4 className="usa-alert__heading">Reminder</h4>
-                    <p className="usa-alert__text">
-                      Notify ReportStream of devices added in{" "}
-                      <a
-                        href="https://usds.slack.com/archives/C024MGSJZ38"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        #prime-reportstream
-                      </a>
-                      .
-                    </p>
-                    <p>
-                      Device details can be found by downloading the mapping
-                      tool (Excel file) from the{" "}
-                      <a
-                        href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        CDC test code mapping for COVID-19 page
-                      </a>
-                      .
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="grid-row grid-gap">
-                <div className="tablet:grid-col">
-                  <Select
-                    label="Device name"
-                    name="name"
-                    value={selectedDevice?.internalId || ""}
-                    options={getDeviceNames()}
-                    defaultSelect
-                    onChange={(id) => {
-                      setSelectedDevice(
-                        getUpdateDeviceType(
-                          devices.find((device) => id === device.internalId)
-                        )
-                      );
-                    }}
-                    required
-                  />
-                </div>
-                <div className="tablet:grid-col">
-                  <TextInput
-                    label="Manufacturer"
-                    name="manufacturer"
-                    value={selectedDevice?.manufacturer}
-                    onChange={onChange}
-                    disabled={!selectedDevice}
-                    required
-                  />
-                </div>
-                <div className="tablet:grid-col">
-                  <TextInput
-                    label="LOINC code"
-                    name="loincCode"
-                    value={selectedDevice?.loincCode}
-                    onChange={onChange}
-                    disabled={!selectedDevice}
-                    required
-                  />
-                </div>
-              </div>
-              <div className="grid-row grid-gap">
-                <div className="tablet:grid-col">
-                  <TextInput
-                    label="Model"
-                    name="model"
-                    value={selectedDevice?.model}
-                    onChange={onChange}
-                    disabled={!selectedDevice}
-                    required
-                  />
-                </div>
-              </div>
-              <div className="grid-row grid-gap">
-                <div
-                  className="tablet:grid-col"
-                  style={{ marginBottom: "56px" }}
-                >
-                  <MultiSelect
-                    key={selectedDevice?.internalId}
-                    label="SNOMED code for swab type(s)"
-                    name="swabTypes"
-                    onChange={(swabTypes) => {
-                      updateDeviceAttribute("swabTypes", swabTypes);
-                    }}
-                    options={swabOptions}
-                    initialSelectedValues={selectedDevice?.swabTypes}
-                    disabled={!selectedDevice}
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-  );
-};
+  it("disables all input fields when no device is selected", function () {
+    expect(
+      screen.getByLabelText("Manufacturer", { exact: false })
+    ).not.toBeEnabled();
+    expect(screen.getByLabelText("Model", { exact: false })).not.toBeEnabled();
+    expect(
+      screen.getByLabelText("LOINC code", { exact: false })
+    ).not.toBeEnabled();
+    expect(screen.getByTestId("multi-select-toggle")).not.toBeEnabled();
+  });
 
-export default ManageDevicesForm;
+  it("shows a list of devices to select from", () => {
+    userEvent.click(screen.getByLabelText("Device name", { exact: false }));
+    expect(screen.getByText("Tesla Emitter")).toBeInTheDocument();
+    expect(screen.getByText("Fission Energizer")).toBeInTheDocument();
+    expect(screen.getByText("Covalent Observer")).toBeInTheDocument();
+  });
+
+  describe("When selecting a device", () => {
+    beforeEach(() => {
+      userEvent.selectOptions(
+        screen.getByLabelText("Device name", { exact: false }),
+        "Tesla Emitter"
+      );
+    });
+
+    it("enables input fields and prefills them with current values", () => {
+      const manufacturerInput = screen.getByLabelText("Manufacturer", {
+        exact: false,
+      });
+      const modelInput = screen.getByLabelText("Model", { exact: false });
+      const loincCodeInput = screen.getByLabelText("LOINC code", {
+        exact: false,
+      });
+      const snomedInput = screen.getByTestId("multi-select-toggle");
+      const pillContainer = screen.getByTestId("pill-container");
+
+      expect(manufacturerInput).toBeEnabled();
+      expect(modelInput).toBeEnabled();
+      expect(loincCodeInput).toBeEnabled();
+      expect(snomedInput).toBeEnabled();
+
+      expect(manufacturerInput).toHaveValue("Celoxitin");
+      expect(modelInput).toHaveValue("Model A");
+      expect(loincCodeInput).toHaveValue("1234-1");
+      within(pillContainer).getByText("nose");
+    });
+
+    it("displays a list of available snomeds", () => {
+      const snomedList = screen.getByTestId("multi-select-option-list");
+
+      expect(within(snomedList).getByText("eye")).toBeInTheDocument();
+      expect(within(snomedList).getByText("mouth")).toBeInTheDocument();
+      expect(within(snomedList).getByText("nose")).toBeInTheDocument();
+    });
+
+    describe("selecting another device", () => {
+      beforeEach(() => {
+        userEvent.selectOptions(
+          screen.getByLabelText("Device name", { exact: false }),
+          "Fission Energizer"
+        );
+      });
+
+      it("prefills input fields with new values", () => {
+        const manufacturerInput = screen.getByLabelText("Manufacturer", {
+          exact: false,
+        });
+        const modelInput = screen.getByLabelText("Model", { exact: false });
+        const loincCodeInput = screen.getByLabelText("LOINC code", {
+          exact: false,
+        });
+        const pillContainer = screen.getByTestId("pill-container", {
+          exact: false,
+        });
+
+        expect(manufacturerInput).toHaveValue("Curentz");
+        expect(modelInput).toHaveValue("Model B");
+        expect(loincCodeInput).toHaveValue("1234-2");
+        within(pillContainer).getByText("eye");
+      });
+    });
+
+    describe("updating a device", () => {
+      it("calls update device with the current values", () => {
+        const snomedInput = screen.getByTestId("multi-select-toggle");
+        const snomedList = screen.getByTestId("multi-select-option-list");
+
+        addValue("Manufacturer", " LLC");
+        addValue("Model", "X");
+        addValue("LOINC code", "234");
+        userEvent.click(snomedInput);
+        userEvent.click(within(snomedList).getByText("eye"));
+        userEvent.click(screen.getByText("Save changes"));
+
+        expect(saveDeviceType).toHaveBeenNthCalledWith(1, {
+          internalId: "abc1",
+          name: "Tesla Emitter",
+          model: "Model AX",
+          manufacturer: "Celoxitin LLC",
+          loincCode: "1234-1234",
+          swabTypes: ["123", "456"],
+        });
+        expect(saveDeviceType).toBeCalledTimes(1);
+      });
+    });
+  });
+});

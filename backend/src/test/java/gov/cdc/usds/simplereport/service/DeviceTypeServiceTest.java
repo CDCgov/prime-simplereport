@@ -2,7 +2,10 @@ package gov.cdc.usds.simplereport.service;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
@@ -34,11 +37,11 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
     DeviceType deviceType = _service.fetchDeviceTypes().get(0);
 
-    assertEquals(deviceType.getName(), "A");
-    assertEquals(deviceType.getManufacturer(), "B");
-    assertEquals(deviceType.getModel(), "C");
-    assertEquals(deviceType.getLoincCode(), "D");
-    assertEquals(deviceType.getSwabType(), FAKE_SWAB_TYPE);
+    assertEquals("A", deviceType.getName());
+    assertEquals("B", deviceType.getManufacturer());
+    assertEquals("C", deviceType.getModel());
+    assertEquals("D", deviceType.getLoincCode());
+    assertEquals(FAKE_SWAB_TYPE, deviceType.getSwabType());
     assertEquals(15, deviceType.getTestLength());
   }
 
@@ -137,10 +140,10 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
     devB = _deviceTypeRepo.findById(devB.getInternalId()).get();
     assertNotNull(devB);
-    assertEquals(devB.getName(), "F");
-    assertEquals(devB.getModel(), "G");
-    assertEquals(devB.getManufacturer(), "H");
-    assertEquals(devB.getLoincCode(), "I");
+    assertEquals("F", devB.getName());
+    assertEquals("G", devB.getModel());
+    assertEquals("H", devB.getManufacturer());
+    assertEquals("I", devB.getLoincCode());
     assertNull(devB.getSwabType());
     List<SpecimenType> devBSwabTypes = devB.getSwabTypes();
     assertThat(devBSwabTypes.size()).isEqualTo(1);

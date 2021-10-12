@@ -53,7 +53,7 @@ const DeviceTypeFormContainer = () => {
       variables: device,
       fetchPolicy: "no-cache",
     }).then(() => {
-      let alert = (
+      const alert = (
         <Alert
           type="success"
           title="Created Device"
