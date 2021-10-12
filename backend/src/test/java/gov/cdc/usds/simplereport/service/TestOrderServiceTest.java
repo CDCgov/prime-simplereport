@@ -12,6 +12,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
+import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -1035,6 +1036,36 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     makedata();
     int size = _service.getTestResultsCount(_site.getInternalId(), null, null, null, null, null);
     assertEquals(11, size);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getOrganizationLevelDashboardMetrics_inOrgWithOrgAdmin_success() {
+    makedata();
+    Date startDate = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
+    Date endDate = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
+
+    OrganizationLevelDashboardMetrics metrics =
+        _service.getOrganizationLevelDashboardMetrics(startDate, endDate);
+    // these will need to be adjusted once the Date bug in makedata is fixed.
+    assertEquals(0, metrics.getOrganizationPositiveTestCount());
+    assertEquals(1, metrics.getOrganizationTotalTestCount());
+    assertEquals(1, metrics.getOrganizationNegativeTestCount());
+    assertEquals(4, metrics.getFacilityMetrics().size());
+  }
+
+  @Test
+  @WithSimpleReportStandardAllFacilitiesUser
+  void getOrganizationLevelDashboardMetrics_inOrgWithStandardUser_failure() {
+    makedata();
+    Date startDate = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
+    Date endDate = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
+
+    assertThrows(
+        AccessDeniedException.class,
+        () -> {
+          _service.getOrganizationLevelDashboardMetrics(startDate, endDate);
+        });
   }
 
   @Test

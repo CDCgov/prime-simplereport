@@ -28,7 +28,6 @@ import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration
 import "./i18n";
 import getNodeEnv from "./app/utils/getNodeEnv";
 import PrimeErrorBoundary from "./app/PrimeErrorBoundary";
-
 import "./styles/App.css";
 
 // Initialize telemetry early

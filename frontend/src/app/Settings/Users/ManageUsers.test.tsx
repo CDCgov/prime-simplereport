@@ -89,6 +89,29 @@ const suspendedUsers: SettingsUsers[keyof SettingsUsers][] = [
   },
 ];
 
+const pendingActivationUsers: SettingsUsers[keyof SettingsUsers][] = [
+  {
+    firstName: "Michael",
+    middleName: "",
+    lastName: "Almond",
+    id: "c456",
+    email: "michael@almond.com",
+    organization: { testingFacility: [] },
+    permissions: ["READ_PATIENT_LIST"],
+    roleDescription: "user",
+    role: "USER",
+    status: "PROVISIONED",
+  },
+  {
+    ...loggedInUser,
+    permissions: [],
+    organization,
+    roleDescription: "admin",
+    role: "ADMIN",
+    status: "ACTIVE",
+  },
+];
+
 const mocks = [
   {
     request: {
@@ -160,6 +183,30 @@ const mocks = [
       },
     },
   },
+  {
+    request: {
+      query: GetUserDocument,
+      variables: {
+        id: "c456",
+      },
+    },
+    result: {
+      data: {
+        user: {
+          id: "c456",
+          firstName: "Michael",
+          middleName: "",
+          lastName: "Almond",
+          roleDescription: "user",
+          role: "USER",
+          permissions: ["READ_PATIENT_LIST"],
+          email: "michael@almond.com",
+          organization: { testingFacility: [] },
+          status: "PROVISIONED",
+        },
+      },
+    },
+  },
 ];
 
 let updateUserPrivileges: () => Promise<any>;
@@ -167,6 +214,8 @@ let addUserToOrg: () => Promise<any>;
 let deleteUser: (obj: any) => Promise<any>;
 let getUsers: () => Promise<any>;
 let reactivateUser: (obj: any) => Promise<any>;
+let resetUserPassword: (obj: any) => Promise<any>;
+let resendUserActivationEmail: (obj: any) => Promise<any>;
 
 let inputValue = (value: string) => ({ target: { value } });
 
@@ -210,6 +259,16 @@ describe("ManageUsers", () => {
         data: { setUserIsReactivated: { id: obj.variables.id } },
       })
     );
+    resetUserPassword = jest.fn((obj) =>
+      Promise.resolve({
+        data: { setUserPasswordReset: { id: obj.variables.id } },
+      })
+    );
+    resendUserActivationEmail = jest.fn((obj) =>
+      Promise.resolve({
+        data: { setUserActivationEmailResent: { id: obj.variables.id } },
+      })
+    );
   });
 
   describe("regular list of users", () => {
@@ -237,7 +296,8 @@ describe("ManageUsers", () => {
               deleteUser={deleteUser}
               getUsers={getUsers}
               reactivateUser={reactivateUser}
-              resetUserPassword={() => Promise.resolve()}
+              resetUserPassword={resetUserPassword}
+              resendUserActivationEmail={resendUserActivationEmail}
             />
           </TestContainer>
         );
@@ -401,6 +461,17 @@ describe("ManageUsers", () => {
         },
       });
     });
+
+    it("resets a user's password", async () => {
+      const resetButton = await findByText("Reset", { exact: false });
+      userEvent.click(resetButton);
+      const sureButton = await findByText("Yes", { exact: false });
+      userEvent.click(sureButton);
+      await waitFor(() => expect(resetUserPassword).toBeCalled());
+      expect(resetUserPassword).toBeCalledWith({
+        variables: { id: users[0].id },
+      });
+    });
   });
 
   describe("empty list of users", () => {
@@ -423,6 +494,7 @@ describe("ManageUsers", () => {
               getUsers={getUsers}
               reactivateUser={reactivateUser}
               resetUserPassword={() => Promise.resolve()}
+              resendUserActivationEmail={resendUserActivationEmail}
             />
           </TestContainer>
         );
@@ -478,6 +550,7 @@ describe("ManageUsers", () => {
               getUsers={getUsers}
               reactivateUser={reactivateUser}
               resetUserPassword={() => Promise.resolve()}
+              resendUserActivationEmail={resendUserActivationEmail}
             />
           </TestContainer>
         );
@@ -500,6 +573,42 @@ describe("ManageUsers", () => {
       // status appears twice for each suspended user - once in the side nav, and once in the detail view.
       // the suspendedUsers list only has two users, one active and one suspended.
       expect(screen.queryAllByText("Account deactivated").length).toBe(2);
+    });
+  });
+
+  describe("pending account setup users", () => {
+    let findByText: any;
+    beforeEach(async () => {
+      await waitFor(() => {
+        const { findByText: findText } = render(
+          <TestContainer>
+            <ManageUsers
+              users={pendingActivationUsers}
+              loggedInUser={loggedInUser}
+              allFacilities={allFacilities}
+              updateUserPrivileges={updateUserPrivileges}
+              addUserToOrg={addUserToOrg}
+              deleteUser={deleteUser}
+              getUsers={getUsers}
+              reactivateUser={reactivateUser}
+              resetUserPassword={() => Promise.resolve()}
+              resendUserActivationEmail={resendUserActivationEmail}
+            />
+          </TestContainer>
+        );
+        findByText = findText;
+      });
+    });
+
+    it("resends account activation email for pending user", async () => {
+      const resendButton = await findByText("Resend", { exact: false });
+      userEvent.click(resendButton);
+      const sureButton = await findByText("Yes", { exact: false });
+      userEvent.click(sureButton);
+      await waitFor(() => expect(resendUserActivationEmail).toBeCalled());
+      expect(resendUserActivationEmail).toBeCalledWith({
+        variables: { id: pendingActivationUsers[0].id },
+      });
     });
   });
 
@@ -577,6 +686,7 @@ describe("ManageUsers", () => {
                 getUsers={getUsers}
                 reactivateUser={reactivateUser}
                 resetUserPassword={() => Promise.resolve()}
+                resendUserActivationEmail={resendUserActivationEmail}
               />
             </MockedProvider>
           </Provider>

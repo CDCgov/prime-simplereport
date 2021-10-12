@@ -219,8 +219,3 @@ test {
     }
 }
 
-sourceSets {
-  main {
-    java.srcDirs += "build/generated/sources/annotationProcessor/java/main"
-  }
-}

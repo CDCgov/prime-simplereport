@@ -30,6 +30,7 @@ interface Props {
   resetUserPassword: (variables: any) => Promise<any>;
   deleteUser: (variables: any) => Promise<any>;
   reactivateUser: (variables: any) => Promise<any>;
+  resendUserActivationEmail: (variables: any) => Promise<any>;
   getUsers: () => Promise<ApolloQueryResult<GetUsersAndStatusQuery>>;
 }
 
@@ -78,6 +79,7 @@ const ManageUsers: React.FC<Props> = ({
   resetUserPassword,
   deleteUser,
   reactivateUser,
+  resendUserActivationEmail,
   getUsers,
 }) => {
   const [activeUser, updateActiveUser] = useState<LimitedUser>();
@@ -102,6 +104,10 @@ const ManageUsers: React.FC<Props> = ({
   const [showReactivateUserModal, updateShowReactivateUserModal] = useState(
     false
   );
+  const [
+    showResendUserActivationEmailModal,
+    updateShowResendUserActivationEmailModal,
+  ] = useState(false);
   const [isUserEdited, updateIsUserEdited] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<Error>();
@@ -305,6 +311,30 @@ const ManageUsers: React.FC<Props> = ({
     }
   };
 
+  const handleResendUserActivationEmail = async (userId: string) => {
+    try {
+      await resendUserActivationEmail({
+        variables: {
+          id: userId,
+        },
+      });
+      const fullName = displayFullName(
+        userWithPermissions?.firstName,
+        userWithPermissions?.middleName,
+        userWithPermissions?.lastName
+      );
+      updateShowResendUserActivationEmailModal(false);
+      showNotification(
+        <Alert
+          type="success"
+          title={`${fullName} has been sent a new invitation.`}
+        />
+      );
+    } catch (e) {
+      setError(e);
+    }
+  };
+
   // Default to first user
   useEffect(() => {
     if (!activeUser && sortedUsers.length) {
@@ -389,6 +419,12 @@ const ManageUsers: React.FC<Props> = ({
               updateUser={updateUser}
               showReactivateUserModal={showReactivateUserModal}
               updateShowReactivateUserModal={updateShowReactivateUserModal}
+              showResendUserActivationEmailModal={
+                showResendUserActivationEmailModal
+              }
+              updateShowResendUserActivationEmailModal={
+                updateShowResendUserActivationEmailModal
+              }
               showResetUserPasswordModal={showResetPasswordModal}
               updateShowResetPasswordModal={updateShowResetPasswordModal}
               showDeleteUserModal={showDeleteUserModal}
@@ -399,6 +435,7 @@ const ManageUsers: React.FC<Props> = ({
               onContinueChangeActiveUser={onContinueChangeActiveUser}
               handleReactivateUser={handleReactivateUser}
               handleResetUserPassword={handleResetUserPassword}
+              handleResendUserActivationEmail={handleResendUserActivationEmail}
             />
           </div>
         </div>

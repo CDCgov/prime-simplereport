@@ -38,6 +38,14 @@ export type AddressInfo = {
   streetTwo?: Maybe<Scalars["String"]>;
 };
 
+export type AggregateFacilityMetrics = {
+  __typename?: "AggregateFacilityMetrics";
+  facilityName?: Maybe<Scalars["String"]>;
+  negativeTestCount?: Maybe<Scalars["Int"]>;
+  positiveTestCount?: Maybe<Scalars["Int"]>;
+  totalTestCount?: Maybe<Scalars["Int"]>;
+};
+
 export type ApiUser = {
   __typename?: "ApiUser";
   email: Scalars["String"];
@@ -122,6 +130,7 @@ export type Mutation = {
   editQueueItem?: Maybe<TestOrder>;
   reactivateUser?: Maybe<User>;
   removePatientFromQueue?: Maybe<Scalars["String"]>;
+  resendActivationEmail?: Maybe<User>;
   resendToReportStream?: Maybe<Scalars["Boolean"]>;
   resetUserPassword?: Maybe<User>;
   sendPatientLinkSms?: Maybe<Scalars["String"]>;
@@ -331,6 +340,10 @@ export type MutationRemovePatientFromQueueArgs = {
   patientId: Scalars["ID"];
 };
 
+export type MutationResendActivationEmailArgs = {
+  id: Scalars["ID"];
+};
+
 export type MutationResendToReportStreamArgs = {
   testEventIds: Array<Scalars["ID"]>;
 };
@@ -503,6 +516,14 @@ export type Organization = {
   type: Scalars["String"];
 };
 
+export type OrganizationLevelDashboardMetrics = {
+  __typename?: "OrganizationLevelDashboardMetrics";
+  facilityMetrics?: Maybe<Array<Maybe<AggregateFacilityMetrics>>>;
+  organizationNegativeTestCount?: Maybe<Scalars["Int"]>;
+  organizationPositiveTestCount?: Maybe<Scalars["Int"]>;
+  organizationTotalTestCount?: Maybe<Scalars["Int"]>;
+};
+
 export type Patient = {
   __typename?: "Patient";
   address?: Maybe<AddressInfo>;
@@ -599,6 +620,7 @@ export type Query = {
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
   /** @deprecated this information is already loaded from the 'whoami' endpoint */
   organization?: Maybe<Organization>;
+  organizationLevelDashboardMetrics?: Maybe<OrganizationLevelDashboardMetrics>;
   organizations: Array<Organization>;
   patient?: Maybe<Patient>;
   patientExists?: Maybe<Scalars["Boolean"]>;
@@ -616,6 +638,11 @@ export type Query = {
   users?: Maybe<Array<Maybe<ApiUser>>>;
   usersWithStatus?: Maybe<Array<ApiUserWithStatus>>;
   whoami: User;
+};
+
+export type QueryOrganizationLevelDashboardMetricsArgs = {
+  endDate: Scalars["DateTime"];
+  startDate: Scalars["DateTime"];
 };
 
 export type QueryOrganizationsArgs = {
@@ -1193,6 +1220,23 @@ export type GetUsersAndStatusQuery = {
       status?: Maybe<string>;
     }>
   >;
+};
+
+export type ResendActivationEmailMutationVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type ResendActivationEmailMutation = {
+  __typename?: "Mutation";
+  resendActivationEmail?: Maybe<{
+    __typename?: "User";
+    id: string;
+    firstName?: Maybe<string>;
+    middleName?: Maybe<string>;
+    lastName: string;
+    email: string;
+    status?: Maybe<string>;
+  }>;
 };
 
 export type GetTopLevelDashboardMetricsQueryVariables = Exact<{
@@ -3036,6 +3080,60 @@ export type GetUsersAndStatusLazyQueryHookResult = ReturnType<
 export type GetUsersAndStatusQueryResult = Apollo.QueryResult<
   GetUsersAndStatusQuery,
   GetUsersAndStatusQueryVariables
+>;
+export const ResendActivationEmailDocument = gql`
+  mutation ResendActivationEmail($id: ID!) {
+    resendActivationEmail(id: $id) {
+      id
+      firstName
+      middleName
+      lastName
+      email
+      status
+    }
+  }
+`;
+export type ResendActivationEmailMutationFn = Apollo.MutationFunction<
+  ResendActivationEmailMutation,
+  ResendActivationEmailMutationVariables
+>;
+
+/**
+ * __useResendActivationEmailMutation__
+ *
+ * To run a mutation, you first call `useResendActivationEmailMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useResendActivationEmailMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [resendActivationEmailMutation, { data, loading, error }] = useResendActivationEmailMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useResendActivationEmailMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ResendActivationEmailMutation,
+    ResendActivationEmailMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    ResendActivationEmailMutation,
+    ResendActivationEmailMutationVariables
+  >(ResendActivationEmailDocument, options);
+}
+export type ResendActivationEmailMutationHookResult = ReturnType<
+  typeof useResendActivationEmailMutation
+>;
+export type ResendActivationEmailMutationResult = Apollo.MutationResult<ResendActivationEmailMutation>;
+export type ResendActivationEmailMutationOptions = Apollo.BaseMutationOptions<
+  ResendActivationEmailMutation,
+  ResendActivationEmailMutationVariables
 >;
 export const GetTopLevelDashboardMetricsDocument = gql`
   query GetTopLevelDashboardMetrics(
