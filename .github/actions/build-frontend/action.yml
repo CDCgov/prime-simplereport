@@ -13,6 +13,15 @@ inputs:
   is-training-site:
     description: If this is set, special training branding will be applied.
     required: false
+  okta-enabled:
+    description: If this is set, the app will redirect to Okta if no one is logged in.
+    required: true
+  okta-url:
+    description: The Okta instance to redirect to.
+    required: false
+  okta-client-id:
+    description: The Okta client ID for this environment.
+    required: false
 runs:
   using: composite
   steps:
@@ -40,6 +49,11 @@ runs:
           fi
           if [[ "true" == "${{ inputs.is-training-site }}" ]]
             then echo "REACT_APP_IS_TRAINING_SITE=true" >> .env.production.local
+          fi
+          if [[ "true" == "${{ inputs.okta-enabled }}" ]]; then 
+            echo "REACT_APP_OKTA_ENABLED=true" >> .env.production.local
+            echo "REACT_APP_OKTA_URL=${{inputs.okta-url}}" >> .env.production.local
+            echo "REACT_APP_OKTA_CLIENT_ID=${{inputs.okta-client-id}}" >> .env.production.local
           fi
           echo "::endgroup::"
     - name: Build deployable application

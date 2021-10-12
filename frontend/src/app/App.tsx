@@ -49,8 +49,16 @@ export const WHOAMI_QUERY = gql`
 
 const App = () => {
   const appInsights = getAppInsights();
-
   const dispatch = useDispatch();
+
+  // Check if the user is logged in, if not redirect to Okta
+  if (process.env.REACT_APP_OKTA_ENABLED === "true") {
+    const accessToken = localStorage.getItem("access_token");
+    if (!accessToken) {
+      throw new Error("Not authenticated, redirecting to Okta...");
+    }
+  }
+
   const { data, loading, error } = useQuery(WHOAMI_QUERY, {
     fetchPolicy: "no-cache",
   });
