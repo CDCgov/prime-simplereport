@@ -82,6 +82,7 @@ jobs:
           smarty-streets-key: ${{ secrets.SMARTY_STREETS_KEY }}
           client-tarball: ./client.tgz
           is-training-site: true
+          okta-enabled: false
       - name: Save compiled frontend application
         uses: actions/upload-artifact@v2
         if: success()

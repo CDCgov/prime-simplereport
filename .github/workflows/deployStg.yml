@@ -77,6 +77,9 @@ jobs:
           deploy-env: ${{env.DEPLOY_ENV}}
           smarty-streets-key: ${{ secrets.SMARTY_STREETS_KEY }}
           client-tarball: ./client.tgz
+          okta-enabled: true
+          okta-url: https://hhs-prime.okta.com
+          okta-client-id: 0oa62qncijWSeQMuc4h6
       - name: Save compiled frontend application
         uses: actions/upload-artifact@v2
         if: success()
