@@ -52,8 +52,8 @@ runs:
           fi
           if [[ "true" == "${{ inputs.okta-enabled }}" ]]; then 
             echo "REACT_APP_OKTA_ENABLED=true" >> .env.production.local
-            echo "REACT_APP_OKTA_URL=${{inputs.okta-url}" >> .env.production.local
-            echo "REACT_APP_OKTA_CLIENT_ID=${{inputs.okta-client-id}" >> .env.production.local
+            echo "REACT_APP_OKTA_URL=${{inputs.okta-url}}" >> .env.production.local
+            echo "REACT_APP_OKTA_CLIENT_ID=${{inputs.okta-client-id}}" >> .env.production.local
           fi
           echo "::endgroup::"
     - name: Build deployable application
