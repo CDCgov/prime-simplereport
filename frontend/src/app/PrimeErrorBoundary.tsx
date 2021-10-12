@@ -47,13 +47,21 @@ export default class PrimeErrorBoundary extends React.Component<
     }
 
     if (this.state.redirectToOkta) {
-      window.location.href = `${
-        process.env.REACT_APP_OKTA_URL
-      }/oauth2/default/v1/authorize?client_id=${
-        process.env.REACT_APP_OKTA_CLIENT_ID
-      }&redirect_uri=${getUrl()}&response_type=token id_token&scope=openid simple_report simple_report_${
-        process.env.DEPLOY_ENV
-      }&nonce=thisisnotsafe&state=thisisbogus`;
+      const url = `${process.env.REACT_APP_OKTA_URL}/oauth2/default/v1/authorize`;
+      const clientId = `?client_id=${process.env.REACT_APP_OKTA_CLIENT_ID}`;
+      const redirectUri = `&redirect_uri=${encodeURIComponent(getUrl())}`;
+      const responseType = `&response_type=${encodeURIComponent(
+        "token id_token"
+      )}`;
+      const scope =
+        "&scope=" +
+        encodeURIComponent(
+          `openid simple_report simple_report_${process.env.DEPLOY_ENV}`
+        );
+      const nonce = "&nonce=thisisnotsafe";
+      const state = "&state=thisisbogus";
+      window.location.href =
+        url + clientId + redirectUri + responseType + scope + nonce + state;
       return false;
     }
 
