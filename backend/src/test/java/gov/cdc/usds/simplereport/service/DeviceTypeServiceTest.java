@@ -49,7 +49,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   @WithSimpleReportSiteAdminUser
   void fetchDeviceType_carestartTestLength() {
 
-    _service.createDeviceTypeNew(
+    _service.createDeviceType(
         CreateDeviceType.builder()
             .name("CareStart")
             .model("B")
@@ -68,7 +68,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   void createDeviceType_baseUser_error() {
     assertSecurityError(
         () ->
-            _service.createDeviceTypeNew(
+            _service.createDeviceType(
                 CreateDeviceType.builder()
                     .name("A")
                     .model("B")
@@ -106,7 +106,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
     // WHEN
     DeviceType devA =
-        _service.createDeviceTypeNew(
+        _service.createDeviceType(
             CreateDeviceType.builder()
                 .name("A")
                 .model("B")
@@ -115,7 +115,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .swabTypes(List.of(swab1.getInternalId()))
                 .build());
     DeviceType devB =
-        _service.createDeviceTypeNew(
+        _service.createDeviceType(
             CreateDeviceType.builder()
                 .name("F")
                 .model("G")
@@ -163,7 +163,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Nose", "111222333"));
     SpecimenType swab2 = specimenTypeRepository.save(new SpecimenType("Mouth", "555666444"));
     DeviceType device =
-        _service.createDeviceTypeNew(
+        _service.createDeviceType(
             CreateDeviceType.builder()
                 .name("A")
                 .model("B")

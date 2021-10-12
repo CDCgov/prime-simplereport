@@ -4,16 +4,14 @@ import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Builder
 @Getter
-@Setter
 public class UpdateDeviceType {
-  UUID internalId;
-  String name;
-  String manufacturer;
-  String model;
-  String loincCode;
-  List<UUID> swabTypes;
+  private UUID internalId;
+  private String name;
+  private String manufacturer;
+  private String model;
+  private String loincCode;
+  private List<UUID> swabTypes;
 }

@@ -144,30 +144,7 @@ public class DeviceTypeService {
 
   @Transactional(readOnly = false)
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public DeviceType createDeviceType(
-      String name, String model, String manufacturer, String loincCode, String swabType) {
-    @SuppressWarnings("deprecation") // this is a shim
-    SpecimenType st =
-        _specimenTypeRepo
-            .findByTypeCode(swabType)
-            .orElseGet(
-                () ->
-                    _specimenTypeRepo.save(
-                        new SpecimenType("Auto-generated " + swabType, swabType)));
-    if (st.isDeleted()) {
-      throw new IllegalGraphqlArgumentException(SWAB_TYPE_DELETED_MESSAGE);
-    }
-    DeviceType dt =
-        _repo.save(
-            new DeviceType(
-                name, manufacturer, model, loincCode, swabType, determineTestLength(name)));
-    _deviceSpecimenRepo.save(new DeviceSpecimenType(dt, st));
-    return dt;
-  }
-
-  @Transactional(readOnly = false)
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public DeviceType createDeviceTypeNew(CreateDeviceType createDevice) {
+  public DeviceType createDeviceType(CreateDeviceType createDevice) {
 
     List<SpecimenType> specimenTypes =
         createDevice.getSwabTypes().stream()

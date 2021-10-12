@@ -19,7 +19,7 @@ public class DeviceTypeMutationResolver implements GraphQLMutationResolver {
 
   public DeviceType createDeviceType(CreateDeviceType input)
       throws IllegalGraphqlArgumentException {
-    return _dts.createDeviceTypeNew(input);
+    return _dts.createDeviceType(input);
   }
 
   public DeviceType updateDeviceType(UpdateDeviceType input)
