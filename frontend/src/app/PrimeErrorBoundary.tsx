@@ -51,7 +51,9 @@ export default class PrimeErrorBoundary extends React.Component<
         process.env.REACT_APP_OKTA_URL
       }/oauth2/default/v1/authorize?client_id=${
         process.env.REACT_APP_OKTA_CLIENT_ID
-      }&redirect_uri=${getUrl()}&response_type=token id_token&scope=openid simple_report simple_report_test&nonce=thisisnotsafe&state=thisisbogus`;
+      }&redirect_uri=${getUrl()}&response_type=token id_token&scope=openid simple_report simple_report_${
+        process.env.DEPLOY_ENV
+      }&nonce=thisisnotsafe&state=thisisbogus`;
       return false;
     }
 
