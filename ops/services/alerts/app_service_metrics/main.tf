@@ -126,7 +126,7 @@ ${local.skip_on_weekends}
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "http_4xx_errors" {
   name                = "${var.env}-api-4xx-errors"
-  description         = "${local.env_title} HTTP Server 4xx Errors (excluding 401s) >= 10"
+  description         = "${local.env_title} HTTP Server 4xx Errors (excluding 401s and 410s) >= 10"
   location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
   severity            = var.severity
@@ -139,7 +139,35 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "http_4xx_errors" {
   query = <<-QUERY
 requests
 ${local.skip_on_weekends}
-| where toint(resultCode) >= 400 and toint(resultCode) < 500 and toint(resultCode) != 401 and timestamp >= ago(5m)
+| where toint(resultCode) >= 400 and toint(resultCode) < 500 and (set_has_element(dynamic([401, 410]), toint(resultCode)) == false) and timestamp >= ago(5m)
+  QUERY
+
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 9
+  }
+
+  action {
+    action_group = var.action_group_ids
+  }
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "http_401_410" {
+  name                = "${var.env}-api-401-410-errors"
+  description         = "${local.env_title} HTTP Server 401/410 Errors >= 100"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+  severity            = var.severity
+  frequency           = 5
+  time_window         = 5
+  enabled             = contains(var.disabled_alerts, "http_401_410_errors") ? false : true
+
+  data_source_id = var.app_insights_id
+
+  query = <<-QUERY
+requests
+${local.skip_on_weekends}
+| where toint(resultCode) == 401 or toint(resultCode) == 410 and timestamp >= ago(5m)
   QUERY
 
   trigger {
