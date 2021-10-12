@@ -12,6 +12,7 @@ https://simplereport.gov/
   - [Backend](#backend)
     - [Backend-Setup](#backend-setup)
     - [Running the app with Make or start.sh](#running-the-app-with-make-or-startsh)
+    - [Running locally with Okta](#running-locally-with-okta)
     - [Updating user role](#updating-user-role)
       - [Organization roles](#organization-roles)
       - [Site roles](#site-roles)
@@ -116,6 +117,18 @@ Then run this to start the app:
 
 This will also start up both servers in "watch" mode.  When using `start.sh`, any environment variables put
 in `.env` in the root directory will be available to the app. Press CTRL-C to exit and cleanup the servers cleanly.
+
+### Running locally with Okta
+
+You can run the app against the "Okta Preview" instance by running the backend with the `okta-local` Spring profile. Be sure to set the `OKTA_API_KEY` environment variable. You can generate an API token for yourself by logging into the Okta Preview [admin panel](https://hhs-prime-admin.oktapreview.com) and going into Security > API > Tokens.
+
+You also need ot set the following in `frontend/.env.local`:
+
+```
+REACT_APP_OKTA_ENABLED=true
+REACT_APP_OKTA_URL=https://hhs-prime.oktapreview.com
+REACT_APP_OKTA_CLIENT_ID=0oa1k0163nAwfVxNW1d7
+```
 
 ### Updating user role
 
