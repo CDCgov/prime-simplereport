@@ -129,10 +129,10 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
     devA = _deviceTypeRepo.findById(devA.getInternalId()).get();
     assertNotNull(devA);
-    assertEquals(devA.getName(), "A");
-    assertEquals(devA.getModel(), "B");
-    assertEquals(devA.getManufacturer(), "C");
-    assertEquals(devA.getLoincCode(), "D");
+    assertEquals("A", devA.getName());
+    assertEquals("B", devA.getModel());
+    assertEquals("C", devA.getManufacturer());
+    assertEquals("D", devA.getLoincCode());
     assertNull(devA.getSwabType());
     List<SpecimenType> devASwabTypes = devA.getSwabTypes();
     assertThat(devASwabTypes.size()).isEqualTo(1);
