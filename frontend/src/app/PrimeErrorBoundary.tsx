@@ -56,7 +56,7 @@ export default class PrimeErrorBoundary extends React.Component<
       const scope =
         "&scope=" +
         encodeURIComponent(
-          `openid simple_report simple_report_${process.env.DEPLOY_ENV}`
+          `openid simple_report ${process.env.REACT_APP_OKTA_SCOPE}`
         );
       const nonce = "&nonce=thisisnotsafe";
       const state = "&state=thisisbogus";
