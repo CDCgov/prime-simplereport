@@ -4,6 +4,7 @@ import Modal from "react-modal";
 
 import Button from "../commonComponents/Button/Button";
 import { displayFullName, showNotification } from "../utils";
+import { formatFullName } from "../utils/user";
 import "./TestResultCorrectionModal.scss";
 import {
   InjectedQueryWrapperProps,
@@ -12,14 +13,9 @@ import {
 import Alert from "../commonComponents/Alert";
 
 export const testQuery = gql`
-  query getTestResultForCorrection($id: ID!) {
+  query getTestResultForText($id: ID!) {
     testResult(id: $id) {
       dateTested
-      result
-      correctionStatus
-      deviceType {
-        name
-      }
       patient {
         firstName
         middleName
@@ -77,22 +73,18 @@ export const DetachedTestResultCorrectionModal = ({
       overlayClassName="sr-test-correction-modal-overlay"
       contentLabel="Printable test result"
     >
-      <h3>Text Result?</h3>
+      <h3>Text Results?</h3>
       <p>
         {" "}
-        {displayFullName(
-          patient.firstName,
-          patient.middleName,
-          patient.lastName
+        {formatFullName(
+          patient
         )}{" "}
-        from July 21st will be sent to the following numbers:
+        test result from July 21st will be sent to the following numbers:
       </p>
-      as an error?
-      <p>If so, please enter a reason.</p>
       <div className="sr-test-correction-buttons">
         <Button variant="unstyled" label="Cancel" onClick={closeModal} />
         <Button
-          label="Send Result"
+          label="Send results"
           onClick={markAsError}
         />
       </div>
