@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
+import moment from "moment";
+
 
 import Button from "../commonComponents/Button/Button";
-import { displayFullName, showNotification } from "../utils";
+import { showNotification } from "../utils";
 import { formatFullName } from "../utils/user";
 import "./TestResultCorrectionModal.scss";
 import {
@@ -26,6 +28,12 @@ export const testQuery = gql`
   }
 `;
 
+const formatDate = (date: string | undefined, withTime?: boolean) => {
+  const dateFormat = "MMMM Do, YYYY";
+  const format = withTime ? `${dateFormat}` : dateFormat;
+  return moment(date)?.format(format);
+};
+
 const MARK_TEST_AS_ERROR = gql`
   mutation MarkTestAsError($id: ID!, $reason: String!) {
     correctTestMarkAsError(id: $id, reason: $reason) {
@@ -47,12 +55,11 @@ export const DetachedTestResultCorrectionModal = ({
 }: Props) => {
   const [markTestAsError] = useMutation(MARK_TEST_AS_ERROR);
   const { patient } = data.testResult;
-  const [reason, setReason] = useState("");
+  const { dateTested } = data.testResult
   const markAsError = () => {
     markTestAsError({
       variables: {
         id: testResultId,
-        reason,
       },
     })
       .then(() => {
@@ -79,8 +86,12 @@ export const DetachedTestResultCorrectionModal = ({
         {formatFullName(
           patient
         )}{" "}
-        test result from July 21st will be sent to the following numbers:
+        test results from {formatDate(dateTested)} will be sent to the following numbers:
       </p>
+      <p>
+        
+      </p>
+
       <div className="sr-test-correction-buttons">
         <Button variant="unstyled" label="Cancel" onClick={closeModal} />
         <Button
