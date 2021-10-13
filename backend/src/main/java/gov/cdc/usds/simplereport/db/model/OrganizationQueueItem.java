@@ -40,4 +40,8 @@ public class OrganizationQueueItem extends EternalAuditedEntity {
     this.externalId = externalId;
     this.requestData = requestData;
   }
+
+  public void setVerifiedOrganization(Organization org) {
+    verifiedOrganization = org;
+  }
 }

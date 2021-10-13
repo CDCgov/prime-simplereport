@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.ApiPendingOrganization;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import graphql.kickstart.tools.GraphQLQueryResolver;
@@ -20,9 +21,11 @@ import org.springframework.stereotype.Component;
 public class OrganizationResolver implements GraphQLQueryResolver {
 
   private OrganizationService _organizationService;
+  private OrganizationQueueService _organizationQueueService;
 
-  public OrganizationResolver(OrganizationService os) {
+  public OrganizationResolver(OrganizationService os, OrganizationQueueService oqs) {
     _organizationService = os;
+    _organizationQueueService = oqs;
   }
 
   public Optional<ApiOrganization> getOrganization() {
@@ -73,7 +76,7 @@ public class OrganizationResolver implements GraphQLQueryResolver {
             .collect(Collectors.toList());
 
     List<ApiPendingOrganization> pendingOrgsInQueue =
-        _organizationService.getQueuedOrganizations().stream()
+        _organizationQueueService.getQueuedOrganizations().stream()
             .map(org -> new ApiPendingOrganization(org))
             .collect(Collectors.toList());
 
