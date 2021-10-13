@@ -38,10 +38,13 @@ const PendingOrganizations = ({
       <tr key={o.externalId} className="sr-org-row">
         <th scope="row">{o.name}</th>
         <th scope="row">{o.adminName}</th>
-        <th scope="row">{o.adminEmail}</th>
-        <th scope="row">{o.adminPhone}</th>
-        <th scope="row">{o.externalId}</th>
+        <th scope="row">
+          Email: {o.adminEmail}
+          <br />
+          Phone: {o.adminPhone}
+        </th>
         <th scope="row">{o.createdAt}</th>
+        <th scope="row">{o.externalId}</th>
         <td>
           <Checkboxes
             onChange={(e) =>
@@ -84,6 +87,9 @@ const PendingOrganizations = ({
                 <thead>
                   <tr>
                     <th scope="col">Name</th>
+                    <th scope="row">Administrator</th>
+                    <th scope="row">Contact</th>
+                    <th scope="row">Created</th>
                     <th scope="col">External ID</th>
                     <th scope="col">Verify Identity</th>
                   </tr>
