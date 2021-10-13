@@ -1,61 +1,22 @@
-import { gql } from "@apollo/client";
+import React, { useState } from "react";
+import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
-import moment from "moment";
-import classnames from "classnames";
-import iconClose from "uswds/dist/img/usa-icons/close.svg";
 
-import "./TestResultPrintModal.scss";
-import { QueryWrapper } from "../commonComponents/QueryWrapper";
-import { TestResult } from "../testQueue/QueueItem";
-import { formatFullName } from "../utils/user";
-import { symptomsStringToArray } from "../utils/symptoms";
+import Button from "../commonComponents/Button/Button";
+import { displayFullName, showNotification } from "../utils";
+import "./TestResultCorrectionModal.scss";
 import {
-  PregnancyCode,
-  pregnancyMap,
-} from "../../patientApp/timeOfTest/constants";
+  InjectedQueryWrapperProps,
+  QueryWrapper,
+} from "../commonComponents/QueryWrapper";
+import Alert from "../commonComponents/Alert";
 
-type Result = {
-  dateTested: string;
-  result: TestResult;
-  correctionStatus: TestCorrectionStatus;
-  noSymptoms: boolean;
-  symptoms: string;
-  symptomOnset: string;
-  pregnancy: PregnancyCode;
-  deviceType: {
-    name: string;
-  };
-  patient: {
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    birthDate: string;
-  };
-  createdBy: {
-    name: {
-      firstName: string;
-      middleName: string;
-      lastName: string;
-    };
-  };
-};
-
-const formatDate = (date: string | undefined, withTime?: boolean) => {
-  const dateFormat = "MM/DD/yyyy";
-  const timeFormat = "h:mma";
-  const format = withTime ? `${dateFormat} ${timeFormat}` : dateFormat;
-  return moment(date)?.format(format);
-};
-
-export const testResultDetailsQuery = gql`
-  query getTestResultDetails($id: ID!) {
+export const testQuery = gql`
+  query getTestResultForCorrection($id: ID!) {
     testResult(id: $id) {
       dateTested
       result
       correctionStatus
-      symptoms
-      symptomOnset
-      pregnancy
       deviceType {
         name
       }
@@ -65,201 +26,89 @@ export const testResultDetailsQuery = gql`
         lastName
         birthDate
       }
-      createdBy {
-        name {
-          firstName
-          middleName
-          lastName
-        }
-      }
     }
   }
 `;
 
-const labelClasses = "text-bold text-no-strike text-ink";
-const containerClasses =
-  "width-full font-sans-md add-list-reset border-base-lighter border-2px radius-md padding-x-2 padding-y-1";
-const strikeClasses = "text-base text-strike";
+const MARK_TEST_AS_ERROR = gql`
+  mutation MarkTestAsError($id: ID!, $reason: String!) {
+    correctTestMarkAsError(id: $id, reason: $reason) {
+      internalId
+    }
+  }
+`;
 
 interface Props {
-  data: { testResult: Nullable<Result> };
-  testResultId: string;
+  data: any; // testQuery result
+  testResultId: string | undefined;
   closeModal: () => void;
 }
 
-export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
-  const {
-    dateTested,
-    result,
-    correctionStatus,
-    symptoms,
-    symptomOnset,
-    pregnancy,
-    deviceType,
-    patient,
-    createdBy,
-  } = { ...data?.testResult };
-
-  const removed = correctionStatus === "REMOVED";
-  const symptomList = symptoms ? symptomsStringToArray(symptoms) : [];
+export const DetachedTestResultCorrectionModal = ({
+  testResultId,
+  data,
+  closeModal,
+}: Props) => {
+  const [markTestAsError] = useMutation(MARK_TEST_AS_ERROR);
+  const { patient } = data.testResult;
+  const [reason, setReason] = useState("");
+  const markAsError = () => {
+    markTestAsError({
+      variables: {
+        id: testResultId,
+        reason,
+      },
+    })
+      .then(() => {
+        const alert = (
+          <Alert type="success" title="Result marked as error" body="" />
+        );
+        showNotification(alert);
+      })
+      .finally(() => {
+        closeModal();
+      });
+  };
 
   return (
     <Modal
       isOpen={true}
-      style={{
-        content: {
-          maxHeight: "90vh",
-          width: "50em",
-          position: "initial",
-        },
-      }}
-      overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
-      contentLabel="Unsaved changes to current user"
-      ariaHideApp={process.env.NODE_ENV !== "test"}
+      className="sr-test-correction-modal-content"
+      overlayClassName="sr-test-correction-modal-overlay"
+      contentLabel="Printable test result"
     >
-      <div className="display-flex flex-justify">
-        <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-          Text Results?
-        </h1>
-        <div className="sr-time-of-test-buttons">
-          <button
-            className="modal__close-button"
-            style={{ cursor: "pointer" }}
-            onClick={closeModal}
-          >
-            <img className="modal__close-img" src={iconClose} alt="Close" />
-          </button>
-        </div>
+      <h3>Text Result?</h3>
+      <p>
+        {" "}
+        {displayFullName(
+          patient.firstName,
+          patient.middleName,
+          patient.lastName
+        )}{" "}
+        from July 21st will be sent to the following numbers:
+      </p>
+      as an error?
+      <p>If so, please enter a reason.</p>
+      <div className="sr-test-correction-buttons">
+        <Button variant="unstyled" label="Cancel" onClick={closeModal} />
+        <Button
+          label="Send Result"
+          onClick={markAsError}
+        />
       </div>
-      <div className="border-top border-base-lighter margin-x-neg-205 margin-top-1"></div>
-      <h2 className="font-sans-md margin-top-3">Patient</h2>
-      <div
-        className={classnames(containerClasses, "grid-row flex-row padding-0")}
-      >
-        <div className="grid-col padding-2 border-right-1px border-base-lighter">
-          <span
-            className={classnames(
-              labelClasses,
-              "display-block margin-bottom-1"
-            )}
-          >
-            Name
-          </span>
-          <span
-            className={classnames("font-sans-lg", removed && strikeClasses)}
-          >
-            {patient ? formatFullName(patient) : "--"}
-          </span>
-        </div>
-        <div className="grid-col padding-2">
-          <span
-            className={classnames(
-              labelClasses,
-              "display-block margin-bottom-1"
-            )}
-          >
-            Date of birth
-          </span>
-          <span
-            className={classnames("font-sans-lg", removed && strikeClasses)}
-          >
-            {patient?.birthDate ? formatDate(patient.birthDate) : "--"}
-          </span>
-        </div>
-      </div>
-      <h2 className="font-sans-md margin-top-3">Test details</h2>
-      <table className={containerClasses}>
-        <tbody>
-          <DetailsRow
-            label="SARS-CoV-2 result"
-            value={result}
-            removed={removed}
-          />
-          <DetailsRow
-            label="Test date"
-            value={dateTested && formatDate(dateTested, true)}
-            removed={removed}
-          />
-          <DetailsRow
-            label="Device"
-            value={deviceType && deviceType.name}
-            removed={removed}
-          />
-          <DetailsRow
-            label="Symptoms"
-            value={
-              symptomList.length > 0 ? symptomList.join(", ") : "No symptoms"
-            }
-            removed={removed}
-          />
-          <DetailsRow
-            label="Symptom onset"
-            value={symptomOnset && formatDate(symptomOnset)}
-            indent
-            removed={removed}
-          />
-          <DetailsRow
-            label="Pregnant?"
-            value={pregnancy && pregnancyMap[pregnancy]}
-            removed={removed}
-          />
-          <DetailsRow
-            label="Submitted by"
-            value={createdBy?.name && formatFullName(createdBy.name)}
-            removed={removed}
-            last
-          />
-        </tbody>
-      </table>
     </Modal>
   );
 };
 
-const TestResultDetailsModal = (props: Omit<Props, "data">) => (
+const TestResultCorrectionModal = (
+  props: Omit<Props, InjectedQueryWrapperProps>
+) => (
   <QueryWrapper<Props>
-    query={testResultDetailsQuery}
+    query={testQuery}
     queryOptions={{ variables: { id: props.testResultId } }}
-    Component={DetachedTestResultDetailsModal}
+    Component={DetachedTestResultCorrectionModal}
     componentProps={{ ...props }}
-    displayLoadingIndicator={false}
   />
 );
 
-export default TestResultDetailsModal;
-
-type StringOrFalsey = string | null | undefined | false;
-
-const DetailsRow = ({
-  label,
-  value,
-  indent,
-  last,
-  removed,
-}: {
-  label: string;
-  value: StringOrFalsey;
-  indent?: boolean;
-  last?: boolean;
-  removed?: boolean;
-}) => {
-  const tdClasses = classnames(
-    "padding-y-3",
-    !last && "border-bottom-1px border-base-lighter"
-  );
-
-  const labelColumnClasses = classnames(
-    labelClasses,
-    tdClasses,
-    "width-card-lg text-left",
-    indent && "font-sans-sm padding-left-2"
-  );
-
-  return (
-    <tr>
-      <th className={labelColumnClasses}>{label}</th>
-      <td className={classnames(tdClasses, removed && strikeClasses)}>
-        {value || "--"}
-      </td>
-    </tr>
-  );
-};
+export default TestResultCorrectionModal;
