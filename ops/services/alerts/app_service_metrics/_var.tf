@@ -22,6 +22,7 @@ variable "disabled_alerts" {
       "http_response_time",
       "http_2xx_failed_requests",
       "http_4xx_errors",
+      "http_401_410_errors",
       "http_5xx_errors",
       "first_error_in_a_week",
       "account_request_failures",

@@ -1,0 +1,17 @@
+mutation resendActivationEmail (
+    $id: ID!
+    ){
+  resendActivationEmail(
+    id: $id
+  ) {
+      id
+      firstName,
+      lastName,
+      email,
+      organization {
+        name
+        externalId
+      }
+    }
+}
+

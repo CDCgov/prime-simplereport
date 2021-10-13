@@ -10,13 +10,13 @@ import "./ManageUsers.scss";
 
 interface Props {
   onClose: () => void;
-  onReactivateUser: (userId: string) => void;
+  onResendActivationEmail: (userId: string) => void;
   user: SettingsUser;
 }
 
-const ReactivateUserModal: React.FC<Props> = ({
+const ResendActivationEmailModal: React.FC<Props> = ({
   onClose,
-  onReactivateUser,
+  onResendActivationEmail,
   user,
 }) => {
   return (
@@ -36,8 +36,7 @@ const ReactivateUserModal: React.FC<Props> = ({
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">
           <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-            Reactivate account:{" "}
-            {displayFullName(user.firstName, user.middleName, user.lastName)}
+            Resend account setup email
           </h1>
           <button onClick={onClose} className="close-button" aria-label="Close">
             <span className="fa-layers">
@@ -49,19 +48,15 @@ const ReactivateUserModal: React.FC<Props> = ({
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
         <div className="grid-row grid-gap">
           <p>
+            Do you want to resend an account setup email to{" "}
             <strong>
               {displayFullName(user.firstName, user.middleName, user.lastName)}
             </strong>
-            's SimpleReport account is currently inactive. They can't log in
-            until their account is reactivated.
+            ?
           </p>
           <p>
-            <strong>
-              Please note: If this user doesn't log in to SimpleReport before
-              6AM EST, their account will be deactivated again.
-            </strong>
+            Doing so will email this person a new link to set up their account.
           </p>
-          <p>Are you sure you want to reactivate this account?</p>
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
           <div className="display-flex flex-justify-end">
@@ -73,8 +68,8 @@ const ReactivateUserModal: React.FC<Props> = ({
             />
             <Button
               className="margin-right-205"
-              onClick={() => onReactivateUser(user.id)}
-              label="Yes, reactivate"
+              onClick={() => onResendActivationEmail(user.id)}
+              label="Yes, send email"
             />
           </div>
         </div>
@@ -83,4 +78,4 @@ const ReactivateUserModal: React.FC<Props> = ({
   );
 };
 
-export default ReactivateUserModal;
+export default ResendActivationEmailModal;

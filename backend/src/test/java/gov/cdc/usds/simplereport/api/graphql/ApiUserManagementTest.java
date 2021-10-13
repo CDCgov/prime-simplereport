@@ -551,6 +551,43 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   }
 
   @Test
+  void resendActivationEmail_orgUser_success() {
+    useSuperUser();
+
+    ObjectNode addUser = runBoilerplateAddUser(Role.ADMIN);
+    String id = addUser.get("id").asText();
+
+    useOrgAdmin();
+
+    ObjectNode resendActivationEmailVariables = JsonNodeFactory.instance.objectNode().put("id", id);
+    ObjectNode resp =
+        runQuery(
+            "resend-activation-email",
+            "resendActivationEmail",
+            resendActivationEmailVariables,
+            null);
+    ObjectNode resendActivationEmailResponse = (ObjectNode) resp.get("resendActivationEmail");
+    assertEquals(USERNAMES.get(0), resendActivationEmailResponse.get("email").asText());
+  }
+
+  @Test
+  void resendActivationEmail_orgUser_failure() {
+    useSuperUser();
+
+    ObjectNode addUser = runBoilerplateAddUser(Role.ADMIN);
+    String id = addUser.get("id").asText();
+
+    useOrgUser();
+
+    ObjectNode resendActivationEmailVariables = JsonNodeFactory.instance.objectNode().put("id", id);
+    runQuery(
+        "resend-activation-email",
+        "resendActivationEmail",
+        resendActivationEmailVariables,
+        "Current user does not have permission to request [/resendActivationEmail]");
+  }
+
+  @Test
   void updateUserPrivileges_orgAdmin_success() {
     useOrgAdmin();
 

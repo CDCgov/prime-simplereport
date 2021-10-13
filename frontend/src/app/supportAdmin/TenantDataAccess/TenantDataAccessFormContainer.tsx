@@ -1,8 +1,4 @@
 import { useState } from "react";
-import {
-  useAppInsightsContext,
-  useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
 import { Redirect } from "react-router-dom";
 
 import Alert from "../../commonComponents/Alert";
@@ -12,6 +8,7 @@ import {
   useGetOrganizationsQuery,
   useSetCurrentUserTenantDataAccessOpMutation,
 } from "../../../generated/graphql";
+import { getAppInsights } from "../../TelemetryService";
 
 import TenantDataAccessForm from "./TenantDataAccessForm";
 
@@ -21,9 +18,8 @@ const TenantDataAccessFormContainer = () => {
     fetchPolicy: "no-cache",
     variables: { identityVerified: true },
   });
-  const appInsights = useAppInsightsContext();
+  const appInsights = getAppInsights();
   const [setTenantDataAccess] = useSetCurrentUserTenantDataAccessOpMutation();
-  const trackSaveSettings = useTrackEvent(appInsights, "Save Settings", null);
 
   if (loading) {
     return <LoadingCard message={"Loading Organizations"} />;
@@ -41,7 +37,7 @@ const TenantDataAccessFormContainer = () => {
     justification?: string
   ) => {
     if (appInsights) {
-      trackSaveSettings(null);
+      appInsights.trackEvent({ name: "Save Settings " });
     }
     setTenantDataAccess({
       variables: {

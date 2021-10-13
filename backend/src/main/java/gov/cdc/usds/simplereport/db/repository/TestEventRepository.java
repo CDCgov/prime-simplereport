@@ -86,5 +86,15 @@ public interface TestEventRepository
   List<TestResultWithCount> countByResultByFacility(
       Collection<UUID> facilityIds, Date startDate, Date endDate);
 
+  @Query(
+      value =
+          "SELECT new gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount(te.result, COUNT(te)) "
+              + "FROM TestEvent te "
+              + "         LEFT JOIN TestEvent corrected_te ON corrected_te.priorCorrectedTestEventId = te.internalId "
+              + "WHERE te.facility.internalId = :facilityId AND COALESCE(te.dateTestedBackdate, te.createdAt) BETWEEN :startDate AND :endDate AND "
+              + "    te.correctionStatus = 'ORIGINAL' AND corrected_te.priorCorrectedTestEventId IS NULL "
+              + "GROUP BY te.result")
+  List<TestResultWithCount> countByResultForFacility(UUID facilityId, Date startDate, Date endDate);
+
   boolean existsByPatient(Person person);
 }

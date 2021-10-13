@@ -19,6 +19,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.io.BufferedReader;
@@ -30,6 +31,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 /** Created by nickrobison on 11/21/20 */
 @Service
 @Transactional
+@RequiredArgsConstructor
 @Slf4j
 public class UploadService {
   private static final String FACILITY_ID = "facilityId";
@@ -44,12 +48,8 @@ public class UploadService {
 
   private final PersonService _ps;
   private final AddressValidationService _avs;
+  private final OrganizationService _os;
   private boolean hasHeaderRow = false;
-
-  public UploadService(PersonService ps, AddressValidationService avs) {
-    this._ps = ps;
-    this._avs = avs;
-  }
 
   private MappingIterator<Map<String, String>> getIteratorForCsv(InputStream csvStream)
       throws IllegalGraphqlArgumentException {
@@ -95,6 +95,7 @@ public class UploadService {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public String processPersonCSV(InputStream csvStream) throws IllegalGraphqlArgumentException {
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
+    final var org = _os.getCurrentOrganization();
 
     // Since the CSV parser won't fail when give a single string, we simple check to see if it has
     // any parsed values
@@ -111,6 +112,10 @@ public class UploadService {
       final Map<String, String> row = getNextRow(valueIterator);
       rowNumber++;
       try {
+        var facilityId = parseUUID(getRow(row, FACILITY_ID, false));
+        Optional<Facility> facility =
+            Optional.ofNullable(facilityId).map(_os::getFacilityInCurrentOrg);
+
         StreetAddress address =
             _avs.getValidatedAddress(
                 getRow(row, "Street", true),
@@ -119,14 +124,24 @@ public class UploadService {
                 getRow(row, "State", true),
                 getRow(row, "ZipCode", true),
                 null);
+
+        var firstName = parseString(getRow(row, "FirstName", true));
+        var lastName = parseString(getRow(row, "LastName", true));
+        var dob = parseUserShortDate(getRow(row, "DOB", true));
+
+        if (_ps.isDuplicatePatient(
+            firstName, lastName, dob, address.getPostalCode(), org, facility)) {
+          continue;
+        }
+
         _ps.addPatient(
-            parseUUID(getRow(row, FACILITY_ID, false)),
+            facilityId,
             null, // lookupID
-            parseString(getRow(row, "FirstName", true)),
+            firstName,
             parseString(getRow(row, "MiddleName", false)),
-            parseString(getRow(row, "LastName", true)),
+            lastName,
             parseString(getRow(row, "Suffix", false)),
-            parseUserShortDate(getRow(row, "DOB", true)),
+            dob,
             address,
             parsePhoneNumbers(
                 List.of(

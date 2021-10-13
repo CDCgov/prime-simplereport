@@ -62,7 +62,7 @@ const UsersSideNav: React.FC<Props> = ({
                       {" "}
                       <FontAwesomeIcon
                         icon={faCircle}
-                        className={"prime-orange-icon suspended-icon"}
+                        className={"prime-blue-icon suspended-icon"}
                       />
                     </span>
                   )}

@@ -38,6 +38,8 @@ public interface OktaRepository {
 
   void reactivateUser(String username);
 
+  void resendActivationEmail(String username);
+
   UserStatus getUserStatus(String username);
 
   Set<String> getAllUsersForOrganization(Organization org);

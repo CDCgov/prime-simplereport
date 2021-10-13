@@ -220,9 +220,23 @@ type TestResult {
   patientLink: PatientLink
 }
 
+type OrganizationLevelDashboardMetrics {
+  organizationPositiveTestCount: Int,
+  organizationNegativeTestCount: Int,
+  organizationTotalTestCount: Int,
+  facilityMetrics: [AggregateFacilityMetrics]
+}
+
 type TopLevelDashboardMetrics {
   positiveTestCount: Int
   totalTestCount: Int
+}
+
+type AggregateFacilityMetrics {
+  facilityName: String,
+  totalTestCount: Int,
+  positiveTestCount: Int,
+  negativeTestCount: Int
 }
 
 type AddTestResultResponse {
@@ -295,6 +309,8 @@ type Query {
   ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  organizationLevelDashboardMetrics(startDate: DateTime!, endDate: DateTime!): OrganizationLevelDashboardMetrics
+    @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   topLevelDashboardMetrics(
     facilityId: ID
     startDate: DateTime
@@ -394,6 +410,7 @@ type Mutation {
   setUserIsDeleted(id: ID!, deleted: Boolean!): User
     @requiredPermissions(allOf: ["MANAGE_USERS"])
   reactivateUser(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
+  resendActivationEmail(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   setCurrentUserTenantDataAccess(
     organizationExternalId: String
     justification: String

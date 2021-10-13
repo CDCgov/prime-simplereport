@@ -20,7 +20,7 @@ export const getPatientLinkIdFromUrl = (): string | null =>
 export const getActivationTokenFromUrl = (): string | null =>
   getParameterFromUrl("activationToken");
 
-export function getUrl(): string | null {
+export function getUrl(): string {
   if (process.env.REACT_APP_BASE_URL) {
     const url = process.env.REACT_APP_BASE_URL + process.env.PUBLIC_URL;
     return url.charAt(url.length - 1) === "/" ? url : url + "/";

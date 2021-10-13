@@ -51,12 +51,7 @@ class ReminderServiceTest extends BaseServiceTest<ReminderService> {
     assertEquals(Set.of(email), remindedEmails);
   }
 
-  // This behavior has been verified to work on production, but this test fails fairly consistently
-  // when run with the github runners.  When run locally, the failure does not seem to be
-  // reproducible
-  // so more investigation is required.  For now, disabling this test for this reason.
   @Test
-  @org.junit.jupiter.api.Disabled("Test is unreliable, but behavior verified on prod")
   void sendAccountReminderEmails_concurrencyLock_success()
       throws InterruptedException, ExecutionException, SQLException {
     String email = "fake@example.org";
