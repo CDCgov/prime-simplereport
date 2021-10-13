@@ -43,6 +43,7 @@ import Select from "../commonComponents/Select";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 import TestResultPrintModal from "./TestResultPrintModal";
+import TestResultTextModal from "./TestResultTextModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
 import TestResultDetailsModal from "./TestResultDetailsModal";
 
@@ -65,7 +66,8 @@ function testResultRows(
   testResults: any,
   setPrintModalId: SetStateAction<any>,
   setMarkErrorId: SetStateAction<any>,
-  setDetailsModalId: SetStateAction<any>
+  setDetailsModalId: SetStateAction<any>,
+  setTextModalId: SetStateAction<any>
 ) {
   const byDateTested = (a: any, b: any) => {
     // ISO string dates sort nicely
@@ -87,10 +89,14 @@ function testResultRows(
     const removed = r.correctionStatus === "REMOVED";
     const actionItems = [
       { name: "Print result", action: () => setPrintModalId(r.internalId) },
+      { name: "Text result", action: () => setTextModalId(r.internalId) },
+      
       {
         name: "View details",
+
         action: () => setDetailsModalId(r.internalId),
       },
+      
     ];
     if (!removed) {
       actionItems.push({
@@ -202,6 +208,7 @@ export const DetachedTestResultsList = ({
   const [printModalId, setPrintModalId] = useState(undefined);
   const [markErrorId, setMarkErrorId] = useState(undefined);
   const [detailsModalId, setDetailsModalId] = useState<string>();
+  const [textModalId, setTextModalId] = useState<string>();
   const [showSuggestion, setShowSuggestion] = useState(true);
   const [startDateError, setStartDateError] = useState<string | undefined>();
   const [endDateError, setEndDateError] = useState<string | undefined>();
@@ -279,6 +286,14 @@ export const DetachedTestResultsList = ({
       />
     );
   }
+  if (textModalId) {
+    return (
+      <TestResultTextModal
+        testResultId={textModalId}
+        closeModal={() => setTextModalId(undefined)}
+      />
+    );
+  }
   if (markErrorId) {
     return (
       <TestResultCorrectionModal
@@ -297,7 +312,8 @@ export const DetachedTestResultsList = ({
     testResults,
     setPrintModalId,
     setMarkErrorId,
-    setDetailsModalId
+    setDetailsModalId,
+    setTextModalId
   );
 
   const processStartDate = (value: string | undefined) => {
