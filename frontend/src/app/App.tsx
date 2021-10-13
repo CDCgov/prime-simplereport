@@ -55,6 +55,13 @@ const App = () => {
   if (process.env.REACT_APP_OKTA_ENABLED === "true") {
     const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
+      // If Okta login has been attempted and returned to SR with an error, don't redirect back to Okta
+      const params = new URLSearchParams(window.location.hash.slice(1));
+      if (params.get("error")) {
+        throw new Error(
+          params.get("error_description") || "Unknown Okta error"
+        );
+      }
       throw new Error("Not authenticated, redirecting to Okta...");
     }
   }
