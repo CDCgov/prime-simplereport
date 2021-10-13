@@ -596,8 +596,8 @@ export type Query = {
   __typename?: "Query";
   deviceSpecimenTypes?: Maybe<Array<Maybe<DeviceSpecimenType>>>;
   /** @deprecated use the pluralized form to reduce confusion */
-  deviceType?: Maybe<Array<Maybe<DeviceType>>>;
-  deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
+  deviceType: Array<DeviceType>;
+  deviceTypes: Array<DeviceType>;
   /** @deprecated this information is already loaded from the 'whoami' endpoint */
   organization?: Maybe<Organization>;
   organizationLevelDashboardMetrics?: Maybe<OrganizationLevelDashboardMetrics>;
@@ -909,11 +909,11 @@ export type GetFacilitiesQuery = {
       }>;
     }>;
   }>;
-  deviceType?: Maybe<
-    Array<
-      Maybe<{ __typename?: "DeviceType"; internalId: string; name: string }>
-    >
-  >;
+  deviceType: Array<{
+    __typename?: "DeviceType";
+    internalId: string;
+    name: string;
+  }>;
   specimenType?: Maybe<
     Array<
       Maybe<{ __typename?: "SpecimenType"; internalId: string; name: string }>
@@ -1481,23 +1481,19 @@ export type GetDeviceTypeListQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetDeviceTypeListQuery = {
   __typename?: "Query";
-  deviceTypes?: Maybe<
-    Array<
-      Maybe<{
-        __typename?: "DeviceType";
-        internalId: string;
-        name: string;
-        loincCode: string;
-        manufacturer: string;
-        model: string;
-        swabTypes: Array<{
-          __typename?: "SpecimenType";
-          internalId: string;
-          name: string;
-        }>;
-      }>
-    >
-  >;
+  deviceTypes: Array<{
+    __typename?: "DeviceType";
+    internalId: string;
+    name: string;
+    loincCode: string;
+    manufacturer: string;
+    model: string;
+    swabTypes: Array<{
+      __typename?: "SpecimenType";
+      internalId: string;
+      name: string;
+    }>;
+  }>;
 };
 
 export type SetOrgIdentityVerifiedMutationVariables = Exact<{

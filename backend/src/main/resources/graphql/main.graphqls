@@ -275,9 +275,9 @@ type Query {
     @deprecated(
       reason: "this information is already loaded from the 'whoami' endpoint"
     )
-  deviceType: [DeviceType]
+  deviceType: [DeviceType!]!
     @deprecated(reason: "use the pluralized form to reduce confusion")
-  deviceTypes: [DeviceType]
+  deviceTypes: [DeviceType!]!
   specimenType: [SpecimenType]
   deviceSpecimenTypes: [DeviceSpecimenType]
   patients(

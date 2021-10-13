@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Redirect } from "react-router-dom";
 
 import {
@@ -8,7 +8,6 @@ import {
   useUpdateDeviceTypeMutation,
   DeviceType,
 } from "../../../generated/graphql";
-import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { showNotification } from "../../utils";
 import Alert from "../../commonComponents/Alert";
@@ -17,12 +16,6 @@ import ManageDevicesForm from "./ManageDevicesForm";
 
 const ManageDeviceTypeFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
-  const [swabOptions, setSwabOptions] = useState<MultiSelectDropdownOption[]>(
-    []
-  );
-
-  const [devices, setDevices] = useState<DeviceType[]>([]);
-
   const [updateDeviceType] = useUpdateDeviceTypeMutation();
   const { data: specimenTypesResults } = useGetSpecimenTypesQuery({
     fetchPolicy: "no-cache",
@@ -30,39 +23,6 @@ const ManageDeviceTypeFormContainer = () => {
   const { data: deviceTypeResults } = useGetDeviceTypeListQuery({
     fetchPolicy: "no-cache",
   });
-
-  useEffect(() => {
-    if (
-      deviceTypeResults &&
-      deviceTypeResults.deviceTypes &&
-      devices.length === 0
-    ) {
-      setDevices(
-        Array.from(
-          deviceTypeResults.deviceTypes.map(
-            (devicesTypes) => devicesTypes as DeviceType
-          )
-        )
-      );
-    }
-  }, [deviceTypeResults, devices]);
-
-  useEffect(() => {
-    if (
-      specimenTypesResults &&
-      specimenTypesResults.specimenTypes &&
-      swabOptions.length === 0
-    ) {
-      setSwabOptions(
-        Array.from(
-          specimenTypesResults.specimenTypes.map((type) => ({
-            label: `${type?.name} (${type?.typeCode})`,
-            value: type?.internalId,
-          }))
-        )
-      );
-    }
-  }, [specimenTypesResults, swabOptions]);
 
   const saveDeviceType = (device: UpdateDeviceType) => {
     updateDeviceType({
@@ -85,9 +45,20 @@ const ManageDeviceTypeFormContainer = () => {
     return <Redirect to="/admin" />;
   }
 
-  if (!deviceTypeResults || !specimenTypesResults) {
-    return <LoadingCard message="Loading" />;
-  } else {
+  if (deviceTypeResults && specimenTypesResults) {
+    const swabOptions = Array.from(
+      specimenTypesResults.specimenTypes.map((type) => ({
+        label: `${type?.name} (${type?.typeCode})`,
+        value: type?.internalId,
+      }))
+    );
+
+    const devices = Array.from(
+      deviceTypeResults.deviceTypes.map(
+        (devicesTypes) => devicesTypes as DeviceType
+      )
+    );
+
     return (
       <ManageDevicesForm
         updateDeviceType={saveDeviceType}
@@ -95,6 +66,8 @@ const ManageDeviceTypeFormContainer = () => {
         devices={devices}
       />
     );
+  } else {
+    return <LoadingCard message="Loading" />;
   }
 };
 

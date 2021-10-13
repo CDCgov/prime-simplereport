@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import DeviceTypeForm from "./DeviceTypeForm";
 
 export const addValue = (name: string, value: string) => {
-  return userEvent.type(screen.getByLabelText(name, { exact: false }), value);
+  userEvent.type(screen.getByLabelText(name, { exact: false }), value);
 };
 
 describe("DeviceTypeForm", () => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Redirect } from "react-router-dom";
 
 import {
@@ -7,7 +7,6 @@ import {
 } from "../../../generated/graphql";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
-import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 import DeviceTypeForm from "./DeviceTypeForm";
@@ -22,31 +21,10 @@ export interface Device {
 
 const DeviceTypeFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
-  const [swabOptions, setSwabOptions] = useState<MultiSelectDropdownOption[]>(
-    []
-  );
-
   const [createDeviceType] = useCreateDeviceTypeMutation();
   const { data: specimenTypesResults } = useGetSpecimenTypesQuery({
     fetchPolicy: "no-cache",
   });
-
-  useEffect(() => {
-    if (
-      specimenTypesResults &&
-      specimenTypesResults.specimenTypes &&
-      swabOptions.length === 0
-    ) {
-      setSwabOptions(
-        Array.from(
-          specimenTypesResults.specimenTypes.map((type) => ({
-            label: `${type?.name} (${type?.typeCode})`,
-            value: type?.internalId,
-          }))
-        )
-      );
-    }
-  }, [specimenTypesResults, swabOptions]);
 
   const saveDeviceType = (device: Device) => {
     createDeviceType({
@@ -69,15 +47,21 @@ const DeviceTypeFormContainer = () => {
     return <Redirect to="/admin" />;
   }
 
-  if (!specimenTypesResults && swabOptions.length === 0) {
-    return <LoadingCard message="Loading" />;
-  } else {
+  if (specimenTypesResults) {
+    const swabOptions = Array.from(
+      specimenTypesResults.specimenTypes.map((type) => ({
+        label: `${type?.name} (${type?.typeCode})`,
+        value: type?.internalId,
+      }))
+    );
     return (
       <DeviceTypeForm
         saveDeviceType={saveDeviceType}
         swabOptions={swabOptions}
       />
     );
+  } else {
+    return <LoadingCard message="Loading" />;
   }
 };
 

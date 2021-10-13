@@ -196,4 +196,37 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertThat(updatedSwabTypes.size()).isEqualTo(1);
     assertThat(updatedSwabTypes.get(0).getName()).isEqualTo("Mouth");
   }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void updateDeviceTypeName_adminUser_success_no_changes() {
+    // GIVEN
+    SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Nose", "111222333"));
+    DeviceType device =
+        _service.createDeviceType(
+            CreateDeviceType.builder()
+                .name("A")
+                .model("B")
+                .manufacturer("C")
+                .loincCode("D")
+                .swabTypes(List.of(swab1.getInternalId()))
+                .build());
+
+    // WHEN
+    DeviceType updatedDevice =
+        _service.updateDeviceType(
+            UpdateDeviceType.builder().internalId(device.getInternalId()).build());
+
+    // THEN
+    assertEquals(updatedDevice.getInternalId(), device.getInternalId());
+    assertEquals("A", updatedDevice.getName());
+    assertEquals("B", updatedDevice.getModel());
+    assertEquals("C", updatedDevice.getManufacturer());
+    assertEquals("D", updatedDevice.getLoincCode());
+    assertNull(updatedDevice.getSwabType());
+
+    List<SpecimenType> updatedSwabTypes = updatedDevice.getSwabTypes();
+    assertThat(updatedSwabTypes.size()).isEqualTo(1);
+    assertThat(updatedSwabTypes.get(0).getName()).isEqualTo("Nose");
+  }
 }

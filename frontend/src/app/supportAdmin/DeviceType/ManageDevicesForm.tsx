@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import Button from "../../commonComponents/Button/Button";
 import TextInput from "../../commonComponents/TextInput";
 import MultiSelect from "../../commonComponents/MultiSelect/MultiSelect";
-import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 import Select from "../../commonComponents/Select";
+import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 import { UpdateDeviceType, DeviceType } from "../../../generated/graphql";
 
 import DeviceTypeReminderMessage from "./DeviceTypeReminderMessage";
@@ -26,12 +26,11 @@ const ManageDevicesForm: React.FC<Props> = ({
 
   const [formChanged, updateFormChanged] = useState<boolean>(false);
 
-  function updateDeviceAttribute(name: string, value: any) {
+  const updateDeviceAttribute = (name: string, value: any) => {
     if (selectedDevice) {
       setSelectedDevice({ ...selectedDevice, [name]: value });
-      updateFormChanged(true);
     }
-  }
+  };
 
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -47,18 +46,19 @@ const ManageDevicesForm: React.FC<Props> = ({
       }))
     );
 
-  const getUpdateDeviceType = (device: DeviceType | undefined) => {
-    if (!device) {
-      return undefined;
-    }
-    return {
-      internalId: device.internalId,
-      name: device.name,
-      manufacturer: device.manufacturer,
-      model: device.model,
-      swabTypes: device.swabTypes?.map((swab) => swab.internalId),
-      loincCode: device.loincCode,
-    } as UpdateDeviceType;
+  const getUpdateDeviceType = (
+    device?: DeviceType
+  ): UpdateDeviceType | undefined => {
+    return device
+      ? {
+          internalId: device.internalId,
+          name: device.name,
+          manufacturer: device.manufacturer,
+          model: device.model,
+          swabTypes: device.swabTypes?.map((swab) => swab.internalId),
+          loincCode: device.loincCode,
+        }
+      : undefined;
   };
 
   return (
@@ -98,6 +98,7 @@ const ManageDevicesForm: React.FC<Props> = ({
                     options={getDeviceNames()}
                     defaultSelect
                     onChange={(id) => {
+                      updateFormChanged(!!id);
                       setSelectedDevice(
                         getUpdateDeviceType(
                           devices.find((device) => id === device.internalId)
