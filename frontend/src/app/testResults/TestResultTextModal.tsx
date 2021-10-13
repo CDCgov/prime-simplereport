@@ -13,6 +13,7 @@ import {
   QueryWrapper,
 } from "../commonComponents/QueryWrapper";
 import Alert from "../commonComponents/Alert";
+import { phoneNumberIsValid } from "../patients/personSchema";
 
 export const testQuery = gql`
   query getTestResultForText($id: ID!) {
@@ -23,16 +24,26 @@ export const testQuery = gql`
         middleName
         lastName
         birthDate
+        phoneNumbers {
+            type
+            number
+        }
       }
     }
   }
 `;
+interface patientPhoneDetails {
+    type: string
+    number: number
 
+}
 const formatDate = (date: string | undefined, withTime?: boolean) => {
   const dateFormat = "MMMM Do, YYYY";
   const format = withTime ? `${dateFormat}` : dateFormat;
   return moment(date)?.format(format);
 };
+
+
 
 const MARK_TEST_AS_ERROR = gql`
   mutation MarkTestAsError($id: ID!, $reason: String!) {
@@ -48,6 +59,17 @@ interface Props {
   closeModal: () => void;
 }
 
+const mobilePhoneNumbers = (phoneArray: patientPhoneDetails[]) => {
+    let mobileNumbers: number[] = []
+    phoneArray.forEach(patientPhone => {
+        if (patientPhone.type === "MOBILE") {
+            mobileNumbers.push(patientPhone.number)
+        }
+    });
+    return mobileNumbers
+};
+
+
 export const DetachedTestResultCorrectionModal = ({
   testResultId,
   data,
@@ -55,6 +77,7 @@ export const DetachedTestResultCorrectionModal = ({
 }: Props) => {
   const [markTestAsError] = useMutation(MARK_TEST_AS_ERROR);
   const { patient } = data.testResult;
+  console.log(patient,"HERE IT IS")
   const { dateTested } = data.testResult
   const markAsError = () => {
     markTestAsError({
@@ -86,12 +109,9 @@ export const DetachedTestResultCorrectionModal = ({
         {formatFullName(
           patient
         )}{" "}
-        test results from {formatDate(dateTested)} will be sent to the following numbers:
+        testresults from {formatDate(dateTested)} will be sent to the following numbers:
+        {mobilePhoneNumbers(patient.phoneNumbers)}
       </p>
-      <p>
-        
-      </p>
-
       <div className="sr-test-correction-buttons">
         <Button variant="unstyled" label="Cancel" onClick={closeModal} />
         <Button
@@ -115,3 +135,8 @@ const TestResultCorrectionModal = (
 );
 
 export default TestResultCorrectionModal;
+
+function patientPhone(patientPhone: patientPhoneDetails) {
+    throw new Error("Function not implemented.");
+}
+
