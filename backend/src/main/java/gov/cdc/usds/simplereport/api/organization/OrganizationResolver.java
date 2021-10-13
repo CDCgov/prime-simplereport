@@ -76,7 +76,7 @@ public class OrganizationResolver implements GraphQLQueryResolver {
             .collect(Collectors.toList());
 
     List<ApiPendingOrganization> pendingOrgsInQueue =
-        _organizationQueueService.getQueuedOrganizations().stream()
+        _organizationQueueService.getUnverifiedQueuedOrganizations().stream()
             .map(org -> new ApiPendingOrganization(org))
             .collect(Collectors.toList());
 

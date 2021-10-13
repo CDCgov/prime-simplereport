@@ -1,10 +1,18 @@
 @import "../../../scss/settings/app-settings.scss";
 
+.grid-container.pending-orgs-wide-container {
+  max-width: 84rem;
+}
+
 .sr-pending-organizations-list {
   .sr-org-row th,
   .sr-org-row td {
     /* override USWDS force-white */
     background: inherit;
+
+    .usa-form-group {
+      margin-top: -2rem;
+    }
   }
 
   .sr-org-row:hover {

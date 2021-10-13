@@ -64,7 +64,7 @@ public class OrganizationQueueService {
     return activationToken;
   }
 
-  public List<OrganizationQueueItem> getQueuedOrganizations() {
-    return _orgQueueRepo.findAll();
+  public List<OrganizationQueueItem> getUnverifiedQueuedOrganizations() {
+    return _orgQueueRepo.findAllNotIdentityVerified();
   }
 }
