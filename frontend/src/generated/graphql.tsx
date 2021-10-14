@@ -1230,8 +1230,8 @@ export type ResendActivationEmailMutation = {
 
 export type GetTopLevelDashboardMetricsNewQueryVariables = Exact<{
   facilityId?: Maybe<Scalars["ID"]>;
-  startDate: Scalars["DateTime"];
-  endDate: Scalars["DateTime"];
+  startDate?: Maybe<Scalars["DateTime"]>;
+  endDate?: Maybe<Scalars["DateTime"]>;
 }>;
 
 export type GetTopLevelDashboardMetricsNewQuery = {
@@ -3110,8 +3110,8 @@ export type ResendActivationEmailMutationOptions = Apollo.BaseMutationOptions<
 export const GetTopLevelDashboardMetricsNewDocument = gql`
   query GetTopLevelDashboardMetricsNew(
     $facilityId: ID
-    $startDate: DateTime!
-    $endDate: DateTime!
+    $startDate: DateTime
+    $endDate: DateTime
   ) {
     topLevelDashboardMetrics(
       facilityId: $facilityId
@@ -3143,7 +3143,7 @@ export const GetTopLevelDashboardMetricsNewDocument = gql`
  * });
  */
 export function useGetTopLevelDashboardMetricsNewQuery(
-  baseOptions: Apollo.QueryHookOptions<
+  baseOptions?: Apollo.QueryHookOptions<
     GetTopLevelDashboardMetricsNewQuery,
     GetTopLevelDashboardMetricsNewQueryVariables
   >

@@ -1,7 +1,7 @@
 query GetTopLevelDashboardMetricsNew(
   $facilityId: ID
-  $startDate: DateTime!
-  $endDate: DateTime!
+  $startDate: DateTime
+  $endDate: DateTime
 ) {
   topLevelDashboardMetrics(
     facilityId: $facilityId
