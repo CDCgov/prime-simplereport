@@ -4,8 +4,8 @@ simple-report:
   azure-reporting-queue:
     enabled: true
     exception-webhook-enabled: true
-  patient-link-url: https://simplereport.gov/app/pxp?plid=
-  twilio-callback-url: https://simplereport.gov/api/pxp/callback
+  patient-link-url: https://www.simplereport.gov/app/pxp?plid=
+  twilio-callback-url: https://www.simplereport.gov/api/pxp/callback
   id-verification-reminders:
     enabled: true
   sendgrid:
