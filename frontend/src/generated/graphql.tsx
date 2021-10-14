@@ -1228,13 +1228,13 @@ export type ResendActivationEmailMutation = {
   }>;
 };
 
-export type GetTopLevelDashboardMetricsQueryVariables = Exact<{
+export type GetTopLevelDashboardMetricsNewQueryVariables = Exact<{
   facilityId?: Maybe<Scalars["ID"]>;
   startDate: Scalars["DateTime"];
   endDate: Scalars["DateTime"];
 }>;
 
-export type GetTopLevelDashboardMetricsQuery = {
+export type GetTopLevelDashboardMetricsNewQuery = {
   __typename?: "Query";
   topLevelDashboardMetrics?: Maybe<{
     __typename?: "TopLevelDashboardMetrics";
@@ -3107,8 +3107,8 @@ export type ResendActivationEmailMutationOptions = Apollo.BaseMutationOptions<
   ResendActivationEmailMutation,
   ResendActivationEmailMutationVariables
 >;
-export const GetTopLevelDashboardMetricsDocument = gql`
-  query GetTopLevelDashboardMetrics(
+export const GetTopLevelDashboardMetricsNewDocument = gql`
+  query GetTopLevelDashboardMetricsNew(
     $facilityId: ID
     $startDate: DateTime!
     $endDate: DateTime!
@@ -3125,16 +3125,16 @@ export const GetTopLevelDashboardMetricsDocument = gql`
 `;
 
 /**
- * __useGetTopLevelDashboardMetricsQuery__
+ * __useGetTopLevelDashboardMetricsNewQuery__
  *
- * To run a query within a React component, call `useGetTopLevelDashboardMetricsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTopLevelDashboardMetricsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetTopLevelDashboardMetricsNewQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTopLevelDashboardMetricsNewQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetTopLevelDashboardMetricsQuery({
+ * const { data, loading, error } = useGetTopLevelDashboardMetricsNewQuery({
  *   variables: {
  *      facilityId: // value for 'facilityId'
  *      startDate: // value for 'startDate'
@@ -3142,39 +3142,39 @@ export const GetTopLevelDashboardMetricsDocument = gql`
  *   },
  * });
  */
-export function useGetTopLevelDashboardMetricsQuery(
+export function useGetTopLevelDashboardMetricsNewQuery(
   baseOptions: Apollo.QueryHookOptions<
-    GetTopLevelDashboardMetricsQuery,
-    GetTopLevelDashboardMetricsQueryVariables
+    GetTopLevelDashboardMetricsNewQuery,
+    GetTopLevelDashboardMetricsNewQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
-    GetTopLevelDashboardMetricsQuery,
-    GetTopLevelDashboardMetricsQueryVariables
-  >(GetTopLevelDashboardMetricsDocument, options);
+    GetTopLevelDashboardMetricsNewQuery,
+    GetTopLevelDashboardMetricsNewQueryVariables
+  >(GetTopLevelDashboardMetricsNewDocument, options);
 }
-export function useGetTopLevelDashboardMetricsLazyQuery(
+export function useGetTopLevelDashboardMetricsNewLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<
-    GetTopLevelDashboardMetricsQuery,
-    GetTopLevelDashboardMetricsQueryVariables
+    GetTopLevelDashboardMetricsNewQuery,
+    GetTopLevelDashboardMetricsNewQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<
-    GetTopLevelDashboardMetricsQuery,
-    GetTopLevelDashboardMetricsQueryVariables
-  >(GetTopLevelDashboardMetricsDocument, options);
+    GetTopLevelDashboardMetricsNewQuery,
+    GetTopLevelDashboardMetricsNewQueryVariables
+  >(GetTopLevelDashboardMetricsNewDocument, options);
 }
-export type GetTopLevelDashboardMetricsQueryHookResult = ReturnType<
-  typeof useGetTopLevelDashboardMetricsQuery
+export type GetTopLevelDashboardMetricsNewQueryHookResult = ReturnType<
+  typeof useGetTopLevelDashboardMetricsNewQuery
 >;
-export type GetTopLevelDashboardMetricsLazyQueryHookResult = ReturnType<
-  typeof useGetTopLevelDashboardMetricsLazyQuery
+export type GetTopLevelDashboardMetricsNewLazyQueryHookResult = ReturnType<
+  typeof useGetTopLevelDashboardMetricsNewLazyQuery
 >;
-export type GetTopLevelDashboardMetricsQueryResult = Apollo.QueryResult<
-  GetTopLevelDashboardMetricsQuery,
-  GetTopLevelDashboardMetricsQueryVariables
+export type GetTopLevelDashboardMetricsNewQueryResult = Apollo.QueryResult<
+  GetTopLevelDashboardMetricsNewQuery,
+  GetTopLevelDashboardMetricsNewQueryVariables
 >;
 export const PatientExistsDocument = gql`
   query PatientExists(
