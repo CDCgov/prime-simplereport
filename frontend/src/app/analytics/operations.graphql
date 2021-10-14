@@ -1,4 +1,4 @@
-query GetTopLevelDashboardMetrics(
+query GetTopLevelDashboardMetricsNew(
   $facilityId: ID
   $startDate: DateTime!
   $endDate: DateTime!
