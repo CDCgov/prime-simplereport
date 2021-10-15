@@ -1,8 +1,8 @@
 module "okta" {
   source               = "../../services/okta-app"
   env                  = local.env
-  app_url              = "https://simplereport.gov/app"
-  logout_redirect_uris = ["https://simplereport.cdc.gov", "https://simplereport.gov"]
+  app_url              = "https://www.simplereport.gov/app"
+  logout_redirect_uris = ["https://simplereport.cdc.gov", "https://www.simplereport.gov"]
 }
 
 // Create the Okta secrets

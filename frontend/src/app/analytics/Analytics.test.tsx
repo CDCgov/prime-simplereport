@@ -5,7 +5,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
 
-import { GetTopLevelDashboardMetricsDocument } from "../../generated/graphql";
+import { GetTopLevelDashboardMetricsNewDocument } from "../../generated/graphql";
 
 import {
   Analytics,
@@ -33,7 +33,7 @@ beforeAll(() => {
 const getMocks = () => [
   {
     request: {
-      query: GetTopLevelDashboardMetricsDocument,
+      query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "",
         startDate: getDateFromDaysAgo(7),
@@ -51,7 +51,7 @@ const getMocks = () => [
   },
   {
     request: {
-      query: GetTopLevelDashboardMetricsDocument,
+      query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "",
         startDate: getDateFromDaysAgo(1),
@@ -69,7 +69,7 @@ const getMocks = () => [
   },
   {
     request: {
-      query: GetTopLevelDashboardMetricsDocument,
+      query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "",
         startDate: getDateFromDaysAgo(30),
@@ -87,7 +87,7 @@ const getMocks = () => [
   },
   {
     request: {
-      query: GetTopLevelDashboardMetricsDocument,
+      query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "1",
         startDate: getDateFromDaysAgo(7),
@@ -105,7 +105,7 @@ const getMocks = () => [
   },
   {
     request: {
-      query: GetTopLevelDashboardMetricsDocument,
+      query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "2",
         startDate: getDateFromDaysAgo(7),
@@ -123,7 +123,7 @@ const getMocks = () => [
   },
   {
     request: {
-      query: GetTopLevelDashboardMetricsDocument,
+      query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "",
         startDate: getDateWithCurrentTimeFromString("07/01/2021"),
@@ -141,7 +141,7 @@ const getMocks = () => [
   },
   {
     request: {
-      query: GetTopLevelDashboardMetricsDocument,
+      query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "",
         startDate: getDateWithCurrentTimeFromString("07/01/2021"),
@@ -159,7 +159,7 @@ const getMocks = () => [
   },
   {
     request: {
-      query: GetTopLevelDashboardMetricsDocument,
+      query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "3",
         startDate: getDateFromDaysAgo(7),
@@ -177,7 +177,7 @@ const getMocks = () => [
   },
   {
     request: {
-      query: GetTopLevelDashboardMetricsDocument,
+      query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "3",
         startDate: getDateFromDaysAgo(30),
