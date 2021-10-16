@@ -8,13 +8,11 @@ on:
       - "**"
     paths-ignore:
       - 'ops/**'
-      - '.github/**'
   push:
     branches:
       - main
     paths-ignore:
       - 'ops/**'
-      - '.github/**'
 
 env:
   NODE_VERSION: 14
