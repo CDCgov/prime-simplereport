@@ -5,6 +5,9 @@ on:
   pull_request:
     branches:
       - "**"
+    paths-ignore:
+      - 'ops/**'
+      - '.github/**'
   push:
     branches:
       - main
