@@ -30,27 +30,27 @@ const OrderingProviderList: React.FC<OrderingProviderListProps> = ({
         <h2 className="font-heading-lg">Manage providers</h2>
       </div>
       <div className="usa-card__body">
-        <table
-          className="usa-table usa-table--borderless"
-          style={{ width: "100%" }}
-        >
-          <thead>
-            <tr>
-              <th scope="col">Provider</th>
-              <th scope="col">Phone number</th>
-              <th scope="col"></th>
-              <th scope="col">Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.isArray(providers) && providers.length === 0 ? (
-              <p>No ordering providers found</p>
-            ) : (
-              providers.map((provider, idx) => {
+        {Array.isArray(providers) && providers.length === 0 ? (
+          <p className="margin-top-1em">No ordering providers found</p>
+        ) : (
+          <table
+            className="usa-table usa-table--borderless"
+            style={{ width: "100%" }}
+          >
+            <thead>
+              <tr>
+                <th scope="col">Provider</th>
+                <th scope="col">Phone number</th>
+                <th scope="col"></th>
+                <th scope="col">Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+              {providers.map((provider, idx) => {
                 return (
                   <tr key={idx}>
                     <td className="padding-y-2">
-                      {/* TODO: route to add/edit provider page after https://github.com/CDCgov/prime-simplereport/issues/2667 */}
+                      {/* route to add/edit provider page after https://github.com/CDCgov/prime-simplereport/issues/2667 */}
                       <LinkWithQuery
                         to={`/provider`}
                         className="sr-provider-edit-link"
@@ -89,15 +89,15 @@ const OrderingProviderList: React.FC<OrderingProviderListProps> = ({
                     </td>
                   </tr>
                 );
-              })
-            )}
-          </tbody>
-        </table>
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
       <div className="usa-card__footer padding-top-2 padding-bottom-205">
         <LinkWithQuery
           className="usa-button usa-button--outline"
-          /* TODO: route to add/edit provider page after https://github.com/CDCgov/prime-simplereport/issues/2667 */
+          /* route to add/edit provider page after https://github.com/CDCgov/prime-simplereport/issues/2667 */
           to={`/provider`}
           id="add-provider-button"
         >

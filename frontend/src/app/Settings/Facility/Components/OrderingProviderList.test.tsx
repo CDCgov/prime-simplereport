@@ -8,6 +8,10 @@ const RouterWithFacility: React.FC = ({ children }) => (
   <MemoryRouter>{children}</MemoryRouter>
 );
 
+jest.mock("@fortawesome/react-fontawesome", () => ({
+  FontAwesomeIcon: () => <p>x</p>,
+}));
+
 const defaultProvider = {
   firstName: "LeBron",
   middleName: "Optimus",
@@ -37,7 +41,7 @@ const otherProvider = {
 };
 
 describe("OrderingProviderList", () => {
-  describe("with no devices set for facility", () => {
+  describe("with no providers set for facility", () => {
     beforeEach(() => {
       render(
         <RouterWithFacility>
@@ -51,22 +55,24 @@ describe("OrderingProviderList", () => {
       );
     });
 
-    it("renders a message if no ordering devices are present in list", async () => {
+    it("renders a message if no ordering providers are present in list", async () => {
       const expected = await screen.findByText("No ordering providers found");
 
       expect(expected).toBeInTheDocument();
     });
   });
 
-  describe("with devices set for facility", () => {
+  describe("with providers set for facility", () => {
+    const mockUpdateDefaultProvider = jest.fn();
+    const mockUpdateProviders = jest.fn();
     beforeEach(() => {
       render(
         <RouterWithFacility>
           <OrderingProviderList
             providers={[defaultProvider, otherProvider]}
             defaultProvider={defaultProvider}
-            updateDefaultProvider={jest.fn()}
-            updateProviders={jest.fn()}
+            updateDefaultProvider={mockUpdateDefaultProvider}
+            updateProviders={mockUpdateProviders}
           />
         </RouterWithFacility>
       );
@@ -85,7 +91,7 @@ describe("OrderingProviderList", () => {
       within(rows[1]).getByText("2708675309");
     });
 
-    it("correctly indicates the device selected as the default", () => {
+    it("correctly indicates the provider selected as the default", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [_header, ...rows] = screen.getAllByRole("row");
 
@@ -93,6 +99,28 @@ describe("OrderingProviderList", () => {
       expect(within(rows[0]).getByRole("checkbox")).toBeChecked();
 
       expect(within(rows[1]).getByRole("checkbox")).not.toBeChecked();
+    });
+
+    describe("clicking delete button", () => {
+      beforeEach(() => {
+        screen.getAllByLabelText("Delete device")[0].click();
+      });
+
+      it("removes the ordering provider from the list of providers", () => {
+        expect(mockUpdateProviders).toHaveBeenCalledWith([otherProvider]);
+        expect(mockUpdateProviders).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe("clicking default provider button", () => {
+      beforeEach(() => {
+        screen.getAllByLabelText("Set as default")[0].click();
+      });
+
+      it("it sets provider as default provider", () => {
+        expect(mockUpdateDefaultProvider).toHaveBeenCalledWith(defaultProvider);
+        expect(mockUpdateDefaultProvider).toHaveBeenCalledTimes(1);
+      });
     });
   });
 });
