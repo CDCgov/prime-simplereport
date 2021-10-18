@@ -60,14 +60,15 @@ interface Props {
 }
 
 const mobilePhoneNumbers = (phoneArray: patientPhoneDetails[]) => {
-    let mobileNumbers: number[] = []
+    let mobileNumbers: any = []
     phoneArray.forEach(patientPhone => {
         if (patientPhone.type === "MOBILE") {
-            mobileNumbers.push(patientPhone.number)
+            mobileNumbers.push(<tr>{patientPhone.number}</tr>);
         }
     });
-    return mobileNumbers
+ return mobileNumbers;
 };
+
 
 
 export const DetachedTestResultCorrectionModal = ({
@@ -106,18 +107,13 @@ export const DetachedTestResultCorrectionModal = ({
       <h3>Text Results?</h3>
       <p>
         {" "}
-        {formatFullName(
-          patient
-        )}{" "}
-        testresults from {formatDate(dateTested)} will be sent to the following numbers:
-        {mobilePhoneNumbers(patient.phoneNumbers)}
+        {formatFullName(patient)} testresults from {formatDate(dateTested)} will
+        be sent to the following numbers:
+        <table>{mobilePhoneNumbers(patient.phoneNumbers)}</table>
       </p>
       <div className="sr-test-correction-buttons">
         <Button variant="unstyled" label="Cancel" onClick={closeModal} />
-        <Button
-          label="Send results"
-          onClick={markAsError}
-        />
+        <Button label="Send results" onClick={markAsError} />
       </div>
     </Modal>
   );
@@ -136,7 +132,4 @@ const TestResultCorrectionModal = (
 
 export default TestResultCorrectionModal;
 
-function patientPhone(patientPhone: patientPhoneDetails) {
-    throw new Error("Function not implemented.");
-}
 
