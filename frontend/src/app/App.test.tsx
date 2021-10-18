@@ -5,7 +5,7 @@ import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { GetTopLevelDashboardMetricsDocument } from "../generated/graphql";
+import { GetTopLevelDashboardMetricsNewDocument } from "../generated/graphql";
 
 import App, { WHOAMI_QUERY } from "./App";
 import { queueQuery } from "./testQueue/TestQueue";
@@ -167,7 +167,7 @@ const WhoAmIErrorQueryMock = {
 };
 const getAnalyticsQueryMock = () => ({
   request: {
-    query: GetTopLevelDashboardMetricsDocument,
+    query: GetTopLevelDashboardMetricsNewDocument,
     variables: {
       facilityId: "",
       startDate: getDateFromDaysAgo(7),

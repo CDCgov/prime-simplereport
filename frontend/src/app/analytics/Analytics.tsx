@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 
 import { DatePicker } from "../commonComponents/DatePicker";
 import Dropdown from "../commonComponents/Dropdown";
-import { useGetTopLevelDashboardMetricsQuery } from "../../generated/graphql";
+import { useGetTopLevelDashboardMetricsNewQuery } from "../../generated/graphql";
 import { LoadingCard } from "../commonComponents/LoadingCard/LoadingCard";
 
 import "./Analytics.scss";
@@ -86,7 +86,7 @@ export const Analytics = () => {
     }
   };
 
-  const { data, loading, error } = useGetTopLevelDashboardMetricsQuery({
+  const { data, loading, error } = useGetTopLevelDashboardMetricsNewQuery({
     variables: {
       facilityId,
       startDate:

@@ -236,7 +236,7 @@ const Header: React.FC<{}> = () => {
             <div>
               <div className="navlink__support">
                 <a
-                  href="https://simplereport.gov/support"
+                  href="https://www.simplereport.gov/support"
                   target="none"
                   onClick={() => handleSupportClick()}
                 >
@@ -381,7 +381,7 @@ const Header: React.FC<{}> = () => {
                   <li className="usa-sidenav__item">{facility.name}</li>
                   <li className="usa-sidenav__item navlink__support">
                     <a
-                      href="https://simplereport.gov/support"
+                      href="https://www.simplereport.gov/support"
                       target="none"
                       onClick={() => handleSupportClick()}
                       data-testid="support-link"

@@ -3,6 +3,8 @@ package gov.cdc.usds.simplereport.api.accountrequest;
 import static gov.cdc.usds.simplereport.config.AuthorizationConfiguration.AUTHORIZER_BEAN;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.IDENTITY_VERIFICATION;
 
+import com.okta.sdk.resource.ResourceException;
+import gov.cdc.usds.simplereport.api.accountrequest.errors.AccountRequestFailureException;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequestOrganizationCreateTemplate;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAnswersRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAnswersResponse;
@@ -177,6 +179,12 @@ public class IdentityVerificationController {
       }
 
       return verificationResponse;
+    } catch (ResourceException e) {
+      // The `ResourceException` is mostly thrown when a user requests an account with an email
+      // address that's already in Okta, but can be thrown for other Okta internal errors as well.
+      // Since there is no way for the user to fix the problem and resubmit, rethrow these as
+      // AccountRequestExceptions so we get paged.
+      throw new AccountRequestFailureException(e);
     } catch (ExperianSubmitAnswersException | ExperianNullNodeException e) {
       // a general error with experian occurred
       sendIdentityVerificationFailedEmails(orgQueueItem.getExternalId(), orgAdminEmail);

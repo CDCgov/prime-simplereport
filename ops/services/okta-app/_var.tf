@@ -23,7 +23,8 @@ variable "redirect_urls" {
     "http://localhost:3000",
     "https://staging.simplereport.org/app",
     "https://simplereport.cdc.gov/app",
-    "https://simplereport.gov/app"
+    "https://simplereport.gov/app",
+    "https://www.simplereport.gov/app"
   ]
 }
 

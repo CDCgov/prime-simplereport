@@ -66,8 +66,8 @@ const mocks = {
     "RemovePatientFromQueue",
     (req, res, ctx) => res(ctx.data({}))
   ),
-  GetTopLevelDashboardMetrics: graphql.query(
-    "GetTopLevelDashboardMetrics",
+  GetTopLevelDashboardMetricsNew: graphql.query(
+    "GetTopLevelDashboardMetricsNew",
     (req, res, ctx) =>
       res(
         ctx.data({

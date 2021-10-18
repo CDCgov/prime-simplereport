@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -15,7 +16,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.okta.sdk.resource.ResourceException;
 import gov.cdc.usds.simplereport.api.accountrequest.IdentityVerificationController;
+import gov.cdc.usds.simplereport.api.accountrequest.errors.AccountRequestFailureException;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequestOrganizationCreateTemplate;
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -48,6 +51,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 @Import({
@@ -307,6 +311,35 @@ class IdentityVerificationControllerTest {
 
     // unable to verify, emails are sent
     verifyEmailsSent();
+  }
+
+  @Test
+  void submitAnswers_queuedOrgDuplicateUser_failure() throws Exception {
+    OrganizationAccountRequest originalRequest = mock(OrganizationAccountRequest.class);
+    when(originalRequest.getEmail()).thenReturn(FAKE_ORG_ADMIN_EMAIL);
+
+    OrganizationQueueItem queueItem = mock(OrganizationQueueItem.class);
+    when(queueItem.getExternalId()).thenReturn(FAKE_ORG_EXTERNAL_ID);
+    when(queueItem.getRequestData()).thenReturn(originalRequest);
+
+    when(_orgQueueService.getUnverifiedQueuedOrganizationByExternalId(FAKE_ORG_EXTERNAL_ID))
+        .thenReturn(Optional.of(queueItem));
+    when(_orgQueueService.createAndActivateQueuedOrganization(queueItem))
+        .thenThrow(ResourceException.class);
+
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ID_VERIFICATION_SUBMIT_ANSWERS)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(submitAnswersRequestBody(FAKE_ORG_EXTERNAL_ID, VALID_SESSION_STRING, true));
+
+    MvcResult result =
+        this._mockMvc.perform(builder).andExpect(status().isInternalServerError()).andReturn();
+
+    // okta error when creating user from queued org, no emails should be sent (page instead)
+    assertEquals(AccountRequestFailureException.class, result.getResolvedException().getClass());
+    verifyEmailsNotSent();
   }
 
   @Test
