@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.service.ApiUserService;
+import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.email.EmailProvider;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import java.util.List;
@@ -45,6 +46,8 @@ class AccountRequestControllerTest extends BaseFullStackTest {
   @SpyBean private ApiUserService apiUserService;
   @MockBean private EmailProvider mockSendGrid;
   @SpyBean private EmailService emailService;
+
+  @SpyBean private OrganizationQueueService _orgQueueService;
 
   @Captor private ArgumentCaptor<TemplateVariablesProvider> contentCaptor;
   @Captor private ArgumentCaptor<Mail> mail;
@@ -498,7 +501,8 @@ class AccountRequestControllerTest extends BaseFullStackTest {
             .content(requestBody);
     this._mockMvc.perform(builder).andExpect(status().isOk());
 
-    verify(_orgService).queueNewRequest(orgNameCaptor.capture(), externalIdCaptor.capture(), any());
+    verify(_orgQueueService)
+        .queueNewRequest(orgNameCaptor.capture(), externalIdCaptor.capture(), any());
 
     assertThat(orgNameCaptor.getValue()).isEqualTo("Central Schools");
     assertThat(externalIdCaptor.getValue()).startsWith("AZ-Central-Schools-");

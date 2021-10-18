@@ -3,6 +3,8 @@ package gov.cdc.usds.simplereport.api.accountrequest;
 import static gov.cdc.usds.simplereport.config.AuthorizationConfiguration.AUTHORIZER_BEAN;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.IDENTITY_VERIFICATION;
 
+import com.okta.sdk.resource.ResourceException;
+import gov.cdc.usds.simplereport.api.accountrequest.errors.AccountRequestFailureException;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequestOrganizationCreateTemplate;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAnswersRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAnswersResponse;
@@ -11,8 +13,10 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQu
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
+import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
@@ -23,6 +27,7 @@ import gov.cdc.usds.simplereport.service.errors.ExperianPersonMatchException;
 import gov.cdc.usds.simplereport.service.errors.ExperianSubmitAnswersException;
 import gov.cdc.usds.simplereport.service.idverification.ExperianService;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
@@ -51,6 +56,7 @@ public class IdentityVerificationController {
   @Autowired private ExperianService _experianService;
   @Autowired private OktaRepository _oktaRepo;
   @Autowired private OrganizationService _orgService;
+  @Autowired private OrganizationQueueService _orgQueueService;
   @Autowired private SendGridProperties sendGridProperties;
 
   @PostConstruct
@@ -118,6 +124,15 @@ public class IdentityVerificationController {
      * selecting "2002" for "Please select the model year of the vehicle you purchased or leased
      * prior to January 2011"
      */
+    Optional<OrganizationQueueItem> optItem =
+        _orgQueueService.getUnverifiedQueuedOrganizationByExternalId(
+            requestBody.getOrgExternalId());
+    if (optItem.isPresent()) {
+      return checkAnswersAndCreateQueuedOrganization(requestBody, optItem.get());
+    }
+
+    // v1 requests (where org has already been created): activate existing organization
+
     Organization org = _orgService.getOrganization(requestBody.getOrgExternalId());
     String orgAdminEmail = checkOrgAndGetAdminEmail(org);
 
@@ -140,6 +155,39 @@ public class IdentityVerificationController {
     } catch (ExperianSubmitAnswersException | ExperianNullNodeException e) {
       // a general error with experian occurred
       sendIdentityVerificationFailedEmails(org.getExternalId(), orgAdminEmail);
+      throw e;
+    }
+  }
+
+  private IdentityVerificationAnswersResponse checkAnswersAndCreateQueuedOrganization(
+      IdentityVerificationAnswersRequest requestBody, OrganizationQueueItem orgQueueItem)
+      throws IOException {
+    String orgAdminEmail = orgQueueItem.getRequestData().getEmail();
+
+    try {
+      IdentityVerificationAnswersResponse verificationResponse =
+          _experianService.submitAnswers(requestBody);
+
+      verificationResponse.setEmail(orgAdminEmail);
+
+      if (verificationResponse.isPassed()) {
+        // create and id verify the organization; create and activate admin user account
+        String activationToken = _orgQueueService.createAndActivateQueuedOrganization(orgQueueItem);
+        verificationResponse.setActivationToken(activationToken);
+      } else {
+        sendIdentityVerificationFailedEmails(orgQueueItem.getExternalId(), orgAdminEmail);
+      }
+
+      return verificationResponse;
+    } catch (ResourceException e) {
+      // The `ResourceException` is mostly thrown when a user requests an account with an email
+      // address that's already in Okta, but can be thrown for other Okta internal errors as well.
+      // Since there is no way for the user to fix the problem and resubmit, rethrow these as
+      // AccountRequestExceptions so we get paged.
+      throw new AccountRequestFailureException(e);
+    } catch (ExperianSubmitAnswersException | ExperianNullNodeException e) {
+      // a general error with experian occurred
+      sendIdentityVerificationFailedEmails(orgQueueItem.getExternalId(), orgAdminEmail);
       throw e;
     }
   }
