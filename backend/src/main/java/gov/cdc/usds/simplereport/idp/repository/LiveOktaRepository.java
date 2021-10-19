@@ -58,6 +58,8 @@ public class LiveOktaRepository implements OktaRepository {
   private static final String FILTER_TYPE_EQ_OKTA_GROUP =
       "type eq \"" + GroupType.OKTA_GROUP + "\"";
 
+  private static final String OKTA_GROUP_NOT_FOUND = "Okta group not found for this organization";
+
   private String _rolePrefix;
   private Client _client;
   private Application _app;
@@ -201,10 +203,7 @@ public class LiveOktaRepository implements OktaRepository {
         oktaGroupList.stream()
             .filter(g -> orgDefaultGroupName.equals(g.getProfile().getName()))
             .findFirst()
-            .orElseThrow(
-                () ->
-                    new IllegalGraphqlArgumentException(
-                        "Okta group not found for this organization"));
+            .orElseThrow(() -> new IllegalGraphqlArgumentException(OKTA_GROUP_NOT_FOUND));
 
     return orgDefaultOktaGroup.listUsers().stream()
         .map(u -> u.getProfile().getEmail())
@@ -221,10 +220,7 @@ public class LiveOktaRepository implements OktaRepository {
         oktaGroupList.stream()
             .filter(g -> orgDefaultGroupName.equals(g.getProfile().getName()))
             .findFirst()
-            .orElseThrow(
-                () ->
-                    new IllegalGraphqlArgumentException(
-                        "Okta group not found for this organization"));
+            .orElseThrow(() -> new IllegalGraphqlArgumentException(OKTA_GROUP_NOT_FOUND));
 
     User adminUser = orgDefaultOktaGroup.listUsers().single();
     UserProfile profile = adminUser.getProfile();
@@ -244,10 +240,7 @@ public class LiveOktaRepository implements OktaRepository {
         oktaGroupList.stream()
             .filter(g -> orgDefaultGroupName.equals(g.getProfile().getName()))
             .findFirst()
-            .orElseThrow(
-                () ->
-                    new IllegalGraphqlArgumentException(
-                        "Okta group not found for this organization"));
+            .orElseThrow(() -> new IllegalGraphqlArgumentException(OKTA_GROUP_NOT_FOUND));
 
     return orgDefaultOktaGroup.listUsers().stream()
         .collect(Collectors.toMap(u -> u.getProfile().getEmail(), u -> u.getStatus()));
