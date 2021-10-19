@@ -56,7 +56,9 @@ const PendingOrganizations = ({
               )
             : ""}
         </td>
-        <td>{new Date(o.createdAt).toLocaleString()}</td>
+        <td data-testid="org-created-at-table-cell">
+          {new Date(o.createdAt).toLocaleString()}
+        </td>
         <td>{o.externalId}</td>
         <td>
           <Checkboxes
