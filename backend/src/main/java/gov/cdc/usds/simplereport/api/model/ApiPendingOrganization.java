@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import com.okta.sdk.resource.user.User;
-import com.okta.sdk.resource.user.UserProfile;
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
@@ -18,13 +16,12 @@ public class ApiPendingOrganization {
   private String adminPhone;
   private Date createdAt;
 
-  public ApiPendingOrganization(Organization org, User adminUser) {
+  public ApiPendingOrganization(Organization org, ApiOrganizationAdmin adminUser) {
     this.externalId = org.getExternalId();
     this.name = org.getOrganizationName();
-    UserProfile profile = adminUser.getProfile();
-    this.adminName = profile.getFirstName() + " " + profile.getLastName();
-    this.adminEmail = profile.getEmail();
-    this.adminPhone = profile.getPrimaryPhone();
+    this.adminName = adminUser.getName();
+    this.adminEmail = adminUser.getEmail();
+    this.adminPhone = adminUser.getPhone();
     this.createdAt = org.getCreatedAt();
   }
 

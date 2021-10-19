@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.api.organization;
 
-import com.okta.sdk.resource.user.User;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
+import gov.cdc.usds.simplereport.api.model.ApiOrganizationAdmin;
 import gov.cdc.usds.simplereport.api.model.ApiPendingOrganization;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -70,7 +70,8 @@ public class OrganizationResolver implements GraphQLQueryResolver {
         _organizationService.getOrganizations(false).stream()
             .map(
                 org -> {
-                  User adminUser = _organizationService.getAdminUserForPendingOrganization(org);
+                  ApiOrganizationAdmin adminUser =
+                      _organizationService.getAdminUserForPendingOrganization(org);
                   return new ApiPendingOrganization(org, adminUser);
                 })
             .collect(Collectors.toList());
