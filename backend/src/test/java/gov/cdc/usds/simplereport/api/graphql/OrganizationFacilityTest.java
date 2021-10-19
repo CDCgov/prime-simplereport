@@ -124,6 +124,23 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
   }
 
   @Test
+  void setOrganizationQueueItemIdentityVerified_siteAdminUser_ok() {
+    TestUserIdentities.withUser(
+        TestUserIdentities.SITE_ADMIN_USER,
+        () -> {
+          OrganizationQueueItem orgQueueItem = _dataFactory.createOrganizationQueueItem();
+          useSuperUser();
+          ObjectNode variables =
+              JsonNodeFactory.instance
+                  .objectNode()
+                  .put("externalId", orgQueueItem.getExternalId())
+                  .put("verified", true);
+          ObjectNode verified = runQuery("set-organization-identity-verified", variables);
+          assertTrue(verified.path("setOrganizationIdentityVerified").asBoolean());
+        });
+  }
+
+  @Test
   void getPendingOrganizations_siteAdminUser_ok() {
     TestUserIdentities.withUser(
         TestUserIdentities.SITE_ADMIN_USER,

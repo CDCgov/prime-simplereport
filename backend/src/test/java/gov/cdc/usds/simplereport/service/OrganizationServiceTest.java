@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.OrderingProviderRequiredException;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -211,5 +212,16 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             () -> _service.verifyOrganizationNoPermissions(orgExternalId));
 
     assertEquals("Organization is already verified.", e.getMessage());
+  }
+
+  @Test
+  void getAdminUserForPendingOrganization_orgAlreadyVerified_failure() {
+    Organization org = _dataFactory.createValidOrg();
+    IllegalGraphqlArgumentException e =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> _service.getAdminUserForPendingOrganization(org));
+
+    assertEquals("Can only get admin user for pending organization", e.getMessage());
   }
 }
