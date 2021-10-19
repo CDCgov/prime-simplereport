@@ -44,8 +44,4 @@ public class OrganizationQueueItem extends EternalAuditedEntity {
   public void setVerifiedOrganization(Organization org) {
     verifiedOrganization = org;
   }
-
-  public void setVerifiedOrganization(Organization org) {
-    verifiedOrganization = org;
-  }
 }
