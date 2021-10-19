@@ -6,9 +6,13 @@ on:
   pull_request:
     branches:
       - "**"
+    paths-ignore:
+      - 'ops/**'
   push:
     branches:
       - main
+    paths-ignore:
+      - 'ops/**'
 
 env:
   NODE_VERSION: 14
