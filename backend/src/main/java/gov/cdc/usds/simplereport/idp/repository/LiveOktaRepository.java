@@ -221,8 +221,7 @@ public class LiveOktaRepository implements OktaRepository {
             .filter(g -> orgDefaultGroupName.equals(g.getProfile().getName()))
             .findFirst()
             .orElseThrow(() -> new IllegalGraphqlArgumentException(OKTA_GROUP_NOT_FOUND));
-
-    User adminUser = orgDefaultOktaGroup.listUsers().single();
+    User adminUser = orgDefaultOktaGroup.listUsers().stream().collect(Collectors.toList()).get(0);
     UserProfile profile = adminUser.getProfile();
     String adminName = profile.getFirstName() + " " + profile.getLastName();
     String adminEmail = profile.getEmail();
