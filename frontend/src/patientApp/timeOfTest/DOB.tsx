@@ -135,7 +135,7 @@ const DOB = () => {
           <p></p>
           <Alert
             type="error"
-            title="Link not found"
+            title="Page not found"
             body={t("testResult.dob.linkNotFound")}
           />
         </div>
