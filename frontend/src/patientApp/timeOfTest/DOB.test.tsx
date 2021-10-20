@@ -5,6 +5,8 @@ import configureStore from "redux-mock-store";
 import { act } from "react-dom/test-utils";
 
 import "../../i18n";
+import { v4 as uuid } from "uuid";
+
 import { PxpApi } from "../PxpApiService";
 
 import DOB from "./DOB";
@@ -20,10 +22,10 @@ const validateDateOfBirthSpy = jest
   .spyOn(PxpApi, "validateDateOfBirth")
   .mockImplementation(jest.fn());
 
-describe("DOB", () => {
+describe("DOB (valid UUID)", () => {
   beforeEach(() => {
     const store = mockStore({
-      plid: "foo",
+      plid: uuid(),
     });
     render(mockContainer(store));
   });
@@ -165,10 +167,29 @@ describe("DOB", () => {
     // THEN
     expect(
       await screen.findByText(
-        "This link is invalid. Please contact your test provider.",
+        "This test result link is invalid. Please double check the URL or contact your test provider for the correct link.",
         { exact: false }
       )
     ).toBeInTheDocument();
     expect(validateDateOfBirthSpy).toHaveBeenCalled();
+  });
+});
+
+describe("DOB (invalid UUID)", () => {
+  it("Rejects an invalid UUID without calling the API", async () => {
+    // GIVEN
+    const store = mockStore({
+      plid: "this is totally not a valid UUID",
+    });
+    render(mockContainer(store));
+
+    // WHEN
+    const error = await screen.findByRole("alert");
+
+    // THEN
+    expect(error.textContent).toEqual(
+      "Page not foundThis test result link is invalid. Please double check the URL or contact your test provider for the correct link."
+    );
+    expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
   });
 });
