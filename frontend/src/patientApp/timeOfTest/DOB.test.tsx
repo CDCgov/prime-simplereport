@@ -167,7 +167,7 @@ describe("DOB (valid UUID)", () => {
     // THEN
     expect(
       await screen.findByText(
-        "This link is invalid. Please contact your test provider.",
+        "This test result link is invalid. Please double check the URL or contact your test provider for the correct link.",
         { exact: false }
       )
     ).toBeInTheDocument();
@@ -188,7 +188,7 @@ describe("DOB (invalid UUID)", () => {
 
     // THEN
     expect(error.textContent).toEqual(
-      "Link not foundThis link is invalid. Please contact your test provider."
+      "Page not foundThis test result link is invalid. Please double check the URL or contact your test provider for the correct link."
     );
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
   });
