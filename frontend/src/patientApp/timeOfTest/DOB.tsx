@@ -3,6 +3,7 @@ import { connect, useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
+import { validate as isValidUUID } from "uuid";
 
 import Button from "../../app/commonComponents/Button/Button";
 import TextInput from "../../app/commonComponents/TextInput";
@@ -14,13 +15,15 @@ const DOB = () => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
+  const plid = useSelector((state: any) => state.plid);
   const [birthDate, setBirthDate] = useState("");
   const [birthDateError, setBirthDateError] = useState("");
   const [birthDateHidden, setBirthDateHidden] = useState(true);
   const [linkExpiredError, setLinkExpiredError] = useState(false);
-  const [linkNotFoundError, setLinkNotFoundError] = useState(false);
+  const [linkNotFoundError, setLinkNotFoundError] = useState(
+    !isValidUUID(plid)
+  );
   const dobRef = useRef<HTMLInputElement>(null);
-  const plid = useSelector((state: any) => state.plid);
   const patient = useSelector((state: any) => state.patient);
   const [loading, setLoading] = useState(false);
 
@@ -132,7 +135,7 @@ const DOB = () => {
           <p></p>
           <Alert
             type="error"
-            title="Link not found"
+            title="Page not found"
             body={t("testResult.dob.linkNotFound")}
           />
         </div>

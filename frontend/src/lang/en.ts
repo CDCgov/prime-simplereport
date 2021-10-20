@@ -537,7 +537,7 @@ export const en = {
         linkExpired:
           "This link has expired. Please contact your test provider.",
         linkNotFound:
-          "This link is invalid. Please contact your test provider.",
+          "This test result link is invalid. Please double check the URL or contact your test provider for the correct link.",
         submit: "Continue",
       },
     },
