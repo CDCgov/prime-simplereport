@@ -3,36 +3,64 @@ import React, { useState } from "react";
 import Button from "../../commonComponents/Button/Button";
 import TextInput from "../../commonComponents/TextInput";
 import MultiSelect from "../../commonComponents/MultiSelect/MultiSelect";
+import Select from "../../commonComponents/Select";
 import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
+import { UpdateDeviceType, DeviceType } from "../../../generated/graphql";
 
-import { Device } from "./DeviceTypeFormContainer";
 import DeviceTypeReminderMessage from "./DeviceTypeReminderMessage";
 
 interface Props {
-  saveDeviceType: (device: Device) => void;
+  updateDeviceType: (device: UpdateDeviceType) => void;
   swabOptions: Array<MultiSelectDropdownOption>;
+  devices: DeviceType[];
 }
 
-const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
-  const [device, updateDevice] = useState<Device>({
-    name: "",
-    manufacturer: "",
-    model: "",
-    loincCode: "",
-    swabTypes: [],
-  });
+const ManageDevicesForm: React.FC<Props> = ({
+  updateDeviceType,
+  swabOptions,
+  devices,
+}) => {
+  const [selectedDevice, setSelectedDevice] = useState<
+    UpdateDeviceType | undefined
+  >(undefined);
+
   const [formChanged, updateFormChanged] = useState<boolean>(false);
 
-  function updateDeviceAttribute(name: string, value: any) {
-    updateDevice({ ...device, [name]: value });
-    updateFormChanged(true);
-  }
+  const updateDeviceAttribute = (name: string, value: any) => {
+    if (selectedDevice) {
+      setSelectedDevice({ ...selectedDevice, [name]: value });
+    }
+  };
 
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     updateDeviceAttribute(e.target.name, e.target.value);
   };
+
+  const getDeviceNames = () =>
+    Array.from(
+      devices.map((device) => ({
+        label: device.name,
+        value: device.internalId,
+      }))
+    );
+
+  const getUpdateDeviceType = (
+    device?: DeviceType
+  ): UpdateDeviceType | undefined => {
+    return device
+      ? {
+          internalId: device.internalId,
+          name: device.name,
+          manufacturer: device.manufacturer,
+          model: device.model,
+          swabTypes: device.swabTypes?.map((swab) => swab.internalId),
+          loincCode: device.loincCode,
+        }
+      : undefined;
+  };
+
   return (
     <main className="prime-home">
       <div className="grid-container">
@@ -40,7 +68,7 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h2>Device type</h2>
+                <h2>Manage devices</h2>
               </div>
               <div
                 style={{
@@ -51,9 +79,11 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
               >
                 <Button
                   type="button"
-                  onClick={() => saveDeviceType(device)}
+                  onClick={() =>
+                    selectedDevice && updateDeviceType(selectedDevice)
+                  }
                   label="Save changes"
-                  disabled={!formChanged}
+                  disabled={!formChanged || !selectedDevice}
                 />
               </div>
             </div>
@@ -61,11 +91,20 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
               <DeviceTypeReminderMessage />
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
-                  <TextInput
+                  <Select
                     label="Device name"
                     name="name"
-                    value={device.name}
-                    onChange={onChange}
+                    value={selectedDevice?.internalId || ""}
+                    options={getDeviceNames()}
+                    defaultSelect
+                    onChange={(id) => {
+                      updateFormChanged(!!id);
+                      setSelectedDevice(
+                        getUpdateDeviceType(
+                          devices.find((device) => id === device.internalId)
+                        )
+                      );
+                    }}
                     required
                   />
                 </div>
@@ -73,17 +112,9 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
                   <TextInput
                     label="Manufacturer"
                     name="manufacturer"
-                    value={device.manufacturer}
+                    value={selectedDevice?.manufacturer}
                     onChange={onChange}
-                    required
-                  />
-                </div>
-                <div className="tablet:grid-col">
-                  <TextInput
-                    label="Model"
-                    name="model"
-                    value={device.model}
-                    onChange={onChange}
+                    disabled={!selectedDevice}
                     required
                   />
                 </div>
@@ -91,8 +122,21 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
                   <TextInput
                     label="LOINC code"
                     name="loincCode"
-                    value={device.loincCode}
+                    value={selectedDevice?.loincCode}
                     onChange={onChange}
+                    disabled={!selectedDevice}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="grid-row grid-gap">
+                <div className="tablet:grid-col">
+                  <TextInput
+                    label="Model"
+                    name="model"
+                    value={selectedDevice?.model}
+                    onChange={onChange}
+                    disabled={!selectedDevice}
                     required
                   />
                 </div>
@@ -103,12 +147,15 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
                   style={{ marginBottom: "56px" }}
                 >
                   <MultiSelect
+                    key={selectedDevice?.internalId}
                     label="SNOMED code for swab type(s)"
                     name="swabTypes"
                     onChange={(swabTypes) => {
                       updateDeviceAttribute("swabTypes", swabTypes);
                     }}
                     options={swabOptions}
+                    initialSelectedValues={selectedDevice?.swabTypes}
+                    disabled={!selectedDevice}
                     required
                   />
                 </div>
@@ -121,4 +168,4 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
   );
 };
 
-export default DeviceTypeForm;
+export default ManageDevicesForm;

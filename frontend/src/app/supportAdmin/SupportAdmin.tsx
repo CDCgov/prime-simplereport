@@ -28,6 +28,11 @@ const SupportAdmin = () => {
                 </LinkWithQuery>
               </div>
               <div>
+                <LinkWithQuery to="/admin/manage-devices">
+                  Manage devices
+                </LinkWithQuery>
+              </div>
+              <div>
                 <LinkWithQuery to="/admin/tenant-data-access">
                   Organization data
                 </LinkWithQuery>
