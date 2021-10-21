@@ -555,7 +555,7 @@ export const es: LanguageConfig = {
         linkExpired:
           "Este enlace ha caducado. Comuníquese con su proveedor de pruebas.",
         linkNotFound:
-          "Este enlace de resultado de la prueba no es válido. Vuelva a verificar la URL o comuníquese con su proveedor de prueba para obtener el enlace correcto.",
+          "Este enlace de resultado de la prueba no es válido. Vuelva a verificar el enlace o comuníquese con su proveedor de prueba para obtener el enlace correcto.",
         submit: "Continuar",
       },
     },
