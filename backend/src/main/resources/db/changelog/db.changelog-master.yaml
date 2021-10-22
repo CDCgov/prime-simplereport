@@ -3092,6 +3092,7 @@ databaseChangeLog:
         - dropIndex:
             indexName: uk__organization_queue__verified_organization_id
   - changeSet:
+<<<<<<< HEAD
       id: add-country-to-person
       author: nclyde@skylight.digital
       comment: add country to person for international addresses
@@ -3187,6 +3188,11 @@ databaseChangeLog:
       author: zedd@skylight.digital
       comment: Add EMAIL and ALL to test result delivery preferences
       runInTransaction: false
+=======
+      id: add-email-all-to-test-result-delivery
+      author: zedd@skylight.digital
+      comment: Add EMAIL and ALL to test result delivery preferences
+>>>>>>> f7c131bf9 (added ability to email test result + mailhog integration for localdev)
       changes:
         - tagDatabase:
               tag: add-email-all-to-test-result-delivery
@@ -3195,6 +3201,7 @@ databaseChangeLog:
             sql: |
               ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_DELIVERY ADD VALUE 'EMAIL';
               ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_DELIVERY ADD VALUE 'ALL';
+<<<<<<< HEAD
       rollback:
         - sql:
             remarks: Removes the enum and recreates it with the old options only
@@ -3230,3 +3237,5 @@ databaseChangeLog:
                   p.test_result_delivery_preference
                 FROM ${database.defaultSchemaName}.person p;
               GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+=======
+>>>>>>> f7c131bf9 (added ability to email test result + mailhog integration for localdev)
