@@ -6,7 +6,7 @@ import {
   ApolloProvider,
   ApolloLink,
   InMemoryCache,
-  concat,
+  from,
 } from "@apollo/client";
 import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import { createUploadLink } from "apollo-upload-client";
@@ -22,7 +22,12 @@ import HealthChecks from "./app/HealthChecks";
 import * as serviceWorker from "./serviceWorker";
 import { store } from "./app/store";
 import { showError } from "./app/utils";
-import { getAppInsights, ai, withInsights } from "./app/TelemetryService";
+import {
+  getAppInsights,
+  ai,
+  withInsights,
+  getAppInsightsHeaders,
+} from "./app/TelemetryService";
 import TelemetryProvider from "./app/telemetry-provider";
 import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration";
 import "./i18n";
@@ -57,12 +62,23 @@ const httpLink = createUploadLink({
 });
 
 const authMiddleware = new ApolloLink((operation, forward) => {
-  operation.setContext({
+  operation.setContext(({ headers = {} }) => ({
     headers: {
+      ...headers,
       "Access-Control-Request-Headers": "Authorization",
       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
     },
-  });
+  }));
+  return forward(operation);
+});
+
+const instrumentationMiddleware = new ApolloLink((operation, forward) => {
+  operation.setContext(({ headers = {} }) => ({
+    headers: {
+      ...headers,
+      ...getAppInsightsHeaders(),
+    },
+  }));
   return forward(operation);
 });
 
@@ -94,7 +110,9 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: logoutLink.concat(concat(authMiddleware, httpLink as any)),
+  link: logoutLink.concat(
+    from([authMiddleware, instrumentationMiddleware, httpLink as any])
+  ),
 });
 
 export const ReactApp = (

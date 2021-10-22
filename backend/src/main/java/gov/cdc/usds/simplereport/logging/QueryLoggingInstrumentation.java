@@ -60,6 +60,9 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
     // Create a new Azure Telemetry Event
     final RequestTelemetry requestTelemetry = new RequestTelemetry();
     requestTelemetry.setId(executionId);
+    final String frontendAppInsightsSessionId =
+        context.getHttpServletRequest().getHeader("x-ms-session-id");
+    requestTelemetry.getContext().getSession().setId(frontendAppInsightsSessionId);
 
     // Try to get the operation name, if one exists
     final String name = parameters.getExecutionInput().getOperationName();
