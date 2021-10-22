@@ -1,19 +1,8 @@
 mutation updateDevice(
-    $id: String!
-    $name: String!
-    $manufacturer: String!
-    $model: String!
-    $loincCode: String!
-    $swabType: String
+    $input: UpdateDeviceType!
 ) {
     updateDeviceType(
-      id: $id
-      name: $name
-      manufacturer: $manufacturer
-      model: $model
-      loincCode: $loincCode
-      swabType: $swabType
-
+     input: $input
     ) {
       internalId
       name

@@ -2,32 +2,30 @@ import { useState } from "react";
 import { Redirect } from "react-router-dom";
 
 import {
-  useCreateDeviceTypeMutation,
+  UpdateDeviceType,
+  useGetDeviceTypeListQuery,
   useGetSpecimenTypesQuery,
+  useUpdateDeviceTypeMutation,
+  DeviceType,
 } from "../../../generated/graphql";
-import Alert from "../../commonComponents/Alert";
-import { showNotification } from "../../utils";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
+import { showNotification } from "../../utils";
+import Alert from "../../commonComponents/Alert";
 
-import DeviceTypeForm from "./DeviceTypeForm";
+import ManageDevicesForm from "./ManageDevicesForm";
 
-export interface Device {
-  name: string;
-  manufacturer: string;
-  model: string;
-  loincCode: string;
-  swabTypes: Array<string>;
-}
-
-const DeviceTypeFormContainer = () => {
+const ManageDeviceTypeFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
-  const [createDeviceType] = useCreateDeviceTypeMutation();
+  const [updateDeviceType] = useUpdateDeviceTypeMutation();
   const { data: specimenTypesResults } = useGetSpecimenTypesQuery({
     fetchPolicy: "no-cache",
   });
+  const { data: deviceTypeResults } = useGetDeviceTypeListQuery({
+    fetchPolicy: "no-cache",
+  });
 
-  const saveDeviceType = (device: Device) => {
-    createDeviceType({
+  const saveDeviceType = (device: UpdateDeviceType) => {
+    updateDeviceType({
       variables: device,
       fetchPolicy: "no-cache",
     }).then(() => {
@@ -47,17 +45,25 @@ const DeviceTypeFormContainer = () => {
     return <Redirect to="/admin" />;
   }
 
-  if (specimenTypesResults) {
+  if (deviceTypeResults && specimenTypesResults) {
     const swabOptions = Array.from(
       specimenTypesResults.specimenTypes.map((type) => ({
         label: `${type?.name} (${type?.typeCode})`,
         value: type?.internalId,
       }))
     );
+
+    const devices = Array.from(
+      deviceTypeResults.deviceTypes.map(
+        (devicesTypes) => devicesTypes as DeviceType
+      )
+    );
+
     return (
-      <DeviceTypeForm
-        saveDeviceType={saveDeviceType}
+      <ManageDevicesForm
+        updateDeviceType={saveDeviceType}
         swabOptions={swabOptions}
+        devices={devices}
       />
     );
   } else {
@@ -65,4 +71,4 @@ const DeviceTypeFormContainer = () => {
   }
 };
 
-export default DeviceTypeFormContainer;
+export default ManageDeviceTypeFormContainer;

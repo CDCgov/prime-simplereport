@@ -23,6 +23,12 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Enter maintenance mode
+        shell: bash
+        run: |
+          export MAINTENANCE_ENV=training
+          echo '{"active": true, "message": "SimpleReport is undergoing routine maintenance and will be available shortly."}' > maintenance.json
+          yarn run maintenance:deploy
       - name: Reset Azure training DB
         run: |
           export RUNNER_PUBLIC_IP=$(curl -s ipinfo.io/ip)
@@ -46,6 +52,12 @@ jobs:
           # Close the firewall
           az postgres server firewall-rule delete --name runner-ip --server-name $SERVER_NAME --resource-group $RG_NAME --yes
           az postgres server update --public disabled --name $SERVER_NAME --resource-group $RG_NAME
+      - name: Exit maintenance mode
+        shell: bash
+        run: |
+          export MAINTENANCE_ENV=training
+          echo '{"active": false, "message": ""}' > maintenance.json
+          yarn run maintenance:deploy
       - name: Restart Training App Service
         run: |
           az webapp restart --resource-group prime-simple-report-${{ env.DEPLOY_ENV }} --name simple-report-api-${{ env.DEPLOY_ENV }}

@@ -1,22 +1,13 @@
 mutation addDevice(
-    $name: String!
-    $manufacturer: String!
-    $model: String!
-    $loincCode: String!
-    $swabType: String!
+    $input: CreateDeviceType!
 ) {
     createDeviceType(
-      name: $name
-      manufacturer: $manufacturer
-      model: $model
-      loincCode: $loincCode
-      swabType: $swabType
+      input: $input
     ) {
       internalId
       name
       model
       manufacturer
       loincCode
-      swabType
     }
 }

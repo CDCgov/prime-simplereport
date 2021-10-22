@@ -29,4 +29,5 @@ public interface DeviceSpecimenTypeRepository
       UUID deviceTypeId); // IGNORES
   // DELETION
 
+  List<DeviceSpecimenType> findAllByDeviceType(DeviceType deviceType);
 }

@@ -6,6 +6,7 @@ import DeviceTypeFormContainer from "./DeviceType/DeviceTypeFormContainer";
 import TenantDataAccessFormContainer from "./TenantDataAccess/TenantDataAccessFormContainer";
 import SupportAdmin from "./SupportAdmin";
 import PendingOrganizationsContainer from "./PendingOrganizations/PendingOrganizationsContainer";
+import ManageDeviceTypeFormContainer from "./DeviceType/ManageDeviceTypeFormContainer";
 
 interface Props {
   match: { url: string };
@@ -36,6 +37,10 @@ const SupportAdminRoutes: React.FC<Props> = ({ match, isAdmin }) => {
       <Route
         path={`${match.url}/create-device-type`}
         component={DeviceTypeFormContainer}
+      />
+      <Route
+        path={`${match.url}/manage-devices`}
+        component={ManageDeviceTypeFormContainer}
       />
       <Route
         path={`${match.url}/tenant-data-access`}

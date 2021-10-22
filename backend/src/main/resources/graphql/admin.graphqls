@@ -9,26 +9,10 @@ extend type Mutation {
   uploadPatients(patientList: Upload!): String
   resendToReportStream(testEventIds: [ID!]!): Boolean
   createDeviceType(
-    name: String!
-    manufacturer: String!
-    model: String!
-    loincCode: String!
-    swabType: String!
-  ): DeviceType
-  createDeviceTypeNew(
-    name: String!
-    manufacturer: String!
-    model: String!
-    loincCode: String!
-    swabTypes: [ID!]!
+    input: CreateDeviceType!
   ): DeviceType
   updateDeviceType(
-    id: String!
-    name: String
-    manufacturer: String
-    model: String
-    loincCode: String
-    swabType: String
+    input: UpdateDeviceType!
   ): DeviceType
   addUser( # not actually used in the admin console (currently)
     name: NameInput
