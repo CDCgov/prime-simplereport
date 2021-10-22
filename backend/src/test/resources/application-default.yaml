@@ -10,6 +10,9 @@ spring:
     properties:
       hibernate:
         default_schema: simple_report
+  mail:
+    host: localhost
+    port: 1025
 okta:
   client:
     org-url: http://localhost:8088

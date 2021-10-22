@@ -14,7 +14,6 @@ import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
-import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -33,6 +32,7 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,6 +46,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -57,18 +59,21 @@ import org.springframework.transaction.annotation.Transactional;
  * specific facility or organization).
  */
 @Service
+@Slf4j
+@RequiredArgsConstructor
 @Transactional(readOnly = false)
 public class TestOrderService {
-  private OrganizationService _os;
-  private PersonService _ps;
-  private DeviceTypeService _dts;
-  private TestOrderRepository _repo;
-  private PatientAnswersRepository _parepo;
-  private TestEventRepository _terepo;
-  private PatientLinkService _pls;
-  private SmsService _smss;
+  private final OrganizationService _os;
+  private final PersonService _ps;
+  private final DeviceTypeService _dts;
+  private final TestOrderRepository _repo;
+  private final PatientAnswersRepository _parepo;
+  private final TestEventRepository _terepo;
+  private final PatientLinkService _pls;
+  private final SmsService _smss;
   private final TestEventReportingService _testEventReportingService;
   private final FacilityDeviceTypeService _facilityDeviceTypeService;
+  private final TestResultsDeliveryService testResultsDeliveryService;
 
   @PersistenceContext EntityManager _entityManager;
 
@@ -80,28 +85,28 @@ public class TestOrderService {
 
   public static final String MISSING_ARG = "Must provide either facility ID or patient ID";
 
-  public TestOrderService(
-      OrganizationService os,
-      DeviceTypeService dts,
-      FacilityDeviceTypeService facilityDeviceTypeService,
-      TestOrderRepository repo,
-      PatientAnswersRepository parepo,
-      TestEventRepository terepo,
-      PersonService ps,
-      PatientLinkService pls,
-      SmsService smss,
-      TestEventReportingService testEventReportingService) {
-    _os = os;
-    _ps = ps;
-    _dts = dts;
-    _repo = repo;
-    _parepo = parepo;
-    _terepo = terepo;
-    _pls = pls;
-    _smss = smss;
-    _testEventReportingService = testEventReportingService;
-    _facilityDeviceTypeService = facilityDeviceTypeService;
-  }
+  //  public TestOrderService(
+  //      OrganizationService os,
+  //      DeviceTypeService dts,
+  //      FacilityDeviceTypeService facilityDeviceTypeService,
+  //      TestOrderRepository repo,
+  //      PatientAnswersRepository parepo,
+  //      TestEventRepository terepo,
+  //      PersonService ps,
+  //      PatientLinkService pls,
+  //      SmsService smss,
+  //      TestEventReportingService testEventReportingService) {
+  //    _os = os;
+  //    _ps = ps;
+  //    _dts = dts;
+  //    _repo = repo;
+  //    _parepo = parepo;
+  //    _terepo = terepo;
+  //    _pls = pls;
+  //    _smss = smss;
+  //    _testEventReportingService = testEventReportingService;
+  //    _facilityDeviceTypeService = facilityDeviceTypeService;
+  //  }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
   public List<TestOrder> getQueue(UUID facilityId) {
@@ -285,18 +290,21 @@ public class TestOrderService {
       order.setTestEventRef(testEvent);
       TestOrder savedOrder = _repo.save(order);
 
+      Boolean deliveryStatus = true;
+
       _testEventReportingService.report(testEvent);
+
+      UUID linkInternalId = _pls.createPatientLink(savedOrder.getInternalId()).getInternalId();
 
       if (TestResultDeliveryPreference.SMS == savedOrder.getPatient().getTestResultDelivery()) {
         // After adding test result, create a new patient link and text it to the
         // patient
-        PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-        UUID internalId = patientLink.getInternalId();
 
+        log.info("Your Covid-19 test result is ready to view: " + patientLinkUrl + linkInternalId);
         List<SmsAPICallResult> smsSendResults =
             _smss.sendToPatientLink(
-                internalId,
-                "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
+                linkInternalId,
+                "Your Covid-19 test result is ready to view: " + patientLinkUrl + linkInternalId);
 
         boolean hasDeliveryFailure =
             smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
@@ -308,7 +316,16 @@ public class TestOrderService {
         return new AddTestResultResponse(savedOrder, true);
       }
 
-      return new AddTestResultResponse(savedOrder);
+      if (TestResultDeliveryPreference.EMAIL == savedOrder.getPatient().getTestResultDelivery()) {
+        try {
+          testResultsDeliveryService.emailTestResults(linkInternalId);
+        } catch (IOException e) {
+          deliveryStatus = false;
+          e.printStackTrace();
+        }
+      }
+
+      return new AddTestResultResponse(savedOrder, deliveryStatus);
     } finally {
       unlockOrder(order.getInternalId());
     }

@@ -64,6 +64,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Autowired private PersonService _personService;
   @Autowired private TestEventRepository _testEventRepository;
   @Autowired private TestDataFactory _dataFactory;
+  //  @Autowired private TestResultsDeliveryService testResultsDeliveryService;
   @MockBean private SmsService _smsService;
 
   private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
@@ -527,6 +528,31 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
 
     assertEquals(false, res.getDeliverySuccess());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void addTestResult_emailDelivery() {
+    // GIVEN
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person p = _dataFactory.createFullPerson(org);
+
+    _personService.updateTestResultDeliveryPreference(
+        p.getInternalId(), TestResultDeliveryPreference.EMAIL);
+
+    _service.addPatientToQueue(
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+    DeviceType devA = facility.getDefaultDeviceType();
+
+    // WHEN
+    AddTestResultResponse res =
+        _service.addTestResult(
+            devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
+
+    // THEN
+
+    assertEquals(true, res.getDeliverySuccess());
   }
 
   @Test
