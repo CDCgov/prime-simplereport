@@ -12,11 +12,9 @@ import com.okta.sdk.resource.group.GroupType;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserBuilder;
 import com.okta.sdk.resource.user.UserList;
-import com.okta.sdk.resource.user.UserProfile;
 import com.okta.sdk.resource.user.UserStatus;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
-import gov.cdc.usds.simplereport.api.model.ApiOrganizationAdmin;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
@@ -208,25 +206,6 @@ public class LiveOktaRepository implements OktaRepository {
     return orgDefaultOktaGroup.listUsers().stream()
         .map(u -> u.getProfile().getEmail())
         .collect(Collectors.toUnmodifiableSet());
-  }
-
-  public ApiOrganizationAdmin getAdminUserForPendingOrganization(Organization org) {
-    final String orgDefaultGroupName =
-        generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
-    final GroupList oktaGroupList =
-        _client.listGroups(orgDefaultGroupName, FILTER_TYPE_EQ_OKTA_GROUP, null);
-
-    Group orgDefaultOktaGroup =
-        oktaGroupList.stream()
-            .filter(g -> orgDefaultGroupName.equals(g.getProfile().getName()))
-            .findFirst()
-            .orElseThrow(() -> new IllegalGraphqlArgumentException(OKTA_GROUP_NOT_FOUND));
-    User adminUser = orgDefaultOktaGroup.listUsers().stream().collect(Collectors.toList()).get(0);
-    UserProfile profile = adminUser.getProfile();
-    String adminName = profile.getFirstName() + " " + profile.getLastName();
-    String adminEmail = profile.getEmail();
-    String adminPhone = profile.getPrimaryPhone();
-    return new ApiOrganizationAdmin(adminName, adminEmail, adminPhone);
   }
 
   public Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org) {

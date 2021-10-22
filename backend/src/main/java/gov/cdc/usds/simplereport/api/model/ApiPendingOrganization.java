@@ -16,12 +16,9 @@ public class ApiPendingOrganization {
   private String adminPhone;
   private Date createdAt;
 
-  public ApiPendingOrganization(Organization org, ApiOrganizationAdmin adminUser) {
+  public ApiPendingOrganization(Organization org) {
     this.externalId = org.getExternalId();
     this.name = org.getOrganizationName();
-    this.adminName = adminUser.getName();
-    this.adminEmail = adminUser.getEmail();
-    this.adminPhone = adminUser.getPhone();
     this.createdAt = org.getCreatedAt();
   }
 

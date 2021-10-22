@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
 import com.okta.sdk.resource.user.UserStatus;
-import gov.cdc.usds.simplereport.api.model.ApiOrganizationAdmin;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -44,8 +43,6 @@ public interface OktaRepository {
   UserStatus getUserStatus(String username);
 
   Set<String> getAllUsersForOrganization(Organization org);
-
-  ApiOrganizationAdmin getAdminUserForPendingOrganization(Organization org);
 
   Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org);
 

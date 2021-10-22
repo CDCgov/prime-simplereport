@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
-import gov.cdc.usds.simplereport.api.model.ApiOrganizationAdmin;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -194,13 +193,6 @@ public class OrganizationService {
             f -> {
               throw new IllegalGraphqlArgumentException("A facility with that name already exists");
             });
-  }
-
-  public ApiOrganizationAdmin getAdminUserForPendingOrganization(Organization org) {
-    if (org.getIdentityVerified()) {
-      throw new IllegalGraphqlArgumentException("Can only get admin user for pending organization");
-    }
-    return _oktaRepo.getAdminUserForPendingOrganization(org);
   }
 
   @Transactional(readOnly = false)

@@ -271,10 +271,10 @@ type PatientLink {
 type PendingOrganization {
   externalId: String!
   name: String!
-  adminName: String!
-  adminEmail: String!
+  adminName: String
+  adminEmail: String
   adminPhone: String
-  createdAt: DateTime
+  createdAt: DateTime!
 }
 
 # Queries and mutations for everyday use

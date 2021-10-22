@@ -5,7 +5,6 @@ import com.okta.sdk.error.ErrorCause;
 import com.okta.sdk.resource.ResourceException;
 import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
-import gov.cdc.usds.simplereport.api.model.ApiOrganizationAdmin;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
@@ -195,10 +194,6 @@ public class DemoOktaRepository implements OktaRepository {
     return orgUsernamesMap.get(org.getExternalId()).stream()
         .filter(u -> !inactiveUsernames.contains(u))
         .collect(Collectors.toUnmodifiableSet());
-  }
-
-  public ApiOrganizationAdmin getAdminUserForPendingOrganization(Organization org) {
-    return new ApiOrganizationAdmin("Bob Saget", "bob@fullhouse.com", "(530) 867-5309");
   }
 
   public Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org) {

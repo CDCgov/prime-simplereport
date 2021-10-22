@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.api.organization;
 
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
-import gov.cdc.usds.simplereport.api.model.ApiOrganizationAdmin;
 import gov.cdc.usds.simplereport.api.model.ApiPendingOrganization;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -68,12 +67,7 @@ public class OrganizationResolver implements GraphQLQueryResolver {
   public List<ApiPendingOrganization> getPendingOrganizations() {
     List<ApiPendingOrganization> pendingOrgsAlreadyCreated =
         _organizationService.getOrganizations(false).stream()
-            .map(
-                org -> {
-                  ApiOrganizationAdmin adminUser =
-                      _organizationService.getAdminUserForPendingOrganization(org);
-                  return new ApiPendingOrganization(org, adminUser);
-                })
+            .map(ApiPendingOrganization::new)
             .collect(Collectors.toList());
 
     List<ApiPendingOrganization> pendingOrgsInQueue =
