@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Redirect, RouteComponentProps, withRouter } from "react-router";
+import { Redirect, RouteComponentProps } from "react-router";
 import classnames from "classnames";
 import { Trans, useTranslation } from "react-i18next";
 
@@ -71,4 +71,4 @@ const TermsOfService: React.FunctionComponent<Props> = ({
   );
 };
 
-export default withRouter(TermsOfService);
+export default TermsOfService;

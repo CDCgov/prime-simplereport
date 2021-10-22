@@ -328,109 +328,140 @@ export const en = {
         document: {
           intro: {
             p0:
-              "As a Testing Facility (Facility) or its user (Facility User) accessing or using SimpleReport (Application) provided by the " +
-              "Centers for Disease Control and Prevention (CDC) and the U.S. Department of Health and Human Services (HHS), in a CDC cloud " +
-              'environment (" CDC Platform"), you acknowledge and agree that you are solely responsible for and shall abide by these Terms ' +
-              "of Service, as well as any relevant sections of <0>CDC's Privacy Policies</0> (collectively, Terms).",
+              "As a User accessing or using SimpleReport (Application) provided by the Centers for Disease Control and Prevention (CDC) " +
+              "and the U.S. Department of Health and Human Services (HHS), in a CDC cloud environment (“CDC Platform”), you acknowledge " +
+              "and agree that you are solely responsible for and shall abide by these Terms of Service, as well as any relevant sections " +
+              "of <0>CDC’s Privacy Policies</0> (collectively, Terms).",
           },
           scope: {
             heading: "Scope",
             p0:
-              "SimpleReport is a free tool that makes it easy for Coronavirus Disease 2019 (COVID-19) testing sites to record results for " +
-              "rapid point-of-care tests and quickly report required data to public health departments. This Application is being provided by " +
-              "HHS and CDC to enable a Facility to record its testing workflow, for record keeping needs and to route relevant and necessary " +
-              "testing data to state, local, tribal, and territorial public health authorities (STLT Public Health Agencies) in furtherance of " +
-              "public health response activities related to COVID-19. It also allows Facility to designate certain users of the data, as set " +
-              "out in these Terms. The Application through which you interact with relevant public health data is subject to these Terms. Use " +
-              "of the Application constitutes acceptance of these Terms.",
+              "SimpleReport is a free tool that makes it easy for facilities such as health care settings or schools to record and " +
+              "quickly transmit public health data to public health departments. It also allows those facilities to enable individuals " +
+              "or guardians to access relevant test results. This Application is being provided by HHS and CDC to enable an Entity to " +
+              "record its data intake workflow, for record keeping needs and to transmit relevant and necessary data to state, local, " +
+              "tribal, and territorial public health authorities (STLT Public Health Agencies) in furtherance of public health " +
+              "surveillance and response activities. It also allows the Entity to designate certain users of the data, as set out in " +
+              "these Terms. The Application through which the Entity and any users interact with relevant public health data is subject " +
+              "to these Terms. Use of the Application constitutes acceptance of these Terms.",
+          },
+          definitions: {
+            heading: "Definitions",
+            l0: "Entity",
+            p0:
+              "A health care provider or facility; testing site; a state, local, tribal, and territorial public health authority " +
+              "(STLT Public Health Agency); or other organization that is enrolled in and using Simple Report to record and/or " +
+              "transmit data.",
+            l1: "User",
+            p1:
+              "An individual whose personal data is being reported via Simple Report (Individual User), or an individual authorized " +
+              "to act on behalf of the Entity under these Terms (Entity User or Entity Administrator). Simple Report will only designate " +
+              "one User from the Entity as the Entity Administrator. Entity Administrators will have more detailed identity verification " +
+              "than general Entity Users. Once the Entity Administrator has their identity verified, the Entity Administrator can add " +
+              "other general Entity Users or Individual Users to the Application. All roles are referred to as “User” for the purposes " +
+              "of these Terms, unless otherwise indicated.",
           },
           dataRights: {
-            heading: "Data Rights and Usage",
+            heading: "Data rights and usage",
             subheading: "Accounts/Registration",
-            l0: "General Facility Users",
-            p0:
-              "If you are using the Application on behalf of a Facility, you represent and warrant that you have authority to bind that " +
-              'Facility to the Terms and by accepting the Terms, you are doing so on behalf of that Facility (and all references to "you" in ' +
-              "the Terms refer to you and that Facility). In order to access the Application, as part of the registration process for the " +
-              "Application, and for your continued use of the Application, you may be required to provide certain information (such as " +
-              "identification or contact details). Any such information you give to CDC or HHS must be accurate and up-to-date, and you must " +
-              "inform us promptly of any updates so that we can keep you informed of any changes to the Application or these Terms which may " +
-              "impact your usage of the Application. Upon Facility registration and the creation of Facility User accounts within the " +
-              "Application, credentials (such as passwords, keys, tokens, and Facility and Facility User identifications (IDs)) will be issued " +
-              "to you by HHS or CDC. These credentials are intended to be used only by you and to identify any software or APIs which you are " +
-              "using. You agree to keep your credentials confidential and make reasonable efforts to prevent and discourage other persons from " +
-              "using your credentials.",
-            l1: "Administrator User",
+            l0: "For entity users",
+            p01:
+              "If you are using the Application on behalf of an Entity as either an Entity Administrator or Entity User, you represent " +
+              "and warrant that you have authority to bind that Entity to the Terms and by accepting the Terms, you are doing so on " +
+              "behalf of that Entity (and all references to “you” in the Terms refer to you and that Entity).",
+            p02:
+              "In order to access the Application, as part of the registration process for the Application, and for your continued use " +
+              "of the Application, you may be required to provide certain information (such as identification or contact details). Any " +
+              "such information you give to CDC or HHS must be accurate and up-to-date. You must inform us promptly of any updates by " +
+              "updating your information in the Application or by emailing <0>support@simplereport.gov</0> so that we can keep you informed " +
+              "of any changes to the Application or these Terms which may impact your usage of the Application. We may use the contact " +
+              "information you provide to contact you regarding usability research for ongoing product and service improvement. Upon " +
+              "Entity registration and the creation of Entity User accounts within the Application, credentials (such as passwords, " +
+              "keys, tokens, and Entity and Entity User identifications (IDs)) will be issued to you by HHS or CDC. These credentials " +
+              "are intended to be used only by you and to identify any software or APIs which you are using. You agree to keep your " +
+              "credentials confidential and make reasonable efforts to prevent and discourage other persons from using your credentials.",
+            l1: "For entity administrators",
             p1:
-              "Upon a Facility's registration (and on an ongoing basis, as needed), the Facility must designate at least one user from the " +
-              "Facility as the Administrator. This Administrator will have more detailed identity verification. Once the Administrator has " +
-              "their identity verified, the Administrator can add other Facility Users to the Application. The Administrator agrees to verify " +
-              "identity on Facility Users who are added and to inactivate Facility Users who should no longer have access. The Administrator " +
-              "also agree to set permissions appropriately to determine the minimum access necessary for Facility Users to complete their " +
-              "required job duties.",
+              "The Entity Administrator agrees to verify the identity of other Entity Users who are added and to inactivate any other " +
+              "Entity Users who should no longer have access. The Administrator also agrees to set permissions appropriately to determine " +
+              "the minimum access necessary for each other Entity User to complete their required job duties.",
+            l2: "For individual users",
+            p2:
+              "Entity Administrators will grant Individual Users access to the Application. Individual Users can use the Application " +
+              "to access and review their own information or information about others as may be permitted by applicable law (e.g., on " +
+              "behalf of a minor or otherwise as a guardian). As noted above, all Users agree to accept and comply with these Terms once " +
+              "you register and use the Application. ",
           },
           privacy: {
             heading: "Privacy",
             p0:
-              "You may use the Application to search, display, analyze, retrieve, view and otherwise ‘get ' information from data you are " +
-              "sending via the Application and the Platform.Please note that the data which you are sending via the Application may be subject " +
-              "to the Privacy Act of 1974, the Health Insurance Portability and Accountability Act of 1996 (HIPAA), and other laws, and " +
-              "requires special safeguarding.By accessing and using the Application, you agree to strictly abide by all applicable federal and " +
-              "state laws regarding the collection, use, protection and disclosure of information obtained or sent through the Application. If " +
-              "you would like more information about the application of the Privacy Act at CDC, <0>click here</0>.",
+              "You may use the Application to search, display, analyze, retrieve, view and/or otherwise ‘get’ information from data you " +
+              "are sending (or for Individual Users, for data being sent about you) via the Application and the Platform. Please note " +
+              "that the data which you are recording, transmitting or accessing via the Application may be subject to the Privacy Act " +
+              "of 1974, the Health Insurance Portability and Accountability Act of 1996 (HIPAA), and other laws, and requires special " +
+              "safeguarding. By accessing and using the Application, you agree to strictly abide by all applicable federal and state " +
+              "laws regarding the collection, use, protection and disclosure of information obtained or sent through the Application. " +
+              "Where Individual Users may be accessing the information on behalf of a minor or otherwise as a guardian, Entity Users and " +
+              "Administrator Users agree to assume full responsibility for designating the correct Individual User contact information " +
+              "within the Application, in accordance with applicable law. If you would like more information about the application of " +
+              "the Privacy Act at CDC, <0>click here</0>.",
             p1:
-              "For purposes of use of this Application, if you are a HIPAA covered entity or acting on behalf of one as a business associate or " +
-              "if the data is maintained in a HIPAA-covered designated record set, you further acknowledge that you will abide by applicable " +
-              "HIPAA regulations (45 CFR Parts 160 and 164) for purposes of appropriate storage, transmission, use and disclosure of any  " +
-              "protected health information.",
+              "For purposes of use of this Application, if you are a HIPAA-covered entity or acting on behalf of one as a business " +
+              "associate or if the data is maintained by you in a HIPAA-covered designated record set, you further acknowledge that you " +
+              "will abide by applicable HIPAA regulations (45 CFR Parts 160 and 164) for purposes of appropriate storage, transmission, " +
+              "use and disclosure of any protected health information.",
           },
           useOfData: {
-            heading: "Use of Data",
+            heading: "Use of data",
             p0:
-              "This Application is being provided in order to allow for the recording of Facility testing workflow and record keeping needs and " +
-              "for the routing of relevant data to STLT Public Health Agencies in furtherance of public health response activities related to " +
-              "the COVID-19 pandemic. HHS and CDC acknowledge that though CDC is providing the Platform, CDC does not intend to access the data " +
-              "nor does it intend to review or analyze this data. As such, CDC does not intend to take custody or control of data sent via the " +
-              "Application. The Facility User acknowledges and agrees that CDC and Administrative Users may manage the data sent via the " +
-              "Application for purposes of operating the CDC Platform and transmitting to and facilitating use by STLT Public Health Agencies " +
-              "of such data. Except as may be required by applicable federal law, CDC may not release the data sent via the Application for " +
-              "other purposes than described below. Should data release be requested of CDC, CDC shall notify the requestor that CDC does not " +
-              "have access to this data and refer to requestor to the Facility.",
+              "This Application is being provided in order to allow for the recording of Entity data, support Entity’s workflow, for " +
+              "record keeping purposes, and for transmitting relevant data to STLT Public Health Agencies in furtherance of public health " +
+              "surveillance and response activities. HHS and CDC acknowledge that though CDC is providing the Platform, CDC does not " +
+              "intend to access the data nor does it intend to review or analyze this data. As such, CDC does not intend to take custody " +
+              "or control of data sent via the Application. Entity and Individual Users acknowledge and agree that CDC and Administrative " +
+              "Users may manage the data sent via the Application for purposes of operating the CDC Platform (which includes verifying " +
+              "user identity) and transmitting to and facilitating use by STLT Public Health Agencies of such data. Except as may be " +
+              "required by applicable federal law, CDC may not release the data sent via the Application for other purposes than " +
+              "described below.",
           },
           sharingOfData: {
-            heading: "Sharing of Data",
+            heading: "Sharing of data",
             p0:
-              "Data recorded and stored in the Application is for use by the Facility as needed for workflow, record keeping, and reporting " +
-              "purposes. All COVID-19 test results will be automatically reported to the appropriate STLT Public Health Agency based on both " +
-              "the testing facility ZIP code and the Patient's ZIP code, including all relevant fields as defined in the <0> HHS COVID-19 " +
-              "Laboratory Reporting Requirements</0>. By entering results that are being reported to STLT Public Health Agency, the Facility " +
-              "attests that it is authorized to report the data via the Application. Though CDC will not actively access and obtain data from " +
-              "the Application, Facility, directly or in coordination with the relevant STLT Public Health Agency, may decide to use the " +
-              "Application to send deidentified data to CDC; such data sent to CDC will be maintained consistent with applicable federal laws.",
+              "Data recorded and stored in the Application by the Entity is for use by the Entity as needed for workflow, record keeping, " +
+              "and reporting purposes. Data recorded and stored by the Entity in the Application will be automatically transmitted to the " +
+              "appropriate STLT Public Health Agency based on both the Entity ZIP code and the Patient’s ZIP code, including, for coronavirus" +
+              "disease 2019 test results, all relevant fields as defined in the <0>HHS COVID-19 Laboratory Reporting Requirements</0>. " +
+              "By entering results that are being transmitted to the relevant STLT Public Health Agency or Agencies, the Entity attests " +
+              "that it is authorized to report the data via the Application. Though CDC will not actively access and obtain data from the " +
+              "Application, Entity, directly or in coordination with the relevant STLT Public Health Agency, may decide to use the " +
+              "Application to send deidentified or other as may be determined by Entity, to CDC; such data sent to CDC will be maintained " +
+              "consistent with applicable federal laws.",
           },
           otherResponsibilities: {
-            heading: "Other Responsibilities",
+            heading: "Other responsibilities",
             ul: {
+              preheading1: "For all users:",
               li0:
-                "You will be fully accountable for all data you submit and will cooperate with CDC or its agents in the event that CDC has a " +
-                "security concern with respect to any inquiry, submission, or receipt of data to or from CDC.",
+                "You will be fully accountable for all data you submit and will cooperate with CDC or its agents in the event that CDC " +
+                "has a security concern with respect to any inquiry, submission, or receipt of data to or from CDC.",
               li1:
-                "You will promptly inform CDC in the event you identify misuse of and individually identifiable health information or " +
+                "You will promptly inform CDC in the event you identify misuse of individually identifiable health information or " +
                 "protected health information you submit and/or access from the CDC Platform.",
               li2:
                 "You will promptly inform CDC in the event that you can no longer comply with any of the provisions set out in these Terms.",
               li3:
                 "You will immediately cease Application use when you no longer meet any of the terms of these Terms.",
+              preheading2: "For entity administrators and entity users:",
               li4:
                 "You must adhere to the basic desktop security measures to ensure the security of any individually identifiable information " +
                 "or protected health information to which you have access in the Application.",
               li5:
-                "As may be required by applicable law you agree to obtain consent from and notify individuals whose data will be input into " +
-                "the Application that their personal information will be collected and used for public health purposes.",
+                "As may be required by applicable law you agree to obtain consent from and/or notify individuals whose data will be input " +
+                "into the Application that their personal information will be collected and used for public health purposes.",
               li6:
                 "When major changes are made to the Application and/or Platform (e.g., disclosure and/or data uses have changed since the " +
                 "notice at the time of original collection), you will be notified by email, and are responsible for notifying and obtaining " +
-                "consent from individuals whose individually identifiable or protected health information is in the Application",
+                "consent from individuals whose individually identifiable or protected health information is in the Application.",
               li7:
                 "In the unlikely event of a breach, you will be required to notify individuals whose individually identifiable or protected " +
                 "health information is in the Application and have been impacted by the breach. Assistance may be offered by CDC to aid in " +
@@ -440,85 +471,87 @@ export const en = {
             },
           },
           serviceManagement: {
-            heading: "Service Management",
+            heading: "Service management",
             subheading: "Right to Limit",
             p0:
-              "Your use of the Application may be subject to certain limitations on access or use as set forth within these Terms or otherwise " +
-              "provided by CDC. These limitations are designed to manage the load on the system, promote equitable access, and ensure " +
-              "appropriate privacy protections and these limitations may be adjusted without notice, as deemed necessary by CDC. If CDC " +
-              "reasonably believes that you have attempted to exceed or circumvent these limits, your ability to use the Application may " +
-              "be temporarily or permanently blocked. CDC may monitor your use of the Application to improve the service or to ensure " +
+              "Your use of the Application may be subject to certain limitations on access or use as set forth within these Terms or " +
+              "otherwise provided by CDC. These limitations are designed to manage the load on the system, promote equitable access, and " +
+              "ensure appropriate privacy protections and these limitations may be adjusted without notice, as deemed necessary by CDC. " +
+              "If CDC reasonably believes that you have attempted to exceed or circumvent these limits, your ability to use the Application " +
+              "may be temporarily or permanently blocked. CDC may monitor your use of the Application to improve the service or to ensure " +
               "compliance with these Terms and reserves the right to deny any User access to the Application at its reasonable discretion.",
           },
           serviceTermination: {
-            heading: "Service Termination",
+            heading: "Service termination",
             p0:
-              "If you wish to terminate your access to and use of the Application, you may do so by deactivating your account or by refraining " +
-              "from further use of the Application.",
+              "If you wish to terminate your access to and use of the Application, you may do so by deactivating your account (such as by " +
+              "contacting your Entity Administrator) or by refraining from further use of the Application.",
             p1:
-              "CDC reserves the right (though not the obligation) to: (1) refuse to provide the Application to you, if it is CDC's opinion that " +
-              "use violates any federal law or CDC policy; or (2) terminate or deny you access to and use of all or part of the Application at " +
-              "any time for any reason which in CDC's sole discretion it deems necessary, including to prevent violation of federal law or " +
-              "CDC policy. You may petition CDC to regain access to the Application through the support email address provided by CDC for " +
-              "the Application. If CDC determines in its sole discretion that the circumstances which led to the refusal to provide the " +
-              "Application or terminate access to the Application no longer exist, then CDC may restore your access. All provisions of these " +
-              "Terms, which by their nature should survive termination, shall survive termination including, without limitation, warranty " +
-              "disclaimers, and limitations of liability.",
+              "CDC reserves the right (though not the obligation) to: (1) refuse to provide the Application to you, if it is CDC’s opinion " +
+              "that use violates any federal law or CDC policy; or (2) terminate or deny you access to and use of all or part of the " +
+              "Application at any time for any reason which in CDC’s sole discretion it deems necessary, including to prevent violation of " +
+              "federal law or CDC policy. You may petition CDC to regain access to the Application through the support email address " +
+              "provided by CDC for the Application. If CDC determines in its sole discretion that the circumstances which led to the " +
+              "refusal to provide the Application or terminate access to the Application no longer exist, then CDC may restore your access. " +
+              "All provisions of these Terms, which by their nature should survive termination, shall survive termination including, " +
+              "without limitation, warranty disclaimers, and limitations of liability.",
           },
           intellectualProperty: {
-            heading: "Intellectual Property – License Grant and Restrictions.",
+            heading: "Intellectual property – License grant and restrictions",
             p0:
-              "The Application provided to User are for User's use. User may not modify, copy, distribute, transmit, display, perform, " +
-              "reproduce, publish, license, create derivative works from, transfer, or sell any information, software, products, or services " +
-              "obtained from CDC. Material provided by CDC are either owned by or the licensed property of the United States Department of " +
-              'Health and Human Services ("HHS") and the Centers for Disease Control and Prevention (CDC). HHS/CDC grants to you a limited, ' +
-              "non-exclusive, non-transferable license to access the Application in the United States for the uses set forth in these Terms.",
+              "The Application provided to User are for User’s use. User may not modify, copy, distribute, transmit, display, perform, " +
+              "reproduce, publish, license, create derivative works from, transfer, or sell any information, software, products, " +
+              "or services obtained from CDC. Materials provided by CDC are either owned by or the licensed property of the United States " +
+              "Department of Health and Human Services (“HHS”) and the Centers for Disease Control and Prevention (CDC). HHS/CDC grants " +
+              "to you a limited, non-exclusive, non-transferable license to access the Application in the United States for the uses set " +
+              "forth in these Terms.",
           },
           disclaimerOfWarranties: {
-            heading: "Disclaimer of Warranties",
+            heading: "Disclaimer of warranties",
             p0:
-              'The Application Platform is provided "as is" and on an "as-available" basis. While CDC will do its best to ensure the service ' +
-              "is available and functional at all times, CDC hereby disclaims all warranties of any kind, express or implied, including " +
-              "without limitation the warranties of merchantability, fitness for a particular purpose, and non-infringement. CDC makes no " +
-              "warranty that data will be error free or that access thereto will be continuous or uninterrupted.",
+              "The Application Platform is provided “as is” and on an “as-available” basis. While CDC will do its best to ensure the " +
+              "service is available and functional at all times, CDC hereby disclaims all warranties of any kind, express or implied, " +
+              "including without limitation the warranties of merchantability, fitness for a particular purpose, and non-infringement. " +
+              "CDC makes no warranty that data will be error free or that access thereto will be continuous or uninterrupted.",
           },
           limitationOfLiability: {
-            heading: "Limitations on Liability",
+            heading: "Limitations on liability",
             p0:
-              "In no event will HHS or CDC be liable with respect to any subject matter of these Terms or your use of the Application under " +
-              "any contract, negligence, strict liability or other legal or equitable theory for: (1) any personal injury, or any special, " +
-              "incidental, indirect or consequential damages; (2) the cost of procurement of substitute products or services; or (3) for loss " +
-              "of profits, interruption of use or loss or corruption of data or any other commercial damages or losses.",
+              "To the extent allowed by law, HHS and CDC will not be liable, with respect to any subject matter of these Terms or your " +
+              "use of the Application under any contract, negligence, strict liability or other legal or equitable theory for: (1) any " +
+              "personal injury, or any special, incidental, indirect or consequential damages; (2) the cost of procurement of substitute " +
+              "products or services; or (3) for loss of profits, interruption of use or loss or corruption of data or any other commercial " +
+              "damages or losses.",
             p1:
-              "HHS and CDC are not responsible for confidentiality or any information shared by the Facility or other user of the Application.",
+              "HHS and CDC are not responsible for confidentiality or any information shared by the Entity or other User of the Application.",
           },
           disputes: {
-            heading: "Disputes, Choice of Law, Venue, and Conflicts",
+            heading: "Disputes, choice of law, venue, and conflicts",
             p0:
-              "Any disputes arising out of these Terms and access to or use of the Application shall be governed by applicable United States " +
-              "Federal law. You further agree and consent to the jurisdiction of the Federal Courts located within the District of Columbia and " +
-              "the courts of appeal therefrom and waive any claim of lack of jurisdiction or forum non conveniens.",
+              "Any disputes arising out of these Terms and access to or use of the Application shall be governed by applicable United " +
+              "States Federal law. You further agree and consent to the jurisdiction of the Federal Courts located within the District " +
+              "of Columbia and the courts of appeal therefrom and waive any claim of lack of jurisdiction or forum non conveniens.",
           },
           indemnification: {
             heading: "Indemnification",
             p0:
-              "You agree to indemnify and hold harmless HHS, including CDC, its contractors, employees, agents, and the like, from and against " +
-              "any and all claims and expenses, including attorney's fees, arising out of your use of the Application, including but not " +
-              "limited to violation of these Terms.",
+              "You agree to indemnify and hold harmless HHS, including CDC, its contractors, employees, agents, and the like, from and " +
+              "against any and all claims and expenses, including attorney’s fees, arising out of your use of the Application, including " +
+              "but not limited to violation of these Terms.",
           },
           noWaiverOfRights: {
-            heading: "No Waiver of Rights",
+            heading: "No waiver of rights",
             p0:
-              "CDC's failure to exercise or enforce any right or provision of these Terms shall not constitute waiver of such right or provision.",
+              "CDC’s failure to exercise or enforce any right or provision of these Terms shall not constitute waiver of such right or provision.",
           },
           dataAnalytics: {
-            heading: "Data Analytics and Monitoring Metrics",
+            heading: "Data analytics and monitoring metrics",
             p0:
               "While using the Application, certain general data analytics on the usage patterns and performance of the Application may be " +
               "gathered and stored automatically to assist with design and development of the Application. This general usage data is not " +
-              "linked to an individual's identity but IP address and device information may be included. Transactions are audited and stored " +
-              "for site monitoring, performance, and troubleshooting and may be tied to the individual performing an activity. Any such data " +
-              "will be maintained consistent with applicable federal laws.",
+              "linked to an individual’s identity but IP address and device information may be included. Transactions are audited and " +
+              "stored for site monitoring, performance, and troubleshooting and may be tied to the individual performing an activity. " +
+              "Any such data will be maintained consistent with applicable federal laws.",
           },
         },
       },
