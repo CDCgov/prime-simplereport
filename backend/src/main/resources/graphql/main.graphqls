@@ -268,6 +268,15 @@ type PatientLink {
   testOrder: TestOrder
 }
 
+type PendingOrganization {
+  externalId: String!
+  name: String!
+  adminName: String
+  adminEmail: String
+  adminPhone: String
+  createdAt: DateTime!
+}
+
 # Queries and mutations for everyday use
 
 type Query {

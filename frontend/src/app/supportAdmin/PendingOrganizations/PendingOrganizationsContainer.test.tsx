@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 
 import {
-  GetOrganizationsDocument,
+  GetPendingOrganizationsDocument,
   SetOrgIdentityVerifiedDocument,
 } from "../../../generated/graphql";
 
@@ -11,18 +11,26 @@ import PendingOrganizationsContainer from "./PendingOrganizationsContainer";
 
 const organizationsQuery = {
   request: {
-    query: GetOrganizationsDocument,
-    variables: {
-      identityVerified: false,
-    },
+    query: GetPendingOrganizationsDocument,
   },
   result: {
     data: {
-      organizations: [
+      pendingOrganizations: [
         {
           externalId: "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0",
           name: "Space Camp",
-          identityVerified: true,
+          adminEmail: "admin@spacecamp.org",
+          adminName: "John Doe",
+          adminPhone: "555-555-5555",
+          createdAt: "2020-05-01T00:00:00.000Z",
+        },
+        {
+          externalId: "CA-A-Real-Hospital-f34183c4-b4c5-449f-97b4-2e02abb7aae0",
+          name: "A Real Hospital",
+          adminEmail: "admin@arealhospital.org",
+          adminName: "Jane Doe",
+          adminPhone: "666-666-6666",
+          createdAt: "2020-06-01T00:00:00.000Z",
         },
       ],
     },
@@ -30,14 +38,11 @@ const organizationsQuery = {
 };
 const EmptyOrganizationsQuery = {
   request: {
-    query: GetOrganizationsDocument,
-    variables: {
-      identityVerified: false,
-    },
+    query: GetPendingOrganizationsDocument,
   },
   result: {
     data: {
-      organizations: [],
+      pendingOrganizations: [],
     },
   },
 };
@@ -99,10 +104,28 @@ describe("PendingOrganizationsContainer", () => {
         screen.getByText("Space Camp", { exact: false })
       ).toBeInTheDocument();
     });
+
+    it("displays the admin info", () => {
+      expect(
+        screen.getByText("John Doe", { exact: false })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("admin@spacecamp.org", { exact: false })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("(555) 555-5555", { exact: false })
+      ).toBeInTheDocument();
+    });
+
+    it("shows the newest orgs first", () => {
+      const rowsCreatedAt = screen.getAllByTestId("org-created-at-table-cell");
+      expect(rowsCreatedAt[0].textContent).toBe("6/1/2020, 12:00:00 AM");
+      expect(rowsCreatedAt[1].textContent).toBe("5/1/2020, 12:00:00 AM");
+    });
     describe("marking an organization as verified", () => {
       beforeEach(async () => {
         await act(async () => {
-          await userEvent.click(screen.getByText("Identity Verified"));
+          await userEvent.click(screen.getAllByText("Identity Verified")[1]);
         });
       });
       it("enables submit", () => {
@@ -130,7 +153,7 @@ describe("PendingOrganizationsContainer", () => {
       describe("then mark as unverified", () => {
         beforeEach(async () => {
           await act(async () => {
-            await userEvent.click(screen.getByText("Identity Verified"));
+            await userEvent.click(screen.getAllByText("Identity Verified")[1]);
           });
         });
         it("disables submit", () => {

@@ -11,6 +11,7 @@ import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationQueueRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,16 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
 
     assertTrue(optFetchedQueueItem.isPresent());
     OrganizationQueueItem fetchedQueueItem = optFetchedQueueItem.get();
+    assertEquals(createdQueueItem.getOrganizationName(), fetchedQueueItem.getOrganizationName());
+  }
+
+  @Test
+  void getUnverifiedQueuedOrganizations_success() {
+    OrganizationQueueItem createdQueueItem = _dataFactory.createOrganizationQueueItem();
+
+    List<OrganizationQueueItem> unverifiedOrgs = _service.getUnverifiedQueuedOrganizations();
+
+    OrganizationQueueItem fetchedQueueItem = unverifiedOrgs.get(0);
     assertEquals(createdQueueItem.getOrganizationName(), fetchedQueueItem.getOrganizationName());
   }
 

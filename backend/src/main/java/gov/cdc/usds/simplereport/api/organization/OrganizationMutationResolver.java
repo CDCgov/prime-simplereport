@@ -7,15 +7,18 @@ import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
+import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
@@ -25,16 +28,19 @@ import org.springframework.stereotype.Component;
 public class OrganizationMutationResolver implements GraphQLMutationResolver {
 
   private final OrganizationService _os;
+  private final OrganizationQueueService _oqs;
   private final DeviceTypeService _dts;
   private final AddressValidationService _avs;
   private final ApiUserService _aus;
 
   public OrganizationMutationResolver(
       OrganizationService os,
+      OrganizationQueueService oqs,
       DeviceTypeService dts,
       AddressValidationService avs,
       ApiUserService aus) {
     _os = os;
+    _oqs = oqs;
     _dts = dts;
     _avs = avs;
     _aus = aus;
@@ -276,6 +282,11 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   }
 
   public boolean setOrganizationIdentityVerified(String externalId, boolean verified) {
+    Optional<OrganizationQueueItem> orgQueueItem =
+        _oqs.getUnverifiedQueuedOrganizationByExternalId(externalId);
+    if (orgQueueItem.isPresent() && verified) {
+      _oqs.createAndActivateQueuedOrganization(orgQueueItem.get());
+    }
     return _os.setIdentityVerified(externalId, verified);
   }
 }

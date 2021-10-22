@@ -3,6 +3,7 @@
 # which is enforced in the API not in the schema validator.
 extend type Query {
   organizations(identityVerified: Boolean): [Organization!]!
+  pendingOrganizations: [PendingOrganization!]!
 }
 extend type Mutation {
   uploadPatients(patientList: Upload!): String

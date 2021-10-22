@@ -1,17 +1,19 @@
+import { PhoneNumberUtil, PhoneNumberFormat } from "google-libphonenumber";
+
 import "./PendingOrganizationsList.scss";
 import Checkboxes from "../../commonComponents/Checkboxes";
 import Button from "../../commonComponents/Button/Button";
+import { PendingOrganization } from "../../../generated/graphql";
 
 interface Props {
-  organizations: {
-    externalId: string;
-    name: string;
-  }[];
+  organizations: PendingOrganization[];
   verifiedOrgExternalIds: Set<string>;
   submitIdentityVerified: () => void;
   setVerifiedOrganization: (externalId: string, verified: boolean) => void;
   loading: boolean;
 }
+
+const phoneUtil = PhoneNumberUtil.getInstance();
 
 const PendingOrganizations = ({
   organizations,
@@ -36,10 +38,28 @@ const PendingOrganizations = ({
       );
     }
 
-    return [...organizations].map((o) => (
+    const orgsSortedByNewest = [...organizations].sort(
+      (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)
+    );
+
+    return orgsSortedByNewest.map((o) => (
       <tr key={o.externalId} className="sr-org-row">
-        <th scope="row">{o.name}</th>
-        <th scope="row">{o.externalId}</th>
+        <td>{o.name}</td>
+        <td>{o.adminName}</td>
+        <td>
+          <a href={`mailto:${o.adminEmail}}`}>{o.adminEmail}</a>
+          <br />
+          {o.adminPhone
+            ? phoneUtil.format(
+                phoneUtil.parseAndKeepRawInput(o.adminPhone, "US"),
+                PhoneNumberFormat.NATIONAL
+              )
+            : ""}
+        </td>
+        <td data-testid="org-created-at-table-cell">
+          {new Date(o.createdAt).toLocaleString()}
+        </td>
+        <td>{o.externalId}</td>
         <td>
           <Checkboxes
             onChange={(e) =>
@@ -62,7 +82,7 @@ const PendingOrganizations = ({
 
   return (
     <main className="prime-home">
-      <div className="grid-container">
+      <div className="grid-container pending-orgs-wide-container">
         <div className="grid-row">
           <div className="prime-container card-container sr-pending-organizations-list">
             <div className="usa-card__header">
@@ -82,6 +102,9 @@ const PendingOrganizations = ({
                 <thead>
                   <tr>
                     <th scope="col">Name</th>
+                    <th scope="row">Administrator</th>
+                    <th scope="row">Contact</th>
+                    <th scope="row">Created</th>
                     <th scope="col">External ID</th>
                     <th scope="col">Verify Identity</th>
                   </tr>

@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.OrganizationQueueRepository;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,5 +62,9 @@ public class OrganizationQueueService {
     _orgQueueRepo.save(queueItem);
 
     return activationToken;
+  }
+
+  public List<OrganizationQueueItem> getUnverifiedQueuedOrganizations() {
+    return _orgQueueRepo.findAllNotIdentityVerified();
   }
 }
