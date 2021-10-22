@@ -382,3 +382,13 @@ Navigate to the [Github Actions Tab](https://github.com/CDCgov/prime-simplerepor
 4. Click the green "Run workflow" button.
 5. After the workflow is completed you can verify the changes are live by Checking the deployed commit hash. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`
 
+## Deployment Issues
+### Maintenance Mode
+
+Users can be notified of deployment issues by placing SimpleReport in maintenance mode. When maintenance mode is enabled, a banner will appear at the top of each page stating that SimpleReport is currently experiencing an outage, along with a configurable supplemental message (e.g. a reason why).
+
+To do so manually:
+1. Create a `MAINTENANCE MESSAGE` in JSON format with an `active` and a `message` key. Example: `{"active": true, "message": "SimpleReport is currently undergoing maintenance"}`. Note that the `active` value must be a _boolean_, not a string.
+2. `cd frontend && MAINTENANCE_MESSAGE=(JSON message here) MAINTENANCE_ENV=(desired env) yarn run maintenance:start`
+
+An easier way is to run the `Maintenance Mode` Action, which will automatically enable/disable maintenance mode for all environments with your desired message.

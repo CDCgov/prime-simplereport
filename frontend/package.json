@@ -88,7 +88,9 @@
     "watch-css": "yarn compile-scss && sass --load-path=./node_modules/uswds/dist/scss --style=compressed --no-source-map -w src/scss/App.scss:src/styles/App.css",
     "create-storybook-public": "rm -rf ./storybook_public && cp -R ./public ./storybook_public && cp mockServiceWorker.js ./storybook_public",
     "storybook": "yarn create-storybook-public && yarn watch-css & start-storybook -p 6006 -s storybook_public",
-    "build-storybook": "yarn create-storybook-public && yarn compile-scss && REACT_APP_BACKEND_URL=http://localhost:8080 build-storybook -s storybook_public"
+    "build-storybook": "yarn create-storybook-public && yarn compile-scss && REACT_APP_BACKEND_URL=http://localhost:8080 build-storybook -s storybook_public",
+    "maintenance:start": "[ -z \"$MAINTENANCE_MESSAGE\" ] && echo \"MAINTENANCE_MESSAGE must be set!\" || (echo $MAINTENANCE_MESSAGE > maintenance.json && yarn maintenance:deploy && rm maintenance.json)",
+    "maintenance:deploy": "[ -z \"$MAINTENANCE_ENV\" ] && echo \"MAINTENANCE_ENV must be set!\" || az storage blob upload -f maintenance.json -n maintenance.json -c '$web' --account-name simplereport${MAINTENANCE_ENV}app"
   },
   "prettier": {
     "singleQuote": false
