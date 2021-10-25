@@ -3096,6 +3096,8 @@ databaseChangeLog:
       author: nclyde@skylight.digital
       comment: add country to person for international addresses
       changes:
+        - tagDatabase:
+            tag: add-country-to-person
         - addColumn:
             tableName: person
             columns:
