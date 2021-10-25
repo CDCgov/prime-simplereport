@@ -3091,3 +3091,15 @@ databaseChangeLog:
             indexName: uk__organization_queue__organization_external_id
         - dropIndex:
             indexName: uk__organization_queue__verified_organization_id
+  - changeSet:
+      id: add-country-to-person
+      author: nclyde@skylight.digital
+      comment: add country to person for international addresses
+      changes:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: country
+                  type: text
+                  remarks: The country of a person's address
