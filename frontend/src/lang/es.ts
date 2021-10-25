@@ -134,6 +134,7 @@ export const es: LanguageConfig = {
           testResultDelivery:
             "¿Le gustaría recibir sus resultados por mensaje de texto?",
           email: "Dirección de correo electrónico",
+          country: "País",
           street1: "Dirección 1",
           street2: "Dirección 2",
           county: "Condado",

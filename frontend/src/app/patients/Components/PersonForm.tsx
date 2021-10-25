@@ -395,6 +395,14 @@ const PersonForm = (props: Props) => {
         <div className="usa-form">
           <Input
             {...commonInputProps}
+            field="country"
+            label={t("patient.form.contact.country")}
+            required
+          />
+        </div>
+        <div className="usa-form">
+          <Input
+            {...commonInputProps}
             field="street"
             label={t("patient.form.contact.street1")}
             required

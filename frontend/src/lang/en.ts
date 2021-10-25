@@ -126,6 +126,7 @@ export const en = {
           testResultDelivery:
             "Would you like to receive your results via text message?",
           email: "Email address",
+          country: "Country",
           street1: "Street address 1",
           street2: "Street address 2",
           county: "County",

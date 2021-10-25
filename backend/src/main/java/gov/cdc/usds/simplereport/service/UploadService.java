@@ -127,6 +127,7 @@ public class UploadService {
 
         var firstName = parseString(getRow(row, "FirstName", true));
         var lastName = parseString(getRow(row, "LastName", true));
+        var country = parseString(getRow(row, "Country", true));
         var dob = parseUserShortDate(getRow(row, "DOB", true));
 
         if (_ps.isDuplicatePatient(
@@ -143,6 +144,7 @@ public class UploadService {
             parseString(getRow(row, "Suffix", false)),
             dob,
             address,
+            country,
             parsePhoneNumbers(
                 List.of(
                     new PhoneNumberInput(
