@@ -3102,9 +3102,9 @@ databaseChangeLog:
               - column:
                   name: country
                   type: text
-                  remarks: The country of a person's address
-                  defaultValue: "United States"
-                  value: "United States"
+                  remarks: The country of a person's address (ISO Alpha-3 code)
+                  defaultValue: "USA"
+                  value: "USA"
         - dropView:
             viewName: person_no_phi_view
         - createView:
