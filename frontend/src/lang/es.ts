@@ -48,7 +48,7 @@ export const es: LanguageConfig = {
       gender: {
         female: "Femenino",
         male: "Masculino",
-        other: OTHER,
+        other: "",
         refused: REFUSED,
       },
       ethnicity: {
