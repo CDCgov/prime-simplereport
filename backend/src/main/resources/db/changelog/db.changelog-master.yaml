@@ -3182,3 +3182,15 @@ databaseChangeLog:
               FROM ${database.defaultSchemaName}.person p
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+  - changeSet:
+      id: add-email-all-to-test-result-delivery
+      author: zedd@skylight.digital
+      comment: Add EMAIL and ALL to test result delivery preferences
+      changes:
+        - tagDatabase:
+              tag: add-email-all-to-test-result-delivery
+        - sql:
+            remarks: Adds EMAIL and ALL to TEST_RESULT_DELIVERY enum
+            sql: |
+              ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_DELIVERY ADD VALUE 'EMAIL';
+              ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_DELIVERY ADD VALUE 'ALL';
