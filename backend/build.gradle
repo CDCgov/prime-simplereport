@@ -154,8 +154,8 @@ liquibase {
             driver "org.postgresql.Driver"
             changeLogFile "/db/changelog/db.changelog-master.yaml"
             url dbConnectionString
-            username "postgres"
-            password "admin_password_for_local_dev_is_not_very_secure"
+            username "simple_report_migrations"
+            password "migrations456"
             defaultSchemaName defaultSchema
             classpath "src/main/resources"
             // this shadows application.yaml: should probably be in a shared properties file
