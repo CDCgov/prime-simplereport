@@ -3194,3 +3194,7 @@ databaseChangeLog:
             sql: |
               ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_DELIVERY ADD VALUE 'EMAIL';
               ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_DELIVERY ADD VALUE 'ALL';
+      rollback:
+        - sql:
+            sql: |
+              SELECT enum_range(NULL::${database.defaultSchemaName}.test_result_delivery);
