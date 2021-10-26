@@ -446,7 +446,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   className="usa-label"
                   htmlFor="9"
                 >
-                  Street address 1
+                  Country
                   <abbr
                     className="usa-hint usa-hint--required"
                     title="required"
@@ -459,7 +459,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   aria-required={true}
                   className="usa-input"
                   id="9"
-                  name="street"
+                  name="country"
                   onBlur={[Function]}
                   onChange={[Function]}
                   type="text"
@@ -477,13 +477,20 @@ exports[`PatientFormContainer snapshot 1`] = `
                   className="usa-label"
                   htmlFor="10"
                 >
-                  Street address 2
+                  Street address 1
+                  <abbr
+                    className="usa-hint usa-hint--required"
+                    title="required"
+                  >
+                     
+                    *
+                  </abbr>
                 </label>
                 <input
-                  aria-required="false"
+                  aria-required={true}
                   className="usa-input"
                   id="10"
-                  name="streetTwo"
+                  name="street"
                   onBlur={[Function]}
                   onChange={[Function]}
                   type="text"
@@ -501,12 +508,36 @@ exports[`PatientFormContainer snapshot 1`] = `
                   className="usa-label"
                   htmlFor="11"
                 >
-                  City
+                  Street address 2
                 </label>
                 <input
                   aria-required="false"
                   className="usa-input"
                   id="11"
+                  name="streetTwo"
+                  onBlur={[Function]}
+                  onChange={[Function]}
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+            <div
+              className="usa-form"
+            >
+              <div
+                className="usa-form-group"
+              >
+                <label
+                  className="usa-label"
+                  htmlFor="12"
+                >
+                  City
+                </label>
+                <input
+                  aria-required="false"
+                  className="usa-input"
+                  id="12"
                   name="city"
                   onBlur={[Function]}
                   onChange={[Function]}
@@ -519,14 +550,14 @@ exports[`PatientFormContainer snapshot 1`] = `
               >
                 <label
                   className="usa-label"
-                  htmlFor="12"
+                  htmlFor="13"
                 >
                   County
                 </label>
                 <input
                   aria-required="false"
                   className="usa-input"
-                  id="12"
+                  id="13"
                   name="county"
                   onBlur={[Function]}
                   onChange={[Function]}
@@ -545,7 +576,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   >
                     <label
                       className="usa-label"
-                      htmlFor="13"
+                      htmlFor="14"
                     >
                       State
                       <abbr
@@ -559,7 +590,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <select
                       aria-required={true}
                       className="usa-select"
-                      id="13"
+                      id="14"
                       name="state"
                       onBlur={[Function]}
                       onChange={[Function]}
@@ -876,7 +907,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   >
                     <label
                       className="usa-label"
-                      htmlFor="14"
+                      htmlFor="15"
                     >
                       ZIP code
                       <abbr
@@ -890,7 +921,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <input
                       aria-required={true}
                       className="usa-input"
-                      id="14"
+                      id="15"
                       name="zipCode"
                       onBlur={[Function]}
                       onChange={[Function]}
@@ -941,7 +972,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="15-val-native"
+                      id="16-val-native"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -949,7 +980,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="15-val-native"
+                      htmlFor="16-val-native"
                     >
                       American Indian/Alaskan Native
                     </label>
@@ -962,7 +993,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="15-val-asian"
+                      id="16-val-asian"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -970,7 +1001,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="15-val-asian"
+                      htmlFor="16-val-asian"
                     >
                       Asian
                     </label>
@@ -983,7 +1014,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="15-val-black"
+                      id="16-val-black"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -991,7 +1022,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="15-val-black"
+                      htmlFor="16-val-black"
                     >
                       Black/African American
                     </label>
@@ -1004,7 +1035,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="15-val-pacific"
+                      id="16-val-pacific"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -1012,7 +1043,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="15-val-pacific"
+                      htmlFor="16-val-pacific"
                     >
                       Native Hawaiian/other Pacific Islander
                     </label>
@@ -1025,7 +1056,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="15-val-white"
+                      id="16-val-white"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -1033,7 +1064,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="15-val-white"
+                      htmlFor="16-val-white"
                     >
                       White
                     </label>
@@ -1046,7 +1077,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="15-val-other"
+                      id="16-val-other"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -1054,7 +1085,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="15-val-other"
+                      htmlFor="16-val-other"
                     >
                       Other
                     </label>
@@ -1067,7 +1098,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="15-val-refused"
+                      id="16-val-refused"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -1075,7 +1106,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="15-val-refused"
+                      htmlFor="16-val-refused"
                     >
                       Prefer not to answer
                     </label>
@@ -1115,7 +1146,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="16-val-hispanic"
+                      id="17-val-hispanic"
                       name="ethnicity"
                       onChange={[Function]}
                       type="radio"
@@ -1123,7 +1154,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="16-val-hispanic"
+                      htmlFor="17-val-hispanic"
                     >
                       Yes
                     </label>
@@ -1136,7 +1167,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="16-val-not_hispanic"
+                      id="17-val-not_hispanic"
                       name="ethnicity"
                       onChange={[Function]}
                       type="radio"
@@ -1144,7 +1175,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="16-val-not_hispanic"
+                      htmlFor="17-val-not_hispanic"
                     >
                       No
                     </label>
@@ -1157,7 +1188,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="16-val-refused"
+                      id="17-val-refused"
                       name="ethnicity"
                       onChange={[Function]}
                       type="radio"
@@ -1165,7 +1196,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="16-val-refused"
+                      htmlFor="17-val-refused"
                     >
                       Prefer not to answer
                     </label>
@@ -1200,7 +1231,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="17-val-female"
+                      id="18-val-female"
                       name="gender"
                       onChange={[Function]}
                       type="radio"
@@ -1208,7 +1239,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="17-val-female"
+                      htmlFor="18-val-female"
                     >
                       Female
                     </label>
@@ -1221,7 +1252,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="17-val-male"
+                      id="18-val-male"
                       name="gender"
                       onChange={[Function]}
                       type="radio"
@@ -1229,7 +1260,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="17-val-male"
+                      htmlFor="18-val-male"
                     >
                       Male
                     </label>
@@ -1242,7 +1273,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="17-val-other"
+                      id="18-val-other"
                       name="gender"
                       onChange={[Function]}
                       type="radio"
@@ -1250,7 +1281,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="17-val-other"
+                      htmlFor="18-val-other"
                     >
                       Other
                     </label>
@@ -1263,7 +1294,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="17-val-refused"
+                      id="18-val-refused"
                       name="gender"
                       onChange={[Function]}
                       type="radio"
@@ -1271,7 +1302,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="17-val-refused"
+                      htmlFor="18-val-refused"
                     >
                       Prefer not to answer
                     </label>
@@ -1319,7 +1350,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="18-val-YES"
+                      id="19-val-YES"
                       name="residentCongregateSetting"
                       onBlur={[Function]}
                       onChange={[Function]}
@@ -1328,7 +1359,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="18-val-YES"
+                      htmlFor="19-val-YES"
                     >
                       Yes
                     </label>
@@ -1341,7 +1372,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="18-val-NO"
+                      id="19-val-NO"
                       name="residentCongregateSetting"
                       onBlur={[Function]}
                       onChange={[Function]}
@@ -1350,7 +1381,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="18-val-NO"
+                      htmlFor="19-val-NO"
                     >
                       No
                     </label>
@@ -1363,7 +1394,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="18-val-UNKNOWN"
+                      id="19-val-UNKNOWN"
                       name="residentCongregateSetting"
                       onBlur={[Function]}
                       onChange={[Function]}
@@ -1372,7 +1403,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="18-val-UNKNOWN"
+                      htmlFor="19-val-UNKNOWN"
                     >
                       Unknown
                     </label>
@@ -1402,7 +1433,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="19-val-YES"
+                      id="20-val-YES"
                       name="employedInHealthcare"
                       onBlur={[Function]}
                       onChange={[Function]}
@@ -1411,7 +1442,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="19-val-YES"
+                      htmlFor="20-val-YES"
                     >
                       Yes
                     </label>
@@ -1424,7 +1455,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="19-val-NO"
+                      id="20-val-NO"
                       name="employedInHealthcare"
                       onBlur={[Function]}
                       onChange={[Function]}
@@ -1433,7 +1464,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="19-val-NO"
+                      htmlFor="20-val-NO"
                     >
                       No
                     </label>
@@ -1446,7 +1477,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="19-val-UNKNOWN"
+                      id="20-val-UNKNOWN"
                       name="employedInHealthcare"
                       onBlur={[Function]}
                       onChange={[Function]}
@@ -1455,7 +1486,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="19-val-UNKNOWN"
+                      htmlFor="20-val-UNKNOWN"
                     >
                       Unknown
                     </label>

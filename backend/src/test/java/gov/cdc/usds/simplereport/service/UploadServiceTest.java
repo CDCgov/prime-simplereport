@@ -129,7 +129,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
               () -> this._service.processPersonCSV(bis),
               "CSV parsing should fail");
       assertTrue(
-          e.getMessage().contains("Not enough column values: expected 20, found 1"),
+          e.getMessage().contains("Not enough column values: expected 21, found 1"),
           "Should have correct error message");
     }
   }

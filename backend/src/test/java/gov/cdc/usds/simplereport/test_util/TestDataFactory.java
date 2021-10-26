@@ -196,6 +196,7 @@ public class TestDataFactory {
             null,
             DEFAULT_BDAY,
             getAddress(),
+            "USA",
             PersonRole.RESIDENT,
             null,
             "white",

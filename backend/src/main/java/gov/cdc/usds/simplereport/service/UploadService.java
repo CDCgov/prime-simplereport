@@ -202,6 +202,7 @@ public class UploadService {
           .addColumn("County", CsvSchema.ColumnType.STRING)
           .addColumn("State", CsvSchema.ColumnType.STRING)
           .addColumn("ZipCode", CsvSchema.ColumnType.STRING)
+          .addColumn("Country", CsvSchema.ColumnType.STRING)
           .addColumn("PhoneNumber", CsvSchema.ColumnType.STRING)
           .addColumn("employedInHealthcare", CsvSchema.ColumnType.STRING)
           .addColumn("residentCongregateSetting", CsvSchema.ColumnType.STRING)
