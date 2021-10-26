@@ -120,11 +120,8 @@ export const en = {
             "You're responsible for entering the correct contact information, following applicable federal and state laws.",
           primaryPhoneNumber: "Primary phone number",
           additionalPhoneNumber: "Additional phone number",
-          receiveTextMessageResults: "Yes, text all mobile numbers on file.",
           phoneType: "Phone type",
           addNumber: "Add another number",
-          testResultDelivery:
-            "Would you like to receive your results via text message?",
           email: "Email address",
           street1: "Street address 1",
           street2: "Street address 2",
@@ -132,6 +129,12 @@ export const en = {
           city: "City",
           state: "State",
           zip: "ZIP code",
+        },
+        testResultDelivery: {
+          text: "Would you like to receive your results via text message?",
+          receiveTextMessageResults: "Yes, text all mobile numbers on file.",
+          email: "Would you like to receive results at this email?",
+          receiveEmailResults: YES,
         },
         demographics: {
           heading: "Demographics",

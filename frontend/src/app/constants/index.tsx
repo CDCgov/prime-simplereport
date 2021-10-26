@@ -2,6 +2,10 @@ import { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
 import { TestResult } from "../testQueue/QueueItem";
+import {
+  TestResultDeliveryPreference,
+  TestResultDeliveryPreferences,
+} from "../patients/Components/PersonForm";
 import i18n from "../../i18n";
 
 export const DATE_FORMAT_MM_DD_YYYY =
@@ -82,7 +86,7 @@ const phoneTypeValues = (
   ];
 };
 
-const testResultDeliveryPreferenceValues = (
+const testResultDeliveryPreferenceValuesSms = (
   t: TFunction
 ): {
   value: TestResultDeliveryPreference;
@@ -90,13 +94,35 @@ const testResultDeliveryPreferenceValues = (
 }[] => {
   return [
     {
-      label: i18n.t("patient.form.contact.receiveTextMessageResults"),
-      value: "SMS",
+      label: i18n.t(
+        "patient.form.testResultDelivery.receiveTextMessageResults"
+      ),
+      value: TestResultDeliveryPreferences.SMS,
     },
-    { label: i18n.t("constants.yesNoUnk.NO"), value: "NONE" },
+    {
+      label: i18n.t("constants.yesNoUnk.NO"),
+      value: TestResultDeliveryPreferences.NONE,
+    },
   ];
 };
 
+const testResultDeliveryPreferenceValuesEmail = (
+  t: TFunction
+): {
+  value: TestResultDeliveryPreference;
+  label: string;
+}[] => {
+  return [
+    {
+      label: i18n.t("patient.form.testResultDelivery.receiveEmailResults"),
+      value: TestResultDeliveryPreferences.EMAIL,
+    },
+    {
+      label: i18n.t("constants.yesNoUnk.NO"),
+      value: TestResultDeliveryPreferences.NONE,
+    },
+  ];
+};
 const yesNoUnkownValues = (
   t: TFunction
 ): {
@@ -715,7 +741,10 @@ export const ETHNICITY_VALUES = ethnicityValues(i18n.t);
 export const GENDER_VALUES = genderValues(i18n.t);
 export const YES_NO_VALUES = yesNoValues(i18n.t);
 export const PHONE_TYPE_VALUES = phoneTypeValues(i18n.t);
-export const TEST_RESULT_DELIVERY_PREFERENCE_VALUES = testResultDeliveryPreferenceValues(
+export const TEST_RESULT_DELIVERY_PREFERENCE_VALUES_SMS = testResultDeliveryPreferenceValuesSms(
+  i18n.t
+);
+export const TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL = testResultDeliveryPreferenceValuesEmail(
   i18n.t
 );
 export const YES_NO_UNKNOWN_VALUES = yesNoUnkownValues(i18n.t);
@@ -729,7 +758,10 @@ export const useTranslatedConstants = () => {
     ROLE_VALUES: roleValues(t),
     ETHNICITY_VALUES: ethnicityValues(t),
     GENDER_VALUES: genderValues(t),
-    TEST_RESULT_DELIVERY_PREFERENCE_VALUES: testResultDeliveryPreferenceValues(
+    TEST_RESULT_DELIVERY_PREFERENCE_VALUES_SMS: testResultDeliveryPreferenceValuesSms(
+      t
+    ),
+    TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL: testResultDeliveryPreferenceValuesEmail(
       t
     ),
     PHONE_TYPE_VALUES: phoneTypeValues(t),

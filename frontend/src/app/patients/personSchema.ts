@@ -12,10 +12,11 @@ import {
   GENDER_VALUES,
   TRIBAL_AFFILIATION_VALUES,
   PHONE_TYPE_VALUES,
-  TEST_RESULT_DELIVERY_PREFERENCE_VALUES,
 } from "../constants";
 import { Option } from "../commonComponents/Dropdown";
 import { languages } from "../../config/constants";
+
+import { TestResultDeliveryPreferences } from "./Components/PersonForm";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -247,7 +248,7 @@ const updateFieldSchemata: (
   testResultDelivery: yup
     .mixed()
     .oneOf(
-      [...getValues(TEST_RESULT_DELIVERY_PREFERENCE_VALUES), "", null],
+      [...Object.values(TestResultDeliveryPreferences), "", null],
       t("patient.form.errors.testResultDelivery")
     ),
 });

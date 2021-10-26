@@ -41,6 +41,14 @@ export enum PersonFormView {
   SELF_REGISTRATION,
 }
 
+export enum TestResultDeliveryPreferences {
+  SMS = "SMS",
+  EMAIL = "EMAIL",
+  NONE = "NONE",
+}
+
+export type TestResultDeliveryPreference = `${TestResultDeliveryPreferences}`;
+
 const boolToYesNoUnknown = (
   value: boolean | null | undefined
 ): YesNoUnknown | undefined => {
@@ -271,6 +279,7 @@ const PersonForm = (props: Props) => {
     ETHNICITY_VALUES,
     GENDER_VALUES,
     ROLE_VALUES,
+    TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL,
   } = useTranslatedConstants();
 
   return (
@@ -391,6 +400,20 @@ const PersonForm = (props: Props) => {
             label={t("patient.form.contact.email")}
             type="email"
           />
+          {patient.email && (
+            <RadioGroup
+              legend={t("patient.form.testResultDelivery.email")}
+              name="testResultDeliveryEmail"
+              buttons={TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL}
+              onChange={onPersonChange("testResultDelivery")}
+              selectedRadio={
+                patient.testResultDelivery ===
+                TestResultDeliveryPreferences.EMAIL
+                  ? TestResultDeliveryPreferences.EMAIL
+                  : TestResultDeliveryPreferences.NONE
+              }
+            />
+          )}
         </div>
         <div className="usa-form">
           <Input
