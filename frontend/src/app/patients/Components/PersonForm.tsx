@@ -20,6 +20,7 @@ import {
   PersonUpdateFields,
   usePersonSchemata,
 } from "../personSchema";
+import TestResultDeliveryPreferences from "../TestResultDeliveryPreferences";
 import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
 import Input from "../../commonComponents/Input";
 import Select from "../../commonComponents/Select";
@@ -40,13 +41,6 @@ export enum PersonFormView {
   PXP,
   SELF_REGISTRATION,
 }
-
-export enum TestResultDeliveryPreferences {
-  SMS = "SMS",
-  EMAIL = "EMAIL",
-  NONE = "NONE",
-}
-
 export type TestResultDeliveryPreference = `${TestResultDeliveryPreferences}`;
 
 const boolToYesNoUnknown = (

@@ -7,11 +7,9 @@ import Input from "../../commonComponents/Input";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import { useTranslatedConstants } from "../../constants";
 import { PhoneNumberErrors, usePersonSchemata } from "../personSchema";
+import TestResultDeliveryPreferences from "../TestResultDeliveryPreferences";
 
-import {
-  TestResultDeliveryPreference,
-  TestResultDeliveryPreferences,
-} from "./PersonForm";
+import { TestResultDeliveryPreference } from "./PersonForm";
 
 interface Props {
   phoneNumbers: PhoneNumber[];

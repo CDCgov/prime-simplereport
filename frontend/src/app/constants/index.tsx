@@ -2,10 +2,8 @@ import { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
 import { TestResult } from "../testQueue/QueueItem";
-import {
-  TestResultDeliveryPreference,
-  TestResultDeliveryPreferences,
-} from "../patients/Components/PersonForm";
+import TestResultDeliveryPreferences from "../patients/TestResultDeliveryPreferences";
+import { TestResultDeliveryPreference } from "../patients/Components/PersonForm";
 import i18n from "../../i18n";
 
 export const DATE_FORMAT_MM_DD_YYYY =

@@ -59,7 +59,7 @@ exports[`AoEForm renders correctly 1`] = `
                     class="usa-radio__input"
                     data-required="false"
                     id="1-val-SMS"
-                    name="testResultDelivery"
+                    name="testResultDeliverySms"
                     type="radio"
                     value="SMS"
                   />
@@ -95,7 +95,7 @@ exports[`AoEForm renders correctly 1`] = `
                     class="usa-radio__input"
                     data-required="false"
                     id="1-val-NONE"
-                    name="testResultDelivery"
+                    name="testResultDeliverySms"
                     type="radio"
                     value="NONE"
                   />

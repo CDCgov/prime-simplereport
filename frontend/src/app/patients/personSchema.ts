@@ -16,7 +16,7 @@ import {
 import { Option } from "../commonComponents/Dropdown";
 import { languages } from "../../config/constants";
 
-import { TestResultDeliveryPreferences } from "./Components/PersonForm";
+import TestResultDeliveryPreferences from "./TestResultDeliveryPreferences";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
