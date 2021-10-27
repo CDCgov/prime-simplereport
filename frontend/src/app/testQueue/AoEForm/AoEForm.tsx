@@ -10,9 +10,9 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import Button from "../../commonComponents/Button/Button";
 import FormGroup from "../../commonComponents/FormGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
-import "./AoEForm.scss";
-
 import TestResultDeliveryPreferences from "../../patients/TestResultDeliveryPreferences";
+
+import "./AoEForm.scss";
 
 import SymptomInputs from "./SymptomInputs";
 
