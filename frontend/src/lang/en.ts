@@ -182,6 +182,7 @@ export const en = {
           state: "State is missing or incorrectly formatted",
           city: "City is incorrectly formatted",
           county: "County is incorrectly formatted",
+          country: "Country is incorrectly formatted",
           race: "Race is incorrectly formatted",
           tribalAffiliation: "Tribal affiliation is incorrectly formatted",
           ethnicity: "Ethnicity is incorrectly formatted",
