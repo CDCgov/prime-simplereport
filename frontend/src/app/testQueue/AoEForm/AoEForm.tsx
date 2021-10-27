@@ -12,6 +12,8 @@ import FormGroup from "../../commonComponents/FormGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import "./AoEForm.scss";
 
+import TestResultDeliveryPreferences from "../../patients/TestResultDeliveryPreferences";
+
 import SymptomInputs from "./SymptomInputs";
 
 // Get the value associate with a button label
@@ -258,12 +260,29 @@ const AoEForm: React.FC<Props> = ({
               hintText="You’re responsible for entering the correct contact information, following applicable federal and state laws."
               wrapperClassName="margin-top-0"
               name="testResultDeliverySms"
-              onChange={setTestResultDelivery}
+              onChange={(val) => {
+                if (
+                  testResultDelivery === TestResultDeliveryPreferences.EMAIL
+                ) {
+                  val = TestResultDeliveryPreferences.ALL;
+                }
+
+                if (testResultDelivery === TestResultDeliveryPreferences.ALL) {
+                  val = TestResultDeliveryPreferences.EMAIL;
+                }
+
+                setTestResultDelivery(val);
+              }}
               buttons={getTestResultDeliveryPreferencesSms(
                 patientMobileNumbers
               )}
               selectedRadio={
-                patientMobileNumbers.length === 0 ? "NONE" : testResultDelivery
+                [
+                  TestResultDeliveryPreferences.SMS,
+                  TestResultDeliveryPreferences.ALL,
+                ].includes(testResultDelivery as TestResultDeliveryPreferences)
+                  ? TestResultDeliveryPreferences.SMS
+                  : TestResultDeliveryPreferences.NONE
               }
             />
           </div>
@@ -274,9 +293,31 @@ const AoEForm: React.FC<Props> = ({
                 hintText="You’re responsible for entering the correct contact information, following applicable federal and state laws."
                 wrapperClassName="margin-top-0"
                 name="testResultDeliveryEmail"
-                onChange={setTestResultDelivery}
+                onChange={(val) => {
+                  if (
+                    testResultDelivery === TestResultDeliveryPreferences.SMS
+                  ) {
+                    val = TestResultDeliveryPreferences.ALL;
+                  }
+                  if (
+                    testResultDelivery === TestResultDeliveryPreferences.ALL
+                  ) {
+                    val = TestResultDeliveryPreferences.SMS;
+                  }
+
+                  setTestResultDelivery(val);
+                }}
                 buttons={getTestResultDeliveryPreferencesEmail(patient.email)}
-                selectedRadio={patient.email ? "NONE" : testResultDelivery}
+                selectedRadio={
+                  [
+                    TestResultDeliveryPreferences.EMAIL,
+                    TestResultDeliveryPreferences.ALL,
+                  ].includes(
+                    testResultDelivery as TestResultDeliveryPreferences
+                  )
+                    ? TestResultDeliveryPreferences.EMAIL
+                    : TestResultDeliveryPreferences.NONE
+                }
               />
             </div>
           )}

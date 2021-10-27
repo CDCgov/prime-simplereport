@@ -779,6 +779,8 @@ export type TestResult = {
 };
 
 export enum TestResultDeliveryPreference {
+  All = "ALL",
+  Email = "EMAIL",
   None = "NONE",
   Sms = "SMS",
 }
