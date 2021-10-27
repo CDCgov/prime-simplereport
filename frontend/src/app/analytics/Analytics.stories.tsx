@@ -22,8 +22,8 @@ export default {
     ),
   ],
   args: {
-    startDate: "2020-03-01",
-    endDate: "2020-03-31",
+    startDate: "2021-10-15",
+    endDate: "2021-10-22",
   },
 } as Meta;
 
