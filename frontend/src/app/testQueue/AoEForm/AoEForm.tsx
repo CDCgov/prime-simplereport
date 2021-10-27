@@ -308,16 +308,20 @@ const AoEForm: React.FC<Props> = ({
                   setTestResultDelivery(val);
                 }}
                 buttons={getTestResultDeliveryPreferencesEmail(patient.email)}
-                selectedRadio={
-                  [
+                selectedRadio={(() => {
+                  if (patientMobileNumbers.length === 0) {
+                    return TestResultDeliveryPreferences.NONE;
+                  }
+
+                  return [
                     TestResultDeliveryPreferences.EMAIL,
                     TestResultDeliveryPreferences.ALL,
                   ].includes(
                     testResultDelivery as TestResultDeliveryPreferences
                   )
                     ? TestResultDeliveryPreferences.EMAIL
-                    : TestResultDeliveryPreferences.NONE
-                }
+                    : TestResultDeliveryPreferences.NONE;
+                })()}
               />
             </div>
           )}
