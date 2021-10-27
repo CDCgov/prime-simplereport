@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
+import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -84,29 +85,6 @@ public class TestOrderService {
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
 
   public static final String MISSING_ARG = "Must provide either facility ID or patient ID";
-
-  //  public TestOrderService(
-  //      OrganizationService os,
-  //      DeviceTypeService dts,
-  //      FacilityDeviceTypeService facilityDeviceTypeService,
-  //      TestOrderRepository repo,
-  //      PatientAnswersRepository parepo,
-  //      TestEventRepository terepo,
-  //      PersonService ps,
-  //      PatientLinkService pls,
-  //      SmsService smss,
-  //      TestEventReportingService testEventReportingService) {
-  //    _os = os;
-  //    _ps = ps;
-  //    _dts = dts;
-  //    _repo = repo;
-  //    _parepo = parepo;
-  //    _terepo = terepo;
-  //    _pls = pls;
-  //    _smss = smss;
-  //    _testEventReportingService = testEventReportingService;
-  //    _facilityDeviceTypeService = facilityDeviceTypeService;
-  //  }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
   public List<TestOrder> getQueue(UUID facilityId) {
@@ -294,17 +272,18 @@ public class TestOrderService {
 
       _testEventReportingService.report(testEvent);
 
-      UUID linkInternalId = _pls.createPatientLink(savedOrder.getInternalId()).getInternalId();
+      PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
+      UUID patientLinkId = patientLink.getInternalId();
 
       if (TestResultDeliveryPreference.SMS == savedOrder.getPatient().getTestResultDelivery()) {
         // After adding test result, create a new patient link and text it to the
         // patient
 
-        log.info("Your Covid-19 test result is ready to view: " + patientLinkUrl + linkInternalId);
+        log.info("Your Covid-19 test result is ready to view: " + patientLinkUrl + patientLinkId);
         List<SmsAPICallResult> smsSendResults =
             _smss.sendToPatientLink(
-                linkInternalId,
-                "Your Covid-19 test result is ready to view: " + patientLinkUrl + linkInternalId);
+                patientLinkId,
+                "Your Covid-19 test result is ready to view: " + patientLinkUrl + patientLinkId);
 
         boolean hasDeliveryFailure =
             smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
@@ -318,10 +297,11 @@ public class TestOrderService {
 
       if (TestResultDeliveryPreference.EMAIL == savedOrder.getPatient().getTestResultDelivery()) {
         try {
-          testResultsDeliveryService.emailTestResults(linkInternalId);
+          testResultsDeliveryService.emailTestResults(patientLink);
         } catch (IOException e) {
           deliveryStatus = false;
-          e.printStackTrace();
+          log.error(
+              "failed to send email for patient link {}, exception: {}", patientId, e.getMessage());
         }
       }
 
