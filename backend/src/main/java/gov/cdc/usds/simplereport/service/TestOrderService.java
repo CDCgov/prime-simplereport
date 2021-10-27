@@ -268,17 +268,16 @@ public class TestOrderService {
       order.setTestEventRef(testEvent);
       TestOrder savedOrder = _repo.save(order);
 
-      Boolean deliveryStatus = true;
-
       _testEventReportingService.report(testEvent);
+      boolean deliveryStatus = true;
 
-      if (!noTestDeliveryPreference(savedOrder)) {
+      if (patientHasDeliveryPreference(savedOrder)) {
         PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-        UUID patientLinkId = patientLink.getInternalId();
 
-        if (smsTestDeliveryPreference(savedOrder) || allTestDeliveryPreference(savedOrder)) {
+        if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
           // After adding test result, create a new patient link and text it to the
           // patient
+          UUID patientLinkId = patientLink.getInternalId();
 
           log.info("Your Covid-19 test result is ready to view: " + patientLinkUrl + patientLinkId);
           List<SmsAPICallResult> smsSendResults =
@@ -294,7 +293,7 @@ public class TestOrderService {
           }
         }
 
-        if (emailTestDeliveryPreference(savedOrder) || allTestDeliveryPreference(savedOrder)) {
+        if (emailDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
           try {
             testResultsDeliveryService.emailTestResults(patientLink);
           } catch (IOException e) {
@@ -313,19 +312,19 @@ public class TestOrderService {
     }
   }
 
-  private boolean noTestDeliveryPreference(TestOrder savedOrder) {
-    return TestResultDeliveryPreference.NONE == savedOrder.getPatient().getTestResultDelivery();
+  private boolean patientHasDeliveryPreference(TestOrder savedOrder) {
+    return TestResultDeliveryPreference.NONE != savedOrder.getPatient().getTestResultDelivery();
   }
 
-  private boolean smsTestDeliveryPreference(TestOrder savedOrder) {
+  private boolean smsDeliveryPreference(TestOrder savedOrder) {
     return TestResultDeliveryPreference.SMS == savedOrder.getPatient().getTestResultDelivery();
   }
 
-  private boolean emailTestDeliveryPreference(TestOrder savedOrder) {
+  private boolean emailDeliveryPreference(TestOrder savedOrder) {
     return TestResultDeliveryPreference.EMAIL == savedOrder.getPatient().getTestResultDelivery();
   }
 
-  private boolean allTestDeliveryPreference(TestOrder savedOrder) {
+  private boolean smsAndEmailDeliveryPreference(TestOrder savedOrder) {
     return TestResultDeliveryPreference.ALL == savedOrder.getPatient().getTestResultDelivery();
   }
 

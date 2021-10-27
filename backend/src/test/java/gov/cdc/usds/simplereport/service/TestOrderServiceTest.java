@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
@@ -564,6 +565,40 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verify(testResultsDeliveryService).emailTestResults(patientLinkCaptor.capture());
     assertThat(patientLinkCaptor.getValue().getTestOrder().getPatient().getInternalId())
         .isEqualTo(patient.getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void addTestResult_emailDelivery_failure() throws IOException {
+    // GIVEN
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person patient = _dataFactory.createFullPerson(org);
+
+    _personService.updateTestResultDeliveryPreference(
+        patient.getInternalId(), TestResultDeliveryPreference.EMAIL);
+
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        patient,
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
+    DeviceType devA = facility.getDefaultDeviceType();
+
+    doThrow(IOException.class)
+        .when(testResultsDeliveryService)
+        .emailTestResults(any(PatientLink.class));
+
+    // WHEN
+    AddTestResultResponse res =
+        _service.addTestResult(
+            devA.getInternalId().toString(), TestResult.POSITIVE, patient.getInternalId(), null);
+
+    // THEN
+    verify(testResultsDeliveryService).emailTestResults(any(PatientLink.class));
+    assertEquals(false, res.getDeliverySuccess());
   }
 
   @Test
