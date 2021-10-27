@@ -3186,6 +3186,7 @@ databaseChangeLog:
       id: add-email-all-to-test-result-delivery
       author: zedd@skylight.digital
       comment: Add EMAIL and ALL to test result delivery preferences
+      runInTransaction: false
       changes:
         - tagDatabase:
               tag: add-email-all-to-test-result-delivery

@@ -1,7 +1,7 @@
 version: "3.5"
 services:
   db:
-    image: postgres:12-alpine
+    image: postgres:11-alpine
     ports:
       - "${SR_DB_PORT:-5432}:${SR_DB_PORT:-5432}"
     environment:
