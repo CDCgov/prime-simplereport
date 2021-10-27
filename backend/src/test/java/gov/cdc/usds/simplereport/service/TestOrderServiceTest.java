@@ -567,6 +567,39 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   }
 
   @Test
+  @WithSimpleReportOrgAdminUser
+  void addTestResult_emailAndSmsDelivery() throws IOException {
+    // GIVEN
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person patient = _dataFactory.createFullPerson(org);
+
+    _personService.updateTestResultDeliveryPreference(
+        patient.getInternalId(), TestResultDeliveryPreference.ALL);
+
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        patient,
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
+    DeviceType devA = facility.getDefaultDeviceType();
+
+    // WHEN
+    AddTestResultResponse res =
+        _service.addTestResult(
+            devA.getInternalId().toString(), TestResult.POSITIVE, patient.getInternalId(), null);
+
+    // THEN
+    assertEquals(true, res.getDeliverySuccess());
+
+    verify(testResultsDeliveryService).emailTestResults(any(PatientLink.class));
+    verify(_smsService).sendToPatientLink(any(UUID.class), anyString());
+    assertEquals(true, res.getDeliverySuccess());
+  }
+
+  @Test
   @WithSimpleReportStandardAllFacilitiesUser
   void editTestResult_standardAllFacilitiesUser_ok() {
     Organization org = _organizationService.getCurrentOrganization();

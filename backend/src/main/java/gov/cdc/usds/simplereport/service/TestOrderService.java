@@ -272,36 +272,38 @@ public class TestOrderService {
 
       _testEventReportingService.report(testEvent);
 
-      PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-      UUID patientLinkId = patientLink.getInternalId();
+      if (!noTestDeliveryPreference(savedOrder)) {
+        PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
+        UUID patientLinkId = patientLink.getInternalId();
 
-      if (TestResultDeliveryPreference.SMS == savedOrder.getPatient().getTestResultDelivery()) {
-        // After adding test result, create a new patient link and text it to the
-        // patient
+        if (smsTestDeliveryPreference(savedOrder) || allTestDeliveryPreference(savedOrder)) {
+          // After adding test result, create a new patient link and text it to the
+          // patient
 
-        log.info("Your Covid-19 test result is ready to view: " + patientLinkUrl + patientLinkId);
-        List<SmsAPICallResult> smsSendResults =
-            _smss.sendToPatientLink(
-                patientLinkId,
-                "Your Covid-19 test result is ready to view: " + patientLinkUrl + patientLinkId);
+          log.info("Your Covid-19 test result is ready to view: " + patientLinkUrl + patientLinkId);
+          List<SmsAPICallResult> smsSendResults =
+              _smss.sendToPatientLink(
+                  patientLinkId,
+                  "Your Covid-19 test result is ready to view: " + patientLinkUrl + patientLinkId);
 
-        boolean hasDeliveryFailure =
-            smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
+          boolean hasDeliveryFailure =
+              smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
 
-        if (hasDeliveryFailure) {
-          return new AddTestResultResponse(savedOrder, false);
+          if (hasDeliveryFailure) {
+            return new AddTestResultResponse(savedOrder, false);
+          }
         }
 
-        return new AddTestResultResponse(savedOrder, true);
-      }
-
-      if (TestResultDeliveryPreference.EMAIL == savedOrder.getPatient().getTestResultDelivery()) {
-        try {
-          testResultsDeliveryService.emailTestResults(patientLink);
-        } catch (IOException e) {
-          deliveryStatus = false;
-          log.error(
-              "failed to send email for patient link {}, exception: {}", patientId, e.getMessage());
+        if (emailTestDeliveryPreference(savedOrder) || allTestDeliveryPreference(savedOrder)) {
+          try {
+            testResultsDeliveryService.emailTestResults(patientLink);
+          } catch (IOException e) {
+            deliveryStatus = false;
+            log.error(
+                "failed to send email for patient link {}, exception: {}",
+                patientId,
+                e.getMessage());
+          }
         }
       }
 
@@ -309,6 +311,22 @@ public class TestOrderService {
     } finally {
       unlockOrder(order.getInternalId());
     }
+  }
+
+  private boolean noTestDeliveryPreference(TestOrder savedOrder) {
+    return TestResultDeliveryPreference.NONE == savedOrder.getPatient().getTestResultDelivery();
+  }
+
+  private boolean smsTestDeliveryPreference(TestOrder savedOrder) {
+    return TestResultDeliveryPreference.SMS == savedOrder.getPatient().getTestResultDelivery();
+  }
+
+  private boolean emailTestDeliveryPreference(TestOrder savedOrder) {
+    return TestResultDeliveryPreference.EMAIL == savedOrder.getPatient().getTestResultDelivery();
+  }
+
+  private boolean allTestDeliveryPreference(TestOrder savedOrder) {
+    return TestResultDeliveryPreference.ALL == savedOrder.getPatient().getTestResultDelivery();
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
