@@ -62,10 +62,11 @@ class TestResultsServiceTestDelivery {
     TestResultEmailTemplate emailTemplate = emailTemplateCaptor.getValue();
 
     Map<String, Object> templateVariables = emailTemplate.toTemplateVariables();
-    assertThat(templateVariables.get("facility_name")).isEqualTo("House of Gryffindor");
-    assertThat(templateVariables.get("expiration_duration")).isEqualTo("2 days");
-    assertThat(templateVariables.get("test_result_url"))
-        .isEqualTo("https://simplereport.gov/pxp?plid=" + uuid);
+
+    assertThat(templateVariables).containsEntry("facility_name", "House of Gryffindor");
+    assertThat(templateVariables).containsEntry("expiration_duration", "2 days");
+    assertThat(templateVariables)
+        .containsEntry("test_result_url", "https://simplereport.gov/pxp?plid=" + uuid);
 
     assertThat(emailTemplate.getTemplateName()).isEqualTo("test-results");
     assertThat(emailTemplate.getFacilityName()).isEqualTo("House of Gryffindor");
