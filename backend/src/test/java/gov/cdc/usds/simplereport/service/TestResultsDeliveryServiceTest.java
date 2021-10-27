@@ -63,9 +63,9 @@ class TestResultsDeliveryServiceTest {
 
     Map<String, Object> templateVariables = emailTemplate.toTemplateVariables();
 
-    assertThat(templateVariables).containsEntry("facility_name", "House of Gryffindor");
-    assertThat(templateVariables).containsEntry("expiration_duration", "2 days");
     assertThat(templateVariables)
+        .containsEntry("facility_name", "House of Gryffindor")
+        .containsEntry("expiration_duration", "2 days")
         .containsEntry("test_result_url", "https://simplereport.gov/pxp?plid=" + uuid);
 
     assertThat(emailTemplate.getTemplateName()).isEqualTo("test-results");
