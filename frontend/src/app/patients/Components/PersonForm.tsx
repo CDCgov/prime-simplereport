@@ -4,7 +4,7 @@ import { SchemaOf } from "yup";
 import { useTranslation } from "react-i18next";
 import { ComboBox } from "@trussworks/react-uswds";
 
-import { stateCodes } from "../../../config/constants";
+import { countries, stateCodes } from "../../../config/constants";
 import getLanguages from "../../utils/languages";
 import i18n from "../../../i18n";
 import {
@@ -174,6 +174,21 @@ const PersonForm = (props: Props) => {
     if (value === patient[field]) {
       return;
     }
+    // If a patient has an international address, use special values for state and zip code
+    if (field === "country") {
+      setFormChanged(true);
+      if (value !== "USA") {
+        setPatient({
+          ...patient,
+          [field]: value,
+          state: "NA",
+          zipCode: "00000",
+        });
+      } else {
+        setPatient({ ...patient, [field]: value, state: null, zipCode: null });
+      }
+      return;
+    }
     setFormChanged(true);
     setPatient({ ...patient, [field]: value });
   };
@@ -201,6 +216,10 @@ const PersonForm = (props: Props) => {
 
   const validatePatientAddress = async () => {
     const originalAddress = getAddress(patient);
+    // Don't validate international addresses
+    if (patient.country !== "USA") {
+      onSave(originalAddress);
+    }
     const suggestedAddress = await getBestSuggestion(originalAddress);
     if (suggestionIsCloseEnough(originalAddress, suggestedAddress)) {
       onSave(suggestedAddress);
@@ -393,10 +412,22 @@ const PersonForm = (props: Props) => {
           />
         </div>
         <div className="usa-form">
-          <Input
-            {...commonInputProps}
-            field="country"
+          <Select
             label={t("patient.form.contact.country")}
+            name="country"
+            value={patient.country || ""}
+            options={Object.entries(countries).map(([code, name]) => ({
+              label: name,
+              value: code,
+            }))}
+            defaultOption="USA"
+            defaultSelect
+            onChange={onPersonChange("country")}
+            onBlur={() => {
+              onBlurField("country");
+            }}
+            validationStatus={validationStatus("country")}
+            errorMessage={errors.country}
             required
           />
         </div>
@@ -428,33 +459,35 @@ const PersonForm = (props: Props) => {
               label={t("patient.form.contact.county")}
             />
           )}
-          <div className="grid-row grid-gap">
-            <div className="mobile-lg:grid-col-6">
-              <Select
-                label={t("patient.form.contact.state")}
-                name="state"
-                value={patient.state || ""}
-                options={stateCodes.map((c) => ({ label: c, value: c }))}
-                defaultOption={t("common.defaultDropdownOption")}
-                defaultSelect
-                onChange={onPersonChange("state")}
-                onBlur={() => {
-                  onBlurField("state");
-                }}
-                validationStatus={validationStatus("state")}
-                errorMessage={errors.state}
-                required
-              />
+          {patient.country === "USA" ? (
+            <div className="grid-row grid-gap">
+              <div className="mobile-lg:grid-col-6">
+                <Select
+                  label={t("patient.form.contact.state")}
+                  name="state"
+                  value={patient.state || ""}
+                  options={stateCodes.map((c) => ({ label: c, value: c }))}
+                  defaultOption={t("common.defaultDropdownOption")}
+                  defaultSelect
+                  onChange={onPersonChange("state")}
+                  onBlur={() => {
+                    onBlurField("state");
+                  }}
+                  validationStatus={validationStatus("state")}
+                  errorMessage={errors.state}
+                  required
+                />
+              </div>
+              <div className="mobile-lg:grid-col-6">
+                <Input
+                  {...commonInputProps}
+                  field="zipCode"
+                  label={t("patient.form.contact.zip")}
+                  required
+                />
+              </div>
             </div>
-            <div className="mobile-lg:grid-col-6">
-              <Input
-                {...commonInputProps}
-                field="zipCode"
-                label={t("patient.form.contact.zip")}
-                required
-              />
-            </div>
-          </div>
+          ) : null}
         </div>
       </FormGroup>
       <FormGroup title={t("patient.form.demographics.heading")}>
