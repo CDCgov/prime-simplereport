@@ -8,9 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
@@ -632,6 +630,37 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verify(testResultsDeliveryService).emailTestResults(any(PatientLink.class));
     verify(_smsService).sendToPatientLink(any(UUID.class), anyString());
     assertEquals(true, res.getDeliverySuccess());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void addTestResult_NoTestResultDelivery() {
+    // GIVEN
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person patient = _dataFactory.createFullPerson(org);
+
+    _personService.updateTestResultDeliveryPreference(
+        patient.getInternalId(), TestResultDeliveryPreference.NONE);
+
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        patient,
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
+    DeviceType devA = facility.getDefaultDeviceType();
+
+    // WHEN
+    AddTestResultResponse res =
+        _service.addTestResult(
+            devA.getInternalId().toString(), TestResult.POSITIVE, patient.getInternalId(), null);
+
+    // THEN
+    assertEquals(true, res.getDeliverySuccess());
+    verifyNoInteractions(testResultsDeliveryService);
+    verifyNoInteractions(_smsService);
   }
 
   @Test

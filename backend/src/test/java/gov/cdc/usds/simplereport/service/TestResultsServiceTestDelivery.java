@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.TestResultEmailTemplate;
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,6 +60,13 @@ class TestResultsServiceTestDelivery {
         .send(eq("harry@hogwarts.edu"), eq("COVID-19 test results"), emailTemplateCaptor.capture());
 
     TestResultEmailTemplate emailTemplate = emailTemplateCaptor.getValue();
+
+    Map<String, Object> templateVariables = emailTemplate.toTemplateVariables();
+    assertThat(templateVariables.get("facility_name")).isEqualTo("House of Gryffindor");
+    assertThat(templateVariables.get("expiration_duration")).isEqualTo("2 days");
+    assertThat(templateVariables.get("test_result_url"))
+        .isEqualTo("https://simplereport.gov/pxp?plid=" + uuid);
+
     assertThat(emailTemplate.getTemplateName()).isEqualTo("test-results");
     assertThat(emailTemplate.getFacilityName()).isEqualTo("House of Gryffindor");
     assertThat(emailTemplate.getTestResultUrl())
