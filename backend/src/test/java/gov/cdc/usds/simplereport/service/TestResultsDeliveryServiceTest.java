@@ -28,7 +28,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(SpringExtension.class)
-class TestResultsServiceTestDelivery {
+class TestResultsDeliveryServiceTest {
 
   @Mock private EmailService emailService;
 
