@@ -114,6 +114,7 @@ describe("AddPatient", () => {
               city: "Boston",
               state: "MA",
               zipCode: "02115",
+              country: "USA",
               telephone: null,
               phoneNumbers: [
                 {
@@ -157,6 +158,7 @@ describe("AddPatient", () => {
               city: "Boston",
               state: "MA",
               zipCode: "02115",
+              country: "USA",
               telephone: null,
               phoneNumbers: [
                 {
