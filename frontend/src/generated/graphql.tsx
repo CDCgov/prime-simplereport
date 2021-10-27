@@ -1333,6 +1333,7 @@ export type GetPatientDetailsQuery = {
     lookupId?: Maybe<string>;
     email?: Maybe<string>;
     county?: Maybe<string>;
+    country?: Maybe<string>;
     race?: Maybe<string>;
     ethnicity?: Maybe<string>;
     tribalAffiliation?: Maybe<Array<Maybe<string>>>;
@@ -1372,6 +1373,7 @@ export type UpdatePatientMutationVariables = Exact<{
   lookupId?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
+  country?: Maybe<Scalars["String"]>;
   race?: Maybe<Scalars["String"]>;
   ethnicity?: Maybe<Scalars["String"]>;
   tribalAffiliation?: Maybe<Scalars["String"]>;
@@ -3481,6 +3483,7 @@ export const GetPatientDetailsDocument = gql`
       lookupId
       email
       county
+      country
       race
       ethnicity
       tribalAffiliation
@@ -3565,6 +3568,7 @@ export const UpdatePatientDocument = gql`
     $lookupId: String
     $email: String
     $county: String
+    $country: String
     $race: String
     $ethnicity: String
     $tribalAffiliation: String
@@ -3592,6 +3596,7 @@ export const UpdatePatientDocument = gql`
       lookupId: $lookupId
       email: $email
       county: $county
+      country: $country
       race: $race
       ethnicity: $ethnicity
       tribalAffiliation: $tribalAffiliation
@@ -3640,6 +3645,7 @@ export type UpdatePatientMutationFn = Apollo.MutationFunction<
  *      lookupId: // value for 'lookupId'
  *      email: // value for 'email'
  *      county: // value for 'county'
+ *      country: // value for 'country'
  *      race: // value for 'race'
  *      ethnicity: // value for 'ethnicity'
  *      tribalAffiliation: // value for 'tribalAffiliation'
