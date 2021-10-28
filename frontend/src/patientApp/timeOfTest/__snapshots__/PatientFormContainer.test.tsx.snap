@@ -2227,7 +2227,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__label"
                       htmlFor="16-val-other"
                     >
-                      Other
+                      Non-binary
                     </label>
                   </div>
                   <div

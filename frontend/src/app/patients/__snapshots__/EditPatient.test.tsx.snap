@@ -600,10 +600,23 @@ Object {
                         <option
                           value="AUS"
                         >
-                          Australia
-                        </option>
-                        <option
-                          value="AUT"
+                          <input
+                            class="usa-radio__input"
+                            data-required="false"
+                            id="88-val-other"
+                            name="gender"
+                            type="radio"
+                            value="other"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="88-val-other"
+                          >
+                            Non-binary
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
                         >
                           Austria
                         </option>
@@ -4691,7 +4704,7 @@ Object {
                           class="usa-radio__label"
                           for="84-val-other"
                         >
-                          Other
+                          Non-binary
                         </label>
                       </div>
                       <div
