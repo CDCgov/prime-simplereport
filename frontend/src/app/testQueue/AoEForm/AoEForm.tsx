@@ -10,7 +10,10 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import Button from "../../commonComponents/Button/Button";
 import FormGroup from "../../commonComponents/FormGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
-import TestResultDeliveryPreferences from "../../patients/TestResultDeliveryPreferences";
+import {
+  TestResultDeliveryPreference,
+  TestResultDeliveryPreferences,
+} from "../../patients/TestResultDeliveryPreference";
 import {
   getSelectedDeliveryPreferencesEmail,
   getSelectedDeliveryPreferencesSms,
@@ -269,8 +272,8 @@ const AoEForm: React.FC<Props> = ({
               onChange={(newPreference) => {
                 setTestResultDelivery(
                   toggleDeliveryPreferenceSms(
-                    testResultDelivery as TestResultDeliveryPreferences,
-                    newPreference as TestResultDeliveryPreferences
+                    testResultDelivery as TestResultDeliveryPreference,
+                    newPreference as TestResultDeliveryPreference
                   )
                 );
               }}
@@ -278,7 +281,7 @@ const AoEForm: React.FC<Props> = ({
                 patientMobileNumbers
               )}
               selectedRadio={getSelectedDeliveryPreferencesSms(
-                patient.testResultDelivery as TestResultDeliveryPreferences
+                patient.testResultDelivery as TestResultDeliveryPreference
               )}
             />
           </div>
@@ -292,8 +295,8 @@ const AoEForm: React.FC<Props> = ({
                 onChange={(newPreference) => {
                   setTestResultDelivery(
                     toggleDeliveryPreferenceEmail(
-                      testResultDelivery as TestResultDeliveryPreferences,
-                      newPreference as TestResultDeliveryPreferences
+                      testResultDelivery as TestResultDeliveryPreference,
+                      newPreference as TestResultDeliveryPreference
                     )
                   );
                 }}
@@ -304,7 +307,7 @@ const AoEForm: React.FC<Props> = ({
                   }
 
                   return getSelectedDeliveryPreferencesEmail(
-                    patient.testResultDelivery as TestResultDeliveryPreferences
+                    patient.testResultDelivery as TestResultDeliveryPreference
                   );
                 })()}
               />

@@ -1,4 +1,4 @@
-import TestResultDeliveryPreferences from "../patients/TestResultDeliveryPreferences";
+import { TestResultDeliveryPreferences } from "../patients/TestResultDeliveryPreference";
 
 import {
   toggleDeliveryPreferenceEmail,
@@ -45,10 +45,6 @@ describe("Delivery preference utilities", () => {
       it("returns NONE when NONE option selected", () => {
         expect(sut(NONE)).toBe(NONE);
       });
-
-      it("returns ALL when EMAIL option selected", () => {
-        expect(sut(EMAIL)).toBe(ALL);
-      });
     });
 
     describe("Prior state: ALL", () => {
@@ -56,7 +52,7 @@ describe("Delivery preference utilities", () => {
         sut = toggleDeliveryPreferenceSms.bind(null, ALL);
       });
 
-      it("returns NONE when NONE option selected", () => {
+      it("returns EMAIL when NONE option selected", () => {
         expect(sut(NONE)).toBe(EMAIL);
       });
     });

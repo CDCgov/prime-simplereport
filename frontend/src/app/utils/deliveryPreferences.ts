@@ -1,5 +1,7 @@
-import { TestResultDeliveryPreference } from "../patients/Components/PersonForm";
-import TestResultDeliveryPreferences from "../patients/TestResultDeliveryPreferences";
+import {
+  TestResultDeliveryPreference,
+  TestResultDeliveryPreferences,
+} from "../patients/TestResultDeliveryPreference";
 
 const { SMS, EMAIL, ALL, NONE } = TestResultDeliveryPreferences;
 
@@ -13,18 +15,18 @@ export const getSelectedDeliveryPreferencesEmail = getSelectedDeliveryPreference
   EMAIL
 );
 
-function toggleDeliveryPreference(field: TestResultDeliveryPreferences) {
+function toggleDeliveryPreference(field: TestResultDeliveryPreference) {
   return function handleToggle(
     preference: TestResultDeliveryPreference,
     newPreference: TestResultDeliveryPreference
   ): TestResultDeliveryPreference {
     const deliveryPreferences = new Set<TestResultDeliveryPreference>();
 
-    if ([SMS, ALL].includes(preference as TestResultDeliveryPreferences)) {
+    if (preference === SMS || preference === ALL) {
       deliveryPreferences.add(SMS);
     }
 
-    if ([EMAIL, ALL].includes(preference as TestResultDeliveryPreferences)) {
+    if (preference === EMAIL || preference === ALL) {
       deliveryPreferences.add(EMAIL);
     }
 
