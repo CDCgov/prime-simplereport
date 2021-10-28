@@ -4,7 +4,11 @@ import { SchemaOf } from "yup";
 import { useTranslation } from "react-i18next";
 import { ComboBox } from "@trussworks/react-uswds";
 
-import { countries, stateCodes } from "../../../config/constants";
+import {
+  countries,
+  countryOptions,
+  stateCodes,
+} from "../../../config/constants";
 import getLanguages from "../../utils/languages";
 import i18n from "../../../i18n";
 import {
@@ -416,12 +420,7 @@ const PersonForm = (props: Props) => {
             label={t("patient.form.contact.country")}
             name="country"
             value={patient.country || ""}
-            options={Object.entries(countries).map(([code, name]) => ({
-              label: name,
-              value: code,
-            }))}
-            defaultOption="USA"
-            defaultSelect
+            options={countryOptions}
             onChange={onPersonChange("country")}
             onBlur={() => {
               onBlurField("country");
