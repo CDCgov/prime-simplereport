@@ -4,11 +4,7 @@ import { SchemaOf } from "yup";
 import { useTranslation } from "react-i18next";
 import { ComboBox } from "@trussworks/react-uswds";
 
-import {
-  countries,
-  countryOptions,
-  stateCodes,
-} from "../../../config/constants";
+import { countryOptions, stateCodes } from "../../../config/constants";
 import getLanguages from "../../utils/languages";
 import i18n from "../../../i18n";
 import {
