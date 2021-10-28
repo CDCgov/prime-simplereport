@@ -11,8 +11,7 @@ import {
 } from "../../utils/deliveryPreferences";
 import { useTranslatedConstants } from "../../constants";
 import { PhoneNumberErrors, usePersonSchemata } from "../personSchema";
-
-import { TestResultDeliveryPreference } from "./PersonForm";
+import { TestResultDeliveryPreference } from "../TestResultDeliveryPreference";
 
 interface Props {
   phoneNumbers: PhoneNumber[];
