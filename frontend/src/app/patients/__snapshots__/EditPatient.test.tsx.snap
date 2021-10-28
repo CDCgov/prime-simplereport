@@ -1266,7 +1266,7 @@ Object {
                             class="usa-radio__label"
                             for="88-val-other"
                           >
-                            Other
+                            Non-binary
                           </label>
                         </div>
                         <div
@@ -2737,7 +2737,7 @@ Object {
                           class="usa-radio__label"
                           for="88-val-other"
                         >
-                          Other
+                          Non-binary
                         </label>
                       </div>
                       <div
