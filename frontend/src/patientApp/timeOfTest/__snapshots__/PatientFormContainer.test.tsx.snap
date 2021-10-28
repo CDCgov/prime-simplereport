@@ -462,22 +462,17 @@ exports[`PatientFormContainer snapshot 1`] = `
                   name="country"
                   onBlur={[Function]}
                   onChange={[Function]}
-                  value="USA"
+                  value="- Select -"
                 >
-                  <option
-                    value=""
-                  >
-                    USA
-                  </option>
                   <option
                     value="AFG"
                   >
                     Afghanistan
                   </option>
                   <option
-                    value="ALA"
+                    value="XQZ"
                   >
-                    Åland Islands
+                    Akrotiri
                   </option>
                   <option
                     value="ALB"
@@ -517,7 +512,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="ATG"
                   >
-                    Antigua and Barbuda
+                    Antigua
                   </option>
                   <option
                     value="ARG"
@@ -533,6 +528,11 @@ exports[`PatientFormContainer snapshot 1`] = `
                     value="ABW"
                   >
                     Aruba
+                  </option>
+                  <option
+                    value="XAC"
+                  >
+                    Ashmore and Cartier Islands
                   </option>
                   <option
                     value="AUS"
@@ -552,12 +552,17 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="BHS"
                   >
-                    Bahamas
+                    Bahamas, The
                   </option>
                   <option
                     value="BHR"
                   >
                     Bahrain
+                  </option>
+                  <option
+                    value="XBK"
+                  >
+                    Baker Island
                   </option>
                   <option
                     value="BGD"
@@ -602,12 +607,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="BOL"
                   >
-                    Bolivia, Plurinational State of
-                  </option>
-                  <option
-                    value="BES"
-                  >
-                    Bonaire, Sint Eustatius and Saba
+                    Bolivia
                   </option>
                   <option
                     value="BIH"
@@ -637,7 +637,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="BRN"
                   >
-                    Brunei Darussalam
+                    Brunei
                   </option>
                   <option
                     value="BGR"
@@ -650,9 +650,19 @@ exports[`PatientFormContainer snapshot 1`] = `
                     Burkina Faso
                   </option>
                   <option
+                    value="MMR"
+                  >
+                    Burma
+                  </option>
+                  <option
                     value="BDI"
                   >
                     Burundi
+                  </option>
+                  <option
+                    value="CPV"
+                  >
+                    Cabo Verde
                   </option>
                   <option
                     value="KHM"
@@ -668,11 +678,6 @@ exports[`PatientFormContainer snapshot 1`] = `
                     value="CAN"
                   >
                     Canada
-                  </option>
-                  <option
-                    value="CPV"
-                  >
-                    Cape Verde
                   </option>
                   <option
                     value="CYM"
@@ -705,6 +710,11 @@ exports[`PatientFormContainer snapshot 1`] = `
                     Christmas Island
                   </option>
                   <option
+                    value="CPT"
+                  >
+                    Clipperton Island
+                  </option>
+                  <option
                     value="CCK"
                   >
                     Cocos (Keeling) Islands
@@ -720,19 +730,14 @@ exports[`PatientFormContainer snapshot 1`] = `
                     Comoros
                   </option>
                   <option
-                    value="COG"
-                  >
-                    Congo
-                  </option>
-                  <option
-                    value="COD"
-                  >
-                    Congo, the Democratic Republic of the
-                  </option>
-                  <option
                     value="COK"
                   >
                     Cook Islands
+                  </option>
+                  <option
+                    value="XCS"
+                  >
+                    Coral Sea Islands
                   </option>
                   <option
                     value="CRI"
@@ -742,7 +747,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="CIV"
                   >
-                    Côte d'Ivoire
+                    Côte d’Ivoire
                   </option>
                   <option
                     value="HRV"
@@ -767,12 +772,22 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="CZE"
                   >
-                    Czech Republic
+                    Czechia
+                  </option>
+                  <option
+                    value="COD"
+                  >
+                    Democratic Republic of the Congo
                   </option>
                   <option
                     value="DNK"
                   >
                     Denmark
+                  </option>
+                  <option
+                    value="XXD"
+                  >
+                    Dhekelia
                   </option>
                   <option
                     value="DJI"
@@ -820,6 +835,11 @@ exports[`PatientFormContainer snapshot 1`] = `
                     Estonia
                   </option>
                   <option
+                    value="SWZ"
+                  >
+                    Eswatini
+                  </option>
+                  <option
                     value="ETH"
                   >
                     Ethiopia
@@ -827,7 +847,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="FLK"
                   >
-                    Falkland Islands (Malvinas)
+                    Falkland Islands (Islas Malvinas)
                   </option>
                   <option
                     value="FRO"
@@ -862,7 +882,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="ATF"
                   >
-                    French Southern Territories
+                    French Southern and Antarctic Lands
                   </option>
                   <option
                     value="GAB"
@@ -872,7 +892,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="GMB"
                   >
-                    Gambia
+                    Gambia, The
                   </option>
                   <option
                     value="GEO"
@@ -957,7 +977,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="VAT"
                   >
-                    Holy See (Vatican City State)
+                    Holy See
                   </option>
                   <option
                     value="HND"
@@ -968,6 +988,11 @@ exports[`PatientFormContainer snapshot 1`] = `
                     value="HKG"
                   >
                     Hong Kong
+                  </option>
+                  <option
+                    value="XHO"
+                  >
+                    Howland Island
                   </option>
                   <option
                     value="HUN"
@@ -992,7 +1017,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="IRN"
                   >
-                    Iran, Islamic Republic of
+                    Iran
                   </option>
                   <option
                     value="IRQ"
@@ -1025,14 +1050,29 @@ exports[`PatientFormContainer snapshot 1`] = `
                     Jamaica
                   </option>
                   <option
+                    value="XJM"
+                  >
+                    Jan Mayen
+                  </option>
+                  <option
                     value="JPN"
                   >
                     Japan
                   </option>
                   <option
+                    value="XJV"
+                  >
+                    Jarvis Island
+                  </option>
+                  <option
                     value="JEY"
                   >
                     Jersey
+                  </option>
+                  <option
+                    value="XJA"
+                  >
+                    Johnston Atoll
                   </option>
                   <option
                     value="JOR"
@@ -1050,6 +1090,11 @@ exports[`PatientFormContainer snapshot 1`] = `
                     Kenya
                   </option>
                   <option
+                    value="XKR"
+                  >
+                    Kingman Reef
+                  </option>
+                  <option
                     value="KIR"
                   >
                     Kiribati
@@ -1057,12 +1102,17 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="PRK"
                   >
-                    Korea, Democratic People's Republic of
+                    Korea, North
                   </option>
                   <option
                     value="KOR"
                   >
-                    Korea, Republic of
+                    Korea, South
+                  </option>
+                  <option
+                    value="XKS"
+                  >
+                    Kosovo
                   </option>
                   <option
                     value="KWT"
@@ -1077,7 +1127,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="LAO"
                   >
-                    Lao People's Democratic Republic
+                    Laos
                   </option>
                   <option
                     value="LVA"
@@ -1122,12 +1172,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="MAC"
                   >
-                    Macao
-                  </option>
-                  <option
-                    value="MKD"
-                  >
-                    Macedonia, the former Yugoslav Republic of
+                    Macau
                   </option>
                   <option
                     value="MDG"
@@ -1195,9 +1240,14 @@ exports[`PatientFormContainer snapshot 1`] = `
                     Micronesia, Federated States of
                   </option>
                   <option
+                    value="XMW"
+                  >
+                    Midway Islands
+                  </option>
+                  <option
                     value="MDA"
                   >
-                    Moldova, Republic of
+                    Moldova
                   </option>
                   <option
                     value="MCO"
@@ -1230,11 +1280,6 @@ exports[`PatientFormContainer snapshot 1`] = `
                     Mozambique
                   </option>
                   <option
-                    value="MMR"
-                  >
-                    Myanmar
-                  </option>
-                  <option
                     value="NAM"
                   >
                     Namibia
@@ -1243,6 +1288,11 @@ exports[`PatientFormContainer snapshot 1`] = `
                     value="NRU"
                   >
                     Nauru
+                  </option>
+                  <option
+                    value="XNV"
+                  >
+                    Navassa Island
                   </option>
                   <option
                     value="NPL"
@@ -1290,6 +1340,11 @@ exports[`PatientFormContainer snapshot 1`] = `
                     Norfolk Island
                   </option>
                   <option
+                    value="MKD"
+                  >
+                    North Macedonia
+                  </option>
+                  <option
                     value="MNP"
                   >
                     Northern Mariana Islands
@@ -1315,9 +1370,9 @@ exports[`PatientFormContainer snapshot 1`] = `
                     Palau
                   </option>
                   <option
-                    value="PSE"
+                    value="XPL"
                   >
-                    Palestinian Territory, Occupied
+                    Palmyra Atoll
                   </option>
                   <option
                     value="PAN"
@@ -1328,6 +1383,11 @@ exports[`PatientFormContainer snapshot 1`] = `
                     value="PNG"
                   >
                     Papua New Guinea
+                  </option>
+                  <option
+                    value="XPR"
+                  >
+                    Paracel Islands
                   </option>
                   <option
                     value="PRY"
@@ -1347,7 +1407,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="PCN"
                   >
-                    Pitcairn
+                    Pitcairn Islands
                   </option>
                   <option
                     value="POL"
@@ -1370,9 +1430,14 @@ exports[`PatientFormContainer snapshot 1`] = `
                     Qatar
                   </option>
                   <option
+                    value="COG"
+                  >
+                    Republic of the Congo
+                  </option>
+                  <option
                     value="REU"
                   >
-                    Réunion
+                    Reunion
                   </option>
                   <option
                     value="ROU"
@@ -1382,7 +1447,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="RUS"
                   >
-                    Russian Federation
+                    Russia
                   </option>
                   <option
                     value="RWA"
@@ -1392,12 +1457,12 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="BLM"
                   >
-                    Saint Barthélemy
+                    Saint Barthelemy
                   </option>
                   <option
                     value="SHN"
                   >
-                    Saint Helena, Ascension and Tristan da Cunha
+                    Saint Helena, Ascension, and Tristan da Cunha
                   </option>
                   <option
                     value="KNA"
@@ -1412,7 +1477,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="MAF"
                   >
-                    Saint Martin (French part)
+                    Saint Martin
                   </option>
                   <option
                     value="SPM"
@@ -1472,7 +1537,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="SXM"
                   >
-                    Sint Maarten (Dutch part)
+                    Sint Maarten
                   </option>
                   <option
                     value="SVK"
@@ -1515,6 +1580,11 @@ exports[`PatientFormContainer snapshot 1`] = `
                     Spain
                   </option>
                   <option
+                    value="XSP"
+                  >
+                    Spratly Islands
+                  </option>
+                  <option
                     value="LKA"
                   >
                     Sri Lanka
@@ -1530,14 +1600,9 @@ exports[`PatientFormContainer snapshot 1`] = `
                     Suriname
                   </option>
                   <option
-                    value="SJM"
+                    value="XSV"
                   >
-                    Svalbard and Jan Mayen
-                  </option>
-                  <option
-                    value="SWZ"
-                  >
-                    Swaziland
+                    Svalbard
                   </option>
                   <option
                     value="SWE"
@@ -1552,12 +1617,12 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="SYR"
                   >
-                    Syrian Arab Republic
+                    Syria
                   </option>
                   <option
                     value="TWN"
                   >
-                    Taiwan, Province of China
+                    Taiwan
                   </option>
                   <option
                     value="TJK"
@@ -1567,7 +1632,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="TZA"
                   >
-                    Tanzania, United Republic of
+                    Tanzania
                   </option>
                   <option
                     value="THA"
@@ -1650,11 +1715,6 @@ exports[`PatientFormContainer snapshot 1`] = `
                     United States
                   </option>
                   <option
-                    value="UMI"
-                  >
-                    United States Minor Outlying Islands
-                  </option>
-                  <option
                     value="URY"
                   >
                     Uruguay
@@ -1672,12 +1732,12 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value="VEN"
                   >
-                    Venezuela, Bolivarian Republic of
+                    Venezuela
                   </option>
                   <option
                     value="VNM"
                   >
-                    Viet Nam
+                    Vietnam
                   </option>
                   <option
                     value="VGB"
@@ -1690,14 +1750,14 @@ exports[`PatientFormContainer snapshot 1`] = `
                     Virgin Islands, U.S.
                   </option>
                   <option
+                    value="XWK"
+                  >
+                    Wake Island
+                  </option>
+                  <option
                     value="WLF"
                   >
                     Wallis and Futuna
-                  </option>
-                  <option
-                    value="ESH"
-                  >
-                    Western Sahara
                   </option>
                   <option
                     value="YEM"

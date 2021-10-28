@@ -528,19 +528,14 @@ Object {
                         name="country"
                       >
                         <option
-                          value=""
-                        >
-                          USA
-                        </option>
-                        <option
                           value="AFG"
                         >
                           Afghanistan
                         </option>
                         <option
-                          value="ALA"
+                          value="XQZ"
                         >
-                          Åland Islands
+                          Akrotiri
                         </option>
                         <option
                           value="ALB"
@@ -580,7 +575,7 @@ Object {
                         <option
                           value="ATG"
                         >
-                          Antigua and Barbuda
+                          Antigua
                         </option>
                         <option
                           value="ARG"
@@ -596,6 +591,11 @@ Object {
                           value="ABW"
                         >
                           Aruba
+                        </option>
+                        <option
+                          value="XAC"
+                        >
+                          Ashmore and Cartier Islands
                         </option>
                         <option
                           value="AUS"
@@ -615,12 +615,17 @@ Object {
                         <option
                           value="BHS"
                         >
-                          Bahamas
+                          Bahamas, The
                         </option>
                         <option
                           value="BHR"
                         >
                           Bahrain
+                        </option>
+                        <option
+                          value="XBK"
+                        >
+                          Baker Island
                         </option>
                         <option
                           value="BGD"
@@ -665,12 +670,7 @@ Object {
                         <option
                           value="BOL"
                         >
-                          Bolivia, Plurinational State of
-                        </option>
-                        <option
-                          value="BES"
-                        >
-                          Bonaire, Sint Eustatius and Saba
+                          Bolivia
                         </option>
                         <option
                           value="BIH"
@@ -700,7 +700,7 @@ Object {
                         <option
                           value="BRN"
                         >
-                          Brunei Darussalam
+                          Brunei
                         </option>
                         <option
                           value="BGR"
@@ -713,9 +713,19 @@ Object {
                           Burkina Faso
                         </option>
                         <option
+                          value="MMR"
+                        >
+                          Burma
+                        </option>
+                        <option
                           value="BDI"
                         >
                           Burundi
+                        </option>
+                        <option
+                          value="CPV"
+                        >
+                          Cabo Verde
                         </option>
                         <option
                           value="KHM"
@@ -731,11 +741,6 @@ Object {
                           value="CAN"
                         >
                           Canada
-                        </option>
-                        <option
-                          value="CPV"
-                        >
-                          Cape Verde
                         </option>
                         <option
                           value="CYM"
@@ -768,6 +773,11 @@ Object {
                           Christmas Island
                         </option>
                         <option
+                          value="CPT"
+                        >
+                          Clipperton Island
+                        </option>
+                        <option
                           value="CCK"
                         >
                           Cocos (Keeling) Islands
@@ -783,19 +793,14 @@ Object {
                           Comoros
                         </option>
                         <option
-                          value="COG"
-                        >
-                          Congo
-                        </option>
-                        <option
-                          value="COD"
-                        >
-                          Congo, the Democratic Republic of the
-                        </option>
-                        <option
                           value="COK"
                         >
                           Cook Islands
+                        </option>
+                        <option
+                          value="XCS"
+                        >
+                          Coral Sea Islands
                         </option>
                         <option
                           value="CRI"
@@ -805,7 +810,7 @@ Object {
                         <option
                           value="CIV"
                         >
-                          Côte d'Ivoire
+                          Côte d’Ivoire
                         </option>
                         <option
                           value="HRV"
@@ -830,12 +835,22 @@ Object {
                         <option
                           value="CZE"
                         >
-                          Czech Republic
+                          Czechia
+                        </option>
+                        <option
+                          value="COD"
+                        >
+                          Democratic Republic of the Congo
                         </option>
                         <option
                           value="DNK"
                         >
                           Denmark
+                        </option>
+                        <option
+                          value="XXD"
+                        >
+                          Dhekelia
                         </option>
                         <option
                           value="DJI"
@@ -883,6 +898,11 @@ Object {
                           Estonia
                         </option>
                         <option
+                          value="SWZ"
+                        >
+                          Eswatini
+                        </option>
+                        <option
                           value="ETH"
                         >
                           Ethiopia
@@ -890,7 +910,7 @@ Object {
                         <option
                           value="FLK"
                         >
-                          Falkland Islands (Malvinas)
+                          Falkland Islands (Islas Malvinas)
                         </option>
                         <option
                           value="FRO"
@@ -925,7 +945,7 @@ Object {
                         <option
                           value="ATF"
                         >
-                          French Southern Territories
+                          French Southern and Antarctic Lands
                         </option>
                         <option
                           value="GAB"
@@ -935,7 +955,7 @@ Object {
                         <option
                           value="GMB"
                         >
-                          Gambia
+                          Gambia, The
                         </option>
                         <option
                           value="GEO"
@@ -1020,7 +1040,7 @@ Object {
                         <option
                           value="VAT"
                         >
-                          Holy See (Vatican City State)
+                          Holy See
                         </option>
                         <option
                           value="HND"
@@ -1031,6 +1051,11 @@ Object {
                           value="HKG"
                         >
                           Hong Kong
+                        </option>
+                        <option
+                          value="XHO"
+                        >
+                          Howland Island
                         </option>
                         <option
                           value="HUN"
@@ -1055,7 +1080,7 @@ Object {
                         <option
                           value="IRN"
                         >
-                          Iran, Islamic Republic of
+                          Iran
                         </option>
                         <option
                           value="IRQ"
@@ -1088,14 +1113,29 @@ Object {
                           Jamaica
                         </option>
                         <option
+                          value="XJM"
+                        >
+                          Jan Mayen
+                        </option>
+                        <option
                           value="JPN"
                         >
                           Japan
                         </option>
                         <option
+                          value="XJV"
+                        >
+                          Jarvis Island
+                        </option>
+                        <option
                           value="JEY"
                         >
                           Jersey
+                        </option>
+                        <option
+                          value="XJA"
+                        >
+                          Johnston Atoll
                         </option>
                         <option
                           value="JOR"
@@ -1113,6 +1153,11 @@ Object {
                           Kenya
                         </option>
                         <option
+                          value="XKR"
+                        >
+                          Kingman Reef
+                        </option>
+                        <option
                           value="KIR"
                         >
                           Kiribati
@@ -1120,12 +1165,17 @@ Object {
                         <option
                           value="PRK"
                         >
-                          Korea, Democratic People's Republic of
+                          Korea, North
                         </option>
                         <option
                           value="KOR"
                         >
-                          Korea, Republic of
+                          Korea, South
+                        </option>
+                        <option
+                          value="XKS"
+                        >
+                          Kosovo
                         </option>
                         <option
                           value="KWT"
@@ -1140,7 +1190,7 @@ Object {
                         <option
                           value="LAO"
                         >
-                          Lao People's Democratic Republic
+                          Laos
                         </option>
                         <option
                           value="LVA"
@@ -1185,12 +1235,7 @@ Object {
                         <option
                           value="MAC"
                         >
-                          Macao
-                        </option>
-                        <option
-                          value="MKD"
-                        >
-                          Macedonia, the former Yugoslav Republic of
+                          Macau
                         </option>
                         <option
                           value="MDG"
@@ -1258,9 +1303,14 @@ Object {
                           Micronesia, Federated States of
                         </option>
                         <option
+                          value="XMW"
+                        >
+                          Midway Islands
+                        </option>
+                        <option
                           value="MDA"
                         >
-                          Moldova, Republic of
+                          Moldova
                         </option>
                         <option
                           value="MCO"
@@ -1293,11 +1343,6 @@ Object {
                           Mozambique
                         </option>
                         <option
-                          value="MMR"
-                        >
-                          Myanmar
-                        </option>
-                        <option
                           value="NAM"
                         >
                           Namibia
@@ -1306,6 +1351,11 @@ Object {
                           value="NRU"
                         >
                           Nauru
+                        </option>
+                        <option
+                          value="XNV"
+                        >
+                          Navassa Island
                         </option>
                         <option
                           value="NPL"
@@ -1353,6 +1403,11 @@ Object {
                           Norfolk Island
                         </option>
                         <option
+                          value="MKD"
+                        >
+                          North Macedonia
+                        </option>
+                        <option
                           value="MNP"
                         >
                           Northern Mariana Islands
@@ -1378,9 +1433,9 @@ Object {
                           Palau
                         </option>
                         <option
-                          value="PSE"
+                          value="XPL"
                         >
-                          Palestinian Territory, Occupied
+                          Palmyra Atoll
                         </option>
                         <option
                           value="PAN"
@@ -1391,6 +1446,11 @@ Object {
                           value="PNG"
                         >
                           Papua New Guinea
+                        </option>
+                        <option
+                          value="XPR"
+                        >
+                          Paracel Islands
                         </option>
                         <option
                           value="PRY"
@@ -1410,7 +1470,7 @@ Object {
                         <option
                           value="PCN"
                         >
-                          Pitcairn
+                          Pitcairn Islands
                         </option>
                         <option
                           value="POL"
@@ -1433,9 +1493,14 @@ Object {
                           Qatar
                         </option>
                         <option
+                          value="COG"
+                        >
+                          Republic of the Congo
+                        </option>
+                        <option
                           value="REU"
                         >
-                          Réunion
+                          Reunion
                         </option>
                         <option
                           value="ROU"
@@ -1445,7 +1510,7 @@ Object {
                         <option
                           value="RUS"
                         >
-                          Russian Federation
+                          Russia
                         </option>
                         <option
                           value="RWA"
@@ -1455,12 +1520,12 @@ Object {
                         <option
                           value="BLM"
                         >
-                          Saint Barthélemy
+                          Saint Barthelemy
                         </option>
                         <option
                           value="SHN"
                         >
-                          Saint Helena, Ascension and Tristan da Cunha
+                          Saint Helena, Ascension, and Tristan da Cunha
                         </option>
                         <option
                           value="KNA"
@@ -1475,7 +1540,7 @@ Object {
                         <option
                           value="MAF"
                         >
-                          Saint Martin (French part)
+                          Saint Martin
                         </option>
                         <option
                           value="SPM"
@@ -1535,7 +1600,7 @@ Object {
                         <option
                           value="SXM"
                         >
-                          Sint Maarten (Dutch part)
+                          Sint Maarten
                         </option>
                         <option
                           value="SVK"
@@ -1578,6 +1643,11 @@ Object {
                           Spain
                         </option>
                         <option
+                          value="XSP"
+                        >
+                          Spratly Islands
+                        </option>
+                        <option
                           value="LKA"
                         >
                           Sri Lanka
@@ -1593,14 +1663,9 @@ Object {
                           Suriname
                         </option>
                         <option
-                          value="SJM"
+                          value="XSV"
                         >
-                          Svalbard and Jan Mayen
-                        </option>
-                        <option
-                          value="SWZ"
-                        >
-                          Swaziland
+                          Svalbard
                         </option>
                         <option
                           value="SWE"
@@ -1615,12 +1680,12 @@ Object {
                         <option
                           value="SYR"
                         >
-                          Syrian Arab Republic
+                          Syria
                         </option>
                         <option
                           value="TWN"
                         >
-                          Taiwan, Province of China
+                          Taiwan
                         </option>
                         <option
                           value="TJK"
@@ -1630,7 +1695,7 @@ Object {
                         <option
                           value="TZA"
                         >
-                          Tanzania, United Republic of
+                          Tanzania
                         </option>
                         <option
                           value="THA"
@@ -1713,11 +1778,6 @@ Object {
                           United States
                         </option>
                         <option
-                          value="UMI"
-                        >
-                          United States Minor Outlying Islands
-                        </option>
-                        <option
                           value="URY"
                         >
                           Uruguay
@@ -1735,12 +1795,12 @@ Object {
                         <option
                           value="VEN"
                         >
-                          Venezuela, Bolivarian Republic of
+                          Venezuela
                         </option>
                         <option
                           value="VNM"
                         >
-                          Viet Nam
+                          Vietnam
                         </option>
                         <option
                           value="VGB"
@@ -1753,14 +1813,14 @@ Object {
                           Virgin Islands, U.S.
                         </option>
                         <option
+                          value="XWK"
+                        >
+                          Wake Island
+                        </option>
+                        <option
                           value="WLF"
                         >
                           Wallis and Futuna
-                        </option>
-                        <option
-                          value="ESH"
-                        >
-                          Western Sahara
                         </option>
                         <option
                           value="YEM"
@@ -2916,19 +2976,14 @@ Object {
                       name="country"
                     >
                       <option
-                        value=""
-                      >
-                        USA
-                      </option>
-                      <option
                         value="AFG"
                       >
                         Afghanistan
                       </option>
                       <option
-                        value="ALA"
+                        value="XQZ"
                       >
-                        Åland Islands
+                        Akrotiri
                       </option>
                       <option
                         value="ALB"
@@ -2968,7 +3023,7 @@ Object {
                       <option
                         value="ATG"
                       >
-                        Antigua and Barbuda
+                        Antigua
                       </option>
                       <option
                         value="ARG"
@@ -2984,6 +3039,11 @@ Object {
                         value="ABW"
                       >
                         Aruba
+                      </option>
+                      <option
+                        value="XAC"
+                      >
+                        Ashmore and Cartier Islands
                       </option>
                       <option
                         value="AUS"
@@ -3003,12 +3063,17 @@ Object {
                       <option
                         value="BHS"
                       >
-                        Bahamas
+                        Bahamas, The
                       </option>
                       <option
                         value="BHR"
                       >
                         Bahrain
+                      </option>
+                      <option
+                        value="XBK"
+                      >
+                        Baker Island
                       </option>
                       <option
                         value="BGD"
@@ -3053,12 +3118,7 @@ Object {
                       <option
                         value="BOL"
                       >
-                        Bolivia, Plurinational State of
-                      </option>
-                      <option
-                        value="BES"
-                      >
-                        Bonaire, Sint Eustatius and Saba
+                        Bolivia
                       </option>
                       <option
                         value="BIH"
@@ -3088,7 +3148,7 @@ Object {
                       <option
                         value="BRN"
                       >
-                        Brunei Darussalam
+                        Brunei
                       </option>
                       <option
                         value="BGR"
@@ -3101,9 +3161,19 @@ Object {
                         Burkina Faso
                       </option>
                       <option
+                        value="MMR"
+                      >
+                        Burma
+                      </option>
+                      <option
                         value="BDI"
                       >
                         Burundi
+                      </option>
+                      <option
+                        value="CPV"
+                      >
+                        Cabo Verde
                       </option>
                       <option
                         value="KHM"
@@ -3119,11 +3189,6 @@ Object {
                         value="CAN"
                       >
                         Canada
-                      </option>
-                      <option
-                        value="CPV"
-                      >
-                        Cape Verde
                       </option>
                       <option
                         value="CYM"
@@ -3156,6 +3221,11 @@ Object {
                         Christmas Island
                       </option>
                       <option
+                        value="CPT"
+                      >
+                        Clipperton Island
+                      </option>
+                      <option
                         value="CCK"
                       >
                         Cocos (Keeling) Islands
@@ -3171,19 +3241,14 @@ Object {
                         Comoros
                       </option>
                       <option
-                        value="COG"
-                      >
-                        Congo
-                      </option>
-                      <option
-                        value="COD"
-                      >
-                        Congo, the Democratic Republic of the
-                      </option>
-                      <option
                         value="COK"
                       >
                         Cook Islands
+                      </option>
+                      <option
+                        value="XCS"
+                      >
+                        Coral Sea Islands
                       </option>
                       <option
                         value="CRI"
@@ -3193,7 +3258,7 @@ Object {
                       <option
                         value="CIV"
                       >
-                        Côte d'Ivoire
+                        Côte d’Ivoire
                       </option>
                       <option
                         value="HRV"
@@ -3218,12 +3283,22 @@ Object {
                       <option
                         value="CZE"
                       >
-                        Czech Republic
+                        Czechia
+                      </option>
+                      <option
+                        value="COD"
+                      >
+                        Democratic Republic of the Congo
                       </option>
                       <option
                         value="DNK"
                       >
                         Denmark
+                      </option>
+                      <option
+                        value="XXD"
+                      >
+                        Dhekelia
                       </option>
                       <option
                         value="DJI"
@@ -3271,6 +3346,11 @@ Object {
                         Estonia
                       </option>
                       <option
+                        value="SWZ"
+                      >
+                        Eswatini
+                      </option>
+                      <option
                         value="ETH"
                       >
                         Ethiopia
@@ -3278,7 +3358,7 @@ Object {
                       <option
                         value="FLK"
                       >
-                        Falkland Islands (Malvinas)
+                        Falkland Islands (Islas Malvinas)
                       </option>
                       <option
                         value="FRO"
@@ -3313,7 +3393,7 @@ Object {
                       <option
                         value="ATF"
                       >
-                        French Southern Territories
+                        French Southern and Antarctic Lands
                       </option>
                       <option
                         value="GAB"
@@ -3323,7 +3403,7 @@ Object {
                       <option
                         value="GMB"
                       >
-                        Gambia
+                        Gambia, The
                       </option>
                       <option
                         value="GEO"
@@ -3408,7 +3488,7 @@ Object {
                       <option
                         value="VAT"
                       >
-                        Holy See (Vatican City State)
+                        Holy See
                       </option>
                       <option
                         value="HND"
@@ -3419,6 +3499,11 @@ Object {
                         value="HKG"
                       >
                         Hong Kong
+                      </option>
+                      <option
+                        value="XHO"
+                      >
+                        Howland Island
                       </option>
                       <option
                         value="HUN"
@@ -3443,7 +3528,7 @@ Object {
                       <option
                         value="IRN"
                       >
-                        Iran, Islamic Republic of
+                        Iran
                       </option>
                       <option
                         value="IRQ"
@@ -3476,14 +3561,29 @@ Object {
                         Jamaica
                       </option>
                       <option
+                        value="XJM"
+                      >
+                        Jan Mayen
+                      </option>
+                      <option
                         value="JPN"
                       >
                         Japan
                       </option>
                       <option
+                        value="XJV"
+                      >
+                        Jarvis Island
+                      </option>
+                      <option
                         value="JEY"
                       >
                         Jersey
+                      </option>
+                      <option
+                        value="XJA"
+                      >
+                        Johnston Atoll
                       </option>
                       <option
                         value="JOR"
@@ -3501,6 +3601,11 @@ Object {
                         Kenya
                       </option>
                       <option
+                        value="XKR"
+                      >
+                        Kingman Reef
+                      </option>
+                      <option
                         value="KIR"
                       >
                         Kiribati
@@ -3508,12 +3613,17 @@ Object {
                       <option
                         value="PRK"
                       >
-                        Korea, Democratic People's Republic of
+                        Korea, North
                       </option>
                       <option
                         value="KOR"
                       >
-                        Korea, Republic of
+                        Korea, South
+                      </option>
+                      <option
+                        value="XKS"
+                      >
+                        Kosovo
                       </option>
                       <option
                         value="KWT"
@@ -3528,7 +3638,7 @@ Object {
                       <option
                         value="LAO"
                       >
-                        Lao People's Democratic Republic
+                        Laos
                       </option>
                       <option
                         value="LVA"
@@ -3573,12 +3683,7 @@ Object {
                       <option
                         value="MAC"
                       >
-                        Macao
-                      </option>
-                      <option
-                        value="MKD"
-                      >
-                        Macedonia, the former Yugoslav Republic of
+                        Macau
                       </option>
                       <option
                         value="MDG"
@@ -3646,9 +3751,14 @@ Object {
                         Micronesia, Federated States of
                       </option>
                       <option
+                        value="XMW"
+                      >
+                        Midway Islands
+                      </option>
+                      <option
                         value="MDA"
                       >
-                        Moldova, Republic of
+                        Moldova
                       </option>
                       <option
                         value="MCO"
@@ -3681,11 +3791,6 @@ Object {
                         Mozambique
                       </option>
                       <option
-                        value="MMR"
-                      >
-                        Myanmar
-                      </option>
-                      <option
                         value="NAM"
                       >
                         Namibia
@@ -3694,6 +3799,11 @@ Object {
                         value="NRU"
                       >
                         Nauru
+                      </option>
+                      <option
+                        value="XNV"
+                      >
+                        Navassa Island
                       </option>
                       <option
                         value="NPL"
@@ -3741,6 +3851,11 @@ Object {
                         Norfolk Island
                       </option>
                       <option
+                        value="MKD"
+                      >
+                        North Macedonia
+                      </option>
+                      <option
                         value="MNP"
                       >
                         Northern Mariana Islands
@@ -3766,9 +3881,9 @@ Object {
                         Palau
                       </option>
                       <option
-                        value="PSE"
+                        value="XPL"
                       >
-                        Palestinian Territory, Occupied
+                        Palmyra Atoll
                       </option>
                       <option
                         value="PAN"
@@ -3779,6 +3894,11 @@ Object {
                         value="PNG"
                       >
                         Papua New Guinea
+                      </option>
+                      <option
+                        value="XPR"
+                      >
+                        Paracel Islands
                       </option>
                       <option
                         value="PRY"
@@ -3798,7 +3918,7 @@ Object {
                       <option
                         value="PCN"
                       >
-                        Pitcairn
+                        Pitcairn Islands
                       </option>
                       <option
                         value="POL"
@@ -3821,9 +3941,14 @@ Object {
                         Qatar
                       </option>
                       <option
+                        value="COG"
+                      >
+                        Republic of the Congo
+                      </option>
+                      <option
                         value="REU"
                       >
-                        Réunion
+                        Reunion
                       </option>
                       <option
                         value="ROU"
@@ -3833,7 +3958,7 @@ Object {
                       <option
                         value="RUS"
                       >
-                        Russian Federation
+                        Russia
                       </option>
                       <option
                         value="RWA"
@@ -3843,12 +3968,12 @@ Object {
                       <option
                         value="BLM"
                       >
-                        Saint Barthélemy
+                        Saint Barthelemy
                       </option>
                       <option
                         value="SHN"
                       >
-                        Saint Helena, Ascension and Tristan da Cunha
+                        Saint Helena, Ascension, and Tristan da Cunha
                       </option>
                       <option
                         value="KNA"
@@ -3863,7 +3988,7 @@ Object {
                       <option
                         value="MAF"
                       >
-                        Saint Martin (French part)
+                        Saint Martin
                       </option>
                       <option
                         value="SPM"
@@ -3923,7 +4048,7 @@ Object {
                       <option
                         value="SXM"
                       >
-                        Sint Maarten (Dutch part)
+                        Sint Maarten
                       </option>
                       <option
                         value="SVK"
@@ -3966,6 +4091,11 @@ Object {
                         Spain
                       </option>
                       <option
+                        value="XSP"
+                      >
+                        Spratly Islands
+                      </option>
+                      <option
                         value="LKA"
                       >
                         Sri Lanka
@@ -3981,14 +4111,9 @@ Object {
                         Suriname
                       </option>
                       <option
-                        value="SJM"
+                        value="XSV"
                       >
-                        Svalbard and Jan Mayen
-                      </option>
-                      <option
-                        value="SWZ"
-                      >
-                        Swaziland
+                        Svalbard
                       </option>
                       <option
                         value="SWE"
@@ -4003,12 +4128,12 @@ Object {
                       <option
                         value="SYR"
                       >
-                        Syrian Arab Republic
+                        Syria
                       </option>
                       <option
                         value="TWN"
                       >
-                        Taiwan, Province of China
+                        Taiwan
                       </option>
                       <option
                         value="TJK"
@@ -4018,7 +4143,7 @@ Object {
                       <option
                         value="TZA"
                       >
-                        Tanzania, United Republic of
+                        Tanzania
                       </option>
                       <option
                         value="THA"
@@ -4101,11 +4226,6 @@ Object {
                         United States
                       </option>
                       <option
-                        value="UMI"
-                      >
-                        United States Minor Outlying Islands
-                      </option>
-                      <option
                         value="URY"
                       >
                         Uruguay
@@ -4123,12 +4243,12 @@ Object {
                       <option
                         value="VEN"
                       >
-                        Venezuela, Bolivarian Republic of
+                        Venezuela
                       </option>
                       <option
                         value="VNM"
                       >
-                        Viet Nam
+                        Vietnam
                       </option>
                       <option
                         value="VGB"
@@ -4141,14 +4261,14 @@ Object {
                         Virgin Islands, U.S.
                       </option>
                       <option
+                        value="XWK"
+                      >
+                        Wake Island
+                      </option>
+                      <option
                         value="WLF"
                       >
                         Wallis and Futuna
-                      </option>
-                      <option
-                        value="ESH"
-                      >
-                        Western Sahara
                       </option>
                       <option
                         value="YEM"
