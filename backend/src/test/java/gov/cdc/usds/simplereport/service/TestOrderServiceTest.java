@@ -9,7 +9,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
@@ -18,6 +20,7 @@ import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -37,6 +40,7 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -51,6 +55,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.access.AccessDeniedException;
@@ -64,6 +69,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Autowired private PersonService _personService;
   @Autowired private TestEventRepository _testEventRepository;
   @Autowired private TestDataFactory _dataFactory;
+  @MockBean private TestResultsDeliveryService testResultsDeliveryService;
   @MockBean private SmsService _smsService;
 
   private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
@@ -527,6 +533,137 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
 
     assertEquals(false, res.getDeliverySuccess());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void addTestResult_emailDelivery() throws IOException {
+    // GIVEN
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person patient = _dataFactory.createFullPerson(org);
+
+    _personService.updateTestResultDeliveryPreference(
+        patient.getInternalId(), TestResultDeliveryPreference.EMAIL);
+
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        patient,
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
+    DeviceType devA = facility.getDefaultDeviceType();
+
+    // WHEN
+    AddTestResultResponse res =
+        _service.addTestResult(
+            devA.getInternalId().toString(), TestResult.POSITIVE, patient.getInternalId(), null);
+
+    // THEN
+    assertEquals(true, res.getDeliverySuccess());
+    ArgumentCaptor<PatientLink> patientLinkCaptor = ArgumentCaptor.forClass(PatientLink.class);
+    verify(testResultsDeliveryService).emailTestResults(patientLinkCaptor.capture());
+    assertThat(patientLinkCaptor.getValue().getTestOrder().getPatient().getInternalId())
+        .isEqualTo(patient.getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void addTestResult_emailDelivery_failure() throws IOException {
+    // GIVEN
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person patient = _dataFactory.createFullPerson(org);
+
+    _personService.updateTestResultDeliveryPreference(
+        patient.getInternalId(), TestResultDeliveryPreference.EMAIL);
+
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        patient,
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
+    DeviceType devA = facility.getDefaultDeviceType();
+
+    doThrow(IOException.class)
+        .when(testResultsDeliveryService)
+        .emailTestResults(any(PatientLink.class));
+
+    // WHEN
+    AddTestResultResponse res =
+        _service.addTestResult(
+            devA.getInternalId().toString(), TestResult.POSITIVE, patient.getInternalId(), null);
+
+    // THEN
+    verify(testResultsDeliveryService).emailTestResults(any(PatientLink.class));
+    assertEquals(false, res.getDeliverySuccess());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void addTestResult_emailAndSmsDelivery() throws IOException {
+    // GIVEN
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person patient = _dataFactory.createFullPerson(org);
+
+    _personService.updateTestResultDeliveryPreference(
+        patient.getInternalId(), TestResultDeliveryPreference.ALL);
+
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        patient,
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
+    DeviceType devA = facility.getDefaultDeviceType();
+
+    // WHEN
+    AddTestResultResponse res =
+        _service.addTestResult(
+            devA.getInternalId().toString(), TestResult.POSITIVE, patient.getInternalId(), null);
+
+    // THEN
+    assertEquals(true, res.getDeliverySuccess());
+
+    verify(testResultsDeliveryService).emailTestResults(any(PatientLink.class));
+    verify(_smsService).sendToPatientLink(any(UUID.class), anyString());
+    assertEquals(true, res.getDeliverySuccess());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void addTestResult_NoTestResultDelivery() {
+    // GIVEN
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person patient = _dataFactory.createFullPerson(org);
+
+    _personService.updateTestResultDeliveryPreference(
+        patient.getInternalId(), TestResultDeliveryPreference.NONE);
+
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        patient,
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
+    DeviceType devA = facility.getDefaultDeviceType();
+
+    // WHEN
+    AddTestResultResponse res =
+        _service.addTestResult(
+            devA.getInternalId().toString(), TestResult.POSITIVE, patient.getInternalId(), null);
+
+    // THEN
+    assertEquals(true, res.getDeliverySuccess());
+    verifyNoInteractions(testResultsDeliveryService);
+    verifyNoInteractions(_smsService);
   }
 
   @Test

@@ -34,6 +34,10 @@ public class PatientLink extends EternalAuditedEntity {
     return testOrder.getInternalId();
   }
 
+  public int getShelfLife() {
+    return SHELF_LIFE;
+  }
+
   public Date getExpiresAt() {
     if (expiresAt == null) {
       return Date.from(getCreatedAt().toInstant().plus(Duration.ofDays(SHELF_LIFE)));

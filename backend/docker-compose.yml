@@ -51,6 +51,11 @@ services:
     depends_on:
     - db
     - api
+  mailhog:
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+    image: mailhog/mailhog
 volumes:
   simple-report-dev-db-data:
 networks:
