@@ -11,6 +11,12 @@ import Button from "../../commonComponents/Button/Button";
 import FormGroup from "../../commonComponents/FormGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import TestResultDeliveryPreferences from "../../patients/TestResultDeliveryPreferences";
+import {
+  getSelectedDeliveryPreferencesEmail,
+  getSelectedDeliveryPreferencesSms,
+  toggleDeliveryPreferenceEmail,
+  toggleDeliveryPreferenceSms,
+} from "../../utils/deliveryPreferences";
 
 import "./AoEForm.scss";
 
@@ -260,30 +266,20 @@ const AoEForm: React.FC<Props> = ({
               hintText="You’re responsible for entering the correct contact information, following applicable federal and state laws."
               wrapperClassName="margin-top-0"
               name="testResultDeliverySms"
-              onChange={(val) => {
-                if (
-                  testResultDelivery === TestResultDeliveryPreferences.EMAIL
-                ) {
-                  val = TestResultDeliveryPreferences.ALL;
-                }
-
-                if (testResultDelivery === TestResultDeliveryPreferences.ALL) {
-                  val = TestResultDeliveryPreferences.EMAIL;
-                }
-
-                setTestResultDelivery(val);
+              onChange={(newPreference) => {
+                setTestResultDelivery(
+                  toggleDeliveryPreferenceSms(
+                    testResultDelivery as TestResultDeliveryPreferences,
+                    newPreference as TestResultDeliveryPreferences
+                  )
+                );
               }}
               buttons={getTestResultDeliveryPreferencesSms(
                 patientMobileNumbers
               )}
-              selectedRadio={
-                [
-                  TestResultDeliveryPreferences.SMS,
-                  TestResultDeliveryPreferences.ALL,
-                ].includes(testResultDelivery as TestResultDeliveryPreferences)
-                  ? TestResultDeliveryPreferences.SMS
-                  : TestResultDeliveryPreferences.NONE
-              }
+              selectedRadio={getSelectedDeliveryPreferencesSms(
+                patient.testResultDelivery as TestResultDeliveryPreferences
+              )}
             />
           </div>
           {patient.email && (
@@ -293,19 +289,13 @@ const AoEForm: React.FC<Props> = ({
                 hintText="You’re responsible for entering the correct contact information, following applicable federal and state laws."
                 wrapperClassName="margin-top-0"
                 name="testResultDeliveryEmail"
-                onChange={(val) => {
-                  if (
-                    testResultDelivery === TestResultDeliveryPreferences.SMS
-                  ) {
-                    val = TestResultDeliveryPreferences.ALL;
-                  }
-                  if (
-                    testResultDelivery === TestResultDeliveryPreferences.ALL
-                  ) {
-                    val = TestResultDeliveryPreferences.SMS;
-                  }
-
-                  setTestResultDelivery(val);
+                onChange={(newPreference) => {
+                  setTestResultDelivery(
+                    toggleDeliveryPreferenceEmail(
+                      testResultDelivery as TestResultDeliveryPreferences,
+                      newPreference as TestResultDeliveryPreferences
+                    )
+                  );
                 }}
                 buttons={getTestResultDeliveryPreferencesEmail(patient.email)}
                 selectedRadio={(() => {
@@ -313,14 +303,9 @@ const AoEForm: React.FC<Props> = ({
                     return TestResultDeliveryPreferences.NONE;
                   }
 
-                  return [
-                    TestResultDeliveryPreferences.EMAIL,
-                    TestResultDeliveryPreferences.ALL,
-                  ].includes(
-                    testResultDelivery as TestResultDeliveryPreferences
-                  )
-                    ? TestResultDeliveryPreferences.EMAIL
-                    : TestResultDeliveryPreferences.NONE;
+                  return getSelectedDeliveryPreferencesEmail(
+                    patient.testResultDelivery as TestResultDeliveryPreferences
+                  );
                 })()}
               />
             </div>

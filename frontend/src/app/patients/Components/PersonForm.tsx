@@ -30,6 +30,10 @@ import {
 } from "../../utils/smartyStreets";
 import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
 import { formatDate } from "../../utils/date";
+import {
+  getSelectedDeliveryPreferencesEmail,
+  toggleDeliveryPreferenceEmail,
+} from "../../utils/deliveryPreferences";
 
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
@@ -399,31 +403,17 @@ const PersonForm = (props: Props) => {
               legend={t("patient.form.testResultDelivery.email")}
               name="testResultDeliveryEmail"
               buttons={TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL}
-              onChange={(val) => {
-                if (
-                  patient.testResultDelivery ===
-                  TestResultDeliveryPreferences.SMS
-                ) {
-                  val = TestResultDeliveryPreferences.ALL;
-                }
-
-                if (
-                  patient.testResultDelivery ===
-                  TestResultDeliveryPreferences.ALL
-                ) {
-                  val = TestResultDeliveryPreferences.SMS;
-                }
-
-                onPersonChange("testResultDelivery")(val);
+              onChange={(newPreference) => {
+                onPersonChange("testResultDelivery")(
+                  toggleDeliveryPreferenceEmail(
+                    patient.testResultDelivery,
+                    newPreference
+                  )
+                );
               }}
-              selectedRadio={
-                [
-                  TestResultDeliveryPreferences.EMAIL,
-                  TestResultDeliveryPreferences.ALL,
-                ].includes(patient.testResultDelivery)
-                  ? TestResultDeliveryPreferences.EMAIL
-                  : TestResultDeliveryPreferences.NONE
-              }
+              selectedRadio={getSelectedDeliveryPreferencesEmail(
+                patient.testResultDelivery as TestResultDeliveryPreference
+              )}
             />
           )}
         </div>

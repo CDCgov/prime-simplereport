@@ -5,9 +5,12 @@ import { useTranslation } from "react-i18next";
 import Button from "../../commonComponents/Button/Button";
 import Input from "../../commonComponents/Input";
 import RadioGroup from "../../commonComponents/RadioGroup";
+import {
+  toggleDeliveryPreferenceSms,
+  getSelectedDeliveryPreferencesSms,
+} from "../../utils/deliveryPreferences";
 import { useTranslatedConstants } from "../../constants";
 import { PhoneNumberErrors, usePersonSchemata } from "../personSchema";
-import TestResultDeliveryPreferences from "../TestResultDeliveryPreferences";
 
 import { TestResultDeliveryPreference } from "./PersonForm";
 
@@ -248,28 +251,17 @@ const ManagePhoneNumbers: React.FC<Props> = ({
           legend={t("patient.form.testResultDelivery.text")}
           name="testResultDeliveryText"
           buttons={TEST_RESULT_DELIVERY_PREFERENCE_VALUES_SMS}
-          onChange={(val) => {
-            if (testResultDelivery === TestResultDeliveryPreferences.EMAIL) {
-              val = TestResultDeliveryPreferences.ALL;
-            }
-
-            if (testResultDelivery === TestResultDeliveryPreferences.ALL) {
-              val = TestResultDeliveryPreferences.EMAIL;
-            }
-
-            updateTestResultDelivery(val);
+          onChange={(newPreference) => {
+            updateTestResultDelivery(
+              toggleDeliveryPreferenceSms(
+                testResultDelivery as TestResultDeliveryPreference,
+                newPreference
+              )
+            );
           }}
-          // Other fields that may set `testResultDelivery` will not necessarily contain values
-          // that are in this radio group, so explicitly set the selected radio to the "NONE"
-          // value in this case
-          selectedRadio={
-            [
-              TestResultDeliveryPreferences.SMS,
-              TestResultDeliveryPreferences.ALL,
-            ].includes(testResultDelivery as TestResultDeliveryPreferences)
-              ? TestResultDeliveryPreferences.SMS
-              : TestResultDeliveryPreferences.NONE
-          }
+          selectedRadio={getSelectedDeliveryPreferencesSms(
+            testResultDelivery as TestResultDeliveryPreference
+          )}
         />
       )}
     </div>
