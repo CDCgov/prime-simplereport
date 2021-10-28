@@ -127,8 +127,12 @@ public class UploadService {
 
         var firstName = parseString(getRow(row, "FirstName", true));
         var lastName = parseString(getRow(row, "LastName", true));
-        var country = parseString(getRow(row, "Country", true));
         var dob = parseUserShortDate(getRow(row, "DOB", true));
+        var country = parseString(getRow(row, "Country", false));
+
+        if (country == null) {
+          country = "USA";
+        }
 
         if (_ps.isDuplicatePatient(
             firstName, lastName, dob, address.getPostalCode(), org, facility)) {

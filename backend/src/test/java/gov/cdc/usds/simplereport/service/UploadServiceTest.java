@@ -82,6 +82,25 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   }
 
   @Test
+  void testInsertNoCountry() throws IOException {
+    // Read the test CSV file
+    try (InputStream inputStream =
+        UploadServiceTest.class
+            .getClassLoader()
+            .getResourceAsStream("test-upload-no-country.csv")) {
+      this._service.processPersonCSV(inputStream);
+    }
+
+    final List<Person> patients =
+        this._ps.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null);
+    assertAll(
+        () -> assertEquals(1, patients.size()),
+        () -> assertEquals("Best", patients.get(0).getLastName()),
+        () ->
+            assertEquals(address, patients.get(0).getAddress(), "Should have the correct address"));
+  }
+
+  @Test
   void testInsertOneBadRow() throws IOException {
     // Read the test CSV file
     try (InputStream inputStream =
