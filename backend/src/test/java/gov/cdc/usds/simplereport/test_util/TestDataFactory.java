@@ -198,7 +198,7 @@ public class TestDataFactory {
             getAddress(),
             "USA",
             PersonRole.RESIDENT,
-            null,
+            "fred@astaire.com",
             "white",
             "not_hispanic",
             null,

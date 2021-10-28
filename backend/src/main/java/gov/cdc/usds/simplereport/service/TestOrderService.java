@@ -33,6 +33,7 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,6 +47,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -57,18 +60,21 @@ import org.springframework.transaction.annotation.Transactional;
  * specific facility or organization).
  */
 @Service
+@Slf4j
+@RequiredArgsConstructor
 @Transactional(readOnly = false)
 public class TestOrderService {
-  private OrganizationService _os;
-  private PersonService _ps;
-  private DeviceTypeService _dts;
-  private TestOrderRepository _repo;
-  private PatientAnswersRepository _parepo;
-  private TestEventRepository _terepo;
-  private PatientLinkService _pls;
-  private SmsService _smss;
+  private final OrganizationService _os;
+  private final PersonService _ps;
+  private final DeviceTypeService _dts;
+  private final TestOrderRepository _repo;
+  private final PatientAnswersRepository _parepo;
+  private final TestEventRepository _terepo;
+  private final PatientLinkService _pls;
+  private final SmsService _smss;
   private final TestEventReportingService _testEventReportingService;
   private final FacilityDeviceTypeService _facilityDeviceTypeService;
+  private final TestResultsDeliveryService testResultsDeliveryService;
 
   @PersistenceContext EntityManager _entityManager;
 
@@ -79,29 +85,6 @@ public class TestOrderService {
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
 
   public static final String MISSING_ARG = "Must provide either facility ID or patient ID";
-
-  public TestOrderService(
-      OrganizationService os,
-      DeviceTypeService dts,
-      FacilityDeviceTypeService facilityDeviceTypeService,
-      TestOrderRepository repo,
-      PatientAnswersRepository parepo,
-      TestEventRepository terepo,
-      PersonService ps,
-      PatientLinkService pls,
-      SmsService smss,
-      TestEventReportingService testEventReportingService) {
-    _os = os;
-    _ps = ps;
-    _dts = dts;
-    _repo = repo;
-    _parepo = parepo;
-    _terepo = terepo;
-    _pls = pls;
-    _smss = smss;
-    _testEventReportingService = testEventReportingService;
-    _facilityDeviceTypeService = facilityDeviceTypeService;
-  }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
   public List<TestOrder> getQueue(UUID facilityId) {
@@ -286,32 +269,63 @@ public class TestOrderService {
       TestOrder savedOrder = _repo.save(order);
 
       _testEventReportingService.report(testEvent);
+      boolean deliveryStatus = true;
 
-      if (TestResultDeliveryPreference.SMS == savedOrder.getPatient().getTestResultDelivery()) {
-        // After adding test result, create a new patient link and text it to the
-        // patient
+      if (patientHasDeliveryPreference(savedOrder)) {
         PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-        UUID internalId = patientLink.getInternalId();
 
-        List<SmsAPICallResult> smsSendResults =
-            _smss.sendToPatientLink(
-                internalId,
-                "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
+        if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
+          // After adding test result, create a new patient link and text it to the
+          // patient
+          UUID patientLinkId = patientLink.getInternalId();
 
-        boolean hasDeliveryFailure =
-            smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
+          log.info("Your Covid-19 test result is ready to view: " + patientLinkUrl + patientLinkId);
+          List<SmsAPICallResult> smsSendResults =
+              _smss.sendToPatientLink(
+                  patientLinkId,
+                  "Your Covid-19 test result is ready to view: " + patientLinkUrl + patientLinkId);
 
-        if (hasDeliveryFailure) {
-          return new AddTestResultResponse(savedOrder, false);
+          boolean hasDeliveryFailure =
+              smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
+
+          if (hasDeliveryFailure) {
+            return new AddTestResultResponse(savedOrder, false);
+          }
         }
 
-        return new AddTestResultResponse(savedOrder, true);
+        if (emailDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
+          try {
+            testResultsDeliveryService.emailTestResults(patientLink);
+          } catch (IOException e) {
+            deliveryStatus = false;
+            log.error(
+                "failed to send email for patient link {}, exception: {}",
+                patientId,
+                e.getMessage());
+          }
+        }
       }
 
-      return new AddTestResultResponse(savedOrder);
+      return new AddTestResultResponse(savedOrder, deliveryStatus);
     } finally {
       unlockOrder(order.getInternalId());
     }
+  }
+
+  private boolean patientHasDeliveryPreference(TestOrder savedOrder) {
+    return TestResultDeliveryPreference.NONE != savedOrder.getPatient().getTestResultDelivery();
+  }
+
+  private boolean smsDeliveryPreference(TestOrder savedOrder) {
+    return TestResultDeliveryPreference.SMS == savedOrder.getPatient().getTestResultDelivery();
+  }
+
+  private boolean emailDeliveryPreference(TestOrder savedOrder) {
+    return TestResultDeliveryPreference.EMAIL == savedOrder.getPatient().getTestResultDelivery();
+  }
+
+  private boolean smsAndEmailDeliveryPreference(TestOrder savedOrder) {
+    return TestResultDeliveryPreference.ALL == savedOrder.getPatient().getTestResultDelivery();
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility

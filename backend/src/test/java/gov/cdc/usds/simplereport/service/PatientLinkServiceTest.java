@@ -65,6 +65,11 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
   }
 
   @Test
+  void getPatientLinkSelfLife() {
+    assertEquals(5, _patientLink.getShelfLife());
+  }
+
+  @Test
   void getRefreshedPatientLink() throws Exception {
     Date previousExpiry = _patientLink.getExpiresAt();
     PatientLink result = _service.getRefreshedPatientLink(_patientLink.getInternalId());
