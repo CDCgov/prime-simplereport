@@ -42,7 +42,7 @@ export const en = {
       gender: {
         female: "Female",
         male: "Male",
-        other: OTHER,
+        other: "Non-binary",
         refused: REFUSED,
       },
       ethnicity: {
@@ -123,6 +123,7 @@ export const en = {
           phoneType: "Phone type",
           addNumber: "Add another number",
           email: "Email address",
+          country: "Country",
           street1: "Street address 1",
           street2: "Street address 2",
           county: "County",
@@ -184,6 +185,7 @@ export const en = {
           state: "State is missing or incorrectly formatted",
           city: "City is incorrectly formatted",
           county: "County is incorrectly formatted",
+          country: "Country is incorrectly formatted",
           race: "Race is incorrectly formatted",
           tribalAffiliation: "Tribal affiliation is incorrectly formatted",
           ethnicity: "Ethnicity is incorrectly formatted",

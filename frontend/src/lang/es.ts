@@ -48,7 +48,7 @@ export const es: LanguageConfig = {
       gender: {
         female: "Femenino",
         male: "Masculino",
-        other: OTHER,
+        other: "Persona no binaria",
         refused: REFUSED,
       },
       ethnicity: {
@@ -130,6 +130,7 @@ export const es: LanguageConfig = {
           phoneType: "Tipo de teléfono",
           addNumber: "Agregar otro número",
           email: "Dirección de correo electrónico",
+          country: "País",
           street1: "Dirección 1",
           street2: "Dirección 2",
           county: "Condado",
@@ -193,6 +194,7 @@ export const es: LanguageConfig = {
           state: "Falta el estado o tiene un formato incorrecto",
           city: "La ciudad tiene un formato incorrecto",
           county: "El formato del condado es incorrecto",
+          country: "El formato del país es incorrecto",
           race: "La raza tiene un formato incorrecto",
           tribalAffiliation: "La afiliación tribal tiene un formato incorrecto",
           ethnicity: "La etnia tiene un formato incorrecto",

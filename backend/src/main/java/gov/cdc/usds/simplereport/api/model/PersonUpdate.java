@@ -11,6 +11,7 @@ import java.util.Objects;
 
 public class PersonUpdate {
   private final StreetAddress address;
+  private final String country;
   private final String telephone;
   private final List<PhoneNumberInput> phoneNumbers;
   private final PersonRole role;
@@ -27,6 +28,7 @@ public class PersonUpdate {
   @JsonCreator
   public PersonUpdate(
       @JsonProperty("address") StreetAddress address,
+      @JsonProperty("country") String country,
       @JsonProperty("telephone") String telephone,
       @JsonProperty("phoneNumbers") List<PhoneNumberInput> phoneNumbers,
       @JsonProperty("role") PersonRole role,
@@ -40,6 +42,7 @@ public class PersonUpdate {
       @JsonProperty("preferredLanguage") String preferredLanguage,
       @JsonProperty("testResultDelivery") TestResultDeliveryPreference testResultDelivery) {
     this.address = address;
+    this.country = country;
     this.telephone = telephone;
     this.phoneNumbers = phoneNumbers;
     this.role = role;
@@ -56,6 +59,10 @@ public class PersonUpdate {
 
   public StreetAddress getAddress() {
     return address;
+  }
+
+  public String getCountry() {
+    return country;
   }
 
   public String getEmail() {
@@ -116,6 +123,7 @@ public class PersonUpdate {
     }
     PersonUpdate that = (PersonUpdate) o;
     return Objects.equals(address, that.address)
+        && Objects.equals(country, that.country)
         && Objects.equals(telephone, that.telephone)
         && Objects.equals(phoneNumbers, that.phoneNumbers)
         && role == that.role
@@ -132,6 +140,7 @@ public class PersonUpdate {
   public int hashCode() {
     return Objects.hash(
         address,
+        country,
         telephone,
         phoneNumbers,
         role,
