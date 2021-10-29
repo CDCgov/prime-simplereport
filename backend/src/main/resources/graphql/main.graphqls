@@ -180,6 +180,7 @@ type Patient
   streetTwo: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   city: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   county: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  country: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   state: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   zipCode: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   telephone: String
@@ -459,6 +460,7 @@ type Mutation {
     role: String
     email: String
     county: String
+    country: String
     race: String
     ethnicity: String
     tribalAffiliation: String
@@ -492,6 +494,7 @@ type Mutation {
     role: String @Size(min: 0, max: 32)
     email: String @Size(min: 3, max: 254)
     county: String
+    country: String
     race: String @Size(min: 0, max: 32)
     ethnicity: String @Size(min: 0, max: 32)
     tribalAffiliation: String @Size(min: 0, max: 3)

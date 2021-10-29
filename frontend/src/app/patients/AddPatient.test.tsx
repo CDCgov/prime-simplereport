@@ -114,6 +114,7 @@ describe("AddPatient", () => {
               city: "Boston",
               state: "MA",
               zipCode: "02115",
+              country: "USA",
               telephone: null,
               phoneNumbers: [
                 {
@@ -157,6 +158,7 @@ describe("AddPatient", () => {
               city: "Boston",
               state: "MA",
               zipCode: "02115",
+              country: "USA",
               telephone: null,
               phoneNumbers: [
                 {
@@ -205,6 +207,65 @@ describe("AddPatient", () => {
       expect(
         await screen.queryAllByText("Add new person", { exact: false })[0]
       ).toBeInTheDocument();
+    });
+
+    describe("Choosing a country", () => {
+      it("should show the state and zip code inputs for USA", async () => {
+        fillOutForm(
+          {
+            "First Name": "Alice",
+            "Last Name": "Hamilton",
+            Facility: mockFacilityID,
+            "Date of birth": "1970-09-22",
+            "Primary phone number": "617-432-1000",
+            Country: "USA",
+            "Street address 1": "25 Shattuck St",
+            City: "Vancouver",
+          },
+          {
+            "Phone type": {
+              label: "Mobile",
+              value: "MOBILE",
+              exact: true,
+            },
+            "Would you like to receive your results via text message": {
+              label: "Yes",
+              value: "SMS",
+              exact: false,
+            },
+          }
+        );
+        expect(await screen.queryByText("State")).toBeInTheDocument();
+        expect(await screen.queryByText("ZIP code")).toBeInTheDocument();
+      });
+      it("should hide the state and zip code inputs for non-US countries", async () => {
+        fillOutForm(
+          {
+            "First Name": "Alice",
+            "Last Name": "Hamilton",
+            Facility: mockFacilityID,
+            "Date of birth": "1970-09-22",
+            "Primary phone number": "617-432-1000",
+            Country: "CAN",
+            "Street address 1": "25 Shattuck St",
+            City: "Vancouver",
+          },
+          {
+            "Phone type": {
+              label: "Mobile",
+              value: "MOBILE",
+              exact: true,
+            },
+            "Would you like to receive your results via text message": {
+              label: "Yes",
+              value: "SMS",
+              exact: false,
+            },
+          }
+        );
+        expect(await screen.queryByText("State")).not.toBeInTheDocument();
+        expect(await screen.queryByText("ZIP code")).not.toBeInTheDocument();
+      });
     });
 
     describe("All required fields entered", () => {
@@ -338,6 +399,7 @@ describe("AddPatient", () => {
 
     describe("saving changes and starting a test", () => {
       beforeEach(async () => {
+        jest.setTimeout(30000);
         fillOutForm(
           {
             "First Name": "Alice",
