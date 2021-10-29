@@ -50,7 +50,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   @Column private LocalDate birthDate;
   @Embedded private StreetAddress address;
-  @Column private String country;
   @Column private String gender;
 
   @Column
@@ -116,7 +115,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       String suffix,
       LocalDate birthDate,
       StreetAddress address,
-      String country,
       PersonRole role,
       String email,
       String race,
@@ -132,7 +130,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
     this.birthDate = birthDate;
     this.address = address;
-    this.country = country;
     this.role = role;
     this.email = email;
     this.race = race;
@@ -167,7 +164,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       String suffix,
       LocalDate birthDate,
       StreetAddress address,
-      String country,
       PersonRole role,
       String email,
       String race,
@@ -185,7 +181,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.nameInfo.setSuffix(suffix);
     this.birthDate = birthDate;
     this.address = address;
-    this.country = country;
     this.role = role;
     this.email = email;
     this.race = race;
@@ -246,10 +241,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   public StreetAddress getAddress() {
     return address;
-  }
-
-  public String getCountry() {
-    return country;
   }
 
   public String getTelephone() {
