@@ -133,4 +133,23 @@ public class EmailService {
 
     return emailProvider.send(mail);
   }
+
+  public String sendWithDynamicTemplate(
+      final String toEmail,
+      final EmailProviderTemplate providerTemplate,
+      final Map<String, Object> templateVariables)
+      throws IOException {
+    Mail mail = new Mail();
+    mail.setFrom(
+        new Email(sendGridProperties.getFromEmail(), sendGridProperties.getFromDisplayName()));
+
+    mail.setTemplateId(sendGridProperties.getDynamicTemplateGuid(providerTemplate));
+
+    Personalization personalization = new Personalization();
+    personalization.addTo(new Email(toEmail));
+    templateVariables.forEach(personalization::addDynamicTemplateData);
+
+    mail.addPersonalization(personalization);
+    return emailProvider.send(mail);
+  }
 }
