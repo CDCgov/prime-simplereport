@@ -38,20 +38,12 @@ public class TestResultsDeliveryService {
       return;
     }
 
-    //    TestResultEmailTemplate template =
-    //        TestResultEmailTemplate.builder()
-    //            .facilityName()
-    //            .testResultUrl()
-    //            .expirationDuration()
-    //            .build();
-
-    String subject = "COVID-19 test results";
-    //    emailService.send(recipientEmailAddresses, subject, template);
     Map<String, Object> templateVariables =
         Map.of(
             "facility_name", patientLink.getTestOrder().getFacility().getFacilityName(),
             "expiration_duration", getExpirationDuration(patientLink),
             "test_result_url", patientLinkUrl + patientLink.getInternalId());
+
     emailService.sendWithDynamicTemplate(
         recipientEmailAddresses,
         EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT,
