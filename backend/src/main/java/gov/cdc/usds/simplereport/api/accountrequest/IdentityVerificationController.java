@@ -11,7 +11,6 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAn
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsResponse;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
@@ -20,6 +19,7 @@ import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
+import gov.cdc.usds.simplereport.service.errors.ExperianAuthException;
 import gov.cdc.usds.simplereport.service.errors.ExperianGetQuestionsException;
 import gov.cdc.usds.simplereport.service.errors.ExperianKbaResultException;
 import gov.cdc.usds.simplereport.service.errors.ExperianNullNodeException;
@@ -94,8 +94,13 @@ public class IdentityVerificationController {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
   }
 
-  @ExceptionHandler(IllegalGraphqlArgumentException.class)
-  public ResponseEntity<String> handleException(IllegalGraphqlArgumentException e) {
+  @ExceptionHandler(ExperianAuthException.class)
+  public ResponseEntity<String> handleException(ExperianAuthException e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+  }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<String> handleException(IllegalArgumentException e) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
   }
 
@@ -107,7 +112,8 @@ public class IdentityVerificationController {
 
     try {
       return _experianService.getQuestions(requestBody);
-    } catch (ExperianPersonMatchException
+    } catch (ExperianAuthException
+        | ExperianPersonMatchException
         | ExperianGetQuestionsException
         | ExperianNullNodeException e) {
       // could not match a person with the details in the request or general experian error
@@ -152,7 +158,7 @@ public class IdentityVerificationController {
       }
 
       return verificationResponse;
-    } catch (ExperianSubmitAnswersException | ExperianNullNodeException e) {
+    } catch (ExperianAuthException | ExperianSubmitAnswersException | ExperianNullNodeException e) {
       // a general error with experian occurred
       sendIdentityVerificationFailedEmails(org.getExternalId(), orgAdminEmail);
       throw e;
