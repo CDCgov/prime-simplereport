@@ -86,7 +86,6 @@ class PatientMutationResolverTest {
         "STAFF",
         null,
         null,
-        "USA",
         null,
         null,
         null,
@@ -99,7 +98,6 @@ class PatientMutationResolverTest {
     verify(personService)
         .addPatient(
             any(UUID.class),
-            any(),
             any(),
             any(),
             any(),

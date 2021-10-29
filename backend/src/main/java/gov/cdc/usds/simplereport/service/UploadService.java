@@ -128,11 +128,6 @@ public class UploadService {
         var firstName = parseString(getRow(row, "FirstName", true));
         var lastName = parseString(getRow(row, "LastName", true));
         var dob = parseUserShortDate(getRow(row, "DOB", true));
-        var country = parseString(getRow(row, "Country", false));
-
-        if (country == null) {
-          country = "USA";
-        }
 
         if (_ps.isDuplicatePatient(
             firstName, lastName, dob, address.getPostalCode(), org, facility)) {
@@ -148,7 +143,6 @@ public class UploadService {
             parseString(getRow(row, "Suffix", false)),
             dob,
             address,
-            country,
             parsePhoneNumbers(
                 List.of(
                     new PhoneNumberInput(
@@ -206,7 +200,6 @@ public class UploadService {
           .addColumn("County", CsvSchema.ColumnType.STRING)
           .addColumn("State", CsvSchema.ColumnType.STRING)
           .addColumn("ZipCode", CsvSchema.ColumnType.STRING)
-          .addColumn("Country", CsvSchema.ColumnType.STRING)
           .addColumn("PhoneNumber", CsvSchema.ColumnType.STRING)
           .addColumn("employedInHealthcare", CsvSchema.ColumnType.STRING)
           .addColumn("residentCongregateSetting", CsvSchema.ColumnType.STRING)

@@ -27,12 +27,7 @@ export const getDateWithCurrentTimeFromString = (date: string): Date => {
   return newDate;
 };
 
-interface Props {
-  startDate?: string;
-  endDate?: string;
-}
-
-export const Analytics = (props: Props) => {
+export const Analytics = () => {
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );
@@ -43,10 +38,10 @@ export const Analytics = (props: Props) => {
   const [facilityName, setFacilityName] = useState<string>(organization.name);
   const [dateRange, setDateRange] = useState<string>("week");
   const [startDate, setStartDate] = useState<string>(
-    props.startDate || getDateStringFromDaysAgo(7)
+    getDateStringFromDaysAgo(7)
   );
   const [endDate, setEndDate] = useState<string>(
-    props.endDate || new Date().toLocaleDateString()
+    new Date().toLocaleDateString()
   );
 
   useEffect(() => {
