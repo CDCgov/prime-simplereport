@@ -17,16 +17,16 @@ export const getSelectedDeliveryPreferencesEmail = getSelectedDeliveryPreference
 
 function toggleDeliveryPreference(field: TestResultDeliveryPreference) {
   return function handleToggle(
-    preference: TestResultDeliveryPreference,
+    oldPreference: TestResultDeliveryPreference,
     newPreference: TestResultDeliveryPreference
   ): TestResultDeliveryPreference {
     const deliveryPreferences = new Set<TestResultDeliveryPreference>();
 
-    if (preference === SMS || preference === ALL) {
+    if (oldPreference === SMS || oldPreference === ALL) {
       deliveryPreferences.add(SMS);
     }
 
-    if (preference === EMAIL || preference === ALL) {
+    if (oldPreference === EMAIL || oldPreference === ALL) {
       deliveryPreferences.add(EMAIL);
     }
 
