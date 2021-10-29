@@ -51,9 +51,7 @@ function toggleDeliveryPreference(field: TestResultDeliveryPreference) {
   };
 }
 
-export function getSelectedDeliveryPreference(
-  field: TestResultDeliveryPreference
-) {
+function getSelectedDeliveryPreference(field: TestResultDeliveryPreference) {
   return function getSelectedDeliveryPreference(
     testResultDeliveryPreference: TestResultDeliveryPreference
   ) {
