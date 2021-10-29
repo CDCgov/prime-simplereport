@@ -741,12 +741,6 @@ export const ETHNICITY_VALUES = ethnicityValues(i18n.t);
 export const GENDER_VALUES = genderValues(i18n.t);
 export const YES_NO_VALUES = yesNoValues(i18n.t);
 export const PHONE_TYPE_VALUES = phoneTypeValues(i18n.t);
-export const TEST_RESULT_DELIVERY_PREFERENCE_VALUES_SMS = testResultDeliveryPreferenceValuesSms(
-  i18n.t
-);
-export const TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL = testResultDeliveryPreferenceValuesEmail(
-  i18n.t
-);
 export const YES_NO_UNKNOWN_VALUES = yesNoUnkownValues(i18n.t);
 
 export const useTranslatedConstants = () => {
