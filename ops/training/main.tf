@@ -98,3 +98,15 @@ module "app_gateway" {
 
   tags = local.management_tags
 }
+
+module "nat_gateway" {
+  source                  = "../services/nat_gateway"
+  name                    = local.name
+  env                     = local.env
+  resource_group_location = data.azurerm_resource_group.rg.location
+  resource_group_name     = data.azurerm_resource_group.rg.name
+  subnet_webapp_id        = data.terraform_remote_state.persistent_training.outputs.subnet_webapp_id
+  subnet_lb_id            = data.terraform_remote_state.persistent_training.outputs.subnet_lbs_id
+  subnet_vm_id            = data.terraform_remote_state.persistent_training.outputs.subnet_vm_id
+  tags                    = local.management_tags
+}
