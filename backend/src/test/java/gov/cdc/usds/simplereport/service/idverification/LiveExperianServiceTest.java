@@ -194,6 +194,24 @@ class LiveExperianServiceTest {
   }
 
   @Test
+  void getQuestions_nullAuthResponse_failure() {
+    // somehow failed to get an access token from experian
+    when(_mockRestTemplate.postForObject(
+            eq(FAKE_PROPERTIES.getTokenEndpoint()), any(), eq(ObjectNode.class)))
+        .thenReturn(null);
+
+    IdentityVerificationQuestionsRequest request = createValidQuestionsRequest();
+
+    ExperianAuthException e =
+        assertThrows(
+            ExperianAuthException.class,
+            () -> {
+              _service.getQuestions(request);
+            });
+    assertEquals("The Experian token request returned a null response.", e.getMessage());
+  }
+
+  @Test
   void submitAnswers_correctResponsesAcceptResponse_success() throws JsonProcessingException {
     setExperianMockResponse(EXPERIAN_ANSWERS_SAMPLE_RESPONSE_ACCEPT);
 
