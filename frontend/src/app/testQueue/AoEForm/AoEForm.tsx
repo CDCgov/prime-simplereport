@@ -281,7 +281,7 @@ const AoEForm: React.FC<Props> = ({
                 patientMobileNumbers
               )}
               selectedRadio={getSelectedDeliveryPreferencesSms(
-                patient.testResultDelivery as TestResultDeliveryPreference
+                testResultDelivery as TestResultDeliveryPreference
               )}
             />
           </div>
@@ -307,7 +307,7 @@ const AoEForm: React.FC<Props> = ({
                   }
 
                   return getSelectedDeliveryPreferencesEmail(
-                    patient.testResultDelivery as TestResultDeliveryPreference
+                    testResultDelivery as TestResultDeliveryPreference
                   );
                 })()}
               />
