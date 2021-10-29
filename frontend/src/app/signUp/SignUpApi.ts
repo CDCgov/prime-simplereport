@@ -22,9 +22,6 @@ export class SignUpApi {
   static createOrganization(
     request: OrganizationCreateRequest
   ): Promise<OrganizationCreateResponse> {
-    return api.request(
-      "/account-request/organization-create-without-facility",
-      request
-    );
+    return api.request("/account-request/organization-add-to-queue", request);
   }
 }
