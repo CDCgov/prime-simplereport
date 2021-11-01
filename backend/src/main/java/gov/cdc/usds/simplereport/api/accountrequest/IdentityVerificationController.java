@@ -208,6 +208,6 @@ public class IdentityVerificationController {
         "New account ID verification failure",
         new AccountRequestOrganizationCreateTemplate(orgExternalId, orgAdminEmail));
     // send next-steps email to requester
-    _es.sendWithProviderTemplate(orgAdminEmail, EmailProviderTemplate.ID_VERIFICATION_FAILED);
+    _es.sendWithDynamicTemplate(orgAdminEmail, EmailProviderTemplate.ID_VERIFICATION_FAILED);
   }
 }

@@ -1,7 +1,8 @@
 package gov.cdc.usds.simplereport.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import gov.cdc.usds.simplereport.service.email.EmailProvider;
 import java.io.IOException;
@@ -72,8 +73,11 @@ public class SendGridDisabledConfiguration {
       message.setFrom(mail.getFrom().getEmail());
       message.setTo(recipientEmails);
       message.setSubject(mail.getSubject());
-      message.setText(
-          mail.getContent().stream().map(Content::getValue).collect(Collectors.joining("\n")));
+
+      ObjectMapper objectMapper = new ObjectMapper();
+      objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+      message.setText(objectMapper.writeValueAsString(mail));
       mailSender.send(message);
       log.debug(message.toString());
 

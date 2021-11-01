@@ -118,19 +118,30 @@ public class EmailService {
         List.of(toEmail), subject, getContentFromTemplate(templateName), attachments);
   }
 
-  public String sendWithProviderTemplate(
+  public String sendWithDynamicTemplate(
       final String toEmail, final EmailProviderTemplate providerTemplate) throws IOException {
+    return sendWithDynamicTemplate(toEmail, providerTemplate, null);
+  }
+
+  public String sendWithDynamicTemplate(
+      final String toEmail,
+      final EmailProviderTemplate providerTemplate,
+      final Map<String, Object> templateVariables)
+      throws IOException {
     Mail mail = new Mail();
     mail.setFrom(
         new Email(sendGridProperties.getFromEmail(), sendGridProperties.getFromDisplayName()));
 
-    // Use SendGrid Dynamic Template (subject and body configured in SendGrid web app)
     mail.setTemplateId(sendGridProperties.getDynamicTemplateGuid(providerTemplate));
 
     Personalization personalization = new Personalization();
     personalization.addTo(new Email(toEmail));
-    mail.addPersonalization(personalization);
 
+    if (templateVariables != null) {
+      templateVariables.forEach(personalization::addDynamicTemplateData);
+    }
+
+    mail.addPersonalization(personalization);
     return emailProvider.send(mail);
   }
 }
