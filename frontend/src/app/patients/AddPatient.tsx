@@ -220,9 +220,6 @@ const AddPatient = () => {
 
   const [activeFacility] = useSelectedFacility();
   const activeFacilityId = activeFacility?.id;
-
-  const [startTest, setStartTest] = useState(false);
-
   const personPath = `/patients/?facility=${activeFacilityId}`;
 
   const [redirect, setRedirect] = useState<
@@ -237,7 +234,10 @@ const AddPatient = () => {
     return <div>No facility selected</div>;
   }
 
-  const savePerson = async (person: Nullable<PersonFormData>) => {
+  const savePerson = async (
+    person: Nullable<PersonFormData>,
+    startTest?: boolean
+  ) => {
     const { data } = await addPatient({
       variables: {
         ...person,
@@ -269,15 +269,17 @@ const AddPatient = () => {
     }
   };
 
-  const getSaveButtons = (formChanged: boolean, onSave: () => void) => (
+  const getSaveButtons = (
+    formChanged: boolean,
+    onSave: (startTest: boolean) => void
+  ) => (
     <>
       <Button
         id="edit-patient-save-lower"
         className="prime-save-patient-changes-start-test"
         disabled={loading || !formChanged}
         onClick={() => {
-          setStartTest(true);
-          onSave();
+          onSave(true);
         }}
         variant="outline"
         label={
@@ -289,8 +291,7 @@ const AddPatient = () => {
         className="prime-save-patient-changes"
         disabled={loading || !formChanged}
         onClick={() => {
-          setStartTest(false);
-          onSave();
+          onSave(false);
         }}
         label={
           loading ? `${t("common.button.saving")}...` : t("common.button.save")

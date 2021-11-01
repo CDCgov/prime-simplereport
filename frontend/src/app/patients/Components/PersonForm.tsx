@@ -79,15 +79,18 @@ const yesNoUnknownToBool = (
 interface Props {
   patient: Nullable<PersonFormData>;
   patientId?: string;
-  savePerson: (person: Nullable<PersonFormData>) => void;
+  savePerson: (person: Nullable<PersonFormData>, startTest?: boolean) => void;
   onBlur?: (person: Nullable<PersonFormData>) => void;
   hideFacilitySelect?: boolean;
   getHeader?: (
     person: Nullable<PersonFormData>,
-    onSave: () => void,
+    onSave: (startTest?: boolean) => void,
     formChanged: boolean
   ) => React.ReactNode;
-  getFooter: (onSave: () => void, formChanged: boolean) => React.ReactNode;
+  getFooter: (
+    onSave: (startTest?: boolean) => void,
+    formChanged: boolean
+  ) => React.ReactNode;
   view?: PersonFormView;
 }
 
@@ -215,7 +218,7 @@ const PersonForm = (props: Props) => {
     }
   };
 
-  const validateForm = async () => {
+  const validateForm = async (startTest?: boolean) => {
     try {
       phoneNumberValidator.current?.();
       await schema.validate(patient, { abortEarly: false });
@@ -255,12 +258,12 @@ const PersonForm = (props: Props) => {
     }
   };
 
-  const onSave = (address?: AddressWithMetaData) => {
+  const onSave = (address?: AddressWithMetaData, startTest?: boolean) => {
     const person = address ? { ...patient, ...address } : patient;
     setPatient(person);
     setAddressModalOpen(false);
     setFormChanged(false);
-    props.savePerson(person);
+    props.savePerson(person, startTest);
   };
 
   const commonInputProps = {

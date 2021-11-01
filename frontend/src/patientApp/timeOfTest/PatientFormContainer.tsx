@@ -97,7 +97,7 @@ const PatientFormContainer = () => {
                 <Button
                   id="edit-patient-save-lower"
                   disabled={!formChanged}
-                  onClick={onSave}
+                  onClick={() => onSave()}
                   label="Save and continue"
                 />
                 <Button

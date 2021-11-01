@@ -281,7 +281,7 @@ const EditPatient = (props: Props) => {
                     <button
                       className="prime-save-patient-changes usa-button margin-right-0"
                       disabled={editPersonLoading || !formChanged}
-                      onClick={onSave}
+                      onClick={() => onSave()}
                     >
                       {editPersonLoading
                         ? `${t("common.button.saving")}...`
@@ -296,7 +296,7 @@ const EditPatient = (props: Props) => {
                     id="edit-patient-save-lower"
                     className="prime-save-patient-changes"
                     disabled={editPersonLoading || !formChanged}
-                    onClick={onSave}
+                    onClick={() => onSave}
                     label={
                       editPersonLoading
                         ? `${t("common.button.saving")}...`
