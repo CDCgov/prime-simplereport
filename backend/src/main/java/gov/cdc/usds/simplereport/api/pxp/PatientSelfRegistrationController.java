@@ -74,7 +74,6 @@ public class PatientSelfRegistrationController {
             parseString(body.getSuffix()),
             body.getBirthDate(),
             body.getAddress(),
-            body.getCountry(),
             parsePhoneNumbers(backwardsCompatiblePhoneNumbers),
             body.getRole(),
             parseEmail(body.getEmail()),

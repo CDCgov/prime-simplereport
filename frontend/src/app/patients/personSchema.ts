@@ -213,7 +213,6 @@ const updateFieldSchemata: (
     .string()
     .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
     .required(t("patient.form.errors.zipCode")),
-  country: yup.string().required(t("patient.form.errors.country")),
   race: yup
     .mixed()
     .oneOf(

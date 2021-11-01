@@ -21,10 +21,6 @@ export default {
       </StoryGraphQLProvider>
     ),
   ],
-  args: {
-    startDate: "2021-10-15",
-    endDate: "2021-10-22",
-  },
 } as Meta;
 
 const store = mockStore({
@@ -37,9 +33,7 @@ const store = mockStore({
   ],
 });
 
-type Props = React.ComponentProps<typeof Analytics>;
-
-const Template: Story<Props> = (args) => (
+const Template: Story = (args) => (
   <Provider store={store}>
     <Analytics {...args} />
   </Provider>
