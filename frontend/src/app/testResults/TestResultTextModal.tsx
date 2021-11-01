@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
 import moment from "moment";
@@ -13,7 +12,7 @@ import {
   QueryWrapper,
 } from "../commonComponents/QueryWrapper";
 import Alert from "../commonComponents/Alert";
-import { phoneNumberIsValid } from "../patients/personSchema";
+
 
 export const testQuery = gql`
   query getTestResultForText($id: ID!) {
