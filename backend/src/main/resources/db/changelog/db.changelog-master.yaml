@@ -3230,3 +3230,26 @@ databaseChangeLog:
                   p.test_result_delivery_preference
                 FROM ${database.defaultSchemaName}.person p;
               GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+  - changeSet:
+      id: add-emails-to-patient
+      author: nathan@skylight.digital
+      comment: add emails column to person table to allow multiple patient emails
+      changes:
+        - tagDatabase:
+            tag: add-emails-to-patient
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: emails
+                  type: text[]
+                  afterColumn: email
+                  remarks: All patient email addresses
+        - sql:
+            remarks: Populate new `emails` column with value from patient `email`
+            sql: |
+              UPDATE person SET emails = ARRAY[email] WHERE email IS NOT NULL;
+      rollback:
+        - dropColumn:
+            tableName: person
+            columnName: emails
