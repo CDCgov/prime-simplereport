@@ -415,7 +415,7 @@ const PersonForm = (props: Props) => {
           <Select
             label={t("patient.form.contact.country")}
             name="country"
-            value={patient.country || ""}
+            value={patient.country || "USA"}
             options={countryOptions}
             onChange={onPersonChange("country")}
             onBlur={() => {
