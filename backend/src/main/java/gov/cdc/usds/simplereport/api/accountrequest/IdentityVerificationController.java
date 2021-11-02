@@ -102,8 +102,22 @@ public class IdentityVerificationController {
   @PostMapping("/get-questions")
   public IdentityVerificationQuestionsResponse getQuestions(
       @Valid @RequestBody IdentityVerificationQuestionsRequest requestBody) throws IOException {
-    Organization org = _orgService.getOrganization(requestBody.getOrgExternalId());
-    String orgAdminEmail = checkOrgAndGetAdminEmail(org);
+    String orgExternalId;
+    String orgAdminEmail;
+
+    Optional<OrganizationQueueItem> optItem =
+        _orgQueueService.getUnverifiedQueuedOrganizationByExternalId(
+            requestBody.getOrgExternalId());
+    if (optItem.isPresent()) {
+      OrganizationQueueItem queueItem = optItem.get();
+      orgExternalId = queueItem.getExternalId();
+      orgAdminEmail = queueItem.getRequestData().getEmail();
+    } else {
+      // v1 requests: try to lookup in org table
+      Organization org = _orgService.getOrganization(requestBody.getOrgExternalId());
+      orgExternalId = org.getExternalId();
+      orgAdminEmail = checkOrgAndGetAdminEmail(org);
+    }
 
     try {
       return _experianService.getQuestions(requestBody);
@@ -111,7 +125,7 @@ public class IdentityVerificationController {
         | ExperianGetQuestionsException
         | ExperianNullNodeException e) {
       // could not match a person with the details in the request or general experian error
-      sendIdentityVerificationFailedEmails(org.getExternalId(), orgAdminEmail);
+      sendIdentityVerificationFailedEmails(orgExternalId, orgAdminEmail);
       throw e;
     }
   }

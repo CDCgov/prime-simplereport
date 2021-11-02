@@ -141,6 +141,59 @@ class IdentityVerificationControllerTest {
   }
 
   @Test
+  void getQuestions_queuedOrg_isOk() throws Exception {
+    OrganizationAccountRequest originalRequest = mock(OrganizationAccountRequest.class);
+    when(originalRequest.getEmail()).thenReturn(FAKE_ORG_ADMIN_EMAIL);
+
+    OrganizationQueueItem queueItem = mock(OrganizationQueueItem.class);
+    when(queueItem.getExternalId()).thenReturn(FAKE_ORG_EXTERNAL_ID);
+    when(queueItem.getRequestData()).thenReturn(originalRequest);
+
+    when(_orgQueueService.getUnverifiedQueuedOrganizationByExternalId(FAKE_ORG_EXTERNAL_ID))
+        .thenReturn(Optional.of(queueItem));
+
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ID_VERIFICATION_GET_QUESTIONS)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(getQuestionsRequestBody(FAKE_ORG_EXTERNAL_ID, FAKE_ORG_ADMIN_EMAIL));
+
+    this._mockMvc
+        .perform(builder)
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.sessionId", org.hamcrest.Matchers.any(String.class)))
+        .andExpect(jsonPath("$.questionSet", org.hamcrest.Matchers.any(List.class)));
+
+    verifyEmailsNotSent();
+  }
+
+  @Test
+  void getQuestions_queuedOrgNoPersonMatch_failure() throws Exception {
+    OrganizationAccountRequest originalRequest = mock(OrganizationAccountRequest.class);
+    when(originalRequest.getEmail()).thenReturn(FAKE_ORG_ADMIN_EMAIL);
+
+    OrganizationQueueItem queueItem = mock(OrganizationQueueItem.class);
+    when(queueItem.getExternalId()).thenReturn(FAKE_ORG_EXTERNAL_ID);
+    when(queueItem.getRequestData()).thenReturn(originalRequest);
+
+    when(_orgQueueService.getUnverifiedQueuedOrganizationByExternalId(FAKE_ORG_EXTERNAL_ID))
+        .thenReturn(Optional.of(queueItem));
+
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ID_VERIFICATION_GET_QUESTIONS)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(getQuestionsRequestBody(FAKE_ORG_EXTERNAL_ID, FAKE_NON_EXISTENT_EMAIL));
+
+    this._mockMvc.perform(builder).andExpect(status().isBadRequest());
+
+    // could not find person, id verification failed so emails are sent
+    verifyEmailsSent();
+  }
+
+  @Test
   void getQuestions_orgDoesNotExist_failure() throws Exception {
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.ID_VERIFICATION_GET_QUESTIONS)
