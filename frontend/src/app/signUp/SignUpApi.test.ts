@@ -78,7 +78,7 @@ describe("SignUpApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/account-request/organization-add-to-queue",
+        "http://localhost:8080/account-request/organization-create-without-facility",
         {
           body:
             '{"firstName":"Laslo","lastName":"Dickens","email":"laslo@shadow.corp","name":"Shadow","type":"treatment_center","state":"NY","workPhoneNumber":"665-452-5484"}',
