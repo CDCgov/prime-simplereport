@@ -462,7 +462,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   name="country"
                   onBlur={[Function]}
                   onChange={[Function]}
-                  value="- Select -"
+                  value="USA"
                 >
                   <option
                     value="AFG"

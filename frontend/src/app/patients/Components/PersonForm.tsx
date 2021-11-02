@@ -259,6 +259,10 @@ const PersonForm = (props: Props) => {
       });
       return;
     }
+    // Default country to USA if it's not set
+    if (patient.country === null) {
+      setPatient({ ...patient, country: "USA" });
+    }
     if (
       JSON.stringify(getAddress(patient)) ===
       JSON.stringify(getAddress(props.patient))
