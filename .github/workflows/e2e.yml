@@ -6,8 +6,6 @@ on:
   push:
     branches:
       - "**"
-    paths-ignore:
-      - 'ops/**'
 
 env:
   NODE_VERSION: 14
