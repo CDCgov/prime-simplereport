@@ -143,6 +143,14 @@ public class Translators {
     throw IllegalGraphqlArgumentException.invalidInput(e, "email");
   }
 
+  public static List<String> parseEmails(List<String> emails) {
+    if (emails == null) {
+      return null;
+    }
+
+    return emails.stream().map(e -> parseEmail(e)).collect(Collectors.toList());
+  }
+
   private static final Map<String, String> RACES =
       Map.of(
           "american indian or alaskan native", "native",

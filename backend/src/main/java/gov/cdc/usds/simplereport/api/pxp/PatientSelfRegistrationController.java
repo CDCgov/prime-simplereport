@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.api.pxp;
 
-import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
+import static gov.cdc.usds.simplereport.api.Translators.parseEmails;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
@@ -64,6 +64,11 @@ public class PatientSelfRegistrationController {
             ? body.getPhoneNumbers()
             : List.of(new PhoneNumberInput(null, parsePhoneNumber(body.getTelephone())));
 
+    List<String> backwardsCompatibleEmails =
+        body.getEmails() != null
+            ? body.getEmails()
+            : body.getEmail() == null ? null : List.of(body.getEmail());
+
     Person p =
         _personService.addPatient(
             registrationLink,
@@ -76,7 +81,7 @@ public class PatientSelfRegistrationController {
             body.getAddress(),
             parsePhoneNumbers(backwardsCompatiblePhoneNumbers),
             body.getRole(),
-            parseEmail(body.getEmail()),
+            parseEmails(backwardsCompatibleEmails),
             parseRace(body.getRace()),
             parseEthnicity(body.getEthnicity()),
             parseTribalAffiliation(body.getTribalAffiliation()),

@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.api.pxp;
 
-import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
+import static gov.cdc.usds.simplereport.api.Translators.parseEmails;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
@@ -99,7 +99,7 @@ public class PatientExperienceController {
             StreetAddress.deAndReSerializeForSafety(person.getAddress()),
             parsePhoneNumbers(person.getPhoneNumbers()),
             person.getRole(),
-            parseEmail(person.getEmail()),
+            parseEmails(person.getEmails()),
             parseRace(person.getRace()),
             parseEthnicity(person.getEthnicity()),
             person.getTribalAffiliation(),

@@ -197,7 +197,7 @@ public class TestDataFactory {
             DEFAULT_BDAY,
             getAddress(),
             PersonRole.RESIDENT,
-            "fred@astaire.com",
+            List.of("fred@astaire.com"),
             "white",
             "not_hispanic",
             null,
@@ -210,6 +210,7 @@ public class TestDataFactory {
     PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, telephone);
     _phoneNumberRepo.save(pn);
     p.setPrimaryPhone(pn);
+    p.setPrimaryEmail("fred@astaire.com");
     return _personRepo.save(p);
   }
 
