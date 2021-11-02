@@ -80,7 +80,7 @@ public class ReminderService {
       for (String email : emailsInOrg) {
         // unverified organizations will only have 1 associated email at this time
         try {
-          _emailService.sendWithProviderTemplate(
+          _emailService.sendWithDynamicTemplate(
               email, EmailProviderTemplate.ORGANIZATION_ID_VERIFICATION_REMINDER);
         } catch (IOException e) {
           log.warn("Failed to send id verification reminder email to: {}", email);

@@ -405,7 +405,7 @@ class IdentityVerificationControllerTest {
 
     // should send email to requester
     verify(_emailService, times(1))
-        .sendWithProviderTemplate(
+        .sendWithDynamicTemplate(
             FAKE_ORG_ADMIN_EMAIL, EmailProviderTemplate.ID_VERIFICATION_FAILED);
   }
 
@@ -414,6 +414,6 @@ class IdentityVerificationControllerTest {
     verify(_emailService, times(0)).send(anyList(), anyString(), any());
 
     // should send email to requester
-    verify(_emailService, times(0)).sendWithProviderTemplate(anyString(), any());
+    verify(_emailService, times(0)).sendWithDynamicTemplate(anyString(), any());
   }
 }

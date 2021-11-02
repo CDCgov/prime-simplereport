@@ -1,8 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -12,16 +9,14 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
-import gov.cdc.usds.simplereport.service.model.TestResultEmailTemplate;
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -35,8 +30,6 @@ class TestResultsDeliveryServiceTest {
   @Mock private PatientLinkService patientLinkService;
 
   @InjectMocks private TestResultsDeliveryService testResultsDeliveryService;
-
-  @Captor ArgumentCaptor<TestResultEmailTemplate> emailTemplateCaptor;
 
   @BeforeEach
   void setup() {
@@ -57,22 +50,13 @@ class TestResultsDeliveryServiceTest {
 
     // THEN
     verify(emailService)
-        .send(eq("harry@hogwarts.edu"), eq("COVID-19 test results"), emailTemplateCaptor.capture());
-
-    TestResultEmailTemplate emailTemplate = emailTemplateCaptor.getValue();
-
-    Map<String, Object> templateVariables = emailTemplate.toTemplateVariables();
-
-    assertThat(templateVariables)
-        .containsEntry("facility_name", "House of Gryffindor")
-        .containsEntry("expiration_duration", "2 days")
-        .containsEntry("test_result_url", "https://simplereport.gov/pxp?plid=" + uuid);
-
-    assertThat(emailTemplate.getTemplateName()).isEqualTo("test-results");
-    assertThat(emailTemplate.getFacilityName()).isEqualTo("House of Gryffindor");
-    assertThat(emailTemplate.getTestResultUrl())
-        .isEqualTo("https://simplereport.gov/pxp?plid=" + uuid);
-    assertThat(emailTemplate.getExpirationDuration()).isEqualTo("2 days");
+        .sendWithDynamicTemplate(
+            "harry@hogwarts.edu",
+            EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT,
+            Map.of(
+                "facility_name", "House of Gryffindor",
+                "expiration_duration", "2 days",
+                "test_result_url", "https://simplereport.gov/pxp?plid=" + uuid));
   }
 
   @Test
@@ -88,8 +72,14 @@ class TestResultsDeliveryServiceTest {
     testResultsDeliveryService.emailTestResults(patientLink.getInternalId());
 
     // THEN
-    verify(emailService).send(anyString(), anyString(), emailTemplateCaptor.capture());
-    assertThat(emailTemplateCaptor.getValue().getExpirationDuration()).isEqualTo("1 day");
+    verify(emailService)
+        .sendWithDynamicTemplate(
+            "harry@hogwarts.edu",
+            EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT,
+            Map.of(
+                "facility_name", "House of Gryffindor",
+                "expiration_duration", "1 day",
+                "test_result_url", "https://simplereport.gov/pxp?plid=" + uuid));
   }
 
   @Test
