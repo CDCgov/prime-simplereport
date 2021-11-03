@@ -9,11 +9,14 @@ locals {
 
   url_prefix = var.env == "prod" ? "www" : var.env
 
-  url_map = {
-    "${var.env}-simplereport-gov"     = "https://${local.url_prefix}.simplereport.gov/",
-    "${var.env}-simplereport-gov-api" = "https://${local.url_prefix}.simplereport.gov/api/actuator/health",
-    "${var.env}-simplereport-gov-app" = "https://${local.url_prefix}.simplereport.gov/app/health/ping"
-  }
+  url_map = merge(
+    {
+      "${var.env}-simplereport-gov"     = "https://${local.url_prefix}.simplereport.gov/",
+      "${var.env}-simplereport-gov-api" = "https://${local.url_prefix}.simplereport.gov/api/actuator/health",
+      "${var.env}-simplereport-gov-app" = "https://${local.url_prefix}.simplereport.gov/app/health/ping"
+    },
+    var.additional_uptime_test_urls
+  )
 }
 
 resource "azurerm_application_insights_web_test" "uptime" {
