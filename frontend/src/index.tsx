@@ -6,7 +6,7 @@ import {
   ApolloProvider,
   ApolloLink,
   InMemoryCache,
-  from,
+  concat,
 } from "@apollo/client";
 import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import { createUploadLink } from "apollo-upload-client";
@@ -61,24 +61,16 @@ const httpLink = createUploadLink({
   uri: `${process.env.REACT_APP_BACKEND_URL}/graphql`,
 });
 
-const authMiddleware = new ApolloLink((operation, forward) => {
-  operation.setContext(({ headers = {} }) => ({
+const apolloMiddleware = new ApolloLink((operation, forward) => {
+  operation.setContext({
     headers: {
-      ...headers,
+      // Auth headers
       "Access-Control-Request-Headers": "Authorization",
       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-    },
-  }));
-  return forward(operation);
-});
-
-const instrumentationMiddleware = new ApolloLink((operation, forward) => {
-  operation.setContext(({ headers = {} }) => ({
-    headers: {
-      ...headers,
+      // App Insight headers
       ...getAppInsightsHeaders(),
     },
-  }));
+  });
   return forward(operation);
 });
 
@@ -110,9 +102,7 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: logoutLink.concat(
-    from([authMiddleware, instrumentationMiddleware, httpLink as any])
-  ),
+  link: logoutLink.concat(concat(apolloMiddleware, httpLink as any)),
 });
 
 export const ReactApp = (
