@@ -127,6 +127,7 @@ public class PersonUpdate {
         && Objects.equals(phoneNumbers, that.phoneNumbers)
         && role == that.role
         && Objects.equals(email, that.email)
+        && Objects.equals(emails, that.emails)
         && Objects.equals(race, that.race)
         && Objects.equals(ethnicity, that.ethnicity)
         && Objects.equals(tribalAffiliation, that.tribalAffiliation)
@@ -143,6 +144,7 @@ public class PersonUpdate {
         phoneNumbers,
         role,
         email,
+        emails,
         race,
         ethnicity,
         tribalAffiliation,

@@ -368,7 +368,7 @@ public class PersonService {
         preferredLanguage,
         toUpdate.getTestResultDelivery());
 
-    if (!emails.isEmpty()) {
+    if (emails != null && !emails.isEmpty()) {
       toUpdate.setPrimaryEmail(emails.get(0));
     }
 
@@ -469,7 +469,7 @@ public class PersonService {
         preferredLanguage,
         testResultDelivery);
 
-    if (!emails.isEmpty()) {
+    if (emails != null && !emails.isEmpty()) {
       patientToUpdate.setPrimaryEmail(emails.get(0));
     }
 

@@ -16,6 +16,7 @@ class PersonUpdateTest {
             + "\"phoneNumbers\":[{\"type\":\"MOBILE\",\"number\":\"(270) 867-5309\"},{\"type\":\"LANDLINE\",\"number\":\"(631) 867-5309\"}],"
             + "\"role\":\"UNKNOWN\","
             + "\"email\":\"user@domain.tld\","
+            + "\"emails\":[\"user@domain.tld\"],"
             + "\"race\":\"refused\","
             + "\"ethnicity\":\"not_hispanic\","
             + "\"tribalAffiliation\":\"432\","

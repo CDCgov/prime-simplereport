@@ -18,6 +18,7 @@ import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
+import java.util.List;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -94,12 +95,19 @@ public class PatientExperienceController {
   public PxpVerifyResponse updatePatient(
       @RequestBody PxpRequestWrapper<PersonUpdate> body, HttpServletRequest request) {
     PersonUpdate person = body.getData();
+
+    List<String> emails = person.getEmails();
+    String primaryEmail = person.getEmail();
+
+    List<String> backwardsCompatibleEmails =
+        emails != null ? emails : primaryEmail == null ? null : List.of(primaryEmail);
+
     Person updated =
         _ps.updateMe(
             StreetAddress.deAndReSerializeForSafety(person.getAddress()),
             parsePhoneNumbers(person.getPhoneNumbers()),
             person.getRole(),
-            parseEmails(person.getEmails()),
+            parseEmails(backwardsCompatibleEmails),
             parseRace(person.getRace()),
             parseEthnicity(person.getEthnicity()),
             person.getTribalAffiliation(),
