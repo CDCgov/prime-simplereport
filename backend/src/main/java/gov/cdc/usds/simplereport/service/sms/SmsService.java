@@ -46,7 +46,6 @@ public class SmsService {
     log.debug("SmsService will send from {}", rawFromNumber);
   }
 
-  // @AuthorizationConfiguration.RequirePermissionStartTestWithPatientLink
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public List<SmsAPICallResult> sendToPatientLink(UUID patientLinkId, String text) {
     PatientLink pl = pls.getRefreshedPatientLink(patientLinkId);

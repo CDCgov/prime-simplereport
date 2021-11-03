@@ -90,13 +90,12 @@ function testResultRows(
     const actionItems = [
       { name: "Print result", action: () => setPrintModalId(r.internalId) },
       { name: "Text result", action: () => setTextModalId(r.internalId) },
-      
+
       {
         name: "View details",
 
         action: () => setDetailsModalId(r.internalId),
       },
-      
     ];
     if (!removed) {
       actionItems.push({

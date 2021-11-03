@@ -1,8 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
 import moment from "moment";
-
-
 import Button from "../commonComponents/Button/Button";
 import { showNotification } from "../utils";
 import { formatFullName } from "../utils/user";
@@ -12,7 +10,6 @@ import {
   QueryWrapper,
 } from "../commonComponents/QueryWrapper";
 import Alert from "../commonComponents/Alert";
-
 
 export const testQuery = gql`
   query getTestResultForText($id: ID!) {
@@ -27,30 +24,26 @@ export const testQuery = gql`
         lastName
         birthDate
         phoneNumbers {
-            type
-            number
+          type
+          number
         }
       }
     }
   }
 `;
 interface patientPhoneDetails {
-    type: string
-    number: number
-
+  type: string;
+  number: number;
 }
 const formatDate = (date: string | undefined, withTime?: boolean) => {
   const dateFormat = "MMMM Do, YYYY";
   const format = withTime ? `${dateFormat}` : dateFormat;
-  
   return moment(date)?.format(format);
 };
 
-
-
 const SEND_SMS = gql`
   mutation sendSMS($id: ID!) {
-    sendPatientLinkSms(internalId: $id) 
+    sendPatientLinkSms(internalId: $id)
   }
 `;
 
@@ -61,16 +54,14 @@ interface Props {
 }
 
 const mobilePhoneNumbers = (phoneArray: patientPhoneDetails[]) => {
-    let mobileNumbers: any = []
-    phoneArray.forEach(patientPhone => {
-        if (patientPhone.type === "MOBILE") {
-            mobileNumbers.push(<tr>{patientPhone.number}</tr>);
-        }
-    });
- return mobileNumbers;
+  let mobileNumbers: any = [];
+  phoneArray.forEach((patientPhone) => {
+    if (patientPhone.type === "MOBILE") {
+      mobileNumbers.push(<tr>{patientPhone.number}</tr>);
+    }
+  });
+  return mobileNumbers;
 };
-
-
 
 export const DetachedTestResultCorrectionModal = ({
   data,
@@ -78,8 +69,8 @@ export const DetachedTestResultCorrectionModal = ({
 }: Props) => {
   const [sendSMS] = useMutation(SEND_SMS);
   const { patient } = data.testResult;
-  const  patientLink  = data.testResult.patientLink.internalId
-  const { dateTested } = data.testResult
+  const patientLink = data.testResult.patientLink.internalId;
+  const { dateTested } = data.testResult;
   const resendSMS = () => {
     sendSMS({
       variables: {
@@ -131,5 +122,3 @@ const TestResultCorrectionModal = (
 );
 
 export default TestResultCorrectionModal;
-
-
