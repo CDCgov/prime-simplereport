@@ -1,8 +1,10 @@
 package gov.cdc.usds.simplereport.api.organization;
 
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
+import gov.cdc.usds.simplereport.api.model.ApiPendingOrganization;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import graphql.kickstart.tools.GraphQLQueryResolver;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
 
 /** Resolver for {@link Organization} related queries */
@@ -17,9 +20,11 @@ import org.springframework.stereotype.Component;
 public class OrganizationResolver implements GraphQLQueryResolver {
 
   private OrganizationService _organizationService;
+  private OrganizationQueueService _organizationQueueService;
 
-  public OrganizationResolver(OrganizationService os) {
+  public OrganizationResolver(OrganizationService os, OrganizationQueueService oqs) {
     _organizationService = os;
+    _organizationQueueService = oqs;
   }
 
   public Optional<ApiOrganization> getOrganization() {
@@ -51,6 +56,26 @@ public class OrganizationResolver implements GraphQLQueryResolver {
     // for retrieving the list of facilities and continuing to use `facilities` for permissions.
     return _organizationService.getOrganizations(identityVerified).stream()
         .map(o -> new ApiOrganization(o, List.of()))
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Retrieves a list of all pending organizations AND organization queue items
+   *
+   * @return a list of pending organizations
+   */
+  public List<ApiPendingOrganization> getPendingOrganizations() {
+    List<ApiPendingOrganization> pendingOrgsAlreadyCreated =
+        _organizationService.getOrganizations(false).stream()
+            .map(ApiPendingOrganization::new)
+            .collect(Collectors.toList());
+
+    List<ApiPendingOrganization> pendingOrgsInQueue =
+        _organizationQueueService.getUnverifiedQueuedOrganizations().stream()
+            .map(ApiPendingOrganization::new)
+            .collect(Collectors.toList());
+
+    return Stream.concat(pendingOrgsAlreadyCreated.stream(), pendingOrgsInQueue.stream())
         .collect(Collectors.toList());
   }
 }

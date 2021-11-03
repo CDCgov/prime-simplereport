@@ -1,9 +1,11 @@
 package gov.cdc.usds.simplereport.test_util;
 
+import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
@@ -27,6 +29,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
+import gov.cdc.usds.simplereport.db.repository.OrganizationQueueRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
@@ -64,6 +67,7 @@ public class TestDataFactory {
   private static final String DEFAULT_SPECIMEN_TYPE = "Nasal swab";
 
   @Autowired private OrganizationRepository _orgRepo;
+  @Autowired private OrganizationQueueRepository _orgQueueRepo;
   @Autowired private FacilityRepository _facilityRepo;
   @Autowired private PersonRepository _personRepo;
   @Autowired private ProviderRepository _providerRepo;
@@ -91,6 +95,21 @@ public class TestDataFactory {
 
   public Organization createUnverifiedOrg() {
     return createValidOrg("The Plaza", "k12", ALT_ORG_ID, false);
+  }
+
+  public OrganizationQueueItem createOrganizationQueueItem(
+      String orgName, String orgExternalId, String adminEmail) {
+    return _orgQueueRepo.save(
+        new OrganizationQueueItem(
+            orgName,
+            orgExternalId,
+            new OrganizationAccountRequest(
+                "First", "Last", adminEmail, "800-555-1212", "CA", null, null)));
+  }
+
+  public OrganizationQueueItem createOrganizationQueueItem() {
+    return createOrganizationQueueItem(
+        "New Org Queue Name", "CA-New-Org-Queue-Name-12345", "org.queue.admin@example.com");
   }
 
   public Facility createValidFacility(Organization org) {
@@ -178,7 +197,7 @@ public class TestDataFactory {
             DEFAULT_BDAY,
             getAddress(),
             PersonRole.RESIDENT,
-            null,
+            "fred@astaire.com",
             "white",
             "not_hispanic",
             null,

@@ -12,5 +12,8 @@ public enum EmailProviderTemplate {
   ID_VERIFICATION_FAILED,
 
   // message to account requester who didn't complete automatic id verification
-  ORGANIZATION_ID_VERIFICATION_REMINDER;
+  ORGANIZATION_ID_VERIFICATION_REMINDER,
+
+  // test results template
+  SIMPLE_REPORT_TEST_RESULT;
 }

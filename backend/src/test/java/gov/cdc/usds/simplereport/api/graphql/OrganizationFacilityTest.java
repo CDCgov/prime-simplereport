@@ -11,11 +11,13 @@ import static org.mockito.Mockito.verify;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
@@ -118,6 +120,43 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
                   .put("verified", true);
           verified = runQuery("set-organization-identity-verified", variables);
           assertTrue(verified.path("setOrganizationIdentityVerified").asBoolean());
+        });
+  }
+
+  @Test
+  void setOrganizationQueueItemIdentityVerified_siteAdminUser_ok() {
+    TestUserIdentities.withUser(
+        TestUserIdentities.SITE_ADMIN_USER,
+        () -> {
+          OrganizationQueueItem orgQueueItem = _dataFactory.createOrganizationQueueItem();
+          useSuperUser();
+          ObjectNode variables =
+              JsonNodeFactory.instance
+                  .objectNode()
+                  .put("externalId", orgQueueItem.getExternalId())
+                  .put("verified", true);
+          ObjectNode verified = runQuery("set-organization-identity-verified", variables);
+          assertTrue(verified.path("setOrganizationIdentityVerified").asBoolean());
+        });
+  }
+
+  @Test
+  void getPendingOrganizations_siteAdminUser_ok() {
+    TestUserIdentities.withUser(
+        TestUserIdentities.SITE_ADMIN_USER,
+        () -> {
+          Organization org = _dataFactory.createUnverifiedOrg();
+          OrganizationQueueItem orgQueueItem = _dataFactory.createOrganizationQueueItem();
+          useSuperUser();
+
+          // Get all pending orgs and queue items
+          ObjectNode result = runQuery("get-pending-organizations");
+          ArrayNode pendingOrgs = (ArrayNode) result.path("pendingOrganizations");
+          assertEquals(2, pendingOrgs.size());
+          JsonNode firstEntry = pendingOrgs.get(0);
+          JsonNode secondEntry = pendingOrgs.get(1);
+          assertEquals(org.getExternalId(), firstEntry.path("externalId").asText());
+          assertEquals(orgQueueItem.getExternalId(), secondEntry.path("externalId").asText());
         });
   }
 

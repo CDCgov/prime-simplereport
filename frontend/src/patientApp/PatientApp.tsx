@@ -1,11 +1,14 @@
 import { FunctionComponent, useEffect } from "react";
 import { useDispatch, connect, useSelector } from "react-redux";
 import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
+import { validate as isValidUUID } from "uuid";
+import { useTranslation } from "react-i18next";
 
 import Page from "../app/commonComponents/Page/Page";
 import { setInitialState } from "../app/store";
 import { getPatientLinkIdFromUrl } from "../app/utils/url";
 import PageNotFound from "../app/commonComponents/PageNotFound";
+import Alert from "../app/commonComponents/Alert";
 
 import PatientHeader from "./PatientHeader";
 import TermsOfService from "./timeOfTest/TermsOfService";
@@ -34,6 +37,7 @@ const PatientLinkURL404Wrapper: FunctionComponent<WrapperProps> = ({
 };
 
 const PatientApp = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const plid = useSelector((state: any) => state.plid);
   const patient = useSelector((state: any) => state.patient);
@@ -46,6 +50,24 @@ const PatientApp = () => {
       })
     );
   });
+
+  if (!isValidUUID(plid)) {
+    return (
+      <Page>
+        <PatientHeader />
+        <main>
+          <div className="grid-container maxw-tablet">
+            <p></p>
+            <Alert
+              type="error"
+              title="Page not found"
+              body={t("testResult.dob.linkNotFound")}
+            />
+          </div>
+        </main>
+      </Page>
+    );
+  }
 
   return (
     <Page>

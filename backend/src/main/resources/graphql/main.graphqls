@@ -53,14 +53,31 @@ type Provider {
   phone: String
 }
 
+input CreateDeviceType {
+  name: String!
+  manufacturer: String!
+  model: String!
+  loincCode: String!
+  swabTypes: [ID!]!
+}
+
+input UpdateDeviceType {
+  internalId: ID!
+  name: String!
+  manufacturer: String!
+  model: String!
+  loincCode: String!
+  swabTypes: [ID!]!
+}
+
 type DeviceType {
-  internalId: ID
-  name: String
-  manufacturer: String
-  model: String
-  loincCode: String
+  internalId: ID!
+  name: String!
+  manufacturer: String!
+  model: String!
+  loincCode: String!
   swabType: String
-  swabTypes: String
+  swabTypes: [SpecimenType!]!
   testLength: Int
 }
 
@@ -251,6 +268,15 @@ type PatientLink {
   testOrder: TestOrder
 }
 
+type PendingOrganization {
+  externalId: String!
+  name: String!
+  adminName: String
+  adminEmail: String
+  adminPhone: String
+  createdAt: DateTime!
+}
+
 # Queries and mutations for everyday use
 
 type Query {
@@ -258,9 +284,9 @@ type Query {
     @deprecated(
       reason: "this information is already loaded from the 'whoami' endpoint"
     )
-  deviceType: [DeviceType]
+  deviceType: [DeviceType!]!
     @deprecated(reason: "use the pluralized form to reduce confusion")
-  deviceTypes: [DeviceType]
+  deviceTypes: [DeviceType!]!
   specimenType: [SpecimenType]
   deviceSpecimenTypes: [DeviceSpecimenType]
   patients(

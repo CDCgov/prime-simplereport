@@ -1,0 +1,10 @@
+query getPendingOrganizations {
+  pendingOrganizations {
+    externalId
+    name
+    adminName
+    adminEmail
+    adminPhone
+    createdAt
+  }
+}

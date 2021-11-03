@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Redirect } from "react-router-dom";
 
 import {
-  useCreateDeviceTypeNewMutation,
+  useCreateDeviceTypeMutation,
   useGetSpecimenTypesQuery,
 } from "../../../generated/graphql";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
-import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
+import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 import DeviceTypeForm from "./DeviceTypeForm";
 
@@ -21,32 +21,17 @@ export interface Device {
 
 const DeviceTypeFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
-  const [swabOptions, setSwabOptions] = useState<
-    Array<MultiSelectDropdownOption>
-  >([]);
-
-  const [createDeviceType] = useCreateDeviceTypeNewMutation();
-  const { data } = useGetSpecimenTypesQuery();
-
-  useEffect(() => {
-    if (data && data.specimenTypes && swabOptions.length === 0) {
-      setSwabOptions(
-        Array.from(
-          data.specimenTypes.map((type) => ({
-            label: `${type?.name} (${type?.typeCode})`,
-            value: type?.internalId,
-          }))
-        )
-      );
-    }
-  }, [data, swabOptions]);
+  const [createDeviceType] = useCreateDeviceTypeMutation();
+  const { data: specimenTypesResults } = useGetSpecimenTypesQuery({
+    fetchPolicy: "no-cache",
+  });
 
   const saveDeviceType = (device: Device) => {
     createDeviceType({
       variables: device,
       fetchPolicy: "no-cache",
     }).then(() => {
-      let alert = (
+      const alert = (
         <Alert
           type="success"
           title="Created Device"
@@ -62,9 +47,22 @@ const DeviceTypeFormContainer = () => {
     return <Redirect to="/admin" />;
   }
 
-  return (
-    <DeviceTypeForm saveDeviceType={saveDeviceType} swabOptions={swabOptions} />
-  );
+  if (specimenTypesResults) {
+    const swabOptions = Array.from(
+      specimenTypesResults.specimenTypes.map((type) => ({
+        label: `${type?.name} (${type?.typeCode})`,
+        value: type?.internalId,
+      }))
+    );
+    return (
+      <DeviceTypeForm
+        saveDeviceType={saveDeviceType}
+        swabOptions={swabOptions}
+      />
+    );
+  } else {
+    return <LoadingCard message="Loading" />;
+  }
 };
 
 export default DeviceTypeFormContainer;

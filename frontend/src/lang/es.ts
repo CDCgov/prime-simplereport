@@ -48,7 +48,7 @@ export const es: LanguageConfig = {
       gender: {
         female: "Femenino",
         male: "Masculino",
-        other: OTHER,
+        other: "Persona no binaria",
         refused: REFUSED,
       },
       ethnicity: {
@@ -127,12 +127,8 @@ export const es: LanguageConfig = {
             "Usted es responsable de ingresar la información de contacto correcta, siguiendo las leyes federales y estatales aplicables.",
           primaryPhoneNumber: "Número de teléfono principal",
           additionalPhoneNumber: "Número de teléfono adicional",
-          receiveTextMessageResults:
-            "Sí, envíe un mensaje de texto a todos los números registrados de teléfonos móviles.",
           phoneType: "Tipo de teléfono",
           addNumber: "Agregar otro número",
-          testResultDelivery:
-            "¿Le gustaría recibir sus resultados por mensaje de texto?",
           email: "Dirección de correo electrónico",
           street1: "Dirección 1",
           street2: "Dirección 2",
@@ -140,6 +136,13 @@ export const es: LanguageConfig = {
           city: "Ciudad",
           state: "Estado",
           zip: "Código postal",
+        },
+        testResultDelivery: {
+          text: "",
+          receiveTextMessageResults:
+            "Sí, envíe un mensaje de texto a todos los números registrados de teléfonos móviles.",
+          email: "",
+          receiveEmailResults: "",
         },
         demographics: {
           heading: "Información demográfica",
@@ -555,7 +558,7 @@ export const es: LanguageConfig = {
         linkExpired:
           "Este enlace ha caducado. Comuníquese con su proveedor de pruebas.",
         linkNotFound:
-          "Este enlace no es válido. Comuníquese con su proveedor de pruebas.",
+          "Este enlace de resultado de la prueba no es válido. Vuelva a verificar el enlace o comuníquese con su proveedor de prueba para obtener el enlace correcto.",
         submit: "Continuar",
       },
     },

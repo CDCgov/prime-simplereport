@@ -2,6 +2,10 @@ import { FetchMock } from "jest-fetch-mock/types";
 
 import { AccountCreationApi } from "./AccountCreationApiService";
 
+const appInsightsHeaders = {
+  "x-ms-session-id": "",
+};
+
 describe("AccountCreationApi", () => {
   beforeEach(() => {
     (fetch as FetchMock).resetMocks();
@@ -20,6 +24,7 @@ describe("AccountCreationApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "GET",
         }
@@ -40,6 +45,7 @@ describe("AccountCreationApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
         }
@@ -60,6 +66,7 @@ describe("AccountCreationApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
         }
@@ -82,6 +89,7 @@ describe("AccountCreationApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
         }
@@ -101,6 +109,7 @@ describe("AccountCreationApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
         }
@@ -120,6 +129,7 @@ describe("AccountCreationApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
         }
@@ -138,6 +148,7 @@ describe("AccountCreationApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
         }
@@ -157,6 +168,7 @@ describe("AccountCreationApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
         }
@@ -175,6 +187,7 @@ describe("AccountCreationApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
         }
@@ -194,6 +207,7 @@ describe("AccountCreationApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
         }
@@ -213,6 +227,7 @@ describe("AccountCreationApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
         }
@@ -231,6 +246,7 @@ describe("AccountCreationApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
         }

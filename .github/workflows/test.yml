@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       test-db:
-        image: postgres:12-alpine
+        image: postgres:11-alpine
         env:
           POSTGRES_PASSWORD: this_is_a_super_secure_admin_password
         # Set health checks to wait until postgres has started

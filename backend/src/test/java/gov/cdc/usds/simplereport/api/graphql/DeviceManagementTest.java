@@ -7,8 +7,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
+import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
@@ -27,21 +31,8 @@ class DeviceManagementTest extends BaseGraphqlTest {
   }
 
   @Test
-  void createDeviceType_orgUser_failure() {
-    ObjectNode variables = sillyDeviceArgs();
-    runQuery("device-type-add", variables, ACCESS_ERROR);
-  }
-
-  @Test
   void createDeviceTypeNew_orgUser_failure() {
-    ObjectNode variables = sillyDeviceArgsNew();
-    runQuery("device-type-add-new", variables, ACCESS_ERROR);
-  }
-
-  @Test
-  void updateDeviceType_orgUser_failure() {
-    ObjectNode someDeviceType = (ObjectNode) fetchSorted().get(0);
-    ObjectNode variables = sillyDeviceArgs().put("id", someDeviceType.get("internalId").asText());
+    ObjectNode variables = getCreateDeviceTypeInput();
     runQuery("device-type-add", variables, ACCESS_ERROR);
   }
 
@@ -49,20 +40,14 @@ class DeviceManagementTest extends BaseGraphqlTest {
   void updateDeviceTypeNew_orgUser_failure() {
     ObjectNode someDeviceType = (ObjectNode) fetchSorted().get(0);
     ObjectNode variables =
-        sillyDeviceArgsNew().put("id", someDeviceType.get("internalId").asText());
-    runQuery("device-type-add-new", variables, ACCESS_ERROR);
-  }
-
-  @Test
-  void createDeviceType_adminUser_success() {
-    useSuperUser();
-    runQuery("device-type-add", sillyDeviceArgs());
+        getCreateDeviceTypeInput().put("id", someDeviceType.get("internalId").asText());
+    runQuery("device-type-add", variables, ACCESS_ERROR);
   }
 
   @Test
   void createDeviceTypeNew_adminUser_success() {
     useSuperUser();
-    runQuery("device-type-add-new", sillyDeviceArgsNew());
+    runQuery("device-type-add", getCreateDeviceTypeInput());
   }
 
   @Test
@@ -78,39 +63,16 @@ class DeviceManagementTest extends BaseGraphqlTest {
   void updateDeviceType_adminUser_success() {
     useSuperUser();
     ObjectNode someDeviceType = (ObjectNode) fetchSorted().get(0);
-    ObjectNode variables =
-        sillyDeviceArgs()
-            .put("id", someDeviceType.get("internalId").asText())
-            .set("swabType", null);
-    runQuery("device-type-update", variables);
-  }
-
-  @Test
-  void updateDeviceType_adminUserUpdatingSwabType_failure() {
-    useSuperUser();
-    ObjectNode someDeviceType = (ObjectNode) fetchSorted().get(0);
-    ObjectNode variables = sillyDeviceArgs().put("id", someDeviceType.get("internalId").asText());
-    runQuery("device-type-update", variables, "swab type");
+    UUID internalId = UUID.fromString(someDeviceType.get("internalId").asText());
+    runQuery("device-type-update", getUpdateDeviceTypeInput(internalId));
   }
 
   private List<JsonNode> fetchSorted() {
     ArrayNode deviceRecords = (ArrayNode) runQuery("device-type-query").get("deviceType");
     List<JsonNode> records = new ArrayList<>();
     deviceRecords.forEach(records::add);
-    records.sort((a, b) -> a.get("name").asText().compareTo(b.get("name").asText()));
+    records.sort(Comparator.comparing(a -> a.get("name").asText()));
     return records;
-  }
-
-  private ObjectNode sillyDeviceArgs() {
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("name", "Funny")
-            .put("manufacturer", "Acme")
-            .put("model", "Test-A-Lot")
-            .put("loincCode", "123456")
-            .put("swabType", "0987654321");
-    return variables;
   }
 
   private List<String> fetchSpecimenTypeIds() {
@@ -120,23 +82,38 @@ class DeviceManagementTest extends BaseGraphqlTest {
     return List.of(specimenId1, specimenId2);
   }
 
-  private ObjectNode sillyDeviceArgsNew() {
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("name", "Funny")
-            .put("manufacturer", "Acme")
-            .put("model", "Test-A-Lot")
-            .put("loincCode", "123456");
+  private ObjectNode getCreateDeviceTypeInput() {
 
-    List<String> specimenTypeIds = fetchSpecimenTypeIds();
-    variables
-        .putArray("swabTypes")
-        .addAll(
-            JsonNodeFactory.instance
-                .arrayNode()
-                .add(specimenTypeIds.get(0))
-                .add(specimenTypeIds.get(1)));
-    return variables;
+    List<UUID> specimenTypeIds =
+        fetchSpecimenTypeIds().stream().map(UUID::fromString).collect(Collectors.toList());
+
+    CreateDeviceType input =
+        CreateDeviceType.builder()
+            .name("Funny")
+            .manufacturer("Acme")
+            .model("Test-A-Lot")
+            .loincCode("123456")
+            .swabTypes(specimenTypeIds)
+            .build();
+
+    return JsonNodeFactory.instance.objectNode().putPOJO("input", input);
+  }
+
+  private ObjectNode getUpdateDeviceTypeInput(UUID internalId) {
+
+    List<UUID> specimenTypeIds =
+        fetchSpecimenTypeIds().stream().map(UUID::fromString).collect(Collectors.toList());
+
+    UpdateDeviceType input =
+        UpdateDeviceType.builder()
+            .internalId(internalId)
+            .name("Funny")
+            .manufacturer("Acme")
+            .model("Test-A-Lot")
+            .loincCode("123456")
+            .swabTypes(specimenTypeIds)
+            .build();
+
+    return JsonNodeFactory.instance.objectNode().putPOJO("input", input);
   }
 }

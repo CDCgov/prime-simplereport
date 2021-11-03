@@ -12,7 +12,7 @@ export default {
   component: Analytics,
   argTypes: {},
   parameters: {
-    msw: getMocks("GetTopLevelDashboardMetrics"),
+    msw: getMocks("GetTopLevelDashboardMetricsNew"),
   },
   decorators: [
     (Story) => (

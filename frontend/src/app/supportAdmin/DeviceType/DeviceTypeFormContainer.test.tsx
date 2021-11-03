@@ -10,7 +10,7 @@ const mockCreateDeviceType = jest.fn();
 
 jest.mock("../../../generated/graphql", () => {
   return {
-    useCreateDeviceTypeNewMutation: () => [
+    useCreateDeviceTypeMutation: () => [
       (options: any) => {
         mockCreateDeviceType(options);
         return Promise.resolve();

@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Personalization;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
@@ -140,5 +141,29 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
     assertEquals(376, mail.getValue().getAttachments().get(0).getContent().length());
     assertEquals("application/pdf", mail.getValue().getAttachments().get(0).getType());
     assertEquals(pdfResourceName, mail.getValue().getAttachments().get(0).getFilename());
+  }
+
+  @Test
+  void sendWithDynamicTemplateTest() throws IOException {
+    // GIVEN
+    String toEmail = "test@foo.com";
+    Map<String, Object> dynamicTemplateData =
+        Map.of(
+            "facility_name", "test_facility",
+            "expiration_duration", "2 days",
+            "test_result_url", "http://localhost");
+    // WHEN
+    _service.sendWithDynamicTemplate(
+        toEmail, EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT, dynamicTemplateData);
+
+    // THEN
+    verify(mockSendGrid, times(1)).send(mail.capture());
+    Mail sentMail = mail.getValue();
+    Personalization personalization = sentMail.getPersonalization().get(0);
+
+    assertThat(sentMail.getFrom().getEmail()).isEqualTo("me@example.com");
+    assertThat(sentMail.getFrom().getName()).isEqualTo("My Display Name");
+    assertEquals(personalization.getTos().get(0).getEmail(), toEmail);
+    assertThat(personalization.getDynamicTemplateData()).isEqualTo(dynamicTemplateData);
   }
 }

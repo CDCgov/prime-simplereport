@@ -1,7 +1,7 @@
 version: "3.5"
 services:
   db:
-    image: postgres:12-alpine
+    image: postgres:11-alpine
     ports:
       - "${SR_DB_PORT:-5432}:${SR_DB_PORT:-5432}"
     environment:
@@ -51,6 +51,11 @@ services:
     depends_on:
     - db
     - api
+  mailhog:
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+    image: mailhog/mailhog
 volumes:
   simple-report-dev-db-data:
 networks:

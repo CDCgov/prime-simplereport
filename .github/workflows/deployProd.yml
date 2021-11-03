@@ -82,7 +82,7 @@ jobs:
         with:
           deploy-env: ${{env.DEPLOY_ENV}}
           smarty-streets-key: ${{ secrets.SMARTY_STREETS_KEY }}
-          base-domain-name: simplereport.gov
+          base-domain-name: www.simplereport.gov
           client-tarball: ./client.tgz
           okta-enabled: true
           okta-url: https://hhs-prime.okta.com
