@@ -348,7 +348,7 @@ export type MutationResetUserPasswordArgs = {
 };
 
 export type MutationSendPatientLinkSmsArgs = {
-  internalId: Scalars["String"];
+  internalId: Scalars["ID"];
 };
 
 export type MutationSetCurrentUserTenantDataAccessArgs = {
@@ -1895,6 +1895,47 @@ export type GetTestResultForPrintQuery = {
       }>;
     }>;
   }>;
+};
+
+export type GetTestResultForTextQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type GetTestResultForTextQuery = {
+  __typename?: "Query";
+  testResult?: Maybe<{
+    __typename?: "TestResult";
+    dateTested?: Maybe<any>;
+    patientLink?: Maybe<{
+      __typename?: "PatientLink";
+      internalId?: Maybe<string>;
+    }>;
+    patient?: Maybe<{
+      __typename?: "Patient";
+      firstName?: Maybe<string>;
+      middleName?: Maybe<string>;
+      lastName?: Maybe<string>;
+      birthDate?: Maybe<any>;
+      phoneNumbers?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "PhoneNumber";
+            type?: Maybe<PhoneType>;
+            number?: Maybe<string>;
+          }>
+        >
+      >;
+    }>;
+  }>;
+};
+
+export type SendSmsMutationVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type SendSmsMutation = {
+  __typename?: "Mutation";
+  sendPatientLinkSms?: Maybe<string>;
 };
 
 export type GetResultsCountByFacilityQueryVariables = Exact<{
@@ -5283,6 +5324,122 @@ export type GetTestResultForPrintLazyQueryHookResult = ReturnType<
 export type GetTestResultForPrintQueryResult = Apollo.QueryResult<
   GetTestResultForPrintQuery,
   GetTestResultForPrintQueryVariables
+>;
+export const GetTestResultForTextDocument = gql`
+  query getTestResultForText($id: ID!) {
+    testResult(id: $id) {
+      patientLink {
+        internalId
+      }
+      dateTested
+      patient {
+        firstName
+        middleName
+        lastName
+        birthDate
+        phoneNumbers {
+          type
+          number
+        }
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetTestResultForTextQuery__
+ *
+ * To run a query within a React component, call `useGetTestResultForTextQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTestResultForTextQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTestResultForTextQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetTestResultForTextQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTestResultForTextQuery,
+    GetTestResultForTextQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetTestResultForTextQuery,
+    GetTestResultForTextQueryVariables
+  >(GetTestResultForTextDocument, options);
+}
+export function useGetTestResultForTextLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTestResultForTextQuery,
+    GetTestResultForTextQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetTestResultForTextQuery,
+    GetTestResultForTextQueryVariables
+  >(GetTestResultForTextDocument, options);
+}
+export type GetTestResultForTextQueryHookResult = ReturnType<
+  typeof useGetTestResultForTextQuery
+>;
+export type GetTestResultForTextLazyQueryHookResult = ReturnType<
+  typeof useGetTestResultForTextLazyQuery
+>;
+export type GetTestResultForTextQueryResult = Apollo.QueryResult<
+  GetTestResultForTextQuery,
+  GetTestResultForTextQueryVariables
+>;
+export const SendSmsDocument = gql`
+  mutation sendSMS($id: ID!) {
+    sendPatientLinkSms(internalId: $id)
+  }
+`;
+export type SendSmsMutationFn = Apollo.MutationFunction<
+  SendSmsMutation,
+  SendSmsMutationVariables
+>;
+
+/**
+ * __useSendSmsMutation__
+ *
+ * To run a mutation, you first call `useSendSmsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSendSmsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [sendSmsMutation, { data, loading, error }] = useSendSmsMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useSendSmsMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    SendSmsMutation,
+    SendSmsMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<SendSmsMutation, SendSmsMutationVariables>(
+    SendSmsDocument,
+    options
+  );
+}
+export type SendSmsMutationHookResult = ReturnType<typeof useSendSmsMutation>;
+export type SendSmsMutationResult = Apollo.MutationResult<SendSmsMutation>;
+export type SendSmsMutationOptions = Apollo.BaseMutationOptions<
+  SendSmsMutation,
+  SendSmsMutationVariables
 >;
 export const GetResultsCountByFacilityDocument = gql`
   query GetResultsCountByFacility(
