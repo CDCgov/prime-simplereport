@@ -33,13 +33,15 @@ const EditOrgModal: React.FC<Props> = ({
   const [org, setOrg] = useState<PendingOrganizationFormValues>({
     name: organization.name,
     adminEmail: organization.adminEmail || "",
-    adminName: organization.adminName || "",
+    adminFirstName: organization.adminFirstName || "",
+    adminLastName: organization.adminLastName || "",
     adminPhone: organization.adminPhone || "",
   });
   const [errors, setErrors] = useState<PendingOrganizationErrors>({
     name: "",
     adminEmail: "",
-    adminName: "",
+    adminFirstName: "",
+    adminLastName: "",
     adminPhone: "",
   });
 
@@ -116,8 +118,13 @@ const EditOrgModal: React.FC<Props> = ({
           <Input {...commonInputProps} label="Organization name" field="name" />
           <Input
             {...commonInputProps}
-            label="Administrator name"
-            field="adminName"
+            label="Administrator first name"
+            field="adminFirstName"
+          />
+          <Input
+            {...commonInputProps}
+            label="Administrator last name"
+            field="adminLastName"
           />
           <Input
             {...commonInputProps}

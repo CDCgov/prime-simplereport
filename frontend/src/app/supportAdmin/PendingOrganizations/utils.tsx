@@ -4,7 +4,8 @@ import { phoneNumberIsValid } from "../../patients/personSchema";
 
 export interface PendingOrganizationFormValues {
   name: string;
-  adminName: string | undefined;
+  adminFirstName: string | undefined;
+  adminLastName: string | undefined;
   adminEmail: string | undefined;
   adminPhone: string | undefined;
 }
@@ -16,7 +17,8 @@ export const pendingOrganizationSchema: yup.SchemaOf<PendingOrganizationFormValu
   .object()
   .shape({
     name: yup.string().required("Organization name is required"),
-    adminName: yup.string(),
+    adminFirstName: yup.string(),
+    adminLastName: yup.string(),
     adminEmail: yup.string().email("A valid email address is required"),
     adminPhone: yup
       .mixed()

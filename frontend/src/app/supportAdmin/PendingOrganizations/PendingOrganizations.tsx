@@ -61,7 +61,7 @@ const PendingOrganizations = ({
     return orgsSortedByNewest.map((o) => (
       <tr key={o.externalId} className="sr-org-row">
         <td>{o.name}</td>
-        <td>{o.adminName}</td>
+        <td>{`${o.adminFirstName} ${o.adminLastName}`}</td>
         <td>
           <a href={`mailto:${o.adminEmail}}`}>{o.adminEmail}</a>
           <br />

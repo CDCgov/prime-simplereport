@@ -561,7 +561,8 @@ export type PatientLink = {
 export type PendingOrganization = {
   __typename?: "PendingOrganization";
   adminEmail?: Maybe<Scalars["String"]>;
-  adminName?: Maybe<Scalars["String"]>;
+  adminFirstName?: Maybe<Scalars["String"]>;
+  adminLastName?: Maybe<Scalars["String"]>;
   adminPhone?: Maybe<Scalars["String"]>;
   createdAt: Scalars["DateTime"];
   externalId: Scalars["String"];
@@ -1517,7 +1518,8 @@ export type GetPendingOrganizationsQuery = {
     __typename?: "PendingOrganization";
     externalId: string;
     name: string;
-    adminName?: Maybe<string>;
+    adminFirstName?: Maybe<string>;
+    adminLastName?: Maybe<string>;
     adminEmail?: Maybe<string>;
     adminPhone?: Maybe<string>;
     createdAt: any;
@@ -4201,7 +4203,8 @@ export const GetPendingOrganizationsDocument = gql`
     pendingOrganizations {
       externalId
       name
-      adminName
+      adminFirstName
+      adminLastName
       adminEmail
       adminPhone
       createdAt
