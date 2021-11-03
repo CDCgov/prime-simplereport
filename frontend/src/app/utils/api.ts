@@ -1,3 +1,5 @@
+import { getAppInsightsHeaders } from "../TelemetryService";
+
 interface JsonObject {
   [key: string]: any;
 }
@@ -6,10 +8,12 @@ type RequestMethod = "GET" | "POST";
 
 const JSON_CONTENT = "application/json";
 const TEXT_CONTENT = "text/plain";
-export const headers = {
+const baseHeaders = {
   "Content-Type": JSON_CONTENT,
   Accept: [JSON_CONTENT, TEXT_CONTENT].join(", "),
 };
+const instrumentationHeaders = getAppInsightsHeaders();
+export const headers = { ...baseHeaders, ...instrumentationHeaders };
 
 /**
  * Helper function to handle paths with or with out leading slash

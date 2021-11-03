@@ -2,6 +2,10 @@ import { FetchMock } from "jest-fetch-mock/types";
 
 import { SignUpApi } from "./SignUpApi";
 
+const appInsightsHeaders = {
+  "x-ms-session-id": "",
+};
+
 describe("SignUpApi", () => {
   beforeEach(() => {
     (fetch as FetchMock).resetMocks();
@@ -32,6 +36,7 @@ describe("SignUpApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
         }
@@ -56,6 +61,7 @@ describe("SignUpApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
         }
@@ -85,6 +91,7 @@ describe("SignUpApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
         }
