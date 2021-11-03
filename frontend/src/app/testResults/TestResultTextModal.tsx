@@ -17,6 +17,9 @@ import Alert from "../commonComponents/Alert";
 export const testQuery = gql`
   query getTestResultForText($id: ID!) {
     testResult(id: $id) {
+      patientLink {
+        internalId
+      }
       dateTested
       patient {
         firstName
@@ -39,16 +42,15 @@ interface patientPhoneDetails {
 const formatDate = (date: string | undefined, withTime?: boolean) => {
   const dateFormat = "MMMM Do, YYYY";
   const format = withTime ? `${dateFormat}` : dateFormat;
+  
   return moment(date)?.format(format);
 };
 
 
 
-const MARK_TEST_AS_ERROR = gql`
-  mutation MarkTestAsError($id: ID!, $reason: String!) {
-    correctTestMarkAsError(id: $id, reason: $reason) {
-      internalId
-    }
+const SEND_SMS = gql`
+  mutation sendSMS($id: ID!) {
+    sendPatientLinkSms(internalId: $id) 
   }
 `;
 
@@ -71,23 +73,22 @@ const mobilePhoneNumbers = (phoneArray: patientPhoneDetails[]) => {
 
 
 export const DetachedTestResultCorrectionModal = ({
-  testResultId,
   data,
   closeModal,
 }: Props) => {
-  const [markTestAsError] = useMutation(MARK_TEST_AS_ERROR);
+  const [sendSMS] = useMutation(SEND_SMS);
   const { patient } = data.testResult;
-  console.log(patient,"HERE IT IS")
+  const  patientLink  = data.testResult.patientLink.internalId
   const { dateTested } = data.testResult
-  const markAsError = () => {
-    markTestAsError({
+  const resendSMS = () => {
+    sendSMS({
       variables: {
-        id: testResultId,
+        id: patientLink,
       },
     })
       .then(() => {
         const alert = (
-          <Alert type="success" title="Result marked as error" body="" />
+          <Alert type="success" title="Patient Results Texted" body="" />
         );
         showNotification(alert);
       })
@@ -112,7 +113,7 @@ export const DetachedTestResultCorrectionModal = ({
       </p>
       <div className="sr-test-correction-buttons">
         <Button variant="unstyled" label="Cancel" onClick={closeModal} />
-        <Button label="Send results" onClick={markAsError} />
+        <Button label="Send results" onClick={resendSMS} />
       </div>
     </Modal>
   );
