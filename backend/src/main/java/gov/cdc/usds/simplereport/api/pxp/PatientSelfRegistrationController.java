@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PatientSelfRegistrationLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.model.ExistingPatientCheckRequestBody;
+import gov.cdc.usds.simplereport.service.model.PatientEmailsHolder;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
@@ -64,10 +65,7 @@ public class PatientSelfRegistrationController {
             ? body.getPhoneNumbers()
             : List.of(new PhoneNumberInput(null, parsePhoneNumber(body.getTelephone())));
 
-    List<String> backwardsCompatibleEmails =
-        body.getEmails() != null
-            ? body.getEmails()
-            : body.getEmail() == null ? null : List.of(body.getEmail());
+    var backwardsCompatibleEmails = new PatientEmailsHolder(body.getEmail(), body.getEmails());
 
     Person p =
         _personService.addPatient(
@@ -81,7 +79,7 @@ public class PatientSelfRegistrationController {
             body.getAddress(),
             parsePhoneNumbers(backwardsCompatiblePhoneNumbers),
             body.getRole(),
-            parseEmails(backwardsCompatibleEmails),
+            parseEmails(backwardsCompatibleEmails.getFullList()),
             parseRace(body.getRace()),
             parseEthnicity(body.getEthnicity()),
             parseTribalAffiliation(body.getTribalAffiliation()),

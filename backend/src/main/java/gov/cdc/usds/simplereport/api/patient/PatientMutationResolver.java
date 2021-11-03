@@ -19,6 +19,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.UploadService;
+import gov.cdc.usds.simplereport.service.model.PatientEmailsHolder;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.io.IOException;
 import java.io.InputStream;
@@ -84,8 +85,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
             ? phoneNumbers
             : List.of(new PhoneNumberInput(null, parsePhoneNumber(telephone)));
 
-    List<String> backwardsCompatibleEmails =
-        emails != null ? emails : email == null ? null : List.of(email);
+    var backwardsCompatibleEmails = new PatientEmailsHolder(email, emails);
 
     return _ps.addPatient(
         facilityId,
@@ -104,7 +104,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
             parseString(county)),
         parsePhoneNumbers(backwardsCompatiblePhoneNumbers),
         parsePersonRole(role, false),
-        parseEmails(backwardsCompatibleEmails),
+        parseEmails(backwardsCompatibleEmails.getFullList()),
         parseRace(race),
         parseEthnicity(ethnicity),
         parseTribalAffiliation(tribalAffiliation),
@@ -148,8 +148,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
             ? phoneNumbers
             : List.of(new PhoneNumberInput(null, parsePhoneNumber(telephone)));
 
-    List<String> backwardsCompatibleEmails =
-        emails != null ? emails : email == null ? null : List.of(email);
+    var backwardsCompatibleEmails = new PatientEmailsHolder(email, emails);
 
     return _ps.updatePatient(
         facilityId,
@@ -169,7 +168,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
             parseString(county)),
         parsePhoneNumbers(backwardsCompatiblePhoneNumbers),
         parsePersonRole(role, false),
-        parseEmails(backwardsCompatibleEmails),
+        parseEmails(backwardsCompatibleEmails.getFullList()),
         parseRace(race),
         parseEthnicity(ethnicity),
         parseTribalAffiliation(tribalAffiliation),

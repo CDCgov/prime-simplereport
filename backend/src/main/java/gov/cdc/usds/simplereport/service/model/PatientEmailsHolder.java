@@ -1,0 +1,38 @@
+package gov.cdc.usds.simplereport.service.model;
+
+import java.util.List;
+
+public class PatientEmailsHolder {
+  private String _default;
+  private List<String> _all;
+
+  public PatientEmailsHolder(String defaultEmail, List<String> emails) {
+    super();
+    this._default = defaultEmail;
+    this._all = emails;
+  }
+
+  public String getDefault() {
+    if (_default == null) {
+      if (_all != null && !_all.isEmpty()) {
+        return _all.get(0);
+      }
+
+      return null;
+    }
+
+    return _default;
+  }
+
+  public List<String> getFullList() {
+    if (_all == null) {
+      if (_default == null) {
+        return null;
+      }
+
+      return List.of(_default);
+    }
+
+    return _all;
+  }
+}
