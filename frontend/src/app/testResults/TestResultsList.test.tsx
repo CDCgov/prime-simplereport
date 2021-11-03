@@ -1092,6 +1092,26 @@ describe("TestResultsList", () => {
     expect(screen.queryAllByText("Test details").length).toBe(2);
   });
 
+  it("opens the email test results modal", async () => {
+    render(
+      <WithRouter>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks}>
+            <TestResultsList pageNumber={1} />
+          </MockedProvider>
+        </Provider>
+      </WithRouter>
+    );
+    await screen.findByText("Test Results", { exact: false });
+    const moreActions = within(screen.getByRole("table")).getAllByRole(
+      "button"
+    )[0];
+    userEvent.click(moreActions);
+    const emailResult = await screen.findByText("Email result");
+    userEvent.click(emailResult);
+    expect(screen.getByText("Email results?")).toBeInTheDocument();
+  });
+
   it("doesn't display anything if no facility is selected", async () => {
     render(
       <MemoryRouter>
