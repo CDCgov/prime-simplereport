@@ -1,9 +1,15 @@
 import { PhoneNumberUtil, PhoneNumberFormat } from "google-libphonenumber";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
 
-import "./PendingOrganizationsList.scss";
 import Checkboxes from "../../commonComponents/Checkboxes";
 import Button from "../../commonComponents/Button/Button";
 import { PendingOrganization } from "../../../generated/graphql";
+
+import EditOrgModal from "./EditOrgModal";
+import { PendingOrganizationFormValues } from "./utils";
+
+import "./PendingOrganizationsList.scss";
 
 interface Props {
   organizations: PendingOrganization[];
@@ -22,6 +28,16 @@ const PendingOrganizations = ({
   setVerifiedOrganization,
   loading,
 }: Props) => {
+  const [orgToEdit, setOrgToEdit] = useState<PendingOrganization | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleUpdateOrg = (org: PendingOrganizationFormValues) => {
+    setIsUpdating(true);
+    console.log("handleUpdateOrg");
+    setOrgToEdit(null);
+    setIsUpdating(false);
+  };
+
   const orgRows = () => {
     if (loading) {
       return (
@@ -76,6 +92,14 @@ const PendingOrganizations = ({
             ]}
           />
         </td>
+        <td>
+          <span
+            data-testid={`edit-icon-${o.externalId}`}
+            onClick={() => setOrgToEdit(o)}
+          >
+            <FontAwesomeIcon icon={"edit"} />
+          </span>
+        </td>
       </tr>
     ));
   };
@@ -85,6 +109,14 @@ const PendingOrganizations = ({
       <div className="grid-container pending-orgs-wide-container">
         <div className="grid-row">
           <div className="prime-container card-container sr-pending-organizations-list">
+            {orgToEdit ? (
+              <EditOrgModal
+                organization={orgToEdit}
+                onClose={() => setOrgToEdit(null)}
+                onSubmit={handleUpdateOrg}
+                isUpdating={isUpdating}
+              />
+            ) : null}
             <div className="usa-card__header">
               <h2>Organizations Pending Identity Verification</h2>
               <div>
@@ -107,6 +139,7 @@ const PendingOrganizations = ({
                     <th scope="row">Created</th>
                     <th scope="col">External ID</th>
                     <th scope="col">Verify Identity</th>
+                    <th scope="col">Edit</th>
                   </tr>
                 </thead>
                 <tbody>{orgRows()}</tbody>

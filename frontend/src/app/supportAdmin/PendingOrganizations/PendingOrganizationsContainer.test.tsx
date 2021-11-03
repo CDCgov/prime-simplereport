@@ -21,7 +21,7 @@ const organizationsQuery = {
           name: "Space Camp",
           adminEmail: "admin@spacecamp.org",
           adminName: "John Doe",
-          adminPhone: "555-555-5555",
+          adminPhone: "530-867-5309",
           createdAt: "2020-05-01T00:00:00.000Z",
         },
         {
@@ -29,7 +29,7 @@ const organizationsQuery = {
           name: "A Real Hospital",
           adminEmail: "admin@arealhospital.org",
           adminName: "Jane Doe",
-          adminPhone: "666-666-6666",
+          adminPhone: "410-867-5309",
           createdAt: "2020-06-01T00:00:00.000Z",
         },
       ],
@@ -113,7 +113,7 @@ describe("PendingOrganizationsContainer", () => {
         screen.getByText("admin@spacecamp.org", { exact: false })
       ).toBeInTheDocument();
       expect(
-        screen.getByText("(555) 555-5555", { exact: false })
+        screen.getByText("(530) 867-5309", { exact: false })
       ).toBeInTheDocument();
     });
 
@@ -160,6 +160,77 @@ describe("PendingOrganizationsContainer", () => {
           expect(
             screen.getByText("Save Changes", { exact: false })
           ).toBeDisabled();
+        });
+      });
+    });
+    describe("editing an org", () => {
+      beforeEach(async () => {
+        await act(async () => {
+          await userEvent.click(
+            screen.getByTestId(
+              "edit-icon-DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+            )
+          );
+        });
+      });
+      it("displays the edit form", async () => {
+        expect(
+          await screen.findByText("Edit organization")
+        ).toBeInTheDocument();
+      });
+      describe("submitting the form", () => {
+        it("closes the modal when successful", async () => {
+          await act(async () => {
+            await userEvent.click(screen.getByText("Save"));
+          });
+          expect(
+            screen.queryByText("Edit organization")
+          ).not.toBeInTheDocument();
+        });
+        it("displays an error when org name is empty", async () => {
+          await act(async () => {
+            await userEvent.clear(
+              screen.getByLabelText("Organization name", { exact: false })
+            );
+            await userEvent.click(screen.getByText("Save"));
+          });
+          expect(
+            screen.getByText("Organization name is required")
+          ).toBeInTheDocument();
+        });
+        it("displays an error when email is invalid", async () => {
+          await act(async () => {
+            await userEvent.clear(
+              screen.getByLabelText("Administrator email", { exact: false })
+            );
+            await userEvent.type(
+              screen.getByLabelText("Administrator email", { exact: false }),
+              "foo"
+            );
+            await userEvent.click(screen.getByText("Save"));
+          });
+          expect(
+            screen.getByText("A valid email address is required", {
+              exact: false,
+            })
+          ).toBeInTheDocument();
+        });
+        it("displays an error when phone is invalid", async () => {
+          await act(async () => {
+            await userEvent.clear(
+              screen.getByLabelText("Administrator phone", { exact: false })
+            );
+            await userEvent.type(
+              screen.getByLabelText("Administrator phone", { exact: false }),
+              "foo"
+            );
+            await userEvent.click(screen.getByText("Save"));
+          });
+          expect(
+            screen.getByText("A valid phone number is required", {
+              exact: false,
+            })
+          ).toBeInTheDocument();
         });
       });
     });
