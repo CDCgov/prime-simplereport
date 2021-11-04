@@ -297,19 +297,20 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     return _os.setIdentityVerified(externalId, verified);
   }
 
-  public void editPendingOrganization(
+  public String editPendingOrganization(
       String orgExternalId,
       String name,
       String adminFirstName,
       String adminLastName,
       String adminEmail,
       String adminPhone) {
-    _oqs.editQueueItem(
+    OrganizationQueueItem editedItem =_oqs.editQueueItem(
         orgExternalId,
         toOptional(name),
         toOptional(adminFirstName),
         toOptional(adminLastName),
         toOptional(adminEmail),
         toOptional(adminPhone));
+    return editedItem.getExternalId();
   }
 }
