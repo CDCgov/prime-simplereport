@@ -35,7 +35,14 @@ const PendingOrganizations = ({
 
   const handleUpdateOrg = (org: PendingOrganizationFormValues) => {
     setIsUpdating(true);
-    console.log("handleUpdateOrg");
+
+    console.log("editing org: ", orgToEdit?.externalId);
+    console.log("new values: ");
+    console.log("name: ", org.name);
+    console.log("admin: ", org.adminFirstName + " " + org.adminLastName);
+    console.log("email: ", org.adminEmail);
+    console.log("phone: ", org.adminPhone);
+
     setOrgToEdit(null);
     setIsUpdating(false);
   };
