@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service.model;
 
+import java.util.Collections;
 import java.util.List;
 
 public class PatientEmailsHolder {
@@ -27,7 +28,7 @@ public class PatientEmailsHolder {
   public List<String> getFullList() {
     if (_all == null) {
       if (_default == null) {
-        return null;
+        return Collections.emptyList();
       }
 
       return List.of(_default);

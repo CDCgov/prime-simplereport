@@ -12,6 +12,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -144,11 +145,11 @@ public class Translators {
   }
 
   public static List<String> parseEmails(List<String> emails) {
-    if (emails == null) {
-      return null;
+    if (emails == null || emails.isEmpty()) {
+      return Collections.emptyList();
     }
 
-    return emails.stream().map(e -> parseEmail(e)).collect(Collectors.toList());
+    return emails.stream().map(Translators::parseEmail).collect(Collectors.toList());
   }
 
   private static final Map<String, String> RACES =

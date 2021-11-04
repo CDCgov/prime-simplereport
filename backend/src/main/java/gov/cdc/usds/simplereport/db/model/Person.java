@@ -137,7 +137,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.address = address;
     this.role = role;
     this.emails = emails;
-    if (emails != null) {
+    if (emails != null && !emails.isEmpty()) {
       this.email = emails.get(0);
     }
     this.race = race;
@@ -191,7 +191,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.address = address;
     this.role = role;
     this.emails = emails;
-    if (emails != null) {
+    if (emails != null && !emails.isEmpty()) {
       this.email = emails.get(0);
     }
     this.race = race;
