@@ -80,7 +80,7 @@ export const DetachedTestResultCorrectionModal = ({
     })
       .then(() => {
         const alert = (
-          <Alert type="success" title="Patient Results Texted" body="" />
+          <Alert type="success" title="Result texted" body="" />
         );
         showNotification(alert);
       })
@@ -96,16 +96,16 @@ export const DetachedTestResultCorrectionModal = ({
       overlayClassName="sr-test-correction-modal-overlay"
       contentLabel="Printable test result"
     >
-      <h3>Text Results?</h3>
+      <h3>Text result?</h3>
       <p>
         {" "}
-        {formatFullName(patient)} testresults from {formatDate(dateTested)} will
+        {formatFullName(patient)} test result from {formatDate(dateTested)} will
         be sent to the following numbers:
         <table>{mobilePhoneNumbers(patient.phoneNumbers)}</table>
       </p>
       <div className="sr-test-correction-buttons">
         <Button variant="unstyled" label="Cancel" onClick={closeModal} />
-        <Button label="Send results" onClick={resendSMS} />
+        <Button label="Send result" onClick={resendSMS} />
       </div>
     </Modal>
   );
