@@ -6,6 +6,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import com.twilio.exception.ApiException;
 import com.twilio.exception.TwilioException;
 import com.twilio.type.PhoneNumber;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TextMessageSent;
@@ -45,6 +46,7 @@ public class SmsService {
     log.debug("SmsService will send from {}", rawFromNumber);
   }
 
+  @AuthorizationConfiguration.RequirePermissionStartTestWithPatientLink
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public List<SmsAPICallResult> sendToPatientLink(UUID patientLinkId, String text) {
     PatientLink pl = pls.getRefreshedPatientLink(patientLinkId);
