@@ -1,26 +1,34 @@
 package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import com.sendgrid.helpers.mail.Mail;
 import gov.cdc.usds.simplereport.api.accountrequest.AccountRequestController;
-import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
+import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
+import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailProvider;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import java.util.List;
+import java.util.UUID;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,29 +48,30 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class AccountRequestControllerTest extends BaseFullStackTest {
+
   @Autowired private MockMvc _mockMvc;
   @Autowired private AccountRequestController _controller;
 
-  @SpyBean private ApiUserService apiUserService;
   @MockBean private EmailProvider mockSendGrid;
   @SpyBean private EmailService emailService;
 
-  @SpyBean private OrganizationQueueService _orgQueueService;
+  @MockBean private ApiUserService _apiUserService;
+  @MockBean private DemoOktaRepository _oktaRepo;
+  @MockBean private OrganizationService _orgService;
+  @MockBean private OrganizationQueueService _orgQueueService;
 
   @Captor private ArgumentCaptor<TemplateVariablesProvider> contentCaptor;
   @Captor private ArgumentCaptor<Mail> mail;
   @Captor private ArgumentCaptor<String> orgNameCaptor;
   @Captor private ArgumentCaptor<String> externalIdCaptor;
-  @Captor private ArgumentCaptor<PersonName> nameCaptor;
 
   @BeforeEach
   void clearDb() {
     truncateDb();
-    _oktaRepo.reset();
   }
 
   @Test
-  void contextLoads() throws Exception {
+  void contextLoads() {
     assertThat(_controller).isNotNull();
   }
 
@@ -115,53 +124,15 @@ class AccountRequestControllerTest extends BaseFullStackTest {
     verifyNoInteractions(emailService);
   }
 
-  // account request tests
   @Test
-  void accountRequestSuccessful() throws Exception {
+  void submitOrganizationAccountRequestAddToQueue_nameCleaning_success() throws Exception {
     // given
-    String requestBody =
-        createAccountRequest(
-            "Day Hayes Trading",
-            "RI",
-            "shelter",
-            "Mary",
-            "",
-            "Lopez",
-            "kyvuzoxy@mailinator.com",
-            "+1 (969) 768-2863");
+    OrganizationQueueItem queueItem = mock(OrganizationQueueItem.class);
+    when(queueItem.getExternalId()).thenReturn("AZ-Central-Schools-SOME_UUID");
+    when(_orgQueueService.queueNewRequest(eq("Central Schools"), any(), any()))
+        .thenReturn(queueItem);
 
     // when
-    MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody);
-
-    this._mockMvc.perform(builder).andExpect(status().isOk());
-
-    // then
-    List<Organization> org = _orgService.getOrganizationsByName("Day Hayes Trading");
-    assertThat(org.size()).isEqualTo(1);
-    assertThat(org.get(0).getExternalId()).startsWith("RI-Day-Hayes-Trading-");
-    assertThat(org.get(0).getIdentityVerified()).isFalse();
-
-    verify(apiUserService, times(1))
-        .createUser(
-            eq("kyvuzoxy@mailinator.com"),
-            nameCaptor.capture(),
-            externalIdCaptor.capture(),
-            eq(Role.ADMIN));
-
-    assertThat(nameCaptor.getValue().getFirstName()).isEqualTo("Mary");
-    assertNull(nameCaptor.getValue().getMiddleName());
-    assertThat(nameCaptor.getValue().getLastName()).isEqualTo("Lopez");
-    assertNull(nameCaptor.getValue().getSuffix());
-    assertThat(externalIdCaptor.getValue()).contains("RI-Day-Hayes-Trading-");
-  }
-
-  @Test
-  void submitOrganizationAccountRequest_nameCleaning_success() throws Exception {
     String requestBody =
         createAccountRequest(
             " Central   Schools  ",
@@ -173,28 +144,72 @@ class AccountRequestControllerTest extends BaseFullStackTest {
             "kyvuzoxy@mailinator.com",
             "+1 (969) 768-2863");
     MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_ADD_TO_QUEUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
     this._mockMvc.perform(builder).andExpect(status().isOk());
 
-    verify(_orgService)
-        .createOrganization(orgNameCaptor.capture(), eq("k12"), externalIdCaptor.capture());
+    // then
+    verify(_orgQueueService)
+        .queueNewRequest(orgNameCaptor.capture(), externalIdCaptor.capture(), any());
 
     assertThat(orgNameCaptor.getValue()).isEqualTo("Central Schools");
     assertThat(externalIdCaptor.getValue()).startsWith("AZ-Central-Schools-");
   }
 
   @Test
-  void submitOrganizationAccountRequest_emptyOrgName_failure() throws Exception {
+  @DisplayName("Duplicate org in different state succeeds but state is appended to name")
+  void submitOrganizationAccountRequestAddToQueue_duplicateOrgInDifferentState_success()
+      throws Exception {
+    // given
+    mockVerifiedDefaultOrganization();
+
+    OrganizationQueueItem queueItem = mock(OrganizationQueueItem.class);
+    when(queueItem.getExternalId()).thenReturn("CA-Central-Schools-CA-SOME_UUID");
+    when(_orgQueueService.queueNewRequest(eq("Central Schools-CA"), any(), any()))
+        .thenReturn(queueItem);
+
+    // when, another org with same name in a different state
+    String requestBody =
+        createAccountRequest(
+            "Central Schools",
+            "CA",
+            "k12",
+            "Mary",
+            "",
+            "Lopez",
+            "mlopez@example.com",
+            "+1 (969) 768-2863");
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_ADD_TO_QUEUE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    // then
+    MvcResult result = this._mockMvc.perform(builder).andReturn();
+    String jsonString = result.getResponse().getContentAsString();
+    DocumentContext context = JsonPath.parse(jsonString);
+    String orgExternalId = context.read("$.orgExternalId");
+    assertTrue(orgExternalId.startsWith("CA-Central-Schools-CA-"));
+
+    verify(_orgQueueService)
+        .queueNewRequest(orgNameCaptor.capture(), externalIdCaptor.capture(), any());
+    assertThat(orgNameCaptor.getValue()).isEqualTo("Central Schools-CA");
+    assertThat(externalIdCaptor.getValue()).startsWith("CA-Central-Schools-CA-");
+  }
+
+  @Test
+  void submitOrganizationAccountRequestAddToQueue_emptyOrgName_failure() throws Exception {
     // failures when cleaning and checking organization name
     String requestBody =
         createAccountRequest(
             " ", "AZ", "k12", "Mary", "", "Lopez", "kyvuzoxy@mailinator.com", "+1 (969) 768-2863");
     MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_ADD_TO_QUEUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -208,7 +223,8 @@ class AccountRequestControllerTest extends BaseFullStackTest {
 
   @ParameterizedTest
   @ValueSource(strings = {"% ^ #", "-", "  --- --- ---"})
-  void submitOrganizationAccountRequest_invalidOrgName_failure(String orgName) throws Exception {
+  void submitOrganizationAccountRequestAddToQueue_invalidOrgName_failure(String orgName)
+      throws Exception {
     // failures when cleaning and checking organization external id
     String requestBody =
         createAccountRequest(
@@ -221,7 +237,7 @@ class AccountRequestControllerTest extends BaseFullStackTest {
             "kyvuzoxy@mailinator.com",
             "+1 (969) 768-2863");
     MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_ADD_TO_QUEUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -235,25 +251,10 @@ class AccountRequestControllerTest extends BaseFullStackTest {
 
   @Test
   @DisplayName("Duplicate org in same state fails")
-  void duplicateOrgInSameState() throws Exception {
+  void submitOrganizationAccountRequestAddToQueue_duplicateOrgInSameState_failure()
+      throws Exception {
     // given
-    String originalRequestBody =
-        createAccountRequest(
-            "Central Schools",
-            "AZ",
-            "k12",
-            "Mary",
-            "",
-            "Lopez",
-            "kyvuzoxy@mailinator.com",
-            "+1 (969) 768-2863");
-    MockHttpServletRequestBuilder originalBuilder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(originalRequestBody);
-    this._mockMvc.perform(originalBuilder).andExpect(status().isOk());
+    mockVerifiedDefaultOrganization();
 
     // when
     String duplicateRequestBody =
@@ -268,7 +269,7 @@ class AccountRequestControllerTest extends BaseFullStackTest {
             "760-858-9900");
 
     MockHttpServletRequestBuilder duplicateBuilder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_ADD_TO_QUEUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -283,25 +284,10 @@ class AccountRequestControllerTest extends BaseFullStackTest {
 
   @Test
   @DisplayName("Duplicate org in same state with different letter casing fails")
-  void duplicateOrgInSameStateDifferentCasing() throws Exception {
+  void submitOrganizationAccountRequestAddToQueue_duplicateOrgInSameStateDifferentCasing_failure()
+      throws Exception {
     // given
-    String originalRequestBody =
-        createAccountRequest(
-            "Central Schools",
-            "AZ",
-            "k12",
-            "Mary",
-            "",
-            "Lopez",
-            "kyvuzoxy@mailinator.com",
-            "+1 (969) 768-2863");
-    MockHttpServletRequestBuilder originalBuilder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(originalRequestBody);
-    this._mockMvc.perform(originalBuilder).andExpect(status().isOk());
+    mockVerifiedDefaultOrganization();
 
     // when
     String duplicateRequestBody =
@@ -316,95 +302,24 @@ class AccountRequestControllerTest extends BaseFullStackTest {
             "760-858-9900");
 
     MockHttpServletRequestBuilder duplicateBuilder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_ADD_TO_QUEUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(duplicateRequestBody);
+    MvcResult result = this._mockMvc.perform(duplicateBuilder).andReturn();
 
     // then
-    MvcResult result = this._mockMvc.perform(duplicateBuilder).andReturn();
     assertThat(result.getResponse().getStatus()).isEqualTo(400);
     assertThat(result.getResponse().getContentAsString())
         .contains("This organization has already registered with SimpleReport.");
   }
 
   @Test
-  @DisplayName("Duplicate org in different state succeeds but state is appended to name")
-  void duplicateOrgInDifferentState() throws Exception {
-    // given
-    String originalRequestBody =
-        createAccountRequest(
-            "Central Schools",
-            "AZ",
-            "k12",
-            "Mary",
-            "",
-            "Lopez",
-            "kyvuzoxy@mailinator.com",
-            "+1 (969) 768-2863");
-
-    MockHttpServletRequestBuilder originalBuilder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(originalRequestBody);
-
-    this._mockMvc.perform(originalBuilder).andExpect(status().isOk());
-
-    // when
-    String duplicateRequestBody =
-        createAccountRequest(
-            "Central Schools",
-            "CA",
-            "k12",
-            "Susie",
-            "",
-            "Smith",
-            "susie@example.com",
-            "760-858-9900");
-
-    MockHttpServletRequestBuilder duplicateBuilder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(duplicateRequestBody);
-
-    this._mockMvc.perform(duplicateBuilder).andExpect(status().isOk());
-
-    // then
-    List<Organization> originalOrg = _orgService.getOrganizationsByName("Central Schools");
-    assertThat(originalOrg.size()).isEqualTo(1);
-    assertThat(originalOrg.get(0).getExternalId()).startsWith("AZ-Central-Schools");
-
-    List<Organization> duplicateOrg = _orgService.getOrganizationsByName("Central Schools-CA");
-    assertThat(duplicateOrg.size()).isEqualTo(1);
-    assertThat(duplicateOrg.get(0).getExternalId()).startsWith("CA-Central-Schools-CA-");
-  }
-
-  @Test
   @DisplayName("Duplicate org with admin re-signing up fails")
-  void duplicateOrgWithAdminFails() throws Exception {
+  void submitOrganizationAccountRequestAddToQueue_duplicateOrgWithAdmin_failure() throws Exception {
     // given
-    String originalRequestBody =
-        createAccountRequest(
-            "Central Schools",
-            "AZ",
-            "k12",
-            "Mary",
-            "",
-            "Lopez",
-            "mlopez@mailinator.com",
-            "+1 (969) 768-2863");
-    MockHttpServletRequestBuilder originalBuilder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(originalRequestBody);
-    this._mockMvc.perform(originalBuilder).andExpect(status().isOk());
+    mockVerifiedOrganization("Central Schools", "AZ", "mlopez@mailinator.com");
 
     // when
     String duplicateRequestBody =
@@ -419,7 +334,7 @@ class AccountRequestControllerTest extends BaseFullStackTest {
             "+1 (969) 768-2863");
 
     MockHttpServletRequestBuilder duplicateBuilder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_ADD_TO_QUEUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -430,152 +345,13 @@ class AccountRequestControllerTest extends BaseFullStackTest {
     assertThat(result.getResponse().getStatus()).isEqualTo(400);
     assertThat(result.getResponse().getContentAsString())
         .contains(
-            "Duplicate organization with admin user that has not completed identity verification.");
-  }
-
-  @Test
-  @DisplayName("Cannot create user with existing email address")
-  void duplicateUserFails() throws Exception {
-    // given
-    String originalRequestBody =
-        createAccountRequest(
-            "Central Schools",
-            "AZ",
-            "k12",
-            "Mary",
-            "",
-            "Lopez",
-            "kyvuzoxy@mailinator.com",
-            "+1 (969) 768-2863");
-    MockHttpServletRequestBuilder originalBuilder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(originalRequestBody);
-    this._mockMvc.perform(originalBuilder).andExpect(status().isOk());
-
-    // when
-    String duplicateRequestBody =
-        createAccountRequest(
-            "Different Org, Same User",
-            "AZ",
-            "k12",
-            "Mary",
-            "",
-            "Lopez",
-            "kyvuzoxy@mailinator.com",
-            "+1 (969) 768-2863");
-
-    MockHttpServletRequestBuilder duplicateBuilder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(duplicateRequestBody);
-
-    // then
-    MvcResult result = this._mockMvc.perform(duplicateBuilder).andReturn();
-    assertThat(result.getResponse().getStatus()).isEqualTo(400);
-    assertThat(result.getResponse().getContentAsString())
-        .contains("This email address is already associated with a SimpleReport user.");
-  }
-
-  @Test
-  void submitOrganizationAccountRequestAddToQueue_nameCleaning_success() throws Exception {
-    String requestBody =
-        createAccountRequest(
-            " Central   Schools  ",
-            "AZ",
-            "k12",
-            "Mary",
-            "",
-            "Lopez",
-            "kyvuzoxy@mailinator.com",
-            "+1 (969) 768-2863");
-    MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_ADD_TO_QUEUE)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody);
-    this._mockMvc.perform(builder).andExpect(status().isOk());
-
-    verify(_orgQueueService)
-        .queueNewRequest(orgNameCaptor.capture(), externalIdCaptor.capture(), any());
-
-    assertThat(orgNameCaptor.getValue()).isEqualTo("Central Schools");
-    assertThat(externalIdCaptor.getValue()).startsWith("AZ-Central-Schools-");
-  }
-
-  @Test
-  void submitOrganizationAccountRequestAddToQueue_duplicateOrgInSameState_failure()
-      throws Exception {
-    // given
-    String originalRequestBody =
-        createAccountRequest(
-            "Central Schools",
-            "AZ",
-            "k12",
-            "Mary",
-            "",
-            "Lopez",
-            "kyvuzoxy@mailinator.com",
-            "+1 (969) 768-2863");
-    MockHttpServletRequestBuilder originalBuilder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(originalRequestBody);
-    this._mockMvc.perform(originalBuilder).andExpect(status().isOk());
-
-    // when
-    String duplicateRequestBody =
-        createAccountRequest(
-            "Central Schools",
-            "AZ",
-            "k12",
-            "Susie",
-            "",
-            "Smith",
-            "susie@example.com",
-            "760-858-9900");
-
-    MockHttpServletRequestBuilder duplicateBuilder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_ADD_TO_QUEUE)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(duplicateRequestBody);
-
-    // then
-    MvcResult result = this._mockMvc.perform(duplicateBuilder).andReturn();
-    assertThat(result.getResponse().getStatus()).isEqualTo(400);
-    assertThat(result.getResponse().getContentAsString())
-        .contains("This organization has already registered with SimpleReport.");
+            "Duplicate organization with admin user who has completed identity verification.");
   }
 
   @Test
   void submitOrganizationAccountRequestAddToQueue_duplicateUser_failure() throws Exception {
     // given
-    String originalRequestBody =
-        createAccountRequest(
-            "Central Schools",
-            "AZ",
-            "k12",
-            "Mary",
-            "",
-            "Lopez",
-            "kyvuzoxy@mailinator.com",
-            "+1 (969) 768-2863");
-    MockHttpServletRequestBuilder originalBuilder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_CREATE)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(originalRequestBody);
-    this._mockMvc.perform(originalBuilder).andExpect(status().isOk());
+    when(_apiUserService.userExists("kyvuzoxy@mailinator.com")).thenReturn(true);
 
     // when
     String duplicateRequestBody =
@@ -622,5 +398,22 @@ class AccountRequestControllerTest extends BaseFullStackTest {
     requestBody.put("email", workEmail);
     requestBody.put("workPhoneNumber", workPhone);
     return requestBody.toString();
+  }
+
+  private void mockVerifiedOrganization(String orgName, String state, String email) {
+    String orgNameNoSpaces = orgName.replaceAll(" ", "-");
+    String generatedExternalId =
+        String.format("%s-%s-%s", state, orgNameNoSpaces, UUID.randomUUID());
+    Organization org = mock(Organization.class);
+    when(org.getExternalId()).thenReturn(generatedExternalId);
+    when(org.getIdentityVerified()).thenReturn(true);
+
+    when(_orgService.getOrganizationsByName(argThat(equalToIgnoringCase(orgName))))
+        .thenReturn(List.of(org));
+    when(_oktaRepo.fetchAdminUserEmail(org)).thenReturn(List.of(email));
+  }
+
+  private void mockVerifiedDefaultOrganization() throws Exception {
+    mockVerifiedOrganization("Central Schools", "AZ", "kyvuzoxy@mailinator.com");
   }
 }

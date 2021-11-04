@@ -10,11 +10,8 @@ public final class ResourceLinks {
   public static final String ENTITY_NAME = "/pxp/register/entity-name";
 
   public static final String WAITLIST_REQUEST = "/account-request/waitlist";
-  public static final String ACCOUNT_REQUEST_ORGANIZATION_CREATE =
-      "/account-request/organization-create-without-facility";
   public static final String ACCOUNT_REQUEST_ORGANIZATION_ADD_TO_QUEUE =
       "/account-request/organization-add-to-queue";
-  public static final String USER_ACCOUNT_REQUEST = "/user-account";
   public static final String USER_GET_STATUS = "/user-account/user-status";
   public static final String USER_ACTIVATE_ACCOUNT_REQUEST = "/user-account/initialize";
   public static final String USER_SET_PASSWORD = "/user-account/set-password";
