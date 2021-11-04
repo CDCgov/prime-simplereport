@@ -17,6 +17,7 @@ interface Props {
   submitIdentityVerified: () => void;
   setVerifiedOrganization: (externalId: string, verified: boolean) => void;
   loading: boolean;
+  verifyInProgress: boolean;
 }
 
 const phoneUtil = PhoneNumberUtil.getInstance();
@@ -27,6 +28,7 @@ const PendingOrganizations = ({
   submitIdentityVerified,
   setVerifiedOrganization,
   loading,
+  verifyInProgress,
 }: Props) => {
   const [orgToEdit, setOrgToEdit] = useState<PendingOrganization | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -122,7 +124,11 @@ const PendingOrganizations = ({
               <div>
                 <Button
                   className="sr-active-button"
-                  disabled={loading || verifiedOrgExternalIds.size === 0}
+                  disabled={
+                    loading ||
+                    verifyInProgress ||
+                    verifiedOrgExternalIds.size === 0
+                  }
                   onClick={submitIdentityVerified}
                 >
                   Save Changes

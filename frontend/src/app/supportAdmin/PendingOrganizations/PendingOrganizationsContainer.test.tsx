@@ -139,16 +139,14 @@ describe("PendingOrganizationsContainer", () => {
         beforeEach(async () => {
           await act(async () => {
             await userEvent.click(screen.getByText("Save Changes"));
-          });
-          await waitFor(() =>
             expect(
-              screen.getByText("No results", { exact: false })
-            ).toBeInTheDocument()
-          );
+              screen.getByText("Save Changes", { exact: false })
+            ).toBeDisabled();
+          });
         });
         it("no more results", async () => {
-          await expect(
-            screen.getByText("No results", { exact: false })
+          expect(
+            await screen.findByText("No results", { exact: false })
           ).toBeInTheDocument();
         });
       });
