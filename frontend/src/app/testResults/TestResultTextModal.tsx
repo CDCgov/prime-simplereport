@@ -79,9 +79,7 @@ export const DetachedTestResultCorrectionModal = ({
       },
     })
       .then(() => {
-        const alert = (
-          <Alert type="success" title="Result texted" body="" />
-        );
+        const alert = <Alert type="success" title="Result texted" body="" />;
         showNotification(alert);
       })
       .finally(() => {
