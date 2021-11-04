@@ -7,7 +7,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 
 public interface OrganizationQueueRepository
-    extends EternalAuditedEntityRepository<OrganizationQueueItem> {
+    extends EternalAuditedEntityRepository<OrganizationQueueItem>, AdvisoryLockManager {
+
+  int ORG_QUEUE_REMINDER_LOCK = 66543221; // arbitrary 32-bit integer for our lock
 
   @Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.verifiedOrganization IS NULL")
   List<OrganizationQueueItem> findAllNotIdentityVerified();
@@ -22,4 +24,14 @@ public interface OrganizationQueueRepository
       EternalAuditedEntityRepository.BASE_QUERY
           + " and e.verifiedOrganization IS NULL and e.externalId = :orgExternalId")
   Optional<OrganizationQueueItem> findUnverifiedByExternalId(String orgExternalId);
+
+  /**
+   * Try to obtain the lock for the unverified organization reminders task. (It will be released
+   * automatically when the current transaction closes.)
+   *
+   * @return true if the lock was obtained, false otherwise.
+   */
+  default boolean tryOrgReminderLock() {
+    return tryTransactionLock(CORE_API_LOCK_SCOPE, ORG_QUEUE_REMINDER_LOCK);
+  }
 }
