@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAn
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsResponse;
 import gov.cdc.usds.simplereport.properties.ExperianProperties;
+import gov.cdc.usds.simplereport.service.errors.ExperianAuthException;
 import gov.cdc.usds.simplereport.service.errors.ExperianGetQuestionsException;
 import gov.cdc.usds.simplereport.service.errors.ExperianKbaResultException;
 import gov.cdc.usds.simplereport.service.errors.ExperianNullNodeException;
@@ -95,11 +96,11 @@ public class LiveExperianService
           _restTemplate.postForObject(
               _experianProperties.getTokenEndpoint(), entity, ObjectNode.class);
       if (responseBody == null) {
-        throw new RestClientException("The Experian token request returned a null response.");
+        throw new ExperianAuthException("The Experian token request returned a null response.");
       }
       return responseBody.path("access_token").asText();
     } catch (RestClientException e) {
-      throw new IllegalArgumentException("The activation token could not be retrieved: ", e);
+      throw new ExperianAuthException("The activation token could not be retrieved.", e);
     }
   }
 
