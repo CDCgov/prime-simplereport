@@ -1,12 +1,12 @@
 package gov.cdc.usds.simplereport.api.organization;
 
-import static gov.cdc.usds.simplereport.api.Translators.toOptional;
-import static gov.cdc.usds.simplereport.api.Translators.parseString;
-import static gov.cdc.usds.simplereport.api.Translators.parseState;
-import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
-import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
 import static gov.cdc.usds.simplereport.api.Translators.consolidateNameArguments;
+import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
 import static gov.cdc.usds.simplereport.api.Translators.parseOrganizationType;
+import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
+import static gov.cdc.usds.simplereport.api.Translators.parseState;
+import static gov.cdc.usds.simplereport.api.Translators.parseString;
+import static gov.cdc.usds.simplereport.api.Translators.toOptional;
 
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
@@ -304,13 +304,14 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String adminLastName,
       String adminEmail,
       String adminPhone) {
-    OrganizationQueueItem editedItem =_oqs.editQueueItem(
-        orgExternalId,
-        toOptional(name),
-        toOptional(adminFirstName),
-        toOptional(adminLastName),
-        toOptional(adminEmail),
-        toOptional(adminPhone));
+    OrganizationQueueItem editedItem =
+        _oqs.editQueueItem(
+            orgExternalId,
+            toOptional(name),
+            toOptional(adminFirstName),
+            toOptional(adminLastName),
+            toOptional(adminEmail),
+            toOptional(adminPhone));
     return editedItem.getExternalId();
   }
 }
