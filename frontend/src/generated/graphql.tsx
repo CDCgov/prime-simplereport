@@ -1,6 +1,5 @@
 import { gql } from "@apollo/client";
 import * as Apollo from "@apollo/client";
-
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
@@ -134,6 +133,7 @@ export type Mutation = {
   createFacilityRegistrationLink?: Maybe<Scalars["String"]>;
   createOrganization?: Maybe<Organization>;
   createOrganizationRegistrationLink?: Maybe<Scalars["String"]>;
+  editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
   reactivateUser?: Maybe<User>;
   removePatientFromQueue?: Maybe<Scalars["String"]>;
@@ -318,6 +318,15 @@ export type MutationCreateOrganizationArgs = {
 export type MutationCreateOrganizationRegistrationLinkArgs = {
   link: Scalars["String"];
   organizationExternalId: Scalars["String"];
+};
+
+export type MutationEditPendingOrganizationArgs = {
+  adminEmail?: Maybe<Scalars["String"]>;
+  adminFirstName?: Maybe<Scalars["String"]>;
+  adminLastName?: Maybe<Scalars["String"]>;
+  adminPhone?: Maybe<Scalars["String"]>;
+  name?: Maybe<Scalars["String"]>;
+  orgExternalId: Scalars["String"];
 };
 
 export type MutationEditQueueItemArgs = {
