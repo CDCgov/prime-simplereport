@@ -15,6 +15,8 @@ public class PatientEmailsHolder {
 
   public String getDefault() {
     if (_default == null) {
+      // If a default email is not specified, use the first element of the
+      // patient email list
       if (_all != null && !_all.isEmpty()) {
         return _all.get(0);
       }
@@ -28,6 +30,7 @@ public class PatientEmailsHolder {
   public List<String> getFullList() {
     if (_all == null) {
       if (_default == null) {
+        // No email addresses supplied at all
         return Collections.emptyList();
       }
 
