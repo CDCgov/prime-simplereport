@@ -86,15 +86,22 @@ function testResultRows(
 
   // `sort` mutates the array, so make a copy
   return [...testResults].sort(byDateTested).map((r) => {
-    const removed = r.correctionStatus === "REMOVED";
-    const actionItems = [
-      { name: "Print result", action: () => setPrintModalId(r.internalId) },
-      {
+    const actionItems = [];
+    actionItems.push({
+      name: "Print result",
+      action: () => setPrintModalId(r.internalId),
+    });
+    if (r.patient.email) {
+      actionItems.push({
         name: "Email result",
         action: () => setEmailModalTestResultId(r.internalId),
-      },
-      { name: "View details", action: () => setDetailsModalId(r.internalId) },
-    ];
+      });
+    }
+    actionItems.push({
+      name: "View details",
+      action: () => setDetailsModalId(r.internalId),
+    });
+    const removed = r.correctionStatus === "REMOVED";
     if (!removed) {
       actionItems.push({
         name: "Mark as error",
@@ -582,6 +589,7 @@ export const testResultQuery = gql`
         birthDate
         gender
         lookupId
+        email
       }
       createdBy {
         nameInfo {

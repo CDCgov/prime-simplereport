@@ -1953,6 +1953,7 @@ export type GetFacilityResultsQuery = {
           birthDate?: Maybe<any>;
           gender?: Maybe<string>;
           lookupId?: Maybe<string>;
+          email?: Maybe<string>;
         }>;
         createdBy?: Maybe<{
           __typename?: "ApiUser";
@@ -5433,6 +5434,7 @@ export const GetFacilityResultsDocument = gql`
         birthDate
         gender
         lookupId
+        email
       }
       createdBy {
         nameInfo {
