@@ -23,7 +23,7 @@ export const ActionsMenu = (props: Props) => (
     }
   >
     {props.items.map((item) => (
-      <MenuItem key={item.name} onClick={item.action}>
+      <MenuItem key={item.name} onClick={item.action} className="sr-menu-item">
         {item.name}
       </MenuItem>
     ))}
