@@ -10,11 +10,12 @@ let appInsights: ApplicationInsights | null = null;
 
 const createTelemetryService = () => {
   const initialize = (browserHistory?: ReturnType<typeof useHistory>) => {
-    const instrumentationKey = process.env.REACT_APP_APPINSIGHTS_KEY;
+    const connectionString =
+      process.env.REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING;
 
-    if (!instrumentationKey) {
+    if (!connectionString) {
       if (process.env.NODE_ENV !== "test") {
-        console.warn("Instrumentation key not provided");
+        console.warn("Connection string not provided");
       }
       return;
     }
@@ -23,7 +24,7 @@ const createTelemetryService = () => {
 
     appInsights = new ApplicationInsights({
       config: {
-        instrumentationKey,
+        connectionString,
         extensions: [reactPlugin],
         loggingLevelConsole: process.env.NODE_ENV === "development" ? 2 : 0,
         disableFetchTracking: false,
@@ -105,4 +106,16 @@ export function withInsights(console: Console) {
       });
     };
   });
+}
+
+export function getAppInsightsHeaders(): { [key: string]: string } {
+  // x-ms-session-id is passed explicitly to the backend so we can correlate
+  // backend operations with the frontend ones in App Insights
+  return {
+    "x-ms-session-id": getAppInsightsSessionId(),
+  };
+}
+
+function getAppInsightsSessionId(): string {
+  return appInsights?.context.sessionManager.automaticSession.id ?? "";
 }

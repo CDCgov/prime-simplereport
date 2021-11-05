@@ -20,6 +20,7 @@ import {
   PersonUpdateFields,
   usePersonSchemata,
 } from "../personSchema";
+import { TestResultDeliveryPreference } from "../TestResultDeliveryPreference";
 import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
 import Input from "../../commonComponents/Input";
 import Select from "../../commonComponents/Select";
@@ -29,6 +30,10 @@ import {
 } from "../../utils/smartyStreets";
 import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
 import { formatDate } from "../../utils/date";
+import {
+  getSelectedDeliveryPreferencesEmail,
+  toggleDeliveryPreferenceEmail,
+} from "../../utils/deliveryPreferences";
 
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
@@ -271,6 +276,7 @@ const PersonForm = (props: Props) => {
     ETHNICITY_VALUES,
     GENDER_VALUES,
     ROLE_VALUES,
+    TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL,
   } = useTranslatedConstants();
 
   return (
@@ -391,6 +397,24 @@ const PersonForm = (props: Props) => {
             label={t("patient.form.contact.email")}
             type="email"
           />
+          {patient.email && (
+            <RadioGroup
+              legend={t("patient.form.testResultDelivery.email")}
+              name="testResultDeliveryEmail"
+              buttons={TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL}
+              onChange={(newPreference) => {
+                onPersonChange("testResultDelivery")(
+                  toggleDeliveryPreferenceEmail(
+                    patient.testResultDelivery,
+                    newPreference
+                  )
+                );
+              }}
+              selectedRadio={getSelectedDeliveryPreferencesEmail(
+                patient.testResultDelivery as TestResultDeliveryPreference
+              )}
+            />
+          )}
         </div>
         <div className="usa-form">
           <Input

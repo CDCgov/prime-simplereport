@@ -782,6 +782,8 @@ export type TestResult = {
 };
 
 export enum TestResultDeliveryPreference {
+  All = "ALL",
+  Email = "EMAIL",
   None = "NONE",
   Sms = "SMS",
 }
@@ -1653,6 +1655,7 @@ export type GetFacilityQueueQuery = {
           gender?: Maybe<string>;
           testResultDelivery?: Maybe<TestResultDeliveryPreference>;
           preferredLanguage?: Maybe<string>;
+          email?: Maybe<string>;
           phoneNumbers?: Maybe<
             Array<
               Maybe<{
@@ -1739,6 +1742,7 @@ export type GetPatientsByFacilityForQueueQuery = {
         birthDate?: Maybe<any>;
         gender?: Maybe<string>;
         telephone?: Maybe<string>;
+        email?: Maybe<string>;
         testResultDelivery?: Maybe<TestResultDeliveryPreference>;
         phoneNumbers?: Maybe<
           Array<
@@ -4638,6 +4642,7 @@ export const GetFacilityQueueDocument = gql`
         gender
         testResultDelivery
         preferredLanguage
+        email
         phoneNumbers {
           type
           number
@@ -4802,6 +4807,7 @@ export const GetPatientsByFacilityForQueueDocument = gql`
       birthDate
       gender
       telephone
+      email
       phoneNumbers {
         type
         number

@@ -112,6 +112,19 @@ public class TestDataFactory {
         "New Org Queue Name", "CA-New-Org-Queue-Name-12345", "org.queue.admin@example.com");
   }
 
+  public OrganizationQueueItem createVerifiedOrganizationQueueItem(
+      String orgName, String orgExternalId, String adminEmail) {
+    Organization org = createValidOrg(orgName, "k12", orgExternalId, true);
+    OrganizationQueueItem queueItem =
+        new OrganizationQueueItem(
+            orgName,
+            orgExternalId,
+            new OrganizationAccountRequest(
+                "First", "Last", adminEmail, "800-555-1212", "CA", null, null));
+    queueItem.setVerifiedOrganization(org);
+    return _orgQueueRepo.save(queueItem);
+  }
+
   public Facility createValidFacility(Organization org) {
     return createValidFacility(org, "Imaginary Site");
   }

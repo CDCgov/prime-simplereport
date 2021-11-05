@@ -3,8 +3,9 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { act } from "react-dom/test-utils";
-import "../../i18n";
 import { v4 as uuid } from "uuid";
+
+import "../../i18n";
 
 import { PxpApi } from "../PxpApiService";
 

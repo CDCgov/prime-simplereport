@@ -8,6 +8,14 @@ module "metric_alerts" {
   rg_name             = data.azurerm_resource_group.rg.name
   tags                = local.management_tags
 
+  // Add additional tests for the following special case redirects:
+  // simplereport.gov     -> www.simplereport.gov
+  // simplereport.cdc.gov -> www.simplereport.gov
+  additional_uptime_test_urls = {
+    "${local.env}-simplereport-gov-www-redirect" = "https://simplereport.gov/",
+    "${local.env}-simplereport-gov-cdc-redirect" = "https://simplereport.cdc.gov/",
+  }
+
   mem_threshold = 80
 
   action_group_ids = [
