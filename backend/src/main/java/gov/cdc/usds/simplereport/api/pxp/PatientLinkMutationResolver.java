@@ -27,11 +27,6 @@ public class PatientLinkMutationResolver implements GraphQLMutationResolver {
   }
 
   public boolean sendPatientLinkEmail(UUID internalId) {
-    try {
-      testResultsDeliveryService.emailTestResults(internalId);
-      return true;
-    } catch (Exception e) {
-      return false;
-    }
+    return testResultsDeliveryService.emailTestResults(internalId);
   }
 }

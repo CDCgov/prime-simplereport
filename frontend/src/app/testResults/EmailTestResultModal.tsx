@@ -8,15 +8,10 @@ import {
   useGetTestResultForResendingEmailsQuery,
   useResendTestResultsEmailMutation,
 } from "../../generated/graphql";
-import Alert from "../commonComponents/Alert";
 import { showAlertNotification } from "../utils";
 
-import React from "react";
-
-const formatDate = (date: string | undefined, withTime?: boolean) => {
-  const dateFormat = "MMMM Do, YYYY";
-  const format = withTime ? `${dateFormat}` : dateFormat;
-  return moment(date)?.format(format);
+const formatDate = (date: string | undefined) => {
+  return moment(date)?.format("MMMM Do, YYYY");
 };
 
 interface Props {
@@ -31,17 +26,6 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
     variables: { id: testResultId },
     fetchPolicy: "no-cache",
   });
-
-  if (loading) {
-    return (
-      <Modal
-        isOpen={true}
-        className="sr-test-correction-modal-content"
-        overlayClassName="sr-test-correction-modal-overlay"
-        contentLabel="Printable test result"
-      ></Modal>
-    );
-  }
 
   const patient = data?.testResult?.patient as User;
   const dateTested = data?.testResult?.dateTested;
