@@ -1,7 +1,7 @@
 import qs from "querystring";
 
 import { MockedProvider } from "@apollo/client/testing";
-import { act, render, screen, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router";
 import configureStore from "redux-mock-store";

@@ -67,7 +67,7 @@ function testResultRows(
   setPrintModalId: SetStateAction<any>,
   setMarkErrorId: SetStateAction<any>,
   setDetailsModalId: SetStateAction<any>,
-  setTextModalId: SetStateAction<any>
+  setEmailModalTestResultId: SetStateAction<any>
 ) {
   const byDateTested = (a: any, b: any) => {
     // ISO string dates sort nicely
@@ -89,7 +89,10 @@ function testResultRows(
     const removed = r.correctionStatus === "REMOVED";
     const actionItems = [
       { name: "Print result", action: () => setPrintModalId(r.internalId) },
-      { name: "Email result", action: () => setTextModalId(r.internalId) },
+      {
+        name: "Email result",
+        action: () => setEmailModalTestResultId(r.internalId),
+      },
       { name: "View details", action: () => setDetailsModalId(r.internalId) },
     ];
     if (!removed) {
@@ -202,7 +205,10 @@ export const DetachedTestResultsList = ({
   const [printModalId, setPrintModalId] = useState(undefined);
   const [markErrorId, setMarkErrorId] = useState(undefined);
   const [detailsModalId, setDetailsModalId] = useState<string>();
-  const [emailModalId, setEmailModalId] = useState<string>();
+  const [
+    emailModalTestResultId,
+    setEmailModalTestResultId,
+  ] = useState<string>();
   const [showSuggestion, setShowSuggestion] = useState(true);
   const [startDateError, setStartDateError] = useState<string | undefined>();
   const [endDateError, setEndDateError] = useState<string | undefined>();
@@ -280,11 +286,11 @@ export const DetachedTestResultsList = ({
       />
     );
   }
-  if (emailModalId) {
+  if (emailModalTestResultId) {
     return (
       <EmailTestResultModal
-        testResultId={emailModalId}
-        closeModal={() => setEmailModalId(undefined)}
+        testResultId={emailModalTestResultId}
+        closeModal={() => setEmailModalTestResultId(undefined)}
       />
     );
   }
@@ -307,7 +313,7 @@ export const DetachedTestResultsList = ({
     setPrintModalId,
     setMarkErrorId,
     setDetailsModalId,
-    setEmailModalId
+    setEmailModalTestResultId
   );
 
   const processStartDate = (value: string | undefined) => {
