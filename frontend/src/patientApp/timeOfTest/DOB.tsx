@@ -72,12 +72,12 @@ const DOB = () => {
       );
       dispatch(setPatient(response));
     } catch (error: any) {
-      console.log(error);
-      if (error?.status === 410) {
+      let strError = String(error);
+      if (error?.status === 410 || strError.includes("410")) {
         setLinkExpiredError(true);
-      } else if (error?.status === 404) {
+      } else if (error?.status === 404 || strError.includes("404")) {
         setLinkNotFoundError(true);
-      } else if (error?.status === 403 || error?.status === 401) {
+      } else if (error?.status === 403 || error?.status === 401 || strError.includes("403") || strError.includes("401")) {
         setBirthDateError(t("testResult.dob.error"));
       }
     } finally {
