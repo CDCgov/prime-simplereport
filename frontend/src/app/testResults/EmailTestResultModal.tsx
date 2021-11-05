@@ -46,7 +46,7 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
         <>
           <div className="body">
             <div className="text">
-              {formatFullName(patient)}'s test results from{" "}
+              {formatFullName(patient)}'s test result from{" "}
               {formatDate(dateTested)} will be sent to the following emails:
             </div>
             <div>{patient?.email}</div>

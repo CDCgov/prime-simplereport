@@ -68,7 +68,7 @@ describe("EmailTestResultModal", () => {
 
     screen.getByText("Email result?");
     screen.getByText(
-      "Zelda Francesca Holcomb Gordon's test results from November 2nd, 2021 will be sent to the following emails:"
+      "Zelda Francesca Holcomb Gordon's test result from November 2nd, 2021 will be sent to the following emails:"
     );
     screen.getByText("gesezyx@mailinator.com");
     screen.getByText("Send result");
