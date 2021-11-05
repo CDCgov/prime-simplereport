@@ -7,7 +7,7 @@ public class PatientEmailsHolder {
   private String _default;
   private List<String> _all;
 
-  public PatientEmailsHolder(String defaultEmail, List<String> emails) {
+  PatientEmailsHolder(String defaultEmail, List<String> emails) {
     super();
     this._default = defaultEmail;
     this._all = emails;

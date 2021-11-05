@@ -329,12 +329,12 @@ class TranslatorTest {
   @Test
   void testEmptyEmails() {
     List<String> emails = Collections.emptyList();
-    assertEquals(parseEmails(emails), Collections.emptyList());
+    assertEquals(Collections.emptyList(), parseEmails(emails));
   }
 
   @Test
   void testNullEmails() {
-    assertEquals(parseEmails(null), Collections.emptyList());
+    assertEquals(Collections.emptyList(), parseEmails(null));
   }
 
   @Test
