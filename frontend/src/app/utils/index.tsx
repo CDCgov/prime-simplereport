@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 
-import Alert from "../commonComponents/Alert";
+import Alert, { AlertType } from "../commonComponents/Alert";
 
 export const displayFullName = (
   first: string | null | undefined,
@@ -29,9 +29,23 @@ export const showNotification = (children: JSX.Element) => {
     const toastId = JSON.stringify(children.props).substr(0, 512);
     toast(children, { toastId });
     toast.clearWaitingQueue(); // don't pile up messages
-  } catch (err) {
+  } catch (err: any) {
     console.error(err, err.stack);
   }
+};
+
+export const showAlertNotification = (
+  type: AlertType,
+  title?: string,
+  message?: string
+) => {
+  showNotification(
+    <Alert
+      type={type}
+      title={title}
+      body={message ? message.substr(0, 512) : undefined}
+    />
+  );
 };
 
 export const showError = (

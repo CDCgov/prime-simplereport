@@ -1,7 +1,7 @@
 import qs from "querystring";
 
 import { MockedProvider } from "@apollo/client/testing";
-import { render, screen, within } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router";
 import configureStore from "redux-mock-store";
@@ -36,6 +36,8 @@ jest.mock("@microsoft/applicationinsights-react-js", () => ({
   useAppInsightsContext: () => {},
   useTrackEvent: jest.fn(),
 }));
+
+jest.mock("./EmailTestResultModal", () => () => <p>Email results?</p>);
 
 const WithRouter: React.FC = ({ children }) => (
   <MemoryRouter initialEntries={[{ search: "?facility=1" }]}>
@@ -1082,7 +1084,10 @@ describe("TestResultsList", () => {
         </Provider>
       </WithRouter>
     );
-    await screen.findByText("Test Results", { exact: false });
+    expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Test Results", { exact: false })
+    ).toBeInTheDocument();
     const moreActions = within(screen.getByRole("table")).getAllByRole(
       "button"
     )[0];
@@ -1102,12 +1107,16 @@ describe("TestResultsList", () => {
         </Provider>
       </WithRouter>
     );
-    await screen.findByText("Test Results", { exact: false });
+
+    expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+    expect(
+      screen.getByText("Test Results", { exact: false })
+    ).toBeInTheDocument();
     const moreActions = within(screen.getByRole("table")).getAllByRole(
       "button"
     )[0];
     userEvent.click(moreActions);
-    const emailResult = await screen.findByText("Email result");
+    const emailResult = screen.getByText("Email result");
     userEvent.click(emailResult);
     expect(screen.getByText("Email results?")).toBeInTheDocument();
   });

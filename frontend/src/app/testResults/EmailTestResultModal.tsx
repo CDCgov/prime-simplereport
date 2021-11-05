@@ -9,7 +9,7 @@ import {
   useResendTestResultsEmailMutation,
 } from "../../generated/graphql";
 import Alert from "../commonComponents/Alert";
-import { showNotification } from "../utils";
+import { showAlertNotification } from "../utils";
 
 import React from "react";
 
@@ -54,7 +54,7 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
       overlayClassName="sr-test-correction-modal-overlay"
       contentLabel="Printable test result"
     >
-      <h3>Email Results?</h3>
+      <h3>Email result?</h3>
       {loading ? (
         <p>Loading</p>
       ) : (
@@ -67,19 +67,21 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
           <div className="sr-test-correction-buttons">
             <Button variant="unstyled" label="Cancel" onClick={closeModal} />
             <Button
-              label="Send results"
+              label="Send result"
               onClick={() => {
                 emailTestResult({
                   variables: { patientLinkId },
                 }).then((response) => {
                   const success = response.data?.sendPatientLinkEmail;
-                  const alert = success ? (
-                    <Alert type="success" title="Emailed test results." />
-                  ) : (
-                    <Alert type="error" title="Failed to email test results." />
+                  showAlertNotification(
+                    success ? "success" : "error",
+                    success
+                      ? "Emailed test results."
+                      : "Failed to email test results."
                   );
+
                   window.scrollTo(0, 0);
-                  showNotification(alert);
+
                   closeModal();
                 });
               }}
