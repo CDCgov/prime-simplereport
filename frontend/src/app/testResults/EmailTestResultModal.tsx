@@ -9,6 +9,7 @@ import {
   useResendTestResultsEmailMutation,
 } from "../../generated/graphql";
 import { showAlertNotification } from "../utils";
+import "./EmailTestResultModal.scss";
 
 const formatDate = (date: string | undefined) => {
   return moment(date)?.format("MMMM Do, YYYY");
@@ -34,19 +35,21 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
   return (
     <Modal
       isOpen={true}
-      className="sr-test-correction-modal-content"
+      className="email-test-result-modal-content"
       overlayClassName="sr-test-correction-modal-overlay"
       contentLabel="Printable test result"
     >
-      <h3>Email result?</h3>
+      <div className="header">Email result?</div>
       {loading ? (
         <p>Loading</p>
       ) : (
         <>
-          <div>
-            {formatFullName(patient)}'s test results from{" "}
-            {formatDate(dateTested)} will be sent to the following emails:
-            <p>{patient?.email}</p>
+          <div className="body">
+            <div className="text">
+              {formatFullName(patient)}'s test results from{" "}
+              {formatDate(dateTested)} will be sent to the following emails:
+            </div>
+            <div>{patient?.email}</div>
           </div>
           <div className="sr-test-correction-buttons">
             <Button variant="unstyled" label="Cancel" onClick={closeModal} />
@@ -63,9 +66,7 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
                       ? "Emailed test results."
                       : "Failed to email test results."
                   );
-
                   window.scrollTo(0, 0);
-
                   closeModal();
                 });
               }}
