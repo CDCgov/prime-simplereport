@@ -127,12 +127,8 @@ export const es: LanguageConfig = {
             "Usted es responsable de ingresar la información de contacto correcta, siguiendo las leyes federales y estatales aplicables.",
           primaryPhoneNumber: "Número de teléfono principal",
           additionalPhoneNumber: "Número de teléfono adicional",
-          receiveTextMessageResults:
-            "Sí, envíe un mensaje de texto a todos los números registrados de teléfonos móviles.",
           phoneType: "Tipo de teléfono",
           addNumber: "Agregar otro número",
-          testResultDelivery:
-            "¿Le gustaría recibir sus resultados por mensaje de texto?",
           email: "Dirección de correo electrónico",
           country: "País",
           street1: "Dirección 1",
@@ -141,6 +137,13 @@ export const es: LanguageConfig = {
           city: "Ciudad",
           state: "Estado",
           zip: "Código postal",
+        },
+        testResultDelivery: {
+          text: "",
+          receiveTextMessageResults:
+            "Sí, envíe un mensaje de texto a todos los números registrados de teléfonos móviles.",
+          email: "",
+          receiveEmailResults: "",
         },
         demographics: {
           heading: "Información demográfica",

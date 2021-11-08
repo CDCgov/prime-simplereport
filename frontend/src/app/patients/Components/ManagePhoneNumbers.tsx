@@ -5,8 +5,13 @@ import { useTranslation } from "react-i18next";
 import Button from "../../commonComponents/Button/Button";
 import Input from "../../commonComponents/Input";
 import RadioGroup from "../../commonComponents/RadioGroup";
-import { PhoneNumberErrors, usePersonSchemata } from "../personSchema";
+import {
+  toggleDeliveryPreferenceSms,
+  getSelectedDeliveryPreferencesSms,
+} from "../../utils/deliveryPreferences";
 import { useTranslatedConstants } from "../../constants";
+import { PhoneNumberErrors, usePersonSchemata } from "../personSchema";
+import { TestResultDeliveryPreference } from "../TestResultDeliveryPreference";
 
 interface Props {
   phoneNumbers: PhoneNumber[];
@@ -32,7 +37,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 
   const {
     PHONE_TYPE_VALUES,
-    TEST_RESULT_DELIVERY_PREFERENCE_VALUES,
+    TEST_RESULT_DELIVERY_PREFERENCE_VALUES_SMS,
   } = useTranslatedConstants();
 
   const phoneNumbersOrDefault = useMemo(
@@ -242,11 +247,20 @@ const ManagePhoneNumbers: React.FC<Props> = ({
       />
       {phoneNumbers.some((pn) => pn.type === "MOBILE") && (
         <RadioGroup
-          legend={t("patient.form.contact.testResultDelivery")}
-          name="testResultDelivery"
-          buttons={TEST_RESULT_DELIVERY_PREFERENCE_VALUES}
-          onChange={updateTestResultDelivery}
-          selectedRadio={testResultDelivery}
+          legend={t("patient.form.testResultDelivery.text")}
+          name="testResultDeliveryText"
+          buttons={TEST_RESULT_DELIVERY_PREFERENCE_VALUES_SMS}
+          onChange={(newPreference) => {
+            updateTestResultDelivery(
+              toggleDeliveryPreferenceSms(
+                testResultDelivery as TestResultDeliveryPreference,
+                newPreference
+              )
+            );
+          }}
+          selectedRadio={getSelectedDeliveryPreferencesSms(
+            testResultDelivery as TestResultDeliveryPreference
+          )}
         />
       )}
     </div>

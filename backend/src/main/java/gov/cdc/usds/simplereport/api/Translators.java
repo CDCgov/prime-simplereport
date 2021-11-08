@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -353,5 +354,13 @@ public class Translators {
       return type;
     }
     throw IllegalGraphqlArgumentException.invalidInput(t, "organization type");
+  }
+
+  public static Optional<String> toOptional(String str) {
+    if (str == null) {
+      return Optional.empty();
+    } else {
+      return Optional.of(str);
+    }
   }
 }

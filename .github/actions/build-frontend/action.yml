@@ -38,12 +38,12 @@ runs:
       run: |
           echo "::group::Set build variables"
           az config set extension.use_dynamic_install=yes_without_prompt
-          INSIGHTS_KEY=$(
+          INSIGHTS_CONNECTION_STRING=$(
             az monitor app-insights component show \
               -g prime-simple-report-${{inputs.deploy-env}} \
               -a prime-simple-report-${{inputs.deploy-env}}-insights \
-            | jq -r '.instrumentationKey')
-          echo "REACT_APP_APPINSIGHTS_KEY=${INSIGHTS_KEY}" > .env.production.local
+            | jq -r '.connectionString')
+          echo "REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING=${INSIGHTS_CONNECTION_STRING}" > .env.production.local
           if [[ -n "${{ inputs.base-domain-name }}" ]]
             then echo "REACT_APP_BASE_URL=https://${{inputs.base-domain-name}}" >> .env.production.local
           fi

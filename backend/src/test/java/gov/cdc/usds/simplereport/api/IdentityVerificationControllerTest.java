@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.api;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -21,25 +20,20 @@ import gov.cdc.usds.simplereport.api.accountrequest.IdentityVerificationControll
 import gov.cdc.usds.simplereport.api.accountrequest.errors.AccountRequestFailureException;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequestOrganizationCreateTemplate;
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
-import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
-import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
+import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
-import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.idverification.DemoExperianService;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,6 +51,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @Import({
   DemoAuthenticationConfiguration.class,
   DemoExperianService.class,
+  DemoOktaRepository.class,
 })
 @WebMvcTest(
     controllers = IdentityVerificationController.class,
@@ -73,10 +68,7 @@ class IdentityVerificationControllerTest {
   @Autowired private MockMvc _mockMvc;
 
   @Autowired private DemoExperianService _experianService;
-  @MockBean private OktaRepository _oktaRepo;
   @MockBean private EmailService _emailService;
-  @MockBean private OrganizationService _orgService;
-
   @MockBean private OrganizationQueueService _orgQueueService;
 
   // Dependencies of TenantDataAccessFilter
@@ -108,18 +100,14 @@ class IdentityVerificationControllerTest {
 
     _experianService.addSessionId(VALID_SESSION_UUID);
 
-    Organization org = mock(Organization.class);
-    when(_orgService.getOrganization(FAKE_ORG_EXTERNAL_ID)).thenReturn(org);
-    when(_orgService.getOrganization(not(eq(FAKE_ORG_EXTERNAL_ID))))
-        .thenThrow(IllegalGraphqlArgumentException.class);
-    when(org.getExternalId()).thenReturn(FAKE_ORG_EXTERNAL_ID);
-    Set<String> orgEmails =
-        new HashSet<>() {
-          {
-            add(FAKE_ORG_ADMIN_EMAIL);
-          }
-        };
-    when(_oktaRepo.getAllUsersForOrganization(org)).thenReturn(orgEmails);
+    OrganizationAccountRequest accountRequest = mock(OrganizationAccountRequest.class);
+    when(accountRequest.getEmail()).thenReturn(FAKE_ORG_ADMIN_EMAIL);
+
+    OrganizationQueueItem orgQueueItem = mock(OrganizationQueueItem.class);
+    when(_orgQueueService.getUnverifiedQueuedOrganizationByExternalId(FAKE_ORG_EXTERNAL_ID))
+        .thenReturn(Optional.of(orgQueueItem));
+    when(orgQueueItem.getRequestData()).thenReturn(accountRequest);
+    when(orgQueueItem.getExternalId()).thenReturn(FAKE_ORG_EXTERNAL_ID);
   }
 
   @Test
@@ -138,6 +126,59 @@ class IdentityVerificationControllerTest {
         .andExpect(jsonPath("$.questionSet", org.hamcrest.Matchers.any(List.class)));
 
     verifyEmailsNotSent();
+  }
+
+  @Test
+  void getQuestions_queuedOrg_isOk() throws Exception {
+    OrganizationAccountRequest originalRequest = mock(OrganizationAccountRequest.class);
+    when(originalRequest.getEmail()).thenReturn(FAKE_ORG_ADMIN_EMAIL);
+
+    OrganizationQueueItem queueItem = mock(OrganizationQueueItem.class);
+    when(queueItem.getExternalId()).thenReturn(FAKE_ORG_EXTERNAL_ID);
+    when(queueItem.getRequestData()).thenReturn(originalRequest);
+
+    when(_orgQueueService.getUnverifiedQueuedOrganizationByExternalId(FAKE_ORG_EXTERNAL_ID))
+        .thenReturn(Optional.of(queueItem));
+
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ID_VERIFICATION_GET_QUESTIONS)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(getQuestionsRequestBody(FAKE_ORG_EXTERNAL_ID, FAKE_ORG_ADMIN_EMAIL));
+
+    this._mockMvc
+        .perform(builder)
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.sessionId", org.hamcrest.Matchers.any(String.class)))
+        .andExpect(jsonPath("$.questionSet", org.hamcrest.Matchers.any(List.class)));
+
+    verifyEmailsNotSent();
+  }
+
+  @Test
+  void getQuestions_queuedOrgNoPersonMatch_failure() throws Exception {
+    OrganizationAccountRequest originalRequest = mock(OrganizationAccountRequest.class);
+    when(originalRequest.getEmail()).thenReturn(FAKE_ORG_ADMIN_EMAIL);
+
+    OrganizationQueueItem queueItem = mock(OrganizationQueueItem.class);
+    when(queueItem.getExternalId()).thenReturn(FAKE_ORG_EXTERNAL_ID);
+    when(queueItem.getRequestData()).thenReturn(originalRequest);
+
+    when(_orgQueueService.getUnverifiedQueuedOrganizationByExternalId(FAKE_ORG_EXTERNAL_ID))
+        .thenReturn(Optional.of(queueItem));
+
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ID_VERIFICATION_GET_QUESTIONS)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(getQuestionsRequestBody(FAKE_ORG_EXTERNAL_ID, FAKE_NON_EXISTENT_EMAIL));
+
+    this._mockMvc.perform(builder).andExpect(status().isBadRequest());
+
+    // could not find person, id verification failed so emails are sent
+    verifyEmailsSent();
   }
 
   @Test
@@ -172,31 +213,6 @@ class IdentityVerificationControllerTest {
   }
 
   @Test
-  void getQuestions_badOrg_failure() throws Exception {
-    // org should not be verified and only have 1 member
-    Set<String> orgEmailSet =
-        new HashSet<>() {
-          {
-            add("user1@example.org");
-            add("user2@example.org");
-          }
-        };
-    when(_oktaRepo.getAllUsersForOrganization(any())).thenReturn(orgEmailSet);
-
-    MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.ID_VERIFICATION_GET_QUESTIONS)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(getQuestionsRequestBody(FAKE_ORG_EXTERNAL_ID, FAKE_ORG_ADMIN_EMAIL));
-
-    this._mockMvc.perform(builder).andExpect(status().isBadRequest());
-
-    // not a new org, no emails sent
-    verifyEmailsNotSent();
-  }
-
-  @Test
   void getQuestions_restClientException_failure() throws Exception {
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.ID_VERIFICATION_GET_QUESTIONS)
@@ -213,7 +229,8 @@ class IdentityVerificationControllerTest {
 
   @Test
   void submitAnswers_correctAnswer_success() throws Exception {
-    when(_orgService.verifyOrganizationNoPermissions(any())).thenReturn(FAKE_ACTIVATION_TOKEN);
+    when(_orgQueueService.createAndActivateQueuedOrganization(any()))
+        .thenReturn(FAKE_ACTIVATION_TOKEN);
 
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.ID_VERIFICATION_SUBMIT_ANSWERS)
@@ -343,31 +360,6 @@ class IdentityVerificationControllerTest {
   }
 
   @Test
-  void submitAnswers_badOrg_failure() throws Exception {
-    // org should not be verified and only have 1 member
-    Set<String> orgEmailSet =
-        new HashSet<>() {
-          {
-            add("user1@example.org");
-            add("user2@example.org");
-          }
-        };
-    when(_oktaRepo.getAllUsersForOrganization(any())).thenReturn(orgEmailSet);
-
-    MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.ID_VERIFICATION_SUBMIT_ANSWERS)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(submitAnswersRequestBody(FAKE_ORG_EXTERNAL_ID, VALID_SESSION_STRING, true));
-
-    this._mockMvc.perform(builder).andExpect(status().isBadRequest());
-
-    // too many users in org, no emails sent
-    verifyEmailsNotSent();
-  }
-
-  @Test
   void submitAnswers_restClientException_failure() throws Exception {
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.ID_VERIFICATION_SUBMIT_ANSWERS)
@@ -382,6 +374,32 @@ class IdentityVerificationControllerTest {
 
     // general request failure to experian, send emails
     verifyEmailsSent();
+  }
+
+  @Test
+  void submitAnswers_queuedOrgNotFound_failure() throws Exception {
+    final String nonExistentOrgExtId = "THIS_ORG_DOES_NOT_EXIST";
+
+    // given
+    when(_orgQueueService.getUnverifiedQueuedOrganizationByExternalId(nonExistentOrgExtId))
+        .thenReturn(Optional.empty());
+
+    // when
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.ID_VERIFICATION_SUBMIT_ANSWERS)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(submitAnswersRequestBody(nonExistentOrgExtId, VALID_SESSION_STRING, true));
+    MvcResult result =
+        this._mockMvc.perform(builder).andExpect(status().isBadRequest()).andReturn();
+
+    // then
+    assertEquals(
+        String.format("An organization with external_id=%s does not exist", nonExistentOrgExtId),
+        result.getResponse().getContentAsString());
+
+    verifyEmailsNotSent();
   }
 
   private String getQuestionsRequestBody(String orgExternalId, String email) {

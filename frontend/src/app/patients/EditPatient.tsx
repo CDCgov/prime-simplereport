@@ -11,6 +11,7 @@ import Button from "../commonComponents/Button/Button";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
 
+import { TestResultDeliveryPreference } from "./TestResultDeliveryPreference";
 import PersonForm from "./Components/PersonForm";
 
 export const GET_PATIENT = gql`

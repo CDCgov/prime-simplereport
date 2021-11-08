@@ -22,7 +22,12 @@ import HealthChecks from "./app/HealthChecks";
 import * as serviceWorker from "./serviceWorker";
 import { store } from "./app/store";
 import { showError } from "./app/utils";
-import { getAppInsights, ai, withInsights } from "./app/TelemetryService";
+import {
+  getAppInsights,
+  ai,
+  withInsights,
+  getAppInsightsHeaders,
+} from "./app/TelemetryService";
 import TelemetryProvider from "./app/telemetry-provider";
 import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration";
 import "./i18n";
@@ -56,11 +61,14 @@ const httpLink = createUploadLink({
   uri: `${process.env.REACT_APP_BACKEND_URL}/graphql`,
 });
 
-const authMiddleware = new ApolloLink((operation, forward) => {
+const apolloMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext({
     headers: {
+      // Auth headers
       "Access-Control-Request-Headers": "Authorization",
       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      // App Insight headers
+      ...getAppInsightsHeaders(),
     },
   });
   return forward(operation);
@@ -95,7 +103,7 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: logoutLink.concat(concat(authMiddleware, httpLink as any)),
+  link: logoutLink.concat(concat(apolloMiddleware, httpLink as any)),
 });
 
 export const ReactApp = (

@@ -15,6 +15,7 @@ resource "azurerm_application_insights" "app_insights" {
   location            = var.rg_location
   resource_group_name = var.rg_name
   name                = "prime-simple-report-${var.env}-insights"
+  disable_ip_masking  = true
 
   tags = var.tags
 }

@@ -2,6 +2,10 @@ import { FetchMock } from "jest-fetch-mock/types";
 
 import { PxpApi, SelfRegistrationData } from "./PxpApiService";
 
+const appInsightsHeaders = {
+  "x-ms-session-id": "",
+};
+
 describe("PxpApi", () => {
   beforeEach(() => {
     (fetch as FetchMock).resetMocks();
@@ -24,6 +28,7 @@ describe("PxpApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
           mode: "cors",
@@ -50,6 +55,7 @@ describe("PxpApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
           mode: "cors",
@@ -74,6 +80,7 @@ describe("PxpApi", () => {
         headers: {
           Accept: "application/json, text/plain",
           "Content-Type": "application/json",
+          ...appInsightsHeaders,
         },
         method: "POST",
         mode: "cors",
@@ -108,6 +115,7 @@ describe("PxpApi", () => {
         headers: {
           Accept: "application/json, text/plain",
           "Content-Type": "application/json",
+          ...appInsightsHeaders,
         },
         method: "POST",
         mode: "cors",

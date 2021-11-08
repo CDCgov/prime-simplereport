@@ -2,6 +2,10 @@ import { FetchMock } from "jest-fetch-mock/types";
 
 import { SignUpApi } from "./SignUpApi";
 
+const appInsightsHeaders = {
+  "x-ms-session-id": "",
+};
+
 describe("SignUpApi", () => {
   beforeEach(() => {
     (fetch as FetchMock).resetMocks();
@@ -32,6 +36,7 @@ describe("SignUpApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
         }
@@ -56,6 +61,7 @@ describe("SignUpApi", () => {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
         }
@@ -78,13 +84,14 @@ describe("SignUpApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/account-request/organization-create-without-facility",
+        "http://localhost:8080/account-request/organization-add-to-queue",
         {
           body:
             '{"firstName":"Laslo","lastName":"Dickens","email":"laslo@shadow.corp","name":"Shadow","type":"treatment_center","state":"NY","workPhoneNumber":"665-452-5484"}',
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
+            ...appInsightsHeaders,
           },
           method: "POST",
         }

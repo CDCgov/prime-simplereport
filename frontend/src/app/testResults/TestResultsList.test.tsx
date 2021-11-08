@@ -37,6 +37,8 @@ jest.mock("@microsoft/applicationinsights-react-js", () => ({
   useTrackEvent: jest.fn(),
 }));
 
+jest.mock("./EmailTestResultModal", () => () => <p>Email result modal</p>);
+
 const WithRouter: React.FC = ({ children }) => (
   <MemoryRouter initialEntries={[{ search: "?facility=1" }]}>
     {children}
@@ -134,6 +136,7 @@ const testResults = [
       gender: "male",
       role: "RESIDENT",
       lookupId: null,
+      email: "sam@gerard.com",
       __typename: "Patient",
     },
     createdBy: {
@@ -1082,7 +1085,10 @@ describe("TestResultsList", () => {
         </Provider>
       </WithRouter>
     );
-    await screen.findByText("Test Results", { exact: false });
+    expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Test Results", { exact: false })
+    ).toBeInTheDocument();
     const moreActions = within(screen.getByRole("table")).getAllByRole(
       "button"
     )[0];
@@ -1090,6 +1096,54 @@ describe("TestResultsList", () => {
     const viewDetails = await screen.findByText("View details");
     userEvent.click(viewDetails);
     expect(screen.queryAllByText("Test details").length).toBe(2);
+  });
+
+  it("opens the email test results modal", async () => {
+    render(
+      <WithRouter>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks}>
+            <TestResultsList pageNumber={1} />
+          </MockedProvider>
+        </Provider>
+      </WithRouter>
+    );
+
+    expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+    expect(
+      screen.getByText("Test Results", { exact: false })
+    ).toBeInTheDocument();
+    const moreActions = within(screen.getByRole("table")).getAllByRole(
+      "button"
+    )[0];
+    userEvent.click(moreActions);
+    const emailResult = screen.getByText("Email result");
+    userEvent.click(emailResult);
+    expect(screen.getByText("Email result modal")).toBeInTheDocument();
+  });
+
+  describe("patient has no email", () => {
+    it("doesnt show the button to print results", async () => {
+      render(
+        <WithRouter>
+          <Provider store={store}>
+            <MockedProvider mocks={mocks}>
+              <TestResultsList pageNumber={1} />
+            </MockedProvider>
+          </Provider>
+        </WithRouter>
+      );
+
+      expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+      expect(
+        screen.getByText("Test Results", { exact: false })
+      ).toBeInTheDocument();
+      const moreActions = within(screen.getByRole("table")).getAllByRole(
+        "button"
+      )[1];
+      userEvent.click(moreActions);
+      expect(screen.queryByText("Email result")).not.toBeInTheDocument();
+    });
   });
 
   it("doesn't display anything if no facility is selected", async () => {
