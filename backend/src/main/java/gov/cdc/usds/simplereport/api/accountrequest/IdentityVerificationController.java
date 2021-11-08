@@ -11,12 +11,10 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAn
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsResponse;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
-import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
-import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
-import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.errors.ExperianAuthException;
@@ -28,7 +26,6 @@ import gov.cdc.usds.simplereport.service.errors.ExperianSubmitAnswersException;
 import gov.cdc.usds.simplereport.service.idverification.ExperianService;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -54,8 +51,6 @@ public class IdentityVerificationController {
 
   @Autowired private EmailService _es;
   @Autowired private ExperianService _experianService;
-  @Autowired private OktaRepository _oktaRepo;
-  @Autowired private OrganizationService _orgService;
   @Autowired private OrganizationQueueService _orgQueueService;
   @Autowired private SendGridProperties sendGridProperties;
 
@@ -107,21 +102,13 @@ public class IdentityVerificationController {
   @PostMapping("/get-questions")
   public IdentityVerificationQuestionsResponse getQuestions(
       @Valid @RequestBody IdentityVerificationQuestionsRequest requestBody) throws IOException {
-    String orgExternalId;
-    String orgAdminEmail;
-
     Optional<OrganizationQueueItem> optItem =
         _orgQueueService.getUnverifiedQueuedOrganizationByExternalId(
             requestBody.getOrgExternalId());
-    if (optItem.isPresent()) {
-      OrganizationQueueItem queueItem = optItem.get();
-      orgExternalId = queueItem.getExternalId();
-      orgAdminEmail = queueItem.getRequestData().getEmail();
-    } else {
-      // v1 requests: try to lookup in org table
-      Organization org = _orgService.getOrganization(requestBody.getOrgExternalId());
-      orgExternalId = org.getExternalId();
-      orgAdminEmail = checkOrgAndGetAdminEmail(org);
+    if (optItem.isEmpty()) {
+      // throw same error that organizationService.getOrganization does
+      throw new IllegalGraphqlArgumentException(
+          "An organization with external_id=" + requestBody.getOrgExternalId() + " does not exist");
     }
 
     try {
@@ -131,7 +118,9 @@ public class IdentityVerificationController {
         | ExperianGetQuestionsException
         | ExperianNullNodeException e) {
       // could not match a person with the details in the request or general experian error
-      sendIdentityVerificationFailedEmails(orgExternalId, orgAdminEmail);
+      OrganizationQueueItem queueItem = optItem.get();
+      sendIdentityVerificationFailedEmails(
+          queueItem.getExternalId(), queueItem.getRequestData().getEmail());
       throw e;
     }
   }
@@ -147,36 +136,13 @@ public class IdentityVerificationController {
     Optional<OrganizationQueueItem> optItem =
         _orgQueueService.getUnverifiedQueuedOrganizationByExternalId(
             requestBody.getOrgExternalId());
-    if (optItem.isPresent()) {
-      return checkAnswersAndCreateQueuedOrganization(requestBody, optItem.get());
+    if (optItem.isEmpty()) {
+      // throw same error that organizationService.getOrganization does
+      throw new IllegalGraphqlArgumentException(
+          "An organization with external_id=" + requestBody.getOrgExternalId() + " does not exist");
     }
 
-    // v1 requests (where org has already been created): activate existing organization
-
-    Organization org = _orgService.getOrganization(requestBody.getOrgExternalId());
-    String orgAdminEmail = checkOrgAndGetAdminEmail(org);
-
-    try {
-      IdentityVerificationAnswersResponse verificationResponse =
-          _experianService.submitAnswers(requestBody);
-
-      verificationResponse.setEmail(orgAdminEmail);
-
-      if (verificationResponse.isPassed()) {
-        // enable the organization and send account activation email (through okta)
-        String activationToken =
-            _orgService.verifyOrganizationNoPermissions(requestBody.getOrgExternalId());
-        verificationResponse.setActivationToken(activationToken);
-      } else {
-        sendIdentityVerificationFailedEmails(org.getExternalId(), orgAdminEmail);
-      }
-
-      return verificationResponse;
-    } catch (ExperianAuthException | ExperianSubmitAnswersException | ExperianNullNodeException e) {
-      // a general error with experian occurred
-      sendIdentityVerificationFailedEmails(org.getExternalId(), orgAdminEmail);
-      throw e;
-    }
+    return checkAnswersAndCreateQueuedOrganization(requestBody, optItem.get());
   }
 
   private IdentityVerificationAnswersResponse checkAnswersAndCreateQueuedOrganization(
@@ -205,19 +171,11 @@ public class IdentityVerificationController {
       // Since there is no way for the user to fix the problem and resubmit, rethrow these as
       // AccountRequestExceptions so we get paged.
       throw new AccountRequestFailureException(e);
-    } catch (ExperianSubmitAnswersException | ExperianNullNodeException e) {
+    } catch (ExperianAuthException | ExperianSubmitAnswersException | ExperianNullNodeException e) {
       // a general error with experian occurred
       sendIdentityVerificationFailedEmails(orgQueueItem.getExternalId(), orgAdminEmail);
       throw e;
     }
-  }
-
-  private String checkOrgAndGetAdminEmail(Organization org) {
-    Set<String> orgUserEmailSet = _oktaRepo.getAllUsersForOrganization(org);
-    if (org.getIdentityVerified() || orgUserEmailSet.size() != 1) {
-      throw new BadRequestException("The organization must be unverified and only have 1 member");
-    }
-    return orgUserEmailSet.iterator().next();
   }
 
   private void sendIdentityVerificationFailedEmails(String orgExternalId, String orgAdminEmail)
