@@ -2,16 +2,12 @@ package gov.cdc.usds.simplereport.db.repository;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 
 /** Interface specification for fetching and manipulating {@link Organization} entities */
-public interface OrganizationRepository
-    extends EternalAuditedEntityRepository<Organization>, AdvisoryLockManager {
-
-  int ORG_REMINDER_LOCK = 66543221; // arbitrary 32-bit integer for our lock
+public interface OrganizationRepository extends EternalAuditedEntityRepository<Organization> {
 
   @Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.externalId = :externalId")
   Optional<Organization> findByExternalId(String externalId);
@@ -23,22 +19,6 @@ public interface OrganizationRepository
   List<Organization> findAllByIdentityVerified(boolean identityVerified);
 
   @Query(
-      EternalAuditedEntityRepository.BASE_QUERY
-          + " and e.identityVerified = :identityVerified and e.createdAt > :rangeStartDate and e.createdAt <= :rangeStopDate")
-  List<Organization> findAllByIdentityVerifiedAndCreatedAtRange(
-      boolean identityVerified, Date rangeStartDate, Date rangeStopDate);
-
-  @Query(
       EternalAuditedEntityRepository.BASE_QUERY + " and UPPER(e.organizationName) = UPPER(:name)")
   List<Organization> findAllByName(String name);
-
-  /**
-   * Try to obtain the lock for the unverified organization reminders task. (It will be released
-   * automatically when the current transaction closes.)
-   *
-   * @return true if the lock was obtained, false otherwise.
-   */
-  default boolean tryOrgReminderLock() {
-    return tryTransactionLock(CORE_API_LOCK_SCOPE, ORG_REMINDER_LOCK);
-  }
 }

@@ -44,6 +44,7 @@ import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultTextModal from "./TestResultTextModal";
+import EmailTestResultModal from "./EmailTestResultModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
 import TestResultDetailsModal from "./TestResultDetailsModal";
 
@@ -67,7 +68,8 @@ function testResultRows(
   setPrintModalId: SetStateAction<any>,
   setMarkErrorId: SetStateAction<any>,
   setDetailsModalId: SetStateAction<any>,
-  setTextModalId: SetStateAction<any>
+  setTextModalId: SetStateAction<any>,
+  setEmailModalTestResultId: SetStateAction<any>
 ) {
   const byDateTested = (a: any, b: any) => {
     // ISO string dates sort nicely
@@ -86,8 +88,23 @@ function testResultRows(
 
   // `sort` mutates the array, so make a copy
   return [...testResults].sort(byDateTested).map((r) => {
+    let actionItems = [];
+    actionItems.push({
+      name: "Print result",
+      action: () => setPrintModalId(r.internalId),
+    });
+    if (r.patient.email) {
+      actionItems.push({
+        name: "Email result",
+        action: () => setEmailModalTestResultId(r.internalId),
+      });
+    }
+    actionItems.push({
+      name: "View details",
+      action: () => setDetailsModalId(r.internalId),
+    });
     const removed = r.correctionStatus === "REMOVED";
-    const actionItems = [
+    actionItems = [
       { name: "Print result", action: () => setPrintModalId(r.internalId) },
       { name: "Text result", action: () => setTextModalId(r.internalId) },
 
@@ -208,6 +225,10 @@ export const DetachedTestResultsList = ({
   const [markErrorId, setMarkErrorId] = useState(undefined);
   const [detailsModalId, setDetailsModalId] = useState<string>();
   const [textModalId, setTextModalId] = useState<string>();
+  const [
+    emailModalTestResultId,
+    setEmailModalTestResultId,
+  ] = useState<string>();
   const [showSuggestion, setShowSuggestion] = useState(true);
   const [startDateError, setStartDateError] = useState<string | undefined>();
   const [endDateError, setEndDateError] = useState<string | undefined>();
@@ -293,6 +314,14 @@ export const DetachedTestResultsList = ({
       />
     );
   }
+  if (emailModalTestResultId) {
+    return (
+      <EmailTestResultModal
+        testResultId={emailModalTestResultId}
+        closeModal={() => setEmailModalTestResultId(undefined)}
+      />
+    );
+  }
   if (markErrorId) {
     return (
       <TestResultCorrectionModal
@@ -312,7 +341,8 @@ export const DetachedTestResultsList = ({
     setPrintModalId,
     setMarkErrorId,
     setDetailsModalId,
-    setTextModalId
+    setTextModalId,
+    setEmailModalTestResultId
   );
 
   const processStartDate = (value: string | undefined) => {
@@ -581,6 +611,7 @@ export const testResultQuery = gql`
         birthDate
         gender
         lookupId
+        email
       }
       createdBy {
         nameInfo {

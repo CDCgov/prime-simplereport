@@ -544,6 +544,7 @@ type Mutation {
   ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkSms(internalId: ID!): String
     @requiredPermissions(allOf: ["UPDATE_TEST"])
+  sendPatientLinkEmail(internalId: ID!): Boolean
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
 }

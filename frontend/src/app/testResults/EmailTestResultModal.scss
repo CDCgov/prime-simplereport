@@ -1,0 +1,21 @@
+.email-test-result-modal-content {
+  background: #fff;
+  max-width: 30em;
+  max-height: 90vh;
+  padding: 28px 24px;
+
+  .header {
+    font-size: 22px;
+    padding-bottom: 12px;
+  }
+
+  .body {
+    font-size: 16px;
+    padding-bottom: 20px;
+
+    .text {
+      color: #565c65;
+      padding-bottom: 20px;
+    }
+  }
+}

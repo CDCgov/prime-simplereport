@@ -33,7 +33,6 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -241,7 +240,6 @@ public class TestOrderService {
   }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
-  @Deprecated // switch to using device specimen ID, using methods that ... don't exist yet!
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
       String deviceID, TestResult result, UUID patientId, Date dateTested) {
@@ -269,14 +267,13 @@ public class TestOrderService {
       TestOrder savedOrder = _repo.save(order);
 
       _testEventReportingService.report(testEvent);
-      boolean deliveryStatus = true;
+      ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
 
       if (patientHasDeliveryPreference(savedOrder)) {
         PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
 
         if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
-          // After adding test result, create a new patient link and text it to the
-          // patient
+          // After adding test result, create a new patient link and text it to the patient
           UUID patientLinkId = patientLink.getInternalId();
 
           log.info("Your Covid-19 test result is ready to view: " + patientLinkUrl + patientLinkId);
@@ -285,27 +282,19 @@ public class TestOrderService {
                   patientLinkId,
                   "Your Covid-19 test result is ready to view: " + patientLinkUrl + patientLinkId);
 
-          boolean hasDeliveryFailure =
+          boolean failure =
               smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
-
-          if (hasDeliveryFailure) {
-            return new AddTestResultResponse(savedOrder, false);
-          }
+          if (failure) deliveryStatuses.add(false);
         }
 
         if (emailDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
-          try {
-            testResultsDeliveryService.emailTestResults(patientLink);
-          } catch (IOException e) {
-            deliveryStatus = false;
-            log.error(
-                "failed to send email for patient link {}, exception: {}",
-                patientId,
-                e.getMessage());
-          }
+          boolean emailDeliveryStatus = testResultsDeliveryService.emailTestResults(patientLink);
+          deliveryStatuses.add(emailDeliveryStatus);
         }
       }
 
+      boolean deliveryStatus =
+          deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
       return new AddTestResultResponse(savedOrder, deliveryStatus);
     } finally {
       unlockOrder(order.getInternalId());
