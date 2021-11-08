@@ -1553,6 +1553,20 @@ export type SetOrgIdentityVerifiedMutation = {
   setOrganizationIdentityVerified?: Maybe<boolean>;
 };
 
+export type EditPendingOrganizationMutationVariables = Exact<{
+  externalId: Scalars["String"];
+  name?: Maybe<Scalars["String"]>;
+  adminFirstName?: Maybe<Scalars["String"]>;
+  adminLastName?: Maybe<Scalars["String"]>;
+  adminEmail?: Maybe<Scalars["String"]>;
+  adminPhone?: Maybe<Scalars["String"]>;
+}>;
+
+export type EditPendingOrganizationMutation = {
+  __typename?: "Mutation";
+  editPendingOrganization?: Maybe<string>;
+};
+
 export type GetOrganizationsQueryVariables = Exact<{
   identityVerified?: Maybe<Scalars["Boolean"]>;
 }>;
@@ -4363,6 +4377,72 @@ export type SetOrgIdentityVerifiedMutationResult = Apollo.MutationResult<SetOrgI
 export type SetOrgIdentityVerifiedMutationOptions = Apollo.BaseMutationOptions<
   SetOrgIdentityVerifiedMutation,
   SetOrgIdentityVerifiedMutationVariables
+>;
+export const EditPendingOrganizationDocument = gql`
+  mutation EditPendingOrganization(
+    $externalId: String!
+    $name: String
+    $adminFirstName: String
+    $adminLastName: String
+    $adminEmail: String
+    $adminPhone: String
+  ) {
+    editPendingOrganization(
+      orgExternalId: $externalId
+      name: $name
+      adminFirstName: $adminFirstName
+      adminLastName: $adminLastName
+      adminEmail: $adminEmail
+      adminPhone: $adminPhone
+    )
+  }
+`;
+export type EditPendingOrganizationMutationFn = Apollo.MutationFunction<
+  EditPendingOrganizationMutation,
+  EditPendingOrganizationMutationVariables
+>;
+
+/**
+ * __useEditPendingOrganizationMutation__
+ *
+ * To run a mutation, you first call `useEditPendingOrganizationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditPendingOrganizationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editPendingOrganizationMutation, { data, loading, error }] = useEditPendingOrganizationMutation({
+ *   variables: {
+ *      externalId: // value for 'externalId'
+ *      name: // value for 'name'
+ *      adminFirstName: // value for 'adminFirstName'
+ *      adminLastName: // value for 'adminLastName'
+ *      adminEmail: // value for 'adminEmail'
+ *      adminPhone: // value for 'adminPhone'
+ *   },
+ * });
+ */
+export function useEditPendingOrganizationMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    EditPendingOrganizationMutation,
+    EditPendingOrganizationMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    EditPendingOrganizationMutation,
+    EditPendingOrganizationMutationVariables
+  >(EditPendingOrganizationDocument, options);
+}
+export type EditPendingOrganizationMutationHookResult = ReturnType<
+  typeof useEditPendingOrganizationMutation
+>;
+export type EditPendingOrganizationMutationResult = Apollo.MutationResult<EditPendingOrganizationMutation>;
+export type EditPendingOrganizationMutationOptions = Apollo.BaseMutationOptions<
+  EditPendingOrganizationMutation,
+  EditPendingOrganizationMutationVariables
 >;
 export const GetOrganizationsDocument = gql`
   query GetOrganizations($identityVerified: Boolean) {

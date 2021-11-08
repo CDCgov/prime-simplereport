@@ -68,6 +68,7 @@ const PendingOrganizationsContainer = () => {
       setVerifiedOrganization={setVerifiedOrganization}
       loading={loading}
       verifyInProgress={verifyInProgress}
+      refetch={refetch}
     />
   );
 };

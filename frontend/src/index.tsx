@@ -79,6 +79,7 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
     if ("statusCode" in networkError && networkError.statusCode === 401) {
       console.warn("[UNATHORIZED_ACCESS] !!");
       console.warn("redirect-to:", process.env.REACT_APP_BASE_URL);
+      localStorage.removeItem("access_token");
       window.location.replace(process.env.REACT_APP_BASE_URL);
     } else {
       const appInsights = getAppInsights();

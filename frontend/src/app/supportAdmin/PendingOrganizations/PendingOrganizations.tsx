@@ -4,7 +4,10 @@ import { useState } from "react";
 
 import Checkboxes from "../../commonComponents/Checkboxes";
 import Button from "../../commonComponents/Button/Button";
-import { PendingOrganization } from "../../../generated/graphql";
+import {
+  PendingOrganization,
+  useEditPendingOrganizationMutation,
+} from "../../../generated/graphql";
 
 import EditOrgModal from "./EditOrgModal";
 import { PendingOrganizationFormValues } from "./utils";
@@ -18,6 +21,7 @@ interface Props {
   setVerifiedOrganization: (externalId: string, verified: boolean) => void;
   loading: boolean;
   verifyInProgress: boolean;
+  refetch: () => void;
 }
 
 const phoneUtil = PhoneNumberUtil.getInstance();
@@ -29,20 +33,35 @@ const PendingOrganizations = ({
   setVerifiedOrganization,
   loading,
   verifyInProgress,
+  refetch,
 }: Props) => {
   const [orgToEdit, setOrgToEdit] = useState<PendingOrganization | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [editOrg] = useEditPendingOrganizationMutation();
 
-  const handleUpdateOrg = (org: PendingOrganizationFormValues) => {
+  const handleUpdateOrg = async (org: PendingOrganizationFormValues) => {
+    // Don't do anything if no org is selected
+    if (orgToEdit === null) {
+      return;
+    }
+
     setIsUpdating(true);
+    try {
+      await editOrg({
+        variables: {
+          externalId: orgToEdit.externalId,
+          name: org.name,
+          adminFirstName: org.adminFirstName,
+          adminLastName: org.adminLastName,
+          adminEmail: org.adminEmail,
+          adminPhone: org.adminPhone,
+        },
+      });
+    } catch (e) {
+      console.error(e);
+    }
 
-    console.log("editing org: ", orgToEdit?.externalId);
-    console.log("new values: ");
-    console.log("name: ", org.name);
-    console.log("admin: ", org.adminFirstName + " " + org.adminLastName);
-    console.log("email: ", org.adminEmail);
-    console.log("phone: ", org.adminPhone);
-
+    refetch();
     setOrgToEdit(null);
     setIsUpdating(false);
   };
