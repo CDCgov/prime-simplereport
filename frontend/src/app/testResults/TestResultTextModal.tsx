@@ -3,7 +3,7 @@ import Modal from "react-modal";
 import moment from "moment";
 
 import Button from "../commonComponents/Button/Button";
-import { showNotification } from "../utils";
+import { showAlertNotification } from "../utils";
 import { formatFullName } from "../utils/user";
 import "./TestResultCorrectionModal.scss";
 import {
@@ -78,9 +78,12 @@ export const DetachedTestResultCorrectionModal = ({
         id: patientLink,
       },
     })
-      .then(() => {
-        const alert = <Alert type="success" title="Result texted" body="" />;
-        showNotification(alert);
+      .then((response) => {
+        const success = response.data?.sendPatientLinkSms;
+        showAlertNotification(
+          success ? "success" : "error",
+          success ? "Texted test results." : "Failed to text test results."
+        );
       })
       .finally(() => {
         closeModal();
@@ -109,9 +112,7 @@ export const DetachedTestResultCorrectionModal = ({
   );
 };
 
-const TestResultCorrectionModal = (
-  props: Omit<Props, InjectedQueryWrapperProps>
-) => (
+const TestResultTextModal = (props: Omit<Props, InjectedQueryWrapperProps>) => (
   <QueryWrapper<Props>
     query={testQuery}
     queryOptions={{ variables: { id: props.testResultId } }}
@@ -120,4 +121,4 @@ const TestResultCorrectionModal = (
   />
 );
 
-export default TestResultCorrectionModal;
+export default TestResultTextModal;
