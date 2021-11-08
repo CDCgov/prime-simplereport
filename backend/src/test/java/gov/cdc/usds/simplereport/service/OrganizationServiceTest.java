@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -14,7 +15,12 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
+import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
@@ -23,6 +29,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -33,6 +41,11 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private PatientRegistrationLinkRepository _prlRepo;
+  @Autowired private FacilityRepository facilityRepository;
+  @Autowired private OrganizationRepository organizationRepository;
+
+  @Autowired private DeviceTypeRepository deviceTypeRepository;
+  @Autowired private SpecimenTypeRepository specimenTypeRepository;
 
   @BeforeEach
   void setupData() {
@@ -211,5 +224,117 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             () -> _service.verifyOrganizationNoPermissions(orgExternalId));
 
     assertEquals("Organization is already verified.", e.getMessage());
+  }
+
+  @Nested
+  @DisplayName("When updating a facility")
+  class UpdateFacilityTest {
+    private Facility facility;
+    private List<DeviceType> devices;
+    private List<SpecimenType> specimenTypes;
+    private StreetAddress newFacilityAddress;
+    private StreetAddress newOrderingProviderAddress;
+
+    @BeforeEach
+    void beforeEach() {
+      List<Organization> disOrgs = organizationRepository.findAllByName("Dis Organization");
+      assertThat(disOrgs).hasSize(1);
+      Organization disOrg = disOrgs.get(0);
+
+      facility =
+          facilityRepository.findByOrganizationAndFacilityName(disOrg, "Injection Site").get();
+      assertThat(facility).isNotNull();
+
+      devices = deviceTypeRepository.findAll();
+      specimenTypes = specimenTypeRepository.findAll();
+
+      newFacilityAddress = new StreetAddress("0", "1", "2", "3", "4", "5");
+      newOrderingProviderAddress = new StreetAddress("6", "7", "8", "9", "10", "11");
+      _service.updateFacility(
+          facility.getInternalId(),
+          "new name",
+          "new clia",
+          newFacilityAddress,
+          "817-555-6666",
+          "facility@dis.org",
+          "dr. provider",
+          "very",
+          "expensive",
+          "jr.",
+          "npi",
+          newOrderingProviderAddress,
+          "817-555-7777",
+          new DeviceSpecimenTypeHolder(
+              new DeviceSpecimenType(devices.get(0), specimenTypes.get(0)),
+              List.of(
+                  new DeviceSpecimenType(devices.get(0), specimenTypes.get(0)),
+                  new DeviceSpecimenType(devices.get(1), specimenTypes.get(0)))));
+    }
+
+    @Test
+    @DisplayName("it should update the facility with new values")
+    @WithSimpleReportOrgAdminUser
+    void updateFacilityTest() {
+      Facility updatedFacility = facilityRepository.findById(facility.getInternalId()).get();
+
+      assertThat(updatedFacility).isNotNull();
+      assertThat(updatedFacility.getFacilityName()).isEqualTo("new name");
+      assertThat(updatedFacility.getCliaNumber()).isEqualTo("new clia");
+      assertThat(updatedFacility.getTelephone()).isEqualTo("817-555-6666");
+      assertThat(updatedFacility.getEmail()).isEqualTo("facility@dis.org");
+      assertThat(updatedFacility.getAddress()).isEqualTo(newFacilityAddress);
+
+      assertThat(updatedFacility.getOrderingProvider().getNameInfo().getFirstName())
+          .isEqualTo("dr. provider");
+      assertThat(updatedFacility.getOrderingProvider().getNameInfo().getMiddleName())
+          .isEqualTo("very");
+      assertThat(updatedFacility.getOrderingProvider().getNameInfo().getLastName())
+          .isEqualTo("expensive");
+      assertThat(updatedFacility.getOrderingProvider().getNameInfo().getSuffix()).isEqualTo("jr.");
+      assertThat(updatedFacility.getOrderingProvider().getProviderId()).isEqualTo("npi");
+      assertThat(updatedFacility.getOrderingProvider().getAddress())
+          .isEqualTo(newOrderingProviderAddress);
+
+      assertThat(updatedFacility.getDeviceSpecimenTypes()).hasSize(2);
+    }
+
+    @Nested
+    @DisplayName("when changing default device")
+    class UpdatingDefaultDevice {
+      @BeforeEach
+      void beforeEach() {
+        _service.updateFacility(
+            facility.getInternalId(),
+            "new name",
+            "new clia",
+            new StreetAddress("", "", "", "", "", ""),
+            "817-555-6666",
+            "facility@dis.org",
+            "dr. provider",
+            "very",
+            "expensive",
+            "jr.",
+            "npi",
+            new StreetAddress("", "", "", "", "", ""),
+            "817-555-7777",
+            new DeviceSpecimenTypeHolder(
+                new DeviceSpecimenType(devices.get(1), specimenTypes.get(0)),
+                List.of(
+                    new DeviceSpecimenType(devices.get(0), specimenTypes.get(0)),
+                    new DeviceSpecimenType(devices.get(1), specimenTypes.get(0)))));
+      }
+
+      @Test
+      @DisplayName("it should update default device and retain deviceSepcimenTypes")
+      @WithSimpleReportOrgAdminUser
+      void updateDefaultDevice() {
+        Facility updatedFacility = facilityRepository.findById(facility.getInternalId()).get();
+        assertThat(updatedFacility.getDefaultDeviceSpecimen().getDeviceType().getInternalId())
+            .isEqualTo(devices.get(1).getInternalId());
+        assertThat(updatedFacility.getDefaultDeviceSpecimen().getSpecimenType().getInternalId())
+            .isEqualTo(specimenTypes.get(0).getInternalId());
+        assertThat(updatedFacility.getDeviceSpecimenTypes()).hasSize(2);
+      }
+    }
   }
 }

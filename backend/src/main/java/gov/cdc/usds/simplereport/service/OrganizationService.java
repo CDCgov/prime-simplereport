@@ -11,6 +11,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,35 +33,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @Slf4j
+@RequiredArgsConstructor
 public class OrganizationService {
 
-  private OrganizationRepository _repo;
-  private FacilityRepository _facilityRepo;
-  private ProviderRepository _providerRepo;
-  private AuthorizationService _authService;
-  private OktaRepository _oktaRepo;
-  private CurrentOrganizationRolesContextHolder _currentOrgRolesContextHolder;
-  private OrderingProviderRequiredValidator _orderingProviderRequiredValidator;
-  private PatientSelfRegistrationLinkService _psrlService;
-
-  public OrganizationService(
-      OrganizationRepository repo,
-      FacilityRepository facilityRepo,
-      AuthorizationService authService,
-      ProviderRepository providerRepo,
-      OktaRepository oktaRepo,
-      CurrentOrganizationRolesContextHolder currentOrgRolesContextHolder,
-      OrderingProviderRequiredValidator orderingProviderRequiredValidator,
-      PatientSelfRegistrationLinkService patientSelfRegistrationLinkService) {
-    _repo = repo;
-    _facilityRepo = facilityRepo;
-    _authService = authService;
-    _providerRepo = providerRepo;
-    _oktaRepo = oktaRepo;
-    _currentOrgRolesContextHolder = currentOrgRolesContextHolder;
-    _orderingProviderRequiredValidator = orderingProviderRequiredValidator;
-    _psrlService = patientSelfRegistrationLinkService;
-  }
+  private final OrganizationRepository _repo;
+  private final FacilityRepository _facilityRepo;
+  private final ProviderRepository _providerRepo;
+  private final AuthorizationService _authService;
+  private final OktaRepository _oktaRepo;
+  private final CurrentOrganizationRolesContextHolder _currentOrgRolesContextHolder;
+  private final OrderingProviderRequiredValidator _orderingProviderRequiredValidator;
+  private final PatientSelfRegistrationLinkService _psrlService;
+  private final DeviceSpecimenTypeRepository deviceSpecimenTypeRepository;
 
   public void resetOrganizationRolesContext() {
     _currentOrgRolesContextHolder.reset();
@@ -232,18 +217,20 @@ public class OrganizationService {
     _orderingProviderRequiredValidator.assertValidity(
         p.getNameInfo(), p.getProviderId(), p.getTelephone(), facility.getAddress().getState());
 
+    facility.getDeviceSpecimenTypes().forEach(facility::removeDeviceSpecimenType);
+
     for (DeviceSpecimenType ds : deviceSpecimenTypes.getFullList()) {
-      facility.addDeviceSpecimenType(ds);
+      Optional<DeviceSpecimenType> deviceSpecimenTypeOptional =
+          deviceSpecimenTypeRepository.find(ds.getDeviceType(), ds.getSpecimenType());
+      deviceSpecimenTypeOptional.ifPresent(facility::addDeviceSpecimenType);
     }
 
-    // remove all existing devices
-    for (DeviceSpecimenType ds : facility.getDeviceSpecimenTypes()) {
-      if (!deviceSpecimenTypes.getFullList().contains(ds)) {
-        facility.removeDeviceSpecimenType(ds);
-      }
-    }
+    Optional<DeviceSpecimenType> deviceSpecimenTypeOptional =
+        deviceSpecimenTypeRepository.find(
+            deviceSpecimenTypes.getDefault().getDeviceType(),
+            deviceSpecimenTypes.getDefault().getSpecimenType());
+    deviceSpecimenTypeOptional.ifPresent(facility::addDefaultDeviceSpecimen);
 
-    facility.addDefaultDeviceSpecimen(deviceSpecimenTypes.getDefault());
     return _facilityRepo.save(facility);
   }
 
