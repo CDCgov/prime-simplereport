@@ -10,6 +10,17 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import Button from "../../commonComponents/Button/Button";
 import FormGroup from "../../commonComponents/FormGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
+import {
+  TestResultDeliveryPreference,
+  TestResultDeliveryPreferences,
+} from "../../patients/TestResultDeliveryPreference";
+import {
+  getSelectedDeliveryPreferencesEmail,
+  getSelectedDeliveryPreferencesSms,
+  toggleDeliveryPreferenceEmail,
+  toggleDeliveryPreferenceSms,
+} from "../../utils/deliveryPreferences";
+
 import "./AoEForm.scss";
 
 import SymptomInputs from "./SymptomInputs";
@@ -28,6 +39,7 @@ export interface TestQueuePerson {
   firstName: string;
   middleName: string | null;
   lastName: string;
+  email: string;
   phoneNumbers: PhoneNumber[];
   telephone: string;
   testResultDelivery: string;
@@ -144,7 +156,7 @@ const AoEForm: React.FC<Props> = ({
     }
   };
 
-  const getTestResultDeliveryPreferences = (phoneNumbers: PhoneNumber[]) => [
+  const getTestResultDeliveryPreferencesSms = (phoneNumbers: PhoneNumber[]) => [
     {
       label: (
         <>
@@ -172,6 +184,36 @@ const AoEForm: React.FC<Props> = ({
       ),
       value: "SMS",
       ...(phoneNumbers.length === 0 && { disabled: true }),
+    },
+    { label: "No", value: "NONE" },
+  ];
+
+  const getTestResultDeliveryPreferencesEmail = (email: string) => [
+    {
+      label: (
+        <>
+          Yes
+          <span className="usa-checkbox__label-description">
+            <p>
+              {email ? (
+                <span className="radio__label-description--checked">
+                  <strong>Results will be sent to this email:</strong>
+                </span>
+              ) : (
+                "(There is no email address listed in your patient profile.)"
+              )}
+            </p>
+            <span
+              key={"test-result-delivery-preference-email"}
+              className="radio__label-description--checked usa-radio__label-description text-base"
+            >
+              {email}
+            </span>
+          </span>
+        </>
+      ),
+      value: "EMAIL",
+      ...(!email && { disabled: true }),
     },
     { label: "No", value: "NONE" },
   ];
@@ -226,14 +268,51 @@ const AoEForm: React.FC<Props> = ({
               legend="Would you like to receive a copy of your results via text message?"
               hintText="You’re responsible for entering the correct contact information, following applicable federal and state laws."
               wrapperClassName="margin-top-0"
-              name="testResultDelivery"
-              onChange={setTestResultDelivery}
-              buttons={getTestResultDeliveryPreferences(patientMobileNumbers)}
-              selectedRadio={
-                patientMobileNumbers.length === 0 ? "NONE" : testResultDelivery
-              }
+              name="testResultDeliverySms"
+              onChange={(newPreference) => {
+                setTestResultDelivery(
+                  toggleDeliveryPreferenceSms(
+                    testResultDelivery as TestResultDeliveryPreference,
+                    newPreference as TestResultDeliveryPreference
+                  )
+                );
+              }}
+              buttons={getTestResultDeliveryPreferencesSms(
+                patientMobileNumbers
+              )}
+              selectedRadio={getSelectedDeliveryPreferencesSms(
+                testResultDelivery as TestResultDeliveryPreference
+              )}
             />
           </div>
+          {patient.email && (
+            <div className="prime-formgroup__wrapper">
+              <RadioGroup
+                legend="Would you like to receive a copy of your results via email?"
+                hintText="You’re responsible for entering the correct contact information, following applicable federal and state laws."
+                wrapperClassName="margin-top-0"
+                name="testResultDeliveryEmail"
+                onChange={(newPreference) => {
+                  setTestResultDelivery(
+                    toggleDeliveryPreferenceEmail(
+                      testResultDelivery as TestResultDeliveryPreference,
+                      newPreference as TestResultDeliveryPreference
+                    )
+                  );
+                }}
+                buttons={getTestResultDeliveryPreferencesEmail(patient.email)}
+                selectedRadio={(() => {
+                  if (patientMobileNumbers.length === 0) {
+                    return TestResultDeliveryPreferences.NONE;
+                  }
+
+                  return getSelectedDeliveryPreferencesEmail(
+                    testResultDelivery as TestResultDeliveryPreference
+                  );
+                })()}
+              />
+            </div>
+          )}
         </FormGroup>
         <FormGroup title="Symptoms">
           <SymptomInputs

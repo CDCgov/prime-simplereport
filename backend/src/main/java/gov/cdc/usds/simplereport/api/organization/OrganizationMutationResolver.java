@@ -1,6 +1,13 @@
 package gov.cdc.usds.simplereport.api.organization;
 
-import gov.cdc.usds.simplereport.api.Translators;
+import static gov.cdc.usds.simplereport.api.Translators.consolidateNameArguments;
+import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
+import static gov.cdc.usds.simplereport.api.Translators.parseOrganizationType;
+import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
+import static gov.cdc.usds.simplereport.api.Translators.parseState;
+import static gov.cdc.usds.simplereport.api.Translators.parseString;
+import static gov.cdc.usds.simplereport.api.Translators.toOptional;
+
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.Role;
@@ -91,12 +98,12 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
         new StreetAddress(
-            Translators.parseString(orderingProviderStreet),
-            Translators.parseString(orderingProviderStreetTwo),
-            Translators.parseString(orderingProviderCity),
-            Translators.parseState(orderingProviderState),
-            Translators.parseString(orderingProviderZipCode),
-            Translators.parseString(orderingProviderCounty));
+            parseString(orderingProviderStreet),
+            parseString(orderingProviderStreetTwo),
+            parseString(orderingProviderCity),
+            parseState(orderingProviderState),
+            parseString(orderingProviderZipCode),
+            parseString(orderingProviderCounty));
     PersonName providerName =
         new PersonName(
             orderingProviderFirstName,
@@ -108,8 +115,8 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             testingFacilityName,
             cliaNumber,
             facilityAddress,
-            Translators.parsePhoneNumber(phone),
-            Translators.parseEmail(email),
+            parsePhoneNumber(phone),
+            parseEmail(email),
             dstHolder,
             providerName,
             providerAddress,
@@ -164,27 +171,27 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
 
     StreetAddress providerAddress =
         new StreetAddress(
-            Translators.parseString(orderingProviderStreet),
-            Translators.parseString(orderingProviderStreetTwo),
-            Translators.parseString(orderingProviderCity),
-            Translators.parseState(orderingProviderState),
-            Translators.parseString(orderingProviderZipCode),
-            Translators.parseString(orderingProviderCounty));
+            parseString(orderingProviderStreet),
+            parseString(orderingProviderStreetTwo),
+            parseString(orderingProviderCity),
+            parseState(orderingProviderState),
+            parseString(orderingProviderZipCode),
+            parseString(orderingProviderCounty));
     Facility facility =
         _os.updateFacility(
             facilityId,
             testingFacilityName,
             cliaNumber,
             facilityAddress,
-            Translators.parsePhoneNumber(phone),
-            Translators.parseEmail(email),
+            parsePhoneNumber(phone),
+            parseEmail(email),
             orderingProviderFirstName,
             orderingProviderMiddleName,
             orderingProviderLastName,
             orderingProviderSuffix,
             orderingProviderNPI,
             providerAddress,
-            Translators.parsePhoneNumber(orderingProviderTelephone),
+            parsePhoneNumber(orderingProviderTelephone),
             dstHolder);
     return new ApiFacility(facility);
   }
@@ -234,14 +241,14 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
         new StreetAddress(
-            Translators.parseString(orderingProviderStreet),
-            Translators.parseString(orderingProviderStreetTwo),
-            Translators.parseString(orderingProviderCity),
-            Translators.parseState(orderingProviderState),
-            Translators.parseString(orderingProviderZipCode),
-            Translators.parseString(orderingProviderCounty));
+            parseString(orderingProviderStreet),
+            parseString(orderingProviderStreetTwo),
+            parseString(orderingProviderCity),
+            parseState(orderingProviderState),
+            parseString(orderingProviderZipCode),
+            parseString(orderingProviderCounty));
     providerName = // SPECIAL CASE: MAY BE ALL NULLS/BLANKS
-        Translators.consolidateNameArguments(
+        consolidateNameArguments(
             providerName,
             orderingProviderFirstName,
             orderingProviderMiddleName,
@@ -249,22 +256,22 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             orderingProviderSuffix,
             true);
     adminName =
-        Translators.consolidateNameArguments(
+        consolidateNameArguments(
             adminName, adminFirstName, adminMiddleName, adminLastName, adminSuffix);
     Organization org =
         _os.createOrganizationAndFacility(
             name,
-            Translators.parseOrganizationType(type),
+            parseOrganizationType(type),
             externalId,
             testingFacilityName,
             cliaNumber,
             facilityAddress,
-            Translators.parsePhoneNumber(phone),
-            Translators.parseEmail(email),
+            parsePhoneNumber(phone),
+            parseEmail(email),
             deviceSpecimenTypes,
             providerName,
             providerAddress,
-            Translators.parsePhoneNumber(orderingProviderTelephone),
+            parsePhoneNumber(orderingProviderTelephone),
             orderingProviderNPI);
     _aus.createUser(adminEmail, adminName, externalId, Role.ADMIN);
     List<Facility> facilities = _os.getFacilities(org);
@@ -272,12 +279,12 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   }
 
   public void adminUpdateOrganization(String name, String type) {
-    String parsedType = Translators.parseOrganizationType(type);
+    String parsedType = parseOrganizationType(type);
     _os.updateOrganization(name, parsedType);
   }
 
   public void updateOrganization(String type) {
-    String parsedType = Translators.parseOrganizationType(type);
+    String parsedType = parseOrganizationType(type);
     _os.updateOrganization(parsedType);
   }
 
@@ -288,5 +295,23 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       _oqs.createAndActivateQueuedOrganization(orgQueueItem.get());
     }
     return _os.setIdentityVerified(externalId, verified);
+  }
+
+  public String editPendingOrganization(
+      String orgExternalId,
+      String name,
+      String adminFirstName,
+      String adminLastName,
+      String adminEmail,
+      String adminPhone) {
+    OrganizationQueueItem editedItem =
+        _oqs.editQueueItem(
+            orgExternalId,
+            toOptional(name),
+            toOptional(adminFirstName),
+            toOptional(adminLastName),
+            toOptional(adminEmail),
+            toOptional(adminPhone));
+    return editedItem.getExternalId();
   }
 }

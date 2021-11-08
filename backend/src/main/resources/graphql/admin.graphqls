@@ -66,6 +66,14 @@ extend type Mutation {
     externalId: String!
     verified: Boolean!
   ): Boolean
+  editPendingOrganization(
+    orgExternalId: String!
+    name: String
+    adminFirstName: String
+    adminLastName: String
+    adminEmail: String
+    adminPhone: String
+  ) : String
   createOrganizationRegistrationLink(
     organizationExternalId: String!
     link: String!

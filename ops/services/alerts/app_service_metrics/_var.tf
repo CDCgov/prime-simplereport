@@ -73,3 +73,10 @@ variable "failed_http_2xx_threshold" {
 variable "skip_on_weekends" {
   default = false
 }
+
+// Additional URLs to monitor via App Insights availability tests
+// Format: map of { test name = URL } pairs
+variable "additional_uptime_test_urls" {
+  type    = map(string)
+  default = {}
+}
