@@ -37,6 +37,7 @@ import {
 
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
+import ManageEmails from "./ManageEmails";
 
 export type ValidateField = (field: keyof PersonErrors) => Promise<void>;
 
@@ -100,6 +101,7 @@ const PersonForm = (props: Props) => {
     AddressWithMetaData | undefined
   >();
   const phoneNumberValidator = useRef<Function | null>(null);
+  const emailValidator = useRef<Function | null>(null);
 
   const languages = getLanguages();
 
@@ -391,11 +393,11 @@ const PersonForm = (props: Props) => {
           phoneNumberValidator={phoneNumberValidator}
         />
         <div className="usa-form">
-          <Input
-            {...commonInputProps}
-            field="email"
-            label={t("patient.form.contact.email")}
-            type="email"
+          <ManageEmails
+            emails={patient.emails}
+            patient={patient}
+            updateEmails={onPersonChange("emails")}
+            emailValidator={emailValidator}
           />
           {patient.email && (
             <RadioGroup

@@ -41,6 +41,7 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   phoneNumbers: null,
   county: null,
   email: null,
+  emails: null,
   street: "",
   streetTwo: null,
   city: null,
@@ -85,6 +86,7 @@ export const ADD_PATIENT = gql`
     $role: String
     $lookupId: String
     $email: String
+    $emails: [String]
     $county: String
     $race: String
     $ethnicity: String
@@ -111,6 +113,7 @@ export const ADD_PATIENT = gql`
       role: $role
       lookupId: $lookupId
       email: $email
+      emails: $emails
       county: $county
       race: $race
       ethnicity: $ethnicity
@@ -246,6 +249,17 @@ const AddPatient = () => {
             return phoneNumber && phoneNumber.number && phoneNumber.type;
           }
         ),
+        emails: (person.emails || []).reduce(function dedupeAndCompact(
+          emails: string[],
+          email: string
+        ) {
+          if (email && !emails.includes(email)) {
+            emails.push(email);
+          }
+
+          return emails;
+        },
+        []),
       },
     });
     showNotification(
