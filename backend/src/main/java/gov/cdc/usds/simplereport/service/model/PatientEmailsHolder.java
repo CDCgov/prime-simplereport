@@ -4,39 +4,39 @@ import java.util.Collections;
 import java.util.List;
 
 public class PatientEmailsHolder {
-  private String _default;
-  private List<String> _all;
+  private String primary;
+  private List<String> all;
 
-  PatientEmailsHolder(String defaultEmail, List<String> emails) {
+  public PatientEmailsHolder(String primaryEmail, List<String> emails) {
     super();
-    this._default = defaultEmail;
-    this._all = emails;
+    this.primary = primaryEmail;
+    this.all = emails;
   }
 
   public String getDefault() {
-    if (_default == null) {
+    if (primary == null) {
       // If a default email is not specified, use the first element of the
       // patient email list
-      if (_all != null && !_all.isEmpty()) {
-        return _all.get(0);
+      if (all != null && !all.isEmpty()) {
+        return all.get(0);
       }
 
       return null;
     }
 
-    return _default;
+    return primary;
   }
 
   public List<String> getFullList() {
-    if (_all == null) {
-      if (_default == null) {
+    if (all == null) {
+      if (primary == null) {
         // No email addresses supplied at all
         return Collections.emptyList();
       }
 
-      return List.of(_default);
+      return List.of(primary);
     }
 
-    return _all;
+    return all;
   }
 }
