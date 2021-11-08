@@ -58,6 +58,7 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
               onClick={() => {
                 emailTestResult({
                   variables: { patientLinkId },
+                  fetchPolicy: "no-cache",
                 }).then((response) => {
                   const success = response.data?.sendPatientLinkEmail;
                   showAlertNotification(
