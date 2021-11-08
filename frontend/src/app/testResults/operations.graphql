@@ -1,0 +1,18 @@
+query getTestResultForResendingEmails($id: ID!) {
+  testResult(id: $id) {
+    dateTested
+    patient {
+      firstName
+      middleName
+      lastName
+      email
+    }
+    patientLink{
+      internalId
+    }
+  }
+}
+
+mutation resendTestResultsEmail($patientLinkId: ID!) {
+  sendPatientLinkEmail(internalId: $patientLinkId)
+}

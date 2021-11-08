@@ -16,6 +16,7 @@ module "metric_alerts" {
     "http_5xx_errors",
     "first_error_in_a_week",
     "account_request_failures",
+    "experian_auth_failures",
     "frontend_error_boundary",
     "db_query_duration",
     "db_query_duration_over_time_window",
