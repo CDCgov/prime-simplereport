@@ -10,7 +10,6 @@ import {
   InjectedQueryWrapperProps,
   QueryWrapper,
 } from "../commonComponents/QueryWrapper";
-import Alert from "../commonComponents/Alert";
 
 export const testQuery = gql`
   query getTestResultForText($id: ID!) {
