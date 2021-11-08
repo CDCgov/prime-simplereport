@@ -89,9 +89,9 @@ class IdentityVerificationControllerTest {
   private static final String VALID_SESSION_STRING = "099244e0-bebc-4f59-83fd-453dc7f0b858";
   private static final UUID VALID_SESSION_UUID = UUID.fromString(VALID_SESSION_STRING);
 
-  protected static final String GET_QUESTIONS_REQUEST_TEMPLATE =
+  private static final String GET_QUESTIONS_REQUEST_TEMPLATE =
       "{\"orgExternalId\": \"%s\", \"firstName\":\"Jane\", \"lastName\":\"Doe\", \"dateOfBirth\":\"1980-08-12\", \"email\":\"%s\", \"phoneNumber\":\"410-867-5309\", \"streetAddress1\":\"1600 Pennsylvania Ave\", \"city\":\"Washington\", \"state\":\"DC\", \"zip\":\"20500\"}";
-  protected static final String SUBMIT_ANSWERS_REQUEST_TEMPLATE =
+  private static final String SUBMIT_ANSWERS_REQUEST_TEMPLATE =
       "{\"orgExternalId\": \"%s\", \"sessionId\": \"%s\", \"answers\": [%s]}";
 
   @BeforeEach
