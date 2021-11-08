@@ -1,6 +1,8 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
@@ -53,6 +55,83 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
     assertTrue(optFetchedQueueItem.isPresent());
     OrganizationQueueItem fetchedQueueItem = optFetchedQueueItem.get();
     assertEquals(createdQueueItem.getOrganizationName(), fetchedQueueItem.getOrganizationName());
+  }
+
+  @Test
+  void editQueueItem_newOrgName_success() {
+    OrganizationQueueItem createdQueueItem = _dataFactory.createOrganizationQueueItem();
+
+    OrganizationQueueItem editedItem =
+        _service.editQueueItem(
+            createdQueueItem.getExternalId(),
+            Optional.of("Edited Org Queue Name"),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty());
+
+    // external id changed because name changed
+    assertFalse(editedItem.getExternalId().equals(createdQueueItem.getExternalId()));
+
+    Optional<OrganizationQueueItem> optFetchedQueueItem =
+        _service.getUnverifiedQueuedOrganizationByExternalId(editedItem.getExternalId());
+    assertEquals(optFetchedQueueItem.get().getOrganizationName(), "Edited Org Queue Name");
+  }
+
+  @Test
+  void editQueueItem_newAdminName_success() {
+    OrganizationQueueItem createdQueueItem = _dataFactory.createOrganizationQueueItem();
+
+    _service.editQueueItem(
+        createdQueueItem.getExternalId(),
+        Optional.empty(),
+        Optional.of("Sarah"),
+        Optional.of("Samuels"),
+        Optional.empty(),
+        Optional.empty());
+
+    // re-fetch queue item and see changes reflected
+    Optional<OrganizationQueueItem> optFetchedQueueItem =
+        _service.getUnverifiedQueuedOrganizationByExternalId(createdQueueItem.getExternalId());
+    assertEquals(optFetchedQueueItem.get().getRequestData().getFirstName(), "Sarah");
+    assertEquals(optFetchedQueueItem.get().getRequestData().getLastName(), "Samuels");
+  }
+
+  @Test
+  void editQueueItem_newContactInfo_success() {
+    OrganizationQueueItem createdQueueItem = _dataFactory.createOrganizationQueueItem();
+
+    _service.editQueueItem(
+        createdQueueItem.getExternalId(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.of("foo@bar.com"),
+        Optional.of("123-456-7890"));
+
+    // re-fetch queue item and see changes reflected
+    Optional<OrganizationQueueItem> optFetchedQueueItem =
+        _service.getUnverifiedQueuedOrganizationByExternalId(createdQueueItem.getExternalId());
+    assertEquals(optFetchedQueueItem.get().getRequestData().getEmail(), "foo@bar.com");
+    assertEquals(optFetchedQueueItem.get().getRequestData().getWorkPhoneNumber(), "123-456-7890");
+  }
+
+  @Test
+  void editQueueItem_failsToFindValidOrg() {
+    Exception exception =
+        assertThrows(
+            IllegalStateException.class,
+            () -> {
+              _service.editQueueItem(
+                  "nonsense id",
+                  Optional.empty(),
+                  Optional.empty(),
+                  Optional.empty(),
+                  Optional.of("foo@bar.com"),
+                  Optional.of("123-456-7890"));
+            });
+    assertEquals(
+        exception.getMessage(), "Requesting edits on an organization that does not exist.");
   }
 
   @Test

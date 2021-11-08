@@ -20,10 +20,10 @@ import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailService;
+import gov.cdc.usds.simplereport.utils.OrganizationUtils;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
@@ -86,7 +86,8 @@ public class AccountRequestController {
       String parsedStateCode = Translators.parseState(request.getState());
       String organizationName =
           checkForDuplicateOrg(request.getName(), parsedStateCode, request.getEmail());
-      String orgExternalId = createOrgExternalId(organizationName, parsedStateCode);
+      String orgExternalId =
+          OrganizationUtils.generateOrgExternalId(organizationName, parsedStateCode);
 
       String requestEmail = Translators.parseEmail(request.getEmail());
       boolean userExists = _aus.userExists(requestEmail);
@@ -145,23 +146,6 @@ public class AccountRequestController {
     // Org can be created because it's not in the same state, but it gets a special org name to
     // distinguish it
     return String.join("-", organizationName, state);
-  }
-
-  private String createOrgExternalId(String organizationName, String state) {
-    organizationName =
-        organizationName
-            // remove all non-alpha-numeric
-            .replaceAll("[^-A-Za-z0-9 ]", "")
-            // spaces to hyphens
-            .replace(' ', '-')
-            // reduce repeated hyphens to one
-            .replaceAll("-+", "-")
-            // remove leading hyphens
-            .replaceAll("^-+", "");
-    if (organizationName.length() == 0) {
-      throw new BadRequestException("The organization name is invalid.");
-    }
-    return String.format("%s-%s-%s", state, organizationName, UUID.randomUUID());
   }
 
   private void logOrganizationAccountRequest(@RequestBody @Valid OrganizationAccountRequest request)
