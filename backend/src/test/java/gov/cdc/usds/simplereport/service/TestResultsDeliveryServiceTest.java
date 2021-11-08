@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -46,9 +48,10 @@ class TestResultsDeliveryServiceTest {
     when(patientLinkService.getRefreshedPatientLink(uuid)).thenReturn(patientLink);
 
     // WHEN
-    testResultsDeliveryService.emailTestResults(patientLink.getInternalId());
+    boolean success = testResultsDeliveryService.emailTestResults(patientLink.getInternalId());
 
     // THEN
+    assertThat(success).isTrue();
     verify(emailService)
         .sendWithDynamicTemplate(
             "harry@hogwarts.edu",
@@ -69,9 +72,10 @@ class TestResultsDeliveryServiceTest {
     when(patientLinkService.getRefreshedPatientLink(uuid)).thenReturn(patientLink);
 
     // WHEN
-    testResultsDeliveryService.emailTestResults(patientLink.getInternalId());
+    boolean success = testResultsDeliveryService.emailTestResults(patientLink.getInternalId());
 
     // THEN
+    assertThat(success).isTrue();
     verify(emailService)
         .sendWithDynamicTemplate(
             "harry@hogwarts.edu",
@@ -83,7 +87,7 @@ class TestResultsDeliveryServiceTest {
   }
 
   @Test
-  void emailTestResultTests_noUserEmails() throws IOException {
+  void emailTestResultTests_noUserEmails() {
 
     // GIVEN
     UUID uuid = UUID.randomUUID();
@@ -92,10 +96,27 @@ class TestResultsDeliveryServiceTest {
     when(patientLinkService.getRefreshedPatientLink(uuid)).thenReturn(patientLink);
 
     // WHEN
-    testResultsDeliveryService.emailTestResults(patientLink.getInternalId());
+    boolean success = testResultsDeliveryService.emailTestResults(patientLink.getInternalId());
 
     // THEN
+    assertThat(success).isFalse();
     verifyNoInteractions(emailService);
+  }
+
+  @Test
+  void emailTestResultTests_exceptionFailure() throws IOException {
+
+    // GIVEN
+    UUID uuid = UUID.randomUUID();
+    PatientLink patientLink = getMockedPatientLink(uuid);
+    when(patientLinkService.getRefreshedPatientLink(uuid)).thenReturn(patientLink);
+    when(emailService.sendWithDynamicTemplate(any(), any(), any())).thenThrow(IOException.class);
+
+    // WHEN
+    boolean success = testResultsDeliveryService.emailTestResults(patientLink.getInternalId());
+
+    // THEN
+    assertThat(success).isFalse();
   }
 
   private PatientLink getMockedPatientLink(UUID internalId) {

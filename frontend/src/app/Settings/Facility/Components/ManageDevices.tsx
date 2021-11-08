@@ -93,16 +93,16 @@ const ManageDevices: React.FC<Props> = ({
 
   // returns a list of deviceIds that have *not* been selected so far
   const _getRemainingDeviceOptions = () =>
-    deviceSpecimenTypeOptions
-      .map((dst) => dst.deviceType)
-      .filter((dst) => !deviceTypeIds.includes(dst));
+    deviceSpecimenTypeOptions.filter(
+      (dst) => !deviceTypeIds.includes(dst.deviceType.internalId)
+    );
 
   const onAddDevice = () => {
     const remainingDeviceOptions = _getRemainingDeviceOptions();
     const newDeviceSpecimenTypes = [...deviceSpecimenTypes];
     newDeviceSpecimenTypes.push({
-      deviceType: remainingDeviceOptions[0].internalId,
-      specimenType: deviceSpecimenTypeOptions[0].specimenType,
+      deviceType: remainingDeviceOptions[0].deviceType.internalId,
+      specimenType: remainingDeviceOptions[0].specimenType.internalId,
     });
 
     updateDeviceSpecimenTypes(newDeviceSpecimenTypes);

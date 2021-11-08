@@ -18,6 +18,7 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAn
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationQuestionsResponse;
 import gov.cdc.usds.simplereport.properties.ExperianProperties;
+import gov.cdc.usds.simplereport.service.errors.ExperianAuthException;
 import gov.cdc.usds.simplereport.service.errors.ExperianGetQuestionsException;
 import gov.cdc.usds.simplereport.service.errors.ExperianKbaResultException;
 import gov.cdc.usds.simplereport.service.errors.ExperianNullNodeException;
@@ -172,6 +173,42 @@ class LiveExperianServiceTest {
               _service.getQuestions(request);
             });
     assertEquals(KBA_CODE_DESCRIPTION_DECEASED, e.getMessage());
+  }
+
+  @Test
+  void getQuestions_authFailure_failure() {
+    // somehow failed to get an access token from experian
+    when(_mockRestTemplate.postForObject(
+            eq(FAKE_PROPERTIES.getTokenEndpoint()), any(), eq(ObjectNode.class)))
+        .thenThrow(RestClientException.class);
+
+    IdentityVerificationQuestionsRequest request = createValidQuestionsRequest();
+
+    ExperianAuthException e =
+        assertThrows(
+            ExperianAuthException.class,
+            () -> {
+              _service.getQuestions(request);
+            });
+    assertEquals("The activation token could not be retrieved.", e.getMessage());
+  }
+
+  @Test
+  void getQuestions_nullAuthResponse_failure() {
+    // somehow failed to get an access token from experian
+    when(_mockRestTemplate.postForObject(
+            eq(FAKE_PROPERTIES.getTokenEndpoint()), any(), eq(ObjectNode.class)))
+        .thenReturn(null);
+
+    IdentityVerificationQuestionsRequest request = createValidQuestionsRequest();
+
+    ExperianAuthException e =
+        assertThrows(
+            ExperianAuthException.class,
+            () -> {
+              _service.getQuestions(request);
+            });
+    assertEquals("The Experian token request returned a null response.", e.getMessage());
   }
 
   @Test
