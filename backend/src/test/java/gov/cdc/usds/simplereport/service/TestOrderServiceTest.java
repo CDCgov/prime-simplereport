@@ -9,9 +9,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
@@ -40,7 +40,6 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
-import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -537,7 +536,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void addTestResult_emailDelivery() throws IOException {
+  void addTestResult_emailDelivery() {
     // GIVEN
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
@@ -554,6 +553,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         LocalDate.of(1865, 12, 25),
         false);
     DeviceType devA = facility.getDefaultDeviceType();
+
+    when(testResultsDeliveryService.emailTestResults(any(PatientLink.class))).thenReturn(true);
+    when(testResultsDeliveryService.emailTestResults(any(UUID.class))).thenReturn(true);
 
     // WHEN
     AddTestResultResponse res =
@@ -570,7 +572,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void addTestResult_emailDelivery_failure() throws IOException {
+  void addTestResult_emailDelivery_failure() {
     // GIVEN
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
@@ -588,9 +590,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         false);
     DeviceType devA = facility.getDefaultDeviceType();
 
-    doThrow(IOException.class)
-        .when(testResultsDeliveryService)
-        .emailTestResults(any(PatientLink.class));
+    when(testResultsDeliveryService.emailTestResults(any(PatientLink.class))).thenReturn(false);
+    when(testResultsDeliveryService.emailTestResults(any(UUID.class))).thenReturn(false);
 
     // WHEN
     AddTestResultResponse res =
@@ -604,7 +605,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void addTestResult_emailAndSmsDelivery() throws IOException {
+  void addTestResult_emailAndSmsDelivery() {
     // GIVEN
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
@@ -621,6 +622,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         LocalDate.of(1865, 12, 25),
         false);
     DeviceType devA = facility.getDefaultDeviceType();
+
+    when(testResultsDeliveryService.emailTestResults(any(PatientLink.class))).thenReturn(true);
+    when(testResultsDeliveryService.emailTestResults(any(UUID.class))).thenReturn(true);
 
     // WHEN
     AddTestResultResponse res =

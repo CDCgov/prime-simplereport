@@ -25,17 +25,17 @@ public class TestResultsDeliveryService {
   private final PatientLinkService patientLinkService;
   private final EmailService emailService;
 
-  public void emailTestResults(UUID patientLinkId) throws IOException {
+  public boolean emailTestResults(UUID patientLinkId) {
     PatientLink patientLink = patientLinkService.getRefreshedPatientLink(patientLinkId);
-    emailTestResults(patientLink);
+    return emailTestResults(patientLink);
   }
 
-  public void emailTestResults(PatientLink patientLink) throws IOException {
+  public boolean emailTestResults(PatientLink patientLink) {
     String recipientEmailAddresses = patientLink.getTestOrder().getPatient().getEmail();
 
     if (recipientEmailAddresses == null) {
       log.error("Patient missing email address");
-      return;
+      return false;
     }
 
     Map<String, Object> templateVariables =
@@ -44,10 +44,20 @@ public class TestResultsDeliveryService {
             "expiration_duration", getExpirationDuration(patientLink),
             "test_result_url", patientLinkUrl + patientLink.getInternalId());
 
-    emailService.sendWithDynamicTemplate(
-        recipientEmailAddresses,
-        EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT,
-        templateVariables);
+    try {
+      emailService.sendWithDynamicTemplate(
+          recipientEmailAddresses,
+          EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT,
+          templateVariables);
+    } catch (IOException e) {
+      log.error(
+          "failed to send email for patient link {}, exception: {}",
+          patientLink.getInternalId(),
+          e.getMessage());
+      return false;
+    }
+
+    return true;
   }
 
   @NotNull

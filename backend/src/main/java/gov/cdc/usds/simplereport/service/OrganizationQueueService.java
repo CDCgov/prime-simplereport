@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.OrganizationQueueRepository;
+import gov.cdc.usds.simplereport.utils.OrganizationUtils;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,40 @@ public class OrganizationQueueService {
   public Optional<OrganizationQueueItem> getUnverifiedQueuedOrganizationByExternalId(
       String orgExternalId) {
     return _orgQueueRepo.findUnverifiedByExternalId(orgExternalId);
+  }
+
+  public OrganizationQueueItem editQueueItem(
+      String orgExternalId,
+      Optional<String> editedOrgName,
+      Optional<String> editedOrgAdminFirstName,
+      Optional<String> editedOrgAdminLastName,
+      Optional<String> editedOrgAdminEmail,
+      Optional<String> editedOrgAdminPhone)
+      throws IllegalArgumentException {
+    Optional<OrganizationQueueItem> optionalQueueItem =
+        _orgQueueRepo.findUnverifiedByExternalId(orgExternalId);
+
+    if (optionalQueueItem.isEmpty()) {
+      throw new IllegalStateException("Requesting edits on an organization that does not exist.");
+    }
+
+    OrganizationQueueItem queueItem = optionalQueueItem.get();
+    OrganizationAccountRequest originalRequestData = queueItem.getRequestData();
+    String orgName =
+        editedOrgName.isPresent() ? editedOrgName.get() : queueItem.getOrganizationName();
+
+    String externalId =
+        editedOrgName.isPresent()
+            ? OrganizationUtils.generateOrgExternalId(
+                editedOrgName.get(), originalRequestData.getState())
+            : queueItem.getExternalId();
+
+    editedOrgAdminFirstName.ifPresent(originalRequestData::setFirstName);
+    editedOrgAdminLastName.ifPresent(originalRequestData::setLastName);
+    editedOrgAdminEmail.ifPresent(originalRequestData::setEmail);
+    editedOrgAdminPhone.ifPresent(originalRequestData::setWorkPhoneNumber);
+
+    return queueItem.editOrganizationQueueItem(orgName, externalId, originalRequestData);
   }
 
   public String createAndActivateQueuedOrganization(OrganizationQueueItem queueItem) {
