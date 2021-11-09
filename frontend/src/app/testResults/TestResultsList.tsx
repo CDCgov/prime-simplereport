@@ -88,7 +88,7 @@ function testResultRows(
 
   // `sort` mutates the array, so make a copy
   return [...testResults].sort(byDateTested).map((r) => {
-    let actionItems = [];
+    const actionItems = [];
     actionItems.push({
       name: "Print result",
       action: () => setPrintModalId(r.internalId),
@@ -103,17 +103,11 @@ function testResultRows(
       name: "View details",
       action: () => setDetailsModalId(r.internalId),
     });
+    actionItems.push({
+      name: "Text result",
+      action: () => setTextModalId(r.internalId),
+    });
     const removed = r.correctionStatus === "REMOVED";
-    actionItems = [
-      { name: "Print result", action: () => setPrintModalId(r.internalId) },
-      { name: "Text result", action: () => setTextModalId(r.internalId) },
-
-      {
-        name: "View details",
-
-        action: () => setDetailsModalId(r.internalId),
-      },
-    ];
     if (!removed) {
       actionItems.push({
         name: "Mark as error",
