@@ -137,9 +137,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.address = address;
     this.role = role;
     this.emails = emails;
-    if (emails != null && !emails.isEmpty()) {
-      this.email = emails.get(0);
-    }
     this.race = race;
     this.ethnicity = ethnicity;
     this.tribalAffiliation = tribalAffiliation;
@@ -191,9 +188,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.address = address;
     this.role = role;
     this.emails = emails;
-    if (emails != null && !emails.isEmpty()) {
-      this.email = emails.get(0);
-    }
     this.race = race;
     this.ethnicity = ethnicity;
     this.tribalAffiliation = tribalAffiliation;
@@ -271,7 +265,11 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   }
 
   public String getEmail() {
-    return email;
+    if (emails == null || emails.isEmpty()) {
+      return null;
+    }
+
+    return this.emails.get(0);
   }
 
   public List<String> getEmails() {
