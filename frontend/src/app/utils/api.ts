@@ -1,4 +1,5 @@
 import { getAppInsightsHeaders } from "../TelemetryService";
+import SessionTimeout from "../accountCreation/SessionTimeout";
 
 interface JsonObject {
   [key: string]: any;
@@ -70,7 +71,14 @@ class FetchClient {
       this.getOptions(method, body)
     );
     if (!res.ok) {
-      throw await res.text();
+      let errorText = await res.text();
+      console.log(errorText);
+      if (String(errorText).includes("Session timeout")) {
+        // want to return some kind of error modal here
+        throw SessionTimeout;
+      } else {
+        throw errorText;
+      }
     }
     const contentType = res.headers.get("content-type");
     if (contentType && contentType.indexOf(JSON_CONTENT) !== -1) {
