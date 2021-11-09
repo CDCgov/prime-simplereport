@@ -1,18 +1,9 @@
 import { PhoneNumberUtil, PhoneNumberFormat } from "google-libphonenumber";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
-
-import Checkboxes from "../../commonComponents/Checkboxes";
-import Button from "../../commonComponents/Button/Button";
-import {
-  PendingOrganization,
-  useEditPendingOrganizationMutation,
-} from "../../../generated/graphql";
-
-import EditOrgModal from "./EditOrgModal";
-import { PendingOrganizationFormValues } from "./utils";
 
 import "./PendingOrganizationsList.scss";
+import Checkboxes from "../../commonComponents/Checkboxes";
+import Button from "../../commonComponents/Button/Button";
+import { PendingOrganization } from "../../../generated/graphql";
 
 interface Props {
   organizations: PendingOrganization[];
@@ -20,8 +11,6 @@ interface Props {
   submitIdentityVerified: () => void;
   setVerifiedOrganization: (externalId: string, verified: boolean) => void;
   loading: boolean;
-  verifyInProgress: boolean;
-  refetch: () => void;
 }
 
 const phoneUtil = PhoneNumberUtil.getInstance();
@@ -32,40 +21,7 @@ const PendingOrganizations = ({
   submitIdentityVerified,
   setVerifiedOrganization,
   loading,
-  verifyInProgress,
-  refetch,
 }: Props) => {
-  const [orgToEdit, setOrgToEdit] = useState<PendingOrganization | null>(null);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [editOrg] = useEditPendingOrganizationMutation();
-
-  const handleUpdateOrg = async (org: PendingOrganizationFormValues) => {
-    // Don't do anything if no org is selected
-    if (orgToEdit === null) {
-      return;
-    }
-
-    setIsUpdating(true);
-    try {
-      await editOrg({
-        variables: {
-          externalId: orgToEdit.externalId,
-          name: org.name,
-          adminFirstName: org.adminFirstName,
-          adminLastName: org.adminLastName,
-          adminEmail: org.adminEmail,
-          adminPhone: org.adminPhone,
-        },
-      });
-    } catch (e) {
-      console.error(e);
-    }
-
-    refetch();
-    setOrgToEdit(null);
-    setIsUpdating(false);
-  };
-
   const orgRows = () => {
     if (loading) {
       return (
@@ -89,7 +45,7 @@ const PendingOrganizations = ({
     return orgsSortedByNewest.map((o) => (
       <tr key={o.externalId} className="sr-org-row">
         <td>{o.name}</td>
-        <td>{`${o.adminFirstName} ${o.adminLastName}`}</td>
+        <td>{o.adminName}</td>
         <td>
           <a href={`mailto:${o.adminEmail}}`}>{o.adminEmail}</a>
           <br />
@@ -120,14 +76,6 @@ const PendingOrganizations = ({
             ]}
           />
         </td>
-        <td>
-          <span
-            data-testid={`edit-icon-${o.externalId}`}
-            onClick={() => setOrgToEdit(o)}
-          >
-            <FontAwesomeIcon icon={"edit"} />
-          </span>
-        </td>
       </tr>
     ));
   };
@@ -137,24 +85,12 @@ const PendingOrganizations = ({
       <div className="grid-container pending-orgs-wide-container">
         <div className="grid-row">
           <div className="prime-container card-container sr-pending-organizations-list">
-            {orgToEdit ? (
-              <EditOrgModal
-                organization={orgToEdit}
-                onClose={() => setOrgToEdit(null)}
-                onSubmit={handleUpdateOrg}
-                isUpdating={isUpdating}
-              />
-            ) : null}
             <div className="usa-card__header">
               <h2>Organizations Pending Identity Verification</h2>
               <div>
                 <Button
                   className="sr-active-button"
-                  disabled={
-                    loading ||
-                    verifyInProgress ||
-                    verifiedOrgExternalIds.size === 0
-                  }
+                  disabled={loading || verifiedOrgExternalIds.size === 0}
                   onClick={submitIdentityVerified}
                 >
                   Save Changes
@@ -171,7 +107,6 @@ const PendingOrganizations = ({
                     <th scope="row">Created</th>
                     <th scope="col">External ID</th>
                     <th scope="col">Verify Identity</th>
-                    <th scope="col">Edit</th>
                   </tr>
                 </thead>
                 <tbody>{orgRows()}</tbody>

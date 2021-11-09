@@ -14,7 +14,6 @@ const PendingOrganizationsContainer = () => {
   const [verifiedOrgExternalIds, setVerifiedOrgExternalIds] = useState<
     Set<string>
   >(new Set());
-  const [verifyInProgress, setVerifyInProgress] = useState<boolean>(false);
   const [verifyIdentity] = useSetOrgIdentityVerifiedMutation();
   const { data, refetch, loading, error } = useGetPendingOrganizationsQuery();
   if (error) {
@@ -32,7 +31,6 @@ const PendingOrganizationsContainer = () => {
   }
 
   const submitIdentityVerified = () => {
-    setVerifyInProgress(true);
     Promise.all(
       Array.from(verifiedOrgExternalIds).map((externalId) => {
         return verifyIdentity({
@@ -54,10 +52,7 @@ const PendingOrganizationsContainer = () => {
           />
         );
       })
-      .finally(() => {
-        refetch();
-        setVerifyInProgress(false);
-      });
+      .finally(refetch);
   };
 
   return (
@@ -67,8 +62,6 @@ const PendingOrganizationsContainer = () => {
       submitIdentityVerified={submitIdentityVerified}
       setVerifiedOrganization={setVerifiedOrganization}
       loading={loading}
-      verifyInProgress={verifyInProgress}
-      refetch={refetch}
     />
   );
 };

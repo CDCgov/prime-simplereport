@@ -11,8 +11,7 @@ public class ApiPendingOrganization {
 
   private String externalId;
   private String name;
-  private String adminFirstName;
-  private String adminLastName;
+  private String adminName;
   private String adminEmail;
   private String adminPhone;
   private Date createdAt;
@@ -27,8 +26,7 @@ public class ApiPendingOrganization {
     this.externalId = org.getExternalId();
     this.name = org.getOrganizationName();
     OrganizationAccountRequest accountRequest = org.getRequestData();
-    this.adminFirstName = accountRequest.getFirstName();
-    this.adminLastName = accountRequest.getLastName();
+    this.adminName = accountRequest.getFirstName() + " " + accountRequest.getLastName();
     this.adminEmail = accountRequest.getEmail();
     this.adminPhone = accountRequest.getWorkPhoneNumber();
     this.createdAt = org.getCreatedAt();

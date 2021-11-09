@@ -2,8 +2,7 @@ query GetPendingOrganizations {
   pendingOrganizations {
     externalId
     name
-    adminFirstName
-    adminLastName
+    adminName
     adminEmail
     adminPhone
     createdAt
@@ -12,22 +11,4 @@ query GetPendingOrganizations {
 
 mutation SetOrgIdentityVerified($externalId: String!, $verified: Boolean!) {
   setOrganizationIdentityVerified(externalId: $externalId, verified: $verified)
-}
-
-mutation EditPendingOrganization(
-  $externalId: String!
-  $name: String
-  $adminFirstName: String
-  $adminLastName: String
-  $adminEmail: String
-  $adminPhone: String
-) {
-  editPendingOrganization(
-    orgExternalId: $externalId
-    name: $name
-    adminFirstName: $adminFirstName
-    adminLastName: $adminLastName
-    adminEmail: $adminEmail
-    adminPhone: $adminPhone
-  )
 }
