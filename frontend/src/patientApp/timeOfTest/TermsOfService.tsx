@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Redirect, RouteComponentProps } from "react-router";
+import { Redirect } from "react-router";
 import classnames from "classnames";
 import { Trans, useTranslation } from "react-i18next";
 
@@ -8,7 +8,7 @@ import Button from "../../app/commonComponents/Button/Button";
 
 import ToS from "./ToS";
 
-interface Props extends RouteComponentProps {
+interface Props {
   className?: string;
   onAgree?: () => void;
 }
