@@ -141,7 +141,7 @@ exports[`TermsOfService snapshot 1`] = `
         Sharing of data
       </h3>
       <p>
-        Data recorded and stored in the Application by the Entity is for use by the Entity as needed for workflow, record keeping, and reporting purposes. Data recorded and stored by the Entity in the Application will be automatically transmitted to the appropriate STLT Public Health Agency based on both the Entity ZIP code and the Patient’s ZIP code, including, for coronavirusdisease 2019 test results, all relevant fields as defined in the 
+        Data recorded and stored in the Application by the Entity is for use by the Entity as needed for workflow, record keeping, and reporting purposes. Data recorded and stored by the Entity in the Application will be automatically transmitted to the appropriate STLT Public Health Agency based on both the Entity ZIP code and the Patient’s ZIP code, including, for coronavirus disease 2019 test results, all relevant fields as defined in the 
         <a
           href="https://www.hhs.gov/sites/default/files/covid-19-laboratory-data-reporting-guidance.pdf"
         >
