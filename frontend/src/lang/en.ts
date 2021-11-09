@@ -432,7 +432,7 @@ export const en = {
             p0:
               "Data recorded and stored in the Application by the Entity is for use by the Entity as needed for workflow, record keeping, " +
               "and reporting purposes. Data recorded and stored by the Entity in the Application will be automatically transmitted to the " +
-              "appropriate STLT Public Health Agency based on both the Entity ZIP code and the Patient’s ZIP code, including, for coronavirus" +
+              "appropriate STLT Public Health Agency based on both the Entity ZIP code and the Patient’s ZIP code, including, for coronavirus " +
               "disease 2019 test results, all relevant fields as defined in the <0>HHS COVID-19 Laboratory Reporting Requirements</0>. " +
               "By entering results that are being transmitted to the relevant STLT Public Health Agency or Agencies, the Entity attests " +
               "that it is authorized to report the data via the Application. Though CDC will not actively access and obtain data from the " +
