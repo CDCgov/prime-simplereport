@@ -41,7 +41,7 @@ const formatDate = (date: string | undefined, withTime?: boolean) => {
   return moment(date)?.format(format);
 };
 
-const SEND_SMS = gql`
+export const SEND_SMS = gql`
   mutation sendSMS($id: ID!) {
     sendPatientLinkSms(internalId: $id)
   }
@@ -63,10 +63,10 @@ const mobilePhoneNumbers = (phoneArray: patientPhoneDetails[]) => {
   return mobileNumbers;
 };
 
-export const DetachedTestResultCorrectionModal = ({
-  data,
-  closeModal,
-}: Props) => {
+export const DetachedTestResultTextModal = ({ data, closeModal }: Props) => {
+  console.log(data, "THE DATA");
+  console.log(typeof data);
+  console.log(data.testResult);
   const [sendSMS] = useMutation(SEND_SMS);
   const { patient } = data.testResult;
   const patientLink = data.testResult.patientLink.internalId;
@@ -115,7 +115,7 @@ const TestResultTextModal = (props: Omit<Props, InjectedQueryWrapperProps>) => (
   <QueryWrapper<Props>
     query={testQuery}
     queryOptions={{ variables: { id: props.testResultId } }}
-    Component={DetachedTestResultCorrectionModal}
+    Component={DetachedTestResultTextModal}
     componentProps={{ ...props }}
   />
 );
