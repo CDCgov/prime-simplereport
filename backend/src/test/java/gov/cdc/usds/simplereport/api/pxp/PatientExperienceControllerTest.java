@@ -248,9 +248,9 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             + "[{\"type\":\"MOBILE\",\"number\":\""
             + newTelephone
             + "\"},{\"type\":\"LANDLINE\",\"number\":\"(631) 867-5309"
-            + "\"}],\"role\":\"UNKNOWN\",\"email\":\""
+            + "\"}],\"role\":\"UNKNOWN\",\"emails\":[\""
             + newEmail
-            + "\",\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,"
+            + "\"],\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,"
             + "\"zipCode\":\""
             + zipcode
             + "\"}}}";
@@ -279,9 +279,9 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             + "[{\"type\":\"MOBILE\",\"number\":\""
             + newTelephone
             + "\"},{\"type\":\"LANDLINE\",\"number\":\"(631) 867-5309"
-            + "\"}],\"role\":\"UNKNOWN\",\"email\":\""
+            + "\"}],\"role\":\"UNKNOWN\",\"emails\":[\""
             + newEmail
-            + "\",\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,"
+            + "\"],\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,"
             + "\"postalCode\":\""
             + postalCode
             + "\"}}}";

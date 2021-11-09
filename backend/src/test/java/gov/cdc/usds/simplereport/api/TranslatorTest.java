@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api;
 
 import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
+import static gov.cdc.usds.simplereport.api.Translators.parseEmails;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
@@ -21,6 +22,8 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -321,6 +324,27 @@ class TranslatorTest {
         () -> {
           parseEmail("fooexample.com");
         });
+  }
+
+  @Test
+  void testEmptyEmails() {
+    List<String> emails = Collections.emptyList();
+    assertEquals(Collections.emptyList(), parseEmails(emails));
+  }
+
+  @Test
+  void testNullEmails() {
+    assertEquals(Collections.emptyList(), parseEmails(null));
+  }
+
+  @Test
+  void testValidEmails() {
+    var email1 = "test@fake.org";
+    var email2 = "foo@bar.org";
+
+    var expected = List.of(parseEmail(email1), parseEmail(email2));
+
+    assertEquals(expected, parseEmails(List.of(email1, email2)));
   }
 
   @ParameterizedTest

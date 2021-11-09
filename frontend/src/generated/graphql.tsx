@@ -192,6 +192,7 @@ export type MutationAddPatientArgs = {
   city?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["String"]>;
+  emails?: Maybe<Array<Maybe<Scalars["String"]>>>;
   employedInHealthcare?: Maybe<Scalars["Boolean"]>;
   ethnicity?: Maybe<Scalars["String"]>;
   facilityId?: Maybe<Scalars["ID"]>;
@@ -433,6 +434,7 @@ export type MutationUpdatePatientArgs = {
   city?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["String"]>;
+  emails?: Maybe<Array<Maybe<Scalars["String"]>>>;
   employedInHealthcare?: Maybe<Scalars["Boolean"]>;
   ethnicity?: Maybe<Scalars["String"]>;
   facilityId?: Maybe<Scalars["ID"]>;
@@ -536,6 +538,7 @@ export type Patient = {
   city?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["String"]>;
+  emails?: Maybe<Array<Maybe<Scalars["String"]>>>;
   employedInHealthcare?: Maybe<Scalars["Boolean"]>;
   ethnicity?: Maybe<Scalars["String"]>;
   facility?: Maybe<Facility>;
