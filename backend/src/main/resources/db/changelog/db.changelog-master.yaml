@@ -3091,3 +3091,165 @@ databaseChangeLog:
             indexName: uk__organization_queue__organization_external_id
         - dropIndex:
             indexName: uk__organization_queue__verified_organization_id
+  - changeSet:
+      id: add-country-to-person
+      author: nclyde@skylight.digital
+      comment: add country to person for international addresses
+      changes:
+        - tagDatabase:
+            tag: add-country-to-person
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: country
+                  type: text
+                  remarks: The country of a person's address (ISO Alpha-3 code)
+                  defaultValue: "USA"
+                  value: "USA"
+        - dropView:
+            viewName: person_no_phi_view
+        - createView:
+            viewName: person_no_phi_view
+            remarks: A subset of the person table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: |
+              SELECT
+                p.internal_id,
+                p.created_at,
+                p.created_by,
+                p.updated_at,
+                p.updated_by,
+                p.is_deleted,
+                p.organization_id,
+                p.facility_id,
+                p.race,
+                p.gender,
+                p.ethnicity,
+                p.county,
+                p.state,
+                p.country,
+                p.employed_in_healthcare,
+                p.role,
+                p.resident_congregate_setting,
+                p.tribal_affiliation,
+                p.lookup_id,
+                get_census_dob_group(p.birth_date) AS census_dob_group,
+                p.preferred_language,
+                p.test_result_delivery_preference
+              FROM ${database.defaultSchemaName}.person p
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+      rollback:
+        - dropColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: country
+                  type: text
+                  remarks: The country of a person's address
+        - dropView:
+            viewName: person_no_phi_view
+        - createView:
+            viewName: person_no_phi_view
+            remarks: A subset of the person table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: |
+              SELECT
+                p.internal_id,
+                p.created_at,
+                p.created_by,
+                p.updated_at,
+                p.updated_by,
+                p.is_deleted,
+                p.organization_id,
+                p.facility_id,
+                p.race,
+                p.gender,
+                p.ethnicity,
+                p.county,
+                p.state,
+                p.employed_in_healthcare,
+                p.role,
+                p.resident_congregate_setting,
+                p.tribal_affiliation,
+                p.lookup_id,
+                get_census_dob_group(p.birth_date) AS census_dob_group,
+                p.preferred_language,
+                p.test_result_delivery_preference
+              FROM ${database.defaultSchemaName}.person p
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+  - changeSet:
+      id: add-email-all-to-test-result-delivery
+      author: zedd@skylight.digital
+      comment: Add EMAIL and ALL to test result delivery preferences
+      runInTransaction: false
+      changes:
+        - tagDatabase:
+              tag: add-email-all-to-test-result-delivery
+        - sql:
+            remarks: Adds EMAIL and ALL to TEST_RESULT_DELIVERY enum
+            sql: |
+              ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_DELIVERY ADD VALUE 'EMAIL';
+              ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_DELIVERY ADD VALUE 'ALL';
+      rollback:
+        - sql:
+            remarks: Removes the enum and recreates it with the old options only
+            sql: |
+              ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_DELIVERY RENAME TO TEST_RESULT_DELIVERY_OLD;
+              CREATE TYPE ${database.defaultSchemaName}.TEST_RESULT_DELIVERY as ENUM('SMS', 'NONE');
+              DROP VIEW IF EXISTS ${database.defaultSchemaName}.person_no_phi_view;
+              ALTER TABLE ${database.defaultSchemaName}.person ALTER COLUMN test_result_delivery_preference TYPE ${database.defaultSchemaName}.TEST_RESULT_DELIVERY USING test_result_delivery_preference::text::${database.defaultSchemaName}.TEST_RESULT_DELIVERY;
+              DROP TYPE ${database.defaultSchemaName}.TEST_RESULT_DELIVERY_OLD;
+              create view ${database.defaultSchemaName}.person_no_phi_view AS
+                SELECT
+                  p.internal_id,
+                  p.created_at,
+                  p.created_by,
+                  p.updated_at,
+                  p.updated_by,
+                  p.is_deleted,
+                  p.organization_id,
+                  p.facility_id,
+                  p.race,
+                  p.gender,
+                  p.ethnicity,
+                  p.county,
+                  p.state,
+                  p.country,
+                  p.employed_in_healthcare,
+                  p.role,
+                  p.resident_congregate_setting,
+                  p.tribal_affiliation,
+                  p.lookup_id,
+                  get_census_dob_group(p.birth_date) AS census_dob_group,
+                  p.preferred_language,
+                  p.test_result_delivery_preference
+                FROM ${database.defaultSchemaName}.person p;
+              GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+  - changeSet:
+      id: add-emails-to-patient
+      author: nathan@skylight.digital
+      comment: add emails column to person table to allow multiple patient emails
+      changes:
+        - tagDatabase:
+            tag: add-emails-to-patient
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: emails
+                  type: text[]
+                  afterColumn: email
+                  remarks: All patient email addresses
+        - sql:
+            remarks: Populate new `emails` column with value from patient `email`
+            sql: |
+              UPDATE person SET emails = ARRAY[email] WHERE email IS NOT NULL;
+      rollback:
+        - dropColumn:
+            tableName: person
+            columnName: emails

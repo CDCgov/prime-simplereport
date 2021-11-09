@@ -134,12 +134,14 @@ export type Mutation = {
   createFacilityRegistrationLink?: Maybe<Scalars["String"]>;
   createOrganization?: Maybe<Organization>;
   createOrganizationRegistrationLink?: Maybe<Scalars["String"]>;
+  editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
   reactivateUser?: Maybe<User>;
   removePatientFromQueue?: Maybe<Scalars["String"]>;
   resendActivationEmail?: Maybe<User>;
   resendToReportStream?: Maybe<Scalars["Boolean"]>;
   resetUserPassword?: Maybe<User>;
+  sendPatientLinkEmail?: Maybe<Scalars["Boolean"]>;
   sendPatientLinkSms?: Maybe<Scalars["String"]>;
   setCurrentUserTenantDataAccess?: Maybe<User>;
   setOrganizationIdentityVerified?: Maybe<Scalars["Boolean"]>;
@@ -190,6 +192,7 @@ export type MutationAddPatientArgs = {
   city?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["String"]>;
+  emails?: Maybe<Array<Maybe<Scalars["String"]>>>;
   employedInHealthcare?: Maybe<Scalars["Boolean"]>;
   ethnicity?: Maybe<Scalars["String"]>;
   facilityId?: Maybe<Scalars["ID"]>;
@@ -320,6 +323,15 @@ export type MutationCreateOrganizationRegistrationLinkArgs = {
   organizationExternalId: Scalars["String"];
 };
 
+export type MutationEditPendingOrganizationArgs = {
+  adminEmail?: Maybe<Scalars["String"]>;
+  adminFirstName?: Maybe<Scalars["String"]>;
+  adminLastName?: Maybe<Scalars["String"]>;
+  adminPhone?: Maybe<Scalars["String"]>;
+  name?: Maybe<Scalars["String"]>;
+  orgExternalId: Scalars["String"];
+};
+
 export type MutationEditQueueItemArgs = {
   dateTested?: Maybe<Scalars["DateTime"]>;
   deviceId?: Maybe<Scalars["String"]>;
@@ -347,8 +359,12 @@ export type MutationResetUserPasswordArgs = {
   id: Scalars["ID"];
 };
 
+export type MutationSendPatientLinkEmailArgs = {
+  internalId: Scalars["ID"];
+};
+
 export type MutationSendPatientLinkSmsArgs = {
-  internalId: Scalars["String"];
+  internalId: Scalars["ID"];
 };
 
 export type MutationSetCurrentUserTenantDataAccessArgs = {
@@ -418,6 +434,7 @@ export type MutationUpdatePatientArgs = {
   city?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["String"]>;
+  emails?: Maybe<Array<Maybe<Scalars["String"]>>>;
   employedInHealthcare?: Maybe<Scalars["Boolean"]>;
   ethnicity?: Maybe<Scalars["String"]>;
   facilityId?: Maybe<Scalars["ID"]>;
@@ -521,6 +538,7 @@ export type Patient = {
   city?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["String"]>;
+  emails?: Maybe<Array<Maybe<Scalars["String"]>>>;
   employedInHealthcare?: Maybe<Scalars["Boolean"]>;
   ethnicity?: Maybe<Scalars["String"]>;
   facility?: Maybe<Facility>;
@@ -556,6 +574,16 @@ export type PatientLink = {
   expiresAt?: Maybe<Scalars["DateTime"]>;
   internalId?: Maybe<Scalars["ID"]>;
   testOrder?: Maybe<TestOrder>;
+};
+
+export type PendingOrganization = {
+  __typename?: "PendingOrganization";
+  adminEmail?: Maybe<Scalars["String"]>;
+  adminName?: Maybe<Scalars["String"]>;
+  adminPhone?: Maybe<Scalars["String"]>;
+  createdAt: Scalars["DateTime"];
+  externalId: Scalars["String"];
+  name: Scalars["String"];
 };
 
 export type PhoneNumber = {
@@ -606,6 +634,7 @@ export type Query = {
   patientExists?: Maybe<Scalars["Boolean"]>;
   patients?: Maybe<Array<Maybe<Patient>>>;
   patientsCount?: Maybe<Scalars["Int"]>;
+  pendingOrganizations: Array<PendingOrganization>;
   queue?: Maybe<Array<Maybe<TestOrder>>>;
   specimenType?: Maybe<Array<Maybe<SpecimenType>>>;
   specimenTypes: Array<SpecimenType>;
@@ -768,6 +797,8 @@ export type TestResult = {
 };
 
 export enum TestResultDeliveryPreference {
+  All = "ALL",
+  Email = "EMAIL",
   None = "NONE",
   Sms = "SMS",
 }
@@ -1496,6 +1527,23 @@ export type GetDeviceTypeListQuery = {
   }>;
 };
 
+export type GetPendingOrganizationsQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type GetPendingOrganizationsQuery = {
+  __typename?: "Query";
+  pendingOrganizations: Array<{
+    __typename?: "PendingOrganization";
+    externalId: string;
+    name: string;
+    adminName?: Maybe<string>;
+    adminEmail?: Maybe<string>;
+    adminPhone?: Maybe<string>;
+    createdAt: any;
+  }>;
+};
+
 export type SetOrgIdentityVerifiedMutationVariables = Exact<{
   externalId: Scalars["String"];
   verified: Scalars["Boolean"];
@@ -1622,6 +1670,7 @@ export type GetFacilityQueueQuery = {
           gender?: Maybe<string>;
           testResultDelivery?: Maybe<TestResultDeliveryPreference>;
           preferredLanguage?: Maybe<string>;
+          email?: Maybe<string>;
           phoneNumbers?: Maybe<
             Array<
               Maybe<{
@@ -1708,6 +1757,7 @@ export type GetPatientsByFacilityForQueueQuery = {
         birthDate?: Maybe<any>;
         gender?: Maybe<string>;
         telephone?: Maybe<string>;
+        email?: Maybe<string>;
         testResultDelivery?: Maybe<TestResultDeliveryPreference>;
         phoneNumbers?: Maybe<
           Array<
@@ -1916,6 +1966,7 @@ export type GetFacilityResultsQuery = {
           birthDate?: Maybe<any>;
           gender?: Maybe<string>;
           lookupId?: Maybe<string>;
+          email?: Maybe<string>;
         }>;
         createdBy?: Maybe<{
           __typename?: "ApiUser";
@@ -1933,6 +1984,38 @@ export type GetFacilityResultsQuery = {
       }>
     >
   >;
+};
+
+export type GetTestResultForResendingEmailsQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type GetTestResultForResendingEmailsQuery = {
+  __typename?: "Query";
+  testResult?: Maybe<{
+    __typename?: "TestResult";
+    dateTested?: Maybe<any>;
+    patient?: Maybe<{
+      __typename?: "Patient";
+      firstName?: Maybe<string>;
+      middleName?: Maybe<string>;
+      lastName?: Maybe<string>;
+      email?: Maybe<string>;
+    }>;
+    patientLink?: Maybe<{
+      __typename?: "PatientLink";
+      internalId?: Maybe<string>;
+    }>;
+  }>;
+};
+
+export type ResendTestResultsEmailMutationVariables = Exact<{
+  patientLinkId: Scalars["ID"];
+}>;
+
+export type ResendTestResultsEmailMutation = {
+  __typename?: "Mutation";
+  sendPatientLinkEmail?: Maybe<boolean>;
 };
 
 export const WhoAmIDocument = gql`
@@ -4168,6 +4251,68 @@ export type GetDeviceTypeListQueryResult = Apollo.QueryResult<
   GetDeviceTypeListQuery,
   GetDeviceTypeListQueryVariables
 >;
+export const GetPendingOrganizationsDocument = gql`
+  query GetPendingOrganizations {
+    pendingOrganizations {
+      externalId
+      name
+      adminName
+      adminEmail
+      adminPhone
+      createdAt
+    }
+  }
+`;
+
+/**
+ * __useGetPendingOrganizationsQuery__
+ *
+ * To run a query within a React component, call `useGetPendingOrganizationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPendingOrganizationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPendingOrganizationsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetPendingOrganizationsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetPendingOrganizationsQuery,
+    GetPendingOrganizationsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetPendingOrganizationsQuery,
+    GetPendingOrganizationsQueryVariables
+  >(GetPendingOrganizationsDocument, options);
+}
+export function useGetPendingOrganizationsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetPendingOrganizationsQuery,
+    GetPendingOrganizationsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetPendingOrganizationsQuery,
+    GetPendingOrganizationsQueryVariables
+  >(GetPendingOrganizationsDocument, options);
+}
+export type GetPendingOrganizationsQueryHookResult = ReturnType<
+  typeof useGetPendingOrganizationsQuery
+>;
+export type GetPendingOrganizationsLazyQueryHookResult = ReturnType<
+  typeof useGetPendingOrganizationsLazyQuery
+>;
+export type GetPendingOrganizationsQueryResult = Apollo.QueryResult<
+  GetPendingOrganizationsQuery,
+  GetPendingOrganizationsQueryVariables
+>;
 export const SetOrgIdentityVerifiedDocument = gql`
   mutation SetOrgIdentityVerified($externalId: String!, $verified: Boolean!) {
     setOrganizationIdentityVerified(
@@ -4545,6 +4690,7 @@ export const GetFacilityQueueDocument = gql`
         gender
         testResultDelivery
         preferredLanguage
+        email
         phoneNumbers {
           type
           number
@@ -4709,6 +4855,7 @@ export const GetPatientsByFacilityForQueueDocument = gql`
       birthDate
       gender
       telephone
+      email
       phoneNumbers {
         type
         number
@@ -5300,6 +5447,7 @@ export const GetFacilityResultsDocument = gql`
         birthDate
         gender
         lookupId
+        email
       }
       createdBy {
         nameInfo {
@@ -5373,4 +5521,118 @@ export type GetFacilityResultsLazyQueryHookResult = ReturnType<
 export type GetFacilityResultsQueryResult = Apollo.QueryResult<
   GetFacilityResultsQuery,
   GetFacilityResultsQueryVariables
+>;
+export const GetTestResultForResendingEmailsDocument = gql`
+  query getTestResultForResendingEmails($id: ID!) {
+    testResult(id: $id) {
+      dateTested
+      patient {
+        firstName
+        middleName
+        lastName
+        email
+      }
+      patientLink {
+        internalId
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetTestResultForResendingEmailsQuery__
+ *
+ * To run a query within a React component, call `useGetTestResultForResendingEmailsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTestResultForResendingEmailsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTestResultForResendingEmailsQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetTestResultForResendingEmailsQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTestResultForResendingEmailsQuery,
+    GetTestResultForResendingEmailsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetTestResultForResendingEmailsQuery,
+    GetTestResultForResendingEmailsQueryVariables
+  >(GetTestResultForResendingEmailsDocument, options);
+}
+export function useGetTestResultForResendingEmailsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTestResultForResendingEmailsQuery,
+    GetTestResultForResendingEmailsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetTestResultForResendingEmailsQuery,
+    GetTestResultForResendingEmailsQueryVariables
+  >(GetTestResultForResendingEmailsDocument, options);
+}
+export type GetTestResultForResendingEmailsQueryHookResult = ReturnType<
+  typeof useGetTestResultForResendingEmailsQuery
+>;
+export type GetTestResultForResendingEmailsLazyQueryHookResult = ReturnType<
+  typeof useGetTestResultForResendingEmailsLazyQuery
+>;
+export type GetTestResultForResendingEmailsQueryResult = Apollo.QueryResult<
+  GetTestResultForResendingEmailsQuery,
+  GetTestResultForResendingEmailsQueryVariables
+>;
+export const ResendTestResultsEmailDocument = gql`
+  mutation resendTestResultsEmail($patientLinkId: ID!) {
+    sendPatientLinkEmail(internalId: $patientLinkId)
+  }
+`;
+export type ResendTestResultsEmailMutationFn = Apollo.MutationFunction<
+  ResendTestResultsEmailMutation,
+  ResendTestResultsEmailMutationVariables
+>;
+
+/**
+ * __useResendTestResultsEmailMutation__
+ *
+ * To run a mutation, you first call `useResendTestResultsEmailMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useResendTestResultsEmailMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [resendTestResultsEmailMutation, { data, loading, error }] = useResendTestResultsEmailMutation({
+ *   variables: {
+ *      patientLinkId: // value for 'patientLinkId'
+ *   },
+ * });
+ */
+export function useResendTestResultsEmailMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ResendTestResultsEmailMutation,
+    ResendTestResultsEmailMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    ResendTestResultsEmailMutation,
+    ResendTestResultsEmailMutationVariables
+  >(ResendTestResultsEmailDocument, options);
+}
+export type ResendTestResultsEmailMutationHookResult = ReturnType<
+  typeof useResendTestResultsEmailMutation
+>;
+export type ResendTestResultsEmailMutationResult = Apollo.MutationResult<ResendTestResultsEmailMutation>;
+export type ResendTestResultsEmailMutationOptions = Apollo.BaseMutationOptions<
+  ResendTestResultsEmailMutation,
+  ResendTestResultsEmailMutationVariables
 >;

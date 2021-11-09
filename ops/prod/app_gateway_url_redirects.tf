@@ -1,8 +1,7 @@
-# Production has three special App Gateways that perform global redirects instead of routing
-# to apps: simplereport-gateway and simplereport-internal-gw
+# Production has two special App Gateways that perform global redirects instead of routing
+# to apps: simplereport-gateway and simple-report-www-redirect
 #
 # simplereport-gateway:       redirects simplereport.cdc.gov -> www.simplereport.gov (TODO)
-# simplereport-internal-gw:   redirects simplereport.org     -> www.simplereport.gov (TODO)
 # simple-report-www-redirect: redirects simplereport.gov     -> www.simplereport.gov
 #
 # TODO = extant but not yet managed by Terraform

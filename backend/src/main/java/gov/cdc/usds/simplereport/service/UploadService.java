@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
-import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
+import static gov.cdc.usds.simplereport.api.Translators.parseEmails;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
@@ -148,7 +148,7 @@ public class UploadService {
                     new PhoneNumberInput(
                         null, parsePhoneNumber((getRow(row, "PhoneNumber", true)))))),
             parsePersonRole(getRow(row, "Role", false), false),
-            parseEmail(getRow(row, "Email", false)),
+            parseEmails(List.of(getRow(row, "Email", false))),
             parseRaceDisplayValue(getRow(row, "Race", false)),
             parseEthnicity(getRow(row, "Ethnicity", false)),
             null,

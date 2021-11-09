@@ -252,7 +252,7 @@ public class PersonService {
       StreetAddress address,
       List<PhoneNumber> phoneNumbers,
       PersonRole role,
-      String email,
+      List<String> emails,
       String race,
       String ethnicity,
       String tribalAffiliation,
@@ -272,7 +272,7 @@ public class PersonService {
             birthDate,
             address,
             role,
-            email,
+            emails,
             race,
             ethnicity,
             Arrays.asList(tribalAffiliation),
@@ -299,7 +299,7 @@ public class PersonService {
       StreetAddress address,
       List<PhoneNumber> phoneNumbers,
       PersonRole role,
-      String email,
+      List<String> emails,
       String race,
       String ethnicity,
       String tribalAffiliation,
@@ -319,7 +319,7 @@ public class PersonService {
             birthDate,
             address,
             role,
-            email,
+            emails,
             race,
             ethnicity,
             Arrays.asList(tribalAffiliation),
@@ -340,7 +340,7 @@ public class PersonService {
       StreetAddress address,
       List<PhoneNumber> phoneNumbers,
       PersonRole role,
-      String email,
+      List<String> emails,
       String race,
       String ethnicity,
       String tribalAffiliation,
@@ -358,7 +358,7 @@ public class PersonService {
         toUpdate.getBirthDate(),
         address,
         role,
-        email,
+        emails,
         race,
         ethnicity,
         Arrays.asList(tribalAffiliation),
@@ -367,6 +367,11 @@ public class PersonService {
         employedInHealthcare,
         preferredLanguage,
         toUpdate.getTestResultDelivery());
+
+    if (!emails.isEmpty()) {
+      toUpdate.setPrimaryEmail(emails.get(0));
+    }
+
     updatePhoneNumbers(toUpdate, phoneNumbers);
     return _repo.save(toUpdate);
   }
@@ -435,7 +440,7 @@ public class PersonService {
       StreetAddress address,
       List<PhoneNumber> phoneNumbers,
       PersonRole role,
-      String email,
+      List<String> emails,
       String race,
       String ethnicity,
       String tribalAffiliation,
@@ -454,7 +459,7 @@ public class PersonService {
         birthDate,
         address,
         role,
-        email,
+        emails,
         race,
         ethnicity,
         Arrays.asList(tribalAffiliation),
@@ -463,7 +468,13 @@ public class PersonService {
         employedInHealthcare,
         preferredLanguage,
         testResultDelivery);
+
+    if (!emails.isEmpty()) {
+      patientToUpdate.setPrimaryEmail(emails.get(0));
+    }
+
     updatePhoneNumbers(patientToUpdate, phoneNumbers);
+
     updatePersonFacility(patientToUpdate, facilityId);
 
     return _repo.save(patientToUpdate);

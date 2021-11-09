@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.api.patient;
 
-import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
+import static gov.cdc.usds.simplereport.api.Translators.parseEmails;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
@@ -19,6 +19,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.UploadService;
+import gov.cdc.usds.simplereport.service.model.PatientEmailsHolder;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,6 +70,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       List<PhoneNumberInput> phoneNumbers,
       String role,
       String email,
+      List<String> emails,
       String county,
       String race,
       String ethnicity,
@@ -82,6 +84,8 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         phoneNumbers != null
             ? phoneNumbers
             : List.of(new PhoneNumberInput(null, parsePhoneNumber(telephone)));
+
+    var backwardsCompatibleEmails = new PatientEmailsHolder(email, emails);
 
     return _ps.addPatient(
         facilityId,
@@ -100,7 +104,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
             parseString(county)),
         parsePhoneNumbers(backwardsCompatiblePhoneNumbers),
         parsePersonRole(role, false),
-        parseEmail(email),
+        parseEmails(backwardsCompatibleEmails.getFullList()),
         parseRace(race),
         parseEthnicity(ethnicity),
         parseTribalAffiliation(tribalAffiliation),
@@ -129,6 +133,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       List<PhoneNumberInput> phoneNumbers,
       String role,
       String email,
+      List<String> emails,
       String county,
       String race,
       String ethnicity,
@@ -142,6 +147,9 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         phoneNumbers != null
             ? phoneNumbers
             : List.of(new PhoneNumberInput(null, parsePhoneNumber(telephone)));
+
+    var backwardsCompatibleEmails = new PatientEmailsHolder(email, emails);
+
     return _ps.updatePatient(
         facilityId,
         patientId,
@@ -160,7 +168,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
             parseString(county)),
         parsePhoneNumbers(backwardsCompatiblePhoneNumbers),
         parsePersonRole(role, false),
-        parseEmail(email),
+        parseEmails(backwardsCompatibleEmails.getFullList()),
         parseRace(race),
         parseEthnicity(ethnicity),
         parseTribalAffiliation(tribalAffiliation),

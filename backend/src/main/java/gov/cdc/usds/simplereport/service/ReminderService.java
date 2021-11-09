@@ -1,8 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
-import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
-import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
+import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
+import gov.cdc.usds.simplereport.db.repository.OrganizationQueueRepository;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import java.io.IOException;
@@ -13,7 +12,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,14 +24,11 @@ public class ReminderService {
 
   private static final long LOCK_HOLD_MS = 1000L;
 
-  private final OktaRepository _oktaRepo;
-  private final OrganizationRepository _orgRepo;
+  private final OrganizationQueueRepository _orgQueueRepo;
   private final EmailService _emailService;
 
-  public ReminderService(
-      OktaRepository oktaRepo, OrganizationRepository orgRepo, EmailService emailService) {
-    _oktaRepo = oktaRepo;
-    _orgRepo = orgRepo;
+  public ReminderService(OrganizationQueueRepository orgQueueRepo, EmailService emailService) {
+    _orgQueueRepo = orgQueueRepo;
     _emailService = emailService;
   }
 
@@ -41,9 +36,9 @@ public class ReminderService {
    * Send reminder emails to complete identity verification to members of organizations that
    * were created and did not complete id verification
    */
-  public Map<Organization, Set<String>> sendAccountReminderEmails() {
+  public Map<String, OrganizationQueueItem> sendAccountReminderEmails() {
     // take the advisory lock for this process. auto released after transaction
-    if (_orgRepo.tryOrgReminderLock()) {
+    if (_orgQueueRepo.tryOrgReminderLock()) {
       log.info("Reminder lock obtained: commencing email sending");
     } else {
       log.info("Reminders locked out by mutex: aborting");
@@ -59,35 +54,29 @@ public class ReminderService {
 
     log.info("CRON -- account reminder emails for {} - {}", rangeStartDate, rangeStopDate);
 
-    List<Organization> organizations =
-        _orgRepo.findAllByIdentityVerifiedAndCreatedAtRange(false, rangeStartDate, rangeStopDate);
+    List<OrganizationQueueItem> queueItems =
+        _orgQueueRepo.findAllNotIdentityVerifiedByCreatedAtRange(rangeStartDate, rangeStopDate);
 
-    Map<Organization, Set<String>> orgReminderMap = new HashMap<>();
+    Map<String, OrganizationQueueItem> orgReminderMap = new HashMap<>();
 
-    for (Organization org : organizations) {
-      log.info("sending reminders for org: {}", org.getExternalId());
+    for (OrganizationQueueItem queueItem : queueItems) {
+      log.info("sending reminders for queued org: {}", queueItem.getExternalId());
+      String orgAdminEmail = queueItem.getRequestData().getEmail();
 
-      // This could be problematic depending on the number of unverified organizations created
-      // on the previous day.  It will make 2 requests to okta per organization.
-      Set<String> emailsInOrg = _oktaRepo.getAllUsersForOrganization(org);
-
-      if (emailsInOrg.isEmpty()) {
-        log.info(
-            "no emails sent: organization \"{}\" has no members in default group",
-            org.getExternalId());
+      if (orgReminderMap.containsKey(orgAdminEmail)) {
+        // in the queue, there can be repeated email addresses
+        log.warn("Already sent id verification reminder email to: {}", orgAdminEmail);
+        continue;
       }
 
-      for (String email : emailsInOrg) {
-        // unverified organizations will only have 1 associated email at this time
-        try {
-          _emailService.sendWithProviderTemplate(
-              email, EmailProviderTemplate.ORGANIZATION_ID_VERIFICATION_REMINDER);
-        } catch (IOException e) {
-          log.warn("Failed to send id verification reminder email to: {}", email);
-        }
+      try {
+        _emailService.sendWithDynamicTemplate(
+            orgAdminEmail, EmailProviderTemplate.ORGANIZATION_ID_VERIFICATION_REMINDER);
+      } catch (IOException e) {
+        log.warn("Failed to send id verification reminder email to: {}", orgAdminEmail);
       }
 
-      orgReminderMap.put(org, emailsInOrg);
+      orgReminderMap.put(orgAdminEmail, queueItem);
     }
 
     try {

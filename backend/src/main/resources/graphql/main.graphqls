@@ -188,6 +188,8 @@ type Patient
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   email: String
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+  emails: [String]
+    @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   role: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   isDeleted: Boolean @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   residentCongregateSetting: Boolean
@@ -238,9 +240,9 @@ type TestResult {
 }
 
 type OrganizationLevelDashboardMetrics {
-  organizationPositiveTestCount: Int,
-  organizationNegativeTestCount: Int,
-  organizationTotalTestCount: Int,
+  organizationPositiveTestCount: Int
+  organizationNegativeTestCount: Int
+  organizationTotalTestCount: Int
   facilityMetrics: [AggregateFacilityMetrics]
 }
 
@@ -250,9 +252,9 @@ type TopLevelDashboardMetrics {
 }
 
 type AggregateFacilityMetrics {
-  facilityName: String,
-  totalTestCount: Int,
-  positiveTestCount: Int,
+  facilityName: String
+  totalTestCount: Int
+  positiveTestCount: Int
   negativeTestCount: Int
 }
 
@@ -266,6 +268,15 @@ type PatientLink {
   createdAt: DateTime
   expiresAt: DateTime
   testOrder: TestOrder
+}
+
+type PendingOrganization {
+  externalId: String!
+  name: String!
+  adminName: String
+  adminEmail: String
+  adminPhone: String
+  createdAt: DateTime!
 }
 
 # Queries and mutations for everyday use
@@ -326,7 +337,10 @@ type Query {
   ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
-  organizationLevelDashboardMetrics(startDate: DateTime!, endDate: DateTime!): OrganizationLevelDashboardMetrics
+  organizationLevelDashboardMetrics(
+    startDate: DateTime!
+    endDate: DateTime!
+  ): OrganizationLevelDashboardMetrics
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   topLevelDashboardMetrics(
     facilityId: ID
@@ -427,7 +441,8 @@ type Mutation {
   setUserIsDeleted(id: ID!, deleted: Boolean!): User
     @requiredPermissions(allOf: ["MANAGE_USERS"])
   reactivateUser(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
-  resendActivationEmail(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
+  resendActivationEmail(id: ID!): User
+    @requiredPermissions(allOf: ["MANAGE_USERS"])
   setCurrentUserTenantDataAccess(
     organizationExternalId: String
     justification: String
@@ -449,6 +464,7 @@ type Mutation {
     phoneNumbers: [PhoneNumberInput!]
     role: String
     email: String
+    emails: [String]
     county: String
     race: String
     ethnicity: String
@@ -482,6 +498,7 @@ type Mutation {
     phoneNumbers: [PhoneNumberInput!]
     role: String @Size(min: 0, max: 32)
     email: String @Size(min: 3, max: 254)
+    emails: [String]
     county: String
     race: String @Size(min: 0, max: 32)
     ethnicity: String @Size(min: 0, max: 32)
@@ -533,8 +550,9 @@ type Mutation {
     noSymptoms: Boolean
     testResultDelivery: TestResultDeliveryPreference
   ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
-  sendPatientLinkSms(internalId: String!): String
+  sendPatientLinkSms(internalId: ID!): String
     @requiredPermissions(allOf: ["UPDATE_TEST"])
+  sendPatientLinkEmail(internalId: ID!): Boolean
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
 }

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class PatientSelfRegistrationTest {
@@ -24,6 +25,7 @@ class PatientSelfRegistrationTest {
             null,
             null,
             "boba@fett.net",
+            List.of("boba@fett.net"),
             "Human (Clone)",
             null,
             null,
@@ -46,6 +48,7 @@ class PatientSelfRegistrationTest {
             null,
             null,
             "boba@fett.net",
+            List.of("boba@fett.net"),
             "Human (Clone)",
             null,
             null,
@@ -68,6 +71,7 @@ class PatientSelfRegistrationTest {
             null,
             null,
             "jabba@thehutt.org",
+            List.of("jabba@thehutt.org"),
             "Hutt",
             null,
             null,
@@ -96,6 +100,7 @@ class PatientSelfRegistrationTest {
             null,
             null,
             "boba@fett.net",
+            List.of("boba@fett.net"),
             "Human (Clone)",
             null,
             null,
@@ -118,6 +123,7 @@ class PatientSelfRegistrationTest {
             null,
             null,
             "boba@fett.net",
+            List.of("boba@fett.net"),
             "Human (Clone)",
             null,
             null,
@@ -140,6 +146,7 @@ class PatientSelfRegistrationTest {
             null,
             null,
             "jabba@thehutt.org",
+            List.of("jabba@thehutt.org"),
             "Hutt",
             null,
             null,

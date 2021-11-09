@@ -79,7 +79,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + "\"Patient_state\":\"DC\","
             + "\"Patient_zip_code\":\"20503\","
             + "\"Patient_phone_number\":\"202-123-4567\","
-            + "\"Patient_email\":null,"
+            + "\"Patient_email\":\"fred@astaire.com\","
             + "\"Patient_ID\":"
             + testEventExport.getPatientId()
             + ","

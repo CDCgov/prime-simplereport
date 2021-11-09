@@ -112,6 +112,19 @@ public class TestDataFactory {
         "New Org Queue Name", "CA-New-Org-Queue-Name-12345", "org.queue.admin@example.com");
   }
 
+  public OrganizationQueueItem createVerifiedOrganizationQueueItem(
+      String orgName, String orgExternalId, String adminEmail) {
+    Organization org = createValidOrg(orgName, "k12", orgExternalId, true);
+    OrganizationQueueItem queueItem =
+        new OrganizationQueueItem(
+            orgName,
+            orgExternalId,
+            new OrganizationAccountRequest(
+                "First", "Last", adminEmail, "800-555-1212", "CA", null, null));
+    queueItem.setVerifiedOrganization(org);
+    return _orgQueueRepo.save(queueItem);
+  }
+
   public Facility createValidFacility(Organization org) {
     return createValidFacility(org, "Imaginary Site");
   }
@@ -197,7 +210,7 @@ public class TestDataFactory {
             DEFAULT_BDAY,
             getAddress(),
             PersonRole.RESIDENT,
-            null,
+            List.of("fred@astaire.com"),
             "white",
             "not_hispanic",
             null,
@@ -210,6 +223,39 @@ public class TestDataFactory {
     PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, telephone);
     _phoneNumberRepo.save(pn);
     p.setPrimaryPhone(pn);
+    return _personRepo.save(p);
+  }
+
+  @Transactional
+  public Person createFullPersonEmails(Organization org, List<String> emails) {
+    // consts are to keep style check happy othewise it complains about
+    // "magic numbers"
+    Person p =
+        new Person(
+            org,
+            "HELLOTHERE",
+            "Fred",
+            null,
+            "Astaire",
+            null,
+            DEFAULT_BDAY,
+            getAddress(),
+            PersonRole.RESIDENT,
+            emails,
+            "white",
+            "not_hispanic",
+            null,
+            "male",
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.SMS);
+    _personRepo.save(p);
+
+    if (emails != null) {
+      p.setPrimaryEmail(emails.get(0));
+    }
+
     return _personRepo.save(p);
   }
 

@@ -15,6 +15,7 @@ public class PersonUpdate {
   private final List<PhoneNumberInput> phoneNumbers;
   private final PersonRole role;
   private final String email;
+  private final List<String> emails;
   private final String race;
   private final String ethnicity;
   private final String tribalAffiliation;
@@ -31,6 +32,7 @@ public class PersonUpdate {
       @JsonProperty("phoneNumbers") List<PhoneNumberInput> phoneNumbers,
       @JsonProperty("role") PersonRole role,
       @JsonProperty("email") String email,
+      @JsonProperty("emails") List<String> emails,
       @JsonProperty("race") String race,
       @JsonProperty("ethnicity") String ethnicity,
       @JsonProperty("tribalAffiliation") String tribalAffiliation,
@@ -44,6 +46,7 @@ public class PersonUpdate {
     this.phoneNumbers = phoneNumbers;
     this.role = role;
     this.email = email;
+    this.emails = emails;
     this.race = race;
     this.ethnicity = ethnicity;
     this.tribalAffiliation = tribalAffiliation;
@@ -60,6 +63,10 @@ public class PersonUpdate {
 
   public String getEmail() {
     return email;
+  }
+
+  public List<String> getEmails() {
+    return emails;
   }
 
   public Boolean getEmployedInHealthcare() {
@@ -120,6 +127,7 @@ public class PersonUpdate {
         && Objects.equals(phoneNumbers, that.phoneNumbers)
         && role == that.role
         && Objects.equals(email, that.email)
+        && Objects.equals(emails, that.emails)
         && Objects.equals(race, that.race)
         && Objects.equals(ethnicity, that.ethnicity)
         && Objects.equals(tribalAffiliation, that.tribalAffiliation)
@@ -136,6 +144,7 @@ public class PersonUpdate {
         phoneNumbers,
         role,
         email,
+        emails,
         race,
         ethnicity,
         tribalAffiliation,

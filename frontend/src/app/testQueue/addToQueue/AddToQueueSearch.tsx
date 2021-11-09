@@ -68,6 +68,7 @@ export const QUERY_PATIENT = gql`
       birthDate
       gender
       telephone
+      email
       phoneNumbers {
         type
         number

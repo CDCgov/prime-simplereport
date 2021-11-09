@@ -11,6 +11,7 @@ import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
+import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
@@ -31,6 +32,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
   AddressValidationService _avs;
   ApiUserService _aus;
   OrganizationService _os;
+  OrganizationQueueService _oqs;
   DeviceTypeService _dts;
 
   @BeforeEach
@@ -38,13 +40,14 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
     _avs = mock(AddressValidationService.class);
     _aus = mock(ApiUserService.class);
     _os = mock(OrganizationService.class);
+    _oqs = mock(OrganizationQueueService.class);
     _dts = mock(DeviceTypeService.class);
   }
 
   @Test
   @SuppressWarnings("checkstyle:IllegalCatch")
   void addFacility_withDeviceIds_success() {
-    var sut = new OrganizationMutationResolver(_os, _dts, _avs, _aus);
+    var sut = new OrganizationMutationResolver(_os, _oqs, _dts, _avs, _aus);
     var org = _dataFactory.createValidOrg();
     var facility = _dataFactory.createValidFacility(org);
     var genericDeviceSpecimen = _dataFactory.getGenericDeviceSpecimen();
@@ -113,7 +116,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
   @Test
   @SuppressWarnings("checkstyle:IllegalCatch")
   void addFacility_withDeviceSpecimenTypes_success() {
-    var sut = new OrganizationMutationResolver(_os, _dts, _avs, _aus);
+    var sut = new OrganizationMutationResolver(_os, _oqs, _dts, _avs, _aus);
 
     var org = _dataFactory.createValidOrg();
     var facility = _dataFactory.createValidFacility(org);

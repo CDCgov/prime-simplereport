@@ -12,10 +12,12 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -141,6 +143,14 @@ public class Translators {
       return email;
     }
     throw IllegalGraphqlArgumentException.invalidInput(e, "email");
+  }
+
+  public static List<String> parseEmails(List<String> emails) {
+    if (emails == null || emails.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    return emails.stream().map(Translators::parseEmail).collect(Collectors.toList());
   }
 
   private static final Map<String, String> RACES =
@@ -352,5 +362,13 @@ public class Translators {
       return type;
     }
     throw IllegalGraphqlArgumentException.invalidInput(t, "organization type");
+  }
+
+  public static Optional<String> toOptional(String str) {
+    if (str == null) {
+      return Optional.empty();
+    } else {
+      return Optional.of(str);
+    }
   }
 }

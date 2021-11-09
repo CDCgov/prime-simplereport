@@ -26,6 +26,7 @@ variable "disabled_alerts" {
       "http_5xx_errors",
       "first_error_in_a_week",
       "account_request_failures",
+      "experian_auth_failures",
       "frontend_error_boundary",
       "db_query_duration",
       "db_query_duration_over_time_window",
@@ -72,4 +73,11 @@ variable "failed_http_2xx_threshold" {
 
 variable "skip_on_weekends" {
   default = false
+}
+
+// Additional URLs to monitor via App Insights availability tests
+// Format: map of { test name = URL } pairs
+variable "additional_uptime_test_urls" {
+  type    = map(string)
+  default = {}
 }

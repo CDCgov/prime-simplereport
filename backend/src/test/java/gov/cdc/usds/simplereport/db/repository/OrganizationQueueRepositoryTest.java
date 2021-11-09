@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -29,6 +32,37 @@ class OrganizationQueueRepositoryTest extends BaseRepositoryTest {
     assertEquals(orgName, fetched.getOrganizationName());
     assertEquals(orgExtId, fetched.getExternalId());
     assertEquals(email, fetched.getRequestData().getEmail());
+  }
+
+  @Test
+  void findAllNotIdentityVerifiedByCreatedAtRange_success() {
+    String orgName = "My House";
+    String orgExtId = "My-House-External-Id";
+    String email = "fake@email.org";
+    addQueueItem(orgName, orgExtId, email);
+
+    // inspect time window from 1 day ago to 1 day from now, queued item should be found
+    LocalDateTime startLocalDate = LocalDateTime.now().minusDays(1);
+    LocalDateTime stopLocalDate = startLocalDate.plusDays(2);
+
+    List<OrganizationQueueItem> queueItems =
+        _repo.findAllNotIdentityVerifiedByCreatedAtRange(
+            Date.from(startLocalDate.atZone(ZoneId.systemDefault()).toInstant()),
+            Date.from(stopLocalDate.atZone(ZoneId.systemDefault()).toInstant()));
+
+    assertEquals(1, queueItems.size());
+    assertEquals(orgExtId, queueItems.get(0).getExternalId());
+
+    // shift the window back 2 days, queued item should not be found
+    startLocalDate = startLocalDate.minusDays(2);
+    stopLocalDate = stopLocalDate.minusDays(2);
+
+    queueItems =
+        _repo.findAllNotIdentityVerifiedByCreatedAtRange(
+            Date.from(startLocalDate.atZone(ZoneId.systemDefault()).toInstant()),
+            Date.from(stopLocalDate.atZone(ZoneId.systemDefault()).toInstant()));
+
+    assertTrue(queueItems.isEmpty());
   }
 
   @Test
