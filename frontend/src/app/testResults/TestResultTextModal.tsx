@@ -64,9 +64,6 @@ const mobilePhoneNumbers = (phoneArray: patientPhoneDetails[]) => {
 };
 
 export const DetachedTestResultTextModal = ({ data, closeModal }: Props) => {
-  console.log(data, "THE DATA");
-  console.log(typeof data);
-  console.log(data.testResult);
   const [sendSMS] = useMutation(SEND_SMS);
   const { patient } = data.testResult;
   const patientLink = data.testResult.patientLink.internalId;
