@@ -4,8 +4,11 @@ import { MockedProvider } from "@apollo/client/testing";
 
 import * as utils from "../utils";
 
-import TestResultTextModal, { DetachedTestResultTextModal, testQuery } from "./TestResultTextModal";
-
+import TestResultTextModal, {
+  DetachedTestResultTextModal,
+  SEND_SMS,
+  testQuery,
+} from "./TestResultTextModal";
 
 const mockCloseModal = jest.fn();
 const mockResendTestResultsText = jest.fn();
@@ -89,19 +92,19 @@ describe("TestResultTextModal", () => {
         request: {
           query: testQuery,
           variables: {
-            id: "e4c1c27f-768e-44d2-b9d5-e047454c1d24",
+            id: "super-fancy-id",
           },
         },
         result: {
           data: {
             testResult: {
               dateTested: "2021-11-02T14:39:15.472Z",
-
               patient: {
                 firstName: "Zelda",
                 middleName: "Francesca Holcomb",
                 lastName: "Gordon",
                 email: "gesezyx@mailinator.com",
+                birthDate: "1990/01/01",
                 __typename: "Patient",
                 phoneNumbers: [
                   {
@@ -120,6 +123,19 @@ describe("TestResultTextModal", () => {
           },
         },
       },
+      {
+        request: {
+          query: SEND_SMS,
+          variables: {
+            id: "e4c1c27f-768e-44d2-b9d5-e047454c1d24",
+          },
+        },
+        result: {
+          data: {
+            sendPatientLinkEmail: true,
+          },
+        },
+      },
     ];
 
     it("should resend the test results text and show success message", async () => {
@@ -132,13 +148,14 @@ describe("TestResultTextModal", () => {
         </MockedProvider>
       );
 
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
       userEvent.click(screen.getByText("Send result"));
 
       expect(mockResendTestResultsText).toHaveBeenCalledWith({
         variables: { patientLinkId: "e4c1c27f-768e-44d2-b9d5-e047454c1d24" },
       });
 
-      await new Promise((resolve) => setTimeout(resolve, 0));
       expect(alertSpy).toHaveBeenCalledWith("success", "Texted test results.");
       expect(mockCloseModal).toHaveBeenCalled();
     });
