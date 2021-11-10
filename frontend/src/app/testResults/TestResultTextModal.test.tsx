@@ -4,7 +4,8 @@ import { MockedProvider } from "@apollo/client/testing";
 
 import * as utils from "../utils";
 
-import { DetachedTestResultTextModal, testQuery } from "./TestResultTextModal";
+import TestResultTextModal, { DetachedTestResultTextModal, testQuery } from "./TestResultTextModal";
+
 
 const mockCloseModal = jest.fn();
 const mockResendTestResultsText = jest.fn();
@@ -80,5 +81,89 @@ describe("TestResultTextModal", () => {
     screen.getByText("(555) 555-5555");
     screen.getByText("Send result");
     screen.getByText("Cancel");
+  });
+
+  describe("clicking on Send result button", () => {
+    let mocks = [
+      {
+        request: {
+          query: testQuery,
+          variables: {
+            id: "e4c1c27f-768e-44d2-b9d5-e047454c1d24",
+          },
+        },
+        result: {
+          data: {
+            testResult: {
+              dateTested: "2021-11-02T14:39:15.472Z",
+
+              patient: {
+                firstName: "Zelda",
+                middleName: "Francesca Holcomb",
+                lastName: "Gordon",
+                email: "gesezyx@mailinator.com",
+                __typename: "Patient",
+                phoneNumbers: [
+                  {
+                    type: "MOBILE",
+                    number: "(555) 555-5555",
+                    __typename: "PhoneNumber",
+                  },
+                ],
+              },
+              patientLink: {
+                internalId: "e4c1c27f-768e-44d2-b9d5-e047454c1d24",
+                __typename: "PatientLink",
+              },
+              __typename: "TestResult",
+            },
+          },
+        },
+      },
+    ];
+
+    it("should resend the test results text and show success message", async () => {
+      render(
+        <MockedProvider mocks={mocks}>
+          <TestResultTextModal
+            testResultId={"super-fancy-id"}
+            closeModal={mockCloseModal}
+          />
+        </MockedProvider>
+      );
+
+      userEvent.click(screen.getByText("Send result"));
+
+      expect(mockResendTestResultsText).toHaveBeenCalledWith({
+        variables: { patientLinkId: "e4c1c27f-768e-44d2-b9d5-e047454c1d24" },
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(alertSpy).toHaveBeenCalledWith("success", "Texted test results.");
+      expect(mockCloseModal).toHaveBeenCalled();
+    });
+
+    // it("should show error message when failing to email", async () => {
+    //   mockResendSuccessValue = false;
+    //   render(
+    //     <EmailTestResultModal
+    //       testResultId={"super-fancy-id"}
+    //       closeModal={mockCloseModal}
+    //     />
+    //   );
+
+    //   userEvent.click(screen.getByText("Send result"));
+
+    //   expect(mockResendTestResultsEmail).toHaveBeenCalledWith({
+    //     variables: { patientLinkId: "e4c1c27f-768e-44d2-b9d5-e047454c1d24" },
+    //   });
+
+    //   await new Promise((resolve) => setTimeout(resolve, 0));
+    //   expect(alertSpy).toHaveBeenCalledWith(
+    //     "error",
+    //     "Failed to email test results."
+    //   );
+    //   expect(mockCloseModal).toHaveBeenCalled();
+    // });
   });
 });
