@@ -148,6 +148,7 @@ class PatientMutationResolverTest {
         // Simulate an older UI version by not using the multiple email field
         null,
         null,
+        "USA",
         null,
         null,
         null,
@@ -160,6 +161,7 @@ class PatientMutationResolverTest {
     verify(personService)
         .addPatient(
             any(UUID.class),
+            any(),
             any(),
             any(),
             any(),
