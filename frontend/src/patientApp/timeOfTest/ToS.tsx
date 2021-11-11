@@ -12,12 +12,23 @@ function ToS() {
         parent="p"
         components={[
           <a href="https://www.cdc.gov/other/information.html">
-            CDC's Privacy Policies
+            CDC’s Privacy Policies
           </a>,
         ]}
       />
       <h2 id="scope">{t("testResult.tos.document.scope.heading")}</h2>
       <p>{t("testResult.tos.document.scope.p0")}</p>
+      <h2 id="definitions">
+        {t("testResult.tos.document.definitions.heading")}
+      </h2>
+      <ul>
+        <li>{t("testResult.tos.document.definitions.l0")}</li>
+      </ul>
+      <p>{t("testResult.tos.document.definitions.p0")}</p>
+      <ul>
+        <li>{t("testResult.tos.document.definitions.l1")}</li>
+      </ul>
+      <p>{t("testResult.tos.document.definitions.p1")}</p>
       <h2 id="data-rights-and-usage">
         {t("testResult.tos.document.dataRights.heading")}
       </h2>
@@ -27,11 +38,25 @@ function ToS() {
       <ul>
         <li>{t("testResult.tos.document.dataRights.l0")}</li>
       </ul>
-      <p>{t("testResult.tos.document.dataRights.p0")}</p>
+      <p>{t("testResult.tos.document.dataRights.p01")}</p>
+      <Trans
+        t={t}
+        i18nKey="testResult.tos.document.dataRights.p02"
+        parent="p"
+        components={[
+          <a href="mailto:support@simplereport.gov">
+            support@simplereport.gov
+          </a>,
+        ]}
+      />
       <ul>
         <li>{t("testResult.tos.document.dataRights.l1")}</li>
       </ul>
       <p>{t("testResult.tos.document.dataRights.p1")}</p>
+      <ul>
+        <li>{t("testResult.tos.document.dataRights.l2")}</li>
+      </ul>
+      <p>{t("testResult.tos.document.dataRights.p2")}</p>
       <h3 id="privacy">{t("testResult.tos.document.privacy.heading")}</h3>
       <Trans
         t={t}
@@ -63,15 +88,25 @@ function ToS() {
         {t("testResult.tos.document.otherResponsibilities.heading")}
       </h3>
       <ul>
-        <li>{t("testResult.tos.document.otherResponsibilities.ul.li0")}</li>
-        <li>{t("testResult.tos.document.otherResponsibilities.ul.li1")}</li>
-        <li>{t("testResult.tos.document.otherResponsibilities.ul.li2")}</li>
-        <li>{t("testResult.tos.document.otherResponsibilities.ul.li3")}</li>
-        <li>{t("testResult.tos.document.otherResponsibilities.ul.li4")}</li>
-        <li>{t("testResult.tos.document.otherResponsibilities.ul.li5")}</li>
-        <li>{t("testResult.tos.document.otherResponsibilities.ul.li6")}</li>
-        <li>{t("testResult.tos.document.otherResponsibilities.ul.li7")}</li>
-        <li>{t("testResult.tos.document.otherResponsibilities.ul.li8")}</li>
+        <li>
+          {t("testResult.tos.document.otherResponsibilities.ul.preheading1")}
+        </li>
+        <ul>
+          <li>{t("testResult.tos.document.otherResponsibilities.ul.li0")}</li>
+          <li>{t("testResult.tos.document.otherResponsibilities.ul.li1")}</li>
+          <li>{t("testResult.tos.document.otherResponsibilities.ul.li2")}</li>
+          <li>{t("testResult.tos.document.otherResponsibilities.ul.li3")}</li>
+        </ul>
+        <li>
+          {t("testResult.tos.document.otherResponsibilities.ul.preheading2")}
+        </li>
+        <ul>
+          <li>{t("testResult.tos.document.otherResponsibilities.ul.li4")}</li>
+          <li>{t("testResult.tos.document.otherResponsibilities.ul.li5")}</li>
+          <li>{t("testResult.tos.document.otherResponsibilities.ul.li6")}</li>
+          <li>{t("testResult.tos.document.otherResponsibilities.ul.li7")}</li>
+          <li>{t("testResult.tos.document.otherResponsibilities.ul.li8")}</li>
+        </ul>
       </ul>
       <h2 id="service-management">
         {t("testResult.tos.document.serviceManagement.heading")}

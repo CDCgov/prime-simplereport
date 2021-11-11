@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -79,6 +80,10 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   @Column private String email;
 
+  @Type(type = "list-array")
+  @Column
+  private List<String> emails = new ArrayList<>();
+
   @Column(nullable = true)
   private Boolean employedInHealthcare;
 
@@ -118,7 +123,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       StreetAddress address,
       String country,
       PersonRole role,
-      String email,
+      List<String> emails,
       String race,
       String ethnicity,
       List<String> tribalAffiliation,
@@ -134,7 +139,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.address = address;
     this.country = country;
     this.role = role;
-    this.email = email;
+    this.emails = emails;
     this.race = race;
     this.ethnicity = ethnicity;
     this.tribalAffiliation = tribalAffiliation;
@@ -169,7 +174,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       StreetAddress address,
       String country,
       PersonRole role,
-      String email,
+      List<String> emails,
       String race,
       String ethnicity,
       List<String> tribalAffiliation,
@@ -187,7 +192,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.address = address;
     this.country = country;
     this.role = role;
-    this.email = email;
+    this.emails = emails;
     this.race = race;
     this.ethnicity = ethnicity;
     this.tribalAffiliation = tribalAffiliation;
@@ -214,6 +219,10 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   public void setPrimaryPhone(PhoneNumber phoneNumber) {
     this.primaryPhone = phoneNumber;
+  }
+
+  public void setPrimaryEmail(String email) {
+    this.email = email;
   }
 
   public String getLookupId() {
@@ -265,7 +274,15 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   }
 
   public String getEmail() {
-    return email;
+    if (emails == null || emails.isEmpty()) {
+      return null;
+    }
+
+    return this.emails.get(0);
+  }
+
+  public List<String> getEmails() {
+    return emails;
   }
 
   public String getRace() {

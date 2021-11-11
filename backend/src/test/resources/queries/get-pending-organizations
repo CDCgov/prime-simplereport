@@ -2,7 +2,8 @@ query getPendingOrganizations {
   pendingOrganizations {
     externalId
     name
-    adminName
+    adminFirstName
+    adminLastName
     adminEmail
     adminPhone
     createdAt

@@ -119,7 +119,7 @@ class PersonSerializationTest {
             addy,
             "USA",
             null,
-            "a@b.c",
+            List.of("a@b.c"),
             "marathon",
             "generic",
             Arrays.asList("123"),
