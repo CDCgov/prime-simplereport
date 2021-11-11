@@ -144,6 +144,28 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
   }
 
   @Test
+  void sendMultipleEmails() throws IOException {
+    // GIVEN
+    String toEmail = "test@foo.com";
+    String subject = "Testing the email service with attachment";
+    String templateName = "test-template";
+
+    // WHEN
+    _service.send(toEmail, subject, templateName);
+
+    // THEN
+    verify(mockSendGrid, times(1)).send(mail.capture());
+    assertEquals(mail.getValue().getPersonalization().get(0).getTos().get(0).getEmail(), toEmail);
+    assertEquals(mail.getValue().getSubject(), subject);
+    assertThat(mail.getValue().getContent().get(0).getValue())
+        .doesNotContain("<b>Foo:</b> var 1", "<b>Bar:</b> var 2")
+        .contains("<b>Foo:</b>", "<b>Bar:</b>");
+    assertEquals(1, mail.getValue().getAttachments().size());
+    assertEquals(376, mail.getValue().getAttachments().get(0).getContent().length());
+    assertEquals("application/pdf", mail.getValue().getAttachments().get(0).getType());
+  }
+
+  @Test
   void sendWithDynamicTemplateTest() throws IOException {
     // GIVEN
     String toEmail = "test@foo.com";
@@ -154,7 +176,7 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
             "test_result_url", "http://localhost");
     // WHEN
     _service.sendWithDynamicTemplate(
-        toEmail, EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT, dynamicTemplateData);
+        List.of(toEmail), EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT, dynamicTemplateData);
 
     // THEN
     verify(mockSendGrid, times(1)).send(mail.capture());

@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +55,7 @@ class TestResultsDeliveryServiceTest {
     assertThat(success).isTrue();
     verify(emailService)
         .sendWithDynamicTemplate(
-            "harry@hogwarts.edu",
+            List.of("harry@hogwarts.edu"),
             EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT,
             Map.of(
                 "facility_name", "House of Gryffindor",
@@ -78,7 +79,7 @@ class TestResultsDeliveryServiceTest {
     assertThat(success).isTrue();
     verify(emailService)
         .sendWithDynamicTemplate(
-            "harry@hogwarts.edu",
+            List.of("harry@hogwarts.edu"),
             EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT,
             Map.of(
                 "facility_name", "House of Gryffindor",

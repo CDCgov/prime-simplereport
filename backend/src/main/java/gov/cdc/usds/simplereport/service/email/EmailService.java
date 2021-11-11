@@ -120,11 +120,17 @@ public class EmailService {
 
   public String sendWithDynamicTemplate(
       final String toEmail, final EmailProviderTemplate providerTemplate) throws IOException {
-    return sendWithDynamicTemplate(toEmail, providerTemplate, null);
+    return sendWithDynamicTemplate(List.of(toEmail), providerTemplate, null);
   }
 
   public String sendWithDynamicTemplate(
-      final String toEmail,
+      final List<String> toEmails, final EmailProviderTemplate providerTemplate)
+      throws IOException {
+    return sendWithDynamicTemplate(toEmails, providerTemplate, null);
+  }
+
+  public String sendWithDynamicTemplate(
+      final List<String> toEmails,
       final EmailProviderTemplate providerTemplate,
       final Map<String, Object> templateVariables)
       throws IOException {
@@ -135,13 +141,13 @@ public class EmailService {
     mail.setTemplateId(sendGridProperties.getDynamicTemplateGuid(providerTemplate));
 
     Personalization personalization = new Personalization();
-    personalization.addTo(new Email(toEmail));
+    toEmails.stream().map(Email::new).forEach(personalization::addTo);
 
     if (templateVariables != null) {
       templateVariables.forEach(personalization::addDynamicTemplateData);
     }
-
     mail.addPersonalization(personalization);
+
     return emailProvider.send(mail);
   }
 }
