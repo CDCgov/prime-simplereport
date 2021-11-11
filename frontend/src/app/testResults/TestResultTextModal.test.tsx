@@ -156,28 +156,5 @@ describe("TestResultTextModal", () => {
       expect(alertSpy).toHaveBeenCalledWith("success", "Texted test results.");
       expect(mockCloseModal).toHaveBeenCalled();
     });
-
-    // it("should show error message when failing to email", async () => {
-    //   mockResendSuccessValue = false;
-    //   render(
-    //     <EmailTestResultModal
-    //       testResultId={"super-fancy-id"}
-    //       closeModal={mockCloseModal}
-    //     />
-    //   );
-
-    //   userEvent.click(screen.getByText("Send result"));
-
-    //   expect(mockResendTestResultsEmail).toHaveBeenCalledWith({
-    //     variables: { patientLinkId: "e4c1c27f-768e-44d2-b9d5-e047454c1d24" },
-    //   });
-
-    //   await new Promise((resolve) => setTimeout(resolve, 0));
-    //   expect(alertSpy).toHaveBeenCalledWith(
-    //     "error",
-    //     "Failed to email test results."
-    //   );
-    //   expect(mockCloseModal).toHaveBeenCalled();
-    // });
   });
 });
