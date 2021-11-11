@@ -484,51 +484,109 @@ Object {
                   <div
                     class="usa-form"
                   >
-                    <div>
-                      <div
-                        class="display-flex"
-                      >
+                    <div
+                      class="usa-form"
+                    >
+                      <div>
                         <div
-                          class="usa-form-group flex-fill"
+                          class="display-flex"
                         >
-                          <label
-                            class="usa-label"
-                            for="79"
+                          <div
+                            class="usa-form-group flex-fill"
                           >
-                            Primary email address
-                          </label>
-                          <input
-                            aria-required="false"
-                            class="usa-input"
-                            id="79"
-                            name="email-0"
-                            type="text"
-                            value="foo@bar.com"
-                          />
+                            <label
+                              class="usa-label"
+                              for="82"
+                            >
+                              Primary email address
+                            </label>
+                            <input
+                              aria-required="false"
+                              class="usa-input"
+                              id="82"
+                              name="email-0"
+                              type="text"
+                              value="foo@bar.com"
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <button
-                      class="usa-button usa-button--unstyled margin-top-2"
-                      type="button"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
-                        data-icon="plus"
-                        data-prefix="fas"
-                        focusable="false"
-                        role="img"
-                        viewBox="0 0 448 512"
-                        xmlns="http://www.w3.org/2000/svg"
+                      <button
+                        class="usa-button usa-button--unstyled margin-top-2"
+                        type="button"
                       >
-                        <path
-                          d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-                          fill="currentColor"
-                        />
-                      </svg>
-                      Add another email address
-                    </button>
+                        <svg
+                          aria-hidden="true"
+                          class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                          data-icon="plus"
+                          data-prefix="fas"
+                          focusable="false"
+                          role="img"
+                          viewBox="0 0 448 512"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                        Add another email address
+                      </button>
+                    </div>
+                    <div
+                      class="usa-form-group"
+                    >
+                      <fieldset
+                        class="usa-fieldset prime-radios"
+                      >
+                        <legend
+                          class="usa-legend"
+                        >
+                          Would you like to receive results at this email?
+                        </legend>
+                        <div
+                          class=""
+                        >
+                          <div
+                            class="usa-radio"
+                          >
+                            <input
+                              class="usa-radio__input"
+                              data-required="false"
+                              id="83-val-EMAIL"
+                              name="testResultDeliveryEmail"
+                              type="radio"
+                              value="EMAIL"
+                            />
+                            <label
+                              class="usa-radio__label"
+                              for="83-val-EMAIL"
+                            >
+                              Yes
+                            </label>
+                          </div>
+                          <div
+                            class="usa-radio"
+                          >
+                            <input
+                              checked=""
+                              class="usa-radio__input"
+                              data-required="false"
+                              id="83-val-NONE"
+                              name="testResultDeliveryEmail"
+                              type="radio"
+                              value="NONE"
+                            />
+                            <label
+                              class="usa-radio__label"
+                              for="83-val-NONE"
+                            >
+                              No
+                            </label>
+                          </div>
+                        </div>
+                      </fieldset>
+                    </div>
                   </div>
                   <div
                     class="usa-form"
@@ -1983,51 +2041,109 @@ Object {
                 <div
                   class="usa-form"
                 >
-                  <div>
-                    <div
-                      class="display-flex"
-                    >
+                  <div
+                    class="usa-form"
+                  >
+                    <div>
                       <div
-                        class="usa-form-group flex-fill"
+                        class="display-flex"
                       >
-                        <label
-                          class="usa-label"
-                          for="79"
+                        <div
+                          class="usa-form-group flex-fill"
                         >
-                          Primary email address
-                        </label>
-                        <input
-                          aria-required="false"
-                          class="usa-input"
-                          id="79"
-                          name="email-0"
-                          type="text"
-                          value="foo@bar.com"
-                        />
+                          <label
+                            class="usa-label"
+                            for="82"
+                          >
+                            Primary email address
+                          </label>
+                          <input
+                            aria-required="false"
+                            class="usa-input"
+                            id="82"
+                            name="email-0"
+                            type="text"
+                            value="foo@bar.com"
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <button
-                    class="usa-button usa-button--unstyled margin-top-2"
-                    type="button"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
-                      data-icon="plus"
-                      data-prefix="fas"
-                      focusable="false"
-                      role="img"
-                      viewBox="0 0 448 512"
-                      xmlns="http://www.w3.org/2000/svg"
+                    <button
+                      class="usa-button usa-button--unstyled margin-top-2"
+                      type="button"
                     >
-                      <path
-                        d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                    Add another email address
-                  </button>
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                        data-icon="plus"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      Add another email address
+                    </button>
+                  </div>
+                  <div
+                    class="usa-form-group"
+                  >
+                    <fieldset
+                      class="usa-fieldset prime-radios"
+                    >
+                      <legend
+                        class="usa-legend"
+                      >
+                        Would you like to receive results at this email?
+                      </legend>
+                      <div
+                        class=""
+                      >
+                        <div
+                          class="usa-radio"
+                        >
+                          <input
+                            class="usa-radio__input"
+                            data-required="false"
+                            id="83-val-EMAIL"
+                            name="testResultDeliveryEmail"
+                            type="radio"
+                            value="EMAIL"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="83-val-EMAIL"
+                          >
+                            Yes
+                          </label>
+                        </div>
+                        <div
+                          class="usa-radio"
+                        >
+                          <input
+                            checked=""
+                            class="usa-radio__input"
+                            data-required="false"
+                            id="83-val-NONE"
+                            name="testResultDeliveryEmail"
+                            type="radio"
+                            value="NONE"
+                          />
+                          <label
+                            class="usa-radio__label"
+                            for="83-val-NONE"
+                          >
+                            No
+                          </label>
+                        </div>
+                      </div>
+                    </fieldset>
+                  </div>
                 </div>
                 <div
                   class="usa-form"

@@ -415,56 +415,60 @@ exports[`PatientFormContainer snapshot 1`] = `
             <div
               className="usa-form"
             >
-              <div>
-                <div
-                  className="display-flex"
-                >
+              <div
+                className="usa-form"
+              >
+                <div>
                   <div
-                    className="usa-form-group flex-fill"
+                    className="display-flex"
                   >
-                    <label
-                      className="usa-label"
-                      htmlFor="8"
+                    <div
+                      className="usa-form-group flex-fill"
                     >
-                      Primary email address
-                    </label>
-                    <input
-                      aria-required="false"
-                      className="usa-input"
-                      id="8"
-                      name="email-0"
-                      onBlur={[Function]}
-                      onChange={[Function]}
-                      type="text"
-                      value=""
-                    />
+                      <label
+                        className="usa-label"
+                        htmlFor="8"
+                      >
+                        Primary email address
+                      </label>
+                      <input
+                        aria-required="false"
+                        className="usa-input"
+                        id="8"
+                        name="email-0"
+                        onBlur={[Function]}
+                        onChange={[Function]}
+                        type="text"
+                        value=""
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <button
-                className="usa-button usa-button--unstyled margin-top-2"
-                onClick={[Function]}
-                type="button"
-              >
-                <svg
-                  aria-hidden="true"
-                  className="svg-inline--fa fa-plus fa-w-14 margin-right-1"
-                  data-icon="plus"
-                  data-prefix="fas"
-                  focusable="false"
-                  role="img"
-                  style={Object {}}
-                  viewBox="0 0 448 512"
-                  xmlns="http://www.w3.org/2000/svg"
+                <button
+                  className="usa-button usa-button--unstyled margin-top-2"
+                  onClick={[Function]}
+                  type="button"
                 >
-                  <path
-                    d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-                    fill="currentColor"
+                  <svg
+                    aria-hidden="true"
+                    className="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                    data-icon="plus"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
                     style={Object {}}
-                  />
-                </svg>
-                Add another email address
-              </button>
+                    viewBox="0 0 448 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                      fill="currentColor"
+                      style={Object {}}
+                    />
+                  </svg>
+                  Add another email address
+                </button>
+              </div>
             </div>
             <div
               className="usa-form"

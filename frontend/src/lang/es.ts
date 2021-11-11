@@ -129,9 +129,9 @@ export const es: LanguageConfig = {
           additionalPhoneNumber: "Número de teléfono adicional",
           phoneType: "Tipo de teléfono",
           addNumber: "Agregar otro número",
-          primaryEmail: "",
-          additionalEmail: "",
-          addEmail: "",
+          primaryEmail: "Dirección de correo electrónico principal",
+          additionalEmail: "Dirección de correo electrónico adicional",
+          addEmail: "Agregue otra dirección de correo electrónico",
           email: "Dirección de correo electrónico",
           street1: "Dirección 1",
           street2: "Dirección 2",
@@ -141,11 +141,12 @@ export const es: LanguageConfig = {
           zip: "Código postal",
         },
         testResultDelivery: {
-          text: "",
+          text: "¿Le gustaría recibir sus resultados por mensaje de texto?",
           receiveTextMessageResults:
             "Sí, envíe un mensaje de texto a todos los números registrados de teléfonos móviles.",
-          email: "",
-          receiveEmailResults: "",
+          email:
+            "¿Le gustaría recibir los resultados en esta dirección de correo electrónico?",
+          receiveEmailResults: YES,
         },
         demographics: {
           heading: "Información demográfica",
