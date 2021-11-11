@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -31,9 +32,9 @@ public class TestResultsDeliveryService {
   }
 
   public boolean emailTestResults(PatientLink patientLink) {
-    String recipientEmailAddresses = patientLink.getTestOrder().getPatient().getEmail();
+    List<String> recipientEmailAddresses = patientLink.getTestOrder().getPatient().getEmails();
 
-    if (recipientEmailAddresses == null) {
+    if (recipientEmailAddresses.isEmpty()) {
       log.error("Patient missing email address");
       return false;
     }
