@@ -80,6 +80,7 @@ describe("ManageEmails", () => {
     ).toBeInTheDocument();
 
     // Enter good info and blur
+    userEvent.clear(primary);
     userEvent.type(primary, "test@fake.com");
     userEvent.tab();
 
