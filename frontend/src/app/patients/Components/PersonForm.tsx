@@ -221,10 +221,6 @@ const PersonForm = (props: Props) => {
 
   const validatePatientAddress = async () => {
     const originalAddress = getAddress(patient);
-    // Don't validate international addresses
-    if (patient.country !== "USA") {
-      onSave(originalAddress);
-    }
     const suggestedAddress = await getBestSuggestion(originalAddress);
     if (suggestionIsCloseEnough(originalAddress, suggestedAddress)) {
       onSave(suggestedAddress);
@@ -270,7 +266,8 @@ const PersonForm = (props: Props) => {
     }
     if (
       JSON.stringify(getAddress(patient)) ===
-      JSON.stringify(getAddress(props.patient))
+        JSON.stringify(getAddress(props.patient)) ||
+      patient.country !== "USA"
     ) {
       onSave();
     } else {
