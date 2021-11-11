@@ -153,6 +153,7 @@ const DOB = () => {
     <main>
       <div className="grid-container maxw-tablet">
         <p className="margin-top-3">{t("testResult.dob.enterDOB2")}</p>
+        <p>{t("testResult.dob.linkExpirationNotice")}</p>
         <TextInput
           className="width-mobile"
           label={t("testResult.dob.dateOfBirth")}

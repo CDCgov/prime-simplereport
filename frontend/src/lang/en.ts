@@ -563,6 +563,8 @@ export const en = {
         enterDOB: "Enter your date of birth",
         enterDOB2:
           "Enter your date of birth to access your COVID-19 testing portal.",
+        linkExpirationNotice:
+          "Note: this link will expire 5 days after the test result was recorded.",
         format: "MM/DD/YYYY",
         invalidFormat: "Date of birth must be in MM/DD/YYYY format",
         invalidYear:
@@ -571,7 +573,7 @@ export const en = {
         error: "The date of birth entered is incorrect",
         validating: "Validating birth date...",
         linkExpired:
-          "This link has expired. Please contact your test provider.",
+          "This link has expired. Please contact your test provider to generate a new link.",
         linkNotFound:
           "This test result link is invalid. Please double check the URL or contact your test provider for the correct link.",
         submit: "Continue",

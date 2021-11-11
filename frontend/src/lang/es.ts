@@ -481,6 +481,8 @@ export const es: LanguageConfig = {
         enterDOB: "Ingrese su fecha de nacimiento",
         enterDOB2:
           "Ingrese su fecha de nacimiento para acceder a su portal de pruebas de COVID-19.",
+        linkExpirationNotice:
+          "Nota: este enlace caducará 5 días después de que se registró el resultado de la prueba.",
         format: "MM/DD/AAAA",
         invalidFormat:
           "La fecha de nacimiento debe estar en formato MM/DD/AAAA",
@@ -490,7 +492,7 @@ export const es: LanguageConfig = {
         error: "La fecha de nacimiento proporcionada es incorrecta",
         validating: "Validación de la fecha de nacimiento ... ",
         linkExpired:
-          "Este enlace ha caducado. Comuníquese con su proveedor de pruebas.",
+          "Este enlace ha caducado. Comuníquese con su proveedor de prueba para generar un nuevo enlace.",
         linkNotFound:
           "Este enlace de resultado de la prueba no es válido. Vuelva a verificar el enlace o comuníquese con su proveedor de prueba para obtener el enlace correcto.",
         submit: "Continuar",

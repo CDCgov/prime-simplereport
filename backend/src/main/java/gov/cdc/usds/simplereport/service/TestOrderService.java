@@ -276,11 +276,12 @@ public class TestOrderService {
           // After adding test result, create a new patient link and text it to the patient
           UUID patientLinkId = patientLink.getInternalId();
 
-          log.info("Your Covid-19 test result is ready to view: " + patientLinkUrl + patientLinkId);
+          String message =
+              "Your Covid-19 test result is ready to view. This link will expire after 5 days: ";
+
+          log.info(message + patientLinkUrl + patientLinkId);
           List<SmsAPICallResult> smsSendResults =
-              _smss.sendToPatientLink(
-                  patientLinkId,
-                  "Your Covid-19 test result is ready to view: " + patientLinkUrl + patientLinkId);
+              _smss.sendToPatientLink(patientLinkId, message + patientLinkUrl + patientLinkId);
 
           boolean failure =
               smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
