@@ -40,6 +40,7 @@ export interface TestQueuePerson {
   middleName: string | null;
   lastName: string;
   email: string;
+  emails: string[];
   phoneNumbers: PhoneNumber[];
   telephone: string;
   testResultDelivery: string;
@@ -188,32 +189,36 @@ const AoEForm: React.FC<Props> = ({
     { label: "No", value: "NONE" },
   ];
 
-  const getTestResultDeliveryPreferencesEmail = (email: string) => [
+  const getTestResultDeliveryPreferencesEmail = (emails: string[] = []) => [
     {
       label: (
         <>
           Yes
           <span className="usa-checkbox__label-description">
             <p>
-              {email ? (
+              {emails.length > 0 ? (
                 <span className="radio__label-description--checked">
-                  <strong>Results will be sent to this email:</strong>
+                  <strong>
+                    Results will be sent to these email addresses:
+                  </strong>
                 </span>
               ) : (
-                "(There is no email address listed in your patient profile.)"
+                "(There are no email addresses listed in your patient profile.)"
               )}
             </p>
-            <span
-              key={"test-result-delivery-preference-email"}
-              className="radio__label-description--checked usa-radio__label-description text-base"
-            >
-              {email}
-            </span>
+            {emails.map((email) => (
+              <span
+                key={"test-result-delivery-preference-email"}
+                className="radio__label-description--checked usa-radio__label-description text-base"
+              >
+                {email}
+              </span>
+            ))}
           </span>
         </>
       ),
       value: "EMAIL",
-      ...(!email && { disabled: true }),
+      ...(emails.length === 0 && { disabled: true }),
     },
     { label: "No", value: "NONE" },
   ];
@@ -285,7 +290,7 @@ const AoEForm: React.FC<Props> = ({
               )}
             />
           </div>
-          {patient.email && (
+          {patient.emails && (
             <div className="prime-formgroup__wrapper">
               <RadioGroup
                 legend="Would you like to receive a copy of your results via email?"
@@ -300,7 +305,7 @@ const AoEForm: React.FC<Props> = ({
                     )
                   );
                 }}
-                buttons={getTestResultDeliveryPreferencesEmail(patient.email)}
+                buttons={getTestResultDeliveryPreferencesEmail(patient.emails)}
                 selectedRadio={(() => {
                   if (patientMobileNumbers.length === 0) {
                     return TestResultDeliveryPreferences.NONE;

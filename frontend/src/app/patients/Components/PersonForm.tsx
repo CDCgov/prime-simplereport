@@ -399,7 +399,7 @@ const PersonForm = (props: Props) => {
             updateEmails={onPersonChange("emails")}
             emailValidator={emailValidator}
           />
-          {patient.email && (
+          {patient.emails && patient?.emails?.length > 0 && (
             <RadioGroup
               legend={t("patient.form.testResultDelivery.email")}
               name="testResultDeliveryEmail"
