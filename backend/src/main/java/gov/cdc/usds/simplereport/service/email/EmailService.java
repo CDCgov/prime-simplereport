@@ -135,7 +135,7 @@ public class EmailService {
       final EmailProviderTemplate providerTemplate,
       final Map<String, Object> templateVariables)
       throws IOException {
-    List<String> results = new ArrayList<String>();
+    List<String> results = new ArrayList<>();
 
     for (String toEmail : toEmails) {
       Mail mail = new Mail();
