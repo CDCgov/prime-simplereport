@@ -37,7 +37,11 @@ class PatientUploadTest extends BaseGraphqlTest {
     parts.add(
         "operations",
         new HttpEntity<>(
-            "{\"operationName\":\"UploadPatients\",\"variables\":{\"patientList\":null},\"query\":\"mutation UploadPatients($patientList: Upload!) {\n  uploadPatients(patientList: $patientList)\n}\n\"}",
+            "{\"operationName\":\"UploadPatients\",\"variables\":{\"patientList\":null},\"query\":\"mutation"
+                + " UploadPatients($patientList: Upload!) {\n"
+                + "  uploadPatients(patientList: $patientList)\n"
+                + "}\n"
+                + "\"}",
             new HttpHeaders()));
     parts.add("map", new HttpEntity<>("{\"1\":[\"variables.patientList\"]}", new HttpHeaders()));
     HttpHeaders csvHeaders = new HttpHeaders();
@@ -45,8 +49,10 @@ class PatientUploadTest extends BaseGraphqlTest {
     parts.add(
         "1",
         new HttpEntity<>(
-            "LastName,FirstName,MiddleName,Suffix,Race,DOB,biologicalSex,Ethnicity,Street,Street2,City ,County,State,ZipCode,PhoneNumber,employedInHealthcare,residentCongregateSetting,Role,Email,facilityId\n"
-                + "Best,Tim,,,White,5/11/1933,Male,Not_Hispanic,123 Main Street,,Washington,,DC,20008,5656667777,Yes,No,Staff,foo@example.com,",
+            "LastName,FirstName,MiddleName,Suffix,Race,DOB,biologicalSex,Ethnicity,Street,Street2,City"
+                + " ,County,State,ZipCode,Country,PhoneNumber,employedInHealthcare,residentCongregateSetting,Role,Email,facilityId\n"
+                + "Best,Tim,,,White,5/11/1933,Male,Not_Hispanic,123 Main"
+                + " Street,,Washington,,DC,20008,USA,5656667777,Yes,No,Staff,foo@example.com,",
             csvHeaders));
     return (JsonNode) runMultipart(parts);
   }
