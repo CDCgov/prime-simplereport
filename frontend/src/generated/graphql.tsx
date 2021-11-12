@@ -1295,6 +1295,7 @@ export type AddPatientMutationVariables = Exact<{
   role?: Maybe<Scalars["String"]>;
   lookupId?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["String"]>;
+  emails?: Maybe<Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>>;
   county?: Maybe<Scalars["String"]>;
   race?: Maybe<Scalars["String"]>;
   ethnicity?: Maybe<Scalars["String"]>;
@@ -1349,6 +1350,7 @@ export type GetPatientDetailsQuery = {
     role?: Maybe<string>;
     lookupId?: Maybe<string>;
     email?: Maybe<string>;
+    emails?: Maybe<Array<Maybe<string>>>;
     county?: Maybe<string>;
     race?: Maybe<string>;
     ethnicity?: Maybe<string>;
@@ -1388,6 +1390,7 @@ export type UpdatePatientMutationVariables = Exact<{
   role?: Maybe<Scalars["String"]>;
   lookupId?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["String"]>;
+  emails?: Maybe<Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>>;
   county?: Maybe<Scalars["String"]>;
   race?: Maybe<Scalars["String"]>;
   ethnicity?: Maybe<Scalars["String"]>;
@@ -1758,6 +1761,7 @@ export type GetPatientsByFacilityForQueueQuery = {
         gender?: Maybe<string>;
         telephone?: Maybe<string>;
         email?: Maybe<string>;
+        emails?: Maybe<Array<Maybe<string>>>;
         testResultDelivery?: Maybe<TestResultDeliveryPreference>;
         phoneNumbers?: Maybe<
           Array<
@@ -3354,6 +3358,7 @@ export const AddPatientDocument = gql`
     $role: String
     $lookupId: String
     $email: String
+    $emails: [String]
     $county: String
     $race: String
     $ethnicity: String
@@ -3380,6 +3385,7 @@ export const AddPatientDocument = gql`
       role: $role
       lookupId: $lookupId
       email: $email
+      emails: $emails
       county: $county
       race: $race
       ethnicity: $ethnicity
@@ -3430,6 +3436,7 @@ export type AddPatientMutationFn = Apollo.MutationFunction<
  *      role: // value for 'role'
  *      lookupId: // value for 'lookupId'
  *      email: // value for 'email'
+ *      emails: // value for 'emails'
  *      county: // value for 'county'
  *      race: // value for 'race'
  *      ethnicity: // value for 'ethnicity'
@@ -3532,6 +3539,7 @@ export const GetPatientDetailsDocument = gql`
       role
       lookupId
       email
+      emails
       county
       race
       ethnicity
@@ -3616,6 +3624,7 @@ export const UpdatePatientDocument = gql`
     $role: String
     $lookupId: String
     $email: String
+    $emails: [String]
     $county: String
     $race: String
     $ethnicity: String
@@ -3643,6 +3652,7 @@ export const UpdatePatientDocument = gql`
       role: $role
       lookupId: $lookupId
       email: $email
+      emails: $emails
       county: $county
       race: $race
       ethnicity: $ethnicity
@@ -3691,6 +3701,7 @@ export type UpdatePatientMutationFn = Apollo.MutationFunction<
  *      role: // value for 'role'
  *      lookupId: // value for 'lookupId'
  *      email: // value for 'email'
+ *      emails: // value for 'emails'
  *      county: // value for 'county'
  *      race: // value for 'race'
  *      ethnicity: // value for 'ethnicity'
@@ -4856,6 +4867,7 @@ export const GetPatientsByFacilityForQueueDocument = gql`
       gender
       telephone
       email
+      emails
       phoneNumbers {
         type
         number

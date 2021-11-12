@@ -44,7 +44,7 @@ const ManageEmails: React.FC<Props> = ({
   );
 
   const validationStatus = (idx: number) => {
-    return errors[idx] && errors[idx] ? "error" : undefined;
+    return errors?.[idx] ? "error" : undefined;
   };
 
   const validateField = useCallback(
