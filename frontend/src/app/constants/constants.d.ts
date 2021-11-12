@@ -592,6 +592,7 @@ interface PersonUpdate extends Address {
   telephone: string;
   phoneNumbers: PhoneNumber[] | null;
   county: string;
+  country: string;
   email: string;
   emails: string[];
   preferredLanguage: Language | null;

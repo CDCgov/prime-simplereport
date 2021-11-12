@@ -249,6 +249,7 @@ const updateFieldSchemata: (
     .string()
     .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
     .required(t("patient.form.errors.zipCode")),
+  country: yup.string().required(t("patient.form.errors.country")),
   race: yup
     .mixed()
     .oneOf(
@@ -329,10 +330,10 @@ const translatePersonSchema: TranslatedSchema<RequiredPersonFields> = (t) =>
       .string()
       .test(
         "birth-date",
-        t("patient.form.errors.birthDate"),
+        t("patient.form.errors.birthDate.base"),
         isValidBirthdate18n(t)
       )
-      .required(t("patient.form.errors.birthDate")),
+      .required(t("patient.form.errors.birthDate.base")),
     facilityId: yup
       .string()
       .nullable()
@@ -363,7 +364,7 @@ const translateSelfRegistrationSchema: TranslatedSchema<SelfRegistationFields> =
         t("patient.form.errors.birthDate.base"),
         isValidBirthdate18n(t)
       )
-      .required(t("patient.form.errors.birthDate")),
+      .required(t("patient.form.errors.birthDate.base")),
     ...updateFieldSchemata(t),
   });
 

@@ -474,11 +474,1352 @@ exports[`PatientFormContainer snapshot 1`] = `
               className="usa-form"
             >
               <div
-                className="usa-form-group"
+                className="usa-form-group prime-dropdown "
               >
                 <label
                   className="usa-label"
                   htmlFor="9"
+                >
+                  Country
+                  <abbr
+                    className="usa-hint usa-hint--required"
+                    title="required"
+                  >
+                     
+                    *
+                  </abbr>
+                </label>
+                <select
+                  aria-required={true}
+                  className="usa-select"
+                  id="9"
+                  name="country"
+                  onBlur={[Function]}
+                  onChange={[Function]}
+                  value="USA"
+                >
+                  <option
+                    value="AFG"
+                  >
+                    Afghanistan
+                  </option>
+                  <option
+                    value="XQZ"
+                  >
+                    Akrotiri
+                  </option>
+                  <option
+                    value="ALB"
+                  >
+                    Albania
+                  </option>
+                  <option
+                    value="DZA"
+                  >
+                    Algeria
+                  </option>
+                  <option
+                    value="ASM"
+                  >
+                    American Samoa
+                  </option>
+                  <option
+                    value="AND"
+                  >
+                    Andorra
+                  </option>
+                  <option
+                    value="AGO"
+                  >
+                    Angola
+                  </option>
+                  <option
+                    value="AIA"
+                  >
+                    Anguilla
+                  </option>
+                  <option
+                    value="ATA"
+                  >
+                    Antarctica
+                  </option>
+                  <option
+                    value="ATG"
+                  >
+                    Antigua
+                  </option>
+                  <option
+                    value="ARG"
+                  >
+                    Argentina
+                  </option>
+                  <option
+                    value="ARM"
+                  >
+                    Armenia
+                  </option>
+                  <option
+                    value="ABW"
+                  >
+                    Aruba
+                  </option>
+                  <option
+                    value="XAC"
+                  >
+                    Ashmore and Cartier Islands
+                  </option>
+                  <option
+                    value="AUS"
+                  >
+                    Australia
+                  </option>
+                  <option
+                    value="AUT"
+                  >
+                    Austria
+                  </option>
+                  <option
+                    value="AZE"
+                  >
+                    Azerbaijan
+                  </option>
+                  <option
+                    value="BHS"
+                  >
+                    Bahamas, The
+                  </option>
+                  <option
+                    value="BHR"
+                  >
+                    Bahrain
+                  </option>
+                  <option
+                    value="XBK"
+                  >
+                    Baker Island
+                  </option>
+                  <option
+                    value="BGD"
+                  >
+                    Bangladesh
+                  </option>
+                  <option
+                    value="BRB"
+                  >
+                    Barbados
+                  </option>
+                  <option
+                    value="BLR"
+                  >
+                    Belarus
+                  </option>
+                  <option
+                    value="BEL"
+                  >
+                    Belgium
+                  </option>
+                  <option
+                    value="BLZ"
+                  >
+                    Belize
+                  </option>
+                  <option
+                    value="BEN"
+                  >
+                    Benin
+                  </option>
+                  <option
+                    value="BMU"
+                  >
+                    Bermuda
+                  </option>
+                  <option
+                    value="BTN"
+                  >
+                    Bhutan
+                  </option>
+                  <option
+                    value="BOL"
+                  >
+                    Bolivia
+                  </option>
+                  <option
+                    value="BIH"
+                  >
+                    Bosnia and Herzegovina
+                  </option>
+                  <option
+                    value="BWA"
+                  >
+                    Botswana
+                  </option>
+                  <option
+                    value="BVT"
+                  >
+                    Bouvet Island
+                  </option>
+                  <option
+                    value="BRA"
+                  >
+                    Brazil
+                  </option>
+                  <option
+                    value="IOT"
+                  >
+                    British Indian Ocean Territory
+                  </option>
+                  <option
+                    value="BRN"
+                  >
+                    Brunei
+                  </option>
+                  <option
+                    value="BGR"
+                  >
+                    Bulgaria
+                  </option>
+                  <option
+                    value="BFA"
+                  >
+                    Burkina Faso
+                  </option>
+                  <option
+                    value="MMR"
+                  >
+                    Burma
+                  </option>
+                  <option
+                    value="BDI"
+                  >
+                    Burundi
+                  </option>
+                  <option
+                    value="CPV"
+                  >
+                    Cabo Verde
+                  </option>
+                  <option
+                    value="KHM"
+                  >
+                    Cambodia
+                  </option>
+                  <option
+                    value="CMR"
+                  >
+                    Cameroon
+                  </option>
+                  <option
+                    value="CAN"
+                  >
+                    Canada
+                  </option>
+                  <option
+                    value="CYM"
+                  >
+                    Cayman Islands
+                  </option>
+                  <option
+                    value="CAF"
+                  >
+                    Central African Republic
+                  </option>
+                  <option
+                    value="TCD"
+                  >
+                    Chad
+                  </option>
+                  <option
+                    value="CHL"
+                  >
+                    Chile
+                  </option>
+                  <option
+                    value="CHN"
+                  >
+                    China
+                  </option>
+                  <option
+                    value="CXR"
+                  >
+                    Christmas Island
+                  </option>
+                  <option
+                    value="CPT"
+                  >
+                    Clipperton Island
+                  </option>
+                  <option
+                    value="CCK"
+                  >
+                    Cocos (Keeling) Islands
+                  </option>
+                  <option
+                    value="COL"
+                  >
+                    Colombia
+                  </option>
+                  <option
+                    value="COM"
+                  >
+                    Comoros
+                  </option>
+                  <option
+                    value="COK"
+                  >
+                    Cook Islands
+                  </option>
+                  <option
+                    value="XCS"
+                  >
+                    Coral Sea Islands
+                  </option>
+                  <option
+                    value="CRI"
+                  >
+                    Costa Rica
+                  </option>
+                  <option
+                    value="CIV"
+                  >
+                    Côte d’Ivoire
+                  </option>
+                  <option
+                    value="HRV"
+                  >
+                    Croatia
+                  </option>
+                  <option
+                    value="CUB"
+                  >
+                    Cuba
+                  </option>
+                  <option
+                    value="CUW"
+                  >
+                    Curaçao
+                  </option>
+                  <option
+                    value="CYP"
+                  >
+                    Cyprus
+                  </option>
+                  <option
+                    value="CZE"
+                  >
+                    Czechia
+                  </option>
+                  <option
+                    value="COD"
+                  >
+                    Democratic Republic of the Congo
+                  </option>
+                  <option
+                    value="DNK"
+                  >
+                    Denmark
+                  </option>
+                  <option
+                    value="XXD"
+                  >
+                    Dhekelia
+                  </option>
+                  <option
+                    value="DJI"
+                  >
+                    Djibouti
+                  </option>
+                  <option
+                    value="DMA"
+                  >
+                    Dominica
+                  </option>
+                  <option
+                    value="DOM"
+                  >
+                    Dominican Republic
+                  </option>
+                  <option
+                    value="ECU"
+                  >
+                    Ecuador
+                  </option>
+                  <option
+                    value="EGY"
+                  >
+                    Egypt
+                  </option>
+                  <option
+                    value="SLV"
+                  >
+                    El Salvador
+                  </option>
+                  <option
+                    value="GNQ"
+                  >
+                    Equatorial Guinea
+                  </option>
+                  <option
+                    value="ERI"
+                  >
+                    Eritrea
+                  </option>
+                  <option
+                    value="EST"
+                  >
+                    Estonia
+                  </option>
+                  <option
+                    value="SWZ"
+                  >
+                    Eswatini
+                  </option>
+                  <option
+                    value="ETH"
+                  >
+                    Ethiopia
+                  </option>
+                  <option
+                    value="FLK"
+                  >
+                    Falkland Islands (Islas Malvinas)
+                  </option>
+                  <option
+                    value="FRO"
+                  >
+                    Faroe Islands
+                  </option>
+                  <option
+                    value="FJI"
+                  >
+                    Fiji
+                  </option>
+                  <option
+                    value="FIN"
+                  >
+                    Finland
+                  </option>
+                  <option
+                    value="FRA"
+                  >
+                    France
+                  </option>
+                  <option
+                    value="GUF"
+                  >
+                    French Guiana
+                  </option>
+                  <option
+                    value="PYF"
+                  >
+                    French Polynesia
+                  </option>
+                  <option
+                    value="ATF"
+                  >
+                    French Southern and Antarctic Lands
+                  </option>
+                  <option
+                    value="GAB"
+                  >
+                    Gabon
+                  </option>
+                  <option
+                    value="GMB"
+                  >
+                    Gambia, The
+                  </option>
+                  <option
+                    value="GEO"
+                  >
+                    Georgia
+                  </option>
+                  <option
+                    value="DEU"
+                  >
+                    Germany
+                  </option>
+                  <option
+                    value="GHA"
+                  >
+                    Ghana
+                  </option>
+                  <option
+                    value="GIB"
+                  >
+                    Gibraltar
+                  </option>
+                  <option
+                    value="GRC"
+                  >
+                    Greece
+                  </option>
+                  <option
+                    value="GRL"
+                  >
+                    Greenland
+                  </option>
+                  <option
+                    value="GRD"
+                  >
+                    Grenada
+                  </option>
+                  <option
+                    value="GLP"
+                  >
+                    Guadeloupe
+                  </option>
+                  <option
+                    value="GUM"
+                  >
+                    Guam
+                  </option>
+                  <option
+                    value="GTM"
+                  >
+                    Guatemala
+                  </option>
+                  <option
+                    value="GGY"
+                  >
+                    Guernsey
+                  </option>
+                  <option
+                    value="GIN"
+                  >
+                    Guinea
+                  </option>
+                  <option
+                    value="GNB"
+                  >
+                    Guinea-Bissau
+                  </option>
+                  <option
+                    value="GUY"
+                  >
+                    Guyana
+                  </option>
+                  <option
+                    value="HTI"
+                  >
+                    Haiti
+                  </option>
+                  <option
+                    value="HMD"
+                  >
+                    Heard Island and McDonald Islands
+                  </option>
+                  <option
+                    value="VAT"
+                  >
+                    Holy See
+                  </option>
+                  <option
+                    value="HND"
+                  >
+                    Honduras
+                  </option>
+                  <option
+                    value="HKG"
+                  >
+                    Hong Kong
+                  </option>
+                  <option
+                    value="XHO"
+                  >
+                    Howland Island
+                  </option>
+                  <option
+                    value="HUN"
+                  >
+                    Hungary
+                  </option>
+                  <option
+                    value="ISL"
+                  >
+                    Iceland
+                  </option>
+                  <option
+                    value="IND"
+                  >
+                    India
+                  </option>
+                  <option
+                    value="IDN"
+                  >
+                    Indonesia
+                  </option>
+                  <option
+                    value="IRN"
+                  >
+                    Iran
+                  </option>
+                  <option
+                    value="IRQ"
+                  >
+                    Iraq
+                  </option>
+                  <option
+                    value="IRL"
+                  >
+                    Ireland
+                  </option>
+                  <option
+                    value="IMN"
+                  >
+                    Isle of Man
+                  </option>
+                  <option
+                    value="ISR"
+                  >
+                    Israel
+                  </option>
+                  <option
+                    value="ITA"
+                  >
+                    Italy
+                  </option>
+                  <option
+                    value="JAM"
+                  >
+                    Jamaica
+                  </option>
+                  <option
+                    value="XJM"
+                  >
+                    Jan Mayen
+                  </option>
+                  <option
+                    value="JPN"
+                  >
+                    Japan
+                  </option>
+                  <option
+                    value="XJV"
+                  >
+                    Jarvis Island
+                  </option>
+                  <option
+                    value="JEY"
+                  >
+                    Jersey
+                  </option>
+                  <option
+                    value="XJA"
+                  >
+                    Johnston Atoll
+                  </option>
+                  <option
+                    value="JOR"
+                  >
+                    Jordan
+                  </option>
+                  <option
+                    value="KAZ"
+                  >
+                    Kazakhstan
+                  </option>
+                  <option
+                    value="KEN"
+                  >
+                    Kenya
+                  </option>
+                  <option
+                    value="XKR"
+                  >
+                    Kingman Reef
+                  </option>
+                  <option
+                    value="KIR"
+                  >
+                    Kiribati
+                  </option>
+                  <option
+                    value="PRK"
+                  >
+                    Korea, North
+                  </option>
+                  <option
+                    value="KOR"
+                  >
+                    Korea, South
+                  </option>
+                  <option
+                    value="XKS"
+                  >
+                    Kosovo
+                  </option>
+                  <option
+                    value="KWT"
+                  >
+                    Kuwait
+                  </option>
+                  <option
+                    value="KGZ"
+                  >
+                    Kyrgyzstan
+                  </option>
+                  <option
+                    value="LAO"
+                  >
+                    Laos
+                  </option>
+                  <option
+                    value="LVA"
+                  >
+                    Latvia
+                  </option>
+                  <option
+                    value="LBN"
+                  >
+                    Lebanon
+                  </option>
+                  <option
+                    value="LSO"
+                  >
+                    Lesotho
+                  </option>
+                  <option
+                    value="LBR"
+                  >
+                    Liberia
+                  </option>
+                  <option
+                    value="LBY"
+                  >
+                    Libya
+                  </option>
+                  <option
+                    value="LIE"
+                  >
+                    Liechtenstein
+                  </option>
+                  <option
+                    value="LTU"
+                  >
+                    Lithuania
+                  </option>
+                  <option
+                    value="LUX"
+                  >
+                    Luxembourg
+                  </option>
+                  <option
+                    value="MAC"
+                  >
+                    Macau
+                  </option>
+                  <option
+                    value="MDG"
+                  >
+                    Madagascar
+                  </option>
+                  <option
+                    value="MWI"
+                  >
+                    Malawi
+                  </option>
+                  <option
+                    value="MYS"
+                  >
+                    Malaysia
+                  </option>
+                  <option
+                    value="MDV"
+                  >
+                    Maldives
+                  </option>
+                  <option
+                    value="MLI"
+                  >
+                    Mali
+                  </option>
+                  <option
+                    value="MLT"
+                  >
+                    Malta
+                  </option>
+                  <option
+                    value="MHL"
+                  >
+                    Marshall Islands
+                  </option>
+                  <option
+                    value="MTQ"
+                  >
+                    Martinique
+                  </option>
+                  <option
+                    value="MRT"
+                  >
+                    Mauritania
+                  </option>
+                  <option
+                    value="MUS"
+                  >
+                    Mauritius
+                  </option>
+                  <option
+                    value="MYT"
+                  >
+                    Mayotte
+                  </option>
+                  <option
+                    value="MEX"
+                  >
+                    Mexico
+                  </option>
+                  <option
+                    value="FSM"
+                  >
+                    Micronesia, Federated States of
+                  </option>
+                  <option
+                    value="XMW"
+                  >
+                    Midway Islands
+                  </option>
+                  <option
+                    value="MDA"
+                  >
+                    Moldova
+                  </option>
+                  <option
+                    value="MCO"
+                  >
+                    Monaco
+                  </option>
+                  <option
+                    value="MNG"
+                  >
+                    Mongolia
+                  </option>
+                  <option
+                    value="MNE"
+                  >
+                    Montenegro
+                  </option>
+                  <option
+                    value="MSR"
+                  >
+                    Montserrat
+                  </option>
+                  <option
+                    value="MAR"
+                  >
+                    Morocco
+                  </option>
+                  <option
+                    value="MOZ"
+                  >
+                    Mozambique
+                  </option>
+                  <option
+                    value="NAM"
+                  >
+                    Namibia
+                  </option>
+                  <option
+                    value="NRU"
+                  >
+                    Nauru
+                  </option>
+                  <option
+                    value="XNV"
+                  >
+                    Navassa Island
+                  </option>
+                  <option
+                    value="NPL"
+                  >
+                    Nepal
+                  </option>
+                  <option
+                    value="NLD"
+                  >
+                    Netherlands
+                  </option>
+                  <option
+                    value="NCL"
+                  >
+                    New Caledonia
+                  </option>
+                  <option
+                    value="NZL"
+                  >
+                    New Zealand
+                  </option>
+                  <option
+                    value="NIC"
+                  >
+                    Nicaragua
+                  </option>
+                  <option
+                    value="NER"
+                  >
+                    Niger
+                  </option>
+                  <option
+                    value="NGA"
+                  >
+                    Nigeria
+                  </option>
+                  <option
+                    value="NIU"
+                  >
+                    Niue
+                  </option>
+                  <option
+                    value="NFK"
+                  >
+                    Norfolk Island
+                  </option>
+                  <option
+                    value="MKD"
+                  >
+                    North Macedonia
+                  </option>
+                  <option
+                    value="MNP"
+                  >
+                    Northern Mariana Islands
+                  </option>
+                  <option
+                    value="NOR"
+                  >
+                    Norway
+                  </option>
+                  <option
+                    value="OMN"
+                  >
+                    Oman
+                  </option>
+                  <option
+                    value="PAK"
+                  >
+                    Pakistan
+                  </option>
+                  <option
+                    value="PLW"
+                  >
+                    Palau
+                  </option>
+                  <option
+                    value="XPL"
+                  >
+                    Palmyra Atoll
+                  </option>
+                  <option
+                    value="PAN"
+                  >
+                    Panama
+                  </option>
+                  <option
+                    value="PNG"
+                  >
+                    Papua New Guinea
+                  </option>
+                  <option
+                    value="XPR"
+                  >
+                    Paracel Islands
+                  </option>
+                  <option
+                    value="PRY"
+                  >
+                    Paraguay
+                  </option>
+                  <option
+                    value="PER"
+                  >
+                    Peru
+                  </option>
+                  <option
+                    value="PHL"
+                  >
+                    Philippines
+                  </option>
+                  <option
+                    value="PCN"
+                  >
+                    Pitcairn Islands
+                  </option>
+                  <option
+                    value="POL"
+                  >
+                    Poland
+                  </option>
+                  <option
+                    value="PRT"
+                  >
+                    Portugal
+                  </option>
+                  <option
+                    value="PRI"
+                  >
+                    Puerto Rico
+                  </option>
+                  <option
+                    value="QAT"
+                  >
+                    Qatar
+                  </option>
+                  <option
+                    value="COG"
+                  >
+                    Republic of the Congo
+                  </option>
+                  <option
+                    value="REU"
+                  >
+                    Reunion
+                  </option>
+                  <option
+                    value="ROU"
+                  >
+                    Romania
+                  </option>
+                  <option
+                    value="RUS"
+                  >
+                    Russia
+                  </option>
+                  <option
+                    value="RWA"
+                  >
+                    Rwanda
+                  </option>
+                  <option
+                    value="BLM"
+                  >
+                    Saint Barthelemy
+                  </option>
+                  <option
+                    value="SHN"
+                  >
+                    Saint Helena, Ascension, and Tristan da Cunha
+                  </option>
+                  <option
+                    value="KNA"
+                  >
+                    Saint Kitts and Nevis
+                  </option>
+                  <option
+                    value="LCA"
+                  >
+                    Saint Lucia
+                  </option>
+                  <option
+                    value="MAF"
+                  >
+                    Saint Martin
+                  </option>
+                  <option
+                    value="SPM"
+                  >
+                    Saint Pierre and Miquelon
+                  </option>
+                  <option
+                    value="VCT"
+                  >
+                    Saint Vincent and the Grenadines
+                  </option>
+                  <option
+                    value="WSM"
+                  >
+                    Samoa
+                  </option>
+                  <option
+                    value="SMR"
+                  >
+                    San Marino
+                  </option>
+                  <option
+                    value="STP"
+                  >
+                    Sao Tome and Principe
+                  </option>
+                  <option
+                    value="SAU"
+                  >
+                    Saudi Arabia
+                  </option>
+                  <option
+                    value="SEN"
+                  >
+                    Senegal
+                  </option>
+                  <option
+                    value="SRB"
+                  >
+                    Serbia
+                  </option>
+                  <option
+                    value="SYC"
+                  >
+                    Seychelles
+                  </option>
+                  <option
+                    value="SLE"
+                  >
+                    Sierra Leone
+                  </option>
+                  <option
+                    value="SGP"
+                  >
+                    Singapore
+                  </option>
+                  <option
+                    value="SXM"
+                  >
+                    Sint Maarten
+                  </option>
+                  <option
+                    value="SVK"
+                  >
+                    Slovakia
+                  </option>
+                  <option
+                    value="SVN"
+                  >
+                    Slovenia
+                  </option>
+                  <option
+                    value="SLB"
+                  >
+                    Solomon Islands
+                  </option>
+                  <option
+                    value="SOM"
+                  >
+                    Somalia
+                  </option>
+                  <option
+                    value="ZAF"
+                  >
+                    South Africa
+                  </option>
+                  <option
+                    value="SGS"
+                  >
+                    South Georgia and the South Sandwich Islands
+                  </option>
+                  <option
+                    value="SSD"
+                  >
+                    South Sudan
+                  </option>
+                  <option
+                    value="ESP"
+                  >
+                    Spain
+                  </option>
+                  <option
+                    value="XSP"
+                  >
+                    Spratly Islands
+                  </option>
+                  <option
+                    value="LKA"
+                  >
+                    Sri Lanka
+                  </option>
+                  <option
+                    value="SDN"
+                  >
+                    Sudan
+                  </option>
+                  <option
+                    value="SUR"
+                  >
+                    Suriname
+                  </option>
+                  <option
+                    value="XSV"
+                  >
+                    Svalbard
+                  </option>
+                  <option
+                    value="SWE"
+                  >
+                    Sweden
+                  </option>
+                  <option
+                    value="CHE"
+                  >
+                    Switzerland
+                  </option>
+                  <option
+                    value="SYR"
+                  >
+                    Syria
+                  </option>
+                  <option
+                    value="TWN"
+                  >
+                    Taiwan
+                  </option>
+                  <option
+                    value="TJK"
+                  >
+                    Tajikistan
+                  </option>
+                  <option
+                    value="TZA"
+                  >
+                    Tanzania
+                  </option>
+                  <option
+                    value="THA"
+                  >
+                    Thailand
+                  </option>
+                  <option
+                    value="TLS"
+                  >
+                    Timor-Leste
+                  </option>
+                  <option
+                    value="TGO"
+                  >
+                    Togo
+                  </option>
+                  <option
+                    value="TKL"
+                  >
+                    Tokelau
+                  </option>
+                  <option
+                    value="TON"
+                  >
+                    Tonga
+                  </option>
+                  <option
+                    value="TTO"
+                  >
+                    Trinidad and Tobago
+                  </option>
+                  <option
+                    value="TUN"
+                  >
+                    Tunisia
+                  </option>
+                  <option
+                    value="TUR"
+                  >
+                    Turkey
+                  </option>
+                  <option
+                    value="TKM"
+                  >
+                    Turkmenistan
+                  </option>
+                  <option
+                    value="TCA"
+                  >
+                    Turks and Caicos Islands
+                  </option>
+                  <option
+                    value="TUV"
+                  >
+                    Tuvalu
+                  </option>
+                  <option
+                    value="UGA"
+                  >
+                    Uganda
+                  </option>
+                  <option
+                    value="UKR"
+                  >
+                    Ukraine
+                  </option>
+                  <option
+                    value="ARE"
+                  >
+                    United Arab Emirates
+                  </option>
+                  <option
+                    value="GBR"
+                  >
+                    United Kingdom
+                  </option>
+                  <option
+                    value="USA"
+                  >
+                    United States
+                  </option>
+                  <option
+                    value="URY"
+                  >
+                    Uruguay
+                  </option>
+                  <option
+                    value="UZB"
+                  >
+                    Uzbekistan
+                  </option>
+                  <option
+                    value="VUT"
+                  >
+                    Vanuatu
+                  </option>
+                  <option
+                    value="VEN"
+                  >
+                    Venezuela
+                  </option>
+                  <option
+                    value="VNM"
+                  >
+                    Vietnam
+                  </option>
+                  <option
+                    value="VGB"
+                  >
+                    Virgin Islands, British
+                  </option>
+                  <option
+                    value="VIR"
+                  >
+                    Virgin Islands, U.S.
+                  </option>
+                  <option
+                    value="XWK"
+                  >
+                    Wake Island
+                  </option>
+                  <option
+                    value="WLF"
+                  >
+                    Wallis and Futuna
+                  </option>
+                  <option
+                    value="YEM"
+                  >
+                    Yemen
+                  </option>
+                  <option
+                    value="ZMB"
+                  >
+                    Zambia
+                  </option>
+                  <option
+                    value="ZWE"
+                  >
+                    Zimbabwe
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div
+              className="usa-form"
+            >
+              <div
+                className="usa-form-group"
+              >
+                <label
+                  className="usa-label"
+                  htmlFor="10"
                 >
                   Street address 1
                   <abbr
@@ -492,32 +1833,8 @@ exports[`PatientFormContainer snapshot 1`] = `
                 <input
                   aria-required={true}
                   className="usa-input"
-                  id="9"
-                  name="street"
-                  onBlur={[Function]}
-                  onChange={[Function]}
-                  type="text"
-                  value=""
-                />
-              </div>
-            </div>
-            <div
-              className="usa-form"
-            >
-              <div
-                className="usa-form-group"
-              >
-                <label
-                  className="usa-label"
-                  htmlFor="10"
-                >
-                  Street address 2
-                </label>
-                <input
-                  aria-required="false"
-                  className="usa-input"
                   id="10"
-                  name="streetTwo"
+                  name="street"
                   onBlur={[Function]}
                   onChange={[Function]}
                   type="text"
@@ -535,12 +1852,36 @@ exports[`PatientFormContainer snapshot 1`] = `
                   className="usa-label"
                   htmlFor="11"
                 >
-                  City
+                  Street address 2
                 </label>
                 <input
                   aria-required="false"
                   className="usa-input"
                   id="11"
+                  name="streetTwo"
+                  onBlur={[Function]}
+                  onChange={[Function]}
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+            <div
+              className="usa-form"
+            >
+              <div
+                className="usa-form-group"
+              >
+                <label
+                  className="usa-label"
+                  htmlFor="12"
+                >
+                  City
+                </label>
+                <input
+                  aria-required="false"
+                  className="usa-input"
+                  id="12"
                   name="city"
                   onBlur={[Function]}
                   onChange={[Function]}
@@ -553,386 +1894,20 @@ exports[`PatientFormContainer snapshot 1`] = `
               >
                 <label
                   className="usa-label"
-                  htmlFor="12"
+                  htmlFor="13"
                 >
                   County
                 </label>
                 <input
                   aria-required="false"
                   className="usa-input"
-                  id="12"
+                  id="13"
                   name="county"
                   onBlur={[Function]}
                   onChange={[Function]}
                   type="text"
                   value=""
                 />
-              </div>
-              <div
-                className="grid-row grid-gap"
-              >
-                <div
-                  className="mobile-lg:grid-col-6"
-                >
-                  <div
-                    className="usa-form-group prime-dropdown "
-                  >
-                    <label
-                      className="usa-label"
-                      htmlFor="13"
-                    >
-                      State
-                      <abbr
-                        className="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
-                    </label>
-                    <select
-                      aria-required={true}
-                      className="usa-select"
-                      id="13"
-                      name="state"
-                      onBlur={[Function]}
-                      onChange={[Function]}
-                      value="- Select -"
-                    >
-                      <option
-                        value=""
-                      >
-                        - Select -
-                      </option>
-                      <option
-                        value="AK"
-                      >
-                        AK
-                      </option>
-                      <option
-                        value="AL"
-                      >
-                        AL
-                      </option>
-                      <option
-                        value="AR"
-                      >
-                        AR
-                      </option>
-                      <option
-                        value="AS"
-                      >
-                        AS
-                      </option>
-                      <option
-                        value="AZ"
-                      >
-                        AZ
-                      </option>
-                      <option
-                        value="CA"
-                      >
-                        CA
-                      </option>
-                      <option
-                        value="CO"
-                      >
-                        CO
-                      </option>
-                      <option
-                        value="CT"
-                      >
-                        CT
-                      </option>
-                      <option
-                        value="DC"
-                      >
-                        DC
-                      </option>
-                      <option
-                        value="DE"
-                      >
-                        DE
-                      </option>
-                      <option
-                        value="FL"
-                      >
-                        FL
-                      </option>
-                      <option
-                        value="FM"
-                      >
-                        FM
-                      </option>
-                      <option
-                        value="GA"
-                      >
-                        GA
-                      </option>
-                      <option
-                        value="GU"
-                      >
-                        GU
-                      </option>
-                      <option
-                        value="HI"
-                      >
-                        HI
-                      </option>
-                      <option
-                        value="IA"
-                      >
-                        IA
-                      </option>
-                      <option
-                        value="ID"
-                      >
-                        ID
-                      </option>
-                      <option
-                        value="IL"
-                      >
-                        IL
-                      </option>
-                      <option
-                        value="IN"
-                      >
-                        IN
-                      </option>
-                      <option
-                        value="KS"
-                      >
-                        KS
-                      </option>
-                      <option
-                        value="KY"
-                      >
-                        KY
-                      </option>
-                      <option
-                        value="LA"
-                      >
-                        LA
-                      </option>
-                      <option
-                        value="MA"
-                      >
-                        MA
-                      </option>
-                      <option
-                        value="MD"
-                      >
-                        MD
-                      </option>
-                      <option
-                        value="ME"
-                      >
-                        ME
-                      </option>
-                      <option
-                        value="MH"
-                      >
-                        MH
-                      </option>
-                      <option
-                        value="MI"
-                      >
-                        MI
-                      </option>
-                      <option
-                        value="MN"
-                      >
-                        MN
-                      </option>
-                      <option
-                        value="MO"
-                      >
-                        MO
-                      </option>
-                      <option
-                        value="MP"
-                      >
-                        MP
-                      </option>
-                      <option
-                        value="MS"
-                      >
-                        MS
-                      </option>
-                      <option
-                        value="MT"
-                      >
-                        MT
-                      </option>
-                      <option
-                        value="NC"
-                      >
-                        NC
-                      </option>
-                      <option
-                        value="ND"
-                      >
-                        ND
-                      </option>
-                      <option
-                        value="NE"
-                      >
-                        NE
-                      </option>
-                      <option
-                        value="NH"
-                      >
-                        NH
-                      </option>
-                      <option
-                        value="NJ"
-                      >
-                        NJ
-                      </option>
-                      <option
-                        value="NM"
-                      >
-                        NM
-                      </option>
-                      <option
-                        value="NV"
-                      >
-                        NV
-                      </option>
-                      <option
-                        value="NY"
-                      >
-                        NY
-                      </option>
-                      <option
-                        value="OH"
-                      >
-                        OH
-                      </option>
-                      <option
-                        value="OK"
-                      >
-                        OK
-                      </option>
-                      <option
-                        value="OR"
-                      >
-                        OR
-                      </option>
-                      <option
-                        value="PA"
-                      >
-                        PA
-                      </option>
-                      <option
-                        value="PR"
-                      >
-                        PR
-                      </option>
-                      <option
-                        value="PW"
-                      >
-                        PW
-                      </option>
-                      <option
-                        value="RI"
-                      >
-                        RI
-                      </option>
-                      <option
-                        value="SC"
-                      >
-                        SC
-                      </option>
-                      <option
-                        value="SD"
-                      >
-                        SD
-                      </option>
-                      <option
-                        value="TN"
-                      >
-                        TN
-                      </option>
-                      <option
-                        value="TX"
-                      >
-                        TX
-                      </option>
-                      <option
-                        value="UT"
-                      >
-                        UT
-                      </option>
-                      <option
-                        value="VA"
-                      >
-                        VA
-                      </option>
-                      <option
-                        value="VI"
-                      >
-                        VI
-                      </option>
-                      <option
-                        value="VT"
-                      >
-                        VT
-                      </option>
-                      <option
-                        value="WA"
-                      >
-                        WA
-                      </option>
-                      <option
-                        value="WI"
-                      >
-                        WI
-                      </option>
-                      <option
-                        value="WV"
-                      >
-                        WV
-                      </option>
-                      <option
-                        value="WY"
-                      >
-                        WY
-                      </option>
-                    </select>
-                  </div>
-                </div>
-                <div
-                  className="mobile-lg:grid-col-6"
-                >
-                  <div
-                    className="usa-form-group"
-                  >
-                    <label
-                      className="usa-label"
-                      htmlFor="14"
-                    >
-                      ZIP code
-                      <abbr
-                        className="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
-                    </label>
-                    <input
-                      aria-required={true}
-                      className="usa-input"
-                      id="14"
-                      name="zipCode"
-                      onBlur={[Function]}
-                      onChange={[Function]}
-                      type="text"
-                      value=""
-                    />
-                  </div>
-                </div>
               </div>
             </div>
           </fieldset>
@@ -975,7 +1950,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="15-val-native"
+                      id="14-val-native"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -983,7 +1958,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="15-val-native"
+                      htmlFor="14-val-native"
                     >
                       American Indian/Alaskan Native
                     </label>
@@ -996,7 +1971,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="15-val-asian"
+                      id="14-val-asian"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -1004,7 +1979,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="15-val-asian"
+                      htmlFor="14-val-asian"
                     >
                       Asian
                     </label>
@@ -1017,7 +1992,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="15-val-black"
+                      id="14-val-black"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -1025,7 +2000,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="15-val-black"
+                      htmlFor="14-val-black"
                     >
                       Black/African American
                     </label>
@@ -1038,7 +2013,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="15-val-pacific"
+                      id="14-val-pacific"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -1046,7 +2021,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="15-val-pacific"
+                      htmlFor="14-val-pacific"
                     >
                       Native Hawaiian/other Pacific Islander
                     </label>
@@ -1059,7 +2034,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="15-val-white"
+                      id="14-val-white"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -1067,7 +2042,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="15-val-white"
+                      htmlFor="14-val-white"
                     >
                       White
                     </label>
@@ -1080,7 +2055,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="15-val-other"
+                      id="14-val-other"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -1088,7 +2063,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="15-val-other"
+                      htmlFor="14-val-other"
                     >
                       Other
                     </label>
@@ -1101,7 +2076,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="15-val-refused"
+                      id="14-val-refused"
                       name="race"
                       onChange={[Function]}
                       type="radio"
@@ -1109,7 +2084,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="15-val-refused"
+                      htmlFor="14-val-refused"
                     >
                       Prefer not to answer
                     </label>
@@ -1149,7 +2124,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="16-val-hispanic"
+                      id="15-val-hispanic"
                       name="ethnicity"
                       onChange={[Function]}
                       type="radio"
@@ -1157,7 +2132,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="16-val-hispanic"
+                      htmlFor="15-val-hispanic"
                     >
                       Yes
                     </label>
@@ -1170,7 +2145,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="16-val-not_hispanic"
+                      id="15-val-not_hispanic"
                       name="ethnicity"
                       onChange={[Function]}
                       type="radio"
@@ -1178,7 +2153,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="16-val-not_hispanic"
+                      htmlFor="15-val-not_hispanic"
                     >
                       No
                     </label>
@@ -1191,7 +2166,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="16-val-refused"
+                      id="15-val-refused"
                       name="ethnicity"
                       onChange={[Function]}
                       type="radio"
@@ -1199,7 +2174,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="16-val-refused"
+                      htmlFor="15-val-refused"
                     >
                       Prefer not to answer
                     </label>
@@ -1234,7 +2209,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="17-val-female"
+                      id="16-val-female"
                       name="gender"
                       onChange={[Function]}
                       type="radio"
@@ -1242,7 +2217,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="17-val-female"
+                      htmlFor="16-val-female"
                     >
                       Female
                     </label>
@@ -1255,7 +2230,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="17-val-male"
+                      id="16-val-male"
                       name="gender"
                       onChange={[Function]}
                       type="radio"
@@ -1263,7 +2238,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="17-val-male"
+                      htmlFor="16-val-male"
                     >
                       Male
                     </label>
@@ -1276,7 +2251,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="17-val-other"
+                      id="16-val-other"
                       name="gender"
                       onChange={[Function]}
                       type="radio"
@@ -1284,7 +2259,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="17-val-other"
+                      htmlFor="16-val-other"
                     >
                       Non-binary
                     </label>
@@ -1297,7 +2272,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="17-val-refused"
+                      id="16-val-refused"
                       name="gender"
                       onChange={[Function]}
                       type="radio"
@@ -1305,7 +2280,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="17-val-refused"
+                      htmlFor="16-val-refused"
                     >
                       Prefer not to answer
                     </label>
@@ -1353,7 +2328,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="18-val-YES"
+                      id="17-val-YES"
                       name="residentCongregateSetting"
                       onBlur={[Function]}
                       onChange={[Function]}
@@ -1362,7 +2337,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="18-val-YES"
+                      htmlFor="17-val-YES"
                     >
                       Yes
                     </label>
@@ -1375,7 +2350,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="18-val-NO"
+                      id="17-val-NO"
                       name="residentCongregateSetting"
                       onBlur={[Function]}
                       onChange={[Function]}
@@ -1384,7 +2359,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="18-val-NO"
+                      htmlFor="17-val-NO"
                     >
                       No
                     </label>
@@ -1397,7 +2372,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="18-val-UNKNOWN"
+                      id="17-val-UNKNOWN"
                       name="residentCongregateSetting"
                       onBlur={[Function]}
                       onChange={[Function]}
@@ -1406,7 +2381,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="18-val-UNKNOWN"
+                      htmlFor="17-val-UNKNOWN"
                     >
                       Unknown
                     </label>
@@ -1436,7 +2411,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="19-val-YES"
+                      id="18-val-YES"
                       name="employedInHealthcare"
                       onBlur={[Function]}
                       onChange={[Function]}
@@ -1445,7 +2420,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="19-val-YES"
+                      htmlFor="18-val-YES"
                     >
                       Yes
                     </label>
@@ -1458,7 +2433,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="19-val-NO"
+                      id="18-val-NO"
                       name="employedInHealthcare"
                       onBlur={[Function]}
                       onChange={[Function]}
@@ -1467,7 +2442,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="19-val-NO"
+                      htmlFor="18-val-NO"
                     >
                       No
                     </label>
@@ -1480,7 +2455,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                       className="usa-radio__input"
                       data-required="false"
                       disabled={false}
-                      id="19-val-UNKNOWN"
+                      id="18-val-UNKNOWN"
                       name="employedInHealthcare"
                       onBlur={[Function]}
                       onChange={[Function]}
@@ -1489,7 +2464,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     />
                     <label
                       className="usa-radio__label"
-                      htmlFor="19-val-UNKNOWN"
+                      htmlFor="18-val-UNKNOWN"
                     >
                       Unknown
                     </label>

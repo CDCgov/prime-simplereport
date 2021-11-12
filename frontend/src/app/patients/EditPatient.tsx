@@ -40,6 +40,7 @@ export const GET_PATIENT = gql`
       email
       emails
       county
+      country
       race
       ethnicity
       tribalAffiliation
@@ -77,6 +78,7 @@ interface GetPatientResponse {
     email: string | null;
     emails: string[];
     county: string | null;
+    country: string | null;
     race: Race | null;
     ethnicity: Ethnicity | null;
     tribalAffiliation: (TribalAffiliation | null)[] | null;
@@ -111,6 +113,7 @@ const UPDATE_PATIENT = gql`
     $email: String
     $emails: [String]
     $county: String
+    $country: String
     $race: String
     $ethnicity: String
     $tribalAffiliation: String
@@ -139,6 +142,7 @@ const UPDATE_PATIENT = gql`
       email: $email
       emails: $emails
       county: $county
+      country: $country
       race: $race
       ethnicity: $ethnicity
       tribalAffiliation: $tribalAffiliation

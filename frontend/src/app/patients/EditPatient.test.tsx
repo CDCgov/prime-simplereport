@@ -308,6 +308,7 @@ describe("EditPatient", () => {
             email: "foo@bar.com",
             emails: ["foo@bar.com"],
             county: null,
+            country: null,
             race: "refused",
             ethnicity: "refused",
             gender: "refused",
@@ -383,6 +384,11 @@ describe("EditPatient", () => {
         </MemoryRouter>
       );
       await screen.findAllByText("Franecki, Eugenia", { exact: false });
+    });
+    it("defaults to USA for a patient with country as null", () => {
+      expect(screen.getByLabelText("Country", { exact: false })).toHaveValue(
+        "USA"
+      );
     });
     it("shows validation errors", async () => {
       const name = await screen.findByLabelText("First name", { exact: false });

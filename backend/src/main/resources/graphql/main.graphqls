@@ -180,6 +180,7 @@ type Patient
   streetTwo: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   city: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   county: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  country: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   state: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   zipCode: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   telephone: String
@@ -273,7 +274,8 @@ type PatientLink {
 type PendingOrganization {
   externalId: String!
   name: String!
-  adminName: String
+  adminFirstName: String
+  adminLastName: String
   adminEmail: String
   adminPhone: String
   createdAt: DateTime!
@@ -466,6 +468,7 @@ type Mutation {
     email: String
     emails: [String]
     county: String
+    country: String
     race: String
     ethnicity: String
     tribalAffiliation: String
@@ -500,6 +503,7 @@ type Mutation {
     email: String @Size(min: 3, max: 254)
     emails: [String]
     county: String
+    country: String
     race: String @Size(min: 0, max: 32)
     ethnicity: String @Size(min: 0, max: 32)
     tribalAffiliation: String @Size(min: 0, max: 3)

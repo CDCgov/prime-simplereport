@@ -34,6 +34,7 @@ import "./i18n";
 import getNodeEnv from "./app/utils/getNodeEnv";
 import PrimeErrorBoundary from "./app/PrimeErrorBoundary";
 import "./styles/App.css";
+import { getUrl } from "./app/utils/url";
 
 // Initialize telemetry early
 ai.initialize();
@@ -76,10 +77,13 @@ const apolloMiddleware = new ApolloLink((operation, forward) => {
 
 const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
   if (networkError && process.env.REACT_APP_BASE_URL) {
+    // If unauthorized (expired or missing token), remove the access token and reload
     if ("statusCode" in networkError && networkError.statusCode === 401) {
       console.warn("[UNATHORIZED_ACCESS] !!");
-      console.warn("redirect-to:", process.env.REACT_APP_BASE_URL);
-      window.location.replace(process.env.REACT_APP_BASE_URL);
+      localStorage.removeItem("access_token");
+      const appUrl = getUrl();
+      console.warn("redirect-to:", appUrl);
+      window.location.replace(appUrl);
     } else {
       const appInsights = getAppInsights();
       if (appInsights instanceof ApplicationInsights) {

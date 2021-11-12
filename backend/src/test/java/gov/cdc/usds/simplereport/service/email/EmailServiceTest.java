@@ -144,25 +144,35 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
   }
 
   @Test
-  void sendMultipleEmails() throws IOException {
+  void sendWithDynamicTemplate_multipleEmails_ok() throws IOException {
     // GIVEN
-    String toEmail = "test@foo.com";
-    String subject = "Testing the email service with attachment";
-    String templateName = "test-template";
-
+    List<String> toEmails = List.of("test@foo.com", "foo@bar.org");
+    Map<String, Object> dynamicTemplateData =
+        Map.of(
+            "facility_name", "test_facility",
+            "expiration_duration", "2 days",
+            "test_result_url", "http://localhost");
     // WHEN
-    _service.send(toEmail, subject, templateName);
+    _service.sendWithDynamicTemplate(
+        toEmails, EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT, dynamicTemplateData);
 
     // THEN
-    verify(mockSendGrid, times(1)).send(mail.capture());
-    assertEquals(mail.getValue().getPersonalization().get(0).getTos().get(0).getEmail(), toEmail);
-    assertEquals(mail.getValue().getSubject(), subject);
-    assertThat(mail.getValue().getContent().get(0).getValue())
-        .doesNotContain("<b>Foo:</b> var 1", "<b>Bar:</b> var 2")
-        .contains("<b>Foo:</b>", "<b>Bar:</b>");
-    assertEquals(1, mail.getValue().getAttachments().size());
-    assertEquals(376, mail.getValue().getAttachments().get(0).getContent().length());
-    assertEquals("application/pdf", mail.getValue().getAttachments().get(0).getType());
+    verify(mockSendGrid, times(2)).send(mail.capture());
+    List<Mail> sentMail = mail.getAllValues();
+
+    // First email
+    Personalization personalization0 = sentMail.get(0).getPersonalization().get(0);
+
+    assertThat(sentMail.get(0).getFrom().getEmail()).isEqualTo("me@example.com");
+    assertThat(sentMail.get(0).getFrom().getName()).isEqualTo("My Display Name");
+    assertEquals(personalization0.getTos().get(0).getEmail(), "test@foo.com");
+
+    // Second email
+    Personalization personalization1 = sentMail.get(1).getPersonalization().get(0);
+
+    assertThat(sentMail.get(1).getFrom().getEmail()).isEqualTo("me@example.com");
+    assertThat(sentMail.get(1).getFrom().getName()).isEqualTo("My Display Name");
+    assertEquals(personalization1.getTos().get(0).getEmail(), "foo@bar.org");
   }
 
   @Test
