@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,36 +119,45 @@ public class EmailService {
         List.of(toEmail), subject, getContentFromTemplate(templateName), attachments);
   }
 
-  public String sendWithDynamicTemplate(
+  public List<String> sendWithDynamicTemplate(
       final String toEmail, final EmailProviderTemplate providerTemplate) throws IOException {
     return sendWithDynamicTemplate(List.of(toEmail), providerTemplate, null);
   }
 
-  public String sendWithDynamicTemplate(
+  public List<String> sendWithDynamicTemplate(
       final List<String> toEmails, final EmailProviderTemplate providerTemplate)
       throws IOException {
     return sendWithDynamicTemplate(toEmails, providerTemplate, null);
   }
 
-  public String sendWithDynamicTemplate(
+  public List<String> sendWithDynamicTemplate(
       final List<String> toEmails,
       final EmailProviderTemplate providerTemplate,
       final Map<String, Object> templateVariables)
       throws IOException {
-    Mail mail = new Mail();
-    mail.setFrom(
-        new Email(sendGridProperties.getFromEmail(), sendGridProperties.getFromDisplayName()));
+    List<String> results = new ArrayList<String>();
 
-    mail.setTemplateId(sendGridProperties.getDynamicTemplateGuid(providerTemplate));
+    for (String toEmail : toEmails) {
+      Mail mail = new Mail();
+      mail.setFrom(
+          new Email(sendGridProperties.getFromEmail(), sendGridProperties.getFromDisplayName()));
 
-    Personalization personalization = new Personalization();
-    toEmails.stream().map(Email::new).forEach(personalization::addTo);
+      mail.setTemplateId(sendGridProperties.getDynamicTemplateGuid(providerTemplate));
 
-    if (templateVariables != null) {
-      templateVariables.forEach(personalization::addDynamicTemplateData);
+      Personalization personalization = new Personalization();
+      personalization.addTo(new Email(toEmail));
+
+      if (templateVariables != null) {
+        templateVariables.forEach(personalization::addDynamicTemplateData);
+      }
+
+      mail.addPersonalization(personalization);
+
+      String result = emailProvider.send(mail);
+
+      results.add(result == null ? "" : result);
     }
-    mail.addPersonalization(personalization);
 
-    return emailProvider.send(mail);
+    return results;
   }
 }
