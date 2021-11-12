@@ -8,7 +8,7 @@ import { LocationDescriptor } from "history";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
-import { showNotification } from "../utils";
+import { showNotification, dedupeAndCompactStrings } from "../utils";
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import {
@@ -249,17 +249,7 @@ const AddPatient = () => {
             return phoneNumber && phoneNumber.number && phoneNumber.type;
           }
         ),
-        emails: (person.emails || []).reduce(function dedupeAndCompact(
-          emails: string[],
-          email: string
-        ) {
-          if (email && !emails.includes(email)) {
-            emails.push(email);
-          }
-
-          return emails;
-        },
-        []),
+        emails: dedupeAndCompactStrings(person.emails || []),
       },
     });
     showNotification(

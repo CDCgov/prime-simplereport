@@ -2005,6 +2005,7 @@ export type GetTestResultForResendingEmailsQuery = {
       middleName?: Maybe<string>;
       lastName?: Maybe<string>;
       email?: Maybe<string>;
+      emails?: Maybe<Array<Maybe<string>>>;
     }>;
     patientLink?: Maybe<{
       __typename?: "PatientLink";
@@ -5543,6 +5544,7 @@ export const GetTestResultForResendingEmailsDocument = gql`
         middleName
         lastName
         email
+        emails
       }
       patientLink {
         internalId

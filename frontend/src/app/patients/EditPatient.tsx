@@ -5,7 +5,11 @@ import { useTranslation } from "react-i18next";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM_CAP } from "../../config/constants";
-import { displayFullName, showNotification } from "../utils";
+import {
+  displayFullName,
+  showNotification,
+  dedupeAndCompactStrings,
+} from "../utils";
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
@@ -210,6 +214,7 @@ const EditPatient = (props: Props) => {
               type: phoneNumber.type,
             };
           }),
+        emails: dedupeAndCompactStrings(person.emails || []),
       },
     });
     showNotification(
