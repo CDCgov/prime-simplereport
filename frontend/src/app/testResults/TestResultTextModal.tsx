@@ -31,10 +31,7 @@ export const testQuery = gql`
     }
   }
 `;
-interface patientPhoneDetails {
-  type: string;
-  number: number;
-}
+
 const formatDate = (date: string | undefined, withTime?: boolean) => {
   const dateFormat = "MMMM Do, YYYY";
   const format = withTime ? `${dateFormat}` : dateFormat;
@@ -53,7 +50,7 @@ interface Props {
   closeModal: () => void;
 }
 
-const mobilePhoneNumbers = (phoneArray: patientPhoneDetails[]) => {
+const mobilePhoneNumbers = (phoneArray: PhoneNumber[]) => {
   let mobileNumbers: any = [];
   phoneArray.forEach((patientPhone) => {
     if (patientPhone.type === "MOBILE") {
