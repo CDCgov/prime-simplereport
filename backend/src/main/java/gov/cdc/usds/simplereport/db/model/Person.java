@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -282,6 +283,10 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   }
 
   public List<String> getEmails() {
+    if (emails == null) {
+      return Collections.emptyList();
+    }
+
     return emails;
   }
 

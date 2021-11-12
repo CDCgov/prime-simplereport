@@ -14,6 +14,8 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +56,7 @@ class TestResultsDeliveryServiceTest {
     assertThat(success).isTrue();
     verify(emailService)
         .sendWithDynamicTemplate(
-            "harry@hogwarts.edu",
+            List.of("harry@hogwarts.edu"),
             EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT,
             Map.of(
                 "facility_name", "House of Gryffindor",
@@ -78,7 +80,7 @@ class TestResultsDeliveryServiceTest {
     assertThat(success).isTrue();
     verify(emailService)
         .sendWithDynamicTemplate(
-            "harry@hogwarts.edu",
+            List.of("harry@hogwarts.edu"),
             EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT,
             Map.of(
                 "facility_name", "House of Gryffindor",
@@ -92,7 +94,7 @@ class TestResultsDeliveryServiceTest {
     // GIVEN
     UUID uuid = UUID.randomUUID();
     PatientLink patientLink = getMockedPatientLink(uuid);
-    when(patientLink.getTestOrder().getPatient().getEmail()).thenReturn(null);
+    when(patientLink.getTestOrder().getPatient().getEmails()).thenReturn(Collections.emptyList());
     when(patientLinkService.getRefreshedPatientLink(uuid)).thenReturn(patientLink);
 
     // WHEN
@@ -125,6 +127,7 @@ class TestResultsDeliveryServiceTest {
 
     Person person = mock(Person.class);
     when(person.getEmail()).thenReturn("harry@hogwarts.edu");
+    when(person.getEmails()).thenReturn(List.of("harry@hogwarts.edu"));
 
     TestOrder testOrder = mock(TestOrder.class);
     when(testOrder.getPatient()).thenReturn(person);
