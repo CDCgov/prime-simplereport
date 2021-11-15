@@ -72,9 +72,7 @@ class FetchClient {
     );
     if (!res.ok) {
       let errorText = await res.text();
-      console.log(errorText);
       if (String(errorText).includes("Session timeout")) {
-        // want to return some kind of error modal here
         throw SessionTimeout;
       } else {
         throw errorText;
