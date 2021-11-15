@@ -404,6 +404,7 @@ describe("AddPatient", () => {
 
     describe("saving changes and starting a test", () => {
       beforeEach(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
         fillOutForm(
           {
             "First Name": "Alice",
