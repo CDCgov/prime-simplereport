@@ -421,7 +421,11 @@ const PersonForm = (props: Props) => {
           />
           {patient.emails && patient?.emails?.length > 0 && (
             <RadioGroup
-              legend={t("patient.form.testResultDelivery.email")}
+              legend={
+                patient.emails.length === 1
+                  ? t("patient.form.testResultDelivery.email")
+                  : t("patient.form.testResultDelivery.email_plural")
+              }
               name="testResultDeliveryEmail"
               buttons={TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL}
               onChange={(newPreference) => {

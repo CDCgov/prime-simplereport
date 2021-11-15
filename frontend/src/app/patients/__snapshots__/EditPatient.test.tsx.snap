@@ -566,7 +566,7 @@ Object {
                         <legend
                           class="usa-legend"
                         >
-                          Would you like to receive results at this email?
+                          Would you like your test result sent to this email?
                         </legend>
                         <div
                           class=""
@@ -3124,7 +3124,7 @@ Object {
                       <legend
                         class="usa-legend"
                       >
-                        Would you like to receive results at this email?
+                        Would you like your test result sent to this email?
                       </legend>
                       <div
                         class=""

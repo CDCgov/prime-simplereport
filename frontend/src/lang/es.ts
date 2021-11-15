@@ -145,6 +145,8 @@ export const es: LanguageConfig = {
             "Sí, envíe un mensaje de texto a todos los números registrados de teléfonos móviles.",
           email:
             "¿Le gustaría recibir los resultados en esta dirección de correo electrónico?",
+          email_plural:
+            "¿Le gustaría recibir los resultados en estas direcciones de correo electrónico?",
           receiveEmailResults: YES,
         },
         demographics: {

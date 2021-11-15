@@ -135,7 +135,8 @@ export const en = {
         testResultDelivery: {
           text: "Would you like to receive your results via text message?",
           receiveTextMessageResults: "Yes, text all mobile numbers on file.",
-          email: "Would you like to receive results at this email?",
+          email: "Would you like your test result sent to this email?",
+          email_plural: "Would you like your test result sent to these emails?",
           receiveEmailResults: YES,
         },
         demographics: {
