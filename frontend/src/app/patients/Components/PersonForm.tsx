@@ -94,6 +94,10 @@ interface Props {
 const PersonForm = (props: Props) => {
   const [formChanged, setFormChanged] = useState(false);
   const [patient, setPatient] = useState(props.patient);
+  // Default country to USA if it's not set
+  if (patient.country === null) {
+    setPatient({ ...patient, country: "USA" });
+  }
   const [errors, setErrors] = useState<PersonErrors>({});
   const [addressModalOpen, setAddressModalOpen] = useState(false);
   const [addressSuggestion, setAddressSuggestion] = useState<
@@ -259,10 +263,6 @@ const PersonForm = (props: Props) => {
         showError(t("patient.form.errors.validationMsg"), error);
       });
       return;
-    }
-    // Default country to USA if it's not set
-    if (patient.country === null) {
-      setPatient({ ...patient, country: "USA" });
     }
     if (
       JSON.stringify(getAddress(patient)) ===
