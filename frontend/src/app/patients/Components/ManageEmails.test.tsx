@@ -30,6 +30,7 @@ const patient = {
   email: "foo@bar.com",
   emails: ["foo@bar.com"],
   county: null,
+  country: null,
   race: null,
   ethnicity: null,
   gender: null,
@@ -124,7 +125,7 @@ describe("ManageEmails", () => {
     const second = (await screen.findAllByText("Email address"))[1];
     userEvent.type(second, "foo@bar.com");
     userEvent.click(
-      await screen.findByLabelText("Delete email", { exact: false })
+      (await screen.findAllByLabelText("Delete email", { exact: false }))[1]
     );
     await waitFor(() => {
       expect(second).not.toBeInTheDocument();

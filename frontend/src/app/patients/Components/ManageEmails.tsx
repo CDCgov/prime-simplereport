@@ -119,41 +119,35 @@ const ManageEmails: React.FC<Props> = ({
 
   return (
     <div className="usa-form">
-      {emailsOrDefault.map((email, idx) => {
-        const isPrimary = idx === 0;
-
-        return (
-          <div key={idx}>
-            <div className="display-flex">
-              <TextInput
-                name={`email-${idx}`}
-                className="flex-fill"
-                value={emailsOrDefault[idx] || ""}
-                errorMessage={errors[idx]}
-                label={t("patient.form.contact.email")}
-                onBlur={() => {
-                  validateField(idx);
-                }}
-                validationStatus={validationStatus(idx)}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  onEmailChange(idx, e.target.value)
-                }
-              />
-              {!isPrimary && (
-                <div className="flex-align-self-end">
-                  <button
-                    className="usa-button--unstyled padding-105 height-5"
-                    onClick={() => onEmailRemove(idx)}
-                    aria-label={`Delete email ${email}`.trim()}
-                  >
-                    <FontAwesomeIcon icon={"trash"} className={"text-error"} />
-                  </button>
-                </div>
-              )}
+      {emailsOrDefault.map((email, idx) => (
+        <div key={idx}>
+          <div className="display-flex">
+            <TextInput
+              name={`email-${idx}`}
+              className="flex-fill"
+              value={emailsOrDefault[idx] || ""}
+              errorMessage={errors[idx]}
+              label={t("patient.form.contact.email")}
+              onBlur={() => {
+                validateField(idx);
+              }}
+              validationStatus={validationStatus(idx)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                onEmailChange(idx, e.target.value)
+              }
+            />
+            <div className="flex-align-self-end">
+              <button
+                className="usa-button--unstyled padding-105 height-5"
+                onClick={() => onEmailRemove(idx)}
+                aria-label={`Delete email ${email}`.trim()}
+              >
+                <FontAwesomeIcon icon={"trash"} className={"text-error"} />
+              </button>
             </div>
           </div>
-        );
-      })}
+        </div>
+      ))}
       <Button
         className="margin-top-2"
         onClick={onAddEmail}
