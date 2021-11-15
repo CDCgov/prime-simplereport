@@ -147,7 +147,7 @@ describe("DOB (valid UUID)", () => {
     // THEN
     expect(
       await screen.findByText(
-        "This link has expired. Please contact your test provider.",
+        "This link has expired. Please contact your test provider to generate a new link.",
         { exact: false }
       )
     ).toBeInTheDocument();
