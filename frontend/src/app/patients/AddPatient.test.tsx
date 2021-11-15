@@ -404,7 +404,6 @@ describe("AddPatient", () => {
 
     describe("saving changes and starting a test", () => {
       beforeEach(async () => {
-        jest.setTimeout(30000);
         fillOutForm(
           {
             "First Name": "Alice",
