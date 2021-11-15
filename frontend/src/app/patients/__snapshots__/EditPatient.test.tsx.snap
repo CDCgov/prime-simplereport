@@ -498,7 +498,7 @@ Object {
                               class="usa-label"
                               for="79"
                             >
-                              Primary email address
+                              Email address
                             </label>
                             <input
                               aria-required="false"
@@ -3032,7 +3032,7 @@ Object {
                             class="usa-label"
                             for="79"
                           >
-                            Primary email address
+                            Email address
                           </label>
                           <input
                             aria-required="false"

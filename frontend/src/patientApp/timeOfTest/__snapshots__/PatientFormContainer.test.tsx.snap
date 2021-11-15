@@ -429,7 +429,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                         className="usa-label"
                         htmlFor="8"
                       >
-                        Primary email address
+                        Email address
                       </label>
                       <input
                         aria-required="false"

@@ -68,7 +68,7 @@ describe("ManageEmails", () => {
   });
 
   it("shows and clears errors", async () => {
-    const primary = await screen.findByLabelText("Primary email address", {
+    const primary = await screen.findByLabelText("Email address", {
       exact: false,
     });
 
@@ -92,7 +92,7 @@ describe("ManageEmails", () => {
   });
 
   it("translates errors", async () => {
-    const primary = await screen.findByLabelText("Primary email address", {
+    const primary = await screen.findByLabelText("Email address", {
       exact: false,
     });
 
@@ -110,7 +110,7 @@ describe("ManageEmails", () => {
   });
 
   it("adds and removes email addresses", async () => {
-    const primary = await screen.findByLabelText("Primary email address", {
+    const primary = await screen.findByLabelText("Email address", {
       exact: false,
     });
 
@@ -121,9 +121,7 @@ describe("ManageEmails", () => {
     await waitFor(() => {
       userEvent.click(addButton);
     });
-    const second = await screen.findByText("Additional email address", {
-      exact: false,
-    });
+    const second = (await screen.findAllByText("Email address"))[1];
     userEvent.type(second, "foo@bar.com");
     userEvent.click(
       await screen.findByLabelText("Delete email", { exact: false })

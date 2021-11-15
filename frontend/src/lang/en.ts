@@ -123,8 +123,6 @@ export const en = {
           phoneType: "Phone type",
           addNumber: "Add another number",
           email: "Email address",
-          primaryEmail: "Primary email address",
-          additionalEmail: "Additional email address",
           addEmail: "Add another email address",
           country: "Country",
           street1: "Street address 1",

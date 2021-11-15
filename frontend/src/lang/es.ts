@@ -129,8 +129,6 @@ export const es: LanguageConfig = {
           additionalPhoneNumber: "Número de teléfono adicional",
           phoneType: "Tipo de teléfono",
           addNumber: "Agregar otro número",
-          primaryEmail: "Dirección de correo electrónico principal",
-          additionalEmail: "Dirección de correo electrónico adicional",
           addEmail: "Agregue otra dirección de correo electrónico",
           email: "Dirección de correo electrónico",
           country: "País",

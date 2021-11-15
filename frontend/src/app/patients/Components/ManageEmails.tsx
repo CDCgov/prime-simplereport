@@ -130,11 +130,7 @@ const ManageEmails: React.FC<Props> = ({
                 className="flex-fill"
                 value={emailsOrDefault[idx] || ""}
                 errorMessage={errors[idx]}
-                label={
-                  isPrimary
-                    ? t("patient.form.contact.primaryEmail")
-                    : t("patient.form.contact.additionalEmail")
-                }
+                label={t("patient.form.contact.email")}
                 onBlur={() => {
                   validateField(idx);
                 }}
