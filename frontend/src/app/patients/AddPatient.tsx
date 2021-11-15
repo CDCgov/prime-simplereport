@@ -40,7 +40,6 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   telephone: null,
   phoneNumbers: null,
   county: null,
-  email: null,
   emails: null,
   street: "",
   streetTwo: null,
@@ -86,7 +85,6 @@ export const ADD_PATIENT = gql`
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
     $lookupId: String
-    $email: String
     $emails: [String]
     $county: String
     $race: String
@@ -113,7 +111,6 @@ export const ADD_PATIENT = gql`
       phoneNumbers: $phoneNumbers
       role: $role
       lookupId: $lookupId
-      email: $email
       emails: $emails
       county: $county
       race: $race

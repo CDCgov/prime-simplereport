@@ -593,7 +593,6 @@ interface PersonUpdate extends Address {
   phoneNumbers: PhoneNumber[] | null;
   county: string;
   country: string;
-  email: string;
   emails: string[];
   preferredLanguage: Language | null;
   testResultDelivery: TestResultDeliveryPreference | null;

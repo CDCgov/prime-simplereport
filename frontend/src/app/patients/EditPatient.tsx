@@ -75,7 +75,6 @@ interface GetPatientResponse {
     phoneNumbers: PhoneNumber[];
     role: Role | null;
     lookupId: string | null;
-    email: string | null;
     emails: string[];
     county: string | null;
     country: string | null;
@@ -110,7 +109,6 @@ const UPDATE_PATIENT = gql`
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
     $lookupId: String
-    $email: String
     $emails: [String]
     $county: String
     $country: String
@@ -139,7 +137,6 @@ const UPDATE_PATIENT = gql`
       phoneNumbers: $phoneNumbers
       role: $role
       lookupId: $lookupId
-      email: $email
       emails: $emails
       county: $county
       country: $country

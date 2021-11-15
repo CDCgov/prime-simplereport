@@ -30,7 +30,7 @@ type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 type UpdateOptionalFields =
   | "lookupId"
   | "role"
-  | "email"
+  | "emails"
   | "streetTwo"
   | "city"
   | "county"
@@ -219,11 +219,6 @@ const updateFieldSchemata: (
       hasPhoneType
     )
     .required(),
-  email: yup
-    .string()
-    .email(t("patient.form.errors.email"))
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
-    .nullable(),
   emails: yup
     .array()
     .test("emails", t("patient.form.errors.email"), areValidEmails18n(t))
