@@ -487,20 +487,51 @@ Object {
                     <div
                       class="usa-form"
                     >
-                      <label
-                        class="usa-label"
-                        for="79"
+                      <div>
+                        <div
+                          class="display-flex"
+                        >
+                          <div
+                            class="usa-form-group flex-fill"
+                          >
+                            <label
+                              class="usa-label"
+                              for="79"
+                            >
+                              Primary email address
+                            </label>
+                            <input
+                              aria-required="false"
+                              class="usa-input"
+                              id="79"
+                              name="email-0"
+                              type="text"
+                              value="foo@bar.com"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        class="usa-button usa-button--unstyled margin-top-2"
+                        type="button"
                       >
-                        Email address
-                      </label>
-                      <input
-                        aria-required="false"
-                        class="usa-input"
-                        id="79"
-                        name="email"
-                        type="email"
-                        value="foo@bar.com"
-                      />
+                        <svg
+                          aria-hidden="true"
+                          class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                          data-icon="plus"
+                          data-prefix="fas"
+                          focusable="false"
+                          role="img"
+                          viewBox="0 0 448 512"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                        Add another email address
+                      </button>
                     </div>
                     <div
                       class="usa-form-group"
@@ -2988,22 +3019,53 @@ Object {
                   class="usa-form"
                 >
                   <div
-                    class="usa-form-group"
+                    class="usa-form"
                   >
-                    <label
-                      class="usa-label"
-                      for="79"
+                    <div>
+                      <div
+                        class="display-flex"
+                      >
+                        <div
+                          class="usa-form-group flex-fill"
+                        >
+                          <label
+                            class="usa-label"
+                            for="79"
+                          >
+                            Primary email address
+                          </label>
+                          <input
+                            aria-required="false"
+                            class="usa-input"
+                            id="79"
+                            name="email-0"
+                            type="text"
+                            value="foo@bar.com"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      class="usa-button usa-button--unstyled margin-top-2"
+                      type="button"
                     >
-                      Email address
-                    </label>
-                    <input
-                      aria-required="false"
-                      class="usa-input"
-                      id="79"
-                      name="email"
-                      type="email"
-                      value="foo@bar.com"
-                    />
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                        data-icon="plus"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      Add another email address
+                    </button>
                   </div>
                   <div
                     class="usa-form-group"
