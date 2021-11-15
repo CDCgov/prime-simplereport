@@ -1298,7 +1298,6 @@ export type AddPatientMutationVariables = Exact<{
   phoneNumbers?: Maybe<Array<PhoneNumberInput> | PhoneNumberInput>;
   role?: Maybe<Scalars["String"]>;
   lookupId?: Maybe<Scalars["String"]>;
-  email?: Maybe<Scalars["String"]>;
   emails?: Maybe<Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>>;
   county?: Maybe<Scalars["String"]>;
   race?: Maybe<Scalars["String"]>;
@@ -1394,7 +1393,6 @@ export type UpdatePatientMutationVariables = Exact<{
   phoneNumbers?: Maybe<Array<PhoneNumberInput> | PhoneNumberInput>;
   role?: Maybe<Scalars["String"]>;
   lookupId?: Maybe<Scalars["String"]>;
-  email?: Maybe<Scalars["String"]>;
   emails?: Maybe<Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>>;
   county?: Maybe<Scalars["String"]>;
   country?: Maybe<Scalars["String"]>;
@@ -3379,7 +3377,6 @@ export const AddPatientDocument = gql`
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
     $lookupId: String
-    $email: String
     $emails: [String]
     $county: String
     $race: String
@@ -3406,7 +3403,6 @@ export const AddPatientDocument = gql`
       phoneNumbers: $phoneNumbers
       role: $role
       lookupId: $lookupId
-      email: $email
       emails: $emails
       county: $county
       race: $race
@@ -3457,7 +3453,6 @@ export type AddPatientMutationFn = Apollo.MutationFunction<
  *      phoneNumbers: // value for 'phoneNumbers'
  *      role: // value for 'role'
  *      lookupId: // value for 'lookupId'
- *      email: // value for 'email'
  *      emails: // value for 'emails'
  *      county: // value for 'county'
  *      race: // value for 'race'
@@ -3646,7 +3641,6 @@ export const UpdatePatientDocument = gql`
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
     $lookupId: String
-    $email: String
     $emails: [String]
     $county: String
     $country: String
@@ -3675,7 +3669,6 @@ export const UpdatePatientDocument = gql`
       phoneNumbers: $phoneNumbers
       role: $role
       lookupId: $lookupId
-      email: $email
       emails: $emails
       county: $county
       country: $country
@@ -3725,7 +3718,6 @@ export type UpdatePatientMutationFn = Apollo.MutationFunction<
  *      phoneNumbers: // value for 'phoneNumbers'
  *      role: // value for 'role'
  *      lookupId: // value for 'lookupId'
- *      email: // value for 'email'
  *      emails: // value for 'emails'
  *      county: // value for 'county'
  *      country: // value for 'country'
