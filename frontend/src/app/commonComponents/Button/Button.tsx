@@ -7,6 +7,7 @@ interface Props {
   type?: "button" | "submit";
   icon?: any;
   label?: string;
+  ariaDescribedBy?: string;
   children?: React.ReactNode;
   disabled?: boolean;
   variant?:
@@ -28,6 +29,7 @@ const Button = ({
   icon,
   disabled,
   label,
+  ariaDescribedBy,
   children,
   variant,
   className,
@@ -45,6 +47,7 @@ const Button = ({
     )}
     id={id}
     onClick={onClick}
+    aria-describedby={ariaDescribedBy || undefined}
   >
     {icon && <FontAwesomeIcon icon={icon} className="margin-right-1" />}
     {label || children}

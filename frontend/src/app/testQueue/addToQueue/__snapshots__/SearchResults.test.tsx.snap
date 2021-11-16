@@ -61,14 +61,19 @@ exports[`SearchResults should show matching results 1`] = `
       </thead>
       <tbody>
         <tr>
-          <td>
+          <td
+            id="name0"
+          >
             Washington, George
           </td>
-          <td>
+          <td
+            id="birthdate0"
+          >
             01/01/1950
           </td>
           <td>
             <button
+              aria-describedby="name0 birthdate0"
               className="usa-button usa-button--unstyled"
               onClick={[Function]}
               type="button"
@@ -78,14 +83,19 @@ exports[`SearchResults should show matching results 1`] = `
           </td>
         </tr>
         <tr>
-          <td>
+          <td
+            id="name1"
+          >
             King, Martin Luther
           </td>
-          <td>
+          <td
+            id="birthdate1"
+          >
             01/01/1950
           </td>
           <td>
             <button
+              aria-describedby="name1 birthdate1"
               className="usa-button usa-button--unstyled"
               onClick={[Function]}
               type="button"
@@ -95,14 +105,19 @@ exports[`SearchResults should show matching results 1`] = `
           </td>
         </tr>
         <tr>
-          <td>
+          <td
+            id="name2"
+          >
             Obama, Barack Hussein
           </td>
-          <td>
+          <td
+            id="birthdate2"
+          >
             01/01/1950
           </td>
           <td>
             <button
+              aria-describedby="name2 birthdate2"
               className="usa-button usa-button--unstyled"
               onClick={[Function]}
               type="button"
