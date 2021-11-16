@@ -3253,3 +3253,14 @@ databaseChangeLog:
         - dropColumn:
             tableName: person
             columnName: emails
+  - changeSet:
+      id: populate-patient-emails
+      author: zedd@skylight.digital
+      comment: populate emails column from email
+      changes:
+        - tagDatabase:
+            tag: populate-patient-emails
+        - sql:
+            remarks: Populate new `emails` column with value from patient `email`
+            sql: |
+              UPDATE person SET emails = ARRAY[email] WHERE email IS NOT NULL;
