@@ -140,6 +140,13 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "http_4xx_errors" {
 requests
 ${local.skip_on_weekends}
 | where toint(resultCode) >= 400 and toint(resultCode) < 500 and (set_has_element(dynamic([401, 410]), toint(resultCode)) == false) and timestamp >= ago(5m)
+| join kind= inner (
+    exceptions
+    | where timestamp >= ago(5m)
+    )
+    on operation_Id
+| where (type has_any (dynamic(["BadRequestException", "InvalidActivationLinkException"]))) == false
+| where (outerMessage has_any (dynamic(["Missing session attribute 'userId'"]))) == false
   QUERY
 
   trigger {
