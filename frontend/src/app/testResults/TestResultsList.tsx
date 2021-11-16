@@ -43,6 +43,7 @@ import Select from "../commonComponents/Select";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 import TestResultPrintModal from "./TestResultPrintModal";
+import TestResultTextModal from "./TestResultTextModal";
 import EmailTestResultModal from "./EmailTestResultModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
 import TestResultDetailsModal from "./TestResultDetailsModal";
@@ -67,6 +68,7 @@ function testResultRows(
   setPrintModalId: SetStateAction<any>,
   setMarkErrorId: SetStateAction<any>,
   setDetailsModalId: SetStateAction<any>,
+  setTextModalId: SetStateAction<any>,
   setEmailModalTestResultId: SetStateAction<any>
 ) {
   const byDateTested = (a: any, b: any) => {
@@ -100,6 +102,10 @@ function testResultRows(
     actionItems.push({
       name: "View details",
       action: () => setDetailsModalId(r.internalId),
+    });
+    actionItems.push({
+      name: "Text result",
+      action: () => setTextModalId(r.internalId),
     });
     const removed = r.correctionStatus === "REMOVED";
     if (!removed) {
@@ -212,6 +218,7 @@ export const DetachedTestResultsList = ({
   const [printModalId, setPrintModalId] = useState(undefined);
   const [markErrorId, setMarkErrorId] = useState(undefined);
   const [detailsModalId, setDetailsModalId] = useState<string>();
+  const [textModalId, setTextModalId] = useState<string>();
   const [
     emailModalTestResultId,
     setEmailModalTestResultId,
@@ -293,6 +300,14 @@ export const DetachedTestResultsList = ({
       />
     );
   }
+  if (textModalId) {
+    return (
+      <TestResultTextModal
+        testResultId={textModalId}
+        closeModal={() => setTextModalId(undefined)}
+      />
+    );
+  }
   if (emailModalTestResultId) {
     return (
       <EmailTestResultModal
@@ -320,6 +335,7 @@ export const DetachedTestResultsList = ({
     setPrintModalId,
     setMarkErrorId,
     setDetailsModalId,
+    setTextModalId,
     setEmailModalTestResultId
   );
 
