@@ -1,9 +1,11 @@
 locals {
   app_setting_defaults = {
-    "MB_DB_CONNECTION_URI"           = var.postgres_url
-    "WEBSITE_VNET_ROUTE_ALL"         = 1
-    "WEBSITE_DNS_SERVER"             = "168.63.129.16"
-    "APPINSIGHTS_INSTRUMENTATIONKEY" = var.ai_instrumentation_key
+    "MB_DB_CONNECTION_URI"                            = var.postgres_url
+    "MB_APPLICATION_DB_MAX_CONNECTION_POOL_SIZE"      = 4 # Controls internal Metabase connection pool sizing
+    "MB_JDBC_DATA_WAREHOUSE_MAX_CONNECTION_POOL_SIZE" = 4 # Controls connection pool sizing to existing data sources (such as postgres)
+    "WEBSITE_VNET_ROUTE_ALL"                          = 1
+    "WEBSITE_DNS_SERVER"                              = "168.63.129.16"
+    "APPINSIGHTS_INSTRUMENTATIONKEY"                  = var.ai_instrumentation_key
   }
 }
 
