@@ -10,6 +10,7 @@ import TextInput from "../../app/commonComponents/TextInput";
 import { setPatient, updateOrganization } from "../../app/store";
 import { PxpApi } from "../PxpApiService";
 import Alert from "../../app/commonComponents/Alert";
+import { DateInput } from "../../app/commonComponents/DateInput";
 
 const DOB = () => {
   const { t } = useTranslation();
@@ -154,7 +155,18 @@ const DOB = () => {
       <div className="grid-container maxw-tablet">
         <p className="margin-top-3">{t("testResult.dob.enterDOB2")}</p>
         <p>{t("testResult.dob.linkExpirationNotice")}</p>
-        <TextInput
+        {/* todo:
+        - make sure all 3 inputs are required
+        - make sure that validation only happens after all 3 inputs are filled (or potentially just don't continue if not filled?)
+        - validate each at the field level (allowed ranges)
+        - reformat results into an acceptable dob to send to backend */}
+        <DateInput 
+          className="width-mobile"
+          label={t("testResult.dob.dateOfBirth")}
+          name={"birthDate"}
+          type={birthDateHidden ? "password" : "text"}
+          />
+        {/* <TextInput
           className="width-mobile"
           label={t("testResult.dob.dateOfBirth")}
           name={"birthDate"}
@@ -168,7 +180,7 @@ const DOB = () => {
           validationStatus={birthDateError ? "error" : undefined}
           onChange={(evt) => setBirthDate(evt.currentTarget.value)}
           inputRef={dobRef}
-        />
+        /> */}
         <div className="margin-top-1 margin-bottom-2">
           <button
             className="usa-button usa-button--unstyled margin-top-0"
