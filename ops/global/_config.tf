@@ -8,16 +8,18 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~>2.0"
+      version = "~>2.84.0"
     }
     okta = {
-      source = "okta/okta"
+      source  = "okta/okta"
+      version = "~>3.19.0"
     }
     pagerduty = {
-      source = "pagerduty/pagerduty"
+      source  = "pagerduty/pagerduty"
+      version = "~>2.1.1"
     }
   }
-  required_version = ">= 0.15.1"
+  required_version = ">=1.0.11"
 }
 
 provider "azurerm" {
