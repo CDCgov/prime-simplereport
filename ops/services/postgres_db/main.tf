@@ -26,7 +26,8 @@ resource "azurerm_postgresql_server" "db" {
 
   lifecycle {
     ignore_changes = [
-      identity
+      identity,
+      storage_mb
     ]
   }
 }
