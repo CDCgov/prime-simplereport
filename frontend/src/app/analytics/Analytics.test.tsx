@@ -9,8 +9,10 @@ import { GetTopLevelDashboardMetricsNewDocument } from "../../generated/graphql"
 
 import {
   Analytics,
-  getDateFromDaysAgo,
-  getDateWithCurrentTimeFromString,
+  getStartDateFromDaysAgo,
+  getEndDateFromDaysAgo,
+  setStartTimeForDateRange,
+  setEndTimeForDateRange,
 } from "./Analytics";
 
 const mockStore = createMockStore([]);
@@ -36,8 +38,8 @@ const getMocks = () => [
       query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "",
-        startDate: getDateFromDaysAgo(7),
-        endDate: new Date(),
+        startDate: getStartDateFromDaysAgo(7),
+        endDate: getEndDateFromDaysAgo(0),
       },
     },
     result: {
@@ -54,8 +56,8 @@ const getMocks = () => [
       query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "",
-        startDate: getDateFromDaysAgo(1),
-        endDate: new Date(),
+        startDate: getStartDateFromDaysAgo(1),
+        endDate: getEndDateFromDaysAgo(0),
       },
     },
     result: {
@@ -72,8 +74,8 @@ const getMocks = () => [
       query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "",
-        startDate: getDateFromDaysAgo(30),
-        endDate: new Date(),
+        startDate: getStartDateFromDaysAgo(30),
+        endDate: getEndDateFromDaysAgo(0),
       },
     },
     result: {
@@ -90,8 +92,8 @@ const getMocks = () => [
       query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "1",
-        startDate: getDateFromDaysAgo(7),
-        endDate: new Date(),
+        startDate: getStartDateFromDaysAgo(7),
+        endDate: getEndDateFromDaysAgo(0),
       },
     },
     result: {
@@ -108,8 +110,8 @@ const getMocks = () => [
       query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "2",
-        startDate: getDateFromDaysAgo(7),
-        endDate: new Date(),
+        startDate: getStartDateFromDaysAgo(7),
+        endDate: getEndDateFromDaysAgo(0),
       },
     },
     result: {
@@ -126,8 +128,8 @@ const getMocks = () => [
       query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "",
-        startDate: getDateWithCurrentTimeFromString("07/01/2021"),
-        endDate: getDateWithCurrentTimeFromString("07/31/2021"),
+        startDate: setStartTimeForDateRange(new Date("07/01/2021")),
+        endDate: setEndTimeForDateRange(new Date("07/31/2021")),
       },
     },
     result: {
@@ -144,8 +146,8 @@ const getMocks = () => [
       query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "",
-        startDate: getDateWithCurrentTimeFromString("07/01/2021"),
-        endDate: new Date(),
+        startDate: setStartTimeForDateRange(new Date("07/01/2021")),
+        endDate: getEndDateFromDaysAgo(0),
       },
     },
     result: {
@@ -162,8 +164,8 @@ const getMocks = () => [
       query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "3",
-        startDate: getDateFromDaysAgo(7),
-        endDate: new Date(),
+        startDate: getStartDateFromDaysAgo(7),
+        endDate: getEndDateFromDaysAgo(0),
       },
     },
     result: {
@@ -180,8 +182,8 @@ const getMocks = () => [
       query: GetTopLevelDashboardMetricsNewDocument,
       variables: {
         facilityId: "3",
-        startDate: getDateFromDaysAgo(30),
-        endDate: new Date(),
+        startDate: getStartDateFromDaysAgo(30),
+        endDate: getEndDateFromDaysAgo(0),
       },
     },
     result: {
