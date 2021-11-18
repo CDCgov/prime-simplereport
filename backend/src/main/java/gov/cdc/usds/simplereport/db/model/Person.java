@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -288,10 +289,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       return Collections.emptyList();
     }
 
-    List<String> nonNullEmails =
-        emails.stream().filter(e -> e != null).collect(Collectors.toList());
-
-    return nonNullEmails;
+    return emails.stream().filter(Objects::nonNull).collect(Collectors.toList());
   }
 
   public String getRace() {
