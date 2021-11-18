@@ -5,9 +5,8 @@ function createOrg() {
   this.expect.section("@app").to.contain.text("Sign up for SimpleReport");
   this.expect
     .section("@app")
-    .to.contain.text(
-      "Each organization gets one account and just needs to sign up one time."
-    );
+    .to.contain.text("My organization is new to SimpleReport");
+  this.section.app.click("@newOrgRadio");
   this.section.app.click("@continueButton");
   this.section.app.expect.element("@nameInput").to.be.visible;
   this.section.app.expect.element("@stateInput").to.be.visible;
@@ -46,6 +45,7 @@ module.exports = {
     app: {
       selector: ".App",
       elements: {
+        newOrgRadio: "#1-val-newOrg",
         nameInput: 'input[name="name"]',
         stateInput: 'select[name="state"]',
         firstStateOption: 'select[name="state"] option[value="AL"]',
