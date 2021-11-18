@@ -306,7 +306,7 @@ const AoEForm: React.FC<Props> = ({
               }}
               buttons={getTestResultDeliveryPreferencesEmail(patient.emails)}
               selectedRadio={(() => {
-                if (patient.emails.length === 0) {
+                if ((patient.emails || []).length === 0) {
                   return TestResultDeliveryPreferences.NONE;
                 }
 

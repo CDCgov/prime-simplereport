@@ -422,7 +422,7 @@ const PersonForm = (props: Props) => {
           {patient.emails && patient?.emails?.length > 0 && (
             <RadioGroup
               legend={
-                patient.emails.length === 1
+                (patient.emails || []).length === 1
                   ? t("patient.form.testResultDelivery.email")
                   : t("patient.form.testResultDelivery.email_plural")
               }
