@@ -1,4 +1,6 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { act } from "react-test-renderer";
 
 import AoEForm from "./AoEForm";
 
@@ -230,6 +232,47 @@ describe("AoEForm", () => {
         expect(emailDeliveryRadio).toBeInTheDocument();
         expect(emailDeliveryRadio).toBeDisabled();
         expect((await screen.findAllByLabelText("No"))[1]).toBeChecked();
+      });
+
+      it("selects email delivery option when radio button is clicked", async () => {
+        render(
+          <AoEForm
+            saveButtonText="save"
+            onClose={jest.fn()}
+            patient={{
+              firstName: "Jon",
+              middleName: "Bon",
+              lastName: "Jovi",
+              internalId: "123",
+              gender: "male",
+              testResultDelivery: "NONE",
+              email: "jon@bon.jovi",
+              emails: ["jon@bon.jovi"],
+              birthDate: "1980-01-01",
+              telephone: "2708675309",
+              phoneNumbers: [
+                {
+                  type: "LANDLINE",
+                  number: "2708675309",
+                },
+              ],
+            }}
+            saveCallback={jest.fn()}
+            isModal={false}
+            noValidation={true}
+          />
+        );
+
+        const emailDeliveryRadio = screen.getByRole("radio", {
+          name:
+            "Yes Results will be sent to these email addresses: jon@bon.jovi",
+        });
+
+        expect(emailDeliveryRadio).toBeInTheDocument();
+        act(() => {
+          userEvent.click(emailDeliveryRadio);
+        });
+        expect(emailDeliveryRadio).toBeChecked();
       });
     });
   });

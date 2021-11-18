@@ -263,6 +263,8 @@ const AoEForm: React.FC<Props> = ({
     (phoneNumber) => phoneNumber.type === "MOBILE"
   );
 
+  const patientEmails = (patient.emails || []).filter((e) => e !== null);
+
   return (
     <div>
       <form className="display-flex flex-column padding-bottom-4">
@@ -290,34 +292,32 @@ const AoEForm: React.FC<Props> = ({
               )}
             />
           </div>
-          {patient.emails && (
-            <div className="prime-formgroup__wrapper">
-              <RadioGroup
-                legend="Would you like to receive a copy of your results via email?"
-                hintText="You’re responsible for entering the correct contact information, following applicable federal and state laws."
-                wrapperClassName="margin-top-0"
-                name="testResultDeliveryEmail"
-                onChange={(newPreference) => {
-                  setTestResultDelivery(
-                    toggleDeliveryPreferenceEmail(
-                      testResultDelivery as TestResultDeliveryPreference,
-                      newPreference as TestResultDeliveryPreference
-                    )
-                  );
-                }}
-                buttons={getTestResultDeliveryPreferencesEmail(patient.emails)}
-                selectedRadio={(() => {
-                  if (patientMobileNumbers.length === 0) {
-                    return TestResultDeliveryPreferences.NONE;
-                  }
+          <div className="prime-formgroup__wrapper">
+            <RadioGroup
+              legend="Would you like to receive a copy of your results via email?"
+              hintText="You’re responsible for entering the correct contact information, following applicable federal and state laws."
+              wrapperClassName="margin-top-0"
+              name="testResultDeliveryEmail"
+              onChange={(newPreference) => {
+                setTestResultDelivery(
+                  toggleDeliveryPreferenceEmail(
+                    testResultDelivery as TestResultDeliveryPreference,
+                    newPreference as TestResultDeliveryPreference
+                  )
+                );
+              }}
+              buttons={getTestResultDeliveryPreferencesEmail(patientEmails)}
+              selectedRadio={(() => {
+                if (patientEmails.length === 0) {
+                  return TestResultDeliveryPreferences.NONE;
+                }
 
-                  return getSelectedDeliveryPreferencesEmail(
-                    testResultDelivery as TestResultDeliveryPreference
-                  );
-                })()}
-              />
-            </div>
-          )}
+                return getSelectedDeliveryPreferencesEmail(
+                  testResultDelivery as TestResultDeliveryPreference
+                );
+              })()}
+            />
+          </div>
         </FormGroup>
         <FormGroup title="Symptoms">
           <SymptomInputs
