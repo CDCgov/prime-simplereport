@@ -187,8 +187,10 @@ const OrganizationForm = () => {
                 </strong>
               </label>
               <p className="usa-hint">
-                Only one person from an organization can be the administrator.
-                This person will submit information for identity verifcation.
+                To start, only one person from an organization can be the
+                administrator. This person will submit information for identity
+                verifcation. (SimpleReport doesn't access or keep personal
+                identity information.)
               </p>
             </>
           );
