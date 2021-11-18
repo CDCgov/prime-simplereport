@@ -45,7 +45,7 @@ module.exports = {
     app: {
       selector: ".App",
       elements: {
-        newOrgRadio: "#1-val-newOrg",
+        newOrgRadio: 'input[value="newOrg"]+label',
         nameInput: 'input[name="name"]',
         stateInput: 'select[name="state"]',
         firstStateOption: 'select[name="state"] option[value="AL"]',
