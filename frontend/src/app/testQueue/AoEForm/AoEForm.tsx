@@ -263,8 +263,6 @@ const AoEForm: React.FC<Props> = ({
     (phoneNumber) => phoneNumber.type === "MOBILE"
   );
 
-  const patientEmails = (patient.emails || []).filter((e) => e !== null);
-
   return (
     <div>
       <form className="display-flex flex-column padding-bottom-4">
@@ -306,9 +304,9 @@ const AoEForm: React.FC<Props> = ({
                   )
                 );
               }}
-              buttons={getTestResultDeliveryPreferencesEmail(patientEmails)}
+              buttons={getTestResultDeliveryPreferencesEmail(patient.emails)}
               selectedRadio={(() => {
-                if (patientEmails.length === 0) {
+                if (patient.emails.length === 0) {
                   return TestResultDeliveryPreferences.NONE;
                 }
 
