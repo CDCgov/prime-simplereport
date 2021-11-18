@@ -11,7 +11,10 @@ import App, { WHOAMI_QUERY } from "./App";
 import { queueQuery } from "./testQueue/TestQueue";
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import { TRAINING_PURPOSES_ONLY } from "./commonComponents/TrainingNotification";
-import { getStartDateFromDaysAgo, getEndDateFromDaysAgo } from "./analytics/Analytics";
+import {
+  getStartDateFromDaysAgo,
+  getEndDateFromDaysAgo,
+} from "./analytics/Analytics";
 
 jest.mock("uuid");
 jest.mock("./VersionService", () => ({
