@@ -3264,3 +3264,25 @@ databaseChangeLog:
             remarks: Populate new `emails` column with value from patient `email`
             sql: |
               UPDATE person SET emails = ARRAY[email] WHERE email IS NOT NULL;
+  - changeSet:
+      id: add-internal-id-to-facility-device-specimen-type
+      author: nathan@skylight.digital
+      comment: Add primary key to facility_device_specimen_type
+      changes:
+        - addColumn:
+            tableName: facility_device_specimen_type
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  defaultValue: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: facility
+            baseColumnNames: default_device_specimen_type_id
+            constraintName: fk__facility__default_device_specimen_type
+            referencedColumnNames: internal_id
+            referencedTableName: device_specimen_type

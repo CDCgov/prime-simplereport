@@ -6,18 +6,16 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
 
 @Entity
 public class FacilityDeviceSpecimenType {
-  @Id private UUID deviceSpecimenTypeId;
+  @Id private UUID internalId;
 
   public DeviceSpecimenType getDeviceSpecimenType() {
     return deviceSpecimenType;
   }
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @MapsId
   @JoinColumn(name = "device_specimen_type_id")
   private DeviceSpecimenType deviceSpecimenType;
 

@@ -11,6 +11,8 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.FacilityDeviceSpecimenTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import java.util.ArrayList;
@@ -35,14 +37,20 @@ public class DeviceTypeService {
   private DeviceTypeRepository _repo;
   private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
   private SpecimenTypeRepository _specimenTypeRepo;
+  private FacilityDeviceSpecimenTypeRepository _facilityDeviceSpecimenTypeRepo;
+  private FacilityRepository _facilityRepo;
 
   public DeviceTypeService(
       DeviceTypeRepository repo,
       DeviceSpecimenTypeRepository deviceSpecimenRepo,
-      SpecimenTypeRepository specimenTypeRepo) {
+      SpecimenTypeRepository specimenTypeRepo,
+      FacilityDeviceSpecimenTypeRepository facilityDeviceSpecimenTypeRepo,
+      FacilityRepository facilityRepo) {
     _repo = repo;
     _deviceSpecimenRepo = deviceSpecimenRepo;
     _specimenTypeRepo = specimenTypeRepo;
+    _facilityDeviceSpecimenTypeRepo = facilityDeviceSpecimenTypeRepo;
+    _facilityRepo = facilityRepo;
   }
 
   @Transactional(readOnly = false)
@@ -130,6 +138,19 @@ public class DeviceTypeService {
       // delete old ones
       ArrayList<DeviceSpecimenType> toBeDeletedDeviceSpecimenTypes =
           new ArrayList<>(exitingDeviceSpecimenTypes);
+
+      // Un-set all devices to be deleted as facility defaults
+      _facilityRepo.unsetDefaultDeviceSpecimenTypeIdsIn(
+          toBeDeletedDeviceSpecimenTypes.stream()
+              .map(DeviceSpecimenType::getInternalId)
+              .collect(Collectors.toList()));
+
+      // Un-assign all devices to be deleted from facility device configuration
+      _facilityDeviceSpecimenTypeRepo.deleteByDeviceSpecimenTypeInternalIdIn(
+          toBeDeletedDeviceSpecimenTypes.stream()
+              .map(DeviceSpecimenType::getInternalId)
+              .collect(Collectors.toList()));
+
       toBeDeletedDeviceSpecimenTypes.removeAll(newDeviceSpecimenTypes);
       _deviceSpecimenRepo.deleteAll(toBeDeletedDeviceSpecimenTypes);
 

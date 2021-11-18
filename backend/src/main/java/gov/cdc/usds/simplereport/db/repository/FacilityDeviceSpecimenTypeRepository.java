@@ -14,4 +14,6 @@ public interface FacilityDeviceSpecimenTypeRepository
 
   Optional<List<FacilityDeviceSpecimenType>>
       findByFacilityInternalIdOrderByDeviceSpecimenTypeCreatedAt(UUID facilityId);
+
+  void deleteByDeviceSpecimenTypeInternalIdIn(List<UUID> deviceSpecimenTypeIds);
 }

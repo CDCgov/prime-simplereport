@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface FacilityRepository extends EternalAuditedEntityRepository<Facility> {
 
@@ -32,4 +34,12 @@ public interface FacilityRepository extends EternalAuditedEntityRepository<Facil
       EternalAuditedEntityRepository.BASE_QUERY
           + " and e.organization = :org order by e.facilityName")
   List<Facility> findByOrganizationOrderByFacilityName(Organization org);
+
+  @Modifying
+  @Transactional
+  @Query(
+      value =
+          "UPDATE {h-schema}#{#entityName} SET default_device_specimen_type_id = null WHERE is_deleted = false AND default_device_specimen_type_id in :deviceSpecimenTypeIds",
+      nativeQuery = true)
+  void unsetDefaultDeviceSpecimenTypeIdsIn(List<UUID> deviceSpecimenTypeIds);
 }
