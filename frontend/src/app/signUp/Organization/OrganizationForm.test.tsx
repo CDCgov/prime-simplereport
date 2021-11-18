@@ -8,7 +8,7 @@ import OrganizationForm, {
 const getOrgNameInput = () =>
   screen.getByRole("textbox", {
     name:
-      "What's the name of your organization? Organizations have multiple testing facilities or locations as part of their network. required",
+      "Organization name Organizations have multiple testing facilities or locations as part of their network. required",
   });
 const getOrgStateDropdown = () => screen.getByLabelText("Organization state *");
 const getOrgTypeDropdown = () => screen.getByLabelText("Organization type *");
@@ -17,7 +17,7 @@ const getMiddleNameInput = () => screen.getByLabelText("Middle name");
 const getLastNameInput = () => screen.getByLabelText("Last name *");
 const getEmailInput = () => screen.getByLabelText("Work email *");
 const getPhoneInput = () => screen.getByLabelText("Work phone number *");
-const getSubmitButton = () => screen.getByText("Submit");
+const getSubmitButton = () => screen.getByText("Continue");
 
 const fillInDropDown = (input: any, text: string) =>
   act(() => {
