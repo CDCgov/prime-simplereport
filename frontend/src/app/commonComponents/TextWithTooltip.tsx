@@ -1,3 +1,5 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip } from "@trussworks/react-uswds";
 import React from "react";
 
@@ -45,6 +47,12 @@ export const TextWithTooltip = ({
       wrapperclasses="usa-text-with-tooltip"
     >
       {text}
+      <FontAwesomeIcon
+        className="info-circle-icon"
+        icon={faInfoCircle}
+        color="black"
+        size="xs"
+      />
     </Tooltip>
   );
 };

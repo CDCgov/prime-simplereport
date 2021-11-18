@@ -179,17 +179,16 @@ const OrganizationForm = () => {
           return (
             <>
               <label className="usa-label margin-top-3">
-                <strong>{label}</strong>
-                <TextWithTooltip
-                  tooltip="Can be anyone that works at your organization. Adds testing facility locations; manages the account and user access."
-                  text="What's an organization administrator?"
-                />
+                <strong>
+                  <TextWithTooltip
+                    tooltip="Can be anyone that works at your organization. Adds testing facility locations; manages the account and user access."
+                    text="Organization administrator"
+                  />
+                </strong>
               </label>
               <p className="usa-hint">
                 Only one person from an organization can be the administrator.
-                This person will submit personal information for identity
-                verification. (SimpleReport doesn't access or keep personal
-                identity information.)
+                This person will submit information for identity verifcation.
               </p>
             </>
           );
@@ -223,6 +222,18 @@ const OrganizationForm = () => {
             noLabels={true}
             segmentIndicatorOnBottom={true}
           />
+          <div className="gray-background padding-y-05 padding-x-3">
+            <p className="font-ui-2xs line-height-sans-5">
+              <strong>Sign up for SimpleReport in three steps:</strong> <br />
+              1. Fill out your organization information <br />
+              2. Enter your personal contact details <br />
+              3. Verify your identity
+            </p>
+            <p className="font-ui-2xs margin-top-0 line-height-sans-5">
+              Each organization only needs one account. After you sign up you
+              can add staff and testing locations.
+            </p>
+          </div>
           {backendError ? backendError : null}
           {/* By mapping over organizationFields (found in utils.tsx), we reduce */}
           {/* duplication of input fields in JSX */}
@@ -237,8 +248,8 @@ const OrganizationForm = () => {
             }
           )}
         </div>
-        <p>
-          By submitting this form, you agree to our{" "}
+        <p className="margin-top-4 margin-bottom-0 font-ui-xs">
+          By selecting Continue, you agree to our{" "}
           <a href="/terms-of-service" target="_blank" rel="noopener noreferrer">
             terms of service
           </a>
@@ -248,7 +259,7 @@ const OrganizationForm = () => {
           className="width-full margin-top-2 submit-button"
           disabled={!formChanged}
           onClick={onSave}
-          label={"Submit"}
+          label={"Continue"}
         />
       </Card>
     </CardBackground>
