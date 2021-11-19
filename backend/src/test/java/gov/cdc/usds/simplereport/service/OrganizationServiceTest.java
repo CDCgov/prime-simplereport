@@ -298,6 +298,15 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
       assertThat(updatedFacility.getDeviceSpecimenTypes()).hasSize(2);
     }
 
+    @Test
+    @DisplayName("it should allow global admins to mark facility as deleted")
+    @WithSimpleReportSiteAdminUser
+    void deleteFacilityTest() {
+      Facility facilityToDelete = facilityRepository.findById(facility.getInternalId()).get();
+      Facility deletedFacility = _service.markFacilityAsDeleted(facilityToDelete.getInternalId(), true);
+      assertThat(deletedFacility.isDeleted()).isTrue();
+    }
+
     @Nested
     @DisplayName("when changing default device")
     class UpdatingDefaultDevice {
