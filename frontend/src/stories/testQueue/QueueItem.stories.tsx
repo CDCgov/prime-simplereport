@@ -61,6 +61,7 @@ const defaultProps: QueueItemProps = {
       },
     ],
     email: "jennifer@finley.com",
+    emails: ["jennifer@finley.com"],
     testResultDelivery: "SMS",
     gender: "male",
   },

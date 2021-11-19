@@ -1298,7 +1298,7 @@ export type AddPatientMutationVariables = Exact<{
   phoneNumbers?: Maybe<Array<PhoneNumberInput> | PhoneNumberInput>;
   role?: Maybe<Scalars["String"]>;
   lookupId?: Maybe<Scalars["String"]>;
-  email?: Maybe<Scalars["String"]>;
+  emails?: Maybe<Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>>;
   county?: Maybe<Scalars["String"]>;
   race?: Maybe<Scalars["String"]>;
   ethnicity?: Maybe<Scalars["String"]>;
@@ -1353,6 +1353,7 @@ export type GetPatientDetailsQuery = {
     role?: Maybe<string>;
     lookupId?: Maybe<string>;
     email?: Maybe<string>;
+    emails?: Maybe<Array<Maybe<string>>>;
     county?: Maybe<string>;
     country?: Maybe<string>;
     race?: Maybe<string>;
@@ -1392,7 +1393,7 @@ export type UpdatePatientMutationVariables = Exact<{
   phoneNumbers?: Maybe<Array<PhoneNumberInput> | PhoneNumberInput>;
   role?: Maybe<Scalars["String"]>;
   lookupId?: Maybe<Scalars["String"]>;
-  email?: Maybe<Scalars["String"]>;
+  emails?: Maybe<Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>>;
   county?: Maybe<Scalars["String"]>;
   country?: Maybe<Scalars["String"]>;
   race?: Maybe<Scalars["String"]>;
@@ -1779,6 +1780,7 @@ export type GetPatientsByFacilityForQueueQuery = {
         gender?: Maybe<string>;
         telephone?: Maybe<string>;
         email?: Maybe<string>;
+        emails?: Maybe<Array<Maybe<string>>>;
         testResultDelivery?: Maybe<TestResultDeliveryPreference>;
         phoneNumbers?: Maybe<
           Array<
@@ -2063,6 +2065,7 @@ export type GetTestResultForResendingEmailsQuery = {
       middleName?: Maybe<string>;
       lastName?: Maybe<string>;
       email?: Maybe<string>;
+      emails?: Maybe<Array<Maybe<string>>>;
     }>;
     patientLink?: Maybe<{
       __typename?: "PatientLink";
@@ -3415,7 +3418,7 @@ export const AddPatientDocument = gql`
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
     $lookupId: String
-    $email: String
+    $emails: [String]
     $county: String
     $race: String
     $ethnicity: String
@@ -3441,7 +3444,7 @@ export const AddPatientDocument = gql`
       phoneNumbers: $phoneNumbers
       role: $role
       lookupId: $lookupId
-      email: $email
+      emails: $emails
       county: $county
       race: $race
       ethnicity: $ethnicity
@@ -3491,7 +3494,7 @@ export type AddPatientMutationFn = Apollo.MutationFunction<
  *      phoneNumbers: // value for 'phoneNumbers'
  *      role: // value for 'role'
  *      lookupId: // value for 'lookupId'
- *      email: // value for 'email'
+ *      emails: // value for 'emails'
  *      county: // value for 'county'
  *      race: // value for 'race'
  *      ethnicity: // value for 'ethnicity'
@@ -3594,6 +3597,7 @@ export const GetPatientDetailsDocument = gql`
       role
       lookupId
       email
+      emails
       county
       country
       race
@@ -3678,7 +3682,7 @@ export const UpdatePatientDocument = gql`
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
     $lookupId: String
-    $email: String
+    $emails: [String]
     $county: String
     $country: String
     $race: String
@@ -3706,7 +3710,7 @@ export const UpdatePatientDocument = gql`
       phoneNumbers: $phoneNumbers
       role: $role
       lookupId: $lookupId
-      email: $email
+      emails: $emails
       county: $county
       country: $country
       race: $race
@@ -3755,7 +3759,7 @@ export type UpdatePatientMutationFn = Apollo.MutationFunction<
  *      phoneNumbers: // value for 'phoneNumbers'
  *      role: // value for 'role'
  *      lookupId: // value for 'lookupId'
- *      email: // value for 'email'
+ *      emails: // value for 'emails'
  *      county: // value for 'county'
  *      country: // value for 'country'
  *      race: // value for 'race'
@@ -4989,6 +4993,7 @@ export const GetPatientsByFacilityForQueueDocument = gql`
       gender
       telephone
       email
+      emails
       phoneNumbers {
         type
         number
@@ -5780,6 +5785,7 @@ export const GetTestResultForResendingEmailsDocument = gql`
         middleName
         lastName
         email
+        emails
       }
       patientLink {
         internalId

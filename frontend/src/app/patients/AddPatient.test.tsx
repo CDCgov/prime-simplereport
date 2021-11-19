@@ -123,7 +123,7 @@ describe("AddPatient", () => {
                 },
               ],
               role: null,
-              email: null,
+              emails: ["foo@bar.org"],
               county: "",
               race: null,
               ethnicity: null,
@@ -167,7 +167,7 @@ describe("AddPatient", () => {
                 },
               ],
               role: "STUDENT",
-              email: null,
+              emails: [],
               county: "",
               race: null,
               ethnicity: null,
@@ -218,6 +218,7 @@ describe("AddPatient", () => {
             Facility: mockFacilityID,
             "Date of birth": "1970-09-22",
             "Primary phone number": "617-432-1000",
+            "Email address": "foo@bar.org",
             Country: "USA",
             "Street address 1": "25 Shattuck St",
             City: "Vancouver",
@@ -246,6 +247,7 @@ describe("AddPatient", () => {
             Facility: mockFacilityID,
             "Date of birth": "1970-09-22",
             "Primary phone number": "617-432-1000",
+            "Email address": "foo@bar.org",
             Country: "CAN",
             "Street address 1": "25 Shattuck St",
             City: "Vancouver",
@@ -277,6 +279,7 @@ describe("AddPatient", () => {
             Facility: mockFacilityID,
             "Date of birth": "1970-09-22",
             "Primary phone number": "617-432-1000",
+            "Email address": "foo@bar.org",
             "Street address 1": "25 Shattuck St",
             City: "Boston",
             State: "MA",
@@ -399,7 +402,7 @@ describe("AddPatient", () => {
 
     describe("saving changes and starting a test", () => {
       beforeEach(async () => {
-        jest.setTimeout(30000);
+        await new Promise((resolve) => setTimeout(resolve, 0));
         fillOutForm(
           {
             "First Name": "Alice",
@@ -407,7 +410,9 @@ describe("AddPatient", () => {
             Facility: mockFacilityID,
             "Date of birth": "1970-09-22",
             "Primary phone number": "617-432-1000",
+            "Email address": "foo@bar.org",
             "Street address 1": "25 Shattuck St",
+            Country: "USA",
             City: "Boston",
             State: "MA",
             "ZIP code": "02115",
