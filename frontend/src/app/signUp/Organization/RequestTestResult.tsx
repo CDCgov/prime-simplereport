@@ -11,7 +11,8 @@ const RequestTestResult = () => {
           link to view your result.
         </p>
         <p>
-          Having trouble getting your result? Contact your testing facility directly.
+          Having trouble getting your result? Contact your testing facility
+          directly.
         </p>
       </Card>
     </CardBackground>
