@@ -233,7 +233,11 @@ const OrganizationForm = () => {
             </p>
             <p className="font-ui-2xs margin-top-0 line-height-sans-5">
               Each organization only needs one account. After you sign up you
-              can add staff and testing locations.
+              can add staff and testing locations. Learn more about our{" "}
+              <a href="/getting-started/organizations-and-testing-facilities/onboard-your-organization/">
+                sign up and identity verification process
+              </a>
+              .
             </p>
           </div>
           {backendError ? backendError : null}
