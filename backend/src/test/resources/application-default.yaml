@@ -2,7 +2,10 @@ spring:
   profiles.include: no-security,no-okta-mgmt, no-okta-auth, no-experian
   datasource:
     url: jdbc:postgresql://localhost:${test-db-port:5444}/simple_report
-    hikari.minimum-idle: 2 # when a context isn't being used, it should not leave lots of connections lying around
+    hikari: # These values are specific to the testing flow. For runtime values, see 'application.yaml'.
+      minimum-idle: 2 # Minimum number of idle connections to maintain. Serves as a floor point for scaling. With the current liquibase settings, tests will fail if this value is removed.
+      maximum-pool-size: 5 # Maximum number of connections to which Hikari should be limited.
+      max-lifetime: 30000 # Maximum lifetime for a connection to be retained in the pool, in milliseconds, once it is closed.
   liquibase:
     user: simple_report_migrations
     password: migrations456
