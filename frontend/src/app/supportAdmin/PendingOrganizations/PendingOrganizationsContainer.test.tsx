@@ -10,35 +10,6 @@ import {
 
 import PendingOrganizationsContainer from "./PendingOrganizationsContainer";
 
-const editedOrganizationsQuery = {
-  request: {
-    query: GetPendingOrganizationsDocument,
-  },
-  result: {
-    data: {
-      pendingOrganizations: [
-        {
-          externalId: "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0",
-          name: "Space Camp 2000",
-          adminEmail: "admin@spacecamp2000.org",
-          adminFirstName: "Alan",
-          adminLastName: "Watts",
-          adminPhone: "916-867-5309",
-          createdAt: "2020-05-01T00:00:00.000Z",
-        },
-        {
-          externalId: "CA-A-Real-Hospital-f34183c4-b4c5-449f-97b4-2e02abb7aae0",
-          name: "A Real Hospital",
-          adminEmail: "admin@arealhospital.org",
-          adminFirstName: "Jane",
-          adminLastName: "Doe",
-          adminPhone: "410-867-5309",
-          createdAt: "2020-06-01T00:00:00.000Z",
-        },
-      ],
-    },
-  },
-};
 const organizationsQuery = {
   request: {
     query: GetPendingOrganizationsDocument,
@@ -92,25 +63,6 @@ const verificationMutation = {
     },
   },
 };
-const editMutation = {
-  request: {
-    query: EditPendingOrganizationDocument,
-    variables: {
-      externalId: "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0",
-      name: "Space Camp 2000",
-      adminEmail: "admin@spacecamp2000.org",
-      adminFirstName: "Alan",
-      adminLastName: "Watts",
-      adminPhone: "916-867-5309",
-    },
-  },
-  result: {
-    data: {
-      editPendingOrganization:
-        "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0",
-    },
-  },
-};
 
 describe("PendingOrganizationsContainer", () => {
   describe("loading organizations", () => {
@@ -138,7 +90,6 @@ describe("PendingOrganizationsContainer", () => {
             organizationsQuery,
             verificationMutation,
             EmptyOrganizationsQuery,
-            editMutation,
           ]}
         >
           <PendingOrganizationsContainer />
@@ -234,35 +185,6 @@ describe("PendingOrganizationsContainer", () => {
         ).toBeInTheDocument();
       });
       describe("submitting the form", () => {
-        it("closes the modal when successful", async () => {
-          await act(async () => {
-            await userEvent.click(screen.getByText("Save"));
-          });
-          await waitFor(() =>
-            expect(
-              screen.queryByText("Edit organization")
-            ).not.toBeInTheDocument()
-          );
-        });
-        it("successfully changes the org name", async () => {
-          await act(async () => {
-            await userEvent.type(
-              screen.getByLabelText("Organization name", { exact: false }),
-              " 2000"
-            );
-            await userEvent.click(screen.getByText("Save"));
-          });
-          render(
-            <MockedProvider mocks={[editedOrganizationsQuery]}>
-              <PendingOrganizationsContainer />
-            </MockedProvider>
-          );
-          await waitFor(() =>
-            expect(
-              screen.getByText("Space Camp 2000", { exact: false })
-            ).toBeInTheDocument()
-          );
-        });
         it("displays an error when org name is empty", async () => {
           await act(async () => {
             await userEvent.clear(
