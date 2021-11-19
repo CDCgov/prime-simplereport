@@ -69,6 +69,7 @@ export const QUERY_PATIENT = gql`
       gender
       telephone
       email
+      emails
       phoneNumbers {
         type
         number

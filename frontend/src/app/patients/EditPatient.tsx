@@ -5,7 +5,11 @@ import { useTranslation } from "react-i18next";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM_CAP } from "../../config/constants";
-import { displayFullName, showNotification } from "../utils";
+import {
+  displayFullName,
+  showNotification,
+  dedupeAndCompactStrings,
+} from "../utils";
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
@@ -34,6 +38,7 @@ export const GET_PATIENT = gql`
       role
       lookupId
       email
+      emails
       county
       country
       race
@@ -70,7 +75,7 @@ interface GetPatientResponse {
     phoneNumbers: PhoneNumber[];
     role: Role | null;
     lookupId: string | null;
-    email: string | null;
+    emails: string[];
     county: string | null;
     country: string | null;
     race: Race | null;
@@ -104,7 +109,7 @@ const UPDATE_PATIENT = gql`
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
     $lookupId: String
-    $email: String
+    $emails: [String]
     $county: String
     $country: String
     $race: String
@@ -132,7 +137,7 @@ const UPDATE_PATIENT = gql`
       phoneNumbers: $phoneNumbers
       role: $role
       lookupId: $lookupId
-      email: $email
+      emails: $emails
       county: $county
       country: $country
       race: $race
@@ -210,6 +215,7 @@ const EditPatient = (props: Props) => {
               type: phoneNumber.type,
             };
           }),
+        emails: dedupeAndCompactStrings(person.emails || []),
       },
     });
     showNotification(

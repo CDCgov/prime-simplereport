@@ -40,6 +40,7 @@ export interface TestQueuePerson {
   middleName: string | null;
   lastName: string;
   email: string;
+  emails: string[];
   phoneNumbers: PhoneNumber[];
   telephone: string;
   testResultDelivery: string;
@@ -188,32 +189,36 @@ const AoEForm: React.FC<Props> = ({
     { label: "No", value: "NONE" },
   ];
 
-  const getTestResultDeliveryPreferencesEmail = (email: string) => [
+  const getTestResultDeliveryPreferencesEmail = (emails: string[] = []) => [
     {
       label: (
         <>
           Yes
           <span className="usa-checkbox__label-description">
             <p>
-              {email ? (
+              {emails.length > 0 ? (
                 <span className="radio__label-description--checked">
-                  <strong>Results will be sent to this email:</strong>
+                  <strong>
+                    Results will be sent to these email addresses:
+                  </strong>
                 </span>
               ) : (
-                "(There is no email address listed in your patient profile.)"
+                "(There are no email addresses listed in your patient profile.)"
               )}
             </p>
-            <span
-              key={"test-result-delivery-preference-email"}
-              className="radio__label-description--checked usa-radio__label-description text-base"
-            >
-              {email}
-            </span>
+            {emails.map((email) => (
+              <span
+                key={"test-result-delivery-preference-email"}
+                className="radio__label-description--checked usa-radio__label-description text-base"
+              >
+                {email}
+              </span>
+            ))}
           </span>
         </>
       ),
       value: "EMAIL",
-      ...(!email && { disabled: true }),
+      ...(emails.length === 0 && { disabled: true }),
     },
     { label: "No", value: "NONE" },
   ];
@@ -285,34 +290,32 @@ const AoEForm: React.FC<Props> = ({
               )}
             />
           </div>
-          {patient.email && (
-            <div className="prime-formgroup__wrapper">
-              <RadioGroup
-                legend="Would you like to receive a copy of your results via email?"
-                hintText="You’re responsible for entering the correct contact information, following applicable federal and state laws."
-                wrapperClassName="margin-top-0"
-                name="testResultDeliveryEmail"
-                onChange={(newPreference) => {
-                  setTestResultDelivery(
-                    toggleDeliveryPreferenceEmail(
-                      testResultDelivery as TestResultDeliveryPreference,
-                      newPreference as TestResultDeliveryPreference
-                    )
-                  );
-                }}
-                buttons={getTestResultDeliveryPreferencesEmail(patient.email)}
-                selectedRadio={(() => {
-                  if (patientMobileNumbers.length === 0) {
-                    return TestResultDeliveryPreferences.NONE;
-                  }
+          <div className="prime-formgroup__wrapper">
+            <RadioGroup
+              legend="Would you like to receive a copy of your results via email?"
+              hintText="You’re responsible for entering the correct contact information, following applicable federal and state laws."
+              wrapperClassName="margin-top-0"
+              name="testResultDeliveryEmail"
+              onChange={(newPreference) => {
+                setTestResultDelivery(
+                  toggleDeliveryPreferenceEmail(
+                    testResultDelivery as TestResultDeliveryPreference,
+                    newPreference as TestResultDeliveryPreference
+                  )
+                );
+              }}
+              buttons={getTestResultDeliveryPreferencesEmail(patient.emails)}
+              selectedRadio={(() => {
+                if ((patient.emails || []).length === 0) {
+                  return TestResultDeliveryPreferences.NONE;
+                }
 
-                  return getSelectedDeliveryPreferencesEmail(
-                    testResultDelivery as TestResultDeliveryPreference
-                  );
-                })()}
-              />
-            </div>
-          )}
+                return getSelectedDeliveryPreferencesEmail(
+                  testResultDelivery as TestResultDeliveryPreference
+                );
+              })()}
+            />
+          </div>
         </FormGroup>
         <FormGroup title="Symptoms">
           <SymptomInputs
