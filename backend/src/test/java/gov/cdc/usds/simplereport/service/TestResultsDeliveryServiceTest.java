@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -13,6 +14,8 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
+import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
+import gov.cdc.usds.simplereport.service.sms.SmsService;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +33,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 class TestResultsDeliveryServiceTest {
 
   @Mock private EmailService emailService;
+  @Mock private SmsService smsService;
 
   @Mock private PatientLinkService patientLinkService;
 
@@ -119,6 +123,49 @@ class TestResultsDeliveryServiceTest {
 
     // THEN
     assertThat(success).isFalse();
+  }
+
+  @Test
+  void smsTextTestResultTest() {
+    // GIVEN
+    UUID uuid = UUID.randomUUID();
+    PatientLink patientLink = getMockedPatientLink(uuid);
+    when(patientLinkService.getRefreshedPatientLink(uuid)).thenReturn(patientLink);
+    when(smsService.sendToPatientLink(any(PatientLink.class), anyString()))
+        .thenReturn(List.of(SmsAPICallResult.builder().successful(true).build()));
+
+    // WHEN
+    boolean success = testResultsDeliveryService.smsTestResults(patientLink.getInternalId());
+
+    // THEN
+    assertThat(success).isTrue();
+    String message =
+        "Your COVID-19 test result is ready to view. This link will expire after 2 days: https://simplereport.gov/pxp?plid="
+            + uuid;
+    verify(smsService).sendToPatientLink(patientLink, message);
+  }
+
+  @Test
+  void smsTextTestResultTest_failure() {
+    // GIVEN
+    UUID uuid = UUID.randomUUID();
+    PatientLink patientLink = getMockedPatientLink(uuid);
+    when(patientLinkService.getRefreshedPatientLink(uuid)).thenReturn(patientLink);
+    when(smsService.sendToPatientLink(any(PatientLink.class), anyString()))
+        .thenReturn(
+            List.of(
+                SmsAPICallResult.builder().successful(true).build(),
+                SmsAPICallResult.builder().successful(false).build()));
+
+    // WHEN
+    boolean success = testResultsDeliveryService.smsTestResults(patientLink.getInternalId());
+
+    // THEN
+    assertThat(success).isFalse();
+    String message =
+        "Your COVID-19 test result is ready to view. This link will expire after 2 days: https://simplereport.gov/pxp?plid="
+            + uuid;
+    verify(smsService).sendToPatientLink(patientLink, message);
   }
 
   private PatientLink getMockedPatientLink(UUID internalId) {
