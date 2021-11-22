@@ -220,13 +220,22 @@ public class TestOrderService {
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
   @Deprecated // switch to specifying device-specimen combo
   public TestOrder editQueueItem(
-      UUID testOrderId, String deviceId, String result, Date dateTested) {
+      UUID testOrderId, UUID deviceSpecimenTypeId, String result, Date dateTested) {
     lockOrder(testOrderId);
     try {
       TestOrder order = this.getTestOrder(testOrderId);
 
-      if (deviceId != null) {
-        order.setDeviceSpecimen(_dts.getDefaultForDeviceId(UUID.fromString(deviceId)));
+      if (deviceSpecimenTypeId != null) {
+        DeviceSpecimenType deviceSpecimenType = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
+
+        order.setDeviceSpecimen(deviceSpecimenType);
+
+        // Set the most-recently configured device specimen for a facility's
+        // test as facility default
+        if (!deviceSpecimenTypeId.equals(
+            order.getFacility().getDefaultDeviceSpecimen().getInternalId())) {
+          order.getFacility().addDefaultDeviceSpecimen(deviceSpecimenType);
+        }
       }
 
       order.setResult(result == null ? null : TestResult.valueOf(result));

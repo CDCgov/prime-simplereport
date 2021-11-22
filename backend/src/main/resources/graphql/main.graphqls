@@ -532,6 +532,7 @@ type Mutation {
   editQueueItem(
     id: ID!
     deviceId: String
+    deviceSpecimenType: ID
     result: String
     dateTested: DateTime
   ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])

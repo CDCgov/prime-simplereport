@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -24,10 +25,12 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
 
   private final TestOrderService _tos;
   private final PersonService _ps;
+  private final DeviceTypeService _dts;
 
-  public QueueMutationResolver(TestOrderService tos, PersonService ps) {
+  public QueueMutationResolver(TestOrderService tos, PersonService ps, DeviceTypeService dts) {
     _tos = tos;
     _ps = ps;
+    _dts = dts;
   }
 
   public AddTestResultResponse addTestResultNew(
@@ -41,8 +44,15 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
         .getTestResult();
   }
 
-  public ApiTestOrder editQueueItem(UUID id, String deviceId, String result, Date dateTested) {
-    return new ApiTestOrder(_tos.editQueueItem(id, deviceId, result, dateTested));
+  public ApiTestOrder editQueueItem(
+      UUID id, String deviceId, UUID deviceSpecimenType, String result, Date dateTested) {
+    UUID dst =
+        deviceSpecimenType == null
+            ? _dts.getDefaultForDeviceId(UUID.fromString(deviceId)).getInternalId()
+            : deviceSpecimenType;
+
+    // return new ApiTestOrder(_tos.editQueueItem(id, deviceId, result, dateTested));
+    return new ApiTestOrder(_tos.editQueueItem(id, dst, result, dateTested));
   }
 
   public String addPatientToQueue(
