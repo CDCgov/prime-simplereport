@@ -197,6 +197,18 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
+  @DisplayName("it should allow global admins to mark facility as deleted")
+  @WithSimpleReportSiteAdminUser
+  void deleteFacilityTest() {
+    Organization verifiedOrg = _dataFactory.createValidOrg();
+    Facility mistakeFacility =
+        _dataFactory.createValidFacility(verifiedOrg, "This facility is a mistake");
+    Facility deletedFacility =
+        _service.markFacilityAsDeleted(mistakeFacility.getInternalId(), true);
+    assertThat(deletedFacility.isDeleted()).isTrue();
+  }
+
+  @Test
   @WithSimpleReportOrgAdminUser
   void adminUpdateOrganization_not_allowed() {
     AccessDeniedException caught =
@@ -296,15 +308,6 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
           .isEqualTo(newOrderingProviderAddress);
 
       assertThat(updatedFacility.getDeviceSpecimenTypes()).hasSize(2);
-    }
-
-    @Test
-    @DisplayName("it should allow global admins to mark facility as deleted")
-    @WithSimpleReportSiteAdminUser
-    void deleteFacilityTest() {
-      Facility facilityToDelete = facilityRepository.findById(facility.getInternalId()).get();
-      Facility deletedFacility = _service.markFacilityAsDeleted(facilityToDelete.getInternalId(), true);
-      assertThat(deletedFacility.isDeleted()).isTrue();
     }
 
     @Nested
