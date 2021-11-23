@@ -87,19 +87,17 @@ describe("ManageDeviceTypeFormContainer", () => {
     render(<ManageDeviceTypeFormContainer />);
   });
 
-  it("should show the device type form", () => {
-    screen.findByText("Manage Device");
+  it("should show the device type form", async () => {
+    expect(await screen.findByText("Manage devices")).toBeInTheDocument();
   });
 
   it("should update the selected device", async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    act(() => {
-      userEvent.selectOptions(
-        screen.getByLabelText("Device name", { exact: false }),
-        "Covalent Observer"
-      );
-    });
+    userEvent.selectOptions(
+      screen.getByLabelText("Device name", { exact: false }),
+      "Covalent Observer"
+    );
 
     await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -107,9 +105,7 @@ describe("ManageDeviceTypeFormContainer", () => {
 
     addValue("Model", "D");
 
-    act(() => {
-      userEvent.click(screen.getByText("Save changes"));
-    });
+    userEvent.click(screen.getByText("Save changes"));
 
     expect(mockUpdateDeviceType).toBeCalledTimes(1);
     expect(mockUpdateDeviceType).toHaveBeenCalledWith({
@@ -124,6 +120,6 @@ describe("ManageDeviceTypeFormContainer", () => {
       },
     });
 
-    await screen.findByText("Redirected to /admin");
+    expect(await screen.findByText("Redirected to /admin")).toBeInTheDocument();
   });
 });

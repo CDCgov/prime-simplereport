@@ -3,7 +3,6 @@ import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 
 import {
-  EditPendingOrganizationDocument,
   GetPendingOrganizationsDocument,
   SetOrgIdentityVerifiedDocument,
 } from "../../../generated/graphql";

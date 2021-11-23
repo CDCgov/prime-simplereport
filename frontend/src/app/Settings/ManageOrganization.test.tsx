@@ -1,5 +1,5 @@
 import { MockedProvider } from "@apollo/client/testing";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { DeepPartial } from "redux";
@@ -52,9 +52,7 @@ describe("ManageOrganization", () => {
     userEvent.type(orgNameInput, "Penny Lane");
     userEvent.selectOptions(orgTypeInput, "other");
     expect(saveButton).not.toBeDisabled();
-    await waitFor(() => {
-      userEvent.click(saveButton);
-    });
+    userEvent.click(saveButton);
   });
 
   it("allows org type change for regular admins", async () => {
@@ -72,9 +70,7 @@ describe("ManageOrganization", () => {
     const saveButton = screen.getByText("Save settings");
     userEvent.selectOptions(orgTypeInput, "hospice");
     expect(saveButton).not.toBeDisabled();
-    await waitFor(() => {
-      userEvent.click(saveButton);
-    });
+    userEvent.click(saveButton);
   });
 });
 

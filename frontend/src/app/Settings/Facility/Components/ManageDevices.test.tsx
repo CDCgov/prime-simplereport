@@ -140,14 +140,14 @@ describe("ManageDevices", () => {
     it("allows user to change the device type on an existing device", async () => {
       const [deviceDropdown] = await screen.findAllByRole("combobox");
 
-      await waitFor(() => {
-        userEvent.selectOptions(deviceDropdown, "device-c");
-      });
+      userEvent.selectOptions(deviceDropdown, "device-c");
 
       expect(
-        (screen.getAllByRole("option", {
-          name: "Device C",
-        })[0] as HTMLOptionElement).selected
+        ((
+          await screen.findAllByRole("option", {
+            name: "Device C",
+          })
+        )[0] as HTMLOptionElement).selected
       ).toBeTruthy();
     });
 
@@ -157,14 +157,14 @@ describe("ManageDevices", () => {
         "combobox"
       );
 
-      await waitFor(() => {
-        userEvent.selectOptions(swabDropdown, "fake-specimen-id-2");
-      });
+      userEvent.selectOptions(swabDropdown, "fake-specimen-id-2");
 
       expect(
-        (screen.getAllByRole("option", {
-          name: "Fake Specimen 2",
-        })[0] as HTMLOptionElement).selected
+        ((
+          await screen.findAllByRole("option", {
+            name: "Fake Specimen 2",
+          })
+        )[0] as HTMLOptionElement).selected
       ).toBeTruthy();
     });
 
@@ -180,9 +180,7 @@ describe("ManageDevices", () => {
 
       expect(dropdowns.length).toBe(4);
 
-      await waitFor(() => {
-        fireEvent.click(screen.getByText("Add device", { exact: false }));
-      });
+      fireEvent.click(screen.getByText("Add device", { exact: false }));
 
       const updatedDropdowns = await screen.findAllByRole("combobox");
       expect(updatedDropdowns.length).toBe(6);
@@ -193,11 +191,9 @@ describe("ManageDevices", () => {
 
       expect(dropdowns.length).toBe(4);
 
-      await waitFor(() => {
-        fireEvent.click(
-          screen.getAllByLabelText("Delete device", { exact: false })[0]
-        );
-      });
+      fireEvent.click(
+        screen.getAllByLabelText("Delete device", { exact: false })[0]
+      );
 
       const updatedDropdowns = await screen.findAllByRole("combobox");
       expect(updatedDropdowns.length).toBe(2);
@@ -217,14 +213,14 @@ describe("ManageDevices", () => {
       ).toBeTruthy();
 
       // Change device to one with _different_ configured swab types
-      await waitFor(() => {
-        userEvent.selectOptions(deviceDropdownElement, "device-b");
-      });
+      userEvent.selectOptions(deviceDropdownElement, "device-b");
 
       expect(
-        (screen.getAllByRole("option", {
-          name: "Fake Specimen 1",
-        })[0] as HTMLOptionElement).selected
+        ((
+          await screen.findAllByRole("option", {
+            name: "Fake Specimen 1",
+          })
+        )[0] as HTMLOptionElement).selected
       ).toBeTruthy();
     });
   });
