@@ -27,6 +27,8 @@ interface Props {
   allFacilities: UserFacilitySetting[];
   updateUserPrivileges: (variables: any) => Promise<any>;
   addUserToOrg: (variables: any) => Promise<any>;
+  updateUserName: (variables: any) => Promise<any>;
+  updateUserEmail: (variables: any) => Promise<any>;
   resetUserPassword: (variables: any) => Promise<any>;
   deleteUser: (variables: any) => Promise<any>;
   reactivateUser: (variables: any) => Promise<any>;
@@ -47,6 +49,7 @@ const emptySettingsUser: SettingsUser = {
   firstName: "",
   middleName: "",
   lastName: "",
+  suffix: "",
   id: "",
   email: "",
   status: "",
@@ -76,6 +79,8 @@ const ManageUsers: React.FC<Props> = ({
   allFacilities,
   updateUserPrivileges,
   addUserToOrg,
+  updateUserName,
+  updateUserEmail,
   resetUserPassword,
   deleteUser,
   reactivateUser,
@@ -97,6 +102,8 @@ const ManageUsers: React.FC<Props> = ({
   );
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
   const [showAddUserModal, updateShowAddUserModal] = useState(false);
+  const [showEditUserNameModal, updateEditUserNameModal] = useState(false);
+  const [showEditUserEmailModal, updateEditUserEmailModal] = useState(false);
   const [showResetPasswordModal, updateShowResetPasswordModal] = useState(
     false
   );
@@ -241,6 +248,51 @@ const ManageUsers: React.FC<Props> = ({
       setIsUpdating(false);
     } catch (e) {
       setIsUpdating(false);
+    }
+  };
+
+  const handleEditUserName = async (
+    userId: string,
+    firstName: string,
+    middleName: string,
+    lastName: string
+  ) => {
+    try {
+      await updateUserName({
+        variables: {
+          id: userId,
+          firstName: firstName,
+          middleName: middleName,
+          lastName: lastName,
+        },
+      });
+      const fullName = displayFullName(firstName, middleName, lastName);
+      updateEditUserNameModal(false);
+      showNotification(
+        <Alert type="success" title={`User name changed to ${fullName}`} />
+      );
+    } catch (e) {
+      setError(e);
+    }
+  };
+
+  const handleEditUserEmail = async (userId: string, emailAddress: string) => {
+    try {
+      await updateUserEmail({
+        variables: {
+          id: userId,
+          email: emailAddress,
+        },
+      });
+      updateEditUserEmailModal(false);
+      showNotification(
+        <Alert
+          type="success"
+          title={`User email address changed to ${emailAddress}`}
+        />
+      );
+    } catch (e) {
+      setError(e);
     }
   };
 
@@ -425,6 +477,10 @@ const ManageUsers: React.FC<Props> = ({
               updateShowResendUserActivationEmailModal={
                 updateShowResendUserActivationEmailModal
               }
+              showEditUserNameModal={showEditUserNameModal}
+              updateEditUserNameModal={updateEditUserNameModal}
+              showEditUserEmailModal={showEditUserEmailModal}
+              updateEditUserEmailModal={updateEditUserEmailModal}
               showResetUserPasswordModal={showResetPasswordModal}
               updateShowResetPasswordModal={updateShowResetPasswordModal}
               showDeleteUserModal={showDeleteUserModal}
@@ -434,6 +490,8 @@ const ManageUsers: React.FC<Props> = ({
               isUserEdited={isUserEdited}
               onContinueChangeActiveUser={onContinueChangeActiveUser}
               handleReactivateUser={handleReactivateUser}
+              handleEditUserName={handleEditUserName}
+              handleEditUserEmail={handleEditUserEmail}
               handleResetUserPassword={handleResetUserPassword}
               handleResendUserActivationEmail={handleResendUserActivationEmail}
             />

@@ -206,6 +206,28 @@ public class ApiUserService {
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
+  public UserInfo updateUserEmail(UUID userId, String email) {
+    ApiUser apiUser = getApiUser(userId);
+    String username = apiUser.getLoginEmail();
+    IdentityAttributes userIdentity = new IdentityAttributes(username, apiUser.getNameInfo());
+
+    apiUser.setLoginEmail(email);
+    apiUser = _apiUserRepo.save(apiUser);
+
+    Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUserEmail(userIdentity, email);
+    Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
+    boolean isAdmin = isAdmin(apiUser);
+    UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
+
+    log.info(
+        "User with id={} updated by user with id={}",
+        apiUser.getInternalId(),
+        getCurrentApiUser().getInternalId().toString());
+
+    return new UserInfo(apiUser, orgRoles, isAdmin(apiUser));
+  }
+
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
   public UserInfo resetUserPassword(UUID userId) {
     ApiUser apiUser = getApiUser(userId);
     String username = apiUser.getLoginEmail();

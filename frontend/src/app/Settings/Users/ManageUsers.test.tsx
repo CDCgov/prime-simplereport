@@ -218,6 +218,8 @@ const mocks = [
 let updateUserPrivileges: () => Promise<any>;
 let addUserToOrg: () => Promise<any>;
 let deleteUser: (obj: any) => Promise<any>;
+let updateUserName: (obj: any) => Promise<any>;
+let updateUserEmail: (obj: any) => Promise<any>;
 let getUsers: () => Promise<any>;
 let reactivateUser: (obj: any) => Promise<any>;
 let resetUserPassword: (obj: any) => Promise<any>;
@@ -259,6 +261,16 @@ describe("ManageUsers", () => {
     deleteUser = jest.fn((obj) =>
       Promise.resolve({ data: { setUserIsDeleted: { id: obj.variables.id } } })
     );
+    updateUserName = jest.fn((obj) =>
+      Promise.resolve({
+        data: { updateUserName: { id: obj.variables.id } },
+      })
+    );
+    updateUserEmail = jest.fn((obj) =>
+      Promise.resolve({
+        data: { updateUserEmail: { id: obj.variables.id } },
+      })
+    );
     getUsers = jest.fn(() => Promise.resolve({ data: users }));
     reactivateUser = jest.fn((obj) =>
       Promise.resolve({
@@ -292,6 +304,8 @@ describe("ManageUsers", () => {
             reactivateUser={reactivateUser}
             resetUserPassword={resetUserPassword}
             resendUserActivationEmail={resendUserActivationEmail}
+            updateUserName={updateUserName}
+            updateUserEmail={updateUserEmail}
           />
         </TestContainer>
       );
@@ -452,6 +466,50 @@ describe("ManageUsers", () => {
         variables: { id: users[0].id },
       });
     });
+
+    it("changes a user's name", async () => {
+      const newUser = {
+        firstName: "Karnov",
+        middleName: "Malachai",
+        lastName: "Beeblebrox"
+      };
+
+      const editButton = await screen.findByText("Edit name", { exact: true });
+      userEvent.click(editButton);
+      const [first, middle, last] = await screen.findAllByRole("textbox");
+      fireEvent.change(first, inputValue(newUser.firstName));
+      fireEvent.change(middle, inputValue(newUser.middleName));
+      fireEvent.change(last, inputValue(newUser.lastName));
+      const confirmButton = await screen.findByText("Confirm", { exact: false });
+      userEvent.click(confirmButton);
+      await waitFor(() => expect(updateUserName).toBeCalled());
+      expect(updateUserName).toBeCalledWith({
+        variables: {
+          id: users[0].id,
+          firstName: newUser.firstName,
+          middleName: newUser.middleName,
+          lastName: newUser.lastName
+        }
+      });
+    });
+
+    it("changes a user's email", async () => {
+      const newEmail = "thisisanewemail@newemail.com"
+
+      const editButton = await screen.findByText("Edit email", { exact: true });
+      userEvent.click(editButton);
+      const [email] = await screen.findAllByRole("textbox");
+      fireEvent.change(email, inputValue(newEmail));
+      const confirmButton = await screen.findByText("Confirm", { exact: false });
+      userEvent.click(confirmButton);
+      await waitFor(() => expect(updateUserEmail).toBeCalled());
+      expect(updateUserEmail).toBeCalledWith({
+        variables: {
+          id: users[0].id,
+          email: newEmail
+        }
+      });
+    });
   });
 
   describe("empty list of users", () => {
@@ -469,6 +527,8 @@ describe("ManageUsers", () => {
             reactivateUser={reactivateUser}
             resetUserPassword={() => Promise.resolve()}
             resendUserActivationEmail={resendUserActivationEmail}
+            updateUserName={() => Promise.resolve()}
+            updateUserEmail={() => Promise.resolve()}
           />
         </TestContainer>
       );
@@ -519,6 +579,8 @@ describe("ManageUsers", () => {
             reactivateUser={reactivateUser}
             resetUserPassword={() => Promise.resolve()}
             resendUserActivationEmail={resendUserActivationEmail}
+            updateUserName={() => Promise.resolve()}
+            updateUserEmail={() => Promise.resolve()}
           />
         </TestContainer>
       );
@@ -560,6 +622,8 @@ describe("ManageUsers", () => {
             reactivateUser={reactivateUser}
             resetUserPassword={() => Promise.resolve()}
             resendUserActivationEmail={resendUserActivationEmail}
+            updateUserName={() => Promise.resolve()}
+            updateUserEmail={() => Promise.resolve()}
           />
         </TestContainer>
       );
@@ -652,6 +716,8 @@ describe("ManageUsers", () => {
               reactivateUser={reactivateUser}
               resetUserPassword={() => Promise.resolve()}
               resendUserActivationEmail={resendUserActivationEmail}
+              updateUserName={() => Promise.resolve()}
+              updateUserEmail={() => Promise.resolve()}
             />
           </MockedProvider>
         </Provider>

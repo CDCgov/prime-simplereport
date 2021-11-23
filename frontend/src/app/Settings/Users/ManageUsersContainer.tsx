@@ -18,6 +18,7 @@ export interface SettingsUser {
   firstName?: Maybe<string>;
   middleName?: Maybe<string>;
   lastName: string;
+  suffix?: Maybe<string>;
   roleDescription: string;
   role?: Maybe<Role>;
   permissions: UserPermission[];
@@ -34,6 +35,7 @@ export interface LimitedUser {
   firstName?: Maybe<string>;
   middleName?: Maybe<string>;
   lastName: string;
+  suffix?: string;
   email: string;
   status?: Maybe<string>;
 }
@@ -63,6 +65,35 @@ const UPDATE_USER_PRIVILEGES = gql`
 const RESET_USER_PASSWORD = gql`
   mutation ResetUserPassword($id: ID!) {
     resetUserPassword(id: $id) {
+      id
+    }
+  }
+`;
+
+const UPDATE_USER_NAME = gql`
+  mutation UpdateUserName(
+    $id: ID!
+    $firstName: String
+    $middleName: String
+    $lastName: String!
+    $suffix: String
+  ) {
+    updateUser(
+      id: $id
+      name: null
+      firstName: $firstName
+      middleName: $middleName
+      lastName: $lastName
+      suffix: $suffix
+    ) {
+      id
+    }
+  }
+`;
+
+const UPDATE_USER_EMAIL = gql`
+  mutation EditUserEmail($id: ID!, $email: String) {
+    updateUserEmail(id: $id, email: $email) {
       id
     }
   }
@@ -116,6 +147,8 @@ const ManageUsersContainer = () => {
   const [deleteUser] = useMutation(DELETE_USER);
   const [reactivateUser] = useMutation(REACTIVATE_USER);
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
+  const [updateUserName] = useMutation(UPDATE_USER_NAME);
+  const [updateUserEmail] = useMutation(UPDATE_USER_EMAIL);
   const [resetPassword] = useMutation(RESET_USER_PASSWORD);
   const [resendUserActivationEmail] = useResendActivationEmailMutation();
 
@@ -145,6 +178,8 @@ const ManageUsersContainer = () => {
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}
       addUserToOrg={addUserToOrg}
+      updateUserName={updateUserName}
+      updateUserEmail={updateUserEmail}
       resetUserPassword={resetPassword}
       deleteUser={deleteUser}
       reactivateUser={reactivateUser}

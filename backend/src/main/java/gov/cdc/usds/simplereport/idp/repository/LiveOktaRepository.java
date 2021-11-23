@@ -247,6 +247,20 @@ public class LiveOktaRepository implements OktaRepository {
     user.update();
   }
 
+  public Optional<OrganizationRoleClaims> updateUserEmail(
+      IdentityAttributes userIdentity, String email) {
+    UserList users = _client.listUsers(userIdentity.getUsername(), null, null, null, null);
+    if (users.stream().count() == 0) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot update email of Okta user with unrecognized username");
+    }
+    User user = users.single();
+    user.getProfile().setEmail(email);
+    user.update();
+
+    return getOrganizationRoleClaimsForUser(user);
+  }
+
   public void reprovisionUser(IdentityAttributes userIdentity) {
     UserList users = _client.listUsers(userIdentity.getUsername(), null, null, null, null);
     if (users.stream().count() == 0) {

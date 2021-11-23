@@ -130,6 +130,109 @@ class LiveOktaRepositoryTest {
   }
 
   @Test
+  void updateUser() {
+    String username = "fraud@fake.com";
+    PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
+    IdentityAttributes userAttributes = new IdentityAttributes(username, personName);
+
+    UserList userList = mock(UserList.class);
+    User user = mock(User.class);
+    UserProfile userProfile = mock(UserProfile.class);
+    GroupList groupList = mock(GroupList.class);
+    Group group1 = mock(Group.class);
+    GroupProfile groupProfile1 = mock(GroupProfile.class);
+
+    when(_client.listUsers(username, null, null, null, null)).thenReturn(userList);
+    when(userList.stream()).thenReturn(Stream.of(user));
+    when(userList.single()).thenReturn(user);
+    when(user.getProfile()).thenReturn(userProfile);
+
+    when(user.listGroups()).thenReturn(groupList);
+    when(groupList.stream()).thenReturn(Stream.of(group1));
+    when(group1.getType()).thenReturn(GroupType.OKTA_GROUP);
+    when(group1.getProfile()).thenReturn(groupProfile1);
+    when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:MYNIFTYORG:NO_ACCESS");
+
+    _repo.updateUser(userAttributes);
+    verify(userProfile, times(1)).setFirstName(personName.getFirstName());
+    verify(userProfile, times(1)).setMiddleName(personName.getMiddleName());
+    verify(userProfile, times(1)).setLastName(personName.getLastName());
+    verify(userProfile, times(1)).setHonorificSuffix(personName.getSuffix());
+    verify(user, times(1)).update();
+  }
+
+  @Test
+  void updateUserEmail() {
+    String username = "fraud@fake.com";
+    String newUsername = "newemail@fake.com";
+    PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
+    IdentityAttributes userAttributes = new IdentityAttributes(username, personName);
+
+    UserList userList = mock(UserList.class);
+    User user = mock(User.class);
+    UserProfile userProfile = mock(UserProfile.class);
+    GroupList groupList = mock(GroupList.class);
+    Group group1 = mock(Group.class);
+    GroupProfile groupProfile1 = mock(GroupProfile.class);
+
+    when(_client.listUsers(username, null, null, null, null)).thenReturn(userList);
+    when(userList.stream()).thenReturn(Stream.of(user));
+    when(userList.single()).thenReturn(user);
+    when(user.getProfile()).thenReturn(userProfile);
+
+    when(user.listGroups()).thenReturn(groupList);
+    when(groupList.stream()).thenReturn(Stream.of(group1));
+    when(group1.getType()).thenReturn(GroupType.OKTA_GROUP);
+    when(group1.getProfile()).thenReturn(groupProfile1);
+    when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:MYNIFTYORG:NO_ACCESS");
+
+    _repo.updateUserEmail(userAttributes, newUsername);
+    verify(userProfile, times(1)).setEmail(newUsername);
+    verify(user, times(1)).update();
+  }
+
+  @Test
+  void updateUser_userNotFound_error() {
+    String username = "fraud@fake.com";
+    PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
+    IdentityAttributes identityAttributes = new IdentityAttributes(username, personName);
+
+    UserList userList = mock(UserList.class);
+
+    when(_client.listUsers(username, null, null, null, null)).thenReturn(userList);
+    when(userList.stream()).thenReturn(Stream.of());
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> {
+              _repo.updateUser(identityAttributes);
+            });
+    assertEquals("Cannot update Okta user with unrecognized username", caught.getMessage());
+  }
+
+  @Test
+  void updateUserEmail_userNotFound_error() {
+    String username = "fraud@fake.com";
+    PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
+    IdentityAttributes identityAttributes = new IdentityAttributes(username, personName);
+
+    UserList userList = mock(UserList.class);
+
+    when(_client.listUsers(username, null, null, null, null)).thenReturn(userList);
+    when(userList.stream()).thenReturn(Stream.of());
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> {
+              _repo.updateUserEmail(identityAttributes, "newemail@fake.com");
+            });
+    assertEquals(
+        "Cannot update email of Okta user with unrecognized username", caught.getMessage());
+  }
+
+  @Test
   void reprovisionUser_success() {
     String username = "fraud@fake.com";
     PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");

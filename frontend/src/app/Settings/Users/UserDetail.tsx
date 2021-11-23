@@ -13,6 +13,8 @@ import DeleteUserModal from "./DeleteUserModal";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
 import ReactivateUserModal from "./ReactivateUserModal";
+import EditUserNameModal from "./EditUserNameModal";
+import EditUserEmailModal from "./EditUserEmailModal";
 import ResetUserPasswordModal from "./ResetUserPasswordModal";
 import "./ManageUsers.scss";
 import ResendActivationEmailModal from "./ResendActivationEmailModal";
@@ -31,6 +33,10 @@ interface Props {
   updateShowResendUserActivationEmailModal: (
     showResendUserActivationEmail: boolean
   ) => void;
+  showEditUserNameModal: boolean;
+  updateEditUserNameModal: (showEditUserNameModal: boolean) => void;
+  showEditUserEmailModal: boolean;
+  updateEditUserEmailModal: (showEditUserEmailModal: boolean) => void;
   showResetUserPasswordModal: boolean;
   updateShowResetPasswordModal: (showResetPasswordModal: boolean) => void;
   showDeleteUserModal: boolean;
@@ -40,6 +46,13 @@ interface Props {
   isUserEdited: boolean;
   onContinueChangeActiveUser: () => void;
   handleReactivateUser: (userId: string) => void;
+  handleEditUserName: (
+    userId: string,
+    firstName: string,
+    middleName: string,
+    lastName: string
+  ) => void;
+  handleEditUserEmail: (userId: string, emailAddress: string) => void;
   handleResetUserPassword: (userId: string) => void;
   handleResendUserActivationEmail: (userId: string) => void;
 }
@@ -57,6 +70,10 @@ const UserDetail: React.FC<Props> = ({
   updateShowReactivateUserModal,
   showResendUserActivationEmailModal,
   updateShowResendUserActivationEmailModal,
+  showEditUserNameModal,
+  updateEditUserNameModal,
+  showEditUserEmailModal,
+  updateEditUserEmailModal,
   showResetUserPasswordModal,
   updateShowResetPasswordModal,
   showDeleteUserModal,
@@ -66,6 +83,8 @@ const UserDetail: React.FC<Props> = ({
   isUserEdited,
   onContinueChangeActiveUser,
   handleReactivateUser,
+  handleEditUserName,
+  handleEditUserEmail,
   handleResetUserPassword,
   handleResendUserActivationEmail,
 }) => {
@@ -108,8 +127,30 @@ const UserDetail: React.FC<Props> = ({
           />
         ) : null}
         {user.status !== "SUSPENDED" &&
-        user.status !== "PROVISIONED" &&
-        user?.id !== loggedInUser.id ? (
+          user.status !== "PROVISIONED" &&
+          user?.id !== loggedInUser.id ? (
+          <Button
+            variant="outline"
+            className="margin-left-auto margin-bottom-1"
+            onClick={() => updateEditUserNameModal(true)}
+            label={"Edit name"}
+            disabled={isUpdating}
+          />
+        ) : null}
+        {user.status !== "SUSPENDED" &&
+          user.status !== "PROVISIONED" &&
+          user?.id !== loggedInUser.id ? (
+          <Button
+            variant="outline"
+            className="margin-left-auto margin-bottom-1"
+            onClick={() => updateEditUserEmailModal(true)}
+            label={"Edit email"}
+            disabled={isUpdating}
+          />
+        ) : null}
+        {user.status !== "SUSPENDED" &&
+          user.status !== "PROVISIONED" &&
+          user?.id !== loggedInUser.id ? (
           <Button
             variant="outline"
             className="margin-left-auto margin-bottom-1"
@@ -203,6 +244,20 @@ const UserDetail: React.FC<Props> = ({
           user={user}
           onClose={() => updateShowResetPasswordModal(false)}
           onResetPassword={handleResetUserPassword}
+        />
+      ) : null}
+      {showEditUserNameModal ? (
+        <EditUserNameModal
+          user={user}
+          onClose={() => updateEditUserNameModal(false)}
+          onEditUserName={handleEditUserName}
+        />
+      ) : null}
+      {showEditUserEmailModal ? (
+        <EditUserEmailModal
+          user={user}
+          onClose={() => updateEditUserEmailModal(false)}
+          onEditUserEmail={handleEditUserEmail}
         />
       ) : null}
     </div>
