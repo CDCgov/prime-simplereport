@@ -8,26 +8,52 @@ import { LoadingCard } from "../commonComponents/LoadingCard/LoadingCard";
 
 import "./Analytics.scss";
 
-export const getDateFromDaysAgo = (daysAgo: number): Date => {
+const getDateFromDaysAgo = (daysAgo: number): Date => {
   const date = new Date();
   date.setDate(date.getDate() - daysAgo);
   return date;
 };
 
-export const getDateStringFromDaysAgo = (daysAgo: number): string => {
-  return getDateFromDaysAgo(daysAgo).toLocaleDateString();
+export const setStartTimeForDateRange = (date: Date): Date => {
+  date.setHours(0);
+  date.setMinutes(0);
+  date.setSeconds(0);
+  return date;
 };
 
-export const getDateWithCurrentTimeFromString = (date: string): Date => {
-  const now = new Date();
-  const newDate = new Date(date);
-  newDate.setHours(now.getHours());
-  newDate.setMinutes(now.getMinutes());
-  newDate.setSeconds(now.getSeconds());
-  return newDate;
+export const setEndTimeForDateRange = (date: Date): Date => {
+  date.setHours(23);
+  date.setMinutes(59);
+  date.setSeconds(59);
+  return date;
 };
 
-export const Analytics = () => {
+export const getStartDateFromDaysAgo = (daysAgo: number): Date => {
+  const newDate = getDateFromDaysAgo(daysAgo);
+  return setStartTimeForDateRange(newDate);
+};
+
+export const getStartDateStringFromDaysAgo = (daysAgo: number): string => {
+  const newDate = getStartDateFromDaysAgo(daysAgo);
+  return newDate.toLocaleDateString();
+};
+
+export const getEndDateFromDaysAgo = (daysAgo: number): Date => {
+  const newDate = getDateFromDaysAgo(daysAgo);
+  return setEndTimeForDateRange(newDate);
+};
+
+export const getEndDateStringFromDaysAgo = (daysAgo: number): string => {
+  const newDate = getEndDateFromDaysAgo(daysAgo);
+  return newDate.toLocaleDateString();
+};
+
+interface Props {
+  startDate?: string;
+  endDate?: string;
+}
+
+export const Analytics = (props: Props) => {
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );
@@ -38,10 +64,10 @@ export const Analytics = () => {
   const [facilityName, setFacilityName] = useState<string>(organization.name);
   const [dateRange, setDateRange] = useState<string>("week");
   const [startDate, setStartDate] = useState<string>(
-    getDateStringFromDaysAgo(7)
+    props.startDate || getStartDateStringFromDaysAgo(7)
   );
   const [endDate, setEndDate] = useState<string>(
-    new Date().toLocaleDateString()
+    props.endDate || getEndDateStringFromDaysAgo(0)
   );
 
   useEffect(() => {
@@ -70,16 +96,16 @@ export const Analytics = () => {
     setDateRange(value);
     switch (value) {
       case "day":
-        setStartDate(getDateStringFromDaysAgo(1));
-        setEndDate(new Date().toLocaleDateString());
+        setStartDate(getStartDateStringFromDaysAgo(1));
+        setEndDate(getEndDateStringFromDaysAgo(0));
         break;
       case "week":
-        setStartDate(getDateStringFromDaysAgo(7));
-        setEndDate(new Date().toLocaleDateString());
+        setStartDate(getStartDateStringFromDaysAgo(7));
+        setEndDate(getEndDateStringFromDaysAgo(0));
         break;
       case "month":
-        setStartDate(getDateStringFromDaysAgo(30));
-        setEndDate(new Date().toLocaleDateString());
+        setStartDate(getStartDateStringFromDaysAgo(30));
+        setEndDate(getEndDateStringFromDaysAgo(0));
         break;
       default:
         break;
@@ -90,8 +116,10 @@ export const Analytics = () => {
     variables: {
       facilityId,
       startDate:
-        getDateWithCurrentTimeFromString(startDate) || getDateFromDaysAgo(7),
-      endDate: getDateWithCurrentTimeFromString(endDate) || new Date(),
+        setStartTimeForDateRange(new Date(startDate)) ||
+        getStartDateFromDaysAgo(7),
+      endDate:
+        setEndTimeForDateRange(new Date(endDate)) || getEndDateFromDaysAgo(0),
     },
     fetchPolicy: "no-cache",
   });
@@ -177,7 +205,11 @@ export const Analytics = () => {
                       onChange={(date?: string) => {
                         if (date && date.length === 10) {
                           const newDate = new Date(date);
-                          setStartDate(newDate.toLocaleDateString());
+                          setStartDate(
+                            setStartTimeForDateRange(
+                              newDate
+                            ).toLocaleDateString()
+                          );
                         }
                       }}
                       noHint
@@ -190,7 +222,9 @@ export const Analytics = () => {
                       onChange={(date?: string) => {
                         if (date && date.length === 10) {
                           const newDate = new Date(date);
-                          setEndDate(newDate.toLocaleDateString());
+                          setEndDate(
+                            setEndTimeForDateRange(newDate).toLocaleDateString()
+                          );
                         }
                       }}
                       noHint

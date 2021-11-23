@@ -8,7 +8,7 @@ import { LocationDescriptor } from "history";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
-import { showNotification } from "../utils";
+import { showNotification, dedupeAndCompactStrings } from "../utils";
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import {
@@ -40,12 +40,13 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   telephone: null,
   phoneNumbers: null,
   county: null,
-  email: null,
+  emails: null,
   street: "",
   streetTwo: null,
   city: null,
   state: "",
   zipCode: "",
+  country: "USA",
   preferredLanguage: null,
   testResultDelivery: null,
 };
@@ -84,7 +85,7 @@ export const ADD_PATIENT = gql`
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
     $lookupId: String
-    $email: String
+    $emails: [String]
     $county: String
     $race: String
     $ethnicity: String
@@ -110,7 +111,7 @@ export const ADD_PATIENT = gql`
       phoneNumbers: $phoneNumbers
       role: $role
       lookupId: $lookupId
-      email: $email
+      emails: $emails
       county: $county
       race: $race
       ethnicity: $ethnicity
@@ -246,6 +247,7 @@ const AddPatient = () => {
             return phoneNumber && phoneNumber.number && phoneNumber.type;
           }
         ),
+        emails: dedupeAndCompactStrings(person.emails || []),
       },
     });
     showNotification(

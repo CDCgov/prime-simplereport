@@ -28,7 +28,7 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
     fetchPolicy: "no-cache",
   });
 
-  const patient = data?.testResult?.patient as User;
+  const patient = data?.testResult?.patient as Person;
   const dateTested = data?.testResult?.dateTested;
   const patientLinkId = data?.testResult?.patientLink?.internalId || "";
 
@@ -49,7 +49,9 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
               {formatFullName(patient)}'s test result from{" "}
               {formatDate(dateTested)} will be sent to the following emails:
             </div>
-            <div>{patient?.email}</div>
+            {patient.emails?.map((email: string) => (
+              <div>{email}</div>
+            ))}
           </div>
           <div className="sr-test-correction-buttons">
             <Button variant="unstyled" label="Cancel" onClick={closeModal} />

@@ -144,6 +144,38 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
   }
 
   @Test
+  void sendWithDynamicTemplate_multipleEmails_ok() throws IOException {
+    // GIVEN
+    List<String> toEmails = List.of("test@foo.com", "foo@bar.org");
+    Map<String, Object> dynamicTemplateData =
+        Map.of(
+            "facility_name", "test_facility",
+            "expiration_duration", "2 days",
+            "test_result_url", "http://localhost");
+    // WHEN
+    _service.sendWithDynamicTemplate(
+        toEmails, EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT, dynamicTemplateData);
+
+    // THEN
+    verify(mockSendGrid, times(2)).send(mail.capture());
+    List<Mail> sentMail = mail.getAllValues();
+
+    // First email
+    Personalization personalization0 = sentMail.get(0).getPersonalization().get(0);
+
+    assertThat(sentMail.get(0).getFrom().getEmail()).isEqualTo("me@example.com");
+    assertThat(sentMail.get(0).getFrom().getName()).isEqualTo("My Display Name");
+    assertEquals(personalization0.getTos().get(0).getEmail(), "test@foo.com");
+
+    // Second email
+    Personalization personalization1 = sentMail.get(1).getPersonalization().get(0);
+
+    assertThat(sentMail.get(1).getFrom().getEmail()).isEqualTo("me@example.com");
+    assertThat(sentMail.get(1).getFrom().getName()).isEqualTo("My Display Name");
+    assertEquals(personalization1.getTos().get(0).getEmail(), "foo@bar.org");
+  }
+
+  @Test
   void sendWithDynamicTemplateTest() throws IOException {
     // GIVEN
     String toEmail = "test@foo.com";
@@ -154,7 +186,7 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
             "test_result_url", "http://localhost");
     // WHEN
     _service.sendWithDynamicTemplate(
-        toEmail, EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT, dynamicTemplateData);
+        List.of(toEmail), EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT, dynamicTemplateData);
 
     // THEN
     verify(mockSendGrid, times(1)).send(mail.capture());

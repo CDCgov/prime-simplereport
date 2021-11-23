@@ -114,6 +114,7 @@ describe("AddPatient", () => {
               city: "Boston",
               state: "MA",
               zipCode: "02115",
+              country: "USA",
               telephone: null,
               phoneNumbers: [
                 {
@@ -122,7 +123,7 @@ describe("AddPatient", () => {
                 },
               ],
               role: null,
-              email: null,
+              emails: ["foo@bar.org"],
               county: "",
               race: null,
               ethnicity: null,
@@ -157,6 +158,7 @@ describe("AddPatient", () => {
               city: "Boston",
               state: "MA",
               zipCode: "02115",
+              country: "USA",
               telephone: null,
               phoneNumbers: [
                 {
@@ -165,7 +167,7 @@ describe("AddPatient", () => {
                 },
               ],
               role: "STUDENT",
-              email: null,
+              emails: [],
               county: "",
               race: null,
               ethnicity: null,
@@ -207,6 +209,67 @@ describe("AddPatient", () => {
       ).toBeInTheDocument();
     });
 
+    describe("Choosing a country", () => {
+      it("should show the state and zip code inputs for USA", async () => {
+        fillOutForm(
+          {
+            "First Name": "Alice",
+            "Last Name": "Hamilton",
+            Facility: mockFacilityID,
+            "Date of birth": "1970-09-22",
+            "Primary phone number": "617-432-1000",
+            "Email address": "foo@bar.org",
+            Country: "USA",
+            "Street address 1": "25 Shattuck St",
+            City: "Vancouver",
+          },
+          {
+            "Phone type": {
+              label: "Mobile",
+              value: "MOBILE",
+              exact: true,
+            },
+            "Would you like to receive your results via text message": {
+              label: "Yes",
+              value: "SMS",
+              exact: false,
+            },
+          }
+        );
+        expect(await screen.queryByText("State")).toBeInTheDocument();
+        expect(await screen.queryByText("ZIP code")).toBeInTheDocument();
+      });
+      it("should hide the state and zip code inputs for non-US countries", async () => {
+        fillOutForm(
+          {
+            "First Name": "Alice",
+            "Last Name": "Hamilton",
+            Facility: mockFacilityID,
+            "Date of birth": "1970-09-22",
+            "Primary phone number": "617-432-1000",
+            "Email address": "foo@bar.org",
+            Country: "CAN",
+            "Street address 1": "25 Shattuck St",
+            City: "Vancouver",
+          },
+          {
+            "Phone type": {
+              label: "Mobile",
+              value: "MOBILE",
+              exact: true,
+            },
+            "Would you like to receive your results via text message": {
+              label: "Yes",
+              value: "SMS",
+              exact: false,
+            },
+          }
+        );
+        expect(await screen.queryByText("State")).not.toBeInTheDocument();
+        expect(await screen.queryByText("ZIP code")).not.toBeInTheDocument();
+      });
+    });
+
     describe("All required fields entered", () => {
       beforeEach(async () => {
         fillOutForm(
@@ -216,6 +279,7 @@ describe("AddPatient", () => {
             Facility: mockFacilityID,
             "Date of birth": "1970-09-22",
             "Primary phone number": "617-432-1000",
+            "Email address": "foo@bar.org",
             "Street address 1": "25 Shattuck St",
             City: "Boston",
             State: "MA",
@@ -338,6 +402,7 @@ describe("AddPatient", () => {
 
     describe("saving changes and starting a test", () => {
       beforeEach(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
         fillOutForm(
           {
             "First Name": "Alice",
@@ -345,7 +410,9 @@ describe("AddPatient", () => {
             Facility: mockFacilityID,
             "Date of birth": "1970-09-22",
             "Primary phone number": "617-432-1000",
+            "Email address": "foo@bar.org",
             "Street address 1": "25 Shattuck St",
+            Country: "USA",
             City: "Boston",
             State: "MA",
             "ZIP code": "02115",

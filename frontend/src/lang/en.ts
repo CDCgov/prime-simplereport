@@ -123,6 +123,8 @@ export const en = {
           phoneType: "Phone type",
           addNumber: "Add another number",
           email: "Email address",
+          addEmail: "Add another email address",
+          country: "Country",
           street1: "Street address 1",
           street2: "Street address 2",
           county: "County",
@@ -133,7 +135,8 @@ export const en = {
         testResultDelivery: {
           text: "Would you like to receive your results via text message?",
           receiveTextMessageResults: "Yes, text all mobile numbers on file.",
-          email: "Would you like to receive results at this email?",
+          email: "Would you like your test result sent to this email?",
+          email_plural: "Would you like your test result sent to these emails?",
           receiveEmailResults: YES,
         },
         demographics: {
@@ -184,6 +187,7 @@ export const en = {
           state: "State is missing or incorrectly formatted",
           city: "City is incorrectly formatted",
           county: "County is incorrectly formatted",
+          country: "Country is incorrectly formatted",
           race: "Race is incorrectly formatted",
           tribalAffiliation: "Tribal affiliation is incorrectly formatted",
           ethnicity: "Ethnicity is incorrectly formatted",
@@ -563,6 +567,8 @@ export const en = {
         enterDOB: "Enter your date of birth",
         enterDOB2:
           "Enter your date of birth to access your COVID-19 testing portal.",
+        linkExpirationNotice:
+          "Note: this link will expire 5 days after the test result was recorded.",
         format: "MM/DD/YYYY",
         invalidFormat: "Date of birth must be in MM/DD/YYYY format",
         invalidYear:
@@ -571,7 +577,7 @@ export const en = {
         error: "The date of birth entered is incorrect",
         validating: "Validating birth date...",
         linkExpired:
-          "This link has expired. Please contact your test provider.",
+          "This link has expired. Please contact your test provider to generate a new link.",
         linkNotFound:
           "This test result link is invalid. Please double check the URL or contact your test provider for the correct link.",
         submit: "Continue",

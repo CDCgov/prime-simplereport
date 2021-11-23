@@ -142,7 +142,7 @@ export type Mutation = {
   resendToReportStream?: Maybe<Scalars["Boolean"]>;
   resetUserPassword?: Maybe<User>;
   sendPatientLinkEmail?: Maybe<Scalars["Boolean"]>;
-  sendPatientLinkSms?: Maybe<Scalars["String"]>;
+  sendPatientLinkSms?: Maybe<Scalars["Boolean"]>;
   setCurrentUserTenantDataAccess?: Maybe<User>;
   setOrganizationIdentityVerified?: Maybe<Scalars["Boolean"]>;
   setPatientIsDeleted?: Maybe<Patient>;
@@ -190,6 +190,7 @@ export type MutationAddFacilityArgs = {
 export type MutationAddPatientArgs = {
   birthDate: Scalars["LocalDate"];
   city?: Maybe<Scalars["String"]>;
+  country?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["String"]>;
   emails?: Maybe<Array<Maybe<Scalars["String"]>>>;
@@ -432,6 +433,7 @@ export type MutationUpdateOrganizationArgs = {
 export type MutationUpdatePatientArgs = {
   birthDate: Scalars["LocalDate"];
   city?: Maybe<Scalars["String"]>;
+  country?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["String"]>;
   emails?: Maybe<Array<Maybe<Scalars["String"]>>>;
@@ -536,6 +538,7 @@ export type Patient = {
   address?: Maybe<AddressInfo>;
   birthDate?: Maybe<Scalars["LocalDate"]>;
   city?: Maybe<Scalars["String"]>;
+  country?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["String"]>;
   emails?: Maybe<Array<Maybe<Scalars["String"]>>>;
@@ -1295,7 +1298,7 @@ export type AddPatientMutationVariables = Exact<{
   phoneNumbers?: Maybe<Array<PhoneNumberInput> | PhoneNumberInput>;
   role?: Maybe<Scalars["String"]>;
   lookupId?: Maybe<Scalars["String"]>;
-  email?: Maybe<Scalars["String"]>;
+  emails?: Maybe<Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>>;
   county?: Maybe<Scalars["String"]>;
   race?: Maybe<Scalars["String"]>;
   ethnicity?: Maybe<Scalars["String"]>;
@@ -1350,7 +1353,9 @@ export type GetPatientDetailsQuery = {
     role?: Maybe<string>;
     lookupId?: Maybe<string>;
     email?: Maybe<string>;
+    emails?: Maybe<Array<Maybe<string>>>;
     county?: Maybe<string>;
+    country?: Maybe<string>;
     race?: Maybe<string>;
     ethnicity?: Maybe<string>;
     tribalAffiliation?: Maybe<Array<Maybe<string>>>;
@@ -1388,8 +1393,9 @@ export type UpdatePatientMutationVariables = Exact<{
   phoneNumbers?: Maybe<Array<PhoneNumberInput> | PhoneNumberInput>;
   role?: Maybe<Scalars["String"]>;
   lookupId?: Maybe<Scalars["String"]>;
-  email?: Maybe<Scalars["String"]>;
+  emails?: Maybe<Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>>;
   county?: Maybe<Scalars["String"]>;
+  country?: Maybe<Scalars["String"]>;
   race?: Maybe<Scalars["String"]>;
   ethnicity?: Maybe<Scalars["String"]>;
   tribalAffiliation?: Maybe<Scalars["String"]>;
@@ -1774,6 +1780,7 @@ export type GetPatientsByFacilityForQueueQuery = {
         gender?: Maybe<string>;
         telephone?: Maybe<string>;
         email?: Maybe<string>;
+        emails?: Maybe<Array<Maybe<string>>>;
         testResultDelivery?: Maybe<TestResultDeliveryPreference>;
         phoneNumbers?: Maybe<
           Array<
@@ -1931,6 +1938,47 @@ export type GetTestResultForPrintQuery = {
   }>;
 };
 
+export type GetTestResultForTextQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type GetTestResultForTextQuery = {
+  __typename?: "Query";
+  testResult?: Maybe<{
+    __typename?: "TestResult";
+    dateTested?: Maybe<any>;
+    patientLink?: Maybe<{
+      __typename?: "PatientLink";
+      internalId?: Maybe<string>;
+    }>;
+    patient?: Maybe<{
+      __typename?: "Patient";
+      firstName?: Maybe<string>;
+      middleName?: Maybe<string>;
+      lastName?: Maybe<string>;
+      birthDate?: Maybe<any>;
+      phoneNumbers?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "PhoneNumber";
+            type?: Maybe<PhoneType>;
+            number?: Maybe<string>;
+          }>
+        >
+      >;
+    }>;
+  }>;
+};
+
+export type SendSmsMutationVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type SendSmsMutation = {
+  __typename?: "Mutation";
+  sendPatientLinkSms?: Maybe<boolean>;
+};
+
 export type GetResultsCountByFacilityQueryVariables = Exact<{
   facilityId?: Maybe<Scalars["ID"]>;
   patientId?: Maybe<Scalars["ID"]>;
@@ -2017,6 +2065,7 @@ export type GetTestResultForResendingEmailsQuery = {
       middleName?: Maybe<string>;
       lastName?: Maybe<string>;
       email?: Maybe<string>;
+      emails?: Maybe<Array<Maybe<string>>>;
     }>;
     patientLink?: Maybe<{
       __typename?: "PatientLink";
@@ -3369,7 +3418,7 @@ export const AddPatientDocument = gql`
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
     $lookupId: String
-    $email: String
+    $emails: [String]
     $county: String
     $race: String
     $ethnicity: String
@@ -3395,7 +3444,7 @@ export const AddPatientDocument = gql`
       phoneNumbers: $phoneNumbers
       role: $role
       lookupId: $lookupId
-      email: $email
+      emails: $emails
       county: $county
       race: $race
       ethnicity: $ethnicity
@@ -3445,7 +3494,7 @@ export type AddPatientMutationFn = Apollo.MutationFunction<
  *      phoneNumbers: // value for 'phoneNumbers'
  *      role: // value for 'role'
  *      lookupId: // value for 'lookupId'
- *      email: // value for 'email'
+ *      emails: // value for 'emails'
  *      county: // value for 'county'
  *      race: // value for 'race'
  *      ethnicity: // value for 'ethnicity'
@@ -3548,7 +3597,9 @@ export const GetPatientDetailsDocument = gql`
       role
       lookupId
       email
+      emails
       county
+      country
       race
       ethnicity
       tribalAffiliation
@@ -3631,8 +3682,9 @@ export const UpdatePatientDocument = gql`
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
     $lookupId: String
-    $email: String
+    $emails: [String]
     $county: String
+    $country: String
     $race: String
     $ethnicity: String
     $tribalAffiliation: String
@@ -3658,8 +3710,9 @@ export const UpdatePatientDocument = gql`
       phoneNumbers: $phoneNumbers
       role: $role
       lookupId: $lookupId
-      email: $email
+      emails: $emails
       county: $county
+      country: $country
       race: $race
       ethnicity: $ethnicity
       tribalAffiliation: $tribalAffiliation
@@ -3706,8 +3759,9 @@ export type UpdatePatientMutationFn = Apollo.MutationFunction<
  *      phoneNumbers: // value for 'phoneNumbers'
  *      role: // value for 'role'
  *      lookupId: // value for 'lookupId'
- *      email: // value for 'email'
+ *      emails: // value for 'emails'
  *      county: // value for 'county'
+ *      country: // value for 'country'
  *      race: // value for 'race'
  *      ethnicity: // value for 'ethnicity'
  *      tribalAffiliation: // value for 'tribalAffiliation'
@@ -4939,6 +4993,7 @@ export const GetPatientsByFacilityForQueueDocument = gql`
       gender
       telephone
       email
+      emails
       phoneNumbers {
         type
         number
@@ -5418,6 +5473,122 @@ export type GetTestResultForPrintQueryResult = Apollo.QueryResult<
   GetTestResultForPrintQuery,
   GetTestResultForPrintQueryVariables
 >;
+export const GetTestResultForTextDocument = gql`
+  query getTestResultForText($id: ID!) {
+    testResult(id: $id) {
+      patientLink {
+        internalId
+      }
+      dateTested
+      patient {
+        firstName
+        middleName
+        lastName
+        birthDate
+        phoneNumbers {
+          type
+          number
+        }
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetTestResultForTextQuery__
+ *
+ * To run a query within a React component, call `useGetTestResultForTextQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTestResultForTextQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTestResultForTextQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetTestResultForTextQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTestResultForTextQuery,
+    GetTestResultForTextQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetTestResultForTextQuery,
+    GetTestResultForTextQueryVariables
+  >(GetTestResultForTextDocument, options);
+}
+export function useGetTestResultForTextLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTestResultForTextQuery,
+    GetTestResultForTextQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetTestResultForTextQuery,
+    GetTestResultForTextQueryVariables
+  >(GetTestResultForTextDocument, options);
+}
+export type GetTestResultForTextQueryHookResult = ReturnType<
+  typeof useGetTestResultForTextQuery
+>;
+export type GetTestResultForTextLazyQueryHookResult = ReturnType<
+  typeof useGetTestResultForTextLazyQuery
+>;
+export type GetTestResultForTextQueryResult = Apollo.QueryResult<
+  GetTestResultForTextQuery,
+  GetTestResultForTextQueryVariables
+>;
+export const SendSmsDocument = gql`
+  mutation sendSMS($id: ID!) {
+    sendPatientLinkSms(internalId: $id)
+  }
+`;
+export type SendSmsMutationFn = Apollo.MutationFunction<
+  SendSmsMutation,
+  SendSmsMutationVariables
+>;
+
+/**
+ * __useSendSmsMutation__
+ *
+ * To run a mutation, you first call `useSendSmsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSendSmsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [sendSmsMutation, { data, loading, error }] = useSendSmsMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useSendSmsMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    SendSmsMutation,
+    SendSmsMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<SendSmsMutation, SendSmsMutationVariables>(
+    SendSmsDocument,
+    options
+  );
+}
+export type SendSmsMutationHookResult = ReturnType<typeof useSendSmsMutation>;
+export type SendSmsMutationResult = Apollo.MutationResult<SendSmsMutation>;
+export type SendSmsMutationOptions = Apollo.BaseMutationOptions<
+  SendSmsMutation,
+  SendSmsMutationVariables
+>;
 export const GetResultsCountByFacilityDocument = gql`
   query GetResultsCountByFacility(
     $facilityId: ID
@@ -5614,6 +5785,7 @@ export const GetTestResultForResendingEmailsDocument = gql`
         middleName
         lastName
         email
+        emails
       }
       patientLink {
         internalId

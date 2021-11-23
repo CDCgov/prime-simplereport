@@ -23,6 +23,18 @@ export const isEmptyString = (input = "") => {
   return Boolean(input.trim().length === 0);
 };
 
+// Given an array of strings, returns a copy of the array with falsy and
+// duplicate values removed
+export const dedupeAndCompactStrings = (strings: string[]) => {
+  return strings.reduce(function dedupeAndCompact(acc: string[], curr: string) {
+    if (curr && !acc.includes(curr)) {
+      acc.push(curr);
+    }
+
+    return acc;
+  }, []);
+};
+
 export const showNotification = (children: JSX.Element) => {
   try {
     // id will de-dup. just use whole message as id

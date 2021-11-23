@@ -129,7 +129,9 @@ export const es: LanguageConfig = {
           additionalPhoneNumber: "Número de teléfono adicional",
           phoneType: "Tipo de teléfono",
           addNumber: "Agregar otro número",
+          addEmail: "Agregue otra dirección de correo electrónico",
           email: "Dirección de correo electrónico",
+          country: "País",
           street1: "Dirección 1",
           street2: "Dirección 2",
           county: "Condado",
@@ -138,11 +140,14 @@ export const es: LanguageConfig = {
           zip: "Código postal",
         },
         testResultDelivery: {
-          text: "",
+          text: "¿Le gustaría recibir sus resultados por mensaje de texto?",
           receiveTextMessageResults:
             "Sí, envíe un mensaje de texto a todos los números registrados de teléfonos móviles.",
-          email: "",
-          receiveEmailResults: "",
+          email:
+            "¿Le gustaría recibir los resultados en esta dirección de correo electrónico?",
+          email_plural:
+            "¿Le gustaría recibir los resultados en estas direcciones de correo electrónico?",
+          receiveEmailResults: YES,
         },
         demographics: {
           heading: "Información demográfica",
@@ -193,6 +198,7 @@ export const es: LanguageConfig = {
           state: "Falta el estado o tiene un formato incorrecto",
           city: "La ciudad tiene un formato incorrecto",
           county: "El formato del condado es incorrecto",
+          country: "El formato del país es incorrecto",
           race: "La raza tiene un formato incorrecto",
           tribalAffiliation: "La afiliación tribal tiene un formato incorrecto",
           ethnicity: "La etnia tiene un formato incorrecto",
@@ -481,6 +487,8 @@ export const es: LanguageConfig = {
         enterDOB: "Ingrese su fecha de nacimiento",
         enterDOB2:
           "Ingrese su fecha de nacimiento para acceder a su portal de pruebas de COVID-19.",
+        linkExpirationNotice:
+          "Nota: este enlace caducará 5 días después de que se registró el resultado de la prueba.",
         format: "MM/DD/AAAA",
         invalidFormat:
           "La fecha de nacimiento debe estar en formato MM/DD/AAAA",
@@ -490,7 +498,7 @@ export const es: LanguageConfig = {
         error: "La fecha de nacimiento proporcionada es incorrecta",
         validating: "Validación de la fecha de nacimiento ... ",
         linkExpired:
-          "Este enlace ha caducado. Comuníquese con su proveedor de pruebas.",
+          "Este enlace ha caducado. Comuníquese con su proveedor de prueba para generar un nuevo enlace.",
         linkNotFound:
           "Este enlace de resultado de la prueba no es válido. Vuelva a verificar el enlace o comuníquese con su proveedor de prueba para obtener el enlace correcto.",
         submit: "Continuar",
