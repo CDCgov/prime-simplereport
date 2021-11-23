@@ -391,4 +391,10 @@ To do so manually:
 1. Create a `MAINTENANCE MESSAGE` in JSON format with an `active` and a `message` key. Example: `{"active": true, "message": "SimpleReport is currently undergoing maintenance"}`. Note that the `active` value must be a _boolean_, not a string.
 2. `cd frontend && MAINTENANCE_MESSAGE=(JSON message here) MAINTENANCE_ENV=(desired env) yarn run maintenance:start`
 
+Example:
+```Shell
+MAINTENANCE_MESSAGE='{"active": true, "message": "SimpleReport is currently experiencing service degradation"}' MAINTENANCE_ENV=dev yarn run maintenance:start
+```
+Possible values for `MAINTENANCE_ENV`: `dev`, `test`, `pentest`, `training`, `demo`, `stg`, `prod`
+
 An easier way is to run the `Maintenance Mode` Action, which will automatically enable/disable maintenance mode for all environments with your desired message.

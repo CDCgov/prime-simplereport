@@ -31,8 +31,6 @@ import gov.cdc.usds.simplereport.db.repository.AdvisoryLockManager;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
-import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
-import gov.cdc.usds.simplereport.service.sms.SmsService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,13 +40,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -70,15 +65,9 @@ public class TestOrderService {
   private final PatientAnswersRepository _parepo;
   private final TestEventRepository _terepo;
   private final PatientLinkService _pls;
-  private final SmsService _smss;
   private final TestEventReportingService _testEventReportingService;
   private final FacilityDeviceTypeService _facilityDeviceTypeService;
   private final TestResultsDeliveryService testResultsDeliveryService;
-
-  @PersistenceContext EntityManager _entityManager;
-
-  @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")
-  private String patientLinkUrl;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
@@ -273,19 +262,8 @@ public class TestOrderService {
         PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
 
         if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
-          // After adding test result, create a new patient link and text it to the patient
-          UUID patientLinkId = patientLink.getInternalId();
-
-          String message =
-              "Your Covid-19 test result is ready to view. This link will expire after 5 days: ";
-
-          log.info(message + patientLinkUrl + patientLinkId);
-          List<SmsAPICallResult> smsSendResults =
-              _smss.sendToPatientLink(patientLinkId, message + patientLinkUrl + patientLinkId);
-
-          boolean failure =
-              smsSendResults.stream().anyMatch(delivery -> !delivery.getDeliverySuccess());
-          if (failure) deliveryStatuses.add(false);
+          boolean smsDeliveryStatus = testResultsDeliveryService.smsTestResults(patientLink);
+          deliveryStatuses.add(smsDeliveryStatus);
         }
 
         if (emailDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
