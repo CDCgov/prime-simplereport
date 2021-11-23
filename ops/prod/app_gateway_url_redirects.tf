@@ -338,7 +338,7 @@ resource "azurerm_application_gateway" "cdc_gov_redirect" {
 
   ssl_certificate {
     name                = data.azurerm_key_vault_certificate.simplereport_cdc_gov.name
-    key_vault_secret_id = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.secret_id
+    key_vault_secret_id = data.azurerm_key_vault_certificate.simplereport_cdc_gov.secret_id
   }
 
   ssl_policy {
