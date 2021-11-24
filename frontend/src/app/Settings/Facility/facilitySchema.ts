@@ -73,6 +73,9 @@ const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
 const deviceTypeSchema: yup.SchemaOf<DeviceType> = yup.object({
   internalId: yup.string().required(),
   name: yup.string().required(),
+  // TODO: This property does not represent user input, so it probably
+  // shouldn't be here -- for now, a shim to keep yup+TS compiler happy
+  testLength: yup.number().optional(),
 });
 
 const specimenTypeSchema: yup.SchemaOf<SpecimenType> = yup.object({

@@ -57,6 +57,10 @@ describe("QueueItem", () => {
             askOnEntry={testProps.askOnEntry}
             selectedDeviceId={testProps.selectedDeviceId}
             selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
             selectedTestResult={testProps.selectedTestResult}
             devices={testProps.devices}
             refetchQueue={testProps.refetchQueue}
@@ -82,6 +86,10 @@ describe("QueueItem", () => {
             askOnEntry={testProps.askOnEntry}
             selectedDeviceId={testProps.selectedDeviceId}
             selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
             selectedTestResult={testProps.selectedTestResult}
             devices={testProps.devices}
             refetchQueue={testProps.refetchQueue}
@@ -127,6 +135,10 @@ describe("QueueItem", () => {
                 askOnEntry={testProps.askOnEntry}
                 selectedDeviceId={testProps.selectedDeviceId}
                 selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+                selectedDeviceSpecimenTypeId={
+                  testProps.selectedDeviceSpecimenTypeId
+                }
+                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
                 selectedTestResult={testProps.selectedTestResult}
                 devices={testProps.devices}
                 refetchQueue={testProps.refetchQueue}
@@ -180,7 +192,7 @@ describe("QueueItem", () => {
         await screen.findByText(
           "Submitting test data for Potter, Harry James..."
         )
-      );
+      ).toBeInTheDocument();
 
       // Verify alert is displayed
       expect(
@@ -212,6 +224,10 @@ describe("QueueItem", () => {
             askOnEntry={testProps.askOnEntry}
             selectedDeviceId={testProps.selectedDeviceId}
             selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
             selectedTestResult={testProps.selectedTestResult}
             devices={testProps.devices}
             refetchQueue={testProps.refetchQueue}
@@ -252,6 +268,10 @@ describe("QueueItem", () => {
             askOnEntry={testProps.askOnEntry}
             selectedDeviceId={testProps.selectedDeviceId}
             selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
             selectedTestResult={testProps.selectedTestResult}
             devices={testProps.devices}
             refetchQueue={testProps.refetchQueue}
@@ -287,6 +307,10 @@ describe("QueueItem", () => {
               askOnEntry={testProps.askOnEntry}
               selectedDeviceId={testProps.selectedDeviceId}
               selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
               selectedTestResult={testProps.selectedTestResult}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
@@ -351,6 +375,17 @@ describe("QueueItem", () => {
 });
 
 const internalId = "f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554";
+const deviceOne = {
+  name: "Access Bio CareStart",
+  internalId: internalId,
+  testLength: 10,
+};
+
+const deviceTwo = {
+  name: "LumiraDX",
+  internalId: "lumira",
+  testLength: 15,
+};
 
 const testProps = {
   internalId: internalId,
@@ -372,28 +407,36 @@ const testProps = {
       },
     ],
   },
-  devices: [
-    {
-      name: "Access Bio CareStart",
-      internalId: internalId,
-      testLength: 10,
-    },
-    {
-      name: "LumiraDX",
-      internalId: "lumira",
-      testLength: 15,
-    },
-  ],
+  devices: [deviceOne, deviceTwo],
   askOnEntry: {
     symptoms: "{}",
   },
   selectedDeviceId: internalId,
   selectedDeviceTestLength: 10,
+  selectedDeviceSpecimenTypeId: deviceOne.internalId,
   selectedTestResult: {},
   dateTestedProp: "",
   refetchQueue: {},
   facilityId: "Hogwarts",
   patientLinkId: "",
+  deviceSpecimenTypes: [
+    {
+      internalId: "device-specimen-1",
+      deviceType: deviceOne,
+      specimenType: {
+        internalId: "specimen-1",
+        name: "Specimen 1",
+      },
+    },
+    {
+      internalId: "device-specimen-2",
+      deviceType: deviceTwo,
+      specimenType: {
+        internalId: "specimen-2",
+        name: "Specimen 2",
+      },
+    },
+  ] as DeviceSpecimenType[],
 };
 
 const nowUTC = moment(new Date(fakeDate))
@@ -416,6 +459,7 @@ const mocks = [
       variables: {
         id: internalId,
         deviceId: "lumira",
+        deviceSpecimenType: "device-specimen-2",
         result: {},
       },
     },
@@ -424,9 +468,11 @@ const mocks = [
         editQueueItem: {
           result: {},
           dateTested: null,
-          deviceType: {
-            internalId: internalId,
-            testLength: 15,
+          deviceType: deviceTwo,
+          deviceSpecimenType: {
+            internalId: "device-specimen-2",
+            deviceType: deviceTwo,
+            specimenType: {},
           },
         },
       },
@@ -438,6 +484,7 @@ const mocks = [
       variables: {
         id: internalId,
         deviceId: internalId,
+        deviceSpecimenType: "device-specimen-1",
         dateTested: nowUTC,
         result: {},
       },
@@ -447,9 +494,11 @@ const mocks = [
         editQueueItem: {
           result: {},
           dateTested: null,
-          deviceType: {
-            internalId: internalId,
-            testLength: 15,
+          deviceType: deviceOne,
+          deviceSpecimenType: {
+            internalId: "device-specimen-1",
+            deviceType: deviceOne,
+            specimenType: {},
           },
         },
       },
@@ -461,6 +510,7 @@ const mocks = [
       variables: {
         id: internalId,
         deviceId: internalId,
+        deviceSpecimenType: "device-specimen-1",
         dateTested: updatedDateUTC,
         result: {},
       },
@@ -472,7 +522,12 @@ const mocks = [
           dateTested: null,
           deviceType: {
             internalId: internalId,
-            testLength: 15,
+            testLength: 10,
+          },
+          deviceSpecimenType: {
+            internalId: "device-specimen-1",
+            deviceType: deviceOne,
+            specimenType: {},
           },
         },
       },
@@ -484,6 +539,7 @@ const mocks = [
       variables: {
         id: internalId,
         deviceId: internalId,
+        deviceSpecimenType: "device-specimen-1",
         dateTested: updatedDateTimeUTC,
         result: {},
       },
@@ -495,7 +551,12 @@ const mocks = [
           dateTested: null,
           deviceType: {
             internalId: internalId,
-            testLength: 15,
+            testLength: 10,
+          },
+          deviceSpecimenType: {
+            internalId: "device-specimen-1",
+            deviceType: deviceOne,
+            specimenType: {},
           },
         },
       },
@@ -506,6 +567,7 @@ const mocks = [
       query: EDIT_QUEUE_ITEM,
       variables: {
         id: internalId,
+        deviceSpecimenType: "device-specimen-1",
         deviceId: internalId,
         result: "UNDETERMINED",
       },
@@ -517,7 +579,12 @@ const mocks = [
           dateTested: null,
           deviceType: {
             internalId: internalId,
-            testLength: 15,
+            testLength: 10,
+          },
+          deviceSpecimenType: {
+            internalId: "device-specimen-1",
+            deviceType: deviceOne,
+            specimenType: {},
           },
         },
       },
@@ -529,6 +596,7 @@ const mocks = [
       variables: {
         patientId: internalId,
         deviceId: internalId,
+        deviceSpecimenType: "device-specimen-1",
         dateTested: null,
         result: "UNDETERMINED",
       },

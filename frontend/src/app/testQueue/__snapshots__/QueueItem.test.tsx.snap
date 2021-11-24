@@ -181,6 +181,32 @@ exports[`QueueItem correctly renders the test queue 1`] = `
                 </div>
               </div>
               <div
+                class="prime-li flex-align-self-end tablet:grid-col-3 padding-right-1"
+              >
+                <div
+                  class="usa-form-group prime-dropdown "
+                >
+                  <label
+                    class="usa-label"
+                    for="2"
+                  >
+                    Swab type
+                  </label>
+                  <select
+                    aria-required="false"
+                    class="usa-select"
+                    id="2"
+                    name="swabType"
+                  >
+                    <option
+                      value="specimen-1"
+                    >
+                      Specimen 1
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div
                 class="prime-li tablet:grid-col tablet:padding-left-1"
               >
                 <div
@@ -203,14 +229,14 @@ exports[`QueueItem correctly renders the test queue 1`] = `
                         <input
                           checked=""
                           class="usa-checkbox__input"
-                          id="2-val-0"
+                          id="3-val-0"
                           name="currentDateTime"
                           type="checkbox"
                           value="true"
                         />
                         <label
                           class="usa-checkbox__label"
-                          for="2-val-0"
+                          for="3-val-0"
                         >
                           Use current date
                         </label>
@@ -253,14 +279,14 @@ exports[`QueueItem correctly renders the test queue 1`] = `
                     <input
                       class="usa-radio__input"
                       data-required="false"
-                      id="3-val-POSITIVE"
+                      id="4-val-POSITIVE"
                       name="covid-test-result-f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554"
                       type="radio"
                       value="POSITIVE"
                     />
                     <label
                       class="usa-radio__label"
-                      for="3-val-POSITIVE"
+                      for="4-val-POSITIVE"
                     >
                       Positive (+)
                     </label>
@@ -271,14 +297,14 @@ exports[`QueueItem correctly renders the test queue 1`] = `
                     <input
                       class="usa-radio__input"
                       data-required="false"
-                      id="3-val-NEGATIVE"
+                      id="4-val-NEGATIVE"
                       name="covid-test-result-f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554"
                       type="radio"
                       value="NEGATIVE"
                     />
                     <label
                       class="usa-radio__label"
-                      for="3-val-NEGATIVE"
+                      for="4-val-NEGATIVE"
                     >
                       Negative (-)
                     </label>
@@ -289,14 +315,14 @@ exports[`QueueItem correctly renders the test queue 1`] = `
                     <input
                       class="usa-radio__input"
                       data-required="false"
-                      id="3-val-UNDETERMINED"
+                      id="4-val-UNDETERMINED"
                       name="covid-test-result-f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554"
                       type="radio"
                       value="UNDETERMINED"
                     />
                     <label
                       class="usa-radio__label"
-                      for="3-val-UNDETERMINED"
+                      for="4-val-UNDETERMINED"
                     >
                       Inconclusive
                     </label>
