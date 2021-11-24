@@ -104,7 +104,8 @@
     ],
     "plugins": [
       "graphql",
-      "testing-library"
+      "testing-library",
+      "unused-imports"
     ],
     "rules": {
       "graphql/template-strings": [
@@ -125,7 +126,18 @@
         }
       ],
       "import/newline-after-import": 1,
-      "import/no-commonjs": 0
+      "import/no-commonjs": 0,
+      "no-unused-vars": "off",
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
+        "warn",
+        {
+          "vars": "all",
+          "varsIgnorePattern": "^_",
+          "args": "after-used",
+          "argsIgnorePattern": "^_"
+        }
+      ]
     },
     "overrides": [
       {
@@ -200,6 +212,7 @@
     "eslint-plugin-graphql": "^4.0.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-testing-library": "^5.0.0",
+    "eslint-plugin-unused-imports": "1.1.5",
     "faker": "^5.5.3",
     "geckodriver": "^1.22.3",
     "jest-fetch-mock": "^3.0.3",
