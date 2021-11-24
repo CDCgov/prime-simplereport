@@ -34,13 +34,27 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
   }
 
   public AddTestResultResponse addTestResultNew(
-      String deviceID, String result, UUID patientID, Date dateTested) throws NumberParseException {
-    return _tos.addTestResult(deviceID, TestResult.valueOf(result), patientID, dateTested);
+      String deviceID, UUID deviceSpecimenType, String result, UUID patientID, Date dateTested)
+      throws NumberParseException {
+    UUID deviceSpecimenTypeId =
+        deviceSpecimenType == null
+            ? _dts.getDefaultForDeviceId(UUID.fromString(deviceID)).getInternalId()
+            : deviceSpecimenType;
+
+    return _tos.addTestResult(
+        deviceSpecimenTypeId, TestResult.valueOf(result), patientID, dateTested);
   }
 
-  public ApiTestOrder addTestResult(String deviceID, String result, UUID patientID, Date dateTested)
+  public ApiTestOrder addTestResult(
+      String deviceID, UUID deviceSpecimenType, String result, UUID patientID, Date dateTested)
       throws NumberParseException {
-    return _tos.addTestResult(deviceID, TestResult.valueOf(result), patientID, dateTested)
+    UUID deviceSpecimenTypeId =
+        deviceSpecimenType == null
+            ? _dts.getDefaultForDeviceId(UUID.fromString(deviceID)).getInternalId()
+            : deviceSpecimenType;
+
+    return _tos.addTestResult(
+            deviceSpecimenTypeId, TestResult.valueOf(result), patientID, dateTested)
         .getTestResult();
   }
 
@@ -51,7 +65,6 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
             ? _dts.getDefaultForDeviceId(UUID.fromString(deviceId)).getInternalId()
             : deviceSpecimenType;
 
-    // return new ApiTestOrder(_tos.editQueueItem(id, deviceId, result, dateTested));
     return new ApiTestOrder(_tos.editQueueItem(id, dst, result, dateTested));
   }
 

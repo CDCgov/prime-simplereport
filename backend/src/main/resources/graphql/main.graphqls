@@ -519,12 +519,14 @@ type Mutation {
     @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
   addTestResultNew(
     deviceId: String!
+    deviceSpecimenType: ID
     result: String!
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
   addTestResult(
     deviceId: String!
+    deviceSpecimenType: ID
     result: String!
     patientId: ID!
     dateTested: DateTime

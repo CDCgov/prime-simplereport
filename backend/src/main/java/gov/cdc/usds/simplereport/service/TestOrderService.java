@@ -251,15 +251,14 @@ public class TestOrderService {
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
-      String deviceID, TestResult result, UUID patientId, Date dateTested) {
+      UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order =
         _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
 
     UUID facilityId = order.getFacility().getInternalId();
-    DeviceSpecimenType deviceSpecimen =
-        _facilityDeviceTypeService.getDefaultForDeviceId(facilityId, UUID.fromString(deviceID));
+    DeviceSpecimenType deviceSpecimen = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
 
     lockOrder(order.getInternalId());
     try {
