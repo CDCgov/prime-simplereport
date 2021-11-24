@@ -5,7 +5,6 @@ import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 import {
   render,
   screen,
-  waitFor,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
