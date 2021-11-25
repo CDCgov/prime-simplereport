@@ -189,6 +189,7 @@ export interface QueueItemProps {
 
 interface updateQueueItemProps {
   deviceId?: string;
+  deviceSpecimenType: string;
   testLength?: number;
   result?: TestResult;
   dateTested?: string;
@@ -244,8 +245,8 @@ const QueueItem = ({
     setAoeAnswers(askOnEntry);
   }, [askOnEntry]);
 
-  const [deviceId, updateDeviceId] = useState(selectedDeviceId);
-  const [specimenId, updateSpecimenId] = useState(selectedDeviceId);
+  const [deviceId, updateDeviceId] = useState<string>(selectedDeviceId);
+  const [specimenId, updateSpecimenId] = useState<string>("");
   const [deviceSpecimenTypeId, updateDeviceSpecimenTypeId] = useState(
     selectedDeviceSpecimenTypeId
   );
@@ -392,14 +393,19 @@ const QueueItem = ({
   };
 
   const updateQueueItem = useCallback(
-    ({ deviceId, result, dateTested }: updateQueueItemProps) => {
+    ({
+      deviceId,
+      deviceSpecimenType,
+      result,
+      dateTested,
+    }: updateQueueItemProps) => {
       return editQueueItem({
         variables: {
           id: internalId,
           deviceId,
           result,
           dateTested,
-          deviceSpecimenType: deviceSpecimenTypeId,
+          deviceSpecimenType,
         },
       })
         .then((response) => {
@@ -423,7 +429,7 @@ const QueueItem = ({
         })
         .catch(updateMutationError);
     },
-    [editQueueItem, internalId, deviceSpecimenTypeId]
+    [editQueueItem, internalId]
   );
 
   const onDeviceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -485,6 +491,7 @@ const QueueItem = ({
         await updateQueueItem({
           deviceId,
           dateTested,
+          deviceSpecimenType: deviceSpecimenTypeId,
           result: testResultValue,
         });
         setSaveState("idle");
@@ -494,7 +501,13 @@ const QueueItem = ({
       clearTimeout(debounceTimer);
       setSaveState("idle");
     };
-  }, [deviceId, dateTested, testResultValue, updateQueueItem]);
+  }, [
+    deviceId,
+    deviceSpecimenTypeId,
+    dateTested,
+    testResultValue,
+    updateQueueItem,
+  ]);
 
   const onTestResultChange = (result: TestResult | undefined) => {
     updateTestResultValue(result);
@@ -564,7 +577,7 @@ const QueueItem = ({
   const deviceLookup: Map<DeviceType, SpecimenType[]> = useMemo(
     () =>
       deviceSpecimenTypes.reduce((allDevices, { deviceType, specimenType }) => {
-        // TODO: explain what we're doing here
+        // Key equality of a Map is by-reference, so grab the original device
         const device = deviceTypes.find(
           (d) => d.internalId === deviceType.internalId
         ) as DeviceType;
@@ -573,7 +586,9 @@ const QueueItem = ({
 
         return allDevices;
       }, new Map(deviceTypes.map((device) => [device, [] as SpecimenType[]]))),
-    [] // TODO: wiggle out of this lint warning
+    // adding `deviceTypes` to dependency list will cause an infinite loop of state updates
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [deviceSpecimenTypes]
   );
 
   const patientFullName = displayFullName(
