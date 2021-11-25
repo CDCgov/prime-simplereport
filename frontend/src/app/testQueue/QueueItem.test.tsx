@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import configureStore, { MockStoreEnhanced } from "redux-mock-store";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import moment from "moment";
+import { act } from "react-dom/test-utils";
 
 import { getAppInsights } from "../TelemetryService";
 import * as utils from "../utils/index";
@@ -33,16 +34,12 @@ describe("QueueItem", () => {
       },
     });
 
-    jest.useFakeTimers();
-    Date.now = jest.fn(() => fakeDate);
-
     (getAppInsights as jest.Mock).mockImplementation(() => ({
       trackEvent: trackEventMock,
     }));
   });
 
   afterEach(() => {
-    jest.useRealTimers();
     Date.now = nowFn;
     (getAppInsights as jest.Mock).mockReset();
   });
@@ -105,12 +102,10 @@ describe("QueueItem", () => {
       fireEvent.change(getByLabelText("Device", { exact: false }), {
         target: { value: "lumira" },
       });
-      jest.advanceTimersByTime(1000);
     });
 
     await waitFor(() => {
       expect(getByTestId("timer")).toHaveTextContent("15:00");
-      jest.advanceTimersToNextTimer(1000);
     });
   });
 
@@ -125,9 +120,67 @@ describe("QueueItem", () => {
     });
 
     it("displays delivery failure alert on submit for invalid patient phone number", async () => {
+      let submitTestMockIsDone = false;
+
+      const submitTestResultMocks = [
+        {
+          request: {
+            query: EDIT_QUEUE_ITEM,
+            variables: {
+              id: internalId,
+              deviceSpecimenType: "device-specimen-1",
+              deviceId: internalId,
+              result: "UNDETERMINED",
+            },
+          },
+          result: {
+            data: {
+              editQueueItem: {
+                result: "UNDETERMINED",
+                dateTested: null,
+                deviceType: {
+                  internalId: internalId,
+                  testLength: 10,
+                },
+                deviceSpecimenType: {
+                  internalId: "device-specimen-1",
+                  deviceType: deviceOne,
+                  specimenType: {},
+                },
+              },
+            },
+          },
+        },
+        {
+          request: {
+            query: SUBMIT_TEST_RESULT,
+            variables: {
+              patientId: internalId,
+              deviceId: internalId,
+              deviceSpecimenTypeId: "device-specimen-1",
+              result: "UNDETERMINED",
+              dateTested: null,
+            },
+          },
+          result: () => {
+            submitTestMockIsDone = true;
+            return {
+              data: {
+                addTestResultNew: {
+                  testResult: {
+                    internalId: internalId,
+                  },
+                  deliverySuccess: false,
+                },
+              },
+            };
+          },
+        },
+      ];
+
       render(
         <>
-          <MockedProvider mocks={mocks} addTypename={false}>
+          <MockedProvider mocks={submitTestResultMocks} addTypename={false}>
             <Provider store={store}>
               <QueueItem
                 internalId={testProps.internalId}
@@ -159,7 +212,7 @@ describe("QueueItem", () => {
       );
 
       // Select result
-      await waitFor(() => {
+      act(() => {
         fireEvent.click(
           screen.getByLabelText("Inconclusive", {
             exact: false,
@@ -170,16 +223,15 @@ describe("QueueItem", () => {
         );
       });
 
-      await waitFor(() => {
-        jest.advanceTimersByTime(1000);
-      });
+      // Wait for the genuinely long-running "edit queue" operation to finish
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Submit
-      await waitFor(() => {
+      // Submit test result
+      act(() => {
         fireEvent.click(screen.getByText("Submit"));
       });
 
-      await waitFor(() => {
+      act(() => {
         fireEvent.click(
           screen.getByText("Submit anyway", {
             exact: false,
@@ -194,6 +246,10 @@ describe("QueueItem", () => {
         )
       ).toBeInTheDocument();
 
+      // Wait for MockedProvider to populate the mocked result
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(submitTestMockIsDone).toBe(true);
+
       // Verify alert is displayed
       expect(
         await screen.findByText(
@@ -205,12 +261,10 @@ describe("QueueItem", () => {
       ).toBeInTheDocument();
 
       // Submitting indicator and card are gone
-      await waitFor(() => {
-        expect(screen.queryByText("Potter, Harry James"));
-        expect(
-          screen.queryByText("Submitting test data for Potter, Harry James...")
-        );
-      });
+      expect(screen.queryByText("Potter, Harry James"));
+      expect(
+        screen.queryByText("Submitting test data for Potter, Harry James...")
+      );
     });
   });
 
@@ -411,9 +465,10 @@ const testProps = {
   askOnEntry: {
     symptoms: "{}",
   },
+  testResultPreference: "SMS",
   selectedDeviceId: internalId,
   selectedDeviceTestLength: 10,
-  selectedDeviceSpecimenTypeId: deviceOne.internalId,
+  selectedDeviceSpecimenTypeId: "device-specimen-1",
   selectedTestResult: {},
   dateTestedProp: "",
   refetchQueue: {},
@@ -558,56 +613,6 @@ const mocks = [
             deviceType: deviceOne,
             specimenType: {},
           },
-        },
-      },
-    },
-  },
-  {
-    request: {
-      query: EDIT_QUEUE_ITEM,
-      variables: {
-        id: internalId,
-        deviceSpecimenType: "device-specimen-1",
-        deviceId: internalId,
-        result: "UNDETERMINED",
-      },
-    },
-    result: {
-      data: {
-        editQueueItem: {
-          result: "UNDETERMINED",
-          dateTested: null,
-          deviceType: {
-            internalId: internalId,
-            testLength: 10,
-          },
-          deviceSpecimenType: {
-            internalId: "device-specimen-1",
-            deviceType: deviceOne,
-            specimenType: {},
-          },
-        },
-      },
-    },
-  },
-  {
-    request: {
-      query: SUBMIT_TEST_RESULT,
-      variables: {
-        patientId: internalId,
-        deviceId: internalId,
-        deviceSpecimenType: "device-specimen-1",
-        dateTested: null,
-        result: "UNDETERMINED",
-      },
-    },
-    result: {
-      data: {
-        addTestResultNew: {
-          testResult: {
-            internalId: internalId,
-          },
-          deliverySuccess: false,
         },
       },
     },
