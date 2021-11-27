@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { Redirect } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
+import { updateFacilities } from "../../store";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import { getAppInsights } from "../../TelemetryService";
@@ -199,22 +201,40 @@ const FacilityFormContainer: any = (props: Props) => {
       fetchPolicy: "no-cache",
     }
   );
-  const appInsights = getAppInsights();
-  const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION);
-  const [addFacility] = useMutation(ADD_FACILITY_MUTATION);
-  const [saveSuccess, updateSaveSuccess] = useState(false);
 
+  const appInsights = getAppInsights();
+  const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION, {
+    refetchQueries: [GET_FACILITY_QUERY],
+    update(cache, { data: { updateFacility } }) {
+      cache.writeQuery({
+        query: UPDATE_FACILITY_MUTATION,
+        data: updateFacility,
+      });
+    },
+  });
+  const [addFacility] = useMutation(ADD_FACILITY_MUTATION, {
+    refetchQueries: [GET_FACILITY_QUERY],
+    update(cache, { data: { addFacility } }) {
+      cache.writeQuery({
+        query: UPDATE_FACILITY_MUTATION,
+        data: addFacility,
+      });
+    },
+  });
+  const [saveSuccess, updateSaveSuccess] = useState(false);
+  const [updatedFacility, setUpdatedFacility] = useState<Facility | null>(null);
+  const dispatch = useDispatch();
   if (loading) {
     return <p> Loading... </p>;
   }
   if (error) {
     return error;
   }
-
-  if (data === undefined) {
+  if (!data) {
     return <p>Error: facility not found</p>;
   }
   if (saveSuccess) {
+    dispatch(updateFacilities(updatedFacility));
     if (props.newOrg) {
       window.location.pathname = process.env.PUBLIC_URL || "";
     }
@@ -257,7 +277,7 @@ const FacilityFormContainer: any = (props: Props) => {
         defaultDevice: facility.defaultDevice,
       },
     });
-
+    setUpdatedFacility(() => facility);
     const alert = (
       <Alert
         type="success"

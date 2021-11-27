@@ -5,6 +5,7 @@ import { UserPermission } from "../generated/graphql";
 
 const SET_INITIAL_STATE = "SET_INITIAL_STATE";
 const UPDATE_ORGANIZATION = "UPDATE_ORGANIZATION";
+const UPDATE_FACILITIES = "UPDATE_FACILITIES";
 const SET_PATIENT = "SET_PATIENT";
 
 // this should be the default value for a brand new org
@@ -58,6 +59,19 @@ const reducers = (state = initialState, action: any) => {
           ...action.payload,
         },
       };
+    case UPDATE_FACILITIES:
+      const facilityIndex = state.facilities.findIndex(
+        (f) => f.id === action.payload.id
+      );
+      if (facilityIndex > -1) {
+        state.facilities[facilityIndex] = action.payload;
+      } else {
+        state.facilities.push(action.payload);
+      }
+      return {
+        ...state,
+        facilities: state.facilities,
+      };
     case SET_PATIENT:
       return {
         ...state,
@@ -81,6 +95,13 @@ export const updateOrganization = (organization: any) => {
   return {
     type: UPDATE_ORGANIZATION,
     payload: organization,
+  };
+};
+
+export const updateFacilities = (facility: any) => {
+  return {
+    type: UPDATE_FACILITIES,
+    payload: facility,
   };
 };
 
