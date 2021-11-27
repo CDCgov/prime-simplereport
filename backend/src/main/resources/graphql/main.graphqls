@@ -416,6 +416,65 @@ type Mutation {
     deviceSpecimenTypes: [ID]
     defaultDevice: String!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+    updateFacilityV2(
+    facilityId: ID!
+    testingFacilityName: String!
+    cliaNumber: String
+    street: String!
+    streetTwo: String
+    city: String
+    county: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    state: String!
+    zipCode: String!
+    phone: String
+    email: String
+    orderingProviderFirstName: String
+    orderingProviderMiddleName: String
+    orderingProviderLastName: String
+    orderingProviderSuffix: String
+    orderingProviderNPI: String
+    orderingProviderStreet: String
+    orderingProviderStreetTwo: String
+    orderingProviderCity: String
+    orderingProviderCounty: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
+    orderingProviderPhone: String
+    deviceTypes: [String]!
+    deviceSpecimenTypes: [ID]
+    defaultDevice: String!
+  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  addFacilityV2(
+    testingFacilityName: String!
+    cliaNumber: String
+    street: String!
+    streetTwo: String
+    city: String
+    county: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    state: String!
+    zipCode: String!
+    phone: String
+    email: String
+    orderingProviderFirstName: String
+    orderingProviderMiddleName: String
+    orderingProviderLastName: String
+    orderingProviderSuffix: String
+    orderingProviderNPI: String
+    orderingProviderStreet: String
+    orderingProviderStreetTwo: String
+    orderingProviderCity: String
+    orderingProviderCounty: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
+    orderingProviderPhone: String
+    deviceTypes: [String]!
+    deviceSpecimenTypes: [ID]
+    defaultDevice: String!
+  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addUserToCurrentOrg(
     name: NameInput
     firstName: String
