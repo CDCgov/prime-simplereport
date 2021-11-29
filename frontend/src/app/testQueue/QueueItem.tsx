@@ -12,7 +12,6 @@ import classnames from "classnames";
 import moment from "moment";
 import { DatePicker, Label } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
-import _ from "lodash";
 
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
@@ -40,7 +39,6 @@ import { QueueItemSubmitLoader } from "./QueueItemSubmitLoader";
 import { UPDATE_AOE } from "./addToQueue/AddToQueueSearch";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
-type DeviceLookupEntry = [DeviceType, SpecimenType[]];
 
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
 
@@ -251,6 +249,7 @@ const QueueItem = ({
     selectedDeviceSpecimenTypeId
   );
 
+  // Populate device+specimen state variables from selected device specimen type
   useEffect(() => {
     const deviceSpecimenType = deviceSpecimenTypes.find(
       (dst) => dst.internalId === deviceSpecimenTypeId
@@ -264,10 +263,17 @@ const QueueItem = ({
     updateSpecimenId(deviceSpecimenType.specimenType.internalId);
   }, [deviceSpecimenTypes, deviceSpecimenTypeId]);
 
-  const deviceTypes = _.uniqBy(
-    deviceSpecimenTypes.map((d) => d.deviceType),
-    "internalId"
-  );
+  const deviceTypes = deviceSpecimenTypes
+    .map((d) => d.deviceType)
+    .reduce((devices, device: DeviceType) => {
+      const id = device.internalId;
+
+      if (!(id in devices)) {
+        devices[id] = device;
+      }
+
+      return devices;
+    }, {} as Record<string, DeviceType>);
 
   const [deviceTestLength, updateDeviceTestLength] = useState(
     selectedDeviceTestLength
@@ -577,15 +583,11 @@ const QueueItem = ({
   const deviceLookup: Map<DeviceType, SpecimenType[]> = useMemo(
     () =>
       deviceSpecimenTypes.reduce((allDevices, { deviceType, specimenType }) => {
-        // Key equality of a Map is by-reference, so grab the original device
-        const device = deviceTypes.find(
-          (d) => d.internalId === deviceType.internalId
-        ) as DeviceType;
-
+        const device = deviceTypes[deviceType.internalId];
         allDevices.get(device)?.push(specimenType);
 
         return allDevices;
-      }, new Map(deviceTypes.map((device) => [device, [] as SpecimenType[]]))),
+      }, new Map(Object.values(deviceTypes).map((device) => [device, [] as SpecimenType[]]))),
     // adding `deviceTypes` to dependency list will cause an infinite loop of state updates
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceSpecimenTypes]
@@ -765,12 +767,9 @@ const QueueItem = ({
                   </div>
                   <div className="prime-li flex-align-self-end tablet:grid-col-3 padding-right-1">
                     <Dropdown
-                      options={(Array.from(deviceLookup.entries())
-                        // `Array.prototype.find` can return `undefined`, but we can logically
-                        // guarantee that the selected device will be in the lookup map
-                        .find(
-                          ([device, _swabs]) => device?.internalId === deviceId
-                        ) as DeviceLookupEntry)[1] // get swab types for device
+                      options={(deviceLookup.get(
+                        deviceTypes[deviceId]
+                      ) as SpecimenType[])
                         .sort(alphabetizeByName)
                         .map((s: SpecimenType) => ({
                           label: s.name,
