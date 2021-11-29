@@ -24,6 +24,7 @@ https://simplereport.gov/
     - [Local Settings](#local-settings)
     - [SchemaSpy](#schemaspy)
     - [Twilio](#twilio)
+    - [MailHog](#MailHog)
   - [Frontend](#frontend)
     - [Frontend-Setup](#frontend-setup)
     - [Linters](#linters)
@@ -304,6 +305,18 @@ twilio:
 ```
 
 These can also be set by environment variable if desired.
+
+### MailHog
+MailHog is an email-testing tool with a fake SMTP server underneath, we can use it to test sending emails locally.
+- Mailhog client runs on docker, `docker-compose up -d mailhog`
+- add the following to `application-local.yaml` to configure the backend to send email to mailhog client
+```yml
+spring:
+  mail:
+    host: localhost
+    port: 1025
+```
+- Access mailhog inbox on `http://localhost:8025/`
 
 ## Frontend
 
