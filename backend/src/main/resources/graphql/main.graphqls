@@ -554,7 +554,7 @@ type Mutation {
     noSymptoms: Boolean
     testResultDelivery: TestResultDeliveryPreference
   ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
-  sendPatientLinkSms(internalId: ID!): String
+  sendPatientLinkSms(internalId: ID!): Boolean
     @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkEmail(internalId: ID!): Boolean
   updateOrganization(type: String!): String
