@@ -1646,6 +1646,12 @@ export type EditQueueItemMutation = {
     deviceSpecimenType?: Maybe<{
       __typename?: "DeviceSpecimenType";
       internalId: string;
+      deviceType: {
+        __typename?: "DeviceType";
+        internalId: string;
+        testLength?: Maybe<number>;
+      };
+      specimenType: { __typename?: "SpecimenType"; internalId: string };
     }>;
   }>;
 };
@@ -4726,6 +4732,13 @@ export const EditQueueItemDocument = gql`
       }
       deviceSpecimenType {
         internalId
+        deviceType {
+          internalId
+          testLength
+        }
+        specimenType {
+          internalId
+        }
       }
     }
   }
