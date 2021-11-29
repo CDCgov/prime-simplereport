@@ -181,7 +181,7 @@ exports[`QueueItem correctly renders the test queue 1`] = `
                 </div>
               </div>
               <div
-                class="prime-li flex-align-self-end tablet:grid-col-3 padding-right-1"
+                class="prime-li flex-align-self-end tablet:grid-col-3 padding-left-1"
               >
                 <div
                   class="usa-form-group prime-dropdown "
@@ -207,7 +207,7 @@ exports[`QueueItem correctly renders the test queue 1`] = `
                 </div>
               </div>
               <div
-                class="prime-li tablet:grid-col tablet:padding-left-1"
+                class="prime-li tablet:grid-col tablet:padding-left-2"
               >
                 <div
                   class="usa-form-group"
