@@ -2,7 +2,6 @@ import { PhoneNumberUtil, PhoneNumberFormat } from "google-libphonenumber";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 
-import Checkboxes from "../../commonComponents/Checkboxes";
 import Button from "../../commonComponents/Button/Button";
 import {
   PendingOrganization,
@@ -11,8 +10,8 @@ import {
 
 import EditOrgModal from "./EditOrgModal";
 import { PendingOrganizationFormValues } from "./utils";
-
 import "./PendingOrganizationsList.scss";
+import ConfirmOrgVerificationModal from "./ConfirmOrgVerificationModal";
 
 interface Props {
   organizations: PendingOrganization[];
@@ -32,10 +31,12 @@ const PendingOrganizations = ({
   submitIdentityVerified,
   setVerifiedOrganization,
   loading,
-  verifyInProgress,
   refetch,
 }: Props) => {
   const [orgToEdit, setOrgToEdit] = useState<PendingOrganization | null>(null);
+  const [orgToConfirm, setOrgToConfirm] = useState<PendingOrganization | null>(
+    null
+  );
   const [isUpdating, setIsUpdating] = useState(false);
   const [editOrg] = useEditPendingOrganizationMutation();
 
@@ -57,6 +58,24 @@ const PendingOrganizations = ({
           adminPhone: org.adminPhone,
         },
       });
+    } catch (e) {
+      console.error(e);
+    }
+
+    refetch();
+    setOrgToEdit(null);
+    setIsUpdating(false);
+  };
+
+  const handleConfirmOrg = async (org: PendingOrganizationFormValues) => {
+    if (orgToConfirm === null) {
+      return;
+    }
+    setIsUpdating(true);
+
+    try {
+      submitIdentityVerified();
+      setVerifiedOrganization(orgToConfirm.externalId, false);
     } catch (e) {
       console.error(e);
     }
@@ -105,20 +124,16 @@ const PendingOrganizations = ({
         </td>
         <td>{o.externalId}</td>
         <td>
-          <Checkboxes
-            onChange={(e) =>
-              setVerifiedOrganization(o.externalId, e.target.checked)
-            }
-            name="identity_verified"
-            legend=""
-            boxes={[
-              {
-                value: "1",
-                label: "Identity Verified",
-                checked: verifiedOrgExternalIds.has(o.externalId),
-              },
-            ]}
-          />
+          <Button
+            className="sr-active-button"
+            onClick={() => {
+              setVerifiedOrganization(o.externalId, true);
+              console.log("Following are queued for identity verification");
+              setOrgToConfirm(o);
+            }}
+          >
+            Verify Identity
+          </Button>
         </td>
         <td>
           <span
@@ -131,7 +146,7 @@ const PendingOrganizations = ({
       </tr>
     ));
   };
-
+  console.log(verifiedOrgExternalIds);
   return (
     <main className="prime-home">
       <div className="grid-container pending-orgs-wide-container">
@@ -145,21 +160,20 @@ const PendingOrganizations = ({
                 isUpdating={isUpdating}
               />
             ) : null}
+
+            {orgToConfirm ? (
+              <ConfirmOrgVerificationModal
+                organization={orgToConfirm}
+                onClose={() => {
+                  setVerifiedOrganization(orgToConfirm.externalId, false);
+                  setOrgToConfirm(null);
+                }}
+                onSubmit={handleConfirmOrg}
+                isUpdating={isUpdating}
+              />
+            ) : null}
             <div className="usa-card__header">
               <h2>Organizations Pending Identity Verification</h2>
-              <div>
-                <Button
-                  className="sr-active-button"
-                  disabled={
-                    loading ||
-                    verifyInProgress ||
-                    verifiedOrgExternalIds.size === 0
-                  }
-                  onClick={submitIdentityVerified}
-                >
-                  Save Changes
-                </Button>
-              </div>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
