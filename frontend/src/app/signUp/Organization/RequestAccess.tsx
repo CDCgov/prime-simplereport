@@ -12,7 +12,7 @@ const RequestAccess = () => {
             organization or workplace to request access to SimpleReport.
           </p>
           <p>
-            Not sure who the SimpleReport admins are at your organization? Email{" "}
+            Not sure who your admins are? Email{" "}
             <a href="mailto:support@simplereport.gov">
               support@simplereport.gov
             </a>
