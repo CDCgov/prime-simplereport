@@ -532,7 +532,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // WHEN
     AddTestResultResponse res =
         _service.addTestResult(
-            devA.getInternalId().toString(), TestResult.POSITIVE, patient.getInternalId(), null);
+            devA.getInternalId(), TestResult.POSITIVE, patient.getInternalId(), null);
 
     // THEN
     assertTrue(res.getDeliverySuccess());
