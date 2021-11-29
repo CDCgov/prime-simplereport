@@ -765,7 +765,7 @@ const QueueItem = ({
                       onChange={onDeviceChange}
                     />
                   </div>
-                  <div className="prime-li flex-align-self-end tablet:grid-col-3 padding-right-1">
+                  <div className="prime-li flex-align-self-end tablet:grid-col-3 padding-left-1">
                     <Dropdown
                       options={(deviceLookup.get(
                         deviceTypes[deviceId]
@@ -782,7 +782,7 @@ const QueueItem = ({
                     />
                   </div>
                   {testDateFields}
-                  <div className="prime-li tablet:grid-col tablet:padding-left-1">
+                  <div className="prime-li tablet:grid-col tablet:padding-left-2">
                     <Checkboxes
                       boxes={[
                         {
