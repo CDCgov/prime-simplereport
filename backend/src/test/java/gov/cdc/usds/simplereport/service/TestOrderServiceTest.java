@@ -127,8 +127,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(1, queue.size());
 
     DeviceType devA = facility.getDefaultDeviceType();
-    _service.addTestResult(
-        devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
+    _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null);
 
     queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
@@ -170,7 +169,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.addPatientToQueue(
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     _service.addTestResult(
-        _dataFactory.getGenericDevice().getInternalId().toString(),
+        _dataFactory.getGenericDevice().getInternalId(),
         TestResult.POSITIVE,
         p.getInternalId(),
         null);
@@ -183,7 +182,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.addPatientToQueue(
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1866, 12, 25), false);
     _service.addTestResult(
-        _dataFactory.getGenericDevice().getInternalId().toString(),
+        _dataFactory.getGenericDevice().getInternalId(),
         TestResult.POSITIVE,
         p.getInternalId(),
         null);
@@ -326,8 +325,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceType devA = facility.getDefaultDeviceType();
 
-    _service.addTestResult(
-        devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
+    _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null);
 
     verify(_smsService).sendToPatientLink(any(UUID.class), anyString());
 
@@ -366,8 +364,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceType devA = facility.getDefaultDeviceType();
 
-    _service.addTestResult(
-        devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
+    _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null);
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
@@ -452,7 +449,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         AccessDeniedException.class,
         () ->
             _service.addTestResult(
-                devA.getInternalId().toString(), TestResult.POSITIVE, p2.getInternalId(), null));
+                devA.getInternalId(), TestResult.POSITIVE, p2.getInternalId(), null));
 
     // caller has access to the patient (whose facility is null)
     // but cannot modify the test order which was created at a non-accessible facility
@@ -460,16 +457,14 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         AccessDeniedException.class,
         () ->
             _service.addTestResult(
-                devA.getInternalId().toString(), TestResult.POSITIVE, p1.getInternalId(), null));
+                devA.getInternalId(), TestResult.POSITIVE, p1.getInternalId(), null));
 
     TestUserIdentities.setFacilityAuthorities(facility1);
-    _service.addTestResult(
-        devA.getInternalId().toString(), TestResult.POSITIVE, p1.getInternalId(), null);
+    _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p1.getInternalId(), null);
     List<TestOrder> queue = _service.getQueue(facility1.getInternalId());
     assertEquals(1, queue.size());
 
-    _service.addTestResult(
-        devA.getInternalId().toString(), TestResult.NEGATIVE, p2.getInternalId(), null);
+    _service.addTestResult(devA.getInternalId(), TestResult.NEGATIVE, p2.getInternalId(), null);
 
     queue = _service.getQueue(facility1.getInternalId());
     assertEquals(0, queue.size());
@@ -487,8 +482,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceType devA = facility.getDefaultDeviceType();
 
-    _service.addTestResult(
-        devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
+    _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null);
 
     verify(_smsService).sendToPatientLink(any(UUID.class), anyString());
 
@@ -508,13 +502,12 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceType devA = facility.getDefaultDeviceType();
 
-    _service.addTestResult(
-        devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
+    _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null);
     assertThrows(
         NonexistentQueueItemException.class,
         () ->
             _service.addTestResult(
-                devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null));
+                devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null));
   }
 
   @Test
@@ -536,8 +529,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     doReturn(deliveryResults).when(_smsService).sendToPatientLink(any(), any());
 
     AddTestResultResponse res =
-        _service.addTestResult(
-            devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
+        _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null);
 
     assertEquals(false, res.getDeliverySuccess());
   }
@@ -568,7 +560,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // WHEN
     AddTestResultResponse res =
         _service.addTestResult(
-            devA.getInternalId().toString(), TestResult.POSITIVE, patient.getInternalId(), null);
+            devA.getInternalId(), TestResult.POSITIVE, patient.getInternalId(), null);
 
     // THEN
     assertEquals(true, res.getDeliverySuccess());
@@ -604,7 +596,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // WHEN
     AddTestResultResponse res =
         _service.addTestResult(
-            devA.getInternalId().toString(), TestResult.POSITIVE, patient.getInternalId(), null);
+            devA.getInternalId(), TestResult.POSITIVE, patient.getInternalId(), null);
 
     // THEN
     verify(testResultsDeliveryService).emailTestResults(any(PatientLink.class));
@@ -637,7 +629,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // WHEN
     AddTestResultResponse res =
         _service.addTestResult(
-            devA.getInternalId().toString(), TestResult.POSITIVE, patient.getInternalId(), null);
+            devA.getInternalId(), TestResult.POSITIVE, patient.getInternalId(), null);
 
     // THEN
     assertEquals(true, res.getDeliverySuccess());
@@ -670,7 +662,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // WHEN
     AddTestResultResponse res =
         _service.addTestResult(
-            devA.getInternalId().toString(), TestResult.POSITIVE, patient.getInternalId(), null);
+            devA.getInternalId(), TestResult.POSITIVE, patient.getInternalId(), null);
 
     // THEN
     assertEquals(true, res.getDeliverySuccess());
@@ -717,7 +709,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertNotEquals(o.getDeviceType().getName(), devA.getName());
 
     _service.editQueueItem(
-        o.getInternalId(), devA.getInternalId().toString(), TestResult.POSITIVE.toString(), null);
+        o.getInternalId(), devA.getInternalId(), TestResult.POSITIVE.toString(), null);
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
@@ -749,14 +741,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         AccessDeniedException.class,
         () ->
             _service.editQueueItem(
-                o.getInternalId(),
-                devA.getInternalId().toString(),
-                TestResult.POSITIVE.toString(),
-                null));
+                o.getInternalId(), devA.getInternalId(), TestResult.POSITIVE.toString(), null));
 
     TestUserIdentities.setFacilityAuthorities(facility);
     _service.editQueueItem(
-        o.getInternalId(), devA.getInternalId().toString(), TestResult.POSITIVE.toString(), null);
+        o.getInternalId(), devA.getInternalId(), TestResult.POSITIVE.toString(), null);
   }
 
   @Test
@@ -776,7 +765,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     DeviceType devA = facility.getDefaultDeviceType();
 
     _service.editQueueItem(
-        o.getInternalId(), devA.getInternalId().toString(), TestResult.POSITIVE.toString(), null);
+        o.getInternalId(), devA.getInternalId(), TestResult.POSITIVE.toString(), null);
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
@@ -803,19 +792,15 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     DeviceType devA = facility.getDefaultDeviceType();
 
     _service.editQueueItem(
-        o.getInternalId(), devA.getInternalId().toString(), TestResult.NEGATIVE.toString(), null);
+        o.getInternalId(), devA.getInternalId(), TestResult.NEGATIVE.toString(), null);
 
-    _service.addTestResult(
-        devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
+    _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null);
 
     assertThrows(
         NonexistentQueueItemException.class,
         () ->
             _service.editQueueItem(
-                o.getInternalId(),
-                devA.getInternalId().toString(),
-                TestResult.POSITIVE.toString(),
-                null));
+                o.getInternalId(), devA.getInternalId(), TestResult.POSITIVE.toString(), null));
   }
 
   @Test
