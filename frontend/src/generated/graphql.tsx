@@ -142,7 +142,7 @@ export type Mutation = {
   resendToReportStream?: Maybe<Scalars["Boolean"]>;
   resetUserPassword?: Maybe<User>;
   sendPatientLinkEmail?: Maybe<Scalars["Boolean"]>;
-  sendPatientLinkSms?: Maybe<Scalars["String"]>;
+  sendPatientLinkSms?: Maybe<Scalars["Boolean"]>;
   setCurrentUserTenantDataAccess?: Maybe<User>;
   setOrganizationIdentityVerified?: Maybe<Scalars["Boolean"]>;
   setPatientIsDeleted?: Maybe<Patient>;
@@ -2015,7 +2015,7 @@ export type SendSmsMutationVariables = Exact<{
 
 export type SendSmsMutation = {
   __typename?: "Mutation";
-  sendPatientLinkSms?: Maybe<string>;
+  sendPatientLinkSms?: Maybe<boolean>;
 };
 
 export type GetResultsCountByFacilityQueryVariables = Exact<{

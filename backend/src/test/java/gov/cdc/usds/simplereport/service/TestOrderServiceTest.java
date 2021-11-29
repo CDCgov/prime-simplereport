@@ -2,13 +2,13 @@ package gov.cdc.usds.simplereport.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -31,8 +31,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
-import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
-import gov.cdc.usds.simplereport.service.sms.SmsService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
@@ -43,7 +41,6 @@ import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -69,7 +66,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Autowired private TestEventRepository _testEventRepository;
   @Autowired private TestDataFactory _dataFactory;
   @MockBean private TestResultsDeliveryService testResultsDeliveryService;
-  @MockBean private SmsService _smsService;
 
   private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
   private static final PersonName BRAD = new PersonName("Bradley", "Z.", "Jones", "Jr.");
@@ -327,7 +323,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null);
 
-    verify(_smsService).sendToPatientLink(any(UUID.class), anyString());
+    verify(testResultsDeliveryService).smsTestResults(any(PatientLink.class));
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
@@ -484,7 +480,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null);
 
-    verify(_smsService).sendToPatientLink(any(UUID.class), anyString());
+    verify(testResultsDeliveryService).smsTestResults(any(PatientLink.class));
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
@@ -512,26 +508,71 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void addTestResult_smsDelivery_invalidPhoneNumber() {
+  void addTestResult_smsDelivery() {
+    // GIVEN
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
-    Person p = _dataFactory.createFullPerson(org);
+    Person patient = _dataFactory.createFullPerson(org);
 
     _personService.updateTestResultDeliveryPreference(
-        p.getInternalId(), TestResultDeliveryPreference.SMS);
+        patient.getInternalId(), TestResultDeliveryPreference.SMS);
+
     _service.addPatientToQueue(
-        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+        facility.getInternalId(),
+        patient,
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
     DeviceType devA = facility.getDefaultDeviceType();
 
-    List<SmsAPICallResult> deliveryResults = new ArrayList<SmsAPICallResult>();
-    deliveryResults.add(new SmsAPICallResult("message-id", "id", false));
+    when(testResultsDeliveryService.smsTestResults(any(PatientLink.class))).thenReturn(true);
+    when(testResultsDeliveryService.smsTestResults(any(UUID.class))).thenReturn(true);
 
-    doReturn(deliveryResults).when(_smsService).sendToPatientLink(any(), any());
-
+    // WHEN
     AddTestResultResponse res =
-        _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null);
+        _service.addTestResult(
+            devA.getInternalId().toString(), TestResult.POSITIVE, patient.getInternalId(), null);
 
-    assertEquals(false, res.getDeliverySuccess());
+    // THEN
+    assertTrue(res.getDeliverySuccess());
+    ArgumentCaptor<PatientLink> patientLinkCaptor = ArgumentCaptor.forClass(PatientLink.class);
+    verify(testResultsDeliveryService).smsTestResults(patientLinkCaptor.capture());
+    assertThat(patientLinkCaptor.getValue().getTestOrder().getPatient().getInternalId())
+        .isEqualTo(patient.getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void addTestResult_smsDelivery_failure() {
+    // GIVEN
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person patient = _dataFactory.createFullPerson(org);
+
+    _personService.updateTestResultDeliveryPreference(
+        patient.getInternalId(), TestResultDeliveryPreference.SMS);
+
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        patient,
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
+    DeviceType devA = facility.getDefaultDeviceType();
+
+    when(testResultsDeliveryService.smsTestResults(any(PatientLink.class))).thenReturn(false);
+    when(testResultsDeliveryService.smsTestResults(any(UUID.class))).thenReturn(false);
+
+    // WHEN
+    AddTestResultResponse res =
+        _service.addTestResult(
+            devA.getInternalId(), TestResult.POSITIVE, patient.getInternalId(), null);
+
+    // THEN
+    verify(testResultsDeliveryService).smsTestResults(any(PatientLink.class));
+    assertFalse(res.getDeliverySuccess());
   }
 
   @Test
@@ -563,7 +604,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             devA.getInternalId(), TestResult.POSITIVE, patient.getInternalId(), null);
 
     // THEN
-    assertEquals(true, res.getDeliverySuccess());
+    assertTrue(res.getDeliverySuccess());
     ArgumentCaptor<PatientLink> patientLinkCaptor = ArgumentCaptor.forClass(PatientLink.class);
     verify(testResultsDeliveryService).emailTestResults(patientLinkCaptor.capture());
     assertThat(patientLinkCaptor.getValue().getTestOrder().getPatient().getInternalId())
@@ -600,7 +641,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // THEN
     verify(testResultsDeliveryService).emailTestResults(any(PatientLink.class));
-    assertEquals(false, res.getDeliverySuccess());
+    assertFalse(res.getDeliverySuccess());
   }
 
   @Test
@@ -632,11 +673,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             devA.getInternalId(), TestResult.POSITIVE, patient.getInternalId(), null);
 
     // THEN
-    assertEquals(true, res.getDeliverySuccess());
-
     verify(testResultsDeliveryService).emailTestResults(any(PatientLink.class));
-    verify(_smsService).sendToPatientLink(any(UUID.class), anyString());
-    assertEquals(true, res.getDeliverySuccess());
+    verify(testResultsDeliveryService).smsTestResults(any(PatientLink.class));
+    assertTrue(res.getDeliverySuccess());
   }
 
   @Test
@@ -665,9 +704,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             devA.getInternalId(), TestResult.POSITIVE, patient.getInternalId(), null);
 
     // THEN
-    assertEquals(true, res.getDeliverySuccess());
+    assertTrue(res.getDeliverySuccess());
     verifyNoInteractions(testResultsDeliveryService);
-    verifyNoInteractions(_smsService);
   }
 
   @Test
