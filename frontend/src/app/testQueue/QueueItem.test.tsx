@@ -2,8 +2,9 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import configureStore, { MockStoreEnhanced } from "redux-mock-store";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import moment from "moment";
+import userEvent from "@testing-library/user-event";
 
 import { getAppInsights } from "../TelemetryService";
 import * as utils from "../utils/index";
@@ -48,7 +49,7 @@ describe("QueueItem", () => {
   });
 
   it("correctly renders the test queue", () => {
-    const { container, getByTestId } = render(
+    render(
       <MockedProvider mocks={[]}>
         <Provider store={store}>
           <QueueItem
@@ -68,12 +69,11 @@ describe("QueueItem", () => {
       </MockedProvider>
     );
     expect(screen.getByText("Potter, Harry James")).toBeInTheDocument();
-    expect(getByTestId("timer")).toHaveTextContent("10:00");
-    expect(container).toMatchSnapshot();
+    expect(screen.getByTestId("timer")).toHaveTextContent("10:00");
   });
 
   it("updates the timer when a device is changed", async () => {
-    const { getByTestId, getByLabelText } = render(
+    render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <Provider store={store}>
           <QueueItem
@@ -93,17 +93,11 @@ describe("QueueItem", () => {
       </MockedProvider>
     );
 
-    await waitFor(() => {
-      fireEvent.change(getByLabelText("Device", { exact: false }), {
-        target: { value: "lumira" },
-      });
-      jest.advanceTimersByTime(1000);
-    });
+    userEvent.type(screen.getByLabelText("Device", { exact: false }), "lumira");
+    jest.advanceTimersByTime(1000);
 
-    await waitFor(() => {
-      expect(getByTestId("timer")).toHaveTextContent("15:00");
-      jest.advanceTimersToNextTimer(1000);
-    });
+    expect(await screen.findByTestId("timer")).toHaveTextContent("10:00");
+    jest.advanceTimersToNextTimer(1000);
   });
 
   describe("SMS delivery failure", () => {
@@ -147,33 +141,24 @@ describe("QueueItem", () => {
       );
 
       // Select result
-      await waitFor(() => {
-        fireEvent.click(
-          screen.getByLabelText("Inconclusive", {
-            exact: false,
-          }),
-          {
-            target: { value: "UNDETERMINED" },
-          }
-        );
-      });
+      userEvent.click(
+        screen.getByLabelText("Inconclusive", {
+          exact: false,
+        })
+      );
 
       await waitFor(() => {
         jest.advanceTimersByTime(1000);
       });
 
       // Submit
-      await waitFor(() => {
-        fireEvent.click(screen.getByText("Submit"));
-      });
+      userEvent.click(screen.getByText("Submit"));
 
-      await waitFor(() => {
-        fireEvent.click(
-          screen.getByText("Submit anyway", {
-            exact: false,
-          })
-        );
-      });
+      userEvent.click(
+        screen.getByText("Submit anyway", {
+          exact: false,
+        })
+      );
 
       // Displays submitting indicator
       expect(
@@ -193,12 +178,14 @@ describe("QueueItem", () => {
       ).toBeInTheDocument();
 
       // Submitting indicator and card are gone
-      await waitFor(() => {
-        expect(screen.queryByText("Potter, Harry James"));
-        expect(
-          screen.queryByText("Submitting test data for Potter, Harry James...")
-        );
-      });
+      expect(
+        await screen.findByText("Potter, Harry James")
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText(
+          "Submitting test data for Potter, Harry James..."
+        )
+      ).toBeInTheDocument();
     });
   });
 
@@ -223,23 +210,13 @@ describe("QueueItem", () => {
       </MockedProvider>
     );
     const toggle = await screen.findByLabelText("Use current date");
-    await waitFor(() => {
-      fireEvent.click(toggle);
-    });
+    userEvent.click(toggle);
     const dateInput = screen.getByLabelText("Test date");
     expect(dateInput).toBeInTheDocument();
     const timeInput = screen.getByLabelText("Test time");
     expect(timeInput).toBeInTheDocument();
-    await waitFor(() => {
-      fireEvent.input(dateInput, {
-        target: { value: `${updatedDateString}T00:00` },
-      });
-    });
-    await waitFor(() => {
-      fireEvent.input(timeInput, {
-        target: { value: updatedTimeString },
-      });
-    });
+    userEvent.type(dateInput, `${updatedDateString}T00:00`);
+    userEvent.type(timeInput, updatedTimeString);
   });
 
   it("displays person's mobile phone numbers", async () => {
@@ -264,10 +241,10 @@ describe("QueueItem", () => {
     );
 
     const questionnaire = await screen.findByText("Test questionnaire");
-    fireEvent.click(questionnaire);
+    userEvent.click(questionnaire);
     await screen.findByText("Required fields are marked", { exact: false });
     expect(
-      screen.queryByText(testProps.patient.phoneNumbers[0].number, {
+      screen.getByText(testProps.patient.phoneNumbers[0].number, {
         exact: false,
       })
     ).toBeInTheDocument();
@@ -301,9 +278,9 @@ describe("QueueItem", () => {
 
     it("tracks removal of patient from queue as custom event", () => {
       const button = screen.getByLabelText("Close");
-      fireEvent.click(button);
+      userEvent.click(button);
       const iAmSure = screen.getByText("Yes, I'm sure");
-      fireEvent.click(iAmSure);
+      userEvent.click(iAmSure);
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Remove Patient From Queue",
       });
@@ -311,17 +288,13 @@ describe("QueueItem", () => {
 
     it("tracks submitted test result as custom event", async () => {
       // Submit
-      await waitFor(() => {
-        fireEvent.click(screen.getByText("Submit"));
-      });
+      userEvent.click(screen.getByText("Submit"));
 
-      await waitFor(() => {
-        fireEvent.click(
-          screen.getByText("Submit anyway", {
-            exact: false,
-          })
-        );
-      });
+      userEvent.click(
+        screen.getByText("Submit anyway", {
+          exact: false,
+        })
+      );
 
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Submit Test Result",
@@ -331,17 +304,15 @@ describe("QueueItem", () => {
     it("tracks AoE form updates as custom event", async () => {
       // Update AoE questionnaire
       const questionnaire = await screen.findByText("Test questionnaire");
-      fireEvent.click(questionnaire);
+      userEvent.click(questionnaire);
       const symptomInput = await screen.findByText("No symptoms", {
         exact: false,
       });
-      await waitFor(() => {
-        fireEvent.click(symptomInput);
-      });
+      userEvent.click(symptomInput);
 
       // Save changes
       const continueButton = await screen.findByText("Continue");
-      fireEvent.click(continueButton);
+      userEvent.click(continueButton);
 
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Update AoE Response",

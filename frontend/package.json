@@ -162,7 +162,8 @@
             {
               "allowTestingFrameworkSetupHook": "beforeEach"
             }
-          ]
+          ],
+          "testing-library/no-node-access": "off"
         }
       }
     ]

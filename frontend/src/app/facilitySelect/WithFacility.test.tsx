@@ -1,7 +1,7 @@
 import { Provider } from "react-redux";
 import renderer from "react-test-renderer";
 import configureStore from "redux-mock-store";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter as Router } from "react-router";
@@ -146,9 +146,7 @@ describe("WithFacility", () => {
     describe("On facility select", () => {
       beforeEach(async () => {
         const options = await screen.findAllByRole("button");
-        await waitFor(() => {
-          userEvent.click(options[0]);
-        });
+        userEvent.click(options[0]);
       });
       it("should show the app", async () => {
         const renderedApp = await screen.findByText("App");
@@ -214,9 +212,13 @@ describe("WithFacility", () => {
           </Router>
         </I18nextProvider>
       );
-      await act(async () => {
-        await screen.findAllByText("Welcome to SimpleReport", { exact: false });
-      });
+      expect(
+        (
+          await screen.findAllByText("Welcome to SimpleReport", {
+            exact: false,
+          })
+        )[0]
+      ).toBeInTheDocument();
     });
 
     it("should render the facility form", async () => {

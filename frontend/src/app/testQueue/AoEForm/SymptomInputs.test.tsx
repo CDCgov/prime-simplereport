@@ -29,17 +29,15 @@ describe("SymptomInputs", () => {
     );
   });
 
-  it("renders", () => {
-    expect(component.toJSON()).toMatchSnapshot();
-  });
-
   describe("setting has symptoms", () => {
     describe("no symptoms", () => {
       beforeEach(async () => {
-        renderer.act(() => {
-          component.root
-            .findByProps({ name: "no_symptoms" })
-            .props.onChange({ target: { checked: false } });
+        await renderer.act(async () => {
+          const found = await component.root.findByProps({
+            name: "no_symptoms",
+          });
+
+          found.props.onChange({ target: { checked: false } });
         });
       });
       it("calls setNoSymptoms", () => {
@@ -51,10 +49,12 @@ describe("SymptomInputs", () => {
     });
     describe("symptoms", () => {
       beforeEach(async () => {
-        renderer.act(() => {
-          component.root
-            .findByProps({ name: "no_symptoms" })
-            .props.onChange({ target: { checked: true } });
+        await renderer.act(async () => {
+          const found = await component.root.findByProps({
+            name: "no_symptoms",
+          });
+
+          found.props.onChange({ target: { checked: true } });
         });
       });
       it("calls setNoSymptoms", () => {
@@ -68,10 +68,9 @@ describe("SymptomInputs", () => {
 
   describe("onset date", () => {
     beforeEach(async () => {
-      renderer.act(() => {
-        component.root
-          .findByProps({ id: "symptom_onset" })
-          .props.onChange("2021-06-03");
+      await renderer.act(async () => {
+        const found = await component.root.findByProps({ id: "symptom_onset" });
+        found.props.onChange("2021-06-03");
       });
     });
 

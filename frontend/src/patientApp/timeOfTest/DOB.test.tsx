@@ -1,8 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { act } from "react-dom/test-utils";
 import { v4 as uuid } from "uuid";
 
 import "../../i18n";
@@ -126,9 +129,10 @@ describe("DOB (valid UUID)", () => {
     userEvent.type(await screen.findByLabelText("Date of birth"), "08/21/1987");
 
     // WHEN
-    await act(async () => {
-      userEvent.click(await screen.findByText("Continue"));
-    });
+    userEvent.click(await screen.findByText("Continue"));
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Validating birth date...")
+    );
 
     // THEN
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
@@ -140,9 +144,10 @@ describe("DOB (valid UUID)", () => {
     userEvent.type(await screen.findByLabelText("Date of birth"), "08/21/1987");
 
     // WHEN
-    await act(async () => {
-      userEvent.click(await screen.findByText("Continue"));
-    });
+    userEvent.click(await screen.findByText("Continue"));
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Validating birth date...")
+    );
 
     // THEN
     expect(
@@ -160,9 +165,10 @@ describe("DOB (valid UUID)", () => {
     userEvent.type(await screen.findByLabelText("Date of birth"), "08/21/1987");
 
     // WHEN
-    await act(async () => {
-      userEvent.click(await screen.findByText("Continue"));
-    });
+    userEvent.click(await screen.findByText("Continue"));
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Validating birth date...")
+    );
 
     // THEN
     expect(

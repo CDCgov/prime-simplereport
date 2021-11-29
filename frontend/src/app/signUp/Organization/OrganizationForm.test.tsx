@@ -20,9 +20,7 @@ const getPhoneInput = () => screen.getByLabelText("Work phone number *");
 const getSubmitButton = () => screen.getByText("Continue");
 
 const fillInDropDown = (input: any, text: string) =>
-  act(() => {
-    userEvent.selectOptions(input, [text]);
-  });
+  userEvent.selectOptions(input, [text]);
 
 jest.mock("../SignUpApi", () => ({
   SignUpApi: {

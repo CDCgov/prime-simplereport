@@ -1,7 +1,7 @@
 import React from "react";
 import renderer from "react-test-renderer";
 import { MemoryRouter } from "react-router";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Patient } from "../../patients/ManagePatients";
@@ -94,9 +94,7 @@ describe("SearchResults", () => {
       );
 
       expect(screen.getByText("Add new patient")).toBeInTheDocument();
-      act(() => {
-        userEvent.click(screen.getByText("Add new patient"));
-      });
+      userEvent.click(screen.getByText("Add new patient"));
       expect(
         screen.getByText(
           `Redirected to /add-patient?facility=${mockFacilityID}`
@@ -157,10 +155,8 @@ describe("SearchResults", () => {
       </RouterWithFacility>
     );
 
-    await waitFor(() => {
-      expect(screen.getByText("Test questionnaire")).toBeInTheDocument();
-      expect(screen.getByText("Washington, George")).toBeInTheDocument();
-      expect(screen.getByText("Continue")).toBeInTheDocument();
-    });
+    expect(screen.getByText("Test questionnaire")).toBeInTheDocument();
+    expect(screen.getByText("Washington, George")).toBeInTheDocument();
+    expect(screen.getByText("Continue")).toBeInTheDocument();
   });
 });

@@ -10,7 +10,6 @@ import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router";
 import { ToastContainer } from "react-toastify";
 
@@ -48,7 +47,7 @@ describe("EditPatient", () => {
     });
     it("shows loading text", async () => {
       expect(
-        await screen.queryAllByText("loading...", { exact: false })[0]
+        screen.getAllByText("loading...", { exact: false })[0]
       ).toBeInTheDocument();
     });
   });
@@ -125,9 +124,9 @@ describe("EditPatient", () => {
         </>
       );
 
-      await act(async () => {
-        await screen.findAllByText("Franecki, Eugenia", { exact: false });
-      });
+      expect(
+        (await screen.findAllByText("Franecki, Eugenia", { exact: false }))[0]
+      ).toBeInTheDocument();
     });
 
     it("populates primary phone number field with patient `telephone`", () => {
@@ -147,13 +146,11 @@ describe("EditPatient", () => {
     });
 
     it("displays a validation failure alert if phone type not entered", async () => {
-      await act(async () => {
-        userEvent.click(
-          screen.queryAllByText("Add another number", {
-            exact: false,
-          })[0]
-        );
-      });
+      userEvent.click(
+        screen.queryAllByText("Add another number", {
+          exact: false,
+        })[0]
+      );
 
       // Do not enter phone type for additional number
       const number = screen.getAllByLabelText("Additional phone number", {
@@ -164,9 +161,7 @@ describe("EditPatient", () => {
         target: { value: "6318675309" },
       });
 
-      await waitFor(() => {
-        userEvent.click(screen.getAllByText("Save changes")[0]);
-      });
+      userEvent.click(screen.getAllByText("Save changes")[0]);
 
       expect(
         await screen.findByText("Phone type is required", {
@@ -238,14 +233,14 @@ describe("EditPatient", () => {
           </Provider>
         </MemoryRouter>
       );
-      await act(async () => {
-        await screen.findAllByText("Franecki, Eugenia", { exact: false });
-      });
+      expect(
+        (await screen.findAllByText("Franecki, Eugenia", { exact: false }))[0]
+      ).toBeInTheDocument();
     });
 
     it("shows the form title", () => {
       expect(
-        screen.queryAllByText("Franecki, Eugenia", { exact: false })[0]
+        screen.getAllByText("Franecki, Eugenia", { exact: false })[0]
       ).toBeInTheDocument();
     });
 
@@ -334,9 +329,9 @@ describe("EditPatient", () => {
           </Provider>
         </MemoryRouter>
       );
-      await act(async () => {
-        await screen.findAllByText("Franecki, Eugenia", { exact: false });
-      });
+      expect(
+        (await screen.findAllByText("Franecki, Eugenia", { exact: false }))[0]
+      ).toBeInTheDocument();
     });
 
     it("shows prefer not to answer options", () => {
@@ -392,9 +387,9 @@ describe("EditPatient", () => {
       // Error message on bad value
       fireEvent.change(name, { target: { value: "" } });
       fireEvent.blur(name);
-      await waitFor(() => {
-        expect(screen.getByText("First name is required")).toBeInTheDocument();
-      });
+      expect(
+        await screen.findByText("First name is required")
+      ).toBeInTheDocument();
       // No error message on good value
       fireEvent.change(name, { target: { value: "James" } });
       fireEvent.blur(name);
@@ -423,11 +418,9 @@ describe("EditPatient", () => {
       );
     });
     it("renders", async () => {
-      await waitFor(() => {
-        expect(
-          screen.queryByText("Franecki, Eugenia", { exact: false })
-        ).toBeInTheDocument();
-      });
+      expect(
+        await screen.findByText("Franecki, Eugenia", { exact: false })
+      ).toBeInTheDocument();
     });
   });
   describe("EditPatientContainer", () => {

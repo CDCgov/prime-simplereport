@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  act,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import PersonalDetailsForm from "./PersonalDetailsForm";
@@ -60,41 +66,31 @@ describe("PersonalDetailsForm", () => {
       });
     });
     describe("On submitting with an invalid phone number", () => {
-      beforeEach(async () => {
-        await act(async () => {
-          userEvent.type(
-            screen.getByLabelText("Phone number", { exact: false }),
-            "123"
-          );
-          userEvent.click(screen.getByText("Submit"));
-        });
-      });
-      it("shows an error", () => {
+      it("shows an error", async () => {
+        userEvent.type(
+          screen.getByLabelText("Phone number", { exact: false }),
+          "123"
+        );
+        userEvent.click(screen.getByText("Submit"));
         expect(
-          screen.getByText("A valid phone number is required")
+          await screen.findByText("A valid phone number is required")
         ).toBeInTheDocument();
       });
     });
     describe("On submitting an invalid street address 1", () => {
-      beforeEach(async () => {
-        await act(async () => {
-          userEvent.type(
-            screen.getByLabelText("Street address 1", { exact: false }),
-            "111 greendale dr,"
-          );
-        });
-        await act(async () => {
-          userEvent.click(screen.getByText("Submit"));
-        });
-      });
-      it("shows an error", () => {
+      it("shows an error", async () => {
+        userEvent.type(
+          screen.getByLabelText("Street address 1", { exact: false }),
+          "111 greendale dr,"
+        );
+        userEvent.click(screen.getByText("Submit"));
         expect(
-          screen.getByText("A valid street address is required")
+          await screen.findByText("A valid street address is required")
         ).toBeInTheDocument();
       });
     });
     describe("On clicking an invalid date of birth and submitting", () => {
-      beforeEach(async () => {
+      it("shows an error", async () => {
         userEvent.click(screen.getByTestId("date-picker-button"));
         const nextMonthButton = screen.getByTestId("next-month");
         expect(nextMonthButton).toHaveClass(
@@ -104,18 +100,14 @@ describe("PersonalDetailsForm", () => {
         const dateButton = screen.getByText("15");
         expect(dateButton).toHaveClass("usa-date-picker__calendar__date");
         userEvent.click(dateButton);
-        await act(async () => {
-          userEvent.click(screen.getByText("Submit"));
-        });
-      });
-      it("shows an error", () => {
+        userEvent.click(screen.getByText("Submit"));
         expect(
-          screen.getByText("A valid date of birth is required")
+          await screen.findByText("A valid date of birth is required")
         ).toBeInTheDocument();
       });
     });
     describe("On clicking a valid date of birth and submitting", () => {
-      beforeEach(async () => {
+      it("shows an error", async () => {
         userEvent.click(screen.getByTestId("date-picker-button"));
         const previousMonthButton = screen.getByTestId("previous-month");
         expect(previousMonthButton).toHaveClass(
@@ -125,63 +117,47 @@ describe("PersonalDetailsForm", () => {
         const dateButton = screen.getByText("15");
         expect(dateButton).toHaveClass("usa-date-picker__calendar__date");
         userEvent.click(dateButton);
-        await act(async () => {
-          userEvent.click(screen.getByText("Submit"));
+        userEvent.click(screen.getByText("Submit"));
+        await waitFor(() => {
+          expect(
+            screen.queryByText("A valid date of birth is required")
+          ).not.toBeInTheDocument();
         });
-      });
-      it("shows an error", () => {
-        expect(
-          screen.queryByText("A valid date of birth is required")
-        ).not.toBeInTheDocument();
       });
     });
     describe("On submitting an invalid street address 2", () => {
-      beforeEach(async () => {
-        await act(async () => {
-          userEvent.type(
-            screen.getByLabelText("Street address 2", { exact: false }),
-            "111 greendale dr,"
-          );
-        });
-        await act(async () => {
-          userEvent.click(screen.getByText("Submit"));
-        });
-      });
-      it("shows an error", () => {
+      it("shows an error", async () => {
+        userEvent.type(
+          screen.getByLabelText("Street address 2", { exact: false }),
+          "111 greendale dr,"
+        );
+        userEvent.click(screen.getByText("Submit"));
         expect(
-          screen.getByText("Street 2 contains invalid symbols")
+          await screen.findByText("Street 2 contains invalid symbols")
         ).toBeInTheDocument();
       });
     });
     describe("On submitting an invalid zip code", () => {
-      beforeEach(async () => {
-        await act(async () => {
-          userEvent.type(
-            screen.getByLabelText("ZIP code", { exact: false }),
-            "1234"
-          );
-        });
-        await act(async () => {
-          userEvent.click(screen.getByText("Submit"));
-        });
-      });
-      it("shows an error", () => {
+      it("shows an error", async () => {
+        userEvent.type(
+          screen.getByLabelText("ZIP code", { exact: false }),
+          "1234"
+        );
+        userEvent.click(screen.getByText("Submit"));
         expect(
-          screen.getByText("A valid ZIP code is required")
+          await screen.findByText("A valid ZIP code is required")
         ).toBeInTheDocument();
       });
     });
     describe("On submitting an incomplete form", () => {
-      beforeEach(async () => {
-        await act(async () => {
-          fillInText("Email", "bob@bob.bob");
-          userEvent.click(screen.getByText("Submit"));
+      it("shows an error", async () => {
+        fillInText("Email", "bob@bob.bob");
+        userEvent.click(screen.getByText("Submit"));
+        await waitFor(() => {
+          expect(
+            screen.queryAllByText("is required", { exact: false }).length
+          ).toBe(6);
         });
-      });
-      it("shows an error", () => {
-        expect(
-          screen.queryAllByText("is required", { exact: false }).length
-        ).toBe(6);
       });
     });
   });
@@ -201,13 +177,11 @@ describe("PersonalDetailsForm", () => {
     });
 
     describe("On submit", () => {
-      beforeEach(async () => {
-        await act(async () => {
-          userEvent.click(screen.getByText("Submit"));
+      it("does not shows an error", async () => {
+        userEvent.click(screen.getByText("Submit"));
+        await waitFor(() => {
+          expect(screen.queryAllByText("is required").length).toBe(0);
         });
-      });
-      it("does not shows an error", () => {
-        expect(screen.queryAllByText("is required").length).toBe(0);
       });
     });
   });

@@ -1,4 +1,4 @@
-import { render, screen, act } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route } from "react-router";
 
 import { MfaComplete } from "../MfaComplete/MfaComplete";
@@ -57,14 +57,12 @@ describe("MFA Security Key Successful", () => {
     // in the real flow, a user has to touch their security key to trigger the enrollment.
     // it's not possible to mock that, so instead we mock out functions as if the user
     // had touched their key and assert that they get to the success page.
-    act(() => {
-      render(
-        <MemoryRouter initialEntries={["/enroll-security-key-mfa"]}>
-          <Route path="/enroll-security-key-mfa" component={MfaSecurityKey} />
-          <Route path="/success" component={MfaComplete} />
-        </MemoryRouter>
-      );
-    });
+    render(
+      <MemoryRouter initialEntries={["/enroll-security-key-mfa"]}>
+        <Route path="/enroll-security-key-mfa" component={MfaSecurityKey} />
+        <Route path="/success" component={MfaComplete} />
+      </MemoryRouter>
+    );
 
     expect(
       await screen.findByText("Account set up complete")

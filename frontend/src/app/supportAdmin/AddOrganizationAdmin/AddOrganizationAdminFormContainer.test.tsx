@@ -1,4 +1,4 @@
-import { render, screen, waitFor, act } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router";
 import userEvent from "@testing-library/user-event";
@@ -90,25 +90,21 @@ describe("AddOrganizationAdminFormContainer", () => {
         ).toBeDisabled();
       });
       describe("Blank value for first name", () => {
-        beforeEach(async () => {
-          await waitFor(async () => {
-            const firstName = screen.getByLabelText("First name", {
-              exact: false,
-            });
-            userEvent.clear(firstName);
-            userEvent.tab();
+        beforeEach(() => {
+          const firstName = screen.getByLabelText("First name", {
+            exact: false,
           });
+          userEvent.clear(firstName);
         });
-        it("show an error", () => {
+        it("show an error", async () => {
+          userEvent.tab();
           expect(
-            screen.getByText("First name is missing", { exact: false })
+            await screen.findByText("First name is missing", { exact: false })
           ).toBeInTheDocument();
         });
         describe("Form submission", () => {
-          beforeEach(async () => {
-            await act(async () => {
-              await userEvent.click(screen.getByText("Save Changes"));
-            });
+          beforeEach(() => {
+            userEvent.click(screen.getByText("Save Changes"));
           });
           it("shows the form title", () => {
             expect(
@@ -118,25 +114,23 @@ describe("AddOrganizationAdminFormContainer", () => {
         });
       });
       describe("All required fields filled", () => {
-        beforeEach(async () => {
-          await waitFor(async () => {
-            await userEvent.selectOptions(
-              screen.getByTestId("organization-dropdown"),
-              "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
-            );
-            await userEvent.type(
-              screen.getByLabelText("First name", { exact: false }),
-              "Flora"
-            );
-            await userEvent.type(
-              screen.getByLabelText("Last name", { exact: false }),
-              "Murray"
-            );
-            await userEvent.type(
-              screen.getByLabelText("Email", { exact: false }),
-              "Flora.Murray@example.com"
-            );
-          });
+        beforeEach(() => {
+          userEvent.selectOptions(
+            screen.getByTestId("organization-dropdown"),
+            "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+          );
+          userEvent.type(
+            screen.getByLabelText("First name", { exact: false }),
+            "Flora"
+          );
+          userEvent.type(
+            screen.getByLabelText("Last name", { exact: false }),
+            "Murray"
+          );
+          userEvent.type(
+            screen.getByLabelText("Email", { exact: false }),
+            "Flora.Murray@example.com"
+          );
         });
         it("enables the save button", () => {
           expect(
@@ -144,17 +138,9 @@ describe("AddOrganizationAdminFormContainer", () => {
           ).not.toBeDisabled();
         });
         describe("Form submission", () => {
-          let redirected: HTMLElement;
-          beforeEach(async () => {
-            await act(async () => {
-              await userEvent.click(screen.getByText("Save Changes"));
-            });
-            await waitFor(async () => {
-              redirected = await screen.getByText("Redirected");
-            });
-          });
-          it("User is redirected away from the form", () => {
-            expect(redirected).toBeInTheDocument();
+          it("User is redirected away from the form", async () => {
+            userEvent.click(screen.getByText("Save Changes"));
+            expect(await screen.findByText("Redirected")).toBeInTheDocument();
           });
         });
       });

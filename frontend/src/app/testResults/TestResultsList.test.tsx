@@ -990,7 +990,7 @@ describe("TestResultsList", () => {
     );
     userEvent.tab();
     expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-    expect(await screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
+    expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
     expect(
       screen.queryByText("Cragell, Barb Whitaker")
     ).not.toBeInTheDocument();
@@ -1024,7 +1024,7 @@ describe("TestResultsList", () => {
     expect(
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();
-    expect(await screen.queryByText("Colleer, Barde X")).toBeInTheDocument();
+    expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
   });
 
   it("should be able to clear date filters", async () => {
