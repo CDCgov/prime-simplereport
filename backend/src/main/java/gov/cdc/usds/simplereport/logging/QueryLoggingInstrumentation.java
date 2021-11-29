@@ -24,15 +24,17 @@ import org.springframework.stereotype.Component;
 public class QueryLoggingInstrumentation extends SimpleInstrumentation {
 
   private final TelemetryClient client;
+  private final boolean isDebugEnabled;
 
   public QueryLoggingInstrumentation(TelemetryClient client) {
     this.client = client;
+    this.isDebugEnabled = log.isDebugEnabled();
   }
 
   @Override
   public InstrumentationContext<List<ValidationError>> beginValidation(
       InstrumentationValidationParameters parameters) {
-    if (log.isDebugEnabled()) {
+    if (isDebugEnabled) {
       // Descend through the GraphQL query and pull out the field names and variables from the
       // operation definitions
       final Set<String> fieldSet =
