@@ -5,6 +5,7 @@ import configureStore, { MockStoreEnhanced } from "redux-mock-store";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import moment from "moment";
 import { act } from "react-dom/test-utils";
+import userEvent from "@testing-library/user-event";
 
 import { getAppInsights } from "../TelemetryService";
 import * as utils from "../utils/index";
@@ -107,6 +108,176 @@ describe("QueueItem", () => {
     await waitFor(() => {
       expect(getByTestId("timer")).toHaveTextContent("15:00");
     });
+  });
+
+  it("renders dropdown of device types", async () => {
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <Provider store={store}>
+          <QueueItem
+            internalId={testProps.internalId}
+            patient={testProps.patient}
+            askOnEntry={testProps.askOnEntry}
+            selectedDeviceId={testProps.selectedDeviceId}
+            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+            selectedTestResult={testProps.selectedTestResult}
+            devices={testProps.devices}
+            refetchQueue={testProps.refetchQueue}
+            facilityId={testProps.facilityId}
+            dateTestedProp={testProps.dateTestedProp}
+            patientLinkId={testProps.patientLinkId}
+          ></QueueItem>
+        </Provider>
+      </MockedProvider>
+    );
+
+    const deviceDropdown = await screen.findByLabelText("Device");
+
+    act(() => {
+      userEvent.selectOptions(deviceDropdown, "Access Bio CareStart");
+    });
+
+    expect(
+      ((await screen.findByText("Access Bio CareStart")) as HTMLOptionElement)
+        .selected
+    ).toBeTruthy();
+    expect(
+      ((await screen.findByText("LumiraDX")) as HTMLOptionElement).selected
+    ).toBeFalsy();
+  });
+
+  it("renders dropdown of swab types configured with selected device", async () => {
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <Provider store={store}>
+          <QueueItem
+            internalId={testProps.internalId}
+            patient={testProps.patient}
+            askOnEntry={testProps.askOnEntry}
+            selectedDeviceId={testProps.selectedDeviceId}
+            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+            selectedTestResult={testProps.selectedTestResult}
+            devices={testProps.devices}
+            refetchQueue={testProps.refetchQueue}
+            facilityId={testProps.facilityId}
+            dateTestedProp={testProps.dateTestedProp}
+            patientLinkId={testProps.patientLinkId}
+          ></QueueItem>
+        </Provider>
+      </MockedProvider>
+    );
+    const swabDropdown = await screen.findByLabelText("Swab type");
+
+    // First device is selected
+    expect(
+      ((await screen.findByText("Access Bio CareStart")) as HTMLOptionElement)
+        .selected
+    ).toBeTruthy();
+
+    act(() => {
+      userEvent.selectOptions(swabDropdown, "specimen-1");
+    });
+
+    expect(
+      ((await screen.findByText("Specimen 1")) as HTMLOptionElement).selected
+    ).toBeTruthy();
+
+    // Configured on the other device - should not appear in dropdown
+    expect(
+      screen.queryByText("Specimen 2") as HTMLOptionElement
+    ).not.toBeInTheDocument();
+  });
+
+  it("updates test order on device specimen type change", async () => {
+    let editQueueMockIsDone = false;
+
+    const editQueueMocks = [
+      {
+        request: {
+          query: EDIT_QUEUE_ITEM,
+          variables: {
+            id: internalId,
+            deviceSpecimenType: "device-specimen-2",
+            deviceId: "lumira",
+            result: {},
+          },
+        },
+        result: () => {
+          editQueueMockIsDone = true;
+
+          return {
+            data: {
+              editQueueItem: {
+                result: "UNDETERMINED",
+                dateTested: null,
+                deviceType: {
+                  internalId: internalId,
+                  testLength: 10,
+                },
+                deviceSpecimenType: {
+                  internalId: "device-specimen-2",
+                  deviceType: deviceTwo,
+                  specimenType: {},
+                },
+              },
+            },
+          };
+        },
+      },
+    ];
+
+    render(
+      <>
+        <MockedProvider mocks={editQueueMocks} addTypename={false}>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResult={testProps.selectedTestResult}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              patientLinkId={testProps.patientLinkId}
+            ></QueueItem>
+          </Provider>
+        </MockedProvider>
+        <ToastContainer
+          autoClose={5000}
+          closeButton={false}
+          limit={2}
+          position="bottom-center"
+          hideProgressBar={true}
+        />
+      </>
+    );
+
+    const deviceDropdown = await screen.findByLabelText("Device");
+
+    // Change device type
+    act(() => {
+      userEvent.selectOptions(deviceDropdown, "LumiraDX");
+    });
+
+    // Wait for the genuinely long-running "edit queue" operation to finish
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    expect(editQueueMockIsDone).toBe(true);
   });
 
   describe("SMS delivery failure", () => {
