@@ -40,12 +40,14 @@ describe("QueueItem", () => {
     (getAppInsights as jest.Mock).mockImplementation(() => ({
       trackEvent: trackEventMock,
     }));
+    jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
   afterEach(() => {
     jest.useRealTimers();
     Date.now = nowFn;
     (getAppInsights as jest.Mock).mockReset();
+    jest.spyOn(console, "error").mockRestore();
   });
 
   it("correctly renders the test queue", () => {
