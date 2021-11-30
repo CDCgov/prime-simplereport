@@ -2,7 +2,6 @@ import {
   render,
   screen,
   fireEvent,
-  cleanup,
   within,
   waitFor,
 } from "@testing-library/react";
@@ -22,8 +21,6 @@ jest.mock("@trussworks/react-uswds", () => ({
 const mockStore = configureStore([]);
 
 describe("EditPatient", () => {
-  afterEach(cleanup);
-
   const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
   const mockPatientID = "555e8a40-0f95-458e-a038-6b500a0fc2ad";
   const store = mockStore({

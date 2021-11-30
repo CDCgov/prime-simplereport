@@ -1,4 +1,4 @@
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
@@ -12,7 +12,7 @@ jest.mock("@trussworks/react-uswds", () => ({
 const mockStore = configureStore([]);
 
 jest.mock("react-router-dom", () => ({
-  Prompt: (props: any) => <></>,
+  Prompt: (_props: any) => <></>,
   useHistory: () => ({
     listen: jest.fn(),
     push: jest.fn(),
@@ -20,8 +20,6 @@ jest.mock("react-router-dom", () => ({
 }));
 
 describe("PatientFormContainer", () => {
-  afterEach(cleanup);
-
   it("renders", () => {
     jest
       .useFakeTimers("modern")
