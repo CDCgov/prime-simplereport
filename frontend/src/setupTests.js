@@ -22,3 +22,7 @@ ReactModal.setAppElement("*"); // suppresses modal-related test warnings.
 
 // Disable moment warnings
 moment.suppressDeprecationWarnings = true;
+
+// This prevents tests from timing out and causing this error in CI:
+// TypeError: Cannot read property 'createEvent' of null
+jest.setTimeout(30000);

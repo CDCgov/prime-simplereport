@@ -71,8 +71,6 @@ const fillOutForm = (
   });
 };
 
-jest.setTimeout(30000);
-
 describe("AddPatient", () => {
   describe("No facility selected", () => {
     beforeEach(() => {
