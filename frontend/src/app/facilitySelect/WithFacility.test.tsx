@@ -1,5 +1,4 @@
 import { Provider } from "react-redux";
-import renderer from "react-test-renderer";
 import configureStore from "redux-mock-store";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -53,7 +52,6 @@ const mocks = [
 
 describe("WithFacility", () => {
   let store: any;
-  let component: any;
 
   describe("With zero facilities", () => {
     beforeEach(() => {
@@ -70,7 +68,7 @@ describe("WithFacility", () => {
         facilities: [],
       });
       store.dispatch = jest.fn();
-      component = renderer.create(
+      render(
         <Router>
           <Provider store={store}>
             <WithFacility>App</WithFacility>
@@ -80,7 +78,9 @@ describe("WithFacility", () => {
     });
 
     it("should notify user to contact an admin", () => {
-      expect(component.toJSON()).toMatchSnapshot();
+      expect(
+        screen.getByText("Ask an administrator", { exact: false })
+      ).toBeInTheDocument();
     });
   });
 
@@ -98,7 +98,7 @@ describe("WithFacility", () => {
         },
         facilities: [{ id: "1", name: "Facility 1" }],
       });
-      component = render(
+      render(
         <Router>
           <Provider store={store}>
             <WithFacility>App</WithFacility>
@@ -130,7 +130,7 @@ describe("WithFacility", () => {
           { id: "2", name: "Facility 2" },
         ],
       });
-      component = render(
+      render(
         <Router>
           <Provider store={store}>
             <WithFacility>App</WithFacility>
@@ -140,7 +140,9 @@ describe("WithFacility", () => {
     });
 
     it("should show the facility selection screen", () => {
-      expect(component.container.firstChild).toMatchSnapshot();
+      expect(
+        screen.getByText("Please select the testing facility", { exact: false })
+      ).toBeInTheDocument();
     });
 
     describe("On facility select", () => {

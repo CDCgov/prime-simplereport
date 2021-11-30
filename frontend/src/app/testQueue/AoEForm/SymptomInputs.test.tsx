@@ -1,11 +1,11 @@
-import renderer from "react-test-renderer";
 import MockDate from "mockdate";
 import { createRef } from "react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import SymptomInputs from "./SymptomInputs";
 
 describe("SymptomInputs", () => {
-  let component: renderer.ReactTestRenderer;
   let setNoSymptoms: jest.Mock;
   let setOnsetDate: jest.Mock;
   beforeEach(() => {
@@ -13,7 +13,7 @@ describe("SymptomInputs", () => {
     setNoSymptoms = jest.fn();
     setOnsetDate = jest.fn();
 
-    component = renderer.create(
+    render(
       <SymptomInputs
         noSymptoms={false}
         setNoSymptoms={setNoSymptoms}
@@ -31,54 +31,28 @@ describe("SymptomInputs", () => {
 
   describe("setting has symptoms", () => {
     describe("no symptoms", () => {
-      beforeEach(async () => {
-        await renderer.act(async () => {
-          const found = await component.root.findByProps({
-            name: "no_symptoms",
-          });
-
-          found.props.onChange({ target: { checked: false } });
-        });
-      });
       it("calls setNoSymptoms", () => {
+        userEvent.click(screen.getByLabelText("No symptoms"));
         expect(setNoSymptoms).toHaveBeenCalledTimes(1);
-      });
-      it("calls setNoSymptoms with true", () => {
-        expect(setNoSymptoms).toHaveBeenCalledWith(false);
+        expect(setNoSymptoms).toHaveBeenCalledWith(true);
       });
     });
-    describe("symptoms", () => {
-      beforeEach(async () => {
-        await renderer.act(async () => {
-          const found = await component.root.findByProps({
-            name: "no_symptoms",
-          });
-
-          found.props.onChange({ target: { checked: true } });
-        });
-      });
-      it("calls setNoSymptoms", () => {
-        expect(setNoSymptoms).toHaveBeenCalledTimes(1);
-      });
-      it("calls setNoSymptoms with true", () => {
-        expect(setNoSymptoms).toHaveBeenCalledWith(true);
+    describe("yes symptoms", () => {
+      it("doesn't call setNoSymptoms", () => {
+        userEvent.click(screen.getByLabelText("Chills", { exact: false }));
+        expect(setNoSymptoms).toHaveBeenCalledTimes(0);
       });
     });
   });
 
   describe("onset date", () => {
-    beforeEach(async () => {
-      await renderer.act(async () => {
-        const found = await component.root.findByProps({ id: "symptom_onset" });
-        found.props.onChange("2021-06-03");
-      });
-    });
-
     it("calls setOnsetDate", () => {
-      expect(setOnsetDate).toHaveBeenCalledTimes(1);
-    });
-
-    it("calls setOnsetDate with a date", () => {
+      userEvent.type(
+        screen.getByTestId("date-picker-external-input"),
+        "2021-06-03"
+      );
+      // Gets called once per input character
+      expect(setOnsetDate).toHaveBeenCalledTimes(10);
       expect(setOnsetDate).toHaveBeenCalledWith("2021-06-03");
     });
   });

@@ -1,4 +1,3 @@
-import renderer from "react-test-renderer";
 import { render, screen, cleanup } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
@@ -23,7 +22,7 @@ jest.mock("react-router-dom", () => ({
 describe("PatientFormContainer", () => {
   afterEach(cleanup);
 
-  it("snapshot", () => {
+  it("renders", () => {
     jest
       .useFakeTimers("modern")
       .setSystemTime(new Date("2021-08-01").getTime());
@@ -39,7 +38,7 @@ describe("PatientFormContainer", () => {
       },
       facilities: [],
     });
-    const component = renderer.create(
+    render(
       <Provider store={store}>
         <MockedProvider mocks={[]} addTypename={false}>
           <PatientFormContainer />
@@ -47,9 +46,11 @@ describe("PatientFormContainer", () => {
       </Provider>
     );
 
-    expect(component.toJSON()).toMatchSnapshot();
+    expect(
+      screen.getAllByText("Profile information", { exact: false })[0]
+    ).toBeInTheDocument();
   });
-  describe("testing-library/react renderer", () => {
+  describe("renders the correct content", () => {
     window.scrollTo = jest.fn();
 
     beforeEach(() => {

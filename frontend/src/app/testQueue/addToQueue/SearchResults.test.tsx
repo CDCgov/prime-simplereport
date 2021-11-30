@@ -1,5 +1,4 @@
 import React from "react";
-import renderer from "react-test-renderer";
 import { MemoryRouter } from "react-router";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -63,7 +62,7 @@ jest.mock("react-router-dom", () => ({
 describe("SearchResults", () => {
   describe("No Results", () => {
     it("should say 'No Results' for no matches", () => {
-      const component = renderer.create(
+      render(
         <RouterWithFacility>
           <SearchResults
             page="queue"
@@ -76,7 +75,7 @@ describe("SearchResults", () => {
         </RouterWithFacility>
       );
 
-      expect(component.toJSON()).toMatchSnapshot();
+      expect(screen.getByText("No results found.")).toBeInTheDocument();
     });
 
     it("should show add patient button", () => {
@@ -104,7 +103,7 @@ describe("SearchResults", () => {
   });
 
   it("should show matching results", () => {
-    const component = renderer.create(
+    render(
       <RouterWithFacility>
         <SearchResults
           page="queue"
@@ -117,7 +116,7 @@ describe("SearchResults", () => {
       </RouterWithFacility>
     );
 
-    expect(component.toJSON()).toMatchSnapshot();
+    expect(screen.getByText("Washington, George")).toBeInTheDocument();
   });
 
   it("links the non-duplicate patient", () => {
