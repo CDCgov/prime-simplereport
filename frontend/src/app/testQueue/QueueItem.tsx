@@ -179,7 +179,6 @@ const QueueItem = ({
   selectedTestResult,
   refetchQueue,
   facilityName,
-  facilityId,
   dateTestedProp,
 }: QueueItemProps) => {
   const appInsights = getAppInsights();

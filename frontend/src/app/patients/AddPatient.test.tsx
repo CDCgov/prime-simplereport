@@ -53,7 +53,7 @@ const fillOutForm = (
       [value]
     );
   });
-  Object.entries(inputGroups).forEach(([legend, { label, value, exact }]) => {
+  Object.entries(inputGroups).forEach(([legend, { label, exact }]) => {
     const fieldset = screen
       .getByText(legend, {
         exact: false,
