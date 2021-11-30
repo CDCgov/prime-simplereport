@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
@@ -46,12 +52,14 @@ export const EDIT_QUEUE_ITEM = gql`
   mutation EditQueueItem(
     $id: ID!
     $deviceId: String
+    $deviceSpecimenType: ID
     $result: String
     $dateTested: DateTime
   ) {
     editQueueItem(
       id: $id
       deviceId: $deviceId
+      deviceSpecimenType: $deviceSpecimenType
       result: $result
       dateTested: $dateTested
     ) {
@@ -61,6 +69,16 @@ export const EDIT_QUEUE_ITEM = gql`
         internalId
         testLength
       }
+      deviceSpecimenType {
+        internalId
+        deviceType {
+          internalId
+          testLength
+        }
+        specimenType {
+          internalId
+        }
+      }
     }
   }
 `;
@@ -68,6 +86,7 @@ export const EDIT_QUEUE_ITEM = gql`
 interface EditQueueItemParams {
   id: string;
   deviceId?: string;
+  deviceSpecimenType: string;
   result?: TestResult;
   dateTested?: string;
 }
@@ -77,6 +96,7 @@ interface EditQueueItemResponse {
     result: TestResult;
     dateTested: string;
     deviceType: { internalId: string; testLength: number };
+    deviceSpecimenType: DeviceSpecimenType;
   };
 }
 
@@ -84,12 +104,14 @@ export const SUBMIT_TEST_RESULT = gql`
   mutation SubmitTestResult(
     $patientId: ID!
     $deviceId: String!
+    $deviceSpecimenType: ID
     $result: String!
     $dateTested: DateTime
   ) {
     addTestResultNew(
       patientId: $patientId
       deviceId: $deviceId
+      deviceSpecimenType: $deviceSpecimenType
       result: $result
       dateTested: $dateTested
     ) {
@@ -150,8 +172,10 @@ export interface QueueItemProps {
     internalId: string;
     testLength: number;
   }[];
+  deviceSpecimenTypes: DeviceSpecimenType[];
   askOnEntry: AoEAnswers;
   selectedDeviceId: string;
+  selectedDeviceSpecimenTypeId: string;
   selectedDeviceTestLength: number;
   selectedTestResult: TestResult;
   dateTestedProp: string;
@@ -162,6 +186,7 @@ export interface QueueItemProps {
 
 interface updateQueueItemProps {
   deviceId?: string;
+  deviceSpecimenType: string;
   testLength?: number;
   result?: TestResult;
   dateTested?: string;
@@ -173,8 +198,10 @@ const QueueItem = ({
   internalId,
   patient,
   devices,
+  deviceSpecimenTypes,
   askOnEntry,
   selectedDeviceId,
+  selectedDeviceSpecimenTypeId,
   selectedDeviceTestLength,
   selectedTestResult,
   refetchQueue,
@@ -215,7 +242,37 @@ const QueueItem = ({
     setAoeAnswers(askOnEntry);
   }, [askOnEntry]);
 
-  const [deviceId, updateDeviceId] = useState(selectedDeviceId);
+  const [deviceId, updateDeviceId] = useState<string>(selectedDeviceId);
+  const [specimenId, updateSpecimenId] = useState<string>("");
+  const [deviceSpecimenTypeId, updateDeviceSpecimenTypeId] = useState(
+    selectedDeviceSpecimenTypeId
+  );
+
+  // Populate device+specimen state variables from selected device specimen type
+  useEffect(() => {
+    const deviceSpecimenType = deviceSpecimenTypes.find(
+      (dst) => dst.internalId === deviceSpecimenTypeId
+    );
+
+    if (!deviceSpecimenType) {
+      return;
+    }
+
+    updateDeviceId(deviceSpecimenType.deviceType.internalId);
+    updateSpecimenId(deviceSpecimenType.specimenType.internalId);
+  }, [deviceSpecimenTypes, deviceSpecimenTypeId]);
+
+  const deviceTypes = deviceSpecimenTypes
+    .map((d) => d.deviceType)
+    .reduce((allDevices, device: DeviceType) => {
+      const id = device.internalId;
+
+      if (!(id in allDevices)) {
+        allDevices[id] = device;
+      }
+
+      return allDevices;
+    }, {} as Record<string, DeviceType>);
 
   const [deviceTestLength, updateDeviceTestLength] = useState(
     selectedDeviceTestLength
@@ -237,6 +294,22 @@ const QueueItem = ({
   // helper method to work around the annoying string-booleans
   function shouldUseCurrentDateTime() {
     return useCurrentDateTime === "true";
+  }
+
+  // `Array.prototype.sort`-friendly callback for devices and swab types
+  function alphabetizeByName(
+    a: DeviceType | SpecimenType,
+    b: DeviceType | SpecimenType
+  ): number {
+    if (a.name < b.name) {
+      return -1;
+    }
+
+    if (a.name > b.name) {
+      return 1;
+    }
+
+    return 0;
   }
 
   function isValidCustomDateTested(customDate: string | undefined) {
@@ -310,6 +383,7 @@ const QueueItem = ({
         variables: {
           patientId: patient.internalId,
           deviceId: deviceId,
+          deviceSpecimenTypeId: deviceSpecimenTypeId,
           result: testResultValue,
           dateTested: shouldUseCurrentDateTime() ? null : dateTested,
         },
@@ -324,27 +398,33 @@ const QueueItem = ({
   };
 
   const updateQueueItem = useCallback(
-    ({ deviceId, result, dateTested }: updateQueueItemProps) => {
+    (props: updateQueueItemProps) => {
       return editQueueItem({
         variables: {
           id: internalId,
-          deviceId,
-          result,
-          dateTested,
+          deviceId: props.deviceId,
+          result: props.result,
+          dateTested: props.dateTested,
+          deviceSpecimenType: props.deviceSpecimenType,
         },
       })
         .then((response) => {
           if (!response.data) throw Error("updateQueueItem null response");
-          updateDeviceId(response.data.editQueueItem.deviceType.internalId);
+          updateDeviceSpecimenTypeId(
+            response.data.editQueueItem.deviceSpecimenType.internalId
+          );
           updateTestResultValue(
             response.data.editQueueItem.result || undefined
           );
+
           updateTimer(
             internalId,
-            response.data.editQueueItem.deviceType.testLength
+            response.data.editQueueItem.deviceSpecimenType.deviceType
+              .testLength as number
           );
           updateDeviceTestLength(
-            response.data.editQueueItem.deviceType.testLength
+            response.data.editQueueItem.deviceSpecimenType.deviceType
+              .testLength as number
           );
         })
         .catch(updateMutationError);
@@ -353,7 +433,27 @@ const QueueItem = ({
   );
 
   const onDeviceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateDeviceId(e.currentTarget.value);
+    const deviceSpecimenTypesForDevice = deviceSpecimenTypes.filter(
+      (dst) => dst.deviceType.internalId === e.currentTarget.value
+    );
+    // When changing devices, the target device may not be configured with the current swab type
+    // In that case, just grab from the top of the list
+    const newDeviceTypeSpecimen =
+      deviceSpecimenTypesForDevice.find(
+        (dst) => dst.specimenType.internalId === specimenId
+      ) || deviceSpecimenTypesForDevice[0];
+
+    updateDeviceSpecimenTypeId(newDeviceTypeSpecimen.internalId);
+  };
+
+  const onSpecimenChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newDeviceSpecimenType = deviceSpecimenTypes.find(
+      (dst) =>
+        dst.specimenType.internalId === e.currentTarget.value &&
+        dst.deviceType.internalId === deviceId
+    );
+
+    updateDeviceSpecimenTypeId(newDeviceSpecimenType?.internalId);
   };
 
   const onDateTestedChange = (date: moment.Moment) => {
@@ -391,6 +491,7 @@ const QueueItem = ({
         await updateQueueItem({
           deviceId,
           dateTested,
+          deviceSpecimenType: deviceSpecimenTypeId,
           result: testResultValue,
         });
         setSaveState("idle");
@@ -400,7 +501,13 @@ const QueueItem = ({
       clearTimeout(debounceTimer);
       setSaveState("idle");
     };
-  }, [deviceId, dateTested, testResultValue, updateQueueItem]);
+  }, [
+    deviceId,
+    deviceSpecimenTypeId,
+    dateTested,
+    testResultValue,
+    updateQueueItem,
+  ]);
 
   const onTestResultChange = (result: TestResult | undefined) => {
     updateTestResultValue(result);
@@ -467,10 +574,18 @@ const QueueItem = ({
     }
   };
 
-  let options = devices.map((device) => ({
-    label: device.name,
-    value: device.internalId,
-  }));
+  const deviceLookup: Map<DeviceType, SpecimenType[]> = useMemo(
+    () =>
+      deviceSpecimenTypes.reduce((allDevices, { deviceType, specimenType }) => {
+        const device = deviceTypes[deviceType.internalId];
+        allDevices.get(device)?.push(specimenType);
+
+        return allDevices;
+      }, new Map(Object.values(deviceTypes).map((device) => [device, [] as SpecimenType[]]))),
+    // adding `deviceTypes` to dependency list will cause an infinite loop of state updates
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [deviceSpecimenTypes]
+  );
 
   const patientFullName = displayFullName(
     patient.firstName,
@@ -632,15 +747,36 @@ const QueueItem = ({
                 >
                   <div className="prime-li flex-align-self-end tablet:grid-col-3 padding-right-1">
                     <Dropdown
-                      options={options}
+                      options={Array.from(deviceLookup.keys())
+                        .sort(alphabetizeByName)
+                        .map((d: DeviceType) => ({
+                          label: d.name,
+                          value: d.internalId,
+                        }))}
                       label="Device"
                       name="testDevice"
                       selectedValue={deviceId}
                       onChange={onDeviceChange}
                     />
                   </div>
+                  <div className="prime-li flex-align-self-end tablet:grid-col-3 padding-left-1">
+                    <Dropdown
+                      options={(deviceLookup.get(
+                        deviceTypes[deviceId]
+                      ) as SpecimenType[])
+                        .sort(alphabetizeByName)
+                        .map((s: SpecimenType) => ({
+                          label: s.name,
+                          value: s.internalId,
+                        }))}
+                      label="Swab type"
+                      name="swabType"
+                      selectedValue={specimenId}
+                      onChange={onSpecimenChange}
+                    />
+                  </div>
                   {testDateFields}
-                  <div className="prime-li tablet:grid-col tablet:padding-left-1">
+                  <div className="prime-li tablet:grid-col tablet:padding-left-2">
                     <Checkboxes
                       boxes={[
                         {

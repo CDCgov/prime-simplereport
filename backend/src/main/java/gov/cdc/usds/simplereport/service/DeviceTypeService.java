@@ -71,6 +71,12 @@ public class DeviceTypeService {
     return _deviceSpecimenRepo.findAll();
   }
 
+  public DeviceSpecimenType getDeviceSpecimenType(UUID deviceSpecimenTypeId) {
+    return _deviceSpecimenRepo
+        .findById(deviceSpecimenTypeId)
+        .orElseThrow(() -> new IllegalGraphqlArgumentException("invalid device specimen type ID"));
+  }
+
   /**
    * Find the original device/specimen type combination created for this DeviceType, since that will
    * be the one that is assumed by callers who aren't aware that you can have multiple specimen
