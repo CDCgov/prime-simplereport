@@ -416,59 +416,7 @@ describe("AddPatient", () => {
   });
 
   describe("when attempting to create an existing patient ", () => {
-    let patientExistsMockWasCalled = false;
-
-    it("performs GraphQL query when all identifying data fields have been entered", async () => {
-      const mocks = [
-        {
-          request: {
-            query: PATIENT_EXISTS,
-            variables: {
-              firstName: "Alice",
-              lastName: "Hamilton",
-              birthDate: "1970-09-22",
-              zipCode: "02115",
-              facilityId: mockFacilityID,
-            },
-          },
-          result: () => {
-            patientExistsMockWasCalled = true;
-
-            return {
-              data: {
-                patientExists: false,
-              },
-            };
-          },
-        },
-      ];
-
-      render(
-        <Provider store={store}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <RouterWithFacility>
-              <Route component={AddPatient} path={"/add-patient"} />
-              <Route path={"/patients"} render={() => <p>Patients!</p>} />
-            </RouterWithFacility>
-          </MockedProvider>
-        </Provider>
-      );
-
-      fillOutForm(
-        {
-          "First Name": "Alice",
-          "Last Name": "Hamilton",
-          "Date of birth": "1970-09-22",
-          "ZIP code": "02115",
-        },
-        { Facility: mockFacilityID, State: "MA", Country: "USA" },
-        {}
-      );
-
-      expect(patientExistsMockWasCalled).toBe(true);
-    });
-
-    fit("does not open modal if no patient with matching data exists", async () => {
+    it("does not open modal if no patient with matching data exists", async () => {
       const mocks = [
         {
           request: {
@@ -562,12 +510,7 @@ describe("AddPatient", () => {
       );
 
       // The duplicate patient check is triggered on-blur from one of the identifying data fields
-      const zip = await screen.findByLabelText("ZIP code", {
-        exact: false,
-      });
-
-      userEvent.type(zip, "02115");
-
+      userEvent.click(screen.getByLabelText("First Name", { exact: false }));
       userEvent.tab();
 
       expect(
