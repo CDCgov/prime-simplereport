@@ -4,6 +4,7 @@
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom/extend-expect";
 import fetchMock from "jest-fetch-mock";
+import ReactModal from "react-modal";
 
 fetchMock.enableMocks();
 
@@ -15,3 +16,5 @@ jest.mock("@microsoft/applicationinsights-react-js", () => {
     ReactPlugin: Object,
   };
 });
+
+ReactModal.setAppElement("*"); // suppresses modal-related test warnings.

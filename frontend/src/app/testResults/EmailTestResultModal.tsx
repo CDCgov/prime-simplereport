@@ -50,7 +50,7 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
               {formatDate(dateTested)} will be sent to the following emails:
             </div>
             {patient.emails?.map((email: string) => (
-              <div>{email}</div>
+              <div key={email}>{email}</div>
             ))}
           </div>
           <div className="sr-test-correction-buttons">

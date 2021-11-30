@@ -40,6 +40,8 @@ const testResult = {
   },
 };
 
+window.print = jest.fn();
+
 describe("TestResultPrintModal", () => {
   let printSpy: jest.SpyInstance;
 
@@ -65,7 +67,7 @@ describe("TestResultPrintModal", () => {
   });
 
   it("should render the test result print view", async () => {
-    userEvent.click(screen.getAllByRole("button")[2]);
+    userEvent.click(screen.getAllByText("Print")[1]);
 
     expect(printSpy).toBeCalled();
   });
