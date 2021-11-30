@@ -1,10 +1,4 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  act,
-  waitFor,
-} from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import PersonalDetailsForm from "./PersonalDetailsForm";
@@ -49,19 +43,11 @@ describe("PersonalDetailsForm", () => {
       expect(screen.getByText("Submit")).not.toHaveAttribute("disabled");
     });
     describe("focusing and not adding a value", () => {
-      beforeEach(async () => {
-        await act(async () => {
-          await screen
-            .getByLabelText("Phone number *", { exact: false })
-            .focus();
-          await screen
-            .getByLabelText("Street address 1", { exact: false })
-            .focus();
-        });
-      });
-      it("shows a single error", () => {
+      it("shows a single error", async () => {
+        screen.getByLabelText("Phone number *", { exact: false }).focus();
+        screen.getByLabelText("Street address 1", { exact: false }).focus();
         expect(
-          screen.getByText("A valid phone number is required")
+          await screen.findByText("A valid phone number is required")
         ).toBeInTheDocument();
       });
     });
