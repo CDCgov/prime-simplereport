@@ -246,7 +246,6 @@ public class TestOrderService {
     TestOrder order =
         _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
 
-    UUID facilityId = order.getFacility().getInternalId();
     DeviceSpecimenType deviceSpecimen = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
 
     lockOrder(order.getInternalId());

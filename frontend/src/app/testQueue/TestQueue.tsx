@@ -166,7 +166,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     return <p>Facility not found</p>;
   }
 
-  // TODO: guessing this will go away - figure out what to do here
   if (facility.deviceTypes.length === 0) {
     showError(
       "This facility does not have any testing devices. Go into Settings -> Manage facilities and add a device."

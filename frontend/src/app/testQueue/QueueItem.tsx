@@ -100,7 +100,6 @@ interface EditQueueItemResponse {
   };
 }
 
-// TODO: deviceId optional for now for BC reasons - needed?
 export const SUBMIT_TEST_RESULT = gql`
   mutation SubmitTestResult(
     $patientId: ID!
@@ -265,14 +264,14 @@ const QueueItem = ({
 
   const deviceTypes = deviceSpecimenTypes
     .map((d) => d.deviceType)
-    .reduce((devices, device: DeviceType) => {
+    .reduce((allDevices, device: DeviceType) => {
       const id = device.internalId;
 
-      if (!(id in devices)) {
-        devices[id] = device;
+      if (!(id in allDevices)) {
+        allDevices[id] = device;
       }
 
-      return devices;
+      return allDevices;
     }, {} as Record<string, DeviceType>);
 
   const [deviceTestLength, updateDeviceTestLength] = useState(
@@ -399,19 +398,14 @@ const QueueItem = ({
   };
 
   const updateQueueItem = useCallback(
-    ({
-      deviceId,
-      deviceSpecimenType,
-      result,
-      dateTested,
-    }: updateQueueItemProps) => {
+    (props: updateQueueItemProps) => {
       return editQueueItem({
         variables: {
           id: internalId,
-          deviceId,
-          result,
-          dateTested,
-          deviceSpecimenType,
+          deviceId: props.deviceId,
+          result: props.result,
+          dateTested: props.dateTested,
+          deviceSpecimenType: props.deviceSpecimenType,
         },
       })
         .then((response) => {
