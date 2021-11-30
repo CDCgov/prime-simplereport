@@ -62,7 +62,7 @@ describe("AoEForm", () => {
               exact: false,
             }
           )
-        ).not.toBeDisabled();
+        ).toBeEnabled();
         for (const { number } of phoneNumbers) {
           expect(await screen.findByText(number)).toBeInTheDocument();
         }
@@ -150,7 +150,7 @@ describe("AoEForm", () => {
         )[1];
         expect(emailPreferenceRadioOption).toBeInTheDocument();
 
-        expect(emailPreferenceRadioOption).not.toBeDisabled();
+        expect(emailPreferenceRadioOption).toBeEnabled();
 
         for (const email of emails) {
           expect(await screen.findByText(email)).toBeInTheDocument();

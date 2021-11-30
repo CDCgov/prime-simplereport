@@ -64,7 +64,7 @@ describe("ManageSelfRegistrationLinks", () => {
     const orgUrl = `${process.env.REACT_APP_BASE_URL}/register/${expectedOrgSlug}`;
     const [orgBtn] = screen.getAllByRole("button");
     userEvent.click(orgBtn);
-    await waitFor(async () => expect(orgBtn).not.toHaveAttribute("disabled"));
+    await waitFor(async () => expect(orgBtn).toBeEnabled());
     expect(navigator.clipboard.writeText).toBeCalledWith(orgUrl);
   });
 
@@ -72,7 +72,7 @@ describe("ManageSelfRegistrationLinks", () => {
     const facilityUrl = `${process.env.REACT_APP_BASE_URL}/register/${expectedFacilitySlug}`;
     const btns = screen.getAllByRole("button");
     userEvent.click(btns[2]);
-    await waitFor(async () => expect(btns[2]).not.toHaveAttribute("disabled"));
+    await waitFor(async () => expect(btns[2]).toBeEnabled());
     expect(navigator.clipboard.writeText).toBeCalledWith(facilityUrl);
   });
 });

@@ -28,7 +28,7 @@ describe("PersonalDetailsForm", () => {
   });
 
   it("initializes with the submit button disabled", () => {
-    expect(screen.getByText("Submit")).toHaveAttribute("disabled");
+    expect(screen.getByText("Submit")).toBeDisabled();
   });
 
   describe("Filling out the form", () => {
@@ -40,7 +40,7 @@ describe("PersonalDetailsForm", () => {
     });
 
     it("enables the submit button", () => {
-      expect(screen.getByText("Submit")).not.toHaveAttribute("disabled");
+      expect(screen.getByText("Submit")).toBeEnabled();
     });
     describe("focusing and not adding a value", () => {
       it("shows a single error", async () => {

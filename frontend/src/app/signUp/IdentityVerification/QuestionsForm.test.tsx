@@ -22,7 +22,7 @@ describe("QuestionsForm", () => {
     );
   });
   it("initializes with the submit button disabled", () => {
-    expect(screen.getByText("Submit")).toHaveAttribute("disabled");
+    expect(screen.getByText("Submit")).toBeDisabled();
   });
   it("initializes with a counter and starts counting down", async () => {
     expect(screen.getByText("5:00")).toBeInTheDocument();
@@ -31,7 +31,7 @@ describe("QuestionsForm", () => {
   describe("One field entered", () => {
     it("enables the submit button", () => {
       userEvent.click(screen.getByLabelText("2002", { exact: false }));
-      expect(screen.getByText("Submit")).not.toHaveAttribute("disabled");
+      expect(screen.getByText("Submit")).toBeEnabled();
     });
     describe("focusing and not adding a value", () => {
       it("shows a single error", async () => {

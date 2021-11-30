@@ -48,10 +48,10 @@ describe("ManageOrganization", () => {
       exact: false,
     });
     const saveButton = screen.getByText("Save settings");
-    expect(orgNameInput).not.toBeDisabled();
+    expect(orgNameInput).toBeEnabled();
     userEvent.type(orgNameInput, "Penny Lane");
     userEvent.selectOptions(orgTypeInput, "other");
-    expect(saveButton).not.toBeDisabled();
+    expect(saveButton).toBeEnabled();
     userEvent.click(saveButton);
   });
 
@@ -69,7 +69,7 @@ describe("ManageOrganization", () => {
     });
     const saveButton = screen.getByText("Save settings");
     userEvent.selectOptions(orgTypeInput, "hospice");
-    expect(saveButton).not.toBeDisabled();
+    expect(saveButton).toBeEnabled();
     userEvent.click(saveButton);
   });
 });

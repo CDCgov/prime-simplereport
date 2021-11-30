@@ -89,7 +89,7 @@ describe("AddPatient", () => {
         screen.queryByText("Add new person", {
           exact: false,
         })
-      ).toBeNull();
+      ).not.toBeInTheDocument();
     });
     it("shows a 'No facility selected' message", async () => {
       expect(

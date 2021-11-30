@@ -238,7 +238,7 @@ describe("FacilityFormContainer", () => {
   it("redirects on successful save", async () => {
     await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
     userEvent.click(screen.getByRole("button"));
-    expect(await screen.findByText("Redirected")).toBeDefined();
+    expect(await screen.findByText("Redirected")).toBeInTheDocument();
   });
 
   it("tracks custom telemetry event on successful save", async () => {

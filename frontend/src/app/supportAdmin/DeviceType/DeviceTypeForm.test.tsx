@@ -21,7 +21,7 @@ describe("DeviceTypeForm", () => {
   });
 
   it("Disables the save button", () => {
-    expect(screen.getByText("Save changes")).not.toBeEnabled();
+    expect(screen.getByText("Save changes")).toBeDisabled();
   });
 
   describe("All fields completed", () => {

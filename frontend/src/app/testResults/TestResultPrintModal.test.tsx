@@ -46,7 +46,7 @@ describe("TestResultPrintModal", () => {
   let printSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    ReactDOM.createPortal = jest.fn((element, node) => {
+    ReactDOM.createPortal = jest.fn((element, _node) => {
       return element;
     }) as any;
 

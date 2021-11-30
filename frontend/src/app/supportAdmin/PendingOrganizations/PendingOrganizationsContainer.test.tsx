@@ -119,8 +119,8 @@ describe("PendingOrganizationsContainer", () => {
 
     it("shows the newest orgs first", () => {
       const rowsCreatedAt = screen.getAllByTestId("org-created-at-table-cell");
-      expect(rowsCreatedAt[0].textContent).toBe("6/1/2020, 12:00:00 AM");
-      expect(rowsCreatedAt[1].textContent).toBe("5/1/2020, 12:00:00 AM");
+      expect(rowsCreatedAt[0]).toHaveTextContent("6/1/2020, 12:00:00 AM");
+      expect(rowsCreatedAt[1]).toHaveTextContent("5/1/2020, 12:00:00 AM");
     });
     describe("marking an organization as verified", () => {
       beforeEach(async () => {
@@ -129,7 +129,7 @@ describe("PendingOrganizationsContainer", () => {
       it("enables submit", () => {
         expect(
           screen.getByText("Save Changes", { exact: false })
-        ).not.toBeDisabled();
+        ).toBeEnabled();
       });
       describe("submitting the form", () => {
         beforeEach(async () => {

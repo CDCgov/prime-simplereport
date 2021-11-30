@@ -162,9 +162,7 @@ describe("FacilityForm", () => {
     });
     userEvent.clear(facilityNameInput);
     userEvent.click(saveButton);
-    await waitFor(async () =>
-      expect(saveButton).not.toHaveAttribute("disabled")
-    );
+    await waitFor(async () => expect(saveButton).toBeEnabled());
     expect(saveFacility).toBeCalledTimes(0);
   });
   it("validates optional email field", async () => {
@@ -195,9 +193,7 @@ describe("FacilityForm", () => {
 
     userEvent.type(emailInput, "foofacility@example.com");
     userEvent.click(saveButton);
-    await waitFor(async () =>
-      expect(saveButton).not.toHaveAttribute("disabled")
-    );
+    await waitFor(async () => expect(saveButton).toBeEnabled());
     await validateAddress(saveFacility);
   });
   it("only accepts live jurisdictions", async () => {
@@ -263,9 +259,7 @@ describe("FacilityForm", () => {
 
         const saveButton = screen.getAllByText("Save changes")[0];
         userEvent.click(saveButton);
-        await waitFor(async () =>
-          expect(saveButton).not.toHaveAttribute("disabled")
-        );
+        await waitFor(async () => expect(saveButton).toBeEnabled());
         expect(saveFacility).toBeCalledTimes(0);
       });
     });
@@ -376,9 +370,7 @@ describe("FacilityForm", () => {
 
         const saveButton = screen.getAllByText("Save changes")[0];
         userEvent.click(saveButton);
-        await waitFor(async () =>
-          expect(saveButton).not.toHaveAttribute("disabled")
-        );
+        await waitFor(async () => expect(saveButton).toBeEnabled());
         expect(saveFacility).toBeCalledTimes(0);
       });
 
@@ -483,9 +475,7 @@ describe("FacilityForm", () => {
 
         const saveButton = screen.getAllByText("Save changes")[0];
         userEvent.click(saveButton);
-        await waitFor(async () =>
-          expect(saveButton).not.toHaveAttribute("disabled")
-        );
+        await waitFor(async () => expect(saveButton).toBeEnabled());
         expect(saveFacility).toBeCalledTimes(0);
       });
     });
@@ -586,9 +576,7 @@ describe("FacilityForm", () => {
       // Attempt save
       const saveButtons = await screen.findAllByText("Save changes");
       userEvent.click(saveButtons[0]);
-      await waitFor(async () =>
-        expect(saveButtons[0]).not.toHaveAttribute("disabled")
-      );
+      await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
       const warning = await screen.findByText(
         "A default device must be selected",
         { exact: false }
@@ -635,9 +623,7 @@ describe("FacilityForm", () => {
       const saveButtons = await screen.findAllByText("Save changes");
 
       userEvent.click(saveButtons[0]);
-      await waitFor(async () =>
-        expect(saveButtons[0]).not.toHaveAttribute("disabled")
-      );
+      await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
       const warning = await screen.findByText(
         "A default device must be selected",
         { exact: false }
@@ -656,7 +642,7 @@ async function validateAddress(
   const radios = screen.getAllByLabelText(selection, { exact: false });
   radios.forEach((r) => userEvent.click(r));
   const button = screen.getAllByText("Save changes")[2];
-  expect(button).not.toBeDisabled();
+  expect(button).toBeEnabled();
   userEvent.click(button);
   expect(saveFacility).toBeCalledTimes(1);
 }

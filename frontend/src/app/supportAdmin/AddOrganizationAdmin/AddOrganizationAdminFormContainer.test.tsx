@@ -135,7 +135,7 @@ describe("AddOrganizationAdminFormContainer", () => {
         it("enables the save button", () => {
           expect(
             screen.getByText("Save Changes", { exact: false })
-          ).not.toBeDisabled();
+          ).toBeEnabled();
         });
         describe("Form submission", () => {
           it("User is redirected away from the form", async () => {

@@ -152,9 +152,7 @@ describe("MultiSelectDropdown component", () => {
       />
     );
 
-    expect(screen.getByTestId("multi-select-input")).toHaveAttribute(
-      "required"
-    );
+    expect(screen.getByTestId("multi-select-input")).toBeRequired();
     expect(screen.getByTestId("multi-select-input")).toHaveAttribute(
       "role",
       "testing"

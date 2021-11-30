@@ -105,7 +105,8 @@
     "plugins": [
       "graphql",
       "testing-library",
-      "unused-imports"
+      "unused-imports",
+      "jest-dom"
     ],
     "rules": {
       "graphql/template-strings": [
@@ -154,7 +155,8 @@
           "**/?(*.)+(spec|test).[jt]s?(x)"
         ],
         "extends": [
-          "plugin:testing-library/react"
+          "plugin:testing-library/react",
+          "plugin:jest-dom/recommended"
         ],
         "rules": {
           "testing-library/no-render-in-setup": [
@@ -211,6 +213,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-graphql": "^4.0.0",
     "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest-dom": "^3.9.2",
     "eslint-plugin-testing-library": "^5.0.0",
     "eslint-plugin-unused-imports": "1.1.5",
     "faker": "^5.5.3",

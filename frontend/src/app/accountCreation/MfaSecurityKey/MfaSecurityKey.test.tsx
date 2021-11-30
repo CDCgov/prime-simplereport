@@ -25,15 +25,15 @@ jest.mock("../AccountCreationApiService", () => ({
 }));
 
 jest.mock("../../utils/text", () => ({
-  strToBin: (str: string) => {
+  strToBin: (_str: string) => {
     return Uint8Array.of(8).fill(2);
   },
-  binToStr: (bin: ArrayBuffer) => {
+  binToStr: (_bin: ArrayBuffer) => {
     return "str";
   },
 }));
 
-function create(obj: any) {
+function create(_obj: any) {
   return new Promise((cred) => {
     cred({
       response: {

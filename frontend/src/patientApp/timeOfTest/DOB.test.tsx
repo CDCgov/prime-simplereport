@@ -42,7 +42,7 @@ describe("DOB (valid UUID)", () => {
     const error = await screen.findByRole("alert");
 
     // THEN
-    expect(error.textContent).toEqual(
+    expect(error).toHaveTextContent(
       "Error: Date of birth must be in MM/DD/YYYY format"
     );
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
@@ -57,7 +57,7 @@ describe("DOB (valid UUID)", () => {
     const error = await screen.findByRole("alert");
 
     // THEN
-    expect(error.textContent).toEqual(
+    expect(error).toHaveTextContent(
       "Error: Date of birth must be in MM/DD/YYYY format"
     );
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
@@ -72,7 +72,7 @@ describe("DOB (valid UUID)", () => {
     const error = await screen.findByRole("alert");
 
     // THEN
-    expect(error.textContent).toEqual(
+    expect(error).toHaveTextContent(
       "Error: Date of birth must be a valid date"
     );
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
@@ -87,7 +87,7 @@ describe("DOB (valid UUID)", () => {
     const error = await screen.findByRole("alert");
 
     // THEN
-    expect(error.textContent).toEqual(
+    expect(error).toHaveTextContent(
       "Error: Date of birth must be after 1900 and before the current year"
     );
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
@@ -102,7 +102,7 @@ describe("DOB (valid UUID)", () => {
     const error = await screen.findByRole("alert");
 
     // THEN
-    expect(error.textContent).toEqual(
+    expect(error).toHaveTextContent(
       "Error: Date of birth must be after 1900 and before the current year"
     );
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
@@ -118,7 +118,7 @@ describe("DOB (valid UUID)", () => {
     const error = await screen.findByRole("alert");
 
     // THEN
-    expect(error.textContent).toEqual(
+    expect(error).toHaveTextContent(
       "Error: The date of birth entered is incorrect"
     );
     expect(validateDateOfBirthSpy).toHaveBeenCalled();
@@ -193,7 +193,7 @@ describe("DOB (invalid UUID)", () => {
     const error = await screen.findByRole("alert");
 
     // THEN
-    expect(error.textContent).toEqual(
+    expect(error).toHaveTextContent(
       "Page not foundThis test result link is invalid. Please double check the URL or contact your test provider for the correct link."
     );
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();

@@ -308,13 +308,11 @@ describe("ManageUsers", () => {
       });
       expect(
         screen.getByLabelText("Admin (full access)", { exact: false })
-      ).toHaveAttribute("disabled");
-      expect(screen.getByLabelText("user", { exact: false })).toHaveAttribute(
-        "disabled"
-      );
+      ).toBeDisabled();
+      expect(screen.getByLabelText("user", { exact: false })).toBeDisabled();
       expect(
         screen.getByLabelText("Testing only", { exact: false })
-      ).toHaveAttribute("disabled");
+      ).toBeDisabled();
     });
 
     it("passes user details to the addUserToOrg function", async () => {
@@ -334,7 +332,7 @@ describe("ManageUsers", () => {
       fireEvent.change(select, inputValue(newUser.role));
       const sendButton = screen.getByText("Send invite");
       userEvent.click(screen.getAllByRole("checkbox")[1]);
-      expect(sendButton).not.toBeDisabled();
+      expect(sendButton).toBeEnabled();
       userEvent.click(sendButton);
       await waitFor(() => expect(addUserToOrg).toBeCalled());
       expect(addUserToOrg).toBeCalledWith({ variables: newUser });
@@ -365,7 +363,7 @@ describe("ManageUsers", () => {
       fireEvent.change(select, inputValue(newUser.role));
       const sendButton = screen.getByText("Send invite");
       userEvent.click(screen.getAllByRole("checkbox")[1]);
-      expect(sendButton).not.toBeDisabled();
+      expect(sendButton).toBeEnabled();
       userEvent.click(sendButton);
       await waitFor(() => expect(addUserToOrg).not.toBeCalled());
       expect(
@@ -387,7 +385,7 @@ describe("ManageUsers", () => {
       fireEvent.change(email, inputValue(newUser.email));
       userEvent.click(screen.getAllByRole("checkbox")[1]);
       const sendButton = screen.getByText("Send invite");
-      await waitFor(() => expect(sendButton).not.toBeDisabled());
+      await waitFor(() => expect(sendButton).toBeEnabled());
       userEvent.click(sendButton);
       await waitFor(() => expect(addUserToOrg).toBeCalled());
       expect(addUserToOrg).toBeCalledWith({
@@ -410,7 +408,7 @@ describe("ManageUsers", () => {
       const [adminOption] = await screen.findAllByRole("radio");
       userEvent.click(adminOption);
       const button = await screen.findByText("Save", { exact: false });
-      await waitFor(() => expect(button).not.toHaveAttribute("disabled"));
+      await waitFor(() => expect(button).toBeEnabled());
       userEvent.click(button);
       await waitFor(() => expect(updateUserPrivileges).toBeCalled());
       expect(updateUserPrivileges).toBeCalledWith({
@@ -427,10 +425,10 @@ describe("ManageUsers", () => {
       const facilitySelect = await screen.findByLabelText("Add facility");
       const addButton = screen.getByText("Add");
       userEvent.selectOptions(facilitySelect, ["a1"]);
-      expect(addButton).not.toBeDisabled();
+      expect(addButton).toBeEnabled();
       userEvent.click(addButton);
       const saveButton = screen.getByText("Save changes");
-      await waitFor(() => expect(saveButton).not.toBeDisabled());
+      await waitFor(() => expect(saveButton).toBeEnabled());
       userEvent.click(saveButton);
       await waitForElementToBeRemoved(() => screen.queryByText("Saving..."));
       expect(updateUserPrivileges).toBeCalled();
@@ -496,7 +494,7 @@ describe("ManageUsers", () => {
       userEvent.type(email, newUser.email);
       userEvent.click(screen.getByRole("checkbox"));
       const sendButton = screen.getByText("Send invite");
-      await waitFor(() => expect(sendButton).not.toBeDisabled());
+      await waitFor(() => expect(sendButton).toBeEnabled());
       userEvent.click(sendButton);
       await waitForElementToBeRemoved(() => screen.queryByText("Sending"));
       await waitFor(() => expect(addUserToOrg).toBeCalled());
@@ -667,7 +665,7 @@ describe("ManageUsers", () => {
     )[0];
     const saveButton = await screen.findByText("Save changes");
     userEvent.click(removeButton);
-    expect(saveButton).not.toBeDisabled();
+    expect(saveButton).toBeEnabled();
     userEvent.click(saveButton);
     await waitForElementToBeRemoved(() => screen.queryByText("Saving..."));
     expect(updateUserPrivileges).toBeCalledWith({

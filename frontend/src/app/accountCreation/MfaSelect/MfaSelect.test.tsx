@@ -54,7 +54,7 @@ describe("MfaSelect", () => {
   });
 });
 
-function create(obj: any) {
+function create(_obj: any) {
   return new Promise((cred) => {
     cred({
       response: {

@@ -20,6 +20,6 @@ describe("LinkWithQuery", () => {
       </MemoryRouter>
     );
     const link = await screen.findByRole("link");
-    expect(link.getAttribute("href")).toBe("/some/route");
+    expect(link).toHaveAttribute("href", "/some/route");
   });
 });
