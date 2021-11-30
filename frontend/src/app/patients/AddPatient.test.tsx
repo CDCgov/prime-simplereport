@@ -3,6 +3,7 @@ import {
   screen,
   within,
   waitForElementToBeRemoved,
+  waitFor,
 } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
@@ -312,39 +313,6 @@ describe("AddPatient", () => {
 
     describe("With student ID", () => {
       it("allows student ID to be entered", async () => {
-        fillOutForm(
-          {
-            "First Name": "Alice",
-            "Last Name": "Hamilton",
-
-            "Date of birth": "1970-09-22",
-            "Primary phone number": "617-432-1000",
-            "Email address": "foo@bar.org",
-            "Street address 1": "25 Shattuck St",
-            City: "Boston",
-
-            "ZIP code": "02115",
-          },
-          { Facility: mockFacilityID, State: "MA", Country: "USA" },
-          {
-            "Phone type": {
-              label: "Mobile",
-              value: "MOBILE",
-              exact: true,
-            },
-            "Are you a resident in a congregate living setting": {
-              label: "No",
-              value: "No",
-              exact: true,
-            },
-            "Are you a health care worker": {
-              label: "Yes",
-              value: "Yes",
-              exact: true,
-            },
-          }
-        );
-
         userEvent.selectOptions(screen.getByLabelText("Role"), "STUDENT");
         expect(await screen.findByText("Student ID")).toBeInTheDocument();
       });
@@ -417,6 +385,7 @@ describe("AddPatient", () => {
 
   describe("when attempting to create an existing patient ", () => {
     it("does not open modal if no patient with matching data exists", async () => {
+      let patientExistsMock = jest.fn();
       const mocks = [
         {
           request: {
@@ -429,10 +398,13 @@ describe("AddPatient", () => {
               facilityId: mockFacilityID,
             },
           },
-          result: {
-            data: {
-              patientExists: false,
-            },
+          result: () => {
+            patientExistsMock();
+            return {
+              data: {
+                patientExists: false,
+              },
+            };
           },
         },
       ];
@@ -453,14 +425,24 @@ describe("AddPatient", () => {
           "First Name": "Alice",
           "Last Name": "Hamilton",
           "Date of birth": "1970-09-22",
-          "ZIP code": "02115",
         },
-        { Facility: mockFacilityID, State: "MA", Country: "USA" },
+        { Facility: mockFacilityID },
         {}
       );
 
+      // The duplicate patient check is triggered on-blur from one of the identifying data fields
+      userEvent.type(
+        screen.getByLabelText("ZIP code", { exact: false }),
+        "02115"
+      );
+      userEvent.tab();
+
+      await waitFor(() => {
+        expect(patientExistsMock).toHaveBeenCalledTimes(1);
+      });
+
       expect(
-        screen.queryByText("You already have a profile at", {
+        screen.queryByText("This patient is already registered", {
           exact: false,
         })
       ).not.toBeInTheDocument();
@@ -503,14 +485,16 @@ describe("AddPatient", () => {
           "First Name": "Alice",
           "Last Name": "Hamilton",
           "Date of birth": "1970-09-22",
-          "ZIP code": "02115",
         },
-        { Facility: mockFacilityID, State: "MA", Country: "USA" },
+        { Facility: mockFacilityID },
         {}
       );
 
       // The duplicate patient check is triggered on-blur from one of the identifying data fields
-      userEvent.click(screen.getByLabelText("First Name", { exact: false }));
+      userEvent.type(
+        screen.getByLabelText("ZIP code", { exact: false }),
+        "02115"
+      );
       userEvent.tab();
 
       expect(
