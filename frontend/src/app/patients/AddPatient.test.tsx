@@ -482,7 +482,6 @@ describe("AddPatient", () => {
               firstName: "Alice",
               lastName: "Hamilton",
               birthDate: "1970-09-22",
-              zipCode: "02115",
               facilityId: mockFacilityID,
             },
           },
@@ -515,16 +514,15 @@ describe("AddPatient", () => {
           "Last Name": "Hamilton",
           Facility: mockFacilityID,
           "Date of birth": "1970-09-22",
-          "ZIP code": "02115",
         },
         {}
       );
 
-      const zip = await screen.findByLabelText("ZIP code", {
+      const dob = await screen.findByLabelText("Date of birth", {
         exact: false,
       });
 
-      fireEvent.blur(zip);
+      fireEvent.blur(dob);
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -540,7 +538,6 @@ describe("AddPatient", () => {
               firstName: "Alice",
               lastName: "Hamilton",
               birthDate: "1970-09-22",
-              zipCode: "02115",
               facilityId: mockFacilityID,
             },
           },
@@ -569,16 +566,15 @@ describe("AddPatient", () => {
           "Last Name": "Hamilton",
           Facility: mockFacilityID,
           "Date of birth": "1970-09-22",
-          "ZIP code": "02115",
         },
         {}
       );
 
-      const zip = await screen.findByLabelText("ZIP code", {
+      const dob = await screen.findByLabelText("Date of birth", {
         exact: false,
       });
 
-      fireEvent.blur(zip);
+      fireEvent.blur(dob);
 
       expect(
         screen.queryByText("You already have a profile at", {
@@ -596,7 +592,6 @@ describe("AddPatient", () => {
               firstName: "Alice",
               lastName: "Hamilton",
               birthDate: "1970-09-22",
-              zipCode: "02115",
               facilityId: mockFacilityID,
             },
           },
@@ -625,25 +620,16 @@ describe("AddPatient", () => {
           "Last Name": "Hamilton",
           Facility: mockFacilityID,
           "Date of birth": "1970-09-22",
-          "ZIP code": "02115",
         },
         {}
       );
 
       // The duplicate patient check is triggered on-blur from one of the identifying data fields
-      const zip = await screen.findByLabelText("ZIP code", {
+      const dob = await screen.findByLabelText("Date of birth", {
         exact: false,
       });
 
-      act(() => {
-        fireEvent.change(zip, {
-          target: {
-            value: "02115",
-          },
-        });
-      });
-
-      fireEvent.blur(zip);
+      fireEvent.blur(dob);
 
       expect(
         await screen.findByText("This patient is already registered", {
