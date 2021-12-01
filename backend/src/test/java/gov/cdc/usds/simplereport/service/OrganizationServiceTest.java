@@ -219,7 +219,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             IllegalGraphqlArgumentException.class,
             // fake UUID
             () -> _service.markFacilityAsDeleted(UUID.randomUUID(), true));
-    assertEquals("Facility not found", caught.getMessage());
+    assertEquals("Facility not found.", caught.getMessage());
   }
 
   @Test
