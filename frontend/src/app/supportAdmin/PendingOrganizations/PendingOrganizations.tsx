@@ -8,10 +8,10 @@ import {
   useEditPendingOrganizationMutation,
 } from "../../../generated/graphql";
 
-import EditOrgModal from "./EditOrgModal";
+import EditOrgModal from "./modals/EditOrgModal";
 import { PendingOrganizationFormValues } from "./utils";
 import "./PendingOrganizationsList.scss";
-import ConfirmOrgVerificationModal from "./ConfirmOrgVerificationModal";
+import ConfirmOrgVerificationModal from "./modals/ConfirmOrgVerificationModal";
 
 interface Props {
   organizations: PendingOrganization[];
@@ -27,7 +27,6 @@ const phoneUtil = PhoneNumberUtil.getInstance();
 
 const PendingOrganizations = ({
   organizations,
-  verifiedOrgExternalIds,
   submitIdentityVerified,
   setVerifiedOrganization,
   loading,
@@ -81,7 +80,7 @@ const PendingOrganizations = ({
     }
 
     refetch();
-    setOrgToEdit(null);
+    setOrgToConfirm(null);
     setIsUpdating(false);
   };
 
@@ -124,24 +123,23 @@ const PendingOrganizations = ({
         </td>
         <td>{o.externalId}</td>
         <td>
-          <Button
-            className="sr-active-button"
-            onClick={() => {
-              setVerifiedOrganization(o.externalId, true);
-              console.log("Following are queued for identity verification");
-              setOrgToConfirm(o);
-            }}
-          >
-            Verify Identity
-          </Button>
-        </td>
-        <td>
           <span
             data-testid={`edit-icon-${o.externalId}`}
             onClick={() => setOrgToEdit(o)}
           >
             <FontAwesomeIcon icon={"edit"} />
           </span>
+        </td>
+        <td>
+          <Button
+            className="sr-active-button"
+            onClick={() => {
+              setVerifiedOrganization(o.externalId, true);
+              setOrgToConfirm(o);
+            }}
+          >
+            Confirm
+          </Button>
         </td>
       </tr>
     ));
@@ -183,8 +181,8 @@ const PendingOrganizations = ({
                     <th scope="row">Contact</th>
                     <th scope="row">Created</th>
                     <th scope="col">External ID</th>
-                    <th scope="col">Verify Identity</th>
                     <th scope="col">Edit</th>
+                    <th scope="col">Verify Identity</th>
                   </tr>
                 </thead>
                 <tbody>{orgRows()}</tbody>

@@ -9,6 +9,10 @@ simple-report-initialization:
       org-type: urgent_care
       external-id: DAT_ORG
       identity-verified: true
+    - org-name: Unverified Organization
+      org-type: urgent_care
+      external-id: UNV_ORG
+      identity-verified: false
   facilities:
     # TODO: uncomment once e2e tests can accommodate 2+ facilities
     # - facility-name: Injection Site

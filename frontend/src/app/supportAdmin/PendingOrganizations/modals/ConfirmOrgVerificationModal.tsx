@@ -2,29 +2,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import Modal from "react-modal";
 
-import { PendingOrganization } from "../../../generated/graphql";
-import Button from "../../commonComponents/Button/Button";
-import Input from "../../commonComponents/Input";
-import { isFieldValid, isFormValid } from "../../utils/yupHelpers";
-
+import { PendingOrganization } from "../../../../generated/graphql";
+import Button from "../../../commonComponents/Button/Button";
+import Input from "../../../commonComponents/Input";
+import { isFieldValid, isFormValid } from "../../../utils/yupHelpers";
 import {
   PendingOrganizationFormValues,
   pendingOrganizationSchema,
-} from "./utils";
+} from "../utils";
 
-interface Props {
-  organization: PendingOrganization;
-  onClose: () => void;
-  onSubmit: (organization: PendingOrganizationFormValues) => void;
-  isUpdating: boolean;
-}
+import { ModalProps, PendingOrganizationErrors } from "./help";
 
-type PendingOrganizationErrors = Record<
-  keyof PendingOrganizationFormValues,
-  string
->;
-
-const EditOrgModal: React.FC<Props> = ({
+const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
   organization,
   onClose,
   onSubmit,
@@ -81,7 +70,6 @@ const EditOrgModal: React.FC<Props> = ({
     formObject: org,
     onChange,
     required: true,
-    disabled: isUpdating,
     validate: validateField,
     errors,
     getValidationStatus,
@@ -104,7 +92,7 @@ const EditOrgModal: React.FC<Props> = ({
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">
           <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-            Edit organization
+            Confirm the following details
           </h1>
           <button onClick={onClose} className="close-button" aria-label="Close">
             <span className="fa-layers">
@@ -158,4 +146,4 @@ const EditOrgModal: React.FC<Props> = ({
   );
 };
 
-export default EditOrgModal;
+export default ConfirmOrgVerificationModal;
