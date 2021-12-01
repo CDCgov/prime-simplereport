@@ -146,7 +146,6 @@ const PendingOrganizations = ({
       </tr>
     ));
   };
-  console.log(verifiedOrgExternalIds);
   return (
     <main className="prime-home">
       <div className="grid-container pending-orgs-wide-container">
