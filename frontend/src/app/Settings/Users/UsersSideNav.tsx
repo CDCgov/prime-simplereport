@@ -33,6 +33,7 @@ const UsersSideNav: React.FC<Props> = ({
               key={user.id}
             >
               <button
+                role="tab"
                 style={{ cursor: "pointer" }}
                 className={classnames(
                   "usa-button--unstyled",
@@ -40,6 +41,12 @@ const UsersSideNav: React.FC<Props> = ({
                   "text-no-underline",
                   "padding-105 padding-right-2",
                   activeUserId === user.id && "usa-current"
+                )}
+                aria-selected={activeUserId === user.id}
+                aria-label={displayFullName(
+                  user.firstName,
+                  user.middleName,
+                  user.lastName
                 )}
               >
                 <span className="sidenav-user-name">

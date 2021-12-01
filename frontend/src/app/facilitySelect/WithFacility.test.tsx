@@ -1,7 +1,6 @@
 import { Provider } from "react-redux";
-import renderer from "react-test-renderer";
 import configureStore from "redux-mock-store";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter as Router } from "react-router";
@@ -53,7 +52,6 @@ const mocks = [
 
 describe("WithFacility", () => {
   let store: any;
-  let component: any;
 
   describe("With zero facilities", () => {
     beforeEach(() => {
@@ -70,7 +68,7 @@ describe("WithFacility", () => {
         facilities: [],
       });
       store.dispatch = jest.fn();
-      component = renderer.create(
+      render(
         <Router>
           <Provider store={store}>
             <WithFacility>App</WithFacility>
@@ -80,7 +78,9 @@ describe("WithFacility", () => {
     });
 
     it("should notify user to contact an admin", () => {
-      expect(component.toJSON()).toMatchSnapshot();
+      expect(
+        screen.getByText("Ask an administrator", { exact: false })
+      ).toBeInTheDocument();
     });
   });
 
@@ -98,7 +98,7 @@ describe("WithFacility", () => {
         },
         facilities: [{ id: "1", name: "Facility 1" }],
       });
-      component = render(
+      render(
         <Router>
           <Provider store={store}>
             <WithFacility>App</WithFacility>
@@ -130,7 +130,7 @@ describe("WithFacility", () => {
           { id: "2", name: "Facility 2" },
         ],
       });
-      component = render(
+      render(
         <Router>
           <Provider store={store}>
             <WithFacility>App</WithFacility>
@@ -140,15 +140,15 @@ describe("WithFacility", () => {
     });
 
     it("should show the facility selection screen", () => {
-      expect(component.container.firstChild).toMatchSnapshot();
+      expect(
+        screen.getByText("Please select the testing facility", { exact: false })
+      ).toBeInTheDocument();
     });
 
     describe("On facility select", () => {
       beforeEach(async () => {
         const options = await screen.findAllByRole("button");
-        await waitFor(() => {
-          userEvent.click(options[0]);
-        });
+        userEvent.click(options[0]);
       });
       it("should show the app", async () => {
         const renderedApp = await screen.findByText("App");
@@ -214,9 +214,13 @@ describe("WithFacility", () => {
           </Router>
         </I18nextProvider>
       );
-      await act(async () => {
-        await screen.findAllByText("Welcome to SimpleReport", { exact: false });
-      });
+      expect(
+        (
+          await screen.findAllByText("Welcome to SimpleReport", {
+            exact: false,
+          })
+        )[0]
+      ).toBeInTheDocument();
     });
 
     it("should render the facility form", async () => {

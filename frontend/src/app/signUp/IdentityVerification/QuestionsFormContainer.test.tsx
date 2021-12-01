@@ -1,4 +1,10 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import QuestionsFormContainer from "./QuestionsFormContainer";
 import { initPersonalDetails } from "./utils";
@@ -36,14 +42,15 @@ describe("QuestionsFormContainer", () => {
   beforeEach(async () => {
     personalDetails = initPersonalDetails("foo", "Bob", "Bill", "Martínez");
     personalDetails.phoneNumber = "530/867/5309 ext. 222";
-    await act(async () => {
-      render(
-        <QuestionsFormContainer
-          personalDetails={personalDetails}
-          orgExternalId="foo"
-        />
-      );
-    });
+    render(
+      <QuestionsFormContainer
+        personalDetails={personalDetails}
+        orgExternalId="foo"
+      />
+    );
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Submitting ID verification details …")
+    );
   });
   it("show the user that the page is loading", () => {
     personalDetails.orgExternalId = "slow";
@@ -104,15 +111,12 @@ describe("QuestionsFormContainer", () => {
 
     describe("On submit", () => {
       it("shows the success page if submitted with correct responses", async () => {
-        await act(async () => {
-          await fireEvent.click(
-            screen.queryAllByText("Submit", {
-              exact: false,
-            })[0]
-          );
-        });
+        const submitButton = screen.queryAllByText("Submit", {
+          exact: false,
+        })[0];
+        userEvent.click(submitButton);
         expect(
-          screen.getByText(
+          await screen.findByText(
             "Congratulations, your identity has been verified successfully",
             {
               exact: false,
@@ -124,17 +128,18 @@ describe("QuestionsFormContainer", () => {
         await fireEvent.click(screen.getByLabelText("2004", { exact: false }), {
           target: { value: "3" },
         });
-        await act(async () => {
-          await fireEvent.click(
-            screen.queryAllByText("Submit", {
-              exact: false,
-            })[0]
-          );
-        });
-        expect(
-          screen.getByText("Experian was unable to verify your identity", {
+        userEvent.click(
+          screen.queryAllByText("Submit", {
             exact: false,
-          })
+          })[0]
+        );
+        expect(
+          await screen.findByText(
+            "Experian was unable to verify your identity",
+            {
+              exact: false,
+            }
+          )
         ).toBeInTheDocument();
       });
     });
@@ -149,24 +154,19 @@ describe("QuestionsFormContainer countdown", () => {
   it("redirects to failure page when countdown runs out", async () => {
     personalDetails = initPersonalDetails("foo", "Bob", "Bill", "Martínez");
     personalDetails.phoneNumber = "530/867/5309 ext. 222";
-    await act(async () => {
-      render(
-        <QuestionsFormContainer
-          personalDetails={personalDetails}
-          orgExternalId="foo"
-          timeToComplete={1}
-        />
-      );
-      expect(await screen.findByText("0:01")).toBeInTheDocument();
-      expect(
-        await screen.findByText(
-          "Experian was unable to verify your identity.",
-          {
-            exact: false,
-          }
-        )
-      ).toBeInTheDocument();
-    });
+    render(
+      <QuestionsFormContainer
+        personalDetails={personalDetails}
+        orgExternalId="foo"
+        timeToComplete={1}
+      />
+    );
+    expect(await screen.findByText("0:01")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Experian was unable to verify your identity.", {
+        exact: false,
+      })
+    ).toBeInTheDocument();
   });
   afterEach(() => {
     jest.runOnlyPendingTimers();

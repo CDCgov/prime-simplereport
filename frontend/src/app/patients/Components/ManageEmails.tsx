@@ -15,7 +15,6 @@ interface Props {
 
 const ManageEmails: React.FC<Props> = ({
   emails,
-  patient,
   updateEmails,
   emailValidator,
 }) => {

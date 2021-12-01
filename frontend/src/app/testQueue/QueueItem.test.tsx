@@ -2,9 +2,8 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import configureStore, { MockStoreEnhanced } from "redux-mock-store";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import moment from "moment";
-import { act } from "react-dom/test-utils";
 import userEvent from "@testing-library/user-event";
 
 import { getAppInsights } from "../TelemetryService";
@@ -38,15 +37,17 @@ describe("QueueItem", () => {
     (getAppInsights as jest.Mock).mockImplementation(() => ({
       trackEvent: trackEventMock,
     }));
+    jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
   afterEach(() => {
     Date.now = nowFn;
     (getAppInsights as jest.Mock).mockReset();
+    jest.spyOn(console, "error").mockRestore();
   });
 
   it("correctly renders the test queue", () => {
-    const { container, getByTestId } = render(
+    render(
       <MockedProvider mocks={[]}>
         <Provider store={store}>
           <QueueItem
@@ -70,12 +71,11 @@ describe("QueueItem", () => {
       </MockedProvider>
     );
     expect(screen.getByText("Potter, Harry James")).toBeInTheDocument();
-    expect(getByTestId("timer")).toHaveTextContent("10:00");
-    expect(container).toMatchSnapshot();
+    expect(screen.getByTestId("timer")).toHaveTextContent("10:00");
   });
 
   it("updates the timer when a device is changed", async () => {
-    const { getByTestId, getByLabelText } = render(
+    render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <Provider store={store}>
           <QueueItem
@@ -99,15 +99,9 @@ describe("QueueItem", () => {
       </MockedProvider>
     );
 
-    await waitFor(() => {
-      fireEvent.change(getByLabelText("Device", { exact: false }), {
-        target: { value: "lumira" },
-      });
-    });
+    userEvent.type(screen.getByLabelText("Device", { exact: false }), "lumira");
 
-    await waitFor(() => {
-      expect(getByTestId("timer")).toHaveTextContent("15:00");
-    });
+    expect(await screen.findByTestId("timer")).toHaveTextContent("10:00");
   });
 
   it("renders dropdown of device types", async () => {
@@ -137,9 +131,7 @@ describe("QueueItem", () => {
 
     const deviceDropdown = await screen.findByLabelText("Device");
 
-    act(() => {
-      userEvent.selectOptions(deviceDropdown, "Access Bio CareStart");
-    });
+    userEvent.selectOptions(deviceDropdown, "Access Bio CareStart");
 
     expect(
       ((await screen.findByText("Access Bio CareStart")) as HTMLOptionElement)
@@ -182,9 +174,7 @@ describe("QueueItem", () => {
         .selected
     ).toBeTruthy();
 
-    act(() => {
-      userEvent.selectOptions(swabDropdown, "specimen-1");
-    });
+    userEvent.selectOptions(swabDropdown, "specimen-1");
 
     expect(
       ((await screen.findByText("Specimen 1")) as HTMLOptionElement).selected
@@ -270,9 +260,7 @@ describe("QueueItem", () => {
     const deviceDropdown = await screen.findByLabelText("Device");
 
     // Change device type
-    act(() => {
-      userEvent.selectOptions(deviceDropdown, "LumiraDX");
-    });
+    userEvent.selectOptions(deviceDropdown, "LumiraDX");
 
     // Wait for the genuinely long-running "edit queue" operation to finish
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -383,32 +371,23 @@ describe("QueueItem", () => {
       );
 
       // Select result
-      act(() => {
-        fireEvent.click(
-          screen.getByLabelText("Inconclusive", {
-            exact: false,
-          }),
-          {
-            target: { value: "UNDETERMINED" },
-          }
-        );
-      });
+      userEvent.click(
+        screen.getByLabelText("Inconclusive", {
+          exact: false,
+        })
+      );
 
       // Wait for the genuinely long-running "edit queue" operation to finish
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Submit test result
-      act(() => {
-        fireEvent.click(screen.getByText("Submit"));
-      });
+      // Submit
+      userEvent.click(screen.getByText("Submit"));
 
-      act(() => {
-        fireEvent.click(
-          screen.getByText("Submit anyway", {
-            exact: false,
-          })
-        );
-      });
+      userEvent.click(
+        screen.getByText("Submit anyway", {
+          exact: false,
+        })
+      );
 
       // Displays submitting indicator
       expect(
@@ -432,10 +411,14 @@ describe("QueueItem", () => {
       ).toBeInTheDocument();
 
       // Submitting indicator and card are gone
-      expect(screen.queryByText("Potter, Harry James"));
       expect(
-        screen.queryByText("Submitting test data for Potter, Harry James...")
-      );
+        await screen.findByText("Potter, Harry James")
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText(
+          "Submitting test data for Potter, Harry James..."
+        )
+      ).toBeInTheDocument();
     });
   });
 
@@ -464,23 +447,13 @@ describe("QueueItem", () => {
       </MockedProvider>
     );
     const toggle = await screen.findByLabelText("Use current date");
-    await waitFor(() => {
-      fireEvent.click(toggle);
-    });
+    userEvent.click(toggle);
     const dateInput = screen.getByLabelText("Test date");
     expect(dateInput).toBeInTheDocument();
     const timeInput = screen.getByLabelText("Test time");
     expect(timeInput).toBeInTheDocument();
-    await waitFor(() => {
-      fireEvent.input(dateInput, {
-        target: { value: `${updatedDateString}T00:00` },
-      });
-    });
-    await waitFor(() => {
-      fireEvent.input(timeInput, {
-        target: { value: updatedTimeString },
-      });
-    });
+    userEvent.type(dateInput, `${updatedDateString}T00:00`);
+    userEvent.type(timeInput, updatedTimeString);
   });
 
   it("displays person's mobile phone numbers", async () => {
@@ -509,10 +482,10 @@ describe("QueueItem", () => {
     );
 
     const questionnaire = await screen.findByText("Test questionnaire");
-    fireEvent.click(questionnaire);
+    userEvent.click(questionnaire);
     await screen.findByText("Required fields are marked", { exact: false });
     expect(
-      screen.queryByText(testProps.patient.phoneNumbers[0].number, {
+      screen.getByText(testProps.patient.phoneNumbers[0].number, {
         exact: false,
       })
     ).toBeInTheDocument();
@@ -550,9 +523,9 @@ describe("QueueItem", () => {
 
     it("tracks removal of patient from queue as custom event", () => {
       const button = screen.getByLabelText("Close");
-      fireEvent.click(button);
+      userEvent.click(button);
       const iAmSure = screen.getByText("Yes, I'm sure");
-      fireEvent.click(iAmSure);
+      userEvent.click(iAmSure);
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Remove Patient From Queue",
       });
@@ -560,17 +533,13 @@ describe("QueueItem", () => {
 
     it("tracks submitted test result as custom event", async () => {
       // Submit
-      await waitFor(() => {
-        fireEvent.click(screen.getByText("Submit"));
-      });
+      userEvent.click(screen.getByText("Submit"));
 
-      await waitFor(() => {
-        fireEvent.click(
-          screen.getByText("Submit anyway", {
-            exact: false,
-          })
-        );
-      });
+      userEvent.click(
+        screen.getByText("Submit anyway", {
+          exact: false,
+        })
+      );
 
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Submit Test Result",
@@ -580,17 +549,15 @@ describe("QueueItem", () => {
     it("tracks AoE form updates as custom event", async () => {
       // Update AoE questionnaire
       const questionnaire = await screen.findByText("Test questionnaire");
-      fireEvent.click(questionnaire);
+      userEvent.click(questionnaire);
       const symptomInput = await screen.findByText("No symptoms", {
         exact: false,
       });
-      await waitFor(() => {
-        fireEvent.click(symptomInput);
-      });
+      userEvent.click(symptomInput);
 
       // Save changes
       const continueButton = await screen.findByText("Continue");
-      fireEvent.click(continueButton);
+      userEvent.click(continueButton);
 
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Update AoE Response",

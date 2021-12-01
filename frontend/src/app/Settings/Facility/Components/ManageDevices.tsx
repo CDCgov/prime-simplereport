@@ -26,7 +26,6 @@ const ManageDevices: React.FC<Props> = ({
   updateDefaultDevice,
   deviceSpecimenTypeOptions,
   errors,
-  validateField,
 }) => {
   const deviceErrors: React.ReactNode[] = [];
   if (errors.deviceTypes) {
