@@ -1,6 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { act } from "react-dom/test-utils";
 import { MemoryRouter, Route } from "react-router";
 
 import { SecurityQuestion } from "./SecurityQuestion";
@@ -76,9 +79,10 @@ describe("SecurityQuestion", () => {
       screen.getByLabelText("Answer", { exact: false }),
       "Valid answer"
     );
-    await act(async () => {
-      await userEvent.click(screen.getByText("Continue"));
-    });
+    userEvent.click(screen.getByText("Continue"));
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Validating security question …")
+    );
     expect(
       screen.getByText("Recovery question set successfully.")
     ).toBeInTheDocument();
@@ -93,9 +97,10 @@ describe("SecurityQuestion", () => {
       screen.getByLabelText("Answer", { exact: false }),
       "Invalid answer"
     );
-    await act(async () => {
-      await userEvent.click(screen.getByText("Continue"));
-    });
+    userEvent.click(screen.getByText("Continue"));
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Validating security question …")
+    );
     expect(screen.getByText("catastrophic failure")).toBeInTheDocument();
   });
 });

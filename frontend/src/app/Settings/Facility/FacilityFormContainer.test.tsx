@@ -1,4 +1,8 @@
-import { render, screen, act } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
@@ -232,20 +236,14 @@ describe("FacilityFormContainer", () => {
   });
 
   it("redirects on successful save", async () => {
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      await userEvent.click(screen.getByRole("button"));
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      expect(await screen.findByText("Redirected")).toBeDefined();
-    });
+    await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
+    userEvent.click(screen.getByRole("button"));
+    expect(await screen.findByText("Redirected")).toBeInTheDocument();
   });
 
   it("tracks custom telemetry event on successful save", async () => {
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      await userEvent.click(screen.getByRole("button"));
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      expect(trackEventMock).toBeCalledWith({ name: "Save Settings" });
-    });
+    await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
+    userEvent.click(screen.getByRole("button"));
+    expect(trackEventMock).toBeCalledWith({ name: "Save Settings" });
   });
 });

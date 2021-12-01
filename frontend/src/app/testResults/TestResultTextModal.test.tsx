@@ -1,7 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
-import { act } from "react-dom/test-utils";
 
 import * as utils from "../utils";
 
@@ -142,19 +146,17 @@ describe("TestResultTextModal", () => {
         </MockedProvider>
       );
 
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await waitForElementToBeRemoved(() => screen.queryByText("Loading"));
 
-      act(() => {
-        userEvent.click(screen.getByText("Send result"));
-      });
+      userEvent.click(screen.getByText("Send result"));
 
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await waitFor(() => expect(mockCloseModal).toHaveBeenCalled());
+
       // Also implies that the mutation was called with the correct patient link ID
       // as the mock would fail to intercept the request otherwise
       expect(sendSmsMutationCalled).toBe(true);
 
       expect(alertSpy).toHaveBeenCalledWith("success", "Texted test results.");
-      expect(mockCloseModal).toHaveBeenCalled();
     });
   });
 });

@@ -35,7 +35,7 @@ const testCases = {
 
 describe("Pagination", () => {
   it("should render Pagination cases", () => {
-    Object.entries(testCases).forEach(([name, tc], index) => {
+    Object.entries(testCases).forEach(([name, tc], _index) => {
       const props = { ...defaults, ...tc } as any;
       const { container } = render(
         <MemoryRouter>

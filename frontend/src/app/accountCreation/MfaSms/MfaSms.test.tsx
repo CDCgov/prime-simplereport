@@ -1,21 +1,52 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter, Route, Switch } from "react-router";
+
+import { MfaSmsVerify } from "../MfaSmsVerify/MfaSmsVerify";
 
 import { MfaSms } from "./MfaSms";
 
+jest.mock("../AccountCreationApiService", () => ({
+  AccountCreationApi: {
+    enrollSmsMfa: () => {
+      return new Promise((res) => {
+        res(true);
+      });
+    },
+  },
+}));
+
 describe("SMS MFA", () => {
   beforeEach(() => {
-    render(<MfaSms />);
+    render(
+      <MemoryRouter
+        initialEntries={[
+          {
+            pathname: "/mfa-sms",
+          },
+        ]}
+      >
+        <Switch>
+          <Route path="/mfa-sms" component={MfaSms} />
+          <Route path="/mfa-sms/verify" component={MfaSmsVerify} />
+        </Switch>
+      </MemoryRouter>
+    );
   });
 
   it("can enter a valid phone number", async () => {
-    await waitFor(() => {
-      userEvent.type(
-        screen.getByLabelText("Phone number", { exact: false }),
-        "(910) 867-5309"
-      );
-      userEvent.click(screen.getByText("Send code"));
-    });
+    userEvent.type(
+      screen.getByLabelText("Phone number", { exact: false }),
+      "(910) 867-5309"
+    );
+    userEvent.click(screen.getByText("Send code"));
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Validating phone number …")
+    );
 
     expect(
       screen.queryByText("Phone number is invalid")

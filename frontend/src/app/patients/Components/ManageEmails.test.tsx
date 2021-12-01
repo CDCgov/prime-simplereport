@@ -119,9 +119,7 @@ describe("ManageEmails", () => {
     const addButton = screen.getByText("Add another email address", {
       exact: false,
     });
-    await waitFor(() => {
-      userEvent.click(addButton);
-    });
+    userEvent.click(addButton);
     const second = (await screen.findAllByText("Email address"))[1];
     userEvent.type(second, "foo@bar.com");
     userEvent.click(

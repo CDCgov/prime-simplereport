@@ -1,5 +1,5 @@
-import renderer from "react-test-renderer";
 import { MockedProvider } from "@apollo/client/testing";
+import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 
@@ -12,13 +12,15 @@ jest.mock("react-router-dom", () => ({
   }),
 }));
 
+window.scrollTo = jest.fn();
+
 describe("AoEPatientFormContainer", () => {
   beforeAll(() => {
     jest
       .useFakeTimers("modern")
       .setSystemTime(new Date("2399-01-01").getTime());
   });
-  it("snapshot", () => {
+  it("renders", () => {
     const mockStore = configureStore([]);
     const store = mockStore({
       patient: {
@@ -28,7 +30,7 @@ describe("AoEPatientFormContainer", () => {
       },
       plid: "foo",
     });
-    const component = renderer.create(
+    render(
       <Provider store={store}>
         <MockedProvider mocks={[]} addTypename={false}>
           <AoEPatientFormContainer page={""} />
@@ -36,6 +38,8 @@ describe("AoEPatientFormContainer", () => {
       </Provider>
     );
 
-    expect(component.toJSON()).toMatchSnapshot();
+    expect(
+      screen.getByText("Profile information", { exact: false })
+    ).toBeInTheDocument();
   });
 });
