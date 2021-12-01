@@ -9,6 +9,8 @@ import OrganizationForm from "./OrganizationForm";
 import RequestAccess from "./RequestAccess";
 import RequestTestResult from "./RequestTestResult";
 
+import "./SignUpGoals.scss";
+
 const SignUpGoals = () => {
   const [submitted, setSubmitted] = useState(false);
   const [signUpGoal, setSignUpGoal] = useState("");
@@ -39,12 +41,13 @@ const SignUpGoals = () => {
   return (
     <CardBackground>
       <Card logo>
-        <div className="margin-bottom-2">
-          <h2>Sign up for SimpleReport</h2>
-          <p className="font-ui-2xs line-height-sans-5">
+        <div className="sign-up-goals-card usa-prose margin-bottom-2">
+          <h3 className="margin-top-2">Sign up for SimpleReport</h3>
+          <p className="subheader margin-bottom-0">
             To get you to the right place, tell us a little about yourself.
           </p>
           <RadioGroup
+            wrapperClassName="margin-top-1"
             name="signUpGoal"
             buttons={[
               {

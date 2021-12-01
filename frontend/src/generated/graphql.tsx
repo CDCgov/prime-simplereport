@@ -230,6 +230,7 @@ export type MutationAddPatientToQueueArgs = {
 export type MutationAddTestResultArgs = {
   dateTested?: Maybe<Scalars["DateTime"]>;
   deviceId: Scalars["String"];
+  deviceSpecimenType?: Maybe<Scalars["ID"]>;
   patientId: Scalars["ID"];
   result: Scalars["String"];
 };
@@ -237,6 +238,7 @@ export type MutationAddTestResultArgs = {
 export type MutationAddTestResultNewArgs = {
   dateTested?: Maybe<Scalars["DateTime"]>;
   deviceId: Scalars["String"];
+  deviceSpecimenType?: Maybe<Scalars["ID"]>;
   patientId: Scalars["ID"];
   result: Scalars["String"];
 };
@@ -336,6 +338,7 @@ export type MutationEditPendingOrganizationArgs = {
 export type MutationEditQueueItemArgs = {
   dateTested?: Maybe<Scalars["DateTime"]>;
   deviceId?: Maybe<Scalars["String"]>;
+  deviceSpecimenType?: Maybe<Scalars["ID"]>;
   id: Scalars["ID"];
   result?: Maybe<Scalars["String"]>;
 };
@@ -766,6 +769,7 @@ export type TestOrder = {
   correctionStatus?: Maybe<Scalars["String"]>;
   dateAdded?: Maybe<Scalars["String"]>;
   dateTested?: Maybe<Scalars["DateTime"]>;
+  deviceSpecimenType?: Maybe<DeviceSpecimenType>;
   deviceType?: Maybe<DeviceType>;
   id?: Maybe<Scalars["ID"]>;
   /** @deprecated alias for 'id' */
@@ -785,6 +789,7 @@ export type TestResult = {
   createdBy?: Maybe<ApiUser>;
   dateAdded?: Maybe<Scalars["String"]>;
   dateTested?: Maybe<Scalars["DateTime"]>;
+  deviceSpecimenType?: Maybe<DeviceSpecimenType>;
   deviceType?: Maybe<DeviceType>;
   facility?: Maybe<Facility>;
   internalId?: Maybe<Scalars["ID"]>;
@@ -1620,6 +1625,7 @@ export type RemovePatientFromQueueMutation = {
 export type EditQueueItemMutationVariables = Exact<{
   id: Scalars["ID"];
   deviceId?: Maybe<Scalars["String"]>;
+  deviceSpecimenType?: Maybe<Scalars["ID"]>;
   result?: Maybe<Scalars["String"]>;
   dateTested?: Maybe<Scalars["DateTime"]>;
 }>;
@@ -1635,12 +1641,23 @@ export type EditQueueItemMutation = {
       internalId: string;
       testLength?: Maybe<number>;
     }>;
+    deviceSpecimenType?: Maybe<{
+      __typename?: "DeviceSpecimenType";
+      internalId: string;
+      deviceType: {
+        __typename?: "DeviceType";
+        internalId: string;
+        testLength?: Maybe<number>;
+      };
+      specimenType: { __typename?: "SpecimenType"; internalId: string };
+    }>;
   }>;
 };
 
 export type SubmitTestResultMutationVariables = Exact<{
   patientId: Scalars["ID"];
   deviceId: Scalars["String"];
+  deviceSpecimenType?: Maybe<Scalars["ID"]>;
   result: Scalars["String"];
   dateTested?: Maybe<Scalars["DateTime"]>;
 }>;
@@ -1678,6 +1695,10 @@ export type GetFacilityQueueQuery = {
           name: string;
           model: string;
           testLength?: Maybe<number>;
+        }>;
+        deviceSpecimenType?: Maybe<{
+          __typename?: "DeviceSpecimenType";
+          internalId: string;
         }>;
         patient?: Maybe<{
           __typename?: "Patient";
@@ -1729,6 +1750,24 @@ export type GetFacilityQueueQuery = {
       }>;
     }>;
   }>;
+  deviceSpecimenTypes?: Maybe<
+    Array<
+      Maybe<{
+        __typename?: "DeviceSpecimenType";
+        internalId: string;
+        deviceType: {
+          __typename?: "DeviceType";
+          internalId: string;
+          name: string;
+        };
+        specimenType: {
+          __typename?: "SpecimenType";
+          internalId: string;
+          name: string;
+        };
+      }>
+    >
+  >;
 };
 
 export type GetPatientQueryVariables = Exact<{
@@ -4669,12 +4708,14 @@ export const EditQueueItemDocument = gql`
   mutation EditQueueItem(
     $id: ID!
     $deviceId: String
+    $deviceSpecimenType: ID
     $result: String
     $dateTested: DateTime
   ) {
     editQueueItem(
       id: $id
       deviceId: $deviceId
+      deviceSpecimenType: $deviceSpecimenType
       result: $result
       dateTested: $dateTested
     ) {
@@ -4683,6 +4724,16 @@ export const EditQueueItemDocument = gql`
       deviceType {
         internalId
         testLength
+      }
+      deviceSpecimenType {
+        internalId
+        deviceType {
+          internalId
+          testLength
+        }
+        specimenType {
+          internalId
+        }
       }
     }
   }
@@ -4707,6 +4758,7 @@ export type EditQueueItemMutationFn = Apollo.MutationFunction<
  *   variables: {
  *      id: // value for 'id'
  *      deviceId: // value for 'deviceId'
+ *      deviceSpecimenType: // value for 'deviceSpecimenType'
  *      result: // value for 'result'
  *      dateTested: // value for 'dateTested'
  *   },
@@ -4736,12 +4788,14 @@ export const SubmitTestResultDocument = gql`
   mutation SubmitTestResult(
     $patientId: ID!
     $deviceId: String!
+    $deviceSpecimenType: ID
     $result: String!
     $dateTested: DateTime
   ) {
     addTestResultNew(
       patientId: $patientId
       deviceId: $deviceId
+      deviceSpecimenType: $deviceSpecimenType
       result: $result
       dateTested: $dateTested
     ) {
@@ -4772,6 +4826,7 @@ export type SubmitTestResultMutationFn = Apollo.MutationFunction<
  *   variables: {
  *      patientId: // value for 'patientId'
  *      deviceId: // value for 'deviceId'
+ *      deviceSpecimenType: // value for 'deviceSpecimenType'
  *      result: // value for 'result'
  *      dateTested: // value for 'dateTested'
  *   },
@@ -4812,6 +4867,9 @@ export const GetFacilityQueueDocument = gql`
         model
         testLength
       }
+      deviceSpecimenType {
+        internalId
+      }
       patient {
         internalId
         telephone
@@ -4846,6 +4904,17 @@ export const GetFacilityQueueDocument = gql`
           model
           testLength
         }
+      }
+    }
+    deviceSpecimenTypes {
+      internalId
+      deviceType {
+        internalId
+        name
+      }
+      specimenType {
+        internalId
+        name
       }
     }
   }

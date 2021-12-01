@@ -45,6 +45,12 @@ const Template: Story<QueueItemProps> = (args) => {
   );
 };
 
+const device = {
+  name: "TestPro 4000",
+  internalId: "tp4000",
+  testLength: 0.1,
+};
+
 const defaultProps: QueueItemProps = {
   internalId: "abc-123",
   patient: {
@@ -65,13 +71,18 @@ const defaultProps: QueueItemProps = {
     testResultDelivery: "SMS",
     gender: "male",
   },
-  devices: [
+  devices: [device],
+  deviceSpecimenTypes: [
     {
-      name: "TestPro 4000",
-      internalId: "tp4000",
-      testLength: 0.1,
+      internalId: "fake-dst-id",
+      deviceType: device,
+      specimenType: {
+        internalId: "fake-swab-id",
+        name: "Fake Swab Type",
+      },
     },
   ],
+  selectedDeviceSpecimenTypeId: "fake-dst-id",
   // askOnEntry prop is incorrectly typed as "string" in the component
   askOnEntry: {
     noSymptoms: undefined,
