@@ -182,7 +182,6 @@ const AddPatient = () => {
   const onBlur = ({
     firstName,
     lastName,
-    zipCode,
     birthDate,
     facilityId,
   }: Nullable<PersonFormData>) => {
