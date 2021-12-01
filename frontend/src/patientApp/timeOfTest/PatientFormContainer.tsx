@@ -45,10 +45,6 @@ const PatientFormContainer = () => {
       state,
       county,
       zipCode,
-      firstName,
-      middleName,
-      lastName,
-      birthDate,
       ...withoutAddress
     } = person;
     const updatedPatientFromApi = await PxpApi.updatePatient(

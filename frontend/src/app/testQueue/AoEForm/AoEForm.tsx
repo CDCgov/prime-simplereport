@@ -208,7 +208,7 @@ const AoEForm: React.FC<Props> = ({
             </p>
             {emails.map((email) => (
               <span
-                key={"test-result-delivery-preference-email"}
+                key={`test-result-delivery-preference-email-${email}`}
                 className="radio__label-description--checked usa-radio__label-description text-base"
               >
                 {email}

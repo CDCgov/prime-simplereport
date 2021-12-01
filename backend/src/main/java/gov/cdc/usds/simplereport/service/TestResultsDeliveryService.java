@@ -5,6 +5,8 @@ import static java.text.MessageFormat.format;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
+import gov.cdc.usds.simplereport.service.model.SmsAPICallResult;
+import gov.cdc.usds.simplereport.service.sms.SmsService;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,7 @@ public class TestResultsDeliveryService {
 
   private final PatientLinkService patientLinkService;
   private final EmailService emailService;
+  private final SmsService smsService;
 
   public boolean emailTestResults(UUID patientLinkId) {
     PatientLink patientLink = patientLinkService.getRefreshedPatientLink(patientLinkId);
@@ -65,5 +68,19 @@ public class TestResultsDeliveryService {
   private String getExpirationDuration(PatientLink patientLink) {
     return format(
         "{0} day{1}", patientLink.getShelfLife(), patientLink.getShelfLife() > 1 ? "s" : "");
+  }
+
+  public boolean smsTestResults(UUID patientLinkId) {
+    PatientLink patientLink = patientLinkService.getRefreshedPatientLink(patientLinkId);
+    return smsTestResults(patientLink);
+  }
+
+  public boolean smsTestResults(PatientLink patientLink) {
+    String message =
+        format(
+            "Your COVID-19 test result is ready to view. This link will expire after {0}: {1}",
+            getExpirationDuration(patientLink), patientLinkUrl + patientLink.getInternalId());
+    List<SmsAPICallResult> smsSendResults = smsService.sendToPatientLink(patientLink, message);
+    return smsSendResults.stream().allMatch(SmsAPICallResult::isSuccessful);
   }
 }

@@ -7,7 +7,7 @@ describe("SignUpGoals", () => {
     render(<SignUpGoals />);
   });
   it("renders with the submit button enabled", () => {
-    expect(screen.getByText("Continue")).not.toHaveAttribute("disabled");
+    expect(screen.getByText("Continue")).toBeEnabled();
   });
 
   it("requires a selection", () => {

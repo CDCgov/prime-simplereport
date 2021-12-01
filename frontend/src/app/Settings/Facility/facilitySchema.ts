@@ -73,6 +73,7 @@ const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
 const deviceTypeSchema: yup.SchemaOf<DeviceType> = yup.object({
   internalId: yup.string().required(),
   name: yup.string().required(),
+  testLength: yup.number().optional(),
 });
 
 const specimenTypeSchema: yup.SchemaOf<SpecimenType> = yup.object({

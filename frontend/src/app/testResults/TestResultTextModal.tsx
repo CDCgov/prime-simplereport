@@ -54,7 +54,11 @@ const mobilePhoneNumbers = (phoneArray: PhoneNumber[]) => {
   let mobileNumbers: any = [];
   phoneArray.forEach((patientPhone) => {
     if (patientPhone.type === "MOBILE") {
-      mobileNumbers.push(<tr>{patientPhone.number}</tr>);
+      mobileNumbers.push(
+        <tr key={patientPhone.number}>
+          <td>{patientPhone.number}</td>
+        </tr>
+      );
     }
   });
   return mobileNumbers;
@@ -95,8 +99,10 @@ export const DetachedTestResultTextModal = ({ data, closeModal }: Props) => {
         {" "}
         {formatFullName(patient)} test result from {formatDate(dateTested)} will
         be sent to the following numbers:
-        <table>{mobilePhoneNumbers(patient.phoneNumbers)}</table>
       </p>
+      <table>
+        <tbody>{mobilePhoneNumbers(patient.phoneNumbers)}</tbody>
+      </table>
       <div className="sr-test-correction-buttons">
         <Button variant="unstyled" label="Cancel" onClick={closeModal} />
         <Button label="Send result" onClick={resendSMS} />

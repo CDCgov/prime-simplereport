@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import DeviceTypeForm from "./DeviceTypeForm";
@@ -21,7 +21,7 @@ describe("DeviceTypeForm", () => {
   });
 
   it("Disables the save button", () => {
-    expect(screen.getByText("Save changes")).not.toBeEnabled();
+    expect(screen.getByText("Save changes")).toBeDisabled();
   });
 
   describe("All fields completed", () => {
@@ -37,10 +37,8 @@ describe("DeviceTypeForm", () => {
       expect(screen.getByText("Save changes")).toBeEnabled();
     });
     describe("on form submission", () => {
-      beforeEach(async () => {
-        await waitFor(async () => {
-          userEvent.click(screen.getByText("Save changes"));
-        });
+      beforeEach(() => {
+        userEvent.click(screen.getByText("Save changes"));
       });
 
       it("calls the save callback once", async () => {

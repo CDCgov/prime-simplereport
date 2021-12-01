@@ -83,7 +83,7 @@ public class GraphQLLoggingHelpers {
             log.info("GraphQL execution FAILED in {}ms", queryDuration.getMilliseconds());
             request.setSuccess(false);
           } else {
-            log.info("GraphQL execution COMPLETED in {}ms", queryDuration.getMilliseconds());
+            log.debug("GraphQL execution COMPLETED in {}ms", queryDuration.getMilliseconds());
             request.setSuccess(true);
           }
           // Clear the MDC context

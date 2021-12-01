@@ -5,7 +5,9 @@ type ISODate = `${number}${number}${number}${number}-${number}${number}-${number
 interface DeviceType {
   internalId: string;
   name: string;
+  testLength?: number | undefined;
 }
+
 interface DeviceTypes {
   deviceType: [DeviceType];
 }

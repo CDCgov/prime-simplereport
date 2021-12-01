@@ -38,7 +38,6 @@ export const SelfRegistration = () => {
       state,
       county,
       zipCode,
-      facilityId,
       birthDate,
       ...withoutAddress
     } = person;

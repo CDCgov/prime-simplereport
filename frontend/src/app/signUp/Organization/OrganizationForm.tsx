@@ -189,7 +189,7 @@ const OrganizationForm = () => {
               <p className="usa-hint">
                 To start, only one person from an organization can be the
                 administrator. This person will submit information for identity
-                verifcation. (SimpleReport doesn't access or keep personal
+                verification. (SimpleReport doesn't access or keep personal
                 identity information.)
               </p>
             </>
@@ -216,8 +216,10 @@ const OrganizationForm = () => {
   return (
     <CardBackground>
       <Card logo>
-        <div className="margin-bottom-2 organization-form">
-          <h4 className="margin-bottom-0">Sign up for SimpleReport</h4>
+        <div className="margin-bottom-2 organization-form usa-prose">
+          <h4 className="margin-top-2 margin-bottom-0">
+            Sign up for SimpleReport
+          </h4>
           <StepIndicator
             steps={organizationCreationSteps}
             currentStepValue={"0"}
@@ -225,13 +227,22 @@ const OrganizationForm = () => {
             segmentIndicatorOnBottom={true}
           />
           <div className="gray-background padding-y-05 padding-x-3">
-            <p className="font-ui-2xs line-height-sans-5">
-              <strong>Sign up for SimpleReport in three steps:</strong> <br />
-              1. Fill out your organization information <br />
-              2. Enter your personal contact details <br />
-              3. Verify your identity
+            <p className="font-ui-2xs line-height-sans-5 margin-bottom-1">
+              <strong>Sign up for SimpleReport in three steps:</strong>
             </p>
-            <p className="font-ui-2xs margin-top-0 line-height-sans-5">
+            <div className="margin-y-1">
+              <span className="circled-number margin-right-05">1</span>
+              Fill out your organization information
+            </div>
+            <div className="margin-y-1">
+              <span className="circled-number margin-right-05">2</span>
+              Enter your personal contact details
+            </div>
+            <div className="margin-y-1">
+              <span className="circled-number margin-right-05">3</span>
+              Verify your identity
+            </div>
+            <p className="font-ui-2xs margin-top-2 line-height-sans-5">
               Each organization only needs one account. After you sign up you
               can add staff and testing locations. Learn more about our{" "}
               <a href="/getting-started/organizations-and-testing-facilities/onboard-your-organization/">
