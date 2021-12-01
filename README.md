@@ -59,7 +59,7 @@ If Java isn't installed on a Mac you can get it from `brew`:
 
 ```sh
 brew tap adoptopenjdk/openjdk
-brew cask install adoptopenjdk11
+brew install --cask adoptopenjdk11
 brew install gradle
 ```
 
@@ -90,6 +90,9 @@ Running spring app locally and db in docker on port 5433
 1. Run ` docker-compose --env-file .env.development up db`
 1. Run ` SR_DB_PORT=5433 ./gradlew bootRun --args='--spring.profiles.active=dev'`
 1. view site at http://localhost:8080
+
+The GraphQL playground should load after replacing the default request url with
+`http://localhost:8080/graphql`
 
 ### Running the app with Make or start.sh
 
@@ -325,7 +328,8 @@ spring:
 
 ## Frontend
 
-The front end is a React app. The app uses [Apollo](https://www.apollographql.com/) to manage the graphql API. For styling the app leverages the [U.S. Web Design System (USWDS)](https://designsystem.digital.gov/)
+The front end is a React app. The app uses [Apollo](https://www.apollographql.com/) to manage the graphql API. For styling the app leverages the [U.S. Web Design System (USWDS)](https://designsystem.digital.gov/). Ensure your node version is version 14 in order for
+yarn to build packages correctly.
 
 ### Frontend-Setup
 

@@ -23,7 +23,7 @@ describe("NewFeatureTag", () => {
         render(<NewFeatureTag customEndDate={tomorrow.toDateString()} />);
       });
       it("renders the new tag", () => {
-        expect(screen.queryByText("New", { exact: false })).toBeInTheDocument();
+        expect(screen.getByText("New", { exact: false })).toBeInTheDocument();
       });
     });
   });

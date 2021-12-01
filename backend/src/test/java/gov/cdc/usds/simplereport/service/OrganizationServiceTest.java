@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.OrderingProviderRequiredException;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -27,6 +28,7 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -194,6 +196,30 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
         unverifiedOrgs.stream().map(Organization::getExternalId).collect(Collectors.toSet());
     assertFalse(unverifiedOrgIds.contains(verifiedOrg.getExternalId()));
     assertTrue(unverifiedOrgIds.contains(unverifiedOrg.getExternalId()));
+  }
+
+  @Test
+  @DisplayName("it should allow global admins to mark facility as deleted")
+  @WithSimpleReportSiteAdminUser
+  void deleteFacilityTest_successful() {
+    Organization verifiedOrg = _dataFactory.createValidOrg();
+    Facility mistakeFacility =
+        _dataFactory.createValidFacility(verifiedOrg, "This facility is a mistake");
+    Facility deletedFacility =
+        _service.markFacilityAsDeleted(mistakeFacility.getInternalId(), true);
+    assertThat(deletedFacility.isDeleted()).isTrue();
+  }
+
+  @Test
+  @DisplayName("it should not delete nonexistent facilities")
+  @WithSimpleReportSiteAdminUser
+  void deletedFacilityTest_throwsErrorWhenFacilityNotFound() {
+    IllegalGraphqlArgumentException caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            // fake UUID
+            () -> _service.markFacilityAsDeleted(UUID.randomUUID(), true));
+    assertEquals("Facility not found.", caught.getMessage());
   }
 
   @Test

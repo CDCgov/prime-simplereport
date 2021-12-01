@@ -11,7 +11,7 @@ describe("AoEModalForm", () => {
   let component: RenderResult["container"];
 
   beforeAll(() => {
-    ReactDOM.createPortal = jest.fn((element, node) => {
+    ReactDOM.createPortal = jest.fn((element, _node) => {
       return element;
     }) as any;
   });

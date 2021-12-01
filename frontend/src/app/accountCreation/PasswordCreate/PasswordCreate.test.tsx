@@ -1,6 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router";
 import createMockStore from "redux-mock-store";
@@ -122,9 +125,10 @@ describe("PasswordCreate", () => {
       "validPASS123!"
     );
     expect(screen.getByText(strengthLabel("Strong"))).toBeInTheDocument();
-    await act(async () => {
-      await userEvent.click(screen.getByText("Continue"));
-    });
+    userEvent.click(screen.getByText("Continue"));
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Validating password …")
+    );
     expect(screen.getByText("Password set successfully.")).toBeInTheDocument();
   });
 
@@ -135,9 +139,10 @@ describe("PasswordCreate", () => {
       "INvalidPASS123!"
     );
     expect(screen.getByText(strengthLabel("Strong"))).toBeInTheDocument();
-    await act(async () => {
-      await userEvent.click(screen.getByText("Continue"));
-    });
+    userEvent.click(screen.getByText("Continue"));
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Validating password …")
+    );
     expect(screen.getByText("utter failure")).toBeInTheDocument();
   });
 });
