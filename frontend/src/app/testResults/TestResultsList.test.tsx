@@ -898,9 +898,7 @@ describe("TestResultsList", () => {
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();
     expect(screen.queryByText("Colleer, Barde X")).not.toBeInTheDocument();
-    expect(screen.getByRole("searchbox").getAttribute("value")).toBe(
-      "Cragell, Barb Whitaker"
-    );
+    expect(screen.getByRole("searchbox")).toHaveValue("Cragell, Barb Whitaker");
   });
   it("should be able to filter by result value", async () => {
     render(
@@ -990,7 +988,7 @@ describe("TestResultsList", () => {
     );
     userEvent.tab();
     expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-    expect(await screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
+    expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
     expect(
       screen.queryByText("Cragell, Barb Whitaker")
     ).not.toBeInTheDocument();
@@ -1024,7 +1022,7 @@ describe("TestResultsList", () => {
     expect(
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();
-    expect(await screen.queryByText("Colleer, Barde X")).toBeInTheDocument();
+    expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
   });
 
   it("should be able to clear date filters", async () => {
@@ -1053,11 +1051,9 @@ describe("TestResultsList", () => {
       screen.queryByText("Cragell, Barb Whitaker")
     ).not.toBeInTheDocument();
 
-    expect(
-      screen
-        .getAllByTestId("date-picker-external-input")[0]
-        .getAttribute("value")
-    ).toEqual("03/18/2021");
+    expect(screen.getAllByTestId("date-picker-external-input")[0]).toHaveValue(
+      "03/18/2021"
+    );
     // Clear filter
     expect(await screen.findByText("Clear filters")).toBeInTheDocument();
     userEvent.click(screen.getByText("Clear filters"));
@@ -1068,11 +1064,9 @@ describe("TestResultsList", () => {
     ).toBeInTheDocument();
 
     // Date picker no longer displays the selected date
-    expect(
-      screen
-        .getAllByTestId("date-picker-external-input")[0]
-        .getAttribute("value")
-    ).toEqual("");
+    expect(screen.getAllByTestId("date-picker-external-input")[0]).toHaveValue(
+      ""
+    );
   });
 
   it("opens the test detail view", async () => {

@@ -1,7 +1,6 @@
 import React from "react";
-import renderer from "react-test-renderer";
 import { MemoryRouter } from "react-router";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Patient } from "../../patients/ManagePatients";
@@ -63,7 +62,7 @@ jest.mock("react-router-dom", () => ({
 describe("SearchResults", () => {
   describe("No Results", () => {
     it("should say 'No Results' for no matches", () => {
-      const component = renderer.create(
+      render(
         <RouterWithFacility>
           <SearchResults
             page="queue"
@@ -76,7 +75,7 @@ describe("SearchResults", () => {
         </RouterWithFacility>
       );
 
-      expect(component.toJSON()).toMatchSnapshot();
+      expect(screen.getByText("No results found.")).toBeInTheDocument();
     });
 
     it("should show add patient button", () => {
@@ -94,9 +93,7 @@ describe("SearchResults", () => {
       );
 
       expect(screen.getByText("Add new patient")).toBeInTheDocument();
-      act(() => {
-        userEvent.click(screen.getByText("Add new patient"));
-      });
+      userEvent.click(screen.getByText("Add new patient"));
       expect(
         screen.getByText(
           `Redirected to /add-patient?facility=${mockFacilityID}`
@@ -106,7 +103,7 @@ describe("SearchResults", () => {
   });
 
   it("should show matching results", () => {
-    const component = renderer.create(
+    render(
       <RouterWithFacility>
         <SearchResults
           page="queue"
@@ -119,7 +116,7 @@ describe("SearchResults", () => {
       </RouterWithFacility>
     );
 
-    expect(component.toJSON()).toMatchSnapshot();
+    expect(screen.getByText("Washington, George")).toBeInTheDocument();
   });
 
   it("links the non-duplicate patient", () => {
@@ -138,7 +135,7 @@ describe("SearchResults", () => {
     );
 
     expect(screen.getAllByText("Test in progress")).toHaveLength(2);
-    expect(screen.getAllByText("Begin test")).toHaveLength(1);
+    expect(screen.getByText("Begin test")).toBeInTheDocument();
   });
 
   it("opens a modal for selected patient", async () => {
@@ -157,10 +154,8 @@ describe("SearchResults", () => {
       </RouterWithFacility>
     );
 
-    await waitFor(() => {
-      expect(screen.getByText("Test questionnaire")).toBeInTheDocument();
-      expect(screen.getByText("Washington, George")).toBeInTheDocument();
-      expect(screen.getByText("Continue")).toBeInTheDocument();
-    });
+    expect(screen.getByText("Test questionnaire")).toBeInTheDocument();
+    expect(screen.getByText("Washington, George")).toBeInTheDocument();
+    expect(screen.getByText("Continue")).toBeInTheDocument();
   });
 });

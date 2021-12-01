@@ -1,4 +1,8 @@
-import { act, render, screen } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { Provider } from "react-redux";
@@ -135,11 +139,10 @@ describe("TenantDataAccessFormContainer", () => {
   });
 
   it("Redirects on successful save", async () => {
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      await userEvent.click(screen.getByRole("button"));
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      expect(await screen.findByText("Redirected")).toBeDefined();
-    });
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Loading Organizations …")
+    );
+    userEvent.click(screen.getByRole("button"));
+    expect(await screen.findByText("Redirected")).toBeInTheDocument();
   });
 });

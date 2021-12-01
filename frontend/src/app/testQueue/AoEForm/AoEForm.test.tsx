@@ -1,48 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { act } from "react-test-renderer";
 
 import AoEForm from "./AoEForm";
 
 describe("AoEForm", () => {
-  it("renders correctly", () => {
-    const component = render(
-      <AoEForm
-        saveButtonText="save"
-        onClose={jest.fn()}
-        patient={{
-          firstName: "Jon",
-          middleName: "Bon",
-          lastName: "Jovi",
-          internalId: "123",
-          gender: "male",
-          testResultDelivery: "SMS",
-          email: "jon@bon.jovi",
-          emails: ["jon@bon.jovi"],
-          birthDate: "1980-01-01",
-          telephone: "2708675309",
-          phoneNumbers: [
-            {
-              number: "2708675309",
-              type: "MOBILE",
-            },
-          ],
-        }}
-        loadState={{
-          noSymptoms: false,
-          symptoms: '{"426000000":"true","49727002":false}',
-          symptomOnset: "2021-06-20",
-          pregnancy: "77386006",
-        }}
-        saveCallback={jest.fn()}
-        isModal={false}
-        noValidation={true}
-      />
-    );
-
-    expect(component.container.firstChild).toMatchSnapshot();
-  });
-
   describe("Test result delivery options", () => {
     describe("SMS", () => {
       let phoneNumbers: PhoneNumber[];
@@ -101,7 +62,7 @@ describe("AoEForm", () => {
               exact: false,
             }
           )
-        ).not.toBeDisabled();
+        ).toBeEnabled();
         for (const { number } of phoneNumbers) {
           expect(await screen.findByText(number)).toBeInTheDocument();
         }
@@ -189,7 +150,7 @@ describe("AoEForm", () => {
         )[1];
         expect(emailPreferenceRadioOption).toBeInTheDocument();
 
-        expect(emailPreferenceRadioOption).not.toBeDisabled();
+        expect(emailPreferenceRadioOption).toBeEnabled();
 
         for (const email of emails) {
           expect(await screen.findByText(email)).toBeInTheDocument();
@@ -269,9 +230,7 @@ describe("AoEForm", () => {
         });
 
         expect(emailDeliveryRadio).toBeInTheDocument();
-        act(() => {
-          userEvent.click(emailDeliveryRadio);
-        });
+        userEvent.click(emailDeliveryRadio);
         expect(emailDeliveryRadio).toBeChecked();
       });
     });

@@ -1,5 +1,4 @@
 import React from "react";
-import renderer from "react-test-renderer";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -9,7 +8,7 @@ jest.mock("uuid");
 
 describe("TestResultInputForm", () => {
   it("should render with a value", () => {
-    const component = renderer.create(
+    render(
       <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
         testResultValue="POSITIVE"
@@ -19,11 +18,13 @@ describe("TestResultInputForm", () => {
       />
     );
 
-    expect(component.toJSON()).toMatchSnapshot();
+    expect(screen.getByLabelText("Positive (+)")).toBeChecked();
+    expect(screen.getByLabelText("Negative (-)")).not.toBeChecked();
+    expect(screen.getByLabelText("Inconclusive")).not.toBeChecked();
   });
 
   it("should render without a value", () => {
-    const component = renderer.create(
+    render(
       <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
         testResultValue={undefined}
@@ -32,7 +33,9 @@ describe("TestResultInputForm", () => {
       />
     );
 
-    expect(component.toJSON()).toMatchSnapshot();
+    expect(screen.getByLabelText("Positive (+)")).not.toBeChecked();
+    expect(screen.getByLabelText("Negative (-)")).not.toBeChecked();
+    expect(screen.getByLabelText("Inconclusive")).not.toBeChecked();
   });
 
   it("should pass back the result value when clicked", () => {
