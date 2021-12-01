@@ -3,12 +3,12 @@ import { Route, RouteComponentProps } from "react-router-dom";
 import Page from "../commonComponents/Page/Page";
 
 import Consent from "./IdentityVerification/Consent";
-import Instructions from "./Organization/Instructions";
+import SignUpGoals from "./Organization/SignUpGoals";
 
 const SignUpApp: React.FC<RouteComponentProps> = ({ match: { path } }) => {
   return (
     <Page>
-      <Route path={`${path}`} exact component={Instructions} />
+      <Route path={`${path}`} exact component={SignUpGoals} />
       <Route path={`${path}/identity-verification`} exact component={Consent} />
     </Page>
   );

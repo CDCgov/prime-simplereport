@@ -179,15 +179,16 @@ const OrganizationForm = () => {
           return (
             <>
               <label className="usa-label margin-top-3">
-                <strong>{label}</strong>
-                <TextWithTooltip
-                  tooltip="Can be anyone that works at your organization. Adds testing facility locations; manages the account and user access."
-                  text="What's an organization administrator?"
-                />
+                <strong>
+                  <TextWithTooltip
+                    tooltip="Can be anyone that works at your organization. Adds testing facility locations; manages the account and user access."
+                    text="Organization administrator"
+                  />
+                </strong>
               </label>
               <p className="usa-hint">
-                Only one person from an organization can be the administrator.
-                This person will submit personal information for identity
+                To start, only one person from an organization can be the
+                administrator. This person will submit information for identity
                 verification. (SimpleReport doesn't access or keep personal
                 identity information.)
               </p>
@@ -215,14 +216,41 @@ const OrganizationForm = () => {
   return (
     <CardBackground>
       <Card logo>
-        <div className="margin-bottom-2 organization-form">
-          <h4 className="margin-bottom-0">Sign up for SimpleReport</h4>
+        <div className="margin-bottom-2 organization-form usa-prose">
+          <h4 className="margin-top-2 margin-bottom-0">
+            Sign up for SimpleReport
+          </h4>
           <StepIndicator
             steps={organizationCreationSteps}
             currentStepValue={"0"}
             noLabels={true}
             segmentIndicatorOnBottom={true}
           />
+          <div className="gray-background padding-y-05 padding-x-3">
+            <p className="font-ui-2xs line-height-sans-5 margin-bottom-1">
+              <strong>Sign up for SimpleReport in three steps:</strong>
+            </p>
+            <div className="margin-y-1">
+              <span className="circled-number margin-right-05">1</span>
+              Fill out your organization information
+            </div>
+            <div className="margin-y-1">
+              <span className="circled-number margin-right-05">2</span>
+              Enter your personal contact details
+            </div>
+            <div className="margin-y-1">
+              <span className="circled-number margin-right-05">3</span>
+              Verify your identity
+            </div>
+            <p className="font-ui-2xs margin-top-2 line-height-sans-5">
+              Each organization only needs one account. After you sign up you
+              can add staff and testing locations. Learn more about our{" "}
+              <a href="/getting-started/organizations-and-testing-facilities/onboard-your-organization/">
+                sign up and identity verification process
+              </a>
+              .
+            </p>
+          </div>
           {backendError ? backendError : null}
           {/* By mapping over organizationFields (found in utils.tsx), we reduce */}
           {/* duplication of input fields in JSX */}
@@ -237,8 +265,8 @@ const OrganizationForm = () => {
             }
           )}
         </div>
-        <p>
-          By submitting this form, you agree to our{" "}
+        <p className="margin-top-4 margin-bottom-0 font-ui-xs">
+          By selecting Continue, you agree to our{" "}
           <a href="/terms-of-service" target="_blank" rel="noopener noreferrer">
             terms of service
           </a>
@@ -248,7 +276,7 @@ const OrganizationForm = () => {
           className="width-full margin-top-2 submit-button"
           disabled={!formChanged}
           onClick={onSave}
-          label={"Submit"}
+          label={"Continue"}
         />
       </Card>
     </CardBackground>

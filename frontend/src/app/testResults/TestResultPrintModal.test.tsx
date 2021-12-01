@@ -1,4 +1,4 @@
-import { act, render, RenderResult } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockDate from "mockdate";
 import ReactDOM from "react-dom";
@@ -40,39 +40,34 @@ const testResult = {
   },
 };
 
+window.print = jest.fn();
+
 describe("TestResultPrintModal", () => {
   let printSpy: jest.SpyInstance;
-  let component: RenderResult;
-  let container: RenderResult["container"];
 
-  beforeAll(() => {
-    ReactDOM.createPortal = jest.fn((element, node) => {
+  beforeEach(() => {
+    ReactDOM.createPortal = jest.fn((element, _node) => {
       return element;
     }) as any;
 
     printSpy = jest.spyOn(window, "print");
 
     MockDate.set("2021/01/01");
-    component = render(
+    render(
       <DetachedTestResultPrintModal
         data={{ testResult }}
         testResultId="id"
         closeModal={() => {}}
       />
     );
-    container = component.container;
   });
 
-  afterAll(() => {
+  afterEach(() => {
     printSpy.mockRestore();
   });
 
   it("should render the test result print view", async () => {
-    expect(container).toMatchSnapshot();
-
-    await act(async () => {
-      await userEvent.click(component.getAllByRole("button")[2]);
-    });
+    userEvent.click(screen.getAllByText("Print")[1]);
 
     expect(printSpy).toBeCalled();
   });

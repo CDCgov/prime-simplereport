@@ -160,10 +160,9 @@ describe("FacilityForm", () => {
     const facilityNameInput = screen.getByLabelText("Testing facility name", {
       exact: false,
     });
-    await waitFor(() => {
-      userEvent.clear(facilityNameInput);
-      userEvent.click(saveButton);
-    });
+    userEvent.clear(facilityNameInput);
+    userEvent.click(saveButton);
+    await waitFor(async () => expect(saveButton).toBeEnabled());
     expect(saveFacility).toBeCalledTimes(0);
   });
   it("validates optional email field", async () => {
@@ -189,15 +188,12 @@ describe("FacilityForm", () => {
       })
     ).toBeInTheDocument();
 
-    await waitFor(async () => {
-      userEvent.click(saveButton);
-    });
+    userEvent.click(saveButton);
     expect(saveFacility).toBeCalledTimes(0);
 
     userEvent.type(emailInput, "foofacility@example.com");
-    await waitFor(async () => {
-      userEvent.click(saveButton);
-    });
+    userEvent.click(saveButton);
+    await waitFor(async () => expect(saveButton).toBeEnabled());
     await validateAddress(saveFacility);
   });
   it("only accepts live jurisdictions", async () => {
@@ -262,9 +258,8 @@ describe("FacilityForm", () => {
         ).toBeInTheDocument();
 
         const saveButton = screen.getAllByText("Save changes")[0];
-        await waitFor(async () => {
-          userEvent.click(saveButton);
-        });
+        userEvent.click(saveButton);
+        await waitFor(async () => expect(saveButton).toBeEnabled());
         expect(saveFacility).toBeCalledTimes(0);
       });
     });
@@ -374,9 +369,8 @@ describe("FacilityForm", () => {
         ).toBeInTheDocument();
 
         const saveButton = screen.getAllByText("Save changes")[0];
-        await waitFor(async () => {
-          userEvent.click(saveButton);
-        });
+        userEvent.click(saveButton);
+        await waitFor(async () => expect(saveButton).toBeEnabled());
         expect(saveFacility).toBeCalledTimes(0);
       });
 
@@ -480,9 +474,8 @@ describe("FacilityForm", () => {
         ).toBeInTheDocument();
 
         const saveButton = screen.getAllByText("Save changes")[0];
-        await waitFor(async () => {
-          userEvent.click(saveButton);
-        });
+        userEvent.click(saveButton);
+        await waitFor(async () => expect(saveButton).toBeEnabled());
         expect(saveFacility).toBeCalledTimes(0);
       });
     });
@@ -579,12 +572,11 @@ describe("FacilityForm", () => {
       );
       // Delete default device
       const deleteButtons = await screen.findAllByLabelText("Delete device");
-      await waitFor(() => {
-        userEvent.click(deleteButtons[0]);
-      });
+      userEvent.click(deleteButtons[0]);
       // Attempt save
       const saveButtons = await screen.findAllByText("Save changes");
       userEvent.click(saveButtons[0]);
+      await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
       const warning = await screen.findByText(
         "A default device must be selected",
         { exact: false }
@@ -616,10 +608,7 @@ describe("FacilityForm", () => {
         "device-dropdown-0"
       ) as HTMLSelectElement;
 
-      await waitFor(() => {
-        userEvent.selectOptions(dropdown, unusedDevice.internalId);
-      });
-
+      userEvent.selectOptions(dropdown, unusedDevice.internalId);
       expect(
         (screen.getAllByRole("option", {
           name: unusedDevice.name,
@@ -633,9 +622,8 @@ describe("FacilityForm", () => {
       // Attempt save
       const saveButtons = await screen.findAllByText("Save changes");
 
-      await waitFor(async () => {
-        userEvent.click(saveButtons[0]);
-      });
+      userEvent.click(saveButtons[0]);
+      await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
       const warning = await screen.findByText(
         "A default device must be selected",
         { exact: false }
@@ -654,7 +642,7 @@ async function validateAddress(
   const radios = screen.getAllByLabelText(selection, { exact: false });
   radios.forEach((r) => userEvent.click(r));
   const button = screen.getAllByText("Save changes")[2];
-  expect(button).not.toBeDisabled();
+  expect(button).toBeEnabled();
   userEvent.click(button);
   expect(saveFacility).toBeCalledTimes(1);
 }

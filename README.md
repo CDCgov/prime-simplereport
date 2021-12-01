@@ -24,6 +24,7 @@ https://simplereport.gov/
     - [Local Settings](#local-settings)
     - [SchemaSpy](#schemaspy)
     - [Twilio](#twilio)
+    - [MailHog](#MailHog)
   - [Frontend](#frontend)
     - [Frontend-Setup](#frontend-setup)
     - [Linters](#linters)
@@ -305,6 +306,18 @@ twilio:
 
 These can also be set by environment variable if desired.
 
+### MailHog
+MailHog is an email-testing tool with a fake SMTP server underneath, we can use it to test sending emails locally.
+- Mailhog client runs on docker, `docker-compose up -d mailhog`
+- add the following to `application-local.yaml` to configure the backend to send email to mailhog client
+```yml
+spring:
+  mail:
+    host: localhost
+    port: 1025
+```
+- Access mailhog inbox on `http://localhost:8025/`
+
 ## Frontend
 
 The front end is a React app. The app uses [Apollo](https://www.apollographql.com/) to manage the graphql API. For styling the app leverages the [U.S. Web Design System (USWDS)](https://designsystem.digital.gov/)
@@ -390,5 +403,11 @@ Users can be notified of deployment issues by placing SimpleReport in maintenanc
 To do so manually:
 1. Create a `MAINTENANCE MESSAGE` in JSON format with an `active` and a `message` key. Example: `{"active": true, "message": "SimpleReport is currently undergoing maintenance"}`. Note that the `active` value must be a _boolean_, not a string.
 2. `cd frontend && MAINTENANCE_MESSAGE=(JSON message here) MAINTENANCE_ENV=(desired env) yarn run maintenance:start`
+
+Example:
+```Shell
+MAINTENANCE_MESSAGE='{"active": true, "message": "SimpleReport is currently experiencing service degradation"}' MAINTENANCE_ENV=dev yarn run maintenance:start
+```
+Possible values for `MAINTENANCE_ENV`: `dev`, `test`, `pentest`, `training`, `demo`, `stg`, `prod`
 
 An easier way is to run the `Maintenance Mode` Action, which will automatically enable/disable maintenance mode for all environments with your desired message.

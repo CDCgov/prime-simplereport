@@ -143,7 +143,7 @@ export type Mutation = {
   resendToReportStream?: Maybe<Scalars["Boolean"]>;
   resetUserPassword?: Maybe<User>;
   sendPatientLinkEmail?: Maybe<Scalars["Boolean"]>;
-  sendPatientLinkSms?: Maybe<Scalars["String"]>;
+  sendPatientLinkSms?: Maybe<Scalars["Boolean"]>;
   setCurrentUserTenantDataAccess?: Maybe<User>;
   setOrganizationIdentityVerified?: Maybe<Scalars["Boolean"]>;
   setPatientIsDeleted?: Maybe<Patient>;
@@ -231,6 +231,7 @@ export type MutationAddPatientToQueueArgs = {
 export type MutationAddTestResultArgs = {
   dateTested?: Maybe<Scalars["DateTime"]>;
   deviceId: Scalars["String"];
+  deviceSpecimenType?: Maybe<Scalars["ID"]>;
   patientId: Scalars["ID"];
   result: Scalars["String"];
 };
@@ -238,6 +239,7 @@ export type MutationAddTestResultArgs = {
 export type MutationAddTestResultNewArgs = {
   dateTested?: Maybe<Scalars["DateTime"]>;
   deviceId: Scalars["String"];
+  deviceSpecimenType?: Maybe<Scalars["ID"]>;
   patientId: Scalars["ID"];
   result: Scalars["String"];
 };
@@ -337,6 +339,7 @@ export type MutationEditPendingOrganizationArgs = {
 export type MutationEditQueueItemArgs = {
   dateTested?: Maybe<Scalars["DateTime"]>;
   deviceId?: Maybe<Scalars["String"]>;
+  deviceSpecimenType?: Maybe<Scalars["ID"]>;
   id: Scalars["ID"];
   result?: Maybe<Scalars["String"]>;
 };
@@ -773,6 +776,7 @@ export type TestOrder = {
   correctionStatus?: Maybe<Scalars["String"]>;
   dateAdded?: Maybe<Scalars["String"]>;
   dateTested?: Maybe<Scalars["DateTime"]>;
+  deviceSpecimenType?: Maybe<DeviceSpecimenType>;
   deviceType?: Maybe<DeviceType>;
   id?: Maybe<Scalars["ID"]>;
   /** @deprecated alias for 'id' */
@@ -792,6 +796,7 @@ export type TestResult = {
   createdBy?: Maybe<ApiUser>;
   dateAdded?: Maybe<Scalars["String"]>;
   dateTested?: Maybe<Scalars["DateTime"]>;
+  deviceSpecimenType?: Maybe<DeviceSpecimenType>;
   deviceType?: Maybe<DeviceType>;
   facility?: Maybe<Facility>;
   internalId?: Maybe<Scalars["ID"]>;
@@ -1304,7 +1309,7 @@ export type AddPatientMutationVariables = Exact<{
   phoneNumbers?: Maybe<Array<PhoneNumberInput> | PhoneNumberInput>;
   role?: Maybe<Scalars["String"]>;
   lookupId?: Maybe<Scalars["String"]>;
-  email?: Maybe<Scalars["String"]>;
+  emails?: Maybe<Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>>;
   county?: Maybe<Scalars["String"]>;
   race?: Maybe<Scalars["String"]>;
   ethnicity?: Maybe<Scalars["String"]>;
@@ -1359,6 +1364,7 @@ export type GetPatientDetailsQuery = {
     role?: Maybe<string>;
     lookupId?: Maybe<string>;
     email?: Maybe<string>;
+    emails?: Maybe<Array<Maybe<string>>>;
     county?: Maybe<string>;
     country?: Maybe<string>;
     race?: Maybe<string>;
@@ -1398,7 +1404,7 @@ export type UpdatePatientMutationVariables = Exact<{
   phoneNumbers?: Maybe<Array<PhoneNumberInput> | PhoneNumberInput>;
   role?: Maybe<Scalars["String"]>;
   lookupId?: Maybe<Scalars["String"]>;
-  email?: Maybe<Scalars["String"]>;
+  emails?: Maybe<Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>>;
   county?: Maybe<Scalars["String"]>;
   country?: Maybe<Scalars["String"]>;
   race?: Maybe<Scalars["String"]>;
@@ -1627,6 +1633,7 @@ export type RemovePatientFromQueueMutation = {
 export type EditQueueItemMutationVariables = Exact<{
   id: Scalars["ID"];
   deviceId?: Maybe<Scalars["String"]>;
+  deviceSpecimenType?: Maybe<Scalars["ID"]>;
   result?: Maybe<Scalars["String"]>;
   dateTested?: Maybe<Scalars["DateTime"]>;
 }>;
@@ -1642,12 +1649,23 @@ export type EditQueueItemMutation = {
       internalId: string;
       testLength?: Maybe<number>;
     }>;
+    deviceSpecimenType?: Maybe<{
+      __typename?: "DeviceSpecimenType";
+      internalId: string;
+      deviceType: {
+        __typename?: "DeviceType";
+        internalId: string;
+        testLength?: Maybe<number>;
+      };
+      specimenType: { __typename?: "SpecimenType"; internalId: string };
+    }>;
   }>;
 };
 
 export type SubmitTestResultMutationVariables = Exact<{
   patientId: Scalars["ID"];
   deviceId: Scalars["String"];
+  deviceSpecimenType?: Maybe<Scalars["ID"]>;
   result: Scalars["String"];
   dateTested?: Maybe<Scalars["DateTime"]>;
 }>;
@@ -1685,6 +1703,10 @@ export type GetFacilityQueueQuery = {
           name: string;
           model: string;
           testLength?: Maybe<number>;
+        }>;
+        deviceSpecimenType?: Maybe<{
+          __typename?: "DeviceSpecimenType";
+          internalId: string;
         }>;
         patient?: Maybe<{
           __typename?: "Patient";
@@ -1736,6 +1758,24 @@ export type GetFacilityQueueQuery = {
       }>;
     }>;
   }>;
+  deviceSpecimenTypes?: Maybe<
+    Array<
+      Maybe<{
+        __typename?: "DeviceSpecimenType";
+        internalId: string;
+        deviceType: {
+          __typename?: "DeviceType";
+          internalId: string;
+          name: string;
+        };
+        specimenType: {
+          __typename?: "SpecimenType";
+          internalId: string;
+          name: string;
+        };
+      }>
+    >
+  >;
 };
 
 export type GetPatientQueryVariables = Exact<{
@@ -1785,6 +1825,7 @@ export type GetPatientsByFacilityForQueueQuery = {
         gender?: Maybe<string>;
         telephone?: Maybe<string>;
         email?: Maybe<string>;
+        emails?: Maybe<Array<Maybe<string>>>;
         testResultDelivery?: Maybe<TestResultDeliveryPreference>;
         phoneNumbers?: Maybe<
           Array<
@@ -1980,7 +2021,7 @@ export type SendSmsMutationVariables = Exact<{
 
 export type SendSmsMutation = {
   __typename?: "Mutation";
-  sendPatientLinkSms?: Maybe<string>;
+  sendPatientLinkSms?: Maybe<boolean>;
 };
 
 export type GetResultsCountByFacilityQueryVariables = Exact<{
@@ -2069,6 +2110,7 @@ export type GetTestResultForResendingEmailsQuery = {
       middleName?: Maybe<string>;
       lastName?: Maybe<string>;
       email?: Maybe<string>;
+      emails?: Maybe<Array<Maybe<string>>>;
     }>;
     patientLink?: Maybe<{
       __typename?: "PatientLink";
@@ -3421,7 +3463,7 @@ export const AddPatientDocument = gql`
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
     $lookupId: String
-    $email: String
+    $emails: [String]
     $county: String
     $race: String
     $ethnicity: String
@@ -3447,7 +3489,7 @@ export const AddPatientDocument = gql`
       phoneNumbers: $phoneNumbers
       role: $role
       lookupId: $lookupId
-      email: $email
+      emails: $emails
       county: $county
       race: $race
       ethnicity: $ethnicity
@@ -3497,7 +3539,7 @@ export type AddPatientMutationFn = Apollo.MutationFunction<
  *      phoneNumbers: // value for 'phoneNumbers'
  *      role: // value for 'role'
  *      lookupId: // value for 'lookupId'
- *      email: // value for 'email'
+ *      emails: // value for 'emails'
  *      county: // value for 'county'
  *      race: // value for 'race'
  *      ethnicity: // value for 'ethnicity'
@@ -3600,6 +3642,7 @@ export const GetPatientDetailsDocument = gql`
       role
       lookupId
       email
+      emails
       county
       country
       race
@@ -3684,7 +3727,7 @@ export const UpdatePatientDocument = gql`
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
     $lookupId: String
-    $email: String
+    $emails: [String]
     $county: String
     $country: String
     $race: String
@@ -3712,7 +3755,7 @@ export const UpdatePatientDocument = gql`
       phoneNumbers: $phoneNumbers
       role: $role
       lookupId: $lookupId
-      email: $email
+      emails: $emails
       county: $county
       country: $country
       race: $race
@@ -3761,7 +3804,7 @@ export type UpdatePatientMutationFn = Apollo.MutationFunction<
  *      phoneNumbers: // value for 'phoneNumbers'
  *      role: // value for 'role'
  *      lookupId: // value for 'lookupId'
- *      email: // value for 'email'
+ *      emails: // value for 'emails'
  *      county: // value for 'county'
  *      country: // value for 'country'
  *      race: // value for 'race'
@@ -4676,12 +4719,14 @@ export const EditQueueItemDocument = gql`
   mutation EditQueueItem(
     $id: ID!
     $deviceId: String
+    $deviceSpecimenType: ID
     $result: String
     $dateTested: DateTime
   ) {
     editQueueItem(
       id: $id
       deviceId: $deviceId
+      deviceSpecimenType: $deviceSpecimenType
       result: $result
       dateTested: $dateTested
     ) {
@@ -4690,6 +4735,16 @@ export const EditQueueItemDocument = gql`
       deviceType {
         internalId
         testLength
+      }
+      deviceSpecimenType {
+        internalId
+        deviceType {
+          internalId
+          testLength
+        }
+        specimenType {
+          internalId
+        }
       }
     }
   }
@@ -4714,6 +4769,7 @@ export type EditQueueItemMutationFn = Apollo.MutationFunction<
  *   variables: {
  *      id: // value for 'id'
  *      deviceId: // value for 'deviceId'
+ *      deviceSpecimenType: // value for 'deviceSpecimenType'
  *      result: // value for 'result'
  *      dateTested: // value for 'dateTested'
  *   },
@@ -4743,12 +4799,14 @@ export const SubmitTestResultDocument = gql`
   mutation SubmitTestResult(
     $patientId: ID!
     $deviceId: String!
+    $deviceSpecimenType: ID
     $result: String!
     $dateTested: DateTime
   ) {
     addTestResultNew(
       patientId: $patientId
       deviceId: $deviceId
+      deviceSpecimenType: $deviceSpecimenType
       result: $result
       dateTested: $dateTested
     ) {
@@ -4779,6 +4837,7 @@ export type SubmitTestResultMutationFn = Apollo.MutationFunction<
  *   variables: {
  *      patientId: // value for 'patientId'
  *      deviceId: // value for 'deviceId'
+ *      deviceSpecimenType: // value for 'deviceSpecimenType'
  *      result: // value for 'result'
  *      dateTested: // value for 'dateTested'
  *   },
@@ -4819,6 +4878,9 @@ export const GetFacilityQueueDocument = gql`
         model
         testLength
       }
+      deviceSpecimenType {
+        internalId
+      }
       patient {
         internalId
         telephone
@@ -4853,6 +4915,17 @@ export const GetFacilityQueueDocument = gql`
           model
           testLength
         }
+      }
+    }
+    deviceSpecimenTypes {
+      internalId
+      deviceType {
+        internalId
+        name
+      }
+      specimenType {
+        internalId
+        name
       }
     }
   }
@@ -4995,6 +5068,7 @@ export const GetPatientsByFacilityForQueueDocument = gql`
       gender
       telephone
       email
+      emails
       phoneNumbers {
         type
         number
@@ -5786,6 +5860,7 @@ export const GetTestResultForResendingEmailsDocument = gql`
         middleName
         lastName
         email
+        emails
       }
       patientLink {
         internalId

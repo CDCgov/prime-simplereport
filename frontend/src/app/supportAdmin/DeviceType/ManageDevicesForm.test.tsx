@@ -48,18 +48,18 @@ describe("ManageDeviceTypeForm", () => {
   });
 
   it("Disables the save button", () => {
-    expect(screen.getByText("Save changes")).not.toBeEnabled();
+    expect(screen.getByText("Save changes")).toBeDisabled();
   });
 
   it("disables all input fields when no device is selected", function () {
     expect(
       screen.getByLabelText("Manufacturer", { exact: false })
-    ).not.toBeEnabled();
-    expect(screen.getByLabelText("Model", { exact: false })).not.toBeEnabled();
+    ).toBeDisabled();
+    expect(screen.getByLabelText("Model", { exact: false })).toBeDisabled();
     expect(
       screen.getByLabelText("LOINC code", { exact: false })
-    ).not.toBeEnabled();
-    expect(screen.getByTestId("multi-select-toggle")).not.toBeEnabled();
+    ).toBeDisabled();
+    expect(screen.getByTestId("multi-select-toggle")).toBeDisabled();
   });
 
   it("shows a list of devices to select from", () => {

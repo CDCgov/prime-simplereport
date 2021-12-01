@@ -8,11 +8,7 @@ import { getPatientLinkIdFromUrl } from "../../app/utils/url";
 import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";
 import { PxpApi } from "../PxpApiService";
 
-interface Props {
-  page: string;
-}
-
-const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
+const AoEPatientFormContainer: React.FC = () => {
   const [nextPage, setNextPage] = useState(false);
   const patient = useSelector((state) => (state as any).patient as any);
   const plid =

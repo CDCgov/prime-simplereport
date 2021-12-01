@@ -50,16 +50,22 @@ public class SmsService {
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public List<SmsAPICallResult> sendToPatientLink(UUID patientLinkId, String text) {
     PatientLink pl = pls.getRefreshedPatientLink(patientLinkId);
+    return sendToPatientLink(pl, text);
+  }
 
-    List<SmsAPICallResult> smsSendResults = sendToPerson(pl.getTestOrder().getPatient(), text);
+  @AuthorizationConfiguration.RequirePermissionStartTestWithPatientLink
+  @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
+  public List<SmsAPICallResult> sendToPatientLink(PatientLink patientLink, String text) {
+    List<SmsAPICallResult> smsSendResults =
+        sendToPerson(patientLink.getTestOrder().getPatient(), text);
 
     smsSendResults.forEach(
         smsDeliveryResult -> {
-          if (!smsDeliveryResult.getDeliverySuccess()) {
+          if (!smsDeliveryResult.isSuccessful()) {
             return;
           }
 
-          tmsRepo.save(new TextMessageSent(pl, smsDeliveryResult.getMessageId()));
+          tmsRepo.save(new TextMessageSent(patientLink, smsDeliveryResult.getMessageId()));
         });
 
     return smsSendResults;

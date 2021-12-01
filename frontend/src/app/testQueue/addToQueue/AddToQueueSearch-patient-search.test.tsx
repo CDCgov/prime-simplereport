@@ -1,5 +1,10 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
 
@@ -95,15 +100,14 @@ describe("AddToSearchQueue", () => {
       });
       fireEvent.click(screen.getByRole("button"));
 
-      expect(screen.queryByText("Searching...")).toBeInTheDocument();
+      expect(screen.getByText("Searching...")).toBeInTheDocument();
+      await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
 
-      await waitFor(() => {
-        expect(screen.queryByText("Searching...")).not.toBeInTheDocument();
-        expect(
-          screen.queryByText("Cragell, Barb Whitaker")
-        ).toBeInTheDocument();
-        expect(screen.queryByText("Begin test")).toBeInTheDocument();
-      });
+      expect(screen.queryByText("Searching...")).not.toBeInTheDocument();
+      expect(
+        await screen.findByText("Cragell, Barb Whitaker")
+      ).toBeInTheDocument();
+      expect(screen.getByText("Begin test")).toBeInTheDocument();
     });
 
     it("does not allow adding new test if patient already in queue", async () => {
@@ -112,13 +116,14 @@ describe("AddToSearchQueue", () => {
       });
       fireEvent.click(screen.getByRole("button"));
 
-      expect(screen.queryByText("Searching...")).toBeInTheDocument();
+      expect(screen.getByText("Searching...")).toBeInTheDocument();
+      await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
 
-      await waitFor(() => {
-        expect(screen.queryByText("Searching...")).not.toBeInTheDocument();
-        expect(screen.queryByText("Wilhelm, John Jenkins")).toBeInTheDocument();
-        expect(screen.queryByText("Test in progress")).toBeInTheDocument();
-      });
+      expect(screen.queryByText("Searching...")).not.toBeInTheDocument();
+      expect(
+        await screen.findByText("Wilhelm, John Jenkins")
+      ).toBeInTheDocument();
+      expect(screen.getByText("Test in progress")).toBeInTheDocument();
     });
   });
 });

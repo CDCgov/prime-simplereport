@@ -1,6 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { act } from "react-dom/test-utils";
 import { MemoryRouter, Route, Switch } from "react-router";
 
 import { MfaComplete } from "../MfaComplete/MfaComplete";
@@ -50,9 +53,10 @@ describe("Verify Email MFA", () => {
       screen.getByLabelText("One-time security code", { exact: false }),
       "123456"
     );
-    await act(async () => {
-      await userEvent.click(screen.getByText("Submit"));
-    });
+    userEvent.click(screen.getByText("Submit"));
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Verifying security code …")
+    );
     expect(
       screen.queryByText("Enter your security code")
     ).not.toBeInTheDocument();
@@ -74,9 +78,10 @@ describe("Verify Email MFA", () => {
       screen.getByLabelText("One-time security code", { exact: false }),
       "999999"
     );
-    await act(async () => {
-      await userEvent.click(screen.getByText("Submit"));
-    });
+    userEvent.click(screen.getByText("Submit"));
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Verifying security code …")
+    );
     expect(screen.getByText("incorrect code")).toBeInTheDocument();
     expect(
       screen.queryByText(

@@ -149,7 +149,7 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
             .collect(Collectors.toList());
 
     assertEquals(1, failedDelivery.size());
-    assertEquals(false, failedDelivery.get(0).getDeliverySuccess());
+    assertEquals(false, failedDelivery.get(0).isSuccessful());
   }
 
   @Test
@@ -189,7 +189,7 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     var result = sut.get(0);
     assertEquals(_person.getPrimaryPhone().getNumber(), result.getTelephone());
     assertEquals("some-twilio-id-10", result.getMessageId());
-    assertEquals(true, result.getDeliverySuccess());
+    assertEquals(true, result.isSuccessful());
   }
 
   @Test

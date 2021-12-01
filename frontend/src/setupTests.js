@@ -4,6 +4,8 @@
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom/extend-expect";
 import fetchMock from "jest-fetch-mock";
+import ReactModal from "react-modal";
+import moment from "moment";
 
 fetchMock.enableMocks();
 
@@ -15,3 +17,12 @@ jest.mock("@microsoft/applicationinsights-react-js", () => {
     ReactPlugin: Object,
   };
 });
+
+ReactModal.setAppElement("*"); // suppresses modal-related test warnings.
+
+// Disable moment warnings
+moment.suppressDeprecationWarnings = true;
+
+// This prevents tests from timing out and causing this error in CI:
+// TypeError: Cannot read property 'createEvent' of null
+jest.setTimeout(30000);
