@@ -185,4 +185,30 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
     assertEquals(deviceSpecimenType, dst.getDefault());
     assertEquals(List.of(deviceSpecimenType), dst.getFullList());
   }
+
+  @Test
+  @SuppressWarnings("checkstyle:IllegalCatch")
+  void markFacilityAsDeleted_true() {
+    OrganizationMutationResolver resolver =
+        new OrganizationMutationResolver(_os, _oqs, _dts, _avs, _aus);
+
+    var org = _dataFactory.createValidOrg();
+    var facility = _dataFactory.createValidFacility(org);
+
+    resolver.markFacilityAsDeleted(facility.getInternalId(), true);
+    verify(_os).markFacilityAsDeleted(facility.getInternalId(), true);
+  }
+
+  @Test
+  @SuppressWarnings("checkstyle:IllegalCatch")
+  void markFacilityAsDeleted_false() {
+    OrganizationMutationResolver resolver =
+        new OrganizationMutationResolver(_os, _oqs, _dts, _avs, _aus);
+
+    var org = _dataFactory.createValidOrg();
+    var facility = _dataFactory.createValidFacility(org);
+
+    resolver.markFacilityAsDeleted(facility.getInternalId(), false);
+    verify(_os).markFacilityAsDeleted(facility.getInternalId(), false);
+  }
 }
