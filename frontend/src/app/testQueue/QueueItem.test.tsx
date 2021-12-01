@@ -2,8 +2,9 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import configureStore, { MockStoreEnhanced } from "redux-mock-store";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import moment from "moment";
+import userEvent from "@testing-library/user-event";
 
 import { getAppInsights } from "../TelemetryService";
 import * as utils from "../utils/index";
@@ -33,22 +34,20 @@ describe("QueueItem", () => {
       },
     });
 
-    jest.useFakeTimers();
-    Date.now = jest.fn(() => fakeDate);
-
     (getAppInsights as jest.Mock).mockImplementation(() => ({
       trackEvent: trackEventMock,
     }));
+    jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
   afterEach(() => {
-    jest.useRealTimers();
     Date.now = nowFn;
     (getAppInsights as jest.Mock).mockReset();
+    jest.spyOn(console, "error").mockRestore();
   });
 
   it("correctly renders the test queue", () => {
-    const { container, getByTestId } = render(
+    render(
       <MockedProvider mocks={[]}>
         <Provider store={store}>
           <QueueItem
@@ -57,6 +56,10 @@ describe("QueueItem", () => {
             askOnEntry={testProps.askOnEntry}
             selectedDeviceId={testProps.selectedDeviceId}
             selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
             selectedTestResult={testProps.selectedTestResult}
             devices={testProps.devices}
             refetchQueue={testProps.refetchQueue}
@@ -68,12 +71,11 @@ describe("QueueItem", () => {
       </MockedProvider>
     );
     expect(screen.getByText("Potter, Harry James")).toBeInTheDocument();
-    expect(getByTestId("timer")).toHaveTextContent("10:00");
-    expect(container).toMatchSnapshot();
+    expect(screen.getByTestId("timer")).toHaveTextContent("10:00");
   });
 
   it("updates the timer when a device is changed", async () => {
-    const { getByTestId, getByLabelText } = render(
+    render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <Provider store={store}>
           <QueueItem
@@ -82,6 +84,10 @@ describe("QueueItem", () => {
             askOnEntry={testProps.askOnEntry}
             selectedDeviceId={testProps.selectedDeviceId}
             selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
             selectedTestResult={testProps.selectedTestResult}
             devices={testProps.devices}
             refetchQueue={testProps.refetchQueue}
@@ -93,17 +99,173 @@ describe("QueueItem", () => {
       </MockedProvider>
     );
 
-    await waitFor(() => {
-      fireEvent.change(getByLabelText("Device", { exact: false }), {
-        target: { value: "lumira" },
-      });
-      jest.advanceTimersByTime(1000);
-    });
+    userEvent.type(screen.getByLabelText("Device", { exact: false }), "lumira");
 
-    await waitFor(() => {
-      expect(getByTestId("timer")).toHaveTextContent("15:00");
-      jest.advanceTimersToNextTimer(1000);
-    });
+    expect(await screen.findByTestId("timer")).toHaveTextContent("10:00");
+  });
+
+  it("renders dropdown of device types", async () => {
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <Provider store={store}>
+          <QueueItem
+            internalId={testProps.internalId}
+            patient={testProps.patient}
+            askOnEntry={testProps.askOnEntry}
+            selectedDeviceId={testProps.selectedDeviceId}
+            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+            selectedTestResult={testProps.selectedTestResult}
+            devices={testProps.devices}
+            refetchQueue={testProps.refetchQueue}
+            facilityId={testProps.facilityId}
+            dateTestedProp={testProps.dateTestedProp}
+            patientLinkId={testProps.patientLinkId}
+          ></QueueItem>
+        </Provider>
+      </MockedProvider>
+    );
+
+    const deviceDropdown = await screen.findByLabelText("Device");
+
+    userEvent.selectOptions(deviceDropdown, "Access Bio CareStart");
+
+    expect(
+      ((await screen.findByText("Access Bio CareStart")) as HTMLOptionElement)
+        .selected
+    ).toBeTruthy();
+    expect(
+      ((await screen.findByText("LumiraDX")) as HTMLOptionElement).selected
+    ).toBeFalsy();
+  });
+
+  it("renders dropdown of swab types configured with selected device", async () => {
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <Provider store={store}>
+          <QueueItem
+            internalId={testProps.internalId}
+            patient={testProps.patient}
+            askOnEntry={testProps.askOnEntry}
+            selectedDeviceId={testProps.selectedDeviceId}
+            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+            selectedTestResult={testProps.selectedTestResult}
+            devices={testProps.devices}
+            refetchQueue={testProps.refetchQueue}
+            facilityId={testProps.facilityId}
+            dateTestedProp={testProps.dateTestedProp}
+            patientLinkId={testProps.patientLinkId}
+          ></QueueItem>
+        </Provider>
+      </MockedProvider>
+    );
+    const swabDropdown = await screen.findByLabelText("Swab type");
+
+    // First device is selected
+    expect(
+      ((await screen.findByText("Access Bio CareStart")) as HTMLOptionElement)
+        .selected
+    ).toBeTruthy();
+
+    userEvent.selectOptions(swabDropdown, "specimen-1");
+
+    expect(
+      ((await screen.findByText("Specimen 1")) as HTMLOptionElement).selected
+    ).toBeTruthy();
+
+    // Configured on the other device - should not appear in dropdown
+    expect(
+      screen.queryByText("Specimen 2") as HTMLOptionElement
+    ).not.toBeInTheDocument();
+  });
+
+  it("updates test order on device specimen type change", async () => {
+    let editQueueMockIsDone = false;
+
+    const editQueueMocks = [
+      {
+        request: {
+          query: EDIT_QUEUE_ITEM,
+          variables: {
+            id: internalId,
+            deviceSpecimenType: "device-specimen-2",
+            deviceId: "lumira",
+            result: {},
+          },
+        },
+        result: () => {
+          editQueueMockIsDone = true;
+
+          return {
+            data: {
+              editQueueItem: {
+                result: "UNDETERMINED",
+                dateTested: null,
+                deviceType: {
+                  internalId: internalId,
+                  testLength: 10,
+                },
+                deviceSpecimenType: {
+                  internalId: "device-specimen-2",
+                  deviceType: deviceTwo,
+                  specimenType: {},
+                },
+              },
+            },
+          };
+        },
+      },
+    ];
+
+    render(
+      <>
+        <MockedProvider mocks={editQueueMocks} addTypename={false}>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResult={testProps.selectedTestResult}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              patientLinkId={testProps.patientLinkId}
+            ></QueueItem>
+          </Provider>
+        </MockedProvider>
+        <ToastContainer
+          autoClose={5000}
+          closeButton={false}
+          limit={2}
+          position="bottom-center"
+          hideProgressBar={true}
+        />
+      </>
+    );
+
+    const deviceDropdown = await screen.findByLabelText("Device");
+
+    // Change device type
+    userEvent.selectOptions(deviceDropdown, "LumiraDX");
+
+    // Wait for the genuinely long-running "edit queue" operation to finish
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    expect(editQueueMockIsDone).toBe(true);
   });
 
   describe("SMS delivery failure", () => {
@@ -117,9 +279,67 @@ describe("QueueItem", () => {
     });
 
     it("displays delivery failure alert on submit for invalid patient phone number", async () => {
+      let submitTestMockIsDone = false;
+
+      const submitTestResultMocks = [
+        {
+          request: {
+            query: EDIT_QUEUE_ITEM,
+            variables: {
+              id: internalId,
+              deviceSpecimenType: "device-specimen-1",
+              deviceId: internalId,
+              result: "UNDETERMINED",
+            },
+          },
+          result: {
+            data: {
+              editQueueItem: {
+                result: "UNDETERMINED",
+                dateTested: null,
+                deviceType: {
+                  internalId: internalId,
+                  testLength: 10,
+                },
+                deviceSpecimenType: {
+                  internalId: "device-specimen-1",
+                  deviceType: deviceOne,
+                  specimenType: {},
+                },
+              },
+            },
+          },
+        },
+        {
+          request: {
+            query: SUBMIT_TEST_RESULT,
+            variables: {
+              patientId: internalId,
+              deviceId: internalId,
+              deviceSpecimenTypeId: "device-specimen-1",
+              result: "UNDETERMINED",
+              dateTested: null,
+            },
+          },
+          result: () => {
+            submitTestMockIsDone = true;
+            return {
+              data: {
+                addTestResultNew: {
+                  testResult: {
+                    internalId: internalId,
+                  },
+                  deliverySuccess: false,
+                },
+              },
+            };
+          },
+        },
+      ];
+
       render(
         <>
-          <MockedProvider mocks={mocks} addTypename={false}>
+          <MockedProvider mocks={submitTestResultMocks} addTypename={false}>
             <Provider store={store}>
               <QueueItem
                 internalId={testProps.internalId}
@@ -127,6 +347,10 @@ describe("QueueItem", () => {
                 askOnEntry={testProps.askOnEntry}
                 selectedDeviceId={testProps.selectedDeviceId}
                 selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+                selectedDeviceSpecimenTypeId={
+                  testProps.selectedDeviceSpecimenTypeId
+                }
+                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
                 selectedTestResult={testProps.selectedTestResult}
                 devices={testProps.devices}
                 refetchQueue={testProps.refetchQueue}
@@ -147,40 +371,34 @@ describe("QueueItem", () => {
       );
 
       // Select result
-      await waitFor(() => {
-        fireEvent.click(
-          screen.getByLabelText("Inconclusive", {
-            exact: false,
-          }),
-          {
-            target: { value: "UNDETERMINED" },
-          }
-        );
-      });
+      userEvent.click(
+        screen.getByLabelText("Inconclusive", {
+          exact: false,
+        })
+      );
 
-      await waitFor(() => {
-        jest.advanceTimersByTime(1000);
-      });
+      // Wait for the genuinely long-running "edit queue" operation to finish
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Submit
-      await waitFor(() => {
-        fireEvent.click(screen.getByText("Submit"));
-      });
+      userEvent.click(screen.getByText("Submit"));
 
-      await waitFor(() => {
-        fireEvent.click(
-          screen.getByText("Submit anyway", {
-            exact: false,
-          })
-        );
-      });
+      userEvent.click(
+        screen.getByText("Submit anyway", {
+          exact: false,
+        })
+      );
 
       // Displays submitting indicator
       expect(
         await screen.findByText(
           "Submitting test data for Potter, Harry James..."
         )
-      );
+      ).toBeInTheDocument();
+
+      // Wait for MockedProvider to populate the mocked result
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(submitTestMockIsDone).toBe(true);
 
       // Verify alert is displayed
       expect(
@@ -193,12 +411,14 @@ describe("QueueItem", () => {
       ).toBeInTheDocument();
 
       // Submitting indicator and card are gone
-      await waitFor(() => {
-        expect(screen.queryByText("Potter, Harry James"));
-        expect(
-          screen.queryByText("Submitting test data for Potter, Harry James...")
-        );
-      });
+      expect(
+        await screen.findByText("Potter, Harry James")
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText(
+          "Submitting test data for Potter, Harry James..."
+        )
+      ).toBeInTheDocument();
     });
   });
 
@@ -212,6 +432,10 @@ describe("QueueItem", () => {
             askOnEntry={testProps.askOnEntry}
             selectedDeviceId={testProps.selectedDeviceId}
             selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
             selectedTestResult={testProps.selectedTestResult}
             devices={testProps.devices}
             refetchQueue={testProps.refetchQueue}
@@ -223,23 +447,13 @@ describe("QueueItem", () => {
       </MockedProvider>
     );
     const toggle = await screen.findByLabelText("Use current date");
-    await waitFor(() => {
-      fireEvent.click(toggle);
-    });
+    userEvent.click(toggle);
     const dateInput = screen.getByLabelText("Test date");
     expect(dateInput).toBeInTheDocument();
     const timeInput = screen.getByLabelText("Test time");
     expect(timeInput).toBeInTheDocument();
-    await waitFor(() => {
-      fireEvent.input(dateInput, {
-        target: { value: `${updatedDateString}T00:00` },
-      });
-    });
-    await waitFor(() => {
-      fireEvent.input(timeInput, {
-        target: { value: updatedTimeString },
-      });
-    });
+    userEvent.type(dateInput, `${updatedDateString}T00:00`);
+    userEvent.type(timeInput, updatedTimeString);
   });
 
   it("displays person's mobile phone numbers", async () => {
@@ -252,6 +466,10 @@ describe("QueueItem", () => {
             askOnEntry={testProps.askOnEntry}
             selectedDeviceId={testProps.selectedDeviceId}
             selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
             selectedTestResult={testProps.selectedTestResult}
             devices={testProps.devices}
             refetchQueue={testProps.refetchQueue}
@@ -264,10 +482,10 @@ describe("QueueItem", () => {
     );
 
     const questionnaire = await screen.findByText("Test questionnaire");
-    fireEvent.click(questionnaire);
+    userEvent.click(questionnaire);
     await screen.findByText("Required fields are marked", { exact: false });
     expect(
-      screen.queryByText(testProps.patient.phoneNumbers[0].number, {
+      screen.getByText(testProps.patient.phoneNumbers[0].number, {
         exact: false,
       })
     ).toBeInTheDocument();
@@ -287,6 +505,10 @@ describe("QueueItem", () => {
               askOnEntry={testProps.askOnEntry}
               selectedDeviceId={testProps.selectedDeviceId}
               selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
               selectedTestResult={testProps.selectedTestResult}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
@@ -301,9 +523,9 @@ describe("QueueItem", () => {
 
     it("tracks removal of patient from queue as custom event", () => {
       const button = screen.getByLabelText("Close");
-      fireEvent.click(button);
+      userEvent.click(button);
       const iAmSure = screen.getByText("Yes, I'm sure");
-      fireEvent.click(iAmSure);
+      userEvent.click(iAmSure);
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Remove Patient From Queue",
       });
@@ -311,17 +533,13 @@ describe("QueueItem", () => {
 
     it("tracks submitted test result as custom event", async () => {
       // Submit
-      await waitFor(() => {
-        fireEvent.click(screen.getByText("Submit"));
-      });
+      userEvent.click(screen.getByText("Submit"));
 
-      await waitFor(() => {
-        fireEvent.click(
-          screen.getByText("Submit anyway", {
-            exact: false,
-          })
-        );
-      });
+      userEvent.click(
+        screen.getByText("Submit anyway", {
+          exact: false,
+        })
+      );
 
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Submit Test Result",
@@ -331,17 +549,15 @@ describe("QueueItem", () => {
     it("tracks AoE form updates as custom event", async () => {
       // Update AoE questionnaire
       const questionnaire = await screen.findByText("Test questionnaire");
-      fireEvent.click(questionnaire);
+      userEvent.click(questionnaire);
       const symptomInput = await screen.findByText("No symptoms", {
         exact: false,
       });
-      await waitFor(() => {
-        fireEvent.click(symptomInput);
-      });
+      userEvent.click(symptomInput);
 
       // Save changes
       const continueButton = await screen.findByText("Continue");
-      fireEvent.click(continueButton);
+      userEvent.click(continueButton);
 
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Update AoE Response",
@@ -351,6 +567,17 @@ describe("QueueItem", () => {
 });
 
 const internalId = "f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554";
+const deviceOne = {
+  name: "Access Bio CareStart",
+  internalId: internalId,
+  testLength: 10,
+};
+
+const deviceTwo = {
+  name: "LumiraDX",
+  internalId: "lumira",
+  testLength: 15,
+};
 
 const testProps = {
   internalId: internalId,
@@ -372,28 +599,37 @@ const testProps = {
       },
     ],
   },
-  devices: [
-    {
-      name: "Access Bio CareStart",
-      internalId: internalId,
-      testLength: 10,
-    },
-    {
-      name: "LumiraDX",
-      internalId: "lumira",
-      testLength: 15,
-    },
-  ],
+  devices: [deviceOne, deviceTwo],
   askOnEntry: {
     symptoms: "{}",
   },
+  testResultPreference: "SMS",
   selectedDeviceId: internalId,
   selectedDeviceTestLength: 10,
+  selectedDeviceSpecimenTypeId: "device-specimen-1",
   selectedTestResult: {},
   dateTestedProp: "",
   refetchQueue: {},
   facilityId: "Hogwarts",
   patientLinkId: "",
+  deviceSpecimenTypes: [
+    {
+      internalId: "device-specimen-1",
+      deviceType: deviceOne,
+      specimenType: {
+        internalId: "specimen-1",
+        name: "Specimen 1",
+      },
+    },
+    {
+      internalId: "device-specimen-2",
+      deviceType: deviceTwo,
+      specimenType: {
+        internalId: "specimen-2",
+        name: "Specimen 2",
+      },
+    },
+  ] as DeviceSpecimenType[],
 };
 
 const nowUTC = moment(new Date(fakeDate))
@@ -416,6 +652,7 @@ const mocks = [
       variables: {
         id: internalId,
         deviceId: "lumira",
+        deviceSpecimenType: "device-specimen-2",
         result: {},
       },
     },
@@ -424,9 +661,11 @@ const mocks = [
         editQueueItem: {
           result: {},
           dateTested: null,
-          deviceType: {
-            internalId: internalId,
-            testLength: 15,
+          deviceType: deviceTwo,
+          deviceSpecimenType: {
+            internalId: "device-specimen-2",
+            deviceType: deviceTwo,
+            specimenType: {},
           },
         },
       },
@@ -438,6 +677,7 @@ const mocks = [
       variables: {
         id: internalId,
         deviceId: internalId,
+        deviceSpecimenType: "device-specimen-1",
         dateTested: nowUTC,
         result: {},
       },
@@ -447,9 +687,11 @@ const mocks = [
         editQueueItem: {
           result: {},
           dateTested: null,
-          deviceType: {
-            internalId: internalId,
-            testLength: 15,
+          deviceType: deviceOne,
+          deviceSpecimenType: {
+            internalId: "device-specimen-1",
+            deviceType: deviceOne,
+            specimenType: {},
           },
         },
       },
@@ -461,6 +703,7 @@ const mocks = [
       variables: {
         id: internalId,
         deviceId: internalId,
+        deviceSpecimenType: "device-specimen-1",
         dateTested: updatedDateUTC,
         result: {},
       },
@@ -472,7 +715,12 @@ const mocks = [
           dateTested: null,
           deviceType: {
             internalId: internalId,
-            testLength: 15,
+            testLength: 10,
+          },
+          deviceSpecimenType: {
+            internalId: "device-specimen-1",
+            deviceType: deviceOne,
+            specimenType: {},
           },
         },
       },
@@ -484,6 +732,7 @@ const mocks = [
       variables: {
         id: internalId,
         deviceId: internalId,
+        deviceSpecimenType: "device-specimen-1",
         dateTested: updatedDateTimeUTC,
         result: {},
       },
@@ -495,51 +744,13 @@ const mocks = [
           dateTested: null,
           deviceType: {
             internalId: internalId,
-            testLength: 15,
+            testLength: 10,
           },
-        },
-      },
-    },
-  },
-  {
-    request: {
-      query: EDIT_QUEUE_ITEM,
-      variables: {
-        id: internalId,
-        deviceId: internalId,
-        result: "UNDETERMINED",
-      },
-    },
-    result: {
-      data: {
-        editQueueItem: {
-          result: "UNDETERMINED",
-          dateTested: null,
-          deviceType: {
-            internalId: internalId,
-            testLength: 15,
+          deviceSpecimenType: {
+            internalId: "device-specimen-1",
+            deviceType: deviceOne,
+            specimenType: {},
           },
-        },
-      },
-    },
-  },
-  {
-    request: {
-      query: SUBMIT_TEST_RESULT,
-      variables: {
-        patientId: internalId,
-        deviceId: internalId,
-        dateTested: null,
-        result: "UNDETERMINED",
-      },
-    },
-    result: {
-      data: {
-        addTestResultNew: {
-          testResult: {
-            internalId: internalId,
-          },
-          deliverySuccess: false,
         },
       },
     },

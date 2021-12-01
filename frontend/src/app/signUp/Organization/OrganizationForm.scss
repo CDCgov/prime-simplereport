@@ -6,4 +6,25 @@
   .usa-input--error {
     height: auto;
   }
+
+  .gray-background {
+    background-color: #f0f0f0;
+  }
+
+  .circled-number {
+    border: 3px solid #000;
+    height: 40px;
+    border-radius: 99rem;
+    width: 40px;
+    background-color: #fff0;
+    padding: calc((40px - (2ex * 1.2)) * 0.5);
+    font-family: Public Sans, sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 21px;
+    line-height: 90%;
+    display: inline-block;
+    text-align: center;
+    color: #1b1b1b;
+  }
 }

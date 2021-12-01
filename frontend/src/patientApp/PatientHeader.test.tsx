@@ -1,4 +1,4 @@
-import { act, render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
@@ -12,20 +12,8 @@ describe("PatientHeader", () => {
     facilities: [{ id: "fake-id", name: "123" }],
   });
 
-  it("matches snapshot", () => {
-    const { container } = render(
-      <MemoryRouter>
-        <Provider store={store}>
-          <PatientHeader />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    expect(container).toMatchSnapshot();
-  });
-
   it("contains language toggler", () => {
-    const { getByText, getByRole } = render(
+    render(
       <MemoryRouter>
         <Provider store={store}>
           <PatientHeader />
@@ -33,12 +21,12 @@ describe("PatientHeader", () => {
       </MemoryRouter>
     );
 
-    expect(getByText("Español")).toBeInTheDocument();
-    expect(getByRole("button")).toBeInTheDocument();
+    expect(screen.getByText("Español")).toBeInTheDocument();
+    expect(screen.getByRole("button")).toBeInTheDocument();
   });
 
   it("language toggler switches display language when clicked", async () => {
-    const { queryByText, getByText, getByRole } = render(
+    render(
       <MemoryRouter>
         <Provider store={store}>
           <PatientHeader />
@@ -46,13 +34,11 @@ describe("PatientHeader", () => {
       </MemoryRouter>
     );
 
-    expect(getByText("Español")).toBeInTheDocument();
+    expect(screen.getByText("Español")).toBeInTheDocument();
 
-    await act(async () => {
-      await userEvent.click(getByRole("button"));
-    });
+    userEvent.click(screen.getByRole("button"));
 
-    expect(queryByText("Español")).not.toBeInTheDocument();
-    expect(getByText("English")).toBeInTheDocument();
+    expect(screen.queryByText("Español")).not.toBeInTheDocument();
+    expect(screen.getByText("English")).toBeInTheDocument();
   });
 });

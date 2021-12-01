@@ -146,4 +146,8 @@ public class TestEvent extends BaseTestInfo {
   public UUID getPriorCorrectedTestEventId() {
     return priorCorrectedTestEventId;
   }
+
+  public DeviceSpecimenType getDeviceSpecimenType() {
+    return order.getDeviceSpecimen();
+  }
 }

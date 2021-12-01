@@ -53,6 +53,9 @@ export const queueQuery = gql`
         model
         testLength
       }
+      deviceSpecimenType {
+        internalId
+      }
       patient {
         internalId
         telephone
@@ -89,6 +92,17 @@ export const queueQuery = gql`
         }
       }
     }
+    deviceSpecimenTypes {
+      internalId
+      deviceType {
+        internalId
+        name
+      }
+      specimenType {
+        internalId
+        name
+      }
+    }
   }
 `;
 
@@ -103,6 +117,7 @@ interface QueueItemData extends AoEAnswers {
     internalId: string;
     testLength: number;
   };
+  deviceSpecimenType: DeviceSpecimenType;
   patient: TestQueuePerson;
   result: TestResult;
   dateTested: string;
@@ -150,11 +165,13 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   if (!facility) {
     return <p>Facility not found</p>;
   }
+
   if (facility.deviceTypes.length === 0) {
     showError(
       "This facility does not have any testing devices. Go into Settings -> Manage facilities and add a device."
     );
   }
+
   let shouldRenderQueue =
     data.queue.length > 0 && facility.deviceTypes.length > 0;
 
@@ -165,6 +182,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
         ({
           internalId,
           deviceType,
+          deviceSpecimenType,
           patient,
           result,
           dateTested,
@@ -180,6 +198,10 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 internalId={internalId}
                 patient={patient}
                 askOnEntry={questions}
+                selectedDeviceSpecimenTypeId={
+                  deviceSpecimenType?.internalId ||
+                  facility.defaultDeviceType.internalId
+                }
                 selectedDeviceId={
                   deviceType?.internalId ||
                   facility.defaultDeviceType.internalId
@@ -190,6 +212,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 }
                 selectedTestResult={result}
                 devices={facility.deviceTypes}
+                deviceSpecimenTypes={data.deviceSpecimenTypes}
                 refetchQueue={refetch}
                 facilityName={selectedFacility?.name}
                 facilityId={activeFacilityId}

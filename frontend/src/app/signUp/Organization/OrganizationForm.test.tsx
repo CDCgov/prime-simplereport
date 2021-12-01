@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import OrganizationForm, {
@@ -8,7 +8,7 @@ import OrganizationForm, {
 const getOrgNameInput = () =>
   screen.getByRole("textbox", {
     name:
-      "What's the name of your organization? Organizations have multiple testing facilities or locations as part of their network. required",
+      "Organization name Organizations have multiple testing facilities or locations as part of their network. required",
   });
 const getOrgStateDropdown = () => screen.getByLabelText("Organization state *");
 const getOrgTypeDropdown = () => screen.getByLabelText("Organization type *");
@@ -17,12 +17,10 @@ const getMiddleNameInput = () => screen.getByLabelText("Middle name");
 const getLastNameInput = () => screen.getByLabelText("Last name *");
 const getEmailInput = () => screen.getByLabelText("Work email *");
 const getPhoneInput = () => screen.getByLabelText("Work phone number *");
-const getSubmitButton = () => screen.getByText("Submit");
+const getSubmitButton = () => screen.getByText("Continue");
 
 const fillInDropDown = (input: any, text: string) =>
-  act(() => {
-    userEvent.selectOptions(input, [text]);
-  });
+  userEvent.selectOptions(input, [text]);
 
 jest.mock("../SignUpApi", () => ({
   SignUpApi: {
@@ -81,12 +79,10 @@ describe("OrganizationForm", () => {
 
   it("displays form errors when submitting invalid input", async () => {
     fillInDropDown(getOrgStateDropdown(), "IN");
-    await act(async () => {
-      await getSubmitButton().click();
-    });
+    getSubmitButton().click();
 
     expect(
-      screen.getByText("Organization name is required")
+      await screen.findByText("Organization name is required")
     ).toBeInTheDocument();
 
     expect(
@@ -109,12 +105,10 @@ describe("OrganizationForm", () => {
     userEvent.type(getLastNameInput(), "Ever");
     userEvent.type(getEmailInput(), "ever@greatest.com");
     userEvent.type(getPhoneInput(), "8008675309");
-    await act(async () => {
-      await getSubmitButton().click();
-    });
+    getSubmitButton().click();
 
     expect(
-      screen.getByText("Redirected to /sign-up/identity-verification")
+      await screen.findByText("Redirected to /sign-up/identity-verification")
     ).toBeInTheDocument();
   });
 
@@ -127,12 +121,10 @@ describe("OrganizationForm", () => {
     userEvent.type(getLastNameInput(), "Ever");
     userEvent.type(getEmailInput(), "ever@greatest.com");
     userEvent.type(getPhoneInput(), "8008675309");
-    await act(async () => {
-      await getSubmitButton().click();
-    });
+    getSubmitButton().click();
 
     expect(
-      screen.getByText(
+      await screen.findByText(
         "This organization already has a SimpleReport account. Please contact your organization administrator to request access.",
         { exact: false }
       )
@@ -148,12 +140,10 @@ describe("OrganizationForm", () => {
     userEvent.type(getLastNameInput(), "Ever");
     userEvent.type(getEmailInput(), "duplicate@test.com");
     userEvent.type(getPhoneInput(), "8008675309");
-    await act(async () => {
-      await getSubmitButton().click();
-    });
+    getSubmitButton().click();
 
     expect(
-      screen.getByText(
+      await screen.findByText(
         "This email address is already registered with SimpleReport.",
         { exact: false }
       )
@@ -169,12 +159,10 @@ describe("OrganizationForm", () => {
     userEvent.type(getLastNameInput(), "Ever");
     userEvent.type(getEmailInput(), "admin@example.com");
     userEvent.type(getPhoneInput(), "8008675309");
-    await act(async () => {
-      await getSubmitButton().click();
-    });
+    getSubmitButton().click();
 
     expect(
-      screen.getByText(
+      await screen.findByText(
         "Your organization is already registered with SimpleReport. To begin using it, schedule a time",
         { exact: false }
       )
@@ -190,12 +178,10 @@ describe("OrganizationForm", () => {
     userEvent.type(getLastNameInput(), "Ever");
     userEvent.type(getEmailInput(), "admin@example.com");
     userEvent.type(getPhoneInput(), "8008675309");
-    await act(async () => {
-      await getSubmitButton().click();
-    });
+    getSubmitButton().click();
 
     expect(
-      screen.getByText(
+      await screen.findByText(
         "Your organization is already registered with SimpleReport. Check your email for instructions on setting up your account.",
         { exact: false }
       )
@@ -211,12 +197,10 @@ describe("OrganizationForm", () => {
     userEvent.type(getLastNameInput(), "Ever");
     userEvent.type(getEmailInput(), "admin@example.com");
     userEvent.type(getPhoneInput(), "8008675309");
-    await act(async () => {
-      await getSubmitButton().click();
-    });
+    getSubmitButton().click();
 
     expect(
-      screen.getByText(
+      await screen.findByText(
         "An unexpected error occurred. Please resubmit this form",
         { exact: false }
       )

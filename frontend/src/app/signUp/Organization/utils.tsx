@@ -37,14 +37,11 @@ export const OrganizationTypeEnum: { [key in OrganizationType]: string } = {
 export const organizationFields = [
   [
     "name",
-    <span>
-      What's the name of your{" "}
-      <TextWithTooltip
-        text="organization?"
-        tooltip="Organizations have multiple testing facilities or locations as part of their network."
-        position="top"
-      />
-    </span>,
+    <TextWithTooltip
+      text="Organization name"
+      tooltip="Organizations have multiple testing facilities or locations as part of their network."
+      position="top"
+    />,
     true,
     "",
   ],

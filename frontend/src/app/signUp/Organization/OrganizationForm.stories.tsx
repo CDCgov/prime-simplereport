@@ -3,7 +3,7 @@ import { Story, Meta } from "@storybook/react";
 import OrganizationForm from "./OrganizationForm";
 
 export default {
-  title: "App/Organization sign up/Step 2: Organization form",
+  title: "App/Sign up/Step 2b: Organization form",
   component: OrganizationForm,
   argTypes: {},
 } as Meta;
