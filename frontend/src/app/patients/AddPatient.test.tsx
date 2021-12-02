@@ -392,6 +392,7 @@ describe("AddPatient", () => {
               firstName: "Alice",
               lastName: "Hamilton",
               birthDate: "1970-09-22",
+              zipCode: "02115",
               facilityId: mockFacilityID,
             },
           },
@@ -421,6 +422,7 @@ describe("AddPatient", () => {
         {
           "First Name": "Alice",
           "Last Name": "Hamilton",
+          "Date of birth": "1970-09-22",
         },
         { Facility: mockFacilityID },
         {}
@@ -428,8 +430,8 @@ describe("AddPatient", () => {
 
       // The duplicate patient check is triggered on-blur from one of the identifying data fields
       userEvent.type(
-        screen.getByLabelText("Date of birth", { exact: false }),
-        "1970-09-22"
+        screen.getByLabelText("ZIP code", { exact: false }),
+        "02115"
       );
       userEvent.tab();
 
@@ -453,6 +455,7 @@ describe("AddPatient", () => {
               firstName: "Alice",
               lastName: "Hamilton",
               birthDate: "1970-09-22",
+              zipCode: "02115",
               facilityId: mockFacilityID,
             },
           },
@@ -479,6 +482,7 @@ describe("AddPatient", () => {
         {
           "First Name": "Alice",
           "Last Name": "Hamilton",
+          "Date of birth": "1970-09-22",
         },
         { Facility: mockFacilityID },
         {}
@@ -486,8 +490,8 @@ describe("AddPatient", () => {
 
       // The duplicate patient check is triggered on-blur from one of the identifying data fields
       userEvent.type(
-        screen.getByLabelText("Date of birth", { exact: false }),
-        "1970-09-22"
+        screen.getByLabelText("ZIP code", { exact: false }),
+        "02115"
       );
       userEvent.tab();
 

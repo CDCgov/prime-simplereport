@@ -113,7 +113,7 @@ public class PersonService {
   }
 
   private Specification<Person> patientExistsFilter(
-      String firstName, String lastName, LocalDate birthDate) {
+      String firstName, String lastName, LocalDate birthDate, String postalCode) {
     return (root, query, cb) ->
         cb.and(
             cb.equal(
@@ -122,7 +122,8 @@ public class PersonService {
             cb.equal(
                 cb.lower(root.get(SpecField.PERSON_NAME).get(SpecField.LAST_NAME)),
                 lastName.toLowerCase()),
-            cb.equal(root.get(SpecField.BIRTH_DATE), birthDate));
+            cb.equal(root.get(SpecField.BIRTH_DATE), birthDate),
+            cb.equal(root.get(SpecField.ADDRESS).get(SpecField.POSTAL_CODE), postalCode));
   }
 
   private Specification<Person> isDeletedFilter(boolean isDeleted) {
@@ -157,10 +158,11 @@ public class PersonService {
       String firstName,
       String lastName,
       LocalDate birthDate,
+      String postalCode,
       Optional<Facility> facility,
       Organization organization) {
     Specification<Person> filter =
-        patientExistsFilter(firstName, lastName, birthDate)
+        patientExistsFilter(firstName, lastName, birthDate, postalCode)
             .and(inOrganizationFilter(organization.getInternalId()));
 
     return facility.map(f -> filter.and(inFacilityFilter(f.getInternalId()))).orElse(filter);
@@ -198,11 +200,12 @@ public class PersonService {
       String firstName,
       String lastName,
       LocalDate birthDate,
+      String postalCode,
       Organization org,
       Optional<Facility> facility) {
     var patients =
         _repo.findAll(
-            buildPersonMatchFilter(firstName, lastName, birthDate, facility, org),
+            buildPersonMatchFilter(firstName, lastName, birthDate, postalCode, facility, org),
             PageRequest.of(0, 1, NAME_SORT));
 
     return !patients.isEmpty();
