@@ -22,6 +22,7 @@ export type DuplicateModalProps = {
 export type IdentifyingData = {
   firstName: string;
   lastName: string;
+  zipCode: string;
   birthDate: moment.Moment;
   facilityId?: string | null;
 };

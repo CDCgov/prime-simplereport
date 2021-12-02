@@ -29,22 +29,25 @@ export const SelfRegistrationForm = ({
   const { t } = useTranslation();
   const [identifyingData, setIdentifyingData] = useState<
     Nullable<IdentifyingData>
-  >({ firstName: null, lastName: null, birthDate: null });
+  >({ firstName: null, lastName: null, zipCode: null, birthDate: null });
   const [isDuplicate, setIsDuplicate] = useState<boolean>();
 
   const onBlur = ({
     firstName,
     lastName,
+    zipCode,
     birthDate,
   }: Nullable<PersonFormData>) => {
     if (
       firstName !== identifyingData.firstName ||
       lastName !== identifyingData.lastName ||
+      zipCode !== identifyingData.zipCode ||
       !moment(birthDate).isSame(identifyingData.birthDate)
     ) {
       setIdentifyingData({
         firstName,
         lastName,
+        zipCode,
         birthDate: moment(birthDate),
       });
     }
@@ -52,13 +55,14 @@ export const SelfRegistrationForm = ({
 
   useEffect(() => {
     async function checkForDuplicates(data: IdentifyingData) {
-      const { firstName, lastName } = data;
+      const { firstName, lastName, zipCode } = data;
       const birthDate = moment(data.birthDate).format("YYYY-MM-DD") as ISODate;
       try {
         const isDuplicate = await PxpApi.checkDuplicateRegistrant({
           firstName,
           lastName,
           birthDate,
+          postalCode: zipCode,
           registrationLink,
         });
         setIsDuplicate(isDuplicate);
@@ -68,9 +72,9 @@ export const SelfRegistrationForm = ({
       }
     }
 
-    const { firstName, lastName, birthDate } = identifyingData;
-    if (firstName && lastName && birthDate?.isValid()) {
-      checkForDuplicates({ firstName, lastName, birthDate });
+    const { firstName, lastName, zipCode, birthDate } = identifyingData;
+    if (firstName && lastName && zipCode && birthDate?.isValid()) {
+      checkForDuplicates({ firstName, lastName, zipCode, birthDate });
     }
   }, [identifyingData, registrationLink]);
 

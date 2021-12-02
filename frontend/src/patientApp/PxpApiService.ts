@@ -91,6 +91,7 @@ export class PxpApi {
     firstName: string;
     lastName: string;
     birthDate: ISODate;
+    postalCode: string;
     registrationLink: string;
   }): Promise<boolean> => {
     const { registrationLink, ...body } = person;
