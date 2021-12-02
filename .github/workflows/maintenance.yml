@@ -31,7 +31,7 @@ jobs:
         shell: bash
         run: |
           export MAINTENANCE_BOOLEAN=$( if [ "${{ github.event.inputs.active }}" = "true" ]; then echo true; else echo false; fi )
-          export MAINTENANCE_MESSAGE=${{ github.event.inputs.message }}
+          export MAINTENANCE_MESSAGE="${{ github.event.inputs.message }}"
           export MAINTENANCE_ENV=${{ github.event.inputs.env }}
           echo "{\"active\": $MAINTENANCE_BOOLEAN, \"message\": \"$MAINTENANCE_MESSAGE\"}" > maintenance.json
           yarn run maintenance:deploy
