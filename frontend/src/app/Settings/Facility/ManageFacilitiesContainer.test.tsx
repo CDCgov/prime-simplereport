@@ -146,8 +146,8 @@ describe("ManageFacilitiesContainer", () => {
 
   it("displays facilities", async () => {
     await act(async () => {
-      expect(await screen.findByText(mockFacility.name)).toBeDefined();
-      expect(await screen.findByText(mockFacility.cliaNumber)).toBeDefined();
+      expect(await screen.findByText(mockFacility.name)).toBeInTheDocument();
+      expect(await screen.findByText(mockFacility.cliaNumber)).toBeInTheDocument();
       expect(await screen.findByText(mockFacility.name)).toBeInTheDocument();
     });
   });
