@@ -122,9 +122,26 @@ exports[`TestQueue should render the test queue 1`] = `
                 class="grid-row prime-test-name usa-card__header"
                 id="patient-name-header"
               >
-                <h2>
-                  Doe, John A
-                </h2>
+                <div
+                  class="card-header"
+                >
+                  <div
+                    class="card-name"
+                  >
+                    Doe, John A
+                  </div>
+                  <div
+                    class="card-dob"
+                  >
+                    Date of birth:
+                    <span
+                      class="card-date"
+                    >
+                       
+                      06/19/1996
+                    </span>
+                  </div>
+                </div>
                 <button
                   class="timer-button timer-reset"
                   data-testid="timer"
@@ -154,54 +171,88 @@ exports[`TestQueue should render the test queue 1`] = `
                 class="margin-top-2 margin-left-2 margin-bottom-2"
               >
                 <div
-                  class="queue-item__description prime-ul grid-row grid-gap"
+                  class="grid-row"
                 >
-                  <li
-                    class="prime-li tablet:grid-col-3"
-                  >
-                    <strong>
-                      Phone number
-                    </strong>
-                    <p>
-                      1234567890
-                    </p>
-                  </li>
-                  <li
-                    class="prime-li tablet:grid-col-3"
-                  >
-                    <strong>
-                      Date of birth
-                    </strong>
-                    <p>
-                      06/19/1996
-                    </p>
-                  </li>
-                  <li
-                    class="prime-li tablet:grid-col-3"
+                  <div
+                    class="grid-col-4 flex-col-container padding-right-2"
                   >
                     <button
-                      class="usa-button usa-button--unstyled"
+                      class="usa-button usa-button--unstyled test-questionnaire-btn"
                       type="button"
                     >
                       Test questionnaire
                     </button>
-                    <p>
+                    <div
+                      class="margin-bottom-1"
+                    >
                       <span
                         class="usa-tag"
                       >
                         PENDING
                       </span>
-                    </p>
-                  </li>
+                    </div>
+                  </div>
+                  <div
+                    class="flex-col-container"
+                  >
+                    <div>
+                      Test date and time
+                    </div>
+                    <div
+                      class="test-date-time-container"
+                    >
+                      <input
+                        class="card-test-input"
+                        data-testid="test-date"
+                        hidden=""
+                        id="test-date"
+                        max="2021-08-02"
+                        min="2020-01-01"
+                        name="test-date"
+                        type="date"
+                        value="2021-08-01"
+                      />
+                      <input
+                        class="card-test-input"
+                        data-testid="test-time"
+                        hidden=""
+                        name="test-time"
+                        step="60"
+                        type="time"
+                        value="08:20"
+                      />
+                      <div
+                        class="check-box-container"
+                      >
+                        <div
+                          class="usa-checkbox"
+                        >
+                          <input
+                            checked=""
+                            class="usa-checkbox__input margin"
+                            id="current-date-check-31d42f7a-0a14-46b7-bc8a-38b3b1e78659"
+                            type="checkbox"
+                            value="true"
+                          />
+                          <label
+                            class="usa-checkbox__label margin-0 margin-right-05em"
+                            for="current-date-check-31d42f7a-0a14-46b7-bc8a-38b3b1e78659"
+                          >
+                            Current date/time
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div
                   class="queue-item__form prime-ul grid-row"
                 >
                   <div
-                    class="prime-li flex-align-self-end tablet:grid-col-3 padding-right-1"
+                    class="prime-li flex-align-self-end tablet:grid-col-4 padding-right-2"
                   >
                     <div
-                      class="usa-form-group prime-dropdown "
+                      class="usa-form-group prime-dropdown  card-dropdown"
                     >
                       <label
                         class="usa-label"
@@ -234,10 +285,10 @@ exports[`TestQueue should render the test queue 1`] = `
                     </div>
                   </div>
                   <div
-                    class="prime-li flex-align-self-end tablet:grid-col-3 padding-left-1"
+                    class="prime-li flex-align-self-end tablet:grid-col-5 padding-right-2"
                   >
                     <div
-                      class="usa-form-group prime-dropdown "
+                      class="usa-form-group prime-dropdown  card-dropdown"
                     >
                       <label
                         class="usa-label"
@@ -257,45 +308,6 @@ exports[`TestQueue should render the test queue 1`] = `
                           Swab of internal nose
                         </option>
                       </select>
-                    </div>
-                  </div>
-                  <div
-                    class="prime-li tablet:grid-col tablet:padding-left-2"
-                  >
-                    <div
-                      class="usa-form-group"
-                    >
-                      <fieldset
-                        class="usa-fieldset prime-checkboxes"
-                      >
-                        <legend
-                          class="usa-legend"
-                        >
-                          Test date
-                        </legend>
-                        <div
-                          class="checkboxes"
-                        >
-                          <div
-                            class="usa-checkbox"
-                          >
-                            <input
-                              checked=""
-                              class="usa-checkbox__input"
-                              id="3-val-0"
-                              name="currentDateTime"
-                              type="checkbox"
-                              value="true"
-                            />
-                            <label
-                              class="usa-checkbox__label"
-                              for="3-val-0"
-                            >
-                              Use current date
-                            </label>
-                          </div>
-                        </div>
-                      </fieldset>
                     </div>
                   </div>
                 </div>
@@ -332,14 +344,14 @@ exports[`TestQueue should render the test queue 1`] = `
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="4-val-POSITIVE"
+                          id="3-val-POSITIVE"
                           name="covid-test-result-abc"
                           type="radio"
                           value="POSITIVE"
                         />
                         <label
                           class="usa-radio__label"
-                          for="4-val-POSITIVE"
+                          for="3-val-POSITIVE"
                         >
                           Positive (+)
                         </label>
@@ -350,14 +362,14 @@ exports[`TestQueue should render the test queue 1`] = `
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="4-val-NEGATIVE"
+                          id="3-val-NEGATIVE"
                           name="covid-test-result-abc"
                           type="radio"
                           value="NEGATIVE"
                         />
                         <label
                           class="usa-radio__label"
-                          for="4-val-NEGATIVE"
+                          for="3-val-NEGATIVE"
                         >
                           Negative (-)
                         </label>
@@ -368,14 +380,14 @@ exports[`TestQueue should render the test queue 1`] = `
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="4-val-UNDETERMINED"
+                          id="3-val-UNDETERMINED"
                           name="covid-test-result-abc"
                           type="radio"
                           value="UNDETERMINED"
                         />
                         <label
                           class="usa-radio__label"
-                          for="4-val-UNDETERMINED"
+                          for="3-val-UNDETERMINED"
                         >
                           Inconclusive
                         </label>
@@ -471,9 +483,26 @@ exports[`TestQueue should render the test queue 1`] = `
                 class="grid-row prime-test-name usa-card__header"
                 id="patient-name-header"
               >
-                <h2>
-                  Smith, Jane
-                </h2>
+                <div
+                  class="card-header"
+                >
+                  <div
+                    class="card-name"
+                  >
+                    Smith, Jane
+                  </div>
+                  <div
+                    class="card-dob"
+                  >
+                    Date of birth:
+                    <span
+                      class="card-date"
+                    >
+                       
+                      02/01/2021
+                    </span>
+                  </div>
+                </div>
                 <button
                   class="timer-button timer-reset"
                   data-testid="timer"
@@ -503,65 +532,99 @@ exports[`TestQueue should render the test queue 1`] = `
                 class="margin-top-2 margin-left-2 margin-bottom-2"
               >
                 <div
-                  class="queue-item__description prime-ul grid-row grid-gap"
+                  class="grid-row"
                 >
-                  <li
-                    class="prime-li tablet:grid-col-3"
-                  >
-                    <strong>
-                      Phone number
-                    </strong>
-                    <p>
-                      1234567890
-                    </p>
-                  </li>
-                  <li
-                    class="prime-li tablet:grid-col-3"
-                  >
-                    <strong>
-                      Date of birth
-                    </strong>
-                    <p>
-                      02/01/2021
-                    </p>
-                  </li>
-                  <li
-                    class="prime-li tablet:grid-col-3"
+                  <div
+                    class="grid-col-4 flex-col-container padding-right-2"
                   >
                     <button
-                      class="usa-button usa-button--unstyled"
+                      class="usa-button usa-button--unstyled test-questionnaire-btn"
                       type="button"
                     >
                       Test questionnaire
                     </button>
-                    <p>
+                    <div
+                      class="margin-bottom-1"
+                    >
                       <span
                         class="usa-tag"
                       >
                         PENDING
                       </span>
-                    </p>
-                  </li>
+                    </div>
+                  </div>
+                  <div
+                    class="flex-col-container"
+                  >
+                    <div>
+                      Test date and time
+                    </div>
+                    <div
+                      class="test-date-time-container"
+                    >
+                      <input
+                        class="card-test-input"
+                        data-testid="test-date"
+                        hidden=""
+                        id="test-date"
+                        max="2021-08-02"
+                        min="2020-01-01"
+                        name="test-date"
+                        type="date"
+                        value="2021-08-01"
+                      />
+                      <input
+                        class="card-test-input"
+                        data-testid="test-time"
+                        hidden=""
+                        name="test-time"
+                        step="60"
+                        type="time"
+                        value="08:20"
+                      />
+                      <div
+                        class="check-box-container"
+                      >
+                        <div
+                          class="usa-checkbox"
+                        >
+                          <input
+                            checked=""
+                            class="usa-checkbox__input margin"
+                            id="current-date-check-31d42f7a-0a14-46b7-bc8a-38b3b1e78659"
+                            type="checkbox"
+                            value="true"
+                          />
+                          <label
+                            class="usa-checkbox__label margin-0 margin-right-05em"
+                            for="current-date-check-31d42f7a-0a14-46b7-bc8a-38b3b1e78659"
+                          >
+                            Current date/time
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div
                   class="queue-item__form prime-ul grid-row"
                 >
                   <div
-                    class="prime-li flex-align-self-end tablet:grid-col-3 padding-right-1"
+                    class="prime-li flex-align-self-end tablet:grid-col-4 padding-right-2"
                   >
                     <div
-                      class="usa-form-group prime-dropdown "
+                      class="usa-form-group prime-dropdown  card-dropdown"
                     >
                       <label
                         class="usa-label"
-                        for="5"
+                        for="4"
                       >
                         Device
                       </label>
                       <select
                         aria-required="false"
                         class="usa-select"
-                        id="5"
+                        id="4"
                         name="testDevice"
                       >
                         <option
@@ -583,21 +646,21 @@ exports[`TestQueue should render the test queue 1`] = `
                     </div>
                   </div>
                   <div
-                    class="prime-li flex-align-self-end tablet:grid-col-3 padding-left-1"
+                    class="prime-li flex-align-self-end tablet:grid-col-5 padding-right-2"
                   >
                     <div
-                      class="usa-form-group prime-dropdown "
+                      class="usa-form-group prime-dropdown  card-dropdown"
                     >
                       <label
                         class="usa-label"
-                        for="6"
+                        for="5"
                       >
                         Swab type
                       </label>
                       <select
                         aria-required="false"
                         class="usa-select"
-                        id="6"
+                        id="5"
                         name="swabType"
                       >
                         <option
@@ -606,45 +669,6 @@ exports[`TestQueue should render the test queue 1`] = `
                           Swab of internal nose
                         </option>
                       </select>
-                    </div>
-                  </div>
-                  <div
-                    class="prime-li tablet:grid-col tablet:padding-left-2"
-                  >
-                    <div
-                      class="usa-form-group"
-                    >
-                      <fieldset
-                        class="usa-fieldset prime-checkboxes"
-                      >
-                        <legend
-                          class="usa-legend"
-                        >
-                          Test date
-                        </legend>
-                        <div
-                          class="checkboxes"
-                        >
-                          <div
-                            class="usa-checkbox"
-                          >
-                            <input
-                              checked=""
-                              class="usa-checkbox__input"
-                              id="7-val-0"
-                              name="currentDateTime"
-                              type="checkbox"
-                              value="true"
-                            />
-                            <label
-                              class="usa-checkbox__label"
-                              for="7-val-0"
-                            >
-                              Use current date
-                            </label>
-                          </div>
-                        </div>
-                      </fieldset>
                     </div>
                   </div>
                 </div>
@@ -681,14 +705,14 @@ exports[`TestQueue should render the test queue 1`] = `
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="8-val-POSITIVE"
+                          id="6-val-POSITIVE"
                           name="covid-test-result-def"
                           type="radio"
                           value="POSITIVE"
                         />
                         <label
                           class="usa-radio__label"
-                          for="8-val-POSITIVE"
+                          for="6-val-POSITIVE"
                         >
                           Positive (+)
                         </label>
@@ -699,14 +723,14 @@ exports[`TestQueue should render the test queue 1`] = `
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="8-val-NEGATIVE"
+                          id="6-val-NEGATIVE"
                           name="covid-test-result-def"
                           type="radio"
                           value="NEGATIVE"
                         />
                         <label
                           class="usa-radio__label"
-                          for="8-val-NEGATIVE"
+                          for="6-val-NEGATIVE"
                         >
                           Negative (-)
                         </label>
@@ -717,14 +741,14 @@ exports[`TestQueue should render the test queue 1`] = `
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="8-val-UNDETERMINED"
+                          id="6-val-UNDETERMINED"
                           name="covid-test-result-def"
                           type="radio"
                           value="UNDETERMINED"
                         />
                         <label
                           class="usa-radio__label"
-                          for="8-val-UNDETERMINED"
+                          for="6-val-UNDETERMINED"
                         >
                           Inconclusive
                         </label>

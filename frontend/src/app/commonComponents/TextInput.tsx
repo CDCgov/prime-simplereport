@@ -22,7 +22,7 @@ export type HTMLInputElementType =
 interface Props {
   name: string;
   type?: HTMLInputElementType;
-  label: React.ReactNode;
+  label?: React.ReactNode;
   labelSrOnly?: boolean;
   value?: string | null;
   required?: boolean;
