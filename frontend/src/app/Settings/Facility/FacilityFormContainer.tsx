@@ -131,7 +131,9 @@ export const UPDATE_FACILITY_MUTATION = gql`
       deviceTypes: $devices
       deviceSpecimenTypes: $deviceSpecimenTypes
       defaultDevice: $defaultDevice
-    )
+    ) {
+      id
+    }
   }
 `;
 
@@ -185,7 +187,9 @@ const ADD_FACILITY_MUTATION = gql`
       deviceTypes: $devices
       deviceSpecimenTypes: $deviceSpecimenTypes
       defaultDevice: $defaultDevice
-    )
+    ) {
+      id
+    }
   }
 `;
 
@@ -203,24 +207,9 @@ const FacilityFormContainer: any = (props: Props) => {
   );
 
   const appInsights = getAppInsights();
-  const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION, {
-    refetchQueries: [GET_FACILITY_QUERY],
-    update(cache, { data: { updateFacility } }) {
-      cache.writeQuery({
-        query: UPDATE_FACILITY_MUTATION,
-        data: updateFacility,
-      });
-    },
-  });
-  const [addFacility] = useMutation(ADD_FACILITY_MUTATION, {
-    refetchQueries: [GET_FACILITY_QUERY],
-    update(cache, { data: { addFacility } }) {
-      cache.writeQuery({
-        query: UPDATE_FACILITY_MUTATION,
-        data: addFacility,
-      });
-    },
-  });
+  const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION);
+  const [addFacility] = useMutation(ADD_FACILITY_MUTATION);
+
   const [saveSuccess, updateSaveSuccess] = useState(false);
   const [updatedFacility, setUpdatedFacility] = useState<Facility | null>(null);
   const dispatch = useDispatch();
@@ -247,7 +236,7 @@ const FacilityFormContainer: any = (props: Props) => {
     }
     const provider = facility.orderingProvider;
     const saveFacility = props.facilityId ? updateFacility : addFacility;
-    await saveFacility({
+    const savedFacility = await saveFacility({
       variables: {
         facilityId: props.facilityId,
         testingFacilityName: facility.name,
@@ -277,7 +266,13 @@ const FacilityFormContainer: any = (props: Props) => {
         defaultDevice: facility.defaultDevice,
       },
     });
-    setUpdatedFacility(() => facility);
+    setUpdatedFacility(() => ({
+      ...facility,
+      id:
+        saveFacility === updateFacility
+          ? savedFacility.data.updateFacility.id
+          : savedFacility.data.addFacility.id,
+    }));
     const alert = (
       <Alert
         type="success"

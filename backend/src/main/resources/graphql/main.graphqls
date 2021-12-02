@@ -386,7 +386,7 @@ type Mutation {
     deviceTypes: [String]!
     deviceSpecimenTypes: [ID]
     defaultDevice: String!
-  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addFacility(
     testingFacilityName: String!
     cliaNumber: String
@@ -415,7 +415,7 @@ type Mutation {
     deviceTypes: [String]!
     deviceSpecimenTypes: [ID]
     defaultDevice: String!
-  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addUserToCurrentOrg(
     name: NameInput
     firstName: String
