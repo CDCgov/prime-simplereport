@@ -56,14 +56,12 @@ export const PATIENT_EXISTS = gql`
     $firstName: String!
     $lastName: String!
     $birthDate: LocalDate!
-    $zipCode: String!
     $facilityId: ID
   ) {
     patientExists(
       firstName: $firstName
       lastName: $lastName
       birthDate: $birthDate
-      zipCode: $zipCode
       facilityId: $facilityId
     )
   }
@@ -156,7 +154,6 @@ const AddPatient = () => {
   >({
     firstName: null,
     lastName: null,
-    zipCode: null,
     birthDate: null,
     facilityId: null,
   });
@@ -185,21 +182,18 @@ const AddPatient = () => {
   const onBlur = ({
     firstName,
     lastName,
-    zipCode,
     birthDate,
     facilityId,
   }: Nullable<PersonFormData>) => {
     if (
       firstName !== identifyingData.firstName ||
       lastName !== identifyingData.lastName ||
-      zipCode !== identifyingData.zipCode ||
       !moment(birthDate).isSame(identifyingData.birthDate) ||
       facilityId !== identifyingData.facilityId
     ) {
       setIdentifyingData({
         firstName,
         lastName,
-        zipCode,
         birthDate: moment(birthDate),
         facilityId,
       });
@@ -207,9 +201,9 @@ const AddPatient = () => {
   };
 
   useEffect(() => {
-    const { firstName, lastName, zipCode, birthDate } = identifyingData;
+    const { firstName, lastName, birthDate } = identifyingData;
 
-    if (firstName && lastName && zipCode && birthDate?.isValid()) {
+    if (firstName && lastName && birthDate?.isValid()) {
       try {
         getPatientExists();
       } catch (e) {

@@ -679,7 +679,6 @@ export type QueryPatientExistsArgs = {
   facilityId?: Maybe<Scalars["ID"]>;
   firstName: Scalars["String"];
   lastName: Scalars["String"];
-  zipCode: Scalars["String"];
 };
 
 export type QueryPatientsArgs = {
@@ -1285,7 +1284,6 @@ export type PatientExistsQueryVariables = Exact<{
   firstName: Scalars["String"];
   lastName: Scalars["String"];
   birthDate: Scalars["LocalDate"];
-  zipCode: Scalars["String"];
   facilityId?: Maybe<Scalars["ID"]>;
 }>;
 
@@ -3380,14 +3378,12 @@ export const PatientExistsDocument = gql`
     $firstName: String!
     $lastName: String!
     $birthDate: LocalDate!
-    $zipCode: String!
     $facilityId: ID
   ) {
     patientExists(
       firstName: $firstName
       lastName: $lastName
       birthDate: $birthDate
-      zipCode: $zipCode
       facilityId: $facilityId
     )
   }
@@ -3408,7 +3404,6 @@ export const PatientExistsDocument = gql`
  *      firstName: // value for 'firstName'
  *      lastName: // value for 'lastName'
  *      birthDate: // value for 'birthDate'
- *      zipCode: // value for 'zipCode'
  *      facilityId: // value for 'facilityId'
  *   },
  * });

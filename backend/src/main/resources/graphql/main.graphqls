@@ -315,7 +315,6 @@ type Query {
     firstName: String!
     lastName: String!
     birthDate: LocalDate!
-    zipCode: String!
     facilityId: ID
   ): Boolean
   queue(facilityId: ID!): [TestOrder]
