@@ -148,9 +148,7 @@ describe("ManageFacilitiesContainer", () => {
     await act(async () => {
       expect(await screen.findByText(mockFacility.name)).toBeDefined();
       expect(await screen.findByText(mockFacility.cliaNumber)).toBeDefined();
-      expect(await screen.findByText(mockFacility.name)).toContainHTML(
-        `<a href="/settings/facility/${mockFacility.id}">${mockFacility.name}</a>`
-      );
+      expect(await screen.findByText(mockFacility.name)).toBeInTheDocument();
     });
   });
 });
