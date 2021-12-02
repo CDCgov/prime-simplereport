@@ -11,6 +11,10 @@ on:
         description: "Message to display"
         required: true
         default: "We are working on getting this fixed as soon as possible."
+      env:
+        description: "Environment target"
+        required: true
+        default: "dev"  
 
 jobs:
   pushMaintenanceBlob:
