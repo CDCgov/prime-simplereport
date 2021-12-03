@@ -30,19 +30,17 @@ resource "azurerm_nat_gateway_public_ip_association" "outbound" {
   public_ip_address_id = azurerm_public_ip.nat_outbound_static_ip.id
 }
 
-# TODO: uncomment everything below once Experian adjusts their IP allowlist as part of #2855
+resource "azurerm_subnet_nat_gateway_association" "outbound_webapp" {
+  subnet_id      = var.subnet_webapp_id
+  nat_gateway_id = azurerm_nat_gateway.outbound.id
+}
 
-# resource "azurerm_subnet_nat_gateway_association" "outbound_webapp" {
-#   subnet_id      = var.subnet_webapp_id
-#   nat_gateway_id = azurerm_nat_gateway.outbound.id
-# }
+resource "azurerm_subnet_nat_gateway_association" "outbound_lb" {
+  subnet_id      = var.subnet_lb_id
+  nat_gateway_id = azurerm_nat_gateway.outbound.id
+}
 
-# resource "azurerm_subnet_nat_gateway_association" "outbound_lb" {
-#   subnet_id      = var.subnet_lb_id
-#   nat_gateway_id = azurerm_nat_gateway.outbound.id
-# }
-
-# resource "azurerm_subnet_nat_gateway_association" "outbound_vm" {
-#   subnet_id      = var.subnet_vm_id
-#   nat_gateway_id = azurerm_nat_gateway.outbound.id
-# }
+resource "azurerm_subnet_nat_gateway_association" "outbound_vm" {
+  subnet_id      = var.subnet_vm_id
+  nat_gateway_id = azurerm_nat_gateway.outbound.id
+}
