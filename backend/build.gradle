@@ -6,7 +6,7 @@ plugins {
     id 'checkstyle'
     id 'jacoco'
     id 'org.sonarqube'  version '3.0'
-    id 'com.gorylenko.gradle-git-properties' version '2.2.0'
+    id 'com.gorylenko.gradle-git-properties' version '2.3.2'
     id "com.diffplug.spotless" version "5.14.0"
 }
 
@@ -68,11 +68,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // JPA Hibernate static metamodel generation
-    compile 'org.hibernate:hibernate-jpamodelgen:5.4.27.Final'
+    compileOnly 'org.hibernate:hibernate-jpamodelgen:5.4.27.Final'
     annotationProcessor'org.hibernate:hibernate-jpamodelgen'
 
     // graphql-java-extended-validation schema directives
-    compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
+    implementation 'com.graphql-java:graphql-java-extended-validation:16.0.0'
 
     implementation 'com.azure:azure-storage-queue:12.8.+'
 
@@ -99,7 +99,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
 
     // WireMock (only used for testing)
-    testCompile "com.github.tomakehurst:wiremock-jre8:2.28.1"
+    testCompileOnly "com.github.tomakehurst:wiremock-jre8:2.28.1"
 
     // Forcing these version resolutions over the BOM of spring-cloud-dependencies below
     runtimeOnly 'com.azure:azure-core-http-netty:1.10.2'

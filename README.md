@@ -24,7 +24,7 @@ https://simplereport.gov/
     - [Local Settings](#local-settings)
     - [SchemaSpy](#schemaspy)
     - [Twilio](#twilio)
-    - [MailHog](#MailHog)
+    - [MailHog](#mailhog)
   - [Frontend](#frontend)
     - [Frontend-Setup](#frontend-setup)
     - [Linters](#linters)
@@ -33,6 +33,8 @@ https://simplereport.gov/
   - [Deploy](#deploy)
     - [Revert to a Previous Release](#revert-to-a-previous-release)
     - [Deploy With Action](#deploy-with-action)
+  - [Deployment Issues](#deployment-issues)
+    - [Maintenance Mode](#maintenance-mode)
 
 ## Setup
 
@@ -68,7 +70,7 @@ Another option (also compatible with Linux) is to install with [jabba](https://g
 ```sh
 curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash && . ~/.jabba/jabba.sh
 jabba install adopt@1.11-0
-jabba use adopt@1.11
+jabba use adopt@1.11-0
 ```
 
 Running with docker:
@@ -99,7 +101,7 @@ The GraphQL playground should load after replacing the default request url with
 For development, it may be more convenient to start the front and backends simultaneously. This can be done by running the following command in the root directory of the project:
 
 ```bash
-make # "make start" if you're nasty
+make # "make start" works, as well!
 ```
 
 This will start up both servers in "watch" mode, so that changes to the source

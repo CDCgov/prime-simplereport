@@ -1,4 +1,4 @@
-FROM gradle:6.9.1-jdk11-hotspot AS build
+FROM gradle:7.3-jdk11 AS build
 
 WORKDIR /home/gradle/graphql-api
 COPY --chown=gradle:gradle ./.git ./.git
