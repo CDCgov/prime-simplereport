@@ -230,20 +230,9 @@ Running a single test with a full stacktrace can be accomplished by supping the 
 gradle test --tests gov.cdc.usds.simplereport.api.QueueManagementTest.updateItemInQueue --stacktrace
 ```
 
-### E2E Tests
-
-E2E/Integration tests are available using [Nightwatch.js](https://nightwatchjs.org/).
-
-Run them with the following commands while the app (both front and backends) is already running:
-
-```bash
-cd frontend
-yarn e2e
-```
-
 ### Local Settings
 
-to edit Spring boot settings for your local set up you must first create a `application-local.yaml`
+To edit Spring Boot settings for your local set up you must first create a `application-local.yaml`
 (note this file is git ignored):
 
 bash
@@ -280,6 +269,53 @@ simple-report:
   cors:
     allowed-origins:
       - http://localhost:3000
+```
+
+To edit React settings, create `frontend/.env.local` (also git ignored).
+
+### E2E Tests
+
+E2E/Integration tests are available using [Cypress](https://www.cypress.io/).
+
+In order to run them locally, some modifications will need to be made to your local environment. Spring session requires the frontend and backend to be hosted on the same domain in order to properly authenticate.
+
+`frontend/.env.local`:
+```
+REACT_APP_BASE_URL=http://localhost.simplereport.gov
+REACT_APP_BACKEND_URL=http://localhost.simplereport.gov/api
+REACT_APP_OKTA_ENABLED=true
+```
+
+You will need to run the backend with the `e2e` profile, and with the following environment variable:
+```bash
+OKTA_TESTING_DISABLEHTTPSCHECK=true ./gradlew bootRun --args='--spring.profiles.active=e2e
+```
+
+Or, if you are running with the `start.sh` script:
+`backend/src/main/resources/application-local.yaml`
+```
+spring.profiles.include: no-security, no-okta-mgmt, server-debug, create-sample-data
+server.servlet.session.cookie.domain: localhost.simplereport.gov
+okta.client.org-url: http://localhost:8088
+okta.client.token: foo
+```
+```bash
+OKTA_TESTING_DISABLEHTTPSCHECK=true ./start.sh
+```
+
+In order for `http://localhost.simplereport.gov` to route to your local application server, you'll need to make the following addition to your `/etc/hosts` file:
+
+`/etc/hosts`
+```
+127.0.0.1 localhost.simplereport.gov
+```
+
+Finally, you'll need to run a reverse proxy like nginx to point port 80 at your application server. However, this is handled for you by running a docker container in the `e2e.sh` script, which is called by the `yarn e2e` command.
+
+Run them with the following commands while the app (both frontend and backend) is already running:
+
+```bash
+yarn e2e
 ```
 
 ### SchemaSpy

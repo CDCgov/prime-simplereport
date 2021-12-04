@@ -1,5 +1,5 @@
 {
-  "baseUrl": "http://localhost:3000",
+  "baseUrl": "https://simplereport.clyde.tech",
   "viewportWidth": 1200,
   "viewportHeight": 800
 }

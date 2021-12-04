@@ -40,6 +40,6 @@ if [[ $result -ne 0 ]]; then
   exit 1
 fi
 
-echo 'App is online! Starting Nightwatch...'
+echo 'App is online! Starting Cypress...'
 
 npx nightwatch -e "$@"
