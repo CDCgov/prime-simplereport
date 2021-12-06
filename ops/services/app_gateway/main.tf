@@ -153,12 +153,12 @@ resource "azurerm_application_gateway" "load_balancer" {
     frontend_ip_configuration_name = local.frontend_config
     frontend_port_name             = local.https_listener
     protocol                       = "Https"
-    ssl_certificate_name           = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.name
+    ssl_certificate_name           = data.azurerm_key_vault_certificate.simplereport_gov.name
   }
 
   ssl_certificate {
-    name                = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.name
-    key_vault_secret_id = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.secret_id
+    name                = data.azurerm_key_vault_certificate.simplereport_gov.name
+    key_vault_secret_id = data.azurerm_key_vault_certificate.simplereport_gov.secret_id
   }
 
   ssl_policy {
