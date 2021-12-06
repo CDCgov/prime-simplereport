@@ -174,13 +174,6 @@ const FacilityForm: React.FC<Props> = (props) => {
     }));
   };
 
-  const updateDefaultDevice = (defaultDevice: string) => {
-    updateForm((facility) => ({
-      ...facility,
-      defaultDevice,
-    }));
-  };
-
   const { errors, validateField, validateFacility } = useFacilityValidation(
     facility
   );
@@ -373,9 +366,7 @@ const FacilityForm: React.FC<Props> = (props) => {
             deviceType: dst.deviceType.internalId,
             specimenType: dst.specimenType.internalId,
           }))}
-          defaultDevice={facility.defaultDevice}
           updateDeviceSpecimenTypes={updateDeviceSpecimenTypes}
-          updateDefaultDevice={updateDefaultDevice}
           deviceSpecimenTypeOptions={props.deviceSpecimenTypeOptions}
           errors={errors}
           validateField={validateField}

@@ -10,9 +10,7 @@ import { getSpecimenTypesForDevice } from "../../../utils/devices";
 
 interface Props {
   deviceSpecimenTypes: DeviceSpecimenTypeIds[];
-  defaultDevice: string;
   updateDeviceSpecimenTypes: (deviceTypes: DeviceSpecimenTypeIds[]) => void;
-  updateDefaultDevice: (defaultDevice: string) => void;
   deviceSpecimenTypeOptions: DeviceSpecimenType[];
   errors: FacilityErrors;
   validateField: ValidateField;
@@ -20,18 +18,13 @@ interface Props {
 
 const ManageDevices: React.FC<Props> = ({
   deviceSpecimenTypes,
-  defaultDevice,
   updateDeviceSpecimenTypes,
-  updateDefaultDevice,
   deviceSpecimenTypeOptions,
   errors,
 }) => {
   const deviceErrors: React.ReactNode[] = [];
   if (errors.deviceTypes) {
     deviceErrors.push(errors.deviceTypes);
-  }
-  if (errors.defaultDevice) {
-    deviceErrors.push(errors.defaultDevice);
   }
 
   const deviceTypeIds = deviceSpecimenTypes.map((dst) => dst.deviceType);
@@ -60,21 +53,6 @@ const ManageDevices: React.FC<Props> = ({
     };
 
     updateDeviceSpecimenTypes(newDeviceSpecimenTypes);
-
-    // If the changed device was previously the default device, unset default device
-    if (oldDeviceId === defaultDevice) {
-      updateDefaultDevice("");
-    }
-  };
-
-  const onSpecimenTypeChange = (index: number, newSpecimenId: string) => {
-    const newDeviceSpecimenTypes = [...deviceSpecimenTypes];
-    newDeviceSpecimenTypes[index] = {
-      ...newDeviceSpecimenTypes[index],
-      specimenType: newSpecimenId,
-    };
-
-    updateDeviceSpecimenTypes(newDeviceSpecimenTypes);
   };
 
   const onDeviceRemove = (id: string, idx: number) => {
@@ -83,10 +61,6 @@ const ManageDevices: React.FC<Props> = ({
     newDeviceSpecimenTypes.splice(idx, 1);
 
     updateDeviceSpecimenTypes(newDeviceSpecimenTypes);
-    // Unset default device if ID matches
-    if (defaultDevice === id) {
-      updateDefaultDevice("");
-    }
   };
 
   // returns a list of deviceIds that have *not* been selected so far
@@ -113,12 +87,6 @@ const ManageDevices: React.FC<Props> = ({
       const devices = deviceSpecimenTypeOptions.map(
         (deviceSpecimenType) => deviceSpecimenType.deviceType
       );
-      const specimenTypes = deviceSpecimenTypeOptions
-        .filter(
-          (deviceSpecimenType) =>
-            deviceSpecimenType.deviceType.internalId === deviceId
-        )
-        .map((deviceSpecimenType) => deviceSpecimenType.specimenType);
 
       const deviceDropdownOptions = uniqBy(devices, "internalId")
         .sort(function alphabetize(a, b) {
@@ -141,13 +109,6 @@ const ManageDevices: React.FC<Props> = ({
               .includes(deviceType.internalId),
           };
         });
-
-      const specimenDropdownOptions = specimenTypes.map((specimenType) => {
-        return {
-          label: specimenType.name,
-          value: specimenType.internalId,
-        };
-      });
 
       return (
         <tr key={idx}>
