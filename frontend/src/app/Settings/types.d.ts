@@ -45,9 +45,7 @@ interface Facility extends Address {
   name: string;
   phone: string;
   email: string | null;
-  deviceTypes: string[];
-  deviceSpecimenTypes: DeviceSpecimenType[];
-  defaultDevice: string;
+  deviceTypes: DeviceType[];
   orderingProvider: Provider;
 }
 
@@ -121,6 +119,7 @@ interface SettingsData {
         };
         deviceTypes: [
           {
+            name: string;
             internalId: string;
           }
         ];
@@ -142,7 +141,7 @@ interface SettingsData {
       }
     ];
   };
-  deviceType: [
+  deviceTypes: [
     {
       internalId: string;
       name: string;
@@ -167,15 +166,12 @@ interface FacilityData {
         zipCode: string;
         phone: string;
         email: string;
-        defaultDeviceType: {
-          internalId: string;
-        };
         deviceTypes: [
           {
+            name: string;
             internalId: string;
           }
         ];
-        deviceSpecimenTypes: DeviceSpecimenType[];
         orderingProvider: {
           firstName: string;
           middleName: string;
@@ -193,7 +189,7 @@ interface FacilityData {
       }
     ];
   };
-  deviceSpecimenTypes: DeviceSpecimenType[];
+  deviceTypes: DeviceType[];
 }
 
 type TestCorrectionStatus = "ORIGINAL" | "CORRECTED" | "REMOVED";

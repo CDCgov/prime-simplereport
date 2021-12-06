@@ -87,6 +87,7 @@ const deviceTypeSchema: yup.SchemaOf<DeviceType> = yup.object({
   testLength: yup.number().optional(),
 });
 
+/*
 const specimenTypeSchema: yup.SchemaOf<SpecimenType> = yup.object({
   internalId: yup.string().required(),
   name: yup.string().required(),
@@ -97,6 +98,7 @@ export const deviceSchema: yup.SchemaOf<DeviceSpecimenType> = yup.object({
   deviceType: deviceTypeSchema,
   specimenType: specimenTypeSchema,
 });
+*/
 
 export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
   name: yup.string().required("Facility name is missing"),
@@ -128,7 +130,8 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
     ),
   street: yup.string().required("Facility street is missing"),
   zipCode: yup.string().required("Facility zip code is missing"),
-  deviceTypes: yup
+  deviceTypes: yup.array().of(deviceTypeSchema),
+  /*
     .array()
     .of(yup.string().required())
     .min(1, "There must be at least one device")
@@ -140,6 +143,7 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
     }
     return true;
   }),
+  */
   orderingProvider: providerSchema.nullable(),
   phone: yup
     .string()

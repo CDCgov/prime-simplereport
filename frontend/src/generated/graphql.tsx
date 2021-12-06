@@ -105,7 +105,6 @@ export type Facility = {
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   defaultDeviceType?: Maybe<DeviceType>;
-  deviceSpecimenTypes?: Maybe<Array<Maybe<DeviceSpecimenType>>>;
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
   email?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
@@ -165,8 +164,6 @@ export type MutationAddFacilityArgs = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
-  defaultDevice: Scalars["String"];
-  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
   deviceTypes: Array<Maybe<Scalars["String"]>>;
   email?: Maybe<Scalars["String"]>;
   orderingProviderCity?: Maybe<Scalars["String"]>;
@@ -296,7 +293,6 @@ export type MutationCreateOrganizationArgs = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
-  defaultDevice: Scalars["String"];
   deviceTypes: Array<Maybe<Scalars["String"]>>;
   email?: Maybe<Scalars["String"]>;
   externalId: Scalars["String"];
@@ -411,8 +407,6 @@ export type MutationUpdateFacilityArgs = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
-  defaultDevice: Scalars["String"];
-  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
   deviceTypes: Array<Maybe<Scalars["String"]>>;
   email?: Maybe<Scalars["String"]>;
   facilityId: Scalars["ID"];
@@ -928,29 +922,9 @@ export type GetFacilitiesQuery = {
       zipCode?: Maybe<string>;
       phone?: Maybe<string>;
       email?: Maybe<string>;
-      defaultDeviceType?: Maybe<{
-        __typename?: "DeviceType";
-        internalId: string;
-      }>;
       deviceTypes?: Maybe<
-        Array<Maybe<{ __typename?: "DeviceType"; internalId: string }>>
-      >;
-      deviceSpecimenTypes?: Maybe<
         Array<
-          Maybe<{
-            __typename?: "DeviceSpecimenType";
-            internalId: string;
-            deviceType: {
-              __typename?: "DeviceType";
-              name: string;
-              internalId: string;
-            };
-            specimenType: {
-              __typename?: "SpecimenType";
-              internalId: string;
-              name: string;
-            };
-          }>
+          Maybe<{ __typename?: "DeviceType"; name: string; internalId: string }>
         >
       >;
       orderingProvider?: Maybe<{
@@ -969,34 +943,11 @@ export type GetFacilitiesQuery = {
       }>;
     }>;
   }>;
-  deviceType: Array<{
+  deviceTypes: Array<{
     __typename?: "DeviceType";
     internalId: string;
     name: string;
   }>;
-  specimenType?: Maybe<
-    Array<
-      Maybe<{ __typename?: "SpecimenType"; internalId: string; name: string }>
-    >
-  >;
-  deviceSpecimenTypes?: Maybe<
-    Array<
-      Maybe<{
-        __typename?: "DeviceSpecimenType";
-        internalId: string;
-        deviceType: {
-          __typename?: "DeviceType";
-          internalId: string;
-          name: string;
-        };
-        specimenType: {
-          __typename?: "SpecimenType";
-          internalId: string;
-          name: string;
-        };
-      }>
-    >
-  >;
 };
 
 export type UpdateFacilityMutationVariables = Exact<{
@@ -1022,8 +973,6 @@ export type UpdateFacilityMutationVariables = Exact<{
   orderingProviderZipCode?: Maybe<Scalars["String"]>;
   orderingProviderPhone?: Maybe<Scalars["String"]>;
   devices: Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>;
-  deviceSpecimenTypes: Array<Maybe<Scalars["ID"]>> | Maybe<Scalars["ID"]>;
-  defaultDevice: Scalars["String"];
 }>;
 
 export type UpdateFacilityMutation = {
@@ -1053,8 +1002,6 @@ export type AddFacilityMutationVariables = Exact<{
   orderingProviderZipCode?: Maybe<Scalars["String"]>;
   orderingProviderPhone?: Maybe<Scalars["String"]>;
   devices: Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>;
-  deviceSpecimenTypes: Array<Maybe<Scalars["ID"]>> | Maybe<Scalars["ID"]>;
-  defaultDevice: Scalars["String"];
 }>;
 
 export type AddFacilityMutation = {
@@ -1082,20 +1029,9 @@ export type GetManagedFacilitiesQuery = {
       zipCode?: Maybe<string>;
       phone?: Maybe<string>;
       email?: Maybe<string>;
-      defaultDeviceType?: Maybe<{
-        __typename?: "DeviceType";
-        internalId: string;
-      }>;
       deviceTypes?: Maybe<
-        Array<Maybe<{ __typename?: "DeviceType"; internalId: string }>>
-      >;
-      deviceSpecimenTypes?: Maybe<
         Array<
-          Maybe<{
-            __typename?: "DeviceSpecimenType";
-            deviceType: { __typename?: "DeviceType"; internalId: string };
-            specimenType: { __typename?: "SpecimenType"; internalId: string };
-          }>
+          Maybe<{ __typename?: "DeviceType"; internalId: string; name: string }>
         >
       >;
       orderingProvider?: Maybe<{
@@ -2242,22 +2178,9 @@ export const GetFacilitiesDocument = gql`
         zipCode
         phone
         email
-        defaultDeviceType {
-          internalId
-        }
         deviceTypes {
+          name
           internalId
-        }
-        deviceSpecimenTypes {
-          internalId
-          deviceType {
-            name
-            internalId
-          }
-          specimenType {
-            internalId
-            name
-          }
         }
         orderingProvider {
           firstName
@@ -2274,24 +2197,9 @@ export const GetFacilitiesDocument = gql`
         }
       }
     }
-    deviceType {
+    deviceTypes {
       internalId
       name
-    }
-    specimenType {
-      internalId
-      name
-    }
-    deviceSpecimenTypes {
-      internalId
-      deviceType {
-        internalId
-        name
-      }
-      specimenType {
-        internalId
-        name
-      }
     }
   }
 `;
@@ -2369,8 +2277,6 @@ export const UpdateFacilityDocument = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
-    $deviceSpecimenTypes: [ID]!
-    $defaultDevice: String!
   ) {
     updateFacility(
       facilityId: $facilityId
@@ -2395,8 +2301,6 @@ export const UpdateFacilityDocument = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceTypes: $devices
-      deviceSpecimenTypes: $deviceSpecimenTypes
-      defaultDevice: $defaultDevice
     )
   }
 `;
@@ -2440,8 +2344,6 @@ export type UpdateFacilityMutationFn = Apollo.MutationFunction<
  *      orderingProviderZipCode: // value for 'orderingProviderZipCode'
  *      orderingProviderPhone: // value for 'orderingProviderPhone'
  *      devices: // value for 'devices'
- *      deviceSpecimenTypes: // value for 'deviceSpecimenTypes'
- *      defaultDevice: // value for 'defaultDevice'
  *   },
  * });
  */
@@ -2488,8 +2390,6 @@ export const AddFacilityDocument = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
-    $deviceSpecimenTypes: [ID]!
-    $defaultDevice: String!
   ) {
     addFacility(
       testingFacilityName: $testingFacilityName
@@ -2513,8 +2413,6 @@ export const AddFacilityDocument = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceTypes: $devices
-      deviceSpecimenTypes: $deviceSpecimenTypes
-      defaultDevice: $defaultDevice
     )
   }
 `;
@@ -2557,8 +2455,6 @@ export type AddFacilityMutationFn = Apollo.MutationFunction<
  *      orderingProviderZipCode: // value for 'orderingProviderZipCode'
  *      orderingProviderPhone: // value for 'orderingProviderPhone'
  *      devices: // value for 'devices'
- *      deviceSpecimenTypes: // value for 'deviceSpecimenTypes'
- *      defaultDevice: // value for 'defaultDevice'
  *   },
  * });
  */
@@ -2596,19 +2492,9 @@ export const GetManagedFacilitiesDocument = gql`
         zipCode
         phone
         email
-        defaultDeviceType {
-          internalId
-        }
         deviceTypes {
           internalId
-        }
-        deviceSpecimenTypes {
-          deviceType {
-            internalId
-          }
-          specimenType {
-            internalId
-          }
+          name
         }
         orderingProvider {
           firstName

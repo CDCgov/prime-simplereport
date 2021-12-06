@@ -23,22 +23,9 @@ export const GET_FACILITY_QUERY = gql`
         zipCode
         phone
         email
-        defaultDeviceType {
-          internalId
-        }
         deviceTypes {
+          name
           internalId
-        }
-        deviceSpecimenTypes {
-          internalId
-          deviceType {
-            name
-            internalId
-          }
-          specimenType {
-            internalId
-            name
-          }
         }
         orderingProvider {
           firstName
@@ -55,24 +42,9 @@ export const GET_FACILITY_QUERY = gql`
         }
       }
     }
-    deviceType {
+    deviceTypes {
       internalId
       name
-    }
-    specimenType {
-      internalId
-      name
-    }
-    deviceSpecimenTypes {
-      internalId
-      deviceType {
-        internalId
-        name
-      }
-      specimenType {
-        internalId
-        name
-      }
     }
   }
 `;
@@ -101,8 +73,6 @@ export const UPDATE_FACILITY_MUTATION = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
-    $deviceSpecimenTypes: [ID]!
-    $defaultDevice: String!
   ) {
     updateFacility(
       facilityId: $facilityId
@@ -127,8 +97,6 @@ export const UPDATE_FACILITY_MUTATION = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceTypes: $devices
-      deviceSpecimenTypes: $deviceSpecimenTypes
-      defaultDevice: $defaultDevice
     )
   }
 `;
@@ -156,8 +124,6 @@ const ADD_FACILITY_MUTATION = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
-    $deviceSpecimenTypes: [ID]!
-    $defaultDevice: String!
   ) {
     addFacility(
       testingFacilityName: $testingFacilityName
@@ -181,8 +147,6 @@ const ADD_FACILITY_MUTATION = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceTypes: $devices
-      deviceSpecimenTypes: $deviceSpecimenTypes
-      defaultDevice: $defaultDevice
     )
   }
 `;
@@ -251,10 +215,12 @@ const FacilityFormContainer: any = (props: Props) => {
         orderingProviderZipCode: provider.zipCode,
         orderingProviderPhone: provider.phone || null,
         devices: facility.deviceTypes,
+        /*
         deviceSpecimenTypes: facility.deviceSpecimenTypes.map(
           (dst) => dst.internalId
         ),
         defaultDevice: facility.defaultDevice,
+        */
       },
     });
 
@@ -275,19 +241,19 @@ const FacilityFormContainer: any = (props: Props) => {
       (f) => f.id === props.facilityId
     );
     if (facility) {
-      const deviceTypes = facility.deviceSpecimenTypes.map(
-        (dst) => dst.deviceType.internalId
-      );
       return {
         ...facility,
-        deviceTypes: deviceTypes,
+        deviceTypes: facility.deviceTypes,
+        /*
         deviceSpecimenTypes: facility.deviceSpecimenTypes,
         defaultDevice: facility.defaultDeviceType
           ? facility.defaultDeviceType.internalId
           : "",
       };
+      */
+      };
     }
-    const dropdownDefaultDeviceSpecimen = data.deviceSpecimenTypes[0];
+    const dropdownDefaultDevice = data.deviceTypes[0];
 
     return {
       id: "",
@@ -313,16 +279,16 @@ const FacilityFormContainer: any = (props: Props) => {
         zipCode: "",
         phone: "",
       },
-      deviceTypes: [dropdownDefaultDeviceSpecimen.deviceType.internalId],
-      deviceSpecimenTypes: [dropdownDefaultDeviceSpecimen],
-      defaultDevice: dropdownDefaultDeviceSpecimen.deviceType.internalId,
+      deviceTypes: [dropdownDefaultDevice],
+      //deviceSpecimenTypes: [dropdownDefaultDeviceSpecimen],
+      //defaultDevice: dropdownDefaultDeviceSpecimen.deviceType.internalId,
     };
   };
 
   return (
     <FacilityForm
       facility={getFacilityData()}
-      deviceSpecimenTypeOptions={data.deviceSpecimenTypes}
+      deviceTypes={data.deviceTypes}
       saveFacility={saveFacility}
       newOrg={props.newOrg}
     />
