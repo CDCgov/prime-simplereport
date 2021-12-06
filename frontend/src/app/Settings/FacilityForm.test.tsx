@@ -40,7 +40,7 @@ const validFacility: Facility = {
   orderingProvider: {
     firstName: "Frank",
     lastName: "Grimes",
-    NPI: "npi",
+    NPI: "000",
     street: null,
     zipCode: null,
     state: null,
@@ -465,6 +465,40 @@ describe("FacilityForm", () => {
 
         const expectedError = "Ordering provider NPI is incorrectly formatted";
 
+        // The mock function was called at least once
+        expect(spy.mock.calls.length).toBeGreaterThan(0);
+        expect(
+          await screen.findByText(expectedError, {
+            exact: false,
+          })
+        ).toBeInTheDocument();
+
+        const saveButton = screen.getAllByText("Save changes")[0];
+        userEvent.click(saveButton);
+        await waitFor(async () => expect(saveButton).toBeEnabled());
+        expect(saveFacility).toBeCalledTimes(0);
+      });
+
+      it("requires a valid NPI (digits only)", async () => {
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={validFacility}
+              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const npiInput = screen.getByLabelText("NPI", {
+          exact: false,
+        });
+
+        userEvent.clear(npiInput);
+        userEvent.type(npiInput, "Facility name");
+        userEvent.tab();
+
+        const expectedError = "Ordering provider NPI is incorrectly formatted";
         // The mock function was called at least once
         expect(spy.mock.calls.length).toBeGreaterThan(0);
         expect(

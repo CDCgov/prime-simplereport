@@ -6,6 +6,9 @@ import {
   isValidCLIANumber,
   stateRequiresCLIANumberValidation,
 } from "../../utils/clia";
+// import {
+//   isValidNPI
+// } from "../../utils/npi";
 import { isEmptyString } from "../../utils";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
@@ -23,6 +26,18 @@ function orderingProviderIsRequired(
 ): boolean {
   if (this?.options?.context?.orderingProviderIsRequired) {
     return !isEmptyString(input);
+  }
+  return true;
+}
+
+function isValidNpi(
+  this: yup.TestContext<Record<string, any>>,
+  input = ""
+): boolean {
+  if (this?.options?.context?.orderingProviderIsRequired) {
+    // console.log("NPI is required so it better be good");
+    let npiValidator = /^\d{1,10}$/;
+    return npiValidator.test(input);
   }
   return true;
 }
@@ -54,7 +69,7 @@ const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
     .test(
       "ordering-provider-npi",
       orderingProviderFormatError("NPI"),
-      orderingProviderIsRequired
+      isValidNpi
     ),
   phone: yup
     .string()
