@@ -6,9 +6,6 @@ import {
   isValidCLIANumber,
   stateRequiresCLIANumberValidation,
 } from "../../utils/clia";
-// import {
-//   isValidNPI
-// } from "../../utils/npi";
 import { isEmptyString } from "../../utils";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
@@ -35,7 +32,6 @@ function isValidNpi(
   input = ""
 ): boolean {
   if (this?.options?.context?.orderingProviderIsRequired) {
-    // console.log("NPI is required so it better be good");
     let npiValidator = /^\d{1,10}$/;
     return npiValidator.test(input);
   }
