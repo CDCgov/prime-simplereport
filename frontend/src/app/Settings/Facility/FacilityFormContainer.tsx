@@ -235,10 +235,10 @@ const FacilityFormContainer: any = (props: Props) => {
       appInsights.trackEvent({ name: "Save Settings" });
     }
     const provider = facility.orderingProvider;
-    const saveFacility = props.facilityId
+    const saveFacilityMutation = props.facilityId
       ? updateFacilityMutation
       : addFacilityMutation;
-    const savedFacility = await saveFacility({
+    const savedFacility = await saveFacilityMutation({
       variables: {
         facilityId: props.facilityId,
         testingFacilityName: facility.name,
@@ -271,7 +271,7 @@ const FacilityFormContainer: any = (props: Props) => {
     setFacilityData(() => ({
       ...facility,
       id:
-        saveFacility === updateFacilityMutation
+        saveFacilityMutation === updateFacilityMutation
           ? savedFacility.data.updateFacility.id
           : savedFacility.data.addFacility.id,
     }));
