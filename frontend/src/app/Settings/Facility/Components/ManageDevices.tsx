@@ -4,7 +4,6 @@ import { uniqBy } from "lodash";
 
 import Button from "../../../commonComponents/Button/Button";
 import Dropdown from "../../../commonComponents/Dropdown";
-import Checkboxes from "../../../commonComponents/Checkboxes";
 import { FacilityErrors } from "../facilitySchema";
 import { ValidateField } from "../FacilityForm";
 import { getSpecimenTypesForDevice } from "../../../utils/devices";
@@ -167,31 +166,6 @@ const ManageDevices: React.FC<Props> = ({
             />
           </td>
           <td>
-            <Dropdown
-              options={specimenDropdownOptions}
-              selectedValue={dst.specimenType}
-              onChange={(e) =>
-                onSpecimenTypeChange(idx, (e.target as HTMLSelectElement).value)
-              }
-              data-testid={`swab-dropdown-${idx}`}
-            />
-          </td>
-          <td>
-            <Checkboxes
-              onChange={() => updateDefaultDevice(deviceId)}
-              legend="Set default"
-              legendSrOnly
-              name="default_device"
-              boxes={[
-                {
-                  value: "1",
-                  label: "Set as default",
-                  checked: deviceId === defaultDevice,
-                },
-              ]}
-            />
-          </td>
-          <td>
             <button
               className="usa-button--unstyled"
               onClick={() => onDeviceRemove(deviceId, idx)}
@@ -217,8 +191,6 @@ const ManageDevices: React.FC<Props> = ({
         <thead>
           <tr>
             <th scope="col">Device type</th>
-            <th scope="col">Swab type</th>
-            <th scope="col"></th>
             <th scope="col">Action</th>
           </tr>
         </thead>
