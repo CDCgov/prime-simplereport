@@ -3,14 +3,14 @@ import { createStore } from "redux";
 import { COVID_RESULTS } from "../app/constants";
 import { UserPermission } from "../generated/graphql";
 
-const SET_INITIAL_STATE = "SET_INITIAL_STATE";
-const UPDATE_ORGANIZATION = "UPDATE_ORGANIZATION";
-const UPDATE_FACILITIES = "UPDATE_FACILITIES";
-const SET_PATIENT = "SET_PATIENT";
+export const SET_INITIAL_STATE = "SET_INITIAL_STATE";
+export const UPDATE_ORGANIZATION = "UPDATE_ORGANIZATION";
+export const UPDATE_FACILITY = "UPDATE_FACILITY";
+export const SET_PATIENT = "SET_PATIENT";
 
 // this should be the default value for a brand new org
 // TODO: get the fields from a schema or something; hard-coded fields are hard to maintain
-const initialState = {
+export const initialState = {
   dataLoaded: false,
   organization: {
     name: "",
@@ -59,7 +59,7 @@ const reducers = (state = initialState, action: any) => {
           ...action.payload,
         },
       };
-    case UPDATE_FACILITIES:
+    case UPDATE_FACILITY:
       const facilityIndex = state.facilities.findIndex(
         (f) => f.id === action.payload.id
       );
@@ -98,9 +98,9 @@ export const updateOrganization = (organization: any) => {
   };
 };
 
-export const updateFacilities = (facility: any) => {
+export const updateFacility = (facility: any) => {
   return {
-    type: UPDATE_FACILITIES,
+    type: UPDATE_FACILITY,
     payload: facility,
   };
 };
@@ -124,3 +124,5 @@ const configureStore = () => {
 export const store = configureStore();
 
 export type RootState = ReturnType<typeof store.getState>;
+
+export default reducers;

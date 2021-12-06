@@ -3,7 +3,7 @@ import { gql, useQuery, useMutation } from "@apollo/client";
 import { Redirect } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
-import { updateFacilities } from "../../store";
+import { updateFacility } from "../../store";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import { getAppInsights } from "../../TelemetryService";
@@ -207,11 +207,11 @@ const FacilityFormContainer: any = (props: Props) => {
   );
 
   const appInsights = getAppInsights();
-  const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION);
-  const [addFacility] = useMutation(ADD_FACILITY_MUTATION);
+  const [updateFacilityMutation] = useMutation(UPDATE_FACILITY_MUTATION);
+  const [addFacilityMutation] = useMutation(ADD_FACILITY_MUTATION);
 
   const [saveSuccess, updateSaveSuccess] = useState(false);
-  const [updatedFacility, setUpdatedFacility] = useState<Facility | null>(null);
+  const [facilityData, setFacilityData] = useState<Facility | null>(null);
   const dispatch = useDispatch();
   if (loading) {
     return <p> Loading... </p>;
@@ -223,7 +223,7 @@ const FacilityFormContainer: any = (props: Props) => {
     return <p>Error: facility not found</p>;
   }
   if (saveSuccess) {
-    dispatch(updateFacilities(updatedFacility));
+    dispatch(updateFacility(facilityData));
     if (props.newOrg) {
       window.location.pathname = process.env.PUBLIC_URL || "";
     }
@@ -235,7 +235,9 @@ const FacilityFormContainer: any = (props: Props) => {
       appInsights.trackEvent({ name: "Save Settings" });
     }
     const provider = facility.orderingProvider;
-    const saveFacility = props.facilityId ? updateFacility : addFacility;
+    const saveFacility = props.facilityId
+      ? updateFacilityMutation
+      : addFacilityMutation;
     const savedFacility = await saveFacility({
       variables: {
         facilityId: props.facilityId,
@@ -266,10 +268,10 @@ const FacilityFormContainer: any = (props: Props) => {
         defaultDevice: facility.defaultDevice,
       },
     });
-    setUpdatedFacility(() => ({
+    setFacilityData(() => ({
       ...facility,
       id:
-        saveFacility === updateFacility
+        saveFacility === updateFacilityMutation
           ? savedFacility.data.updateFacility.id
           : savedFacility.data.addFacility.id,
     }));
