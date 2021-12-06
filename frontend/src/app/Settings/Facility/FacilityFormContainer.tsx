@@ -214,13 +214,7 @@ const FacilityFormContainer: any = (props: Props) => {
         orderingProviderState: provider.state,
         orderingProviderZipCode: provider.zipCode,
         orderingProviderPhone: provider.phone || null,
-        devices: facility.deviceTypes,
-        /*
-        deviceSpecimenTypes: facility.deviceSpecimenTypes.map(
-          (dst) => dst.internalId
-        ),
-        defaultDevice: facility.defaultDevice,
-        */
+        devices: facility.deviceTypes.map((d) => d.internalId),
       },
     });
 

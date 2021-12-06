@@ -5,18 +5,17 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
-import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
 import java.util.Collection;
@@ -44,7 +43,7 @@ public class OrganizationService {
   private final CurrentOrganizationRolesContextHolder _currentOrgRolesContextHolder;
   private final OrderingProviderRequiredValidator _orderingProviderRequiredValidator;
   private final PatientSelfRegistrationLinkService _psrlService;
-  private final DeviceSpecimenTypeRepository deviceSpecimenTypeRepository;
+  private final DeviceTypeRepository _deviceTypeRepository;
 
   public void resetOrganizationRolesContext() {
     _currentOrgRolesContextHolder.reset();
@@ -196,7 +195,7 @@ public class OrganizationService {
       String orderingProviderNPI,
       StreetAddress orderingProviderAddress,
       String orderingProviderTelephone,
-      DeviceSpecimenTypeHolder deviceSpecimenTypes) {
+      List<DeviceType> deviceTypes) {
 
     Facility facility = this.getFacilityInCurrentOrg(facilityId);
     facility.setFacilityName(testingFacilityName);
@@ -217,6 +216,25 @@ public class OrganizationService {
     _orderingProviderRequiredValidator.assertValidity(
         p.getNameInfo(), p.getProviderId(), p.getTelephone(), facility.getAddress().getState());
 
+    facility.getDeviceTypes().forEach(facility::removeDeviceType);
+
+    for (DeviceType device : deviceTypes) {
+      Optional<DeviceType> deviceTypeOptional =
+          _deviceTypeRepository.findById(device.getInternalId());
+      deviceTypeOptional.ifPresent(facility::addDeviceType);
+    }
+    /*c
+          deviceSpecimenTypeRepository.find(ds.getDeviceType(), ds.getSpecimenType());
+      deviceSpecimenTypeOptional.ifPresent(facility::addDeviceSpecimenType);
+    }
+
+    Optional<DeviceSpecimenType> deviceSpecimenTypeOptional =
+        deviceSpecimenTypeRepository.find(
+            deviceSpecimenTypes.getDefault().getDeviceType(),
+            deviceSpecimenTypes.getDefault().getSpecimenType());
+    deviceSpecimenTypeOptional.ifPresent(facility::addDefaultDeviceSpecimen);
+
+        /*
     facility.getDeviceSpecimenTypes().forEach(facility::removeDeviceSpecimenType);
 
     for (DeviceSpecimenType ds : deviceSpecimenTypes.getFullList()) {
@@ -230,6 +248,7 @@ public class OrganizationService {
             deviceSpecimenTypes.getDefault().getDeviceType(),
             deviceSpecimenTypes.getDefault().getSpecimenType());
     deviceSpecimenTypeOptional.ifPresent(facility::addDefaultDeviceSpecimen);
+    */
 
     return _facilityRepo.save(facility);
   }
@@ -244,7 +263,7 @@ public class OrganizationService {
       StreetAddress facilityAddress,
       String phone,
       String email,
-      DeviceSpecimenTypeHolder deviceSpecimenTypes,
+      List<DeviceType> deviceTypes,
       PersonName providerName,
       StreetAddress providerAddress,
       String providerTelephone,
@@ -258,7 +277,7 @@ public class OrganizationService {
         facilityAddress,
         phone,
         email,
-        deviceSpecimenTypes,
+        deviceTypes,
         providerName,
         providerAddress,
         providerTelephone,
@@ -329,7 +348,7 @@ public class OrganizationService {
       StreetAddress facilityAddress,
       String phone,
       String email,
-      DeviceSpecimenTypeHolder deviceSpecimenTypes,
+      List<DeviceType> deviceTypes,
       PersonName providerName,
       StreetAddress providerAddress,
       String providerTelephone,
@@ -348,8 +367,7 @@ public class OrganizationService {
             phone,
             email,
             orderingProvider,
-            deviceSpecimenTypes.getDefault(),
-            deviceSpecimenTypes.getFullList());
+            deviceTypes);
     facility = _facilityRepo.save(facility);
     _psrlService.createRegistrationLink(facility);
     _oktaRepo.createFacility(facility);
@@ -364,7 +382,7 @@ public class OrganizationService {
       StreetAddress facilityAddress,
       String phone,
       String email,
-      DeviceSpecimenTypeHolder deviceSpecimenTypes,
+      List<DeviceType> deviceTypes,
       PersonName providerName,
       StreetAddress providerAddress,
       String providerTelephone,
@@ -376,7 +394,7 @@ public class OrganizationService {
         facilityAddress,
         phone,
         email,
-        deviceSpecimenTypes,
+        deviceTypes,
         providerName,
         providerAddress,
         providerTelephone,

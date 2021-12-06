@@ -67,6 +67,11 @@ public class DeviceTypeService {
         .collect(Collectors.toList());
   }
 
+  public List<DeviceType> getDeviceTypesByIds(List<UUID> deviceTypeIds) {
+    return StreamSupport.stream(_repo.findAllById(deviceTypeIds).spliterator(), false)
+        .collect(Collectors.toList());
+  }
+
   public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
     return _deviceSpecimenRepo.findAll();
   }

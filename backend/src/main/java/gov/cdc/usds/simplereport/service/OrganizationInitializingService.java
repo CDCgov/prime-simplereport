@@ -107,8 +107,9 @@ public class OrganizationInitializingService {
                         : f.makeRealFacility(
                             orgsByExternalId.get(f.getOrganizationExternalId()),
                             savedProvider,
-                            defaultDeviceSpecimen,
-                            configuredDs))
+                            configuredDs.stream()
+                                .map(DeviceSpecimenType::getDeviceType)
+                                .collect(Collectors.toList())))
             .collect(Collectors.toList());
     log.info(
         "Creating facilities {} with {} devices configured",

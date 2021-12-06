@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.config;
 
 import static gov.cdc.usds.simplereport.utils.DeviceTestLengthConverter.determineTestLength;
 
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -134,10 +133,9 @@ public class InitialSetupProperties {
     public Facility makeRealFacility(
         Organization org,
         Provider p,
-        DeviceSpecimenType defaultDeviceSpec,
-        List<DeviceSpecimenType> configured) {
-      return new Facility(
-          org, name, cliaNumber, address, telephone, email, p, defaultDeviceSpec, configured);
+        // DeviceSpecimenType defaultDeviceSpec,
+        List<DeviceType> configured) {
+      return new Facility(org, name, cliaNumber, address, telephone, email, p, configured);
     }
 
     public String getName() {

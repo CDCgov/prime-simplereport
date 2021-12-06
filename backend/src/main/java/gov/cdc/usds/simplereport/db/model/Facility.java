@@ -40,10 +40,10 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
-      name = "facility_device_specimen_type",
+      name = "facility_device_type",
       joinColumns = @JoinColumn(name = "facility_id"),
-      inverseJoinColumns = @JoinColumn(name = "device_specimen_type_id"))
-  private Set<DeviceSpecimenType> configuredDeviceSpecimenTypes = new HashSet<>();
+      inverseJoinColumns = @JoinColumn(name = "device_type_id"))
+  private Set<DeviceType> configuredDeviceTypes = new HashSet<>();
 
   protected Facility() {
     /* for hibernate */ }
@@ -56,8 +56,8 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
       String phone,
       String email,
       Provider orderingProvider,
-      DeviceSpecimenType defaultDeviceSpecimen,
-      List<DeviceSpecimenType> configuredDeviceSpecimens) {
+      // DeviceSpecimenType defaultDeviceSpecimen,
+      List<DeviceType> configuredDevices) {
     super(org);
     this.facilityName = facilityName;
     this.cliaNumber = cliaNumber;
@@ -65,11 +65,13 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.telephone = phone;
     this.email = email;
     this.orderingProvider = orderingProvider;
+    /*
     this.defaultDeviceSpecimen = defaultDeviceSpecimen;
     if (defaultDeviceSpecimen != null) {
       this.configuredDeviceSpecimenTypes.add(defaultDeviceSpecimen);
     }
-    this.configuredDeviceSpecimenTypes.addAll(configuredDeviceSpecimens);
+    */
+    this.configuredDeviceTypes.addAll(configuredDevices);
   }
 
   public void setFacilityName(String facilityName) {
@@ -91,13 +93,18 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   public List<DeviceType> getDeviceTypes() {
     // this might be better done on the DB side, but that seems like a recipe for
     // weird behaviors
+    return configuredDeviceTypes.stream().filter(e -> !e.isDeleted()).collect(Collectors.toList());
+  }
+  /*
     return configuredDeviceSpecimenTypes.stream()
         .filter(e -> !e.isDeleted())
         .map(DeviceSpecimenType::getDeviceType)
         .filter(e -> !e.isDeleted())
         .collect(Collectors.toList());
   }
+        */
 
+  /*
   public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
     return configuredDeviceSpecimenTypes.stream()
         .filter(
@@ -112,24 +119,30 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     configuredDeviceSpecimenTypes.add(ds);
   }
 
-  public void addDefaultDeviceSpecimen(DeviceSpecimenType newDefault) {
-    addDeviceSpecimenType(newDefault);
-    defaultDeviceSpecimen = newDefault;
-  }
-
   public void removeDeviceSpecimenType(DeviceSpecimenType existing) {
     configuredDeviceSpecimenTypes.remove(existing); // count on this being in one hibernate session
   }
+  */
+
+  public void addDefaultDeviceSpecimen(DeviceSpecimenType newDefault) {
+    defaultDeviceSpecimen = newDefault;
+  }
+
+  public void addDeviceType(DeviceType device) {
+    configuredDeviceTypes.add(device);
+  }
 
   public void removeDeviceType(DeviceType existingDevice) {
-    Iterator<DeviceSpecimenType> i = configuredDeviceSpecimenTypes.iterator();
+    Iterator<DeviceType> i = configuredDeviceTypes.iterator();
     UUID removedId = existingDevice.getInternalId();
+    /*
     if (defaultDeviceSpecimen != null
         && defaultDeviceSpecimen.getDeviceType().getInternalId().equals(removedId)) {
       defaultDeviceSpecimen = null;
     }
+    */
     while (i != null && i.hasNext()) {
-      DeviceType d = i.next().getDeviceType();
+      DeviceType d = i.next();
       if (d.getInternalId().equals(removedId)) {
         i.remove();
         break;
