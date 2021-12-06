@@ -1,6 +1,6 @@
 plugins {
     id 'org.springframework.boot' version '2.4.1'
-    id 'org.liquibase.gradle' version '2.0.4'
+    id 'org.liquibase.gradle' version '2.1.0'
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id 'java'
     id 'checkstyle'
@@ -29,28 +29,29 @@ dependencies {
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'com.vladmihalcea:hibernate-types-52:2.10.0'
     implementation 'org.liquibase:liquibase-core'
     runtimeOnly 'org.postgresql:postgresql'
 
     // data validation
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.15'
-    implementation 'com.smartystreets.api:smartystreets-java-sdk:3.7.2'
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.38'
+    implementation 'com.smartystreets.api:smartystreets-java-sdk:3.12.2'
 
     // UI layer dependencies
     implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
     implementation "com.graphql-java-kickstart:graphiql-spring-boot-starter:${kickstartVersion}"
-    implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.0.0"
-    implementation 'org.json:json:20201115'
+    implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.0.0" //Don't change this! It breaks everything!
+    implementation 'org.json:json:20210307'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Okta dependencies
-    implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
-    implementation 'com.okta.sdk:okta-sdk-api:3.0.2'
-    runtimeOnly 'com.okta.sdk:okta-sdk-impl:3.0.2'
-    runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.2'
+    implementation 'com.okta.spring:okta-spring-boot-starter:2.1.2'
+    implementation 'com.okta.sdk:okta-sdk-api:6.0.0'
+    runtimeOnly 'com.okta.sdk:okta-sdk-impl:6.0.0'
+    runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:6.0.0'
 
     // SpringSession dependencies
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
@@ -59,22 +60,22 @@ dependencies {
     implementation 'com.microsoft.azure:applicationinsights-core:2.6.3'
 
     // Twilio for SMS
-    implementation group: "com.twilio.sdk", name: "twilio", version: "8.7.0"
+    implementation 'com.twilio.sdk:twilio:8.22.1'
 
     // SendGrid for Email
-    implementation 'com.sendgrid:sendgrid-java:4.7.2'
+    implementation 'com.sendgrid:sendgrid-java:4.8.0'
 
     // For local Email
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // JPA Hibernate static metamodel generation
-    compileOnly 'org.hibernate:hibernate-jpamodelgen:5.4.27.Final'
+    compileOnly 'org.hibernate:hibernate-jpamodelgen:5.6.1.Final'
     annotationProcessor'org.hibernate:hibernate-jpamodelgen'
 
     // graphql-java-extended-validation schema directives
     implementation 'com.graphql-java:graphql-java-extended-validation:16.0.0'
 
-    implementation 'com.azure:azure-storage-queue:12.8.+'
+    implementation 'com.azure:azure-storage-queue:12.11.2'
 
     // test/check dependencies
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -82,36 +83,36 @@ dependencies {
     }
     testImplementation "com.graphql-java-kickstart:graphql-spring-boot-starter-test:${kickstartVersion}"
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'com.yannbriancon:spring-hibernate-query-utils:1.0.3'
+    testImplementation 'com.yannbriancon:spring-hibernate-query-utils:2.0.0'
 
     // used to autoconfigure WireMock for testing
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
     testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
-    testImplementation 'org.awaitility:awaitility:4.1.0'
+    testImplementation 'org.awaitility:awaitility:4.1.1'
 
     // dev tools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
-    testCompileOnly 'org.projectlombok:lombok:1.18.20'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    testCompileOnly 'org.projectlombok:lombok:1.18.22'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
 
     // WireMock (only used for testing)
-    testCompileOnly "com.github.tomakehurst:wiremock-jre8:2.28.1"
+    testCompileOnly "com.github.tomakehurst:wiremock-jre8:2.31.0"
 
     // Forcing these version resolutions over the BOM of spring-cloud-dependencies below
-    runtimeOnly 'com.azure:azure-core-http-netty:1.10.2'
-    runtimeOnly 'com.azure:azure-core:1.19.0'
-    runtimeOnly 'com.azure:azure-storage-common:12.12.0'
-    runtimeOnly "com.azure:azure-storage-queue:12.9.1"
+    runtimeOnly 'com.azure:azure-core-http-netty:1.11.3'
+    runtimeOnly 'com.azure:azure-core:1.23.0'
+    runtimeOnly 'com.azure:azure-storage-common:12.14.1'
+    runtimeOnly "com.azure:azure-storage-queue:12.11.2"
 
-    runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
-    runtimeOnly "io.zipkin.brave:brave:5.13.2"
+    runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.3"
+    runtimeOnly "io.zipkin.brave:brave:5.13.3"
     runtimeOnly "io.zipkin.reporter2:zipkin-reporter-brave:2.16.3"
-    runtimeOnly "io.zipkin.reporter2:zipkin-reporter:2.16.1"
-    runtimeOnly "io.zipkin.zipkin2:zipkin:2.23.0"
+    runtimeOnly "io.zipkin.reporter2:zipkin-reporter:2.16.3"
+    runtimeOnly "io.zipkin.zipkin2:zipkin:2.23.9"
 
 }
 
