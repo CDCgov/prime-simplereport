@@ -112,7 +112,7 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
       DataFetchingEnvironment dfe, GraphQLArgument argument) {
     var argValue = dfe.getArgument(argument.getName());
 
-    return argValue == null || Objects.equals(argValue, argument.getDefaultValue());
+    return argValue == null || Objects.equals(argValue, argument.getArgumentDefaultValue());
   }
 
   private static boolean requesterHasRequisitePermissions(
@@ -183,7 +183,7 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
   private static Optional<Set<UserPermission>> fromStringListArgument(
       GraphQLDirective directive, String argumentName) {
     return Optional.ofNullable(directive.getArgument(argumentName))
-        .map(GraphQLArgument::getValue)
+        .map(x -> x.getArgumentValue())
         .filter(Collection.class::isInstance)
         .map(c -> (Collection<String>) c)
         .map(
