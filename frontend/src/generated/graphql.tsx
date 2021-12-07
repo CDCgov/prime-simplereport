@@ -121,7 +121,7 @@ export type Facility = {
 
 export type Mutation = {
   __typename?: "Mutation";
-  addFacility?: Maybe<Scalars["String"]>;
+  addFacility?: Maybe<Facility>;
   addPatient?: Maybe<Patient>;
   addPatientToQueue?: Maybe<Scalars["String"]>;
   addTestResult?: Maybe<TestOrder>;
@@ -150,7 +150,7 @@ export type Mutation = {
   setRegistrationLinkIsDeleted?: Maybe<Scalars["String"]>;
   setUserIsDeleted?: Maybe<User>;
   updateDeviceType?: Maybe<DeviceType>;
-  updateFacility?: Maybe<Scalars["String"]>;
+  updateFacility?: Maybe<Facility>;
   updateOrganization?: Maybe<Scalars["String"]>;
   updatePatient?: Maybe<Patient>;
   updateRegistrationLink?: Maybe<Scalars["String"]>;
@@ -1014,7 +1014,7 @@ export type UpdateFacilityMutationVariables = Exact<{
 
 export type UpdateFacilityMutation = {
   __typename?: "Mutation";
-  updateFacility?: Maybe<string>;
+  updateFacility?: Maybe<{ __typename?: "Facility"; id: string }>;
 };
 
 export type AddFacilityMutationVariables = Exact<{
@@ -1045,7 +1045,7 @@ export type AddFacilityMutationVariables = Exact<{
 
 export type AddFacilityMutation = {
   __typename?: "Mutation";
-  addFacility?: Maybe<string>;
+  addFacility?: Maybe<{ __typename?: "Facility"; id: string }>;
 };
 
 export type GetManagedFacilitiesQueryVariables = Exact<{
@@ -2360,7 +2360,9 @@ export const UpdateFacilityDocument = gql`
       deviceTypes: $devices
       deviceSpecimenTypes: $deviceSpecimenTypes
       defaultDevice: $defaultDevice
-    )
+    ) {
+      id
+    }
   }
 `;
 export type UpdateFacilityMutationFn = Apollo.MutationFunction<
@@ -2478,7 +2480,9 @@ export const AddFacilityDocument = gql`
       deviceTypes: $devices
       deviceSpecimenTypes: $deviceSpecimenTypes
       defaultDevice: $defaultDevice
-    )
+    ) {
+      id
+    }
   }
 `;
 export type AddFacilityMutationFn = Apollo.MutationFunction<
