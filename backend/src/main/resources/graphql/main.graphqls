@@ -30,8 +30,7 @@ type Facility {
   phone: String
   email: String
   deviceTypes: [DeviceType]
-  #deviceSpecimenTypes: [DeviceSpecimenType]
-  #defaultDeviceType: DeviceType
+  defaultDeviceSpecimen: DeviceSpecimenType
   orderingProvider: Provider
   patientSelfRegistrationLink: String
 }

@@ -333,6 +333,12 @@ public class TestOrderService {
           "Cannot add patient to this queue: patient's facility and/or organization "
               + "are incompatible with facility of queue");
     }
+
+    if (testFacility.getDefaultDeviceSpecimen() == null) {
+      testFacility.addDefaultDeviceSpecimen(
+          _dts.getDefaultForDeviceId(testFacility.getDeviceTypes().get(0).getInternalId()));
+    }
+
     TestOrder newOrder = new TestOrder(patient, testFacility);
 
     AskOnEntrySurvey survey =

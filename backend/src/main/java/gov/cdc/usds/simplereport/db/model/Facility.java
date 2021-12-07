@@ -125,6 +125,10 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   */
 
   public void addDefaultDeviceSpecimen(DeviceSpecimenType newDefault) {
+    if (newDefault != null) {
+      configuredDeviceTypes.add(newDefault.getDeviceType());
+    }
+
     defaultDeviceSpecimen = newDefault;
   }
 

@@ -104,7 +104,7 @@ export type Facility = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
-  defaultDeviceType?: Maybe<DeviceType>;
+  defaultDeviceSpecimen?: Maybe<DeviceSpecimenType>;
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
   email?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
@@ -1722,12 +1722,19 @@ export type GetFacilityQueueQuery = {
           }>
         >
       >;
-      defaultDeviceType?: Maybe<{
-        __typename?: "DeviceType";
+      defaultDeviceSpecimen?: Maybe<{
+        __typename?: "DeviceSpecimenType";
         internalId: string;
-        name: string;
-        model: string;
-        testLength?: Maybe<number>;
+        deviceType: {
+          __typename?: "DeviceType";
+          internalId: string;
+          name: string;
+        };
+        specimenType: {
+          __typename?: "SpecimenType";
+          internalId: string;
+          name: string;
+        };
       }>;
     }>;
   }>;
@@ -4946,11 +4953,16 @@ export const GetFacilityQueueDocument = gql`
           model
           testLength
         }
-        defaultDeviceType {
+        defaultDeviceSpecimen {
           internalId
-          name
-          model
-          testLength
+          deviceType {
+            internalId
+            name
+          }
+          specimenType {
+            internalId
+            name
+          }
         }
       }
     }

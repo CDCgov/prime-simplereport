@@ -39,6 +39,7 @@ public class OrganizationService {
   private final FacilityRepository _facilityRepo;
   private final ProviderRepository _providerRepo;
   private final AuthorizationService _authService;
+  private final DeviceTypeService _deviceService;
   private final OktaRepository _oktaRepo;
   private final CurrentOrganizationRolesContextHolder _currentOrgRolesContextHolder;
   private final OrderingProviderRequiredValidator _orderingProviderRequiredValidator;
@@ -216,39 +217,30 @@ public class OrganizationService {
     _orderingProviderRequiredValidator.assertValidity(
         p.getNameInfo(), p.getProviderId(), p.getTelephone(), facility.getAddress().getState());
 
-    facility.getDeviceTypes().forEach(facility::removeDeviceType);
+    facility
+        .getDeviceTypes()
+        .forEach(
+            device -> {
+              // Removing default device
+              if (facility.getDefaultDeviceSpecimen().getDeviceType() == device) {
+                facility.addDefaultDeviceSpecimen(null);
+              }
+
+              facility.removeDeviceType(device);
+            });
 
     for (DeviceType device : deviceTypes) {
       Optional<DeviceType> deviceTypeOptional =
           _deviceTypeRepository.findById(device.getInternalId());
       deviceTypeOptional.ifPresent(facility::addDeviceType);
     }
-    /*c
-          deviceSpecimenTypeRepository.find(ds.getDeviceType(), ds.getSpecimenType());
-      deviceSpecimenTypeOptional.ifPresent(facility::addDeviceSpecimenType);
+
+    // Default device specimen is not explicitly set by update/add facility,
+    // but we still want one to exist
+    if (facility.getDefaultDeviceSpecimen() == null) {
+      facility.addDefaultDeviceSpecimen(
+          _deviceService.getDefaultForDeviceId(deviceTypes.get(0).getInternalId()));
     }
-
-    Optional<DeviceSpecimenType> deviceSpecimenTypeOptional =
-        deviceSpecimenTypeRepository.find(
-            deviceSpecimenTypes.getDefault().getDeviceType(),
-            deviceSpecimenTypes.getDefault().getSpecimenType());
-    deviceSpecimenTypeOptional.ifPresent(facility::addDefaultDeviceSpecimen);
-
-        /*
-    facility.getDeviceSpecimenTypes().forEach(facility::removeDeviceSpecimenType);
-
-    for (DeviceSpecimenType ds : deviceSpecimenTypes.getFullList()) {
-      Optional<DeviceSpecimenType> deviceSpecimenTypeOptional =
-          deviceSpecimenTypeRepository.find(ds.getDeviceType(), ds.getSpecimenType());
-      deviceSpecimenTypeOptional.ifPresent(facility::addDeviceSpecimenType);
-    }
-
-    Optional<DeviceSpecimenType> deviceSpecimenTypeOptional =
-        deviceSpecimenTypeRepository.find(
-            deviceSpecimenTypes.getDefault().getDeviceType(),
-            deviceSpecimenTypes.getDefault().getSpecimenType());
-    deviceSpecimenTypeOptional.ifPresent(facility::addDefaultDeviceSpecimen);
-    */
 
     return _facilityRepo.save(facility);
   }
