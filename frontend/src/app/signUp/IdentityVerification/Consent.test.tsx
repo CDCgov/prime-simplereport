@@ -27,7 +27,7 @@ describe("Consent", () => {
     );
   });
   it("initializes with the submit button enabled", () => {
-    expect(screen.getByText("I agree")).not.toHaveAttribute("disabled");
+    expect(screen.getByText("I agree")).toBeEnabled();
   });
 
   it("redirects to sign-up page when it doesnt get org id and user info", () => {

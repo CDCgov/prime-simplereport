@@ -6,8 +6,9 @@ query getTestResultForResendingEmails($id: ID!) {
       middleName
       lastName
       email
+      emails
     }
-    patientLink{
+    patientLink {
       internalId
     }
   }

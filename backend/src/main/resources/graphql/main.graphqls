@@ -215,6 +215,7 @@ type TestOrder {
   symptoms: String
   symptomOnset: LocalDate
   deviceType: DeviceType
+  deviceSpecimenType: DeviceSpecimenType
   result: String
   dateTested: DateTime
   correctionStatus: String
@@ -231,6 +232,7 @@ type TestResult {
   symptoms: String
   symptomOnset: LocalDate
   deviceType: DeviceType
+  deviceSpecimenType: DeviceSpecimenType
   result: String
   dateTested: DateTime
   testPerformed: TestDescription!
@@ -517,12 +519,14 @@ type Mutation {
     @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
   addTestResultNew(
     deviceId: String!
+    deviceSpecimenType: ID
     result: String!
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
   addTestResult(
     deviceId: String!
+    deviceSpecimenType: ID
     result: String!
     patientId: ID!
     dateTested: DateTime
@@ -530,6 +534,7 @@ type Mutation {
   editQueueItem(
     id: ID!
     deviceId: String
+    deviceSpecimenType: ID
     result: String
     dateTested: DateTime
   ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
@@ -554,7 +559,7 @@ type Mutation {
     noSymptoms: Boolean
     testResultDelivery: TestResultDeliveryPreference
   ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
-  sendPatientLinkSms(internalId: ID!): String
+  sendPatientLinkSms(internalId: ID!): Boolean
     @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkEmail(internalId: ID!): Boolean
   updateOrganization(type: String!): String

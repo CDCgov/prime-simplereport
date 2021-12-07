@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router";
@@ -58,14 +58,10 @@ describe("Header.tsx", () => {
   it("displays the support link correctly", async () => {
     process.env.REACT_APP_IS_TRAINING_SITE = "false";
     render(<WrappedHeader />);
-    await waitFor(() => {
-      userEvent.click(screen.getByTestId("user-button"));
-    });
+    userEvent.click(screen.getByTestId("user-button"));
     expect(screen.getByTestId("support-link")).toBeVisible();
-    await waitFor(() => {
-      userEvent.click(screen.getByTestId("support-link"));
-      expect(trackEventMock).toHaveBeenCalledWith({ name: "Support" });
-    });
+    userEvent.click(screen.getByTestId("support-link"));
+    expect(trackEventMock).toHaveBeenCalledWith({ name: "Support" });
   });
   it("it does not render login links", () => {
     expect(
@@ -80,9 +76,7 @@ describe("Header.tsx", () => {
         </WrappedHeader>
       );
       const dropdown = await screen.findAllByRole("option");
-      await waitFor(() => {
-        userEvent.selectOptions(dropdown[1].closest("select")!, "2");
-      });
+      userEvent.selectOptions(dropdown[1].closest("select")!, "2");
       expect(
         await screen.findByText("Facility 2 is selected")
       ).toBeInTheDocument();

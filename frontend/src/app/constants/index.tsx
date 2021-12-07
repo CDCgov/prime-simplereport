@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 import { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 

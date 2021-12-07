@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 
@@ -39,9 +39,7 @@ describe("TenantDataAccessForm", () => {
     );
     const saveButton = await screen.getAllByText("Access data")[0];
     expect(saveButton).toBeEnabled();
-    await waitFor(async () => {
-      userEvent.click(saveButton);
-    });
+    userEvent.click(saveButton);
     expect(saveTenantDataAccess).toBeCalledTimes(1);
   });
 
@@ -66,9 +64,7 @@ describe("TenantDataAccessForm", () => {
     );
     const cancelButton = await screen.getAllByText("Cancel access")[0];
     expect(cancelButton).toBeEnabled();
-    await waitFor(async () => {
-      userEvent.click(cancelButton);
-    });
+    userEvent.click(cancelButton);
     expect(saveTenantDataAccess).toBeCalledTimes(1);
   });
 
@@ -85,9 +81,7 @@ describe("TenantDataAccessForm", () => {
     );
     const cancelButton = await screen.getAllByText("Cancel access")[0];
     expect(cancelButton).toBeEnabled();
-    await waitFor(async () => {
-      userEvent.click(cancelButton);
-    });
+    userEvent.click(cancelButton);
     expect(saveTenantDataAccess).toBeCalledTimes(1);
   });
 });
