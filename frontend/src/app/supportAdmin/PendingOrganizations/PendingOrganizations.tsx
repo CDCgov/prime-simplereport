@@ -71,36 +71,13 @@ const PendingOrganizations = ({
     setIsUpdating(true);
 
     try {
-      // submit field input to edit function in case there are any differences
-      await editOrg({
-        variables: {
-          externalId: orgToVerify.externalId,
-          name: org.name,
-          adminFirstName: org.adminFirstName,
-          adminLastName: org.adminLastName,
-          adminEmail: org.adminEmail,
-          adminPhone: org.adminPhone,
-        },
-      })
-        .then((orgAfterSubmit) => {
-          if (orgAfterSubmit === undefined) {
-            throw Error(
-              `Org edit function failed during submit process. 
-              Please check for errors and try again`
-            );
-          } else {
-            const newData = refetch();
-            console.log(newData);
-          }
-        })
-        .then(() => {
-          console.log([...organizations]);
-        })
-        .finally(() => {
-          // submitIdentityVerified();
-          setOrgToVerify(null);
-          setIsUpdating(false);
-        });
+      // resubmit form data in case there are any changes
+      await handleUpdateOrg(org).then(() => {
+        console.log(orgToVerify);
+        console.log(org);
+        // submitIdentityVerified();
+        // setVerifiedOrganization(orgToVerify.externalId, false);
+      });
     } catch (e) {
       console.error(e);
     }

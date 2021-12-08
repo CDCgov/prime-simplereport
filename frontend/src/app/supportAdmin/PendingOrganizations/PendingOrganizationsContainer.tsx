@@ -39,13 +39,11 @@ const PendingOrganizationsContainer = () => {
       );
     } else {
       setVerifyInProgress(true);
-      new Promise(() => {
-        return verifyIdentity({
-          variables: {
-            externalId: verifiedOrgExternalId,
-            verified: true,
-          },
-        });
+      return verifyIdentity({
+        variables: {
+          externalId: verifiedOrgExternalId,
+          verified: true,
+        },
       })
         .then(() => {
           showNotification(
