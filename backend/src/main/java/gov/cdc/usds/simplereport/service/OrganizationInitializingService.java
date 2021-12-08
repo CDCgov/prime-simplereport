@@ -66,43 +66,7 @@ public class OrganizationInitializingService {
     log.debug("Organization init called (again?)");
     Provider savedProvider = _providerRepo.save(_props.getProvider());
 
-    Map<String, DeviceType> deviceTypesByName =
-        _deviceTypeRepo.findAll().stream().collect(Collectors.toMap(d -> d.getName(), d -> d));
-    Map<String, SpecimenType> specimenTypesByCode =
-        _specimenTypeRepo.findAll().stream()
-            .collect(Collectors.toMap(SpecimenType::getTypeCode, s -> s));
-    for (SpecimenType s : _props.getSpecimenTypes()) {
-      SpecimenType specimenType = specimenTypesByCode.get(s.getTypeCode());
-      if (null == specimenType) {
-        log.info("Creating specimen type {}", s.getName());
-        specimenType = _specimenTypeRepo.save(s);
-        specimenTypesByCode.put(specimenType.getTypeCode(), _specimenTypeRepo.save(s));
-      }
-    }
-
-    Map<String, DeviceSpecimenType> dsByDeviceName = new HashMap<>();
-    for (DeviceType d : _props.getDeviceTypes()) {
-      DeviceType deviceType = deviceTypesByName.get(d.getName());
-      if (null == deviceType) {
-        log.info("Creating device type {}", d.getName());
-        deviceType = _deviceTypeRepo.save(d);
-        deviceTypesByName.put(deviceType.getName(), deviceType);
-      }
-      SpecimenType defaultTypeForDevice = specimenTypesByCode.get(deviceType.getSwabType());
-      if (defaultTypeForDevice == null) {
-        throw new RuntimeException(
-            "specimen type " + deviceType.getSwabType() + " was not initialized");
-      }
-      Optional<DeviceSpecimenType> deviceSpecimen =
-          _deviceSpecimenRepo.find(deviceType, defaultTypeForDevice);
-      if (deviceSpecimen.isEmpty()) {
-        dsByDeviceName.put(
-            deviceType.getName(),
-            _deviceSpecimenRepo.save(new DeviceSpecimenType(deviceType, defaultTypeForDevice)));
-      } else {
-        dsByDeviceName.put(deviceType.getName(), deviceSpecimen.get());
-      }
-    }
+    Map<String, DeviceSpecimenType> dsByDeviceName = initDevices();
 
     List<DeviceSpecimenType> configuredDs =
         _props.getConfiguredDeviceTypeNames().stream()
@@ -250,6 +214,51 @@ public class OrganizationInitializingService {
   public void initCurrentUser() {
     // Creates current user if it doesn't already exist
     _userService.getCurrentApiUserInContainedTransaction();
+  }
+
+  public void initDevicesOnly() {
+    initDevices();
+  }
+
+  private Map<String, DeviceSpecimenType> initDevices() {
+    Map<String, DeviceType> deviceTypesByName =
+        _deviceTypeRepo.findAll().stream().collect(Collectors.toMap(d -> d.getName(), d -> d));
+    Map<String, SpecimenType> specimenTypesByCode =
+        _specimenTypeRepo.findAll().stream()
+            .collect(Collectors.toMap(SpecimenType::getTypeCode, s -> s));
+    for (SpecimenType s : _props.getSpecimenTypes()) {
+      SpecimenType specimenType = specimenTypesByCode.get(s.getTypeCode());
+      if (null == specimenType) {
+        log.info("Creating specimen type {}", s.getName());
+        specimenType = _specimenTypeRepo.save(s);
+        specimenTypesByCode.put(specimenType.getTypeCode(), _specimenTypeRepo.save(s));
+      }
+    }
+
+    Map<String, DeviceSpecimenType> dsByDeviceName = new HashMap<>();
+    for (DeviceType d : _props.getDeviceTypes()) {
+      DeviceType deviceType = deviceTypesByName.get(d.getName());
+      if (null == deviceType) {
+        log.info("Creating device type {}", d.getName());
+        deviceType = _deviceTypeRepo.save(d);
+        deviceTypesByName.put(deviceType.getName(), deviceType);
+      }
+      SpecimenType defaultTypeForDevice = specimenTypesByCode.get(deviceType.getSwabType());
+      if (defaultTypeForDevice == null) {
+        throw new RuntimeException(
+            "specimen type " + deviceType.getSwabType() + " was not initialized");
+      }
+      Optional<DeviceSpecimenType> deviceSpecimen =
+          _deviceSpecimenRepo.find(deviceType, defaultTypeForDevice);
+      if (deviceSpecimen.isEmpty()) {
+        dsByDeviceName.put(
+            deviceType.getName(),
+            _deviceSpecimenRepo.save(new DeviceSpecimenType(deviceType, defaultTypeForDevice)));
+      } else {
+        dsByDeviceName.put(deviceType.getName(), deviceSpecimen.get());
+      }
+    }
+    return dsByDeviceName;
   }
 
   private void initOktaOrg(Organization org) {
