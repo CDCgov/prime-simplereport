@@ -3,6 +3,7 @@ spring:
     use-legacy-processing: true
   main:
     banner-mode: "OFF"
+    allow-circular-references: true
   datasource:
     username: simple_report_app
     password: api123

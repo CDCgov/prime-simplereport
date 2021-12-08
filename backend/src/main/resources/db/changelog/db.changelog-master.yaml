@@ -1492,6 +1492,7 @@ databaseChangeLog:
         - sql:
             remarks: Create migrations user to indicate records created by migration rather than by a human.
             sql: |
+              SET search_path TO ${database.defaultSchemaName};
               INSERT INTO ${database.defaultSchemaName}.api_user
               (internal_id, created_at, updated_at, is_deleted, last_seen, login_email, last_name)
               VALUES (
