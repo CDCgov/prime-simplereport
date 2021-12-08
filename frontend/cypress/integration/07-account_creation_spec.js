@@ -58,12 +58,6 @@ Cypress.Commands.add("verifySecurityCode", (code) => {
 
 // Since these tests interact with Okta, we need to use
 // Wiremock to stub out the Okta API calls.
-Cypress.Commands.add("restartWiremock", () => {
-  cy.clearCookies();
-  cy.task("stopWiremock");
-  cy.task("startWiremock");
-});
-
 before(() => {
   cy.clearCookies();
   cy.task("downloadWiremock");

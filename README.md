@@ -291,7 +291,8 @@ You will need to run the backend with the `e2e` profile, and with the following 
 OKTA_TESTING_DISABLEHTTPSCHECK=true ./gradlew bootRun --args='--spring.profiles.active=e2e
 ```
 
-Or, if you are running with the `start.sh` script:
+Or, if you are running with the `start.sh` script:  
+  
 `backend/src/main/resources/application-local.yaml`
 ```
 spring.profiles.include: no-security, no-okta-mgmt, server-debug, create-sample-data

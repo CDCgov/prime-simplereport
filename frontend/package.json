@@ -210,6 +210,7 @@
     "chromedriver": "91",
     "craco-sass-resources-loader": "^1.1.0",
     "cypress": "^9.0.0",
+    "cypress-localstorage-commands": "^1.6.1",
     "dayjs": "^1.10.4",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-cypress": "^2.12.1",
