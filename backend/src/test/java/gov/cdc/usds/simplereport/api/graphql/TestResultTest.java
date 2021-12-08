@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.Role;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -42,13 +43,20 @@ class TestResultTest extends BaseGraphqlTest {
 
   private Organization _org;
   private Facility _site;
+  private DeviceSpecimenType _device;
   private Facility _secondSite;
 
   @BeforeEach
   public void init() {
     _org = _orgService.getCurrentOrganizationNoCache();
     _site = _orgService.getFacilities(_org).get(0);
+    _device = _dataFactory.getGenericDeviceSpecimen();
     _secondSite = _orgService.getFacilities(_org).get(1);
+
+    _site.addDefaultDeviceSpecimen(_device);
+    ;
+    _secondSite.addDefaultDeviceSpecimen(_device);
+    ;
   }
 
   @Test

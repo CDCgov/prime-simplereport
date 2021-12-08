@@ -102,7 +102,6 @@ class ApiUserAwareGraphQlContextBuilderTest {
                                 "phone",
                                 "email",
                                 null,
-                                null,
                                 List.of())),
                         Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER))),
                 false)),

@@ -29,15 +29,16 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void smokeTestDeviceOperations() {
-    List<DeviceSpecimenType> configuredDevices = new ArrayList<>();
+    List<DeviceType> configuredDevices = new ArrayList<>();
     DeviceType bill = _devices.save(new DeviceType("Bill", "Weasleys", "1", "12345-6", "E", 15));
     DeviceType percy = _devices.save(new DeviceType("Percy", "Weasleys", "2", "12345-7", "E", 15));
     SpecimenType spec = _specimens.save(new SpecimenType("Troll Bogies", "0001111234"));
     DeviceSpecimenType billbogies = _deviceSpecimens.save(new DeviceSpecimenType(bill, spec));
     Provider mccoy =
         _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));
-    configuredDevices.add(billbogies);
-    configuredDevices.add(_deviceSpecimens.save(new DeviceSpecimenType(percy, spec)));
+    configuredDevices.add(bill);
+    configuredDevices.add(percy);
+    // configuredDevices.add(_deviceSpecimens.save(new DeviceSpecimenType(percy, spec)));
     Organization org = _orgs.save(new Organization("My Office", "other", "650Mass", true));
     Facility saved =
         _repo.save(
@@ -49,7 +50,6 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
                 "555-867-5309",
                 "facility@test.com",
                 mccoy,
-                billbogies,
                 configuredDevices));
     Optional<Facility> maybe = _repo.findByOrganizationAndFacilityName(org, "Third Floor");
     assertTrue(maybe.isPresent(), "should find the facility");

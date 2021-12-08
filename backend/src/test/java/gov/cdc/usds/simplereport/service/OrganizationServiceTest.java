@@ -22,7 +22,6 @@ import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
-import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
@@ -63,7 +62,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   void createOrganizationAndFacility_standardUser_error() {
-    DeviceSpecimenTypeHolder holder = getDeviceConfig();
+    DeviceSpecimenType dst = getDeviceConfig();
     PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
     Organization org =
         _service.createOrganizationAndFacility(
@@ -75,7 +74,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             _dataFactory.getAddress(),
             "123-456-7890",
             "test@foo.com",
-            holder,
+            List.of(dst.getDeviceType()),
             bill,
             _dataFactory.getAddress(),
             "123-456-7890",
@@ -99,18 +98,17 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     assertEquals(5, facLink.getLink().length());
   }
 
-  private DeviceSpecimenTypeHolder getDeviceConfig() {
+  private DeviceSpecimenType getDeviceConfig() {
     DeviceType device = _dataFactory.createDeviceType("Bill", "Weasleys", "1", "12345-6", "E");
     SpecimenType specimen = _dataFactory.getGenericSpecimen();
     DeviceSpecimenType dst = _dataFactory.createDeviceSpecimen(device, specimen);
-    DeviceSpecimenTypeHolder holder = new DeviceSpecimenTypeHolder(dst, List.of(dst));
-    return holder;
+    return dst;
   }
 
   @Test
   @WithSimpleReportSiteAdminUser
   void createOrganizationAndFacility_adminUser_success() {
-    DeviceSpecimenTypeHolder holder = getDeviceConfig();
+    DeviceSpecimenType dst = getDeviceConfig();
     PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
     Organization org =
         _service.createOrganizationAndFacility(
@@ -122,7 +120,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             _dataFactory.getAddress(),
             "123-456-7890",
             "test@foo.com",
-            holder,
+            List.of(dst.getDeviceType()),
             bill,
             _dataFactory.getAddress(),
             "123-456-7890",
@@ -148,7 +146,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   @WithSimpleReportSiteAdminUser
   void createOrganizationAndFacility_orderingProviderRequired_failure() {
-    DeviceSpecimenTypeHolder holder = getDeviceConfig();
+    DeviceSpecimenType dst = getDeviceConfig();
     PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
     assertThrows(
         OrderingProviderRequiredException.class,
@@ -162,7 +160,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
               _dataFactory.getAddress(),
               "123-456-7890",
               "test@foo.com",
-              holder,
+              List.of(dst.getDeviceType()),
               bill,
               _dataFactory.getAddress(),
               null,
@@ -290,11 +288,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
           "npi",
           newOrderingProviderAddress,
           "817-555-7777",
-          new DeviceSpecimenTypeHolder(
-              new DeviceSpecimenType(devices.get(0), specimenTypes.get(0)),
-              List.of(
-                  new DeviceSpecimenType(devices.get(0), specimenTypes.get(0)),
-                  new DeviceSpecimenType(devices.get(1), specimenTypes.get(0)))));
+          devices);
     }
 
     @Test
@@ -321,7 +315,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
       assertThat(updatedFacility.getOrderingProvider().getAddress())
           .isEqualTo(newOrderingProviderAddress);
 
-      assertThat(updatedFacility.getDeviceSpecimenTypes()).hasSize(2);
+      assertThat(updatedFacility.getDeviceTypes()).hasSize(2);
     }
 
     @Nested
@@ -343,11 +337,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             "npi",
             new StreetAddress("", "", "", "", "", ""),
             "817-555-7777",
-            new DeviceSpecimenTypeHolder(
-                new DeviceSpecimenType(devices.get(1), specimenTypes.get(0)),
-                List.of(
-                    new DeviceSpecimenType(devices.get(0), specimenTypes.get(0)),
-                    new DeviceSpecimenType(devices.get(1), specimenTypes.get(0)))));
+            devices);
       }
 
       @Test
@@ -359,7 +349,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             .isEqualTo(devices.get(1).getInternalId());
         assertThat(updatedFacility.getDefaultDeviceSpecimen().getSpecimenType().getInternalId())
             .isEqualTo(specimenTypes.get(0).getInternalId());
-        assertThat(updatedFacility.getDeviceSpecimenTypes()).hasSize(2);
+        assertThat(updatedFacility.getDeviceTypes()).hasSize(2);
       }
     }
   }

@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Service for fetching the device-type reference list (<i>not</i> the device types available for a
  * specific facility or organization).
  */
-@Service
+@Service("deviceTypeService")
 @Transactional(readOnly = true)
 public class DeviceTypeService {
 

@@ -39,7 +39,7 @@ public class OrganizationService {
   private final FacilityRepository _facilityRepo;
   private final ProviderRepository _providerRepo;
   private final AuthorizationService _authService;
-  private final DeviceTypeService _deviceService;
+  private DeviceTypeService _deviceService;
   private final OktaRepository _oktaRepo;
   private final CurrentOrganizationRolesContextHolder _currentOrgRolesContextHolder;
   private final OrderingProviderRequiredValidator _orderingProviderRequiredValidator;

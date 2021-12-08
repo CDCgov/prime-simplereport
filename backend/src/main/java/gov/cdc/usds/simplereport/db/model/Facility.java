@@ -56,7 +56,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
       String phone,
       String email,
       Provider orderingProvider,
-      // DeviceSpecimenType defaultDeviceSpecimen,
       List<DeviceType> configuredDevices) {
     super(org);
     this.facilityName = facilityName;
@@ -65,12 +64,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.telephone = phone;
     this.email = email;
     this.orderingProvider = orderingProvider;
-    /*
-    this.defaultDeviceSpecimen = defaultDeviceSpecimen;
-    if (defaultDeviceSpecimen != null) {
-      this.configuredDeviceSpecimenTypes.add(defaultDeviceSpecimen);
-    }
-    */
     this.configuredDeviceTypes.addAll(configuredDevices);
   }
 
@@ -95,34 +88,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     // weird behaviors
     return configuredDeviceTypes.stream().filter(e -> !e.isDeleted()).collect(Collectors.toList());
   }
-  /*
-    return configuredDeviceSpecimenTypes.stream()
-        .filter(e -> !e.isDeleted())
-        .map(DeviceSpecimenType::getDeviceType)
-        .filter(e -> !e.isDeleted())
-        .collect(Collectors.toList());
-  }
-        */
-
-  /*
-  public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
-    return configuredDeviceSpecimenTypes.stream()
-        .filter(
-            e ->
-                !(e.isDeleted()
-                    || e.getSpecimenType().isDeleted()
-                    || e.getDeviceType().isDeleted()))
-        .collect(Collectors.toList());
-  }
-
-  public void addDeviceSpecimenType(DeviceSpecimenType ds) {
-    configuredDeviceSpecimenTypes.add(ds);
-  }
-
-  public void removeDeviceSpecimenType(DeviceSpecimenType existing) {
-    configuredDeviceSpecimenTypes.remove(existing); // count on this being in one hibernate session
-  }
-  */
 
   public void addDefaultDeviceSpecimen(DeviceSpecimenType newDefault) {
     if (newDefault != null) {
@@ -139,12 +104,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   public void removeDeviceType(DeviceType existingDevice) {
     Iterator<DeviceType> i = configuredDeviceTypes.iterator();
     UUID removedId = existingDevice.getInternalId();
-    /*
-    if (defaultDeviceSpecimen != null
-        && defaultDeviceSpecimen.getDeviceType().getInternalId().equals(removedId)) {
-      defaultDeviceSpecimen = null;
-    }
-    */
+
     while (i != null && i.hasNext()) {
       DeviceType d = i.next();
       if (d.getInternalId().equals(removedId)) {
