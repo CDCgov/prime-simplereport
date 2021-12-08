@@ -23,7 +23,5 @@ mutation updateFacility($facilityId: ID!, $deviceId: String!, $deviceSpecimenTyp
         deviceTypes: [$deviceId]
         deviceSpecimenTypes: $deviceSpecimenTypes
         defaultDevice: $deviceId
-    ) {
-        id
-    }
+    )
 }

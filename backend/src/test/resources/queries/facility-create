@@ -22,7 +22,5 @@ mutation addFac($deviceId: String!, $deviceSpecimenTypes: [ID]!) {
     deviceTypes: [$deviceId]
     deviceSpecimenTypes: $deviceSpecimenTypes
     defaultDevice: $deviceId
-  ) {
-    id
-  }
+  )
 }
