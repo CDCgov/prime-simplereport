@@ -1,5 +1,4 @@
 import { PhoneNumberUtil, PhoneNumberFormat } from "google-libphonenumber";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 
 import Button from "../../commonComponents/Button/Button";
@@ -8,14 +7,13 @@ import {
   useEditPendingOrganizationMutation,
 } from "../../../generated/graphql";
 
-import EditOrgModal from "./modals/EditOrgModal";
 import { PendingOrganizationFormValues } from "./utils";
 import "./PendingOrganizationsList.scss";
 import ConfirmOrgVerificationModal from "./modals/ConfirmOrgVerificationModal";
 
 interface Props {
   organizations: PendingOrganization[];
-  verifiedOrgExternalIds: Set<string>;
+  verifiedOrgExternalId: string | null;
   submitIdentityVerified: () => void;
   setVerifiedOrganization: (externalId: string, verified: boolean) => void;
   loading: boolean;
@@ -32,8 +30,7 @@ const PendingOrganizations = ({
   loading,
   refetch,
 }: Props) => {
-  const [orgToEdit, setOrgToEdit] = useState<PendingOrganization | null>(null);
-  const [orgToConfirm, setOrgToConfirm] = useState<PendingOrganization | null>(
+  const [orgToVerify, setOrgToVerify] = useState<PendingOrganization | null>(
     null
   );
   const [isUpdating, setIsUpdating] = useState(false);
@@ -41,7 +38,7 @@ const PendingOrganizations = ({
 
   const handleUpdateOrg = async (org: PendingOrganizationFormValues) => {
     // Don't do anything if no org is selected
-    if (orgToEdit === null) {
+    if (orgToVerify === null) {
       return;
     }
 
@@ -49,7 +46,7 @@ const PendingOrganizations = ({
     try {
       await editOrg({
         variables: {
-          externalId: orgToEdit.externalId,
+          externalId: orgToVerify.externalId,
           name: org.name,
           adminFirstName: org.adminFirstName,
           adminLastName: org.adminLastName,
@@ -62,25 +59,53 @@ const PendingOrganizations = ({
     }
 
     refetch();
-    setOrgToEdit(null);
+    setVerifiedOrganization(orgToVerify.externalId, false);
+    setOrgToVerify(null);
     setIsUpdating(false);
   };
 
   const handleConfirmOrg = async (org: PendingOrganizationFormValues) => {
-    if (orgToConfirm === null) {
+    if (orgToVerify === null) {
       return;
     }
     setIsUpdating(true);
 
     try {
-      submitIdentityVerified();
-      setVerifiedOrganization(orgToConfirm.externalId, false);
+      // submit field input to edit function in case there are any differences
+      await editOrg({
+        variables: {
+          externalId: orgToVerify.externalId,
+          name: org.name,
+          adminFirstName: org.adminFirstName,
+          adminLastName: org.adminLastName,
+          adminEmail: org.adminEmail,
+          adminPhone: org.adminPhone,
+        },
+      })
+        .then((orgAfterSubmit) => {
+          if (orgAfterSubmit === undefined) {
+            throw Error(
+              `Org edit function failed during submit process. 
+              Please check for errors and try again`
+            );
+          } else {
+            const newData = refetch();
+            console.log(newData);
+          }
+        })
+        .then(() => {
+          console.log([...organizations]);
+        })
+        .finally(() => {
+          // submitIdentityVerified();
+          setOrgToVerify(null);
+          setIsUpdating(false);
+        });
     } catch (e) {
       console.error(e);
     }
-
     refetch();
-    setOrgToConfirm(null);
+    setOrgToVerify(null);
     setIsUpdating(false);
   };
 
@@ -123,22 +148,14 @@ const PendingOrganizations = ({
         </td>
         <td>{o.externalId}</td>
         <td>
-          <span
-            data-testid={`edit-icon-${o.externalId}`}
-            onClick={() => setOrgToEdit(o)}
-          >
-            <FontAwesomeIcon icon={"edit"} />
-          </span>
-        </td>
-        <td>
           <Button
             className="sr-active-button"
             onClick={() => {
               setVerifiedOrganization(o.externalId, true);
-              setOrgToConfirm(o);
+              setOrgToVerify(o);
             }}
           >
-            Confirm
+            View details
           </Button>
         </td>
       </tr>
@@ -149,28 +166,20 @@ const PendingOrganizations = ({
       <div className="grid-container pending-orgs-wide-container">
         <div className="grid-row">
           <div className="prime-container card-container sr-pending-organizations-list">
-            {orgToEdit ? (
-              <EditOrgModal
-                organization={orgToEdit}
-                onClose={() => setOrgToEdit(null)}
-                onSubmit={handleUpdateOrg}
-                isUpdating={isUpdating}
-              />
-            ) : null}
-
-            {orgToConfirm ? (
+            {orgToVerify ? (
               <ConfirmOrgVerificationModal
-                organization={orgToConfirm}
+                organization={orgToVerify}
                 onClose={() => {
-                  setVerifiedOrganization(orgToConfirm.externalId, false);
-                  setOrgToConfirm(null);
+                  setVerifiedOrganization(orgToVerify.externalId, false);
+                  setOrgToVerify(null);
                 }}
                 onSubmit={handleConfirmOrg}
+                onEdit={handleUpdateOrg}
                 isUpdating={isUpdating}
               />
             ) : null}
             <div className="usa-card__header">
-              <h2>Organizations Pending Identity Verification</h2>
+              <h2>Edit or verify organization identity</h2>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
@@ -178,11 +187,10 @@ const PendingOrganizations = ({
                   <tr>
                     <th scope="col">Name</th>
                     <th scope="row">Administrator</th>
-                    <th scope="row">Contact</th>
+                    <th scope="row">Contact information</th>
                     <th scope="row">Created</th>
                     <th scope="col">External ID</th>
-                    <th scope="col">Edit</th>
-                    <th scope="col">Verify Identity</th>
+                    <th scope="col">Edit or verify identity</th>
                   </tr>
                 </thead>
                 <tbody>{orgRows()}</tbody>

@@ -11,9 +11,9 @@ import {
 import PendingOrganizations from "./PendingOrganizations";
 
 const PendingOrganizationsContainer = () => {
-  const [verifiedOrgExternalIds, setVerifiedOrgExternalIds] = useState<
-    Set<string>
-  >(new Set());
+  const [verifiedOrgExternalId, setVerifiedOrgExternalId] = useState<
+    string | null
+  >(null);
   const [verifyInProgress, setVerifyInProgress] = useState<boolean>(false);
   const [verifyIdentity] = useSetOrgIdentityVerifiedMutation();
   const { data, refetch, loading, error } = useGetPendingOrganizationsQuery();
@@ -22,48 +22,52 @@ const PendingOrganizationsContainer = () => {
   }
 
   function setVerifiedOrganization(externalId: string, verified: boolean) {
-    const newVerifiedOrgExternalIds = new Set(verifiedOrgExternalIds);
     if (verified) {
-      newVerifiedOrgExternalIds.add(externalId);
+      setVerifiedOrgExternalId(externalId);
     } else {
-      newVerifiedOrgExternalIds.delete(externalId);
+      setVerifiedOrgExternalId(null);
     }
-    setVerifiedOrgExternalIds(newVerifiedOrgExternalIds);
   }
-
   const submitIdentityVerified = () => {
-    setVerifyInProgress(true);
-    Promise.all(
-      Array.from(verifiedOrgExternalIds).map((externalId) => {
+    if (verifiedOrgExternalId === null) {
+      showNotification(
+        <Alert
+          type="error"
+          title={"No organization external ID set. Please try again"}
+          body=""
+        />
+      );
+    } else {
+      setVerifyInProgress(true);
+      new Promise(() => {
         return verifyIdentity({
           variables: {
-            externalId: externalId,
+            externalId: verifiedOrgExternalId,
             verified: true,
           },
         });
       })
-    )
-      .then(() => {
-        showNotification(
-          <Alert
-            type="success"
-            title={`Identity verified for ${
-              verifiedOrgExternalIds.size
-            } organization${verifiedOrgExternalIds.size === 1 ? "" : "s"}`}
-            body=""
-          />
-        );
-      })
-      .finally(() => {
-        refetch();
-        setVerifyInProgress(false);
-      });
+        .then(() => {
+          showNotification(
+            <Alert
+              type="success"
+              title={`Identity verified for organization with external ID 
+              ${verifiedOrgExternalId}`}
+              body=""
+            />
+          );
+        })
+        .finally(() => {
+          refetch();
+          setVerifyInProgress(false);
+        });
+    }
   };
 
   return (
     <PendingOrganizations
       organizations={data?.pendingOrganizations || []}
-      verifiedOrgExternalIds={verifiedOrgExternalIds}
+      verifiedOrgExternalId={verifiedOrgExternalId}
       submitIdentityVerified={submitIdentityVerified}
       setVerifiedOrganization={setVerifiedOrganization}
       loading={loading}

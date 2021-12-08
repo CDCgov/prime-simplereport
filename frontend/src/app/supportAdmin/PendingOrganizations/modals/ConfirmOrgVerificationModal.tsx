@@ -17,6 +17,7 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
   organization,
   onClose,
   onSubmit,
+  onEdit,
   isUpdating,
 }) => {
   const [org, setOrg] = useState<PendingOrganizationFormValues>({
@@ -60,13 +61,25 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
       schema: pendingOrganizationSchema,
     });
     if (validation.valid) {
-      onSubmit(org);
+      onEdit(org);
     } else {
       setErrors(validation.errors);
     }
   };
 
+  const onVerify = async () => {
+    const validation = await isFormValid({
+      data: org,
+      schema: pendingOrganizationSchema,
+    });
+    if (validation.valid) {
+      onSubmit(org);
+    } else {
+      setErrors(validation.errors);
+    }
+  };
   const commonInputProps = {
+    disabled: false,
     formObject: org,
     onChange,
     required: true,
@@ -92,7 +105,7 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">
           <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-            Confirm the following details
+            Organization details
           </h1>
           <button onClick={onClose} className="close-button" aria-label="Close">
             <span className="fa-layers">
@@ -131,12 +144,18 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
               className="margin-right-2"
               onClick={onClose}
               variant="unstyled"
-              label="Go back"
+              label="Cancel"
+            />
+            <Button
+              className="margin-right-2"
+              variant="outline"
+              onClick={onSave}
+              label="Save details"
             />
             <Button
               className="margin-right-205"
-              onClick={onSave}
-              label={isUpdating ? "Saving..." : "Save"}
+              onClick={onVerify}
+              label={isUpdating ? "Submitting..." : "Submit"}
               disabled={isUpdating}
             />
           </div>

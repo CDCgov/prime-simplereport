@@ -5,6 +5,7 @@ export interface ModalProps {
   organization: PendingOrganization;
   onClose: () => void;
   onSubmit: (organization: PendingOrganizationFormValues) => void;
+  onEdit: (organization: PendingOrganizationFormValues) => void;
   isUpdating: boolean;
 }
 
