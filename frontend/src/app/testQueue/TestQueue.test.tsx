@@ -25,6 +25,9 @@ describe("TestQueue", () => {
   const mockStore = configureStore([]);
 
   beforeEach(() => {
+    jest
+      .useFakeTimers("modern")
+      .setSystemTime(new Date("2021-08-01 08:20").getTime());
     store = mockStore({
       organization: {
         name: "Organization Name",
