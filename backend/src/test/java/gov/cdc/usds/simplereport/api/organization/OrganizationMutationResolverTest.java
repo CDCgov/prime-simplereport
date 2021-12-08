@@ -1,11 +1,13 @@
 package gov.cdc.usds.simplereport.api.organization;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
@@ -18,12 +20,14 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @WithSimpleReportStandardUser // hackedy hack
 class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
   @Autowired private TestDataFactory _dataFactory;
-  // @Captor private ArgumentCaptor<DeviceSpecimenTypeHolder> deviceSpecimenCaptor;
+  @Captor private ArgumentCaptor<List<DeviceType>> deviceTypeCaptor;
 
   AddressValidationService _avs;
   ApiUserService _aus;
@@ -47,11 +51,12 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
     var org = _dataFactory.createValidOrg();
     var facility = _dataFactory.createValidFacility(org);
     var genericDeviceSpecimen = _dataFactory.getGenericDeviceSpecimen();
-    var deviceId = genericDeviceSpecimen.getDeviceType().getInternalId();
+    var genericDevice = genericDeviceSpecimen.getDeviceType();
+    var deviceId = genericDevice.getInternalId();
 
     var address = facility.getAddress();
     doNothing().when(_os).assertFacilityNameAvailable(facility.getFacilityName());
-    // when(_dts.getTypesForFacility(deviceId, List.of(deviceId))).thenReturn(dstHolder);
+    when(_dts.getDeviceTypesByIds(List.of(deviceId))).thenReturn(List.of(genericDevice));
     when(_avs.getValidatedAddress(
             address.getStreetOne(),
             address.getStreetTwo(),
@@ -93,11 +98,14 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             any(),
             any(),
             any(),
-            List.of(genericDeviceSpecimen.getDeviceType()),
+            deviceTypeCaptor.capture(),
             any(),
             any(),
             any(),
             any());
+
+    List<DeviceType> devices = deviceTypeCaptor.getValue();
+    assertEquals(List.of(genericDeviceSpecimen.getDeviceType()), devices);
   }
 
   @Test
@@ -109,17 +117,12 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
     var facility = _dataFactory.createValidFacility(org);
     var address = facility.getAddress();
 
-    var deviceSpecimenType = _dataFactory.getGenericDeviceSpecimen();
-    var deviceSpecimenTypeId = deviceSpecimenType.getInternalId();
-    var deviceSpecimenTypeIds = List.of(deviceSpecimenTypeId);
-    // var holder = new DeviceSpecimenTypeHolder(deviceSpecimenType, List.of(deviceSpecimenType));
+    var genericDeviceSpecimen = _dataFactory.getGenericDeviceSpecimen();
+    var genericDevice = genericDeviceSpecimen.getDeviceType();
+    var deviceId = genericDevice.getInternalId();
 
     doNothing().when(_os).assertFacilityNameAvailable(facility.getFacilityName());
-    /*
-    when(_dts.getDeviceSpecimenTypesForFacility(
-            deviceSpecimenType.getDeviceType().getInternalId(), deviceSpecimenTypeIds))
-        .thenReturn(holder);
-        */
+    when(_dts.getDeviceTypesByIds(List.of(deviceId))).thenReturn(List.of(genericDevice));
     when(_avs.getValidatedAddress(
             address.getStreetOne(),
             address.getStreetTwo(),
@@ -152,7 +155,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
         facility.getOrderingProvider().getAddress().getState(),
         facility.getOrderingProvider().getAddress().getPostalCode(),
         facility.getOrderingProvider().getTelephone(),
-        List.of(deviceSpecimenType.getDeviceType().getInternalId().toString()));
+        List.of(deviceId.toString()));
 
     verify(_os)
         .createFacility(
@@ -161,18 +164,14 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             any(),
             any(),
             any(),
-            List.of(deviceSpecimenType.getDeviceType()),
+            deviceTypeCaptor.capture(),
             any(),
             any(),
             any(),
             any());
 
-    /*
-    DeviceSpecimenTypeHolder dst = deviceSpecimenCaptor.getValue();
-
-    assertEquals(deviceSpecimenType, dst.getDefault());
-    assertEquals(List.of(deviceSpecimenType), dst.getFullList());
-    */
+    List<DeviceType> devices = deviceTypeCaptor.getValue();
+    assertEquals(List.of(genericDevice), devices);
   }
 
   @Test
