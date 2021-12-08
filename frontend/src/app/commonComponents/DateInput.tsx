@@ -1,5 +1,8 @@
 import classnames from "classnames";
-import { DateInput as TrussworksDateInput, DateInputGroup } from "@trussworks/react-uswds";
+import {
+  DateInput as TrussworksDateInput,
+  DateInputGroup,
+} from "@trussworks/react-uswds";
 
 export type HTMLInputElementType =
   | "date"
@@ -16,34 +19,50 @@ export type HTMLInputElementType =
   | "week";
 
 interface Props {
-    name: string;
-    label: string;
-    className?: string;
-    validationStatus?: "error" | "success";
-    errorMessage?: React.ReactNode;
-    labelSrOnly?: boolean;
-    labelClassName?: string;
-    required?: boolean;
-    defaultValue?: string;
-    noHint?: boolean;
-    type?: HTMLInputElementType;
+  name: string;
+  label: string;
+  monthName: string;
+  dayName: string;
+  yearName: string;
+  monthValue: any;
+  dayValue: any;
+  yearValue: any;
+  monthOnChange: any;
+  dayOnChange: any;
+  yearOnChange: any;
+  className?: string;
+  validationStatus?: "error" | "success";
+  errorMessage?: React.ReactNode;
+  labelSrOnly?: boolean;
+  labelClassName?: string;
+  defaultValue?: string;
+  noHint?: boolean;
+  type?: HTMLInputElementType;
 }
 
-export const DateInput = ({ 
-    name,
-    label,
-    type,
-    className,
-    validationStatus,
-    errorMessage,
-    labelSrOnly,
-    labelClassName,
-    required,
-    defaultValue,
-    noHint,
+export const DateInput = ({
+  name,
+  label,
+  monthName,
+  dayName,
+  yearName,
+  monthValue,
+  dayValue,
+  yearValue,
+  monthOnChange,
+  dayOnChange,
+  yearOnChange,
+  type,
+  className,
+  validationStatus,
+  errorMessage,
+  labelSrOnly,
+  labelClassName,
+  defaultValue,
+  noHint,
 }: Props) => {
-    return (
-        <div
+  return (
+    <div
       className={classnames("usa-form-group", className, {
         "usa-form-group--error": validationStatus === "error",
       })}
@@ -65,37 +84,43 @@ export const DateInput = ({
         </span>
       )}
       <DateInputGroup>
-      <TrussworksDateInput
-        id={name}
-        name={name}
-        required={true}
-        defaultValue={defaultValue}
-        label={"Month"}
-        unit={"month"}
-        maxLength={2}
-        type={type || "text"}
-      />
-      <TrussworksDateInput
-        id={name}
-        name={name}
-        required={true}
-        defaultValue={defaultValue}
-        label={"Day"}
-        unit={"day"}
-        maxLength={2}
-        type={type || "text"}
-      />
-      <TrussworksDateInput
-        id={name}
-        name={name}
-        required={true}
-        defaultValue={defaultValue}
-        label={"Year"}
-        unit={"year"}
-        maxLength={4}
-        type={type || "text"}
-      />
+        <TrussworksDateInput
+          id={monthName}
+          name={monthName}
+          value={monthValue}
+          required={true}
+          defaultValue={defaultValue}
+          label={"Month"}
+          unit={"month"}
+          maxLength={2}
+          type={type || "text"}
+          onChange={monthOnChange}
+        />
+        <TrussworksDateInput
+          id={dayName}
+          name={dayName}
+          value={dayValue}
+          required={true}
+          defaultValue={defaultValue}
+          label={"Day"}
+          unit={"day"}
+          maxLength={2}
+          type={type || "text"}
+          onChange={dayOnChange}
+        />
+        <TrussworksDateInput
+          id={yearName}
+          name={yearName}
+          value={yearValue}
+          required={true}
+          defaultValue={defaultValue}
+          label={"Year"}
+          unit={"year"}
+          maxLength={4}
+          type={type || "text"}
+          onChange={yearOnChange}
+        />
       </DateInputGroup>
     </div>
-    );
-}
+  );
+};

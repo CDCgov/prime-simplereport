@@ -6,18 +6,20 @@ import { useTranslation } from "react-i18next";
 import { validate as isValidUUID } from "uuid";
 
 import Button from "../../app/commonComponents/Button/Button";
-import TextInput from "../../app/commonComponents/TextInput";
 import { setPatient, updateOrganization } from "../../app/store";
 import { PxpApi } from "../PxpApiService";
 import Alert from "../../app/commonComponents/Alert";
 import { DateInput } from "../../app/commonComponents/DateInput";
+import { dateFromStrings } from "../../app/utils/date";
 
 const DOB = () => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
   const plid = useSelector((state: any) => state.plid);
-  const [birthDate, setBirthDate] = useState("");
+  const [birthMonth, setBirthMonth] = useState("");
+  const [birthDay, setBirthDay] = useState("");
+  const [birthYear, setBirthYear] = useState("");
   const [birthDateError, setBirthDateError] = useState("");
   const [birthDateHidden, setBirthDateHidden] = useState(true);
   const [linkExpiredError, setLinkExpiredError] = useState(false);
@@ -32,15 +34,11 @@ const DOB = () => {
     dobRef?.current?.focus();
   }, []);
 
-  const validPattern = new RegExp("([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})");
+  console.log("birthDateHidden:", birthDateHidden);
 
   const validateBirthDate = () => {
-    const date = moment(birthDate, "MM/DD/YYYY");
-    if (!validPattern.test(birthDate)) {
-      setBirthDateError(t("testResult.dob.invalidFormat"));
-      dobRef?.current?.focus();
-      return false;
-    } else if (date.year() < 1900 || date.year() > moment().year()) {
+    const date = dateFromStrings(birthMonth, birthDay, birthYear);
+    if (date.year() < 1900 || date.year() > moment().year()) {
       setBirthDateError(t("testResult.dob.invalidYear"));
       dobRef?.current?.focus();
       return false;
@@ -59,7 +57,7 @@ const DOB = () => {
       return;
     }
 
-    const date = moment(birthDate, "MM/DD/YYYY");
+    const date = dateFromStrings(birthMonth, birthDay, birthYear);
     setLoading(true);
     try {
       const response = await PxpApi.validateDateOfBirth(
@@ -155,32 +153,23 @@ const DOB = () => {
       <div className="grid-container maxw-tablet">
         <p className="margin-top-3">{t("testResult.dob.enterDOB2")}</p>
         <p>{t("testResult.dob.linkExpirationNotice")}</p>
-        {/* todo:
-        - make sure all 3 inputs are required
-        - make sure that validation only happens after all 3 inputs are filled (or potentially just don't continue if not filled?)
-        - validate each at the field level (allowed ranges)
-        - reformat results into an acceptable dob to send to backend */}
-        <DateInput 
+        <DateInput
           className="width-mobile"
           label={t("testResult.dob.dateOfBirth")}
           name={"birthDate"}
+          monthName={"birthMonth"}
+          dayName={"birthDay"}
+          yearName={"birthYear"}
+          monthValue={birthMonth}
+          dayValue={birthDay}
+          yearValue={birthYear}
           type={birthDateHidden ? "password" : "text"}
-          />
-        {/* <TextInput
-          className="width-mobile"
-          label={t("testResult.dob.dateOfBirth")}
-          name={"birthDate"}
-          type={birthDateHidden ? "password" : "text"}
-          autoComplete={"on"}
-          value={birthDate}
-          ariaDescribedBy={"bdayFormat"}
-          hintText={t("testResult.dob.format")}
-          onBlur={validateBirthDate}
+          monthOnChange={(evt: any) => setBirthMonth(evt.currentTarget.value)}
+          dayOnChange={(evt: any) => setBirthDay(evt.currentTarget.value)}
+          yearOnChange={(evt: any) => setBirthYear(evt.currentTarget.value)}
           errorMessage={birthDateError}
           validationStatus={birthDateError ? "error" : undefined}
-          onChange={(evt) => setBirthDate(evt.currentTarget.value)}
-          inputRef={dobRef}
-        /> */}
+        />
         <div className="margin-top-1 margin-bottom-2">
           <button
             className="usa-button usa-button--unstyled margin-top-0"
