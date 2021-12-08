@@ -2,16 +2,28 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import Modal from "react-modal";
 
-import { PendingOrganization } from "../../../../generated/graphql";
-import Button from "../../../commonComponents/Button/Button";
-import Input from "../../../commonComponents/Input";
-import { isFieldValid, isFormValid } from "../../../utils/yupHelpers";
+import { PendingOrganization } from "../../../generated/graphql";
+import Button from "../../commonComponents/Button/Button";
+import Input from "../../commonComponents/Input";
+import { isFieldValid, isFormValid } from "../../utils/yupHelpers";
+
 import {
   PendingOrganizationFormValues,
   pendingOrganizationSchema,
-} from "../utils";
+} from "./utils";
 
-import { ModalProps, PendingOrganizationErrors } from "./help";
+interface ModalProps {
+  organization: PendingOrganization;
+  onClose: () => void;
+  onSubmit: (organization: PendingOrganizationFormValues) => void;
+  onEdit: (organization: PendingOrganizationFormValues) => void;
+  isUpdating: boolean;
+}
+
+type PendingOrganizationErrors = Record<
+  keyof PendingOrganizationFormValues,
+  string
+>;
 
 const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
   organization,

@@ -9,13 +9,11 @@ import {
 
 import { PendingOrganizationFormValues } from "./utils";
 import "./PendingOrganizationsList.scss";
-import ConfirmOrgVerificationModal from "./modals/ConfirmOrgVerificationModal";
+import ConfirmOrgVerificationModal from "./ConfirmOrgVerificationModal";
 
 interface Props {
   organizations: PendingOrganization[];
-  verifiedOrgExternalId: string | null;
-  submitIdentityVerified: () => void;
-  setVerifiedOrganization: (externalId: string, verified: boolean) => void;
+  submitIdentityVerified: (externalId: string) => void;
   loading: boolean;
   verifyInProgress: boolean;
   refetch: () => void;
@@ -26,7 +24,6 @@ const phoneUtil = PhoneNumberUtil.getInstance();
 const PendingOrganizations = ({
   organizations,
   submitIdentityVerified,
-  setVerifiedOrganization,
   loading,
   refetch,
 }: Props) => {
@@ -43,8 +40,9 @@ const PendingOrganizations = ({
     }
 
     setIsUpdating(true);
+    let updatedOrg;
     try {
-      await editOrg({
+      updatedOrg = await editOrg({
         variables: {
           externalId: orgToVerify.externalId,
           name: org.name,
@@ -57,11 +55,10 @@ const PendingOrganizations = ({
     } catch (e) {
       console.error(e);
     }
-
     refetch();
-    setVerifiedOrganization(orgToVerify.externalId, false);
     setOrgToVerify(null);
     setIsUpdating(false);
+    return updatedOrg;
   };
 
   const handleConfirmOrg = async (org: PendingOrganizationFormValues) => {
@@ -72,15 +69,21 @@ const PendingOrganizations = ({
 
     try {
       // resubmit form data in case there are any changes
-      await handleUpdateOrg(org).then(() => {
-        console.log(orgToVerify);
-        console.log(org);
-        // submitIdentityVerified();
-        // setVerifiedOrganization(orgToVerify.externalId, false);
+      return handleUpdateOrg(org).then((newOrgData) => {
+        const updatedOrgExternalId = newOrgData?.data?.editPendingOrganization;
+        if (
+          updatedOrgExternalId === undefined ||
+          updatedOrgExternalId === null
+        ) {
+          throw Error(`Update function in submit returned undefined or null
+          external ID. Check for errors and try again`);
+        }
+        submitIdentityVerified(updatedOrgExternalId);
       });
     } catch (e) {
       console.error(e);
     }
+
     refetch();
     setOrgToVerify(null);
     setIsUpdating(false);
@@ -128,7 +131,6 @@ const PendingOrganizations = ({
           <Button
             className="sr-active-button"
             onClick={() => {
-              setVerifiedOrganization(o.externalId, true);
               setOrgToVerify(o);
             }}
           >
@@ -147,7 +149,6 @@ const PendingOrganizations = ({
               <ConfirmOrgVerificationModal
                 organization={orgToVerify}
                 onClose={() => {
-                  setVerifiedOrganization(orgToVerify.externalId, false);
                   setOrgToVerify(null);
                 }}
                 onSubmit={handleConfirmOrg}

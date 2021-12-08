@@ -11,25 +11,14 @@ import {
 import PendingOrganizations from "./PendingOrganizations";
 
 const PendingOrganizationsContainer = () => {
-  const [verifiedOrgExternalId, setVerifiedOrgExternalId] = useState<
-    string | null
-  >(null);
   const [verifyInProgress, setVerifyInProgress] = useState<boolean>(false);
   const [verifyIdentity] = useSetOrgIdentityVerifiedMutation();
   const { data, refetch, loading, error } = useGetPendingOrganizationsQuery();
   if (error) {
     throw error;
   }
-
-  function setVerifiedOrganization(externalId: string, verified: boolean) {
-    if (verified) {
-      setVerifiedOrgExternalId(externalId);
-    } else {
-      setVerifiedOrgExternalId(null);
-    }
-  }
-  const submitIdentityVerified = () => {
-    if (verifiedOrgExternalId === null) {
+  const submitIdentityVerified = (externalId: string) => {
+    if (externalId === null) {
       showNotification(
         <Alert
           type="error"
@@ -41,7 +30,7 @@ const PendingOrganizationsContainer = () => {
       setVerifyInProgress(true);
       return verifyIdentity({
         variables: {
-          externalId: verifiedOrgExternalId,
+          externalId: externalId,
           verified: true,
         },
       })
@@ -50,7 +39,7 @@ const PendingOrganizationsContainer = () => {
             <Alert
               type="success"
               title={`Identity verified for organization with external ID 
-              ${verifiedOrgExternalId}`}
+              ${externalId}`}
               body=""
             />
           );
@@ -65,9 +54,7 @@ const PendingOrganizationsContainer = () => {
   return (
     <PendingOrganizations
       organizations={data?.pendingOrganizations || []}
-      verifiedOrgExternalId={verifiedOrgExternalId}
       submitIdentityVerified={submitIdentityVerified}
-      setVerifiedOrganization={setVerifiedOrganization}
       loading={loading}
       verifyInProgress={verifyInProgress}
       refetch={refetch}
