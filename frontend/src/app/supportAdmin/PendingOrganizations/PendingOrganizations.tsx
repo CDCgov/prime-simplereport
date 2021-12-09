@@ -68,8 +68,18 @@ const PendingOrganizations = ({
     setIsUpdating(true);
 
     try {
-      // resubmit form data in case there are any changes
-      return handleUpdateOrg(org).then((newOrgData) => {
+      const valuesChangedArray = [
+        org.name === orgToVerify.name,
+        org.adminEmail === orgToVerify.adminEmail,
+        org.adminFirstName === orgToVerify.adminFirstName,
+        org.adminLastName === orgToVerify.adminLastName,
+        org.adminPhone === orgToVerify.adminPhone,
+      ];
+      const anyValueDifferent = !valuesChangedArray.every((v) => v === true);
+      let externalIdToVerify = orgToVerify.externalId;
+      if (anyValueDifferent) {
+        // submit changed values and generate new externalId
+        let newOrgData = await handleUpdateOrg(org);
         const updatedOrgExternalId = newOrgData?.data?.editPendingOrganization;
         if (
           updatedOrgExternalId === undefined ||
@@ -78,8 +88,9 @@ const PendingOrganizations = ({
           throw Error(`Update function in submit returned undefined or null
           external ID. Check for errors and try again`);
         }
-        submitIdentityVerified(updatedOrgExternalId);
-      });
+        externalIdToVerify = updatedOrgExternalId;
+      }
+      submitIdentityVerified(externalIdToVerify);
     } catch (e) {
       console.error(e);
     }

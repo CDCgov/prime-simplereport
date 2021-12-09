@@ -5,26 +5,51 @@ import { MockedProvider } from "@apollo/client/testing";
 import {
   GetPendingOrganizationsDocument,
   SetOrgIdentityVerifiedDocument,
+  EditPendingOrganizationDocument,
 } from "../../../generated/graphql";
 
 import PendingOrganizationsContainer from "./PendingOrganizationsContainer";
 
-const organizationsQuery = {
+const organizationsQuery = (name: string, id: string) => {
+  return {
+    request: {
+      query: GetPendingOrganizationsDocument,
+    },
+    result: {
+      data: {
+        pendingOrganizations: [
+          {
+            externalId: id,
+            name: name,
+            adminEmail: "admin@spacecamp.org",
+            adminFirstName: "John",
+            adminLastName: "Doe",
+            adminPhone: "530-867-5309",
+            createdAt: "2020-05-01T00:00:00.000Z",
+          },
+          {
+            externalId:
+              "CA-A-Real-Hospital-f34183c4-b4c5-449f-97b4-2e02abb7aae0",
+            name: "A Real Hospital",
+            adminEmail: "admin@arealhospital.org",
+            adminFirstName: "Jane",
+            adminLastName: "Doe",
+            adminPhone: "410-867-5309",
+            createdAt: "2020-06-01T00:00:00.000Z",
+          },
+        ],
+      },
+    },
+  };
+};
+
+const submittedOrganizationQuery = {
   request: {
     query: GetPendingOrganizationsDocument,
   },
   result: {
     data: {
       pendingOrganizations: [
-        {
-          externalId: "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0",
-          name: "Space Camp",
-          adminEmail: "admin@spacecamp.org",
-          adminFirstName: "John",
-          adminLastName: "Doe",
-          adminPhone: "530-867-5309",
-          createdAt: "2020-05-01T00:00:00.000Z",
-        },
         {
           externalId: "CA-A-Real-Hospital-f34183c4-b4c5-449f-97b4-2e02abb7aae0",
           name: "A Real Hospital",
@@ -38,6 +63,7 @@ const organizationsQuery = {
     },
   },
 };
+
 const EmptyOrganizationsQuery = {
   request: {
     query: GetPendingOrganizationsDocument,
@@ -63,6 +89,26 @@ const verificationMutation = {
   },
 };
 
+const editOrganizationsMutation = {
+  request: {
+    query: EditPendingOrganizationDocument,
+    variables: {
+      externalId: "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0",
+      name: "DC Space Camp",
+      adminFirstName: "John",
+      adminLastName: "Doe",
+      adminEmail: "admin@spacecamp.org",
+      adminPhone: "530-867-5309",
+    },
+  },
+  result: {
+    data: {
+      editPendingOrganization:
+        "DC-Space-Camp-fg413d4-btc5-449f-98b0-2e02abb7aae0",
+    },
+  },
+};
+
 describe("PendingOrganizationsContainer", () => {
   describe("loading organizations", () => {
     beforeEach(() => {
@@ -77,18 +123,38 @@ describe("PendingOrganizationsContainer", () => {
         screen.getByText("Loading Organizations...", { exact: false })
       ).toBeInTheDocument();
     });
-    it("disables submit", () => {
-      expect(screen.getByText("Save Changes", { exact: false })).toBeDisabled();
+  });
+
+  describe("empty organizations", () => {
+    beforeEach(() => {
+      render(
+        <MockedProvider mocks={[EmptyOrganizationsQuery]}>
+          <PendingOrganizationsContainer />
+        </MockedProvider>
+      );
+    });
+    it("shows no results", async () => {
+      expect(
+        await screen.findByText("No results", { exact: false })
+      ).toBeInTheDocument();
     });
   });
+
   describe("organizations loaded", () => {
     beforeEach(async () => {
       render(
         <MockedProvider
           mocks={[
-            organizationsQuery,
+            organizationsQuery(
+              "Space Camp",
+              "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+            ),
             verificationMutation,
-            EmptyOrganizationsQuery,
+            editOrganizationsMutation,
+            organizationsQuery(
+              "DC Space Camp",
+              "DC-Space-Camp-fg413d4-btc5-449f-98b0-2e02abb7aae0"
+            ),
           ]}
         >
           <PendingOrganizationsContainer />
@@ -122,54 +188,20 @@ describe("PendingOrganizationsContainer", () => {
       expect(rowsCreatedAt[0]).toHaveTextContent("6/1/2020, 12:00:00 AM");
       expect(rowsCreatedAt[1]).toHaveTextContent("5/1/2020, 12:00:00 AM");
     });
-    describe("marking an organization as verified", () => {
-      beforeEach(async () => {
-        await userEvent.click(screen.getAllByText("Identity Verified")[1]);
+
+    describe("confirm/edit modal acts correctly", () => {
+      beforeEach(() => {
+        userEvent.click(screen.getAllByText("View details")[1]);
       });
-      it("enables submit", () => {
+      it("populates modal", () => {
         expect(
-          screen.getByText("Save Changes", { exact: false })
-        ).toBeEnabled();
-      });
-      describe("submitting the form", () => {
-        beforeEach(async () => {
-          await userEvent.click(screen.getByText("Save Changes"));
-          expect(
-            screen.getByText("Save Changes", { exact: false })
-          ).toBeDisabled();
-        });
-        it("no more results", async () => {
-          expect(
-            await screen.findByText("No results", { exact: false })
-          ).toBeInTheDocument();
-        });
-      });
-      describe("then mark as unverified", () => {
-        beforeEach(async () => {
-          await userEvent.click(screen.getAllByText("Identity Verified")[1]);
-        });
-        it("disables submit", () => {
-          expect(
-            screen.getByText("Save Changes", { exact: false })
-          ).toBeDisabled();
-        });
-      });
-    });
-    describe("editing an org", () => {
-      beforeEach(async () => {
-        await screen.findByText("Space Camp", { exact: false });
-        await userEvent.click(
-          screen.getByTestId(
-            "edit-icon-DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
-          )
-        );
-      });
-      it("displays the edit form", async () => {
+          screen.getByText("Organization details", { exact: false })
+        ).toBeInTheDocument();
         expect(
-          await screen.findByText("Edit organization")
+          screen.getByText("Space Camp", { exact: false })
         ).toBeInTheDocument();
       });
-      describe("submitting the form", () => {
+      describe("submitting an edit", () => {
         it("displays an error when org name is empty", async () => {
           userEvent.clear(
             screen.getByLabelText("Organization name", { exact: false })
@@ -217,6 +249,61 @@ describe("PendingOrganizationsContainer", () => {
             })
           ).toBeInTheDocument();
         });
+        it("saves information on change", async () => {
+          userEvent.clear(
+            screen.getByLabelText("Organization name", { exact: false })
+          );
+          userEvent.type(
+            screen.getByLabelText("Organization name", { exact: false }),
+            "DC Space Camp"
+          );
+          expect(
+            screen.getByLabelText("Organization name", { exact: false })
+          ).toHaveValue("DC Space Camp");
+
+          userEvent.click(screen.getByText("Save details", { exact: false }));
+
+          expect(
+            await screen.findByText(
+              "DC-Space-Camp-fg413d4-btc5-449f-98b0-2e02abb7aae0",
+              {
+                exact: false,
+              }
+            )
+          ).toBeInTheDocument();
+        });
+      });
+    });
+  });
+  describe("marking an organization as verified", () => {
+    describe("submitting the form", () => {
+      beforeEach(async () => {
+        render(
+          <MockedProvider
+            mocks={[
+              organizationsQuery(
+                "Space Camp",
+                "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+              ),
+              verificationMutation,
+              submittedOrganizationQuery,
+            ]}
+          >
+            <PendingOrganizationsContainer />
+          </MockedProvider>
+        );
+      });
+      it("Space Camp submitted", async () => {
+        userEvent.click(
+          Array.from(await screen.findAllByText("View details"))[1]
+        );
+        userEvent.click(screen.getByText("Submit"));
+        expect(
+          await screen.findByText("Space Camp", { exact: false })
+        ).not.toBeInTheDocument();
+        expect(
+          await screen.findByText("A Real Hospital", { exact: false })
+        ).toBeInTheDocument();
       });
     });
   });
