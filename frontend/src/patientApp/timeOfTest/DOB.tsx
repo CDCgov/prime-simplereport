@@ -21,7 +21,6 @@ const DOB = () => {
   const [birthDay, setBirthDay] = useState("");
   const [birthYear, setBirthYear] = useState("");
   const [birthDateError, setBirthDateError] = useState("");
-  const [birthDateHidden, setBirthDateHidden] = useState(true);
   const [linkExpiredError, setLinkExpiredError] = useState(false);
   const [linkNotFoundError, setLinkNotFoundError] = useState(
     !isValidUUID(plid)
@@ -33,8 +32,6 @@ const DOB = () => {
   useEffect(() => {
     dobRef?.current?.focus();
   }, []);
-
-  console.log("birthDateHidden:", birthDateHidden);
 
   const validateBirthDate = () => {
     const date = dateFromStrings(birthMonth, birthDay, birthYear);
@@ -163,23 +160,14 @@ const DOB = () => {
           monthValue={birthMonth}
           dayValue={birthDay}
           yearValue={birthYear}
-          type={birthDateHidden ? "password" : "text"}
           monthOnChange={(evt: any) => setBirthMonth(evt.currentTarget.value)}
           dayOnChange={(evt: any) => setBirthDay(evt.currentTarget.value)}
           yearOnChange={(evt: any) => setBirthYear(evt.currentTarget.value)}
           errorMessage={birthDateError}
           validationStatus={birthDateError ? "error" : undefined}
         />
-        <div className="margin-top-1 margin-bottom-2">
-          <button
-            className="usa-button usa-button--unstyled margin-top-0"
-            aria-controls="birthDate"
-            onClick={() => setBirthDateHidden(!birthDateHidden)}
-          >
-            {birthDateHidden ? "Show my typing" : "Hide my typing"}
-          </button>
-        </div>
         <Button
+          className="margin-top-2"
           id="dob-submit-button"
           data-testid="dob-submit-button"
           label={t("testResult.dob.submit")}

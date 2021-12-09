@@ -25,6 +25,14 @@ const validateDateOfBirthSpy = jest
   .spyOn(PxpApi, "validateDateOfBirth")
   .mockImplementation(jest.fn());
 
+/**
+ * Tests to write:
+ * - DOB only valid if the year is after 1900 and before the next year
+ * - can't get in by only entering some fields (correct month/date but not year, for example)
+ * - can't access if DOB is incorrect
+ * - error message given for invalid date (31/2/1993, for example)
+ */
+
 describe("DOB (valid UUID)", () => {
   beforeEach(() => {
     const store = mockStore({
@@ -33,39 +41,27 @@ describe("DOB (valid UUID)", () => {
     render(mockContainer(store));
   });
 
-  it("Checks for the correct format - dashes aren't accepted", async () => {
-    // GIVEN
-    userEvent.type(await screen.findByLabelText("Date of birth"), "07-12-1987");
-    userEvent.click(await screen.findByText("Continue"));
-
-    // WHEN
-    const error = await screen.findByRole("alert");
-
-    // THEN
-    expect(error).toHaveTextContent(
-      "Error: Date of birth must be in MM/DD/YYYY format"
-    );
-    expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
-  });
-
-  it("Checks for the correct format - missing slashes aren't accepted", async () => {
-    // GIVEN
-    userEvent.type(await screen.findByLabelText("Date of birth"), "07121987");
-    userEvent.click(await screen.findByText("Continue"));
-
-    // WHEN
-    const error = await screen.findByRole("alert");
-
-    // THEN
-    expect(error).toHaveTextContent(
-      "Error: Date of birth must be in MM/DD/YYYY format"
-    );
-    expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
-  });
-
   it("Checks to make sure it is actually a possible date", async () => {
     // GIVEN
-    userEvent.type(await screen.findByLabelText("Date of birth"), "99/99/9999");
+    userEvent.type(await screen.findByLabelText("Month"), "31");
+    userEvent.type(await screen.findByLabelText("Day"), "7");
+    userEvent.type(await screen.findByLabelText("Year"), "1990");
+    userEvent.click(await screen.findByText("Continue"));
+
+    // WHEN
+    const error = await screen.findByRole("alert");
+
+    // THEN
+    expect(error).toHaveTextContent(
+      "Error: Date of birth must be a valid date"
+    );
+    expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
+  });
+
+  it("Does not allow partial dates", async () => {
+    // GIVEN
+    userEvent.type(await screen.findByLabelText("Month"), "7");
+    userEvent.type(await screen.findByLabelText("Day"), "31");
     userEvent.click(await screen.findByText("Continue"));
 
     // WHEN
@@ -80,7 +76,9 @@ describe("DOB (valid UUID)", () => {
 
   it("Checks to make sure it is a date after 1900", async () => {
     // GIVEN
-    userEvent.type(await screen.findByLabelText("Date of birth"), "08/21/1899");
+    userEvent.type(await screen.findByLabelText("Month"), "08");
+    userEvent.type(await screen.findByLabelText("Day"), "21");
+    userEvent.type(await screen.findByLabelText("Year"), "1899");
     userEvent.click(await screen.findByText("Continue"));
 
     // WHEN
@@ -95,7 +93,9 @@ describe("DOB (valid UUID)", () => {
 
   it("Checks to make sure it is a date before this year", async () => {
     // GIVEN
-    userEvent.type(await screen.findByLabelText("Date of birth"), "08/21/2237");
+    userEvent.type(await screen.findByLabelText("Month"), "08");
+    userEvent.type(await screen.findByLabelText("Day"), "21");
+    userEvent.type(await screen.findByLabelText("Year"), "2237");
     userEvent.click(await screen.findByText("Continue"));
 
     // WHEN
@@ -111,7 +111,9 @@ describe("DOB (valid UUID)", () => {
   it("Rejects the wrong date (not what is stored for the user)", async () => {
     // GIVEN
     validateDateOfBirthSpy.mockRejectedValue({ status: 403 });
-    userEvent.type(await screen.findByLabelText("Date of birth"), "08/22/1987");
+    userEvent.type(await screen.findByLabelText("Month"), "08");
+    userEvent.type(await screen.findByLabelText("Day"), "22");
+    userEvent.type(await screen.findByLabelText("Year"), "1987");
     userEvent.click(await screen.findByText("Continue"));
 
     // WHEN
@@ -126,7 +128,9 @@ describe("DOB (valid UUID)", () => {
 
   it("Accepts an otherwise valid date", async () => {
     // GIVEN
-    userEvent.type(await screen.findByLabelText("Date of birth"), "08/21/1987");
+    userEvent.type(await screen.findByLabelText("Month"), "08");
+    userEvent.type(await screen.findByLabelText("Day"), "21");
+    userEvent.type(await screen.findByLabelText("Year"), "1987");
 
     // WHEN
     userEvent.click(await screen.findByText("Continue"));
@@ -141,7 +145,9 @@ describe("DOB (valid UUID)", () => {
   it("Rejects an expired link", async () => {
     // GIVEN
     validateDateOfBirthSpy.mockRejectedValue({ status: 410 });
-    userEvent.type(await screen.findByLabelText("Date of birth"), "08/21/1987");
+    userEvent.type(await screen.findByLabelText("Month"), "08");
+    userEvent.type(await screen.findByLabelText("Day"), "21");
+    userEvent.type(await screen.findByLabelText("Year"), "1987");
 
     // WHEN
     userEvent.click(await screen.findByText("Continue"));
@@ -162,7 +168,9 @@ describe("DOB (valid UUID)", () => {
   it("Rejects an invalid link", async () => {
     // GIVEN
     validateDateOfBirthSpy.mockRejectedValue({ status: 404 });
-    userEvent.type(await screen.findByLabelText("Date of birth"), "08/21/1987");
+    userEvent.type(await screen.findByLabelText("Month"), "08");
+    userEvent.type(await screen.findByLabelText("Day"), "21");
+    userEvent.type(await screen.findByLabelText("Year"), "1987");
 
     // WHEN
     userEvent.click(await screen.findByText("Continue"));
