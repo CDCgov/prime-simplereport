@@ -15,8 +15,12 @@ function verifyBirthDate(birthDate) {
     .to.contain.text(
       "Enter your date of birth to access your COVID-19 testing portal."
     );
-  this.section.app.expect.element("@dobInput").to.be.visible;
-  this.section.app.setValue("@dobInput", birthDate);
+  this.section.app.expect.element("@monthInput").to.be.visible;
+  this.section.app.setValue("@monthInput", birthDate.month);
+  this.section.app.expect.element("@dayInput").to.be.visible;
+  this.section.app.setValue("@dayInput", birthDate.day);
+  this.section.app.expect.element("@yearInput").to.be.visible;
+  this.section.app.setValue("@yearInput", birthDate.year);
   this.section.app.click("@dobSubmitButton");
   this.expect.section("@app").to.be.visible;
   return this;
@@ -44,7 +48,9 @@ module.exports = {
       selector: ".App",
       elements: {
         tosConsentButton: "#tos-consent-button",
-        dobInput: 'input[name="birthDate"]',
+        monthInput: "input[name=birthMonth]",
+        dayInput: "input[name=birthDay]",
+        yearInput: "input[name=birthYear]",
         dobSubmitButton: "#dob-submit-button",
       },
     },
