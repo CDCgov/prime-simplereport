@@ -1,4 +1,4 @@
-mutation updateFacility($facilityId: ID!, $deviceId: String!, $deviceSpecimenTypes: [ID]!) {
+mutation updateFacility($facilityId: ID!, $deviceId: String!) {
     updateFacility(
         facilityId: $facilityId
         testingFacilityName: "Fake Facility"
@@ -21,7 +21,5 @@ mutation updateFacility($facilityId: ID!, $deviceId: String!, $deviceSpecimenTyp
         orderingProviderZipCode: "11801"
         orderingProviderPhone: "(646) 5432123"
         deviceTypes: [$deviceId]
-        deviceSpecimenTypes: $deviceSpecimenTypes
-        defaultDevice: $deviceId
     )
 }

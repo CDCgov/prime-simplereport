@@ -74,6 +74,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             _dataFactory.getAddress(),
             "123-456-7890",
             "test@foo.com",
+            dst,
             List.of(dst.getDeviceType()),
             bill,
             _dataFactory.getAddress(),
@@ -120,6 +121,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             _dataFactory.getAddress(),
             "123-456-7890",
             "test@foo.com",
+            dst,
             List.of(dst.getDeviceType()),
             bill,
             _dataFactory.getAddress(),
@@ -160,6 +162,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
               _dataFactory.getAddress(),
               "123-456-7890",
               "test@foo.com",
+              dst,
               List.of(dst.getDeviceType()),
               bill,
               _dataFactory.getAddress(),
@@ -288,7 +291,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
           "npi",
           newOrderingProviderAddress,
           "817-555-7777",
-          devices);
+          List.of(devices.get(0), devices.get(1)));
     }
 
     @Test
@@ -316,41 +319,6 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
           .isEqualTo(newOrderingProviderAddress);
 
       assertThat(updatedFacility.getDeviceTypes()).hasSize(2);
-    }
-
-    @Nested
-    @DisplayName("when changing default device")
-    class UpdatingDefaultDevice {
-      @BeforeEach
-      void beforeEach() {
-        _service.updateFacility(
-            facility.getInternalId(),
-            "new name",
-            "new clia",
-            new StreetAddress("", "", "", "", "", ""),
-            "817-555-6666",
-            "facility@dis.org",
-            "dr. provider",
-            "very",
-            "expensive",
-            "jr.",
-            "npi",
-            new StreetAddress("", "", "", "", "", ""),
-            "817-555-7777",
-            devices);
-      }
-
-      @Test
-      @DisplayName("it should update default device and retain deviceSepcimenTypes")
-      @WithSimpleReportOrgAdminUser
-      void updateDefaultDevice() {
-        Facility updatedFacility = facilityRepository.findById(facility.getInternalId()).get();
-        assertThat(updatedFacility.getDefaultDeviceSpecimen().getDeviceType().getInternalId())
-            .isEqualTo(devices.get(1).getInternalId());
-        assertThat(updatedFacility.getDefaultDeviceSpecimen().getSpecimenType().getInternalId())
-            .isEqualTo(specimenTypes.get(0).getInternalId());
-        assertThat(updatedFacility.getDeviceTypes()).hasSize(2);
-      }
     }
   }
 }

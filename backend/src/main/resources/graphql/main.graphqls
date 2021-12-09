@@ -418,6 +418,7 @@ type Mutation {
     orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
+    defaultDevice: String!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addUserToCurrentOrg(
     name: NameInput

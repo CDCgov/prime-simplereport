@@ -89,10 +89,12 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
         facility.getOrderingProvider().getAddress().getState(),
         facility.getOrderingProvider().getAddress().getPostalCode(),
         facility.getOrderingProvider().getTelephone(),
-        List.of(deviceId.toString()));
+        List.of(deviceId.toString()),
+        deviceId.toString());
 
     verify(_os)
         .createFacility(
+            any(),
             any(),
             any(),
             any(),
@@ -155,10 +157,12 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
         facility.getOrderingProvider().getAddress().getState(),
         facility.getOrderingProvider().getAddress().getPostalCode(),
         facility.getOrderingProvider().getTelephone(),
-        List.of(deviceId.toString()));
+        List.of(deviceId.toString()),
+        deviceId.toString());
 
     verify(_os)
         .createFacility(
+            any(),
             any(),
             any(),
             any(),

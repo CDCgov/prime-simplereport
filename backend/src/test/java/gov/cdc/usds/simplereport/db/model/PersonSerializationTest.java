@@ -75,6 +75,7 @@ class PersonSerializationTest {
     Person p = makeSerializablePerson(fakeOrg);
     Provider mccoy = new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222");
     DeviceType d = new DeviceType("Bill", "Weasleys", "1", "12345-6", "E", 15);
+    DeviceSpecimenType dst = new DeviceSpecimenType(d, new SpecimenType());
     StreetAddress addy =
         new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
     p.setFacility(
@@ -86,6 +87,7 @@ class PersonSerializationTest {
             "555-867-5309",
             "facility@test.com",
             mccoy,
+            dst,
             List.of(d)));
     JsonContent<Person> serialized = _tester.write(p);
     assertThat(serialized)

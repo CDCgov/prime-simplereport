@@ -38,7 +38,6 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
         _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));
     configuredDevices.add(bill);
     configuredDevices.add(percy);
-    // configuredDevices.add(_deviceSpecimens.save(new DeviceSpecimenType(percy, spec)));
     Organization org = _orgs.save(new Organization("My Office", "other", "650Mass", true));
     Facility saved =
         _repo.save(
@@ -50,6 +49,7 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
                 "555-867-5309",
                 "facility@test.com",
                 mccoy,
+                billbogies,
                 configuredDevices));
     Optional<Facility> maybe = _repo.findByOrganizationAndFacilityName(org, "Third Floor");
     assertTrue(maybe.isPresent(), "should find the facility");

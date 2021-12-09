@@ -12,6 +12,7 @@ import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -76,7 +77,8 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String orderingProviderState,
       String orderingProviderZipCode,
       String orderingProviderTelephone,
-      List<String> deviceIds) {
+      List<String> deviceIds,
+      String defaultDeviceId) {
     _os.assertFacilityNameAvailable(testingFacilityName);
 
     // For historical reasons, entities representing the internal database ID of a device type
@@ -85,6 +87,8 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     List<UUID> deviceInternalIds =
         deviceIds.stream().map(UUID::fromString).collect(Collectors.toList());
     List<DeviceType> devices = _dts.getDeviceTypesByIds(deviceInternalIds);
+    DeviceSpecimenType defaultDeviceSpecimen =
+        _dts.getDefaultForDeviceId(UUID.fromString(defaultDeviceId));
 
     StreetAddress facilityAddress =
         _avs.getValidatedAddress(
@@ -110,6 +114,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             facilityAddress,
             parsePhoneNumber(phone),
             parseEmail(email),
+            defaultDeviceSpecimen,
             devices,
             providerName,
             providerAddress,
@@ -179,6 +184,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             providerAddress,
             parsePhoneNumber(orderingProviderTelephone),
             devices);
+
     return new ApiFacility(facility);
   }
 
@@ -211,7 +217,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String orderingProviderZipCode,
       String orderingProviderTelephone,
       List<String> deviceIds,
-      // String defaultDeviceId,
+      String defaultDeviceId,
       PersonName adminName,
       String adminFirstName,
       String adminMiddleName,
@@ -222,6 +228,8 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     List<UUID> deviceInternalIds =
         deviceIds.stream().map(UUID::fromString).collect(Collectors.toList());
     List<DeviceType> devices = _dts.getDeviceTypesByIds(deviceInternalIds);
+    DeviceSpecimenType defaultDeviceSpecimen =
+        _dts.getDefaultForDeviceId(UUID.fromString(defaultDeviceId));
 
     StreetAddress facilityAddress =
         _avs.getValidatedAddress(
@@ -255,6 +263,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             facilityAddress,
             parsePhoneNumber(phone),
             parseEmail(email),
+            defaultDeviceSpecimen,
             devices,
             providerName,
             providerAddress,

@@ -50,7 +50,7 @@ extend type Mutation {
     orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
-    #defaultDevice: String!
+    defaultDevice: String!
     adminName: NameInput
     adminFirstName: String
     adminMiddleName: String

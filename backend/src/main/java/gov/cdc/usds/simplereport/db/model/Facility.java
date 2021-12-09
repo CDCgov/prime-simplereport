@@ -34,7 +34,8 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   @JoinColumn(name = "ordering_provider_id", nullable = false)
   private Provider orderingProvider;
 
-  @ManyToOne(optional = true, fetch = FetchType.LAZY)
+  // TODO: think hard about this
+  @ManyToOne(optional = true, fetch = FetchType.EAGER)
   @JoinColumn(name = "default_device_specimen_type_id")
   private DeviceSpecimenType defaultDeviceSpecimen;
 
@@ -56,6 +57,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
       String phone,
       String email,
       Provider orderingProvider,
+      DeviceSpecimenType defaultDeviceSpecimen,
       List<DeviceType> configuredDevices) {
     super(org);
     this.facilityName = facilityName;
@@ -64,6 +66,10 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.telephone = phone;
     this.email = email;
     this.orderingProvider = orderingProvider;
+    this.defaultDeviceSpecimen = defaultDeviceSpecimen;
+    if (defaultDeviceSpecimen != null) {
+      this.configuredDeviceTypes.add(defaultDeviceSpecimen.getDeviceType());
+    }
     this.configuredDeviceTypes.addAll(configuredDevices);
   }
 
@@ -80,7 +86,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   }
 
   public DeviceType getDefaultDeviceType() {
-    return defaultDeviceSpecimen == null ? null : defaultDeviceSpecimen.getDeviceType();
+    return this.defaultDeviceSpecimen == null ? null : this.defaultDeviceSpecimen.getDeviceType();
   }
 
   public List<DeviceType> getDeviceTypes() {
@@ -109,6 +115,12 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
       DeviceType d = i.next();
       if (d.getInternalId().equals(removedId)) {
         i.remove();
+        if (this.defaultDeviceSpecimen != null
+            && this.defaultDeviceSpecimen.getDeviceType().getInternalId().equals(removedId)) {
+          // If the corresponding device to a facility's default device swab type is removed,
+          // set default to null
+          this.defaultDeviceSpecimen = null;
+        }
         break;
       }
     }

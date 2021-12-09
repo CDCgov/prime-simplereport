@@ -902,6 +902,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void fetchTestResults_entryOnlyUser_error() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
+    facility.addDefaultDeviceSpecimen(_dataFactory.getGenericDeviceSpecimen());
     Person p = _dataFactory.createFullPerson(org);
     _dataFactory.createTestEvent(p, facility);
 
@@ -917,6 +918,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void fetchTestEventsResults_getTestEventsResults_NPlusOne() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
+    facility.addDefaultDeviceSpecimen(_dataFactory.getGenericDeviceSpecimen());
     Person p = _dataFactory.createFullPerson(org);
 
     // add some initial data
@@ -953,6 +955,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void editTestResult_getQueue_NPlusOne() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
+    facility.addDefaultDeviceSpecimen(_dataFactory.getGenericDeviceSpecimen());
     UUID facilityId = facility.getInternalId();
 
     Person p1 =

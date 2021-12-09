@@ -107,6 +107,7 @@ public class OrganizationInitializingService {
                         : f.makeRealFacility(
                             orgsByExternalId.get(f.getOrganizationExternalId()),
                             savedProvider,
+                            defaultDeviceSpecimen,
                             configuredDs.stream()
                                 .map(DeviceSpecimenType::getDeviceType)
                                 .collect(Collectors.toList())))

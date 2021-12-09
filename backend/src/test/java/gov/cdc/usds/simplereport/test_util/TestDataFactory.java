@@ -146,8 +146,8 @@ public class TestDataFactory {
             "555-867-5309",
             "facility@test.com",
             doc,
+            dev,
             configuredDevices);
-    facility.addDefaultDeviceSpecimen(dev);
     Facility save = _facilityRepo.save(facility);
     _oktaRepo.createFacility(save);
     return save;

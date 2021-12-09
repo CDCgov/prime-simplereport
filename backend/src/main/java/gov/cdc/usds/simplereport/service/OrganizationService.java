@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -39,7 +40,7 @@ public class OrganizationService {
   private final FacilityRepository _facilityRepo;
   private final ProviderRepository _providerRepo;
   private final AuthorizationService _authService;
-  private DeviceTypeService _deviceService;
+  private final DeviceTypeService _deviceService;
   private final OktaRepository _oktaRepo;
   private final CurrentOrganizationRolesContextHolder _currentOrgRolesContextHolder;
   private final OrderingProviderRequiredValidator _orderingProviderRequiredValidator;
@@ -222,7 +223,8 @@ public class OrganizationService {
         .forEach(
             device -> {
               // Removing default device
-              if (facility.getDefaultDeviceSpecimen().getDeviceType() == device) {
+              if (facility.getDefaultDeviceSpecimen() != null
+                  && facility.getDefaultDeviceSpecimen().getDeviceType() == device) {
                 facility.addDefaultDeviceSpecimen(null);
               }
 
@@ -235,11 +237,12 @@ public class OrganizationService {
       deviceTypeOptional.ifPresent(facility::addDeviceType);
     }
 
-    // Default device specimen is not explicitly set by update/add facility,
-    // but we still want one to exist
+    // Default device specimen is not explicitly set by update/add facility operations,
+    // but it should still be defined
     if (facility.getDefaultDeviceSpecimen() == null) {
-      facility.addDefaultDeviceSpecimen(
-          _deviceService.getDefaultForDeviceId(deviceTypes.get(0).getInternalId()));
+      var deviceId = deviceTypes.get(0).getInternalId();
+
+      facility.addDefaultDeviceSpecimen(_deviceService.getDefaultForDeviceId(deviceId));
     }
 
     return _facilityRepo.save(facility);
@@ -255,6 +258,7 @@ public class OrganizationService {
       StreetAddress facilityAddress,
       String phone,
       String email,
+      DeviceSpecimenType defaultDeviceSpecimen,
       List<DeviceType> deviceTypes,
       PersonName providerName,
       StreetAddress providerAddress,
@@ -269,6 +273,7 @@ public class OrganizationService {
         facilityAddress,
         phone,
         email,
+        defaultDeviceSpecimen,
         deviceTypes,
         providerName,
         providerAddress,
@@ -340,6 +345,7 @@ public class OrganizationService {
       StreetAddress facilityAddress,
       String phone,
       String email,
+      DeviceSpecimenType defaultDeviceSpecimen,
       List<DeviceType> deviceTypes,
       PersonName providerName,
       StreetAddress providerAddress,
@@ -350,6 +356,7 @@ public class OrganizationService {
     Provider orderingProvider =
         _providerRepo.save(
             new Provider(providerName, providerNPI, providerAddress, providerTelephone));
+
     Facility facility =
         new Facility(
             organization,
@@ -359,6 +366,7 @@ public class OrganizationService {
             phone,
             email,
             orderingProvider,
+            defaultDeviceSpecimen,
             deviceTypes);
     facility = _facilityRepo.save(facility);
     _psrlService.createRegistrationLink(facility);
@@ -374,6 +382,7 @@ public class OrganizationService {
       StreetAddress facilityAddress,
       String phone,
       String email,
+      DeviceSpecimenType defaultDeviceSpecimen,
       List<DeviceType> deviceTypes,
       PersonName providerName,
       StreetAddress providerAddress,
@@ -386,6 +395,7 @@ public class OrganizationService {
         facilityAddress,
         phone,
         email,
+        defaultDeviceSpecimen,
         deviceTypes,
         providerName,
         providerAddress,
