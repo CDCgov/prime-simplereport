@@ -134,7 +134,6 @@ export type Mutation = {
   createFacilityRegistrationLink?: Maybe<Scalars["String"]>;
   createOrganization?: Maybe<Organization>;
   createOrganizationRegistrationLink?: Maybe<Scalars["String"]>;
-  deleteQueuedOrganization?: Maybe<Scalars["Boolean"]>;
   editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
   markFacilityAsDeleted?: Maybe<Scalars["String"]>;
@@ -326,11 +325,6 @@ export type MutationCreateOrganizationArgs = {
 export type MutationCreateOrganizationRegistrationLinkArgs = {
   link: Scalars["String"];
   organizationExternalId: Scalars["String"];
-};
-
-export type MutationDeleteQueuedOrganizationArgs = {
-  deleted: Scalars["Boolean"];
-  externalId: Scalars["String"];
 };
 
 export type MutationEditPendingOrganizationArgs = {

@@ -28,7 +28,7 @@ const PendingOrganizationsContainer = () => {
       );
     } else {
       setVerifyInProgress(true);
-      return verifyIdentity({
+      verifyIdentity({
         variables: {
           externalId: externalId,
           verified: true,

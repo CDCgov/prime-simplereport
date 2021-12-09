@@ -34,9 +34,9 @@ const PendingOrganizations = ({
   const [editOrg] = useEditPendingOrganizationMutation();
 
   const handleUpdateOrg = async (org: PendingOrganizationFormValues) => {
-    // Don't do anything if no org is selected
+    // Return nothing if no verification is set
     if (orgToVerify === null) {
-      return;
+      return undefined;
     }
 
     setIsUpdating(true);
@@ -79,7 +79,7 @@ const PendingOrganizations = ({
       let externalIdToVerify = orgToVerify.externalId;
       if (anyValueDifferent) {
         // submit changed values and generate new externalId
-        let newOrgData = await handleUpdateOrg(org);
+        const newOrgData = await handleUpdateOrg(org);
         const updatedOrgExternalId = newOrgData?.data?.editPendingOrganization;
         if (
           updatedOrgExternalId === undefined ||
