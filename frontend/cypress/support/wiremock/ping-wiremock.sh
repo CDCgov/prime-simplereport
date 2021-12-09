@@ -14,4 +14,4 @@ while [[ $result -ne 0 && $polls -lt 180 ]]; do
 done
 echo
 
-echo 'Wiremock is online! Starting Nightwatch tests...'
+echo 'Wiremock is online! Starting Cypress tests...'

@@ -26,8 +26,8 @@
 
 import "cypress-localstorage-commands";
 
-Cypress.Commands.add("restartWiremock", () => {
+Cypress.Commands.add("restartWiremock", (stubDir) => {
   cy.clearCookies();
   cy.task("stopWiremock");
-  cy.task("startWiremock");
+  cy.task("startWiremock", { stubDir });
 });

@@ -61,7 +61,7 @@ Cypress.Commands.add("verifySecurityCode", (code) => {
 before(() => {
   cy.clearCookies();
   cy.task("downloadWiremock");
-  cy.task("startWiremock");
+  cy.task("startWiremock", { stubDir: "accountCreation" });
 });
 beforeEach(() => {
   // Cypress clears cookies by default, but for these tests
@@ -101,7 +101,7 @@ describe.skip("Okta account creation", () => {
 
   describe("Account creation w/ Okta Verify MFA", () => {
     before(() => {
-      cy.restartWiremock();
+      cy.restartWiremock("accountCreation");
     });
     it("navigates to the activation link", () => {
       cy.visit("/uac/?activationToken=NOr20VqF5M6m8AnwcSUJ");
@@ -129,7 +129,7 @@ describe.skip("Okta account creation", () => {
 
   describe("Account creation w/ Google Authenticator MFA", () => {
     before(() => {
-      cy.restartWiremock();
+      cy.restartWiremock("accountCreation");
     });
     it("navigates to the activation link", () => {
       cy.visit("/uac/?activationToken=gqYPzH1FlPzVr0U3tQ7H");
@@ -157,7 +157,7 @@ describe.skip("Okta account creation", () => {
 
   describe("Account creation w/ Voice Call MFA", () => {
     before(() => {
-      cy.restartWiremock();
+      cy.restartWiremock("accountCreation");
     });
     it("navigates to the activation link", () => {
       cy.visit("/uac/?activationToken=wN5mR-8SXao1TP2PLaFe");
@@ -185,7 +185,7 @@ describe.skip("Okta account creation", () => {
 
   describe("Account creation w/ Email MFA", () => {
     before(() => {
-      cy.restartWiremock();
+      cy.restartWiremock("accountCreation");
     });
     it("navigates to the activation link", () => {
       cy.visit("/uac/?activationToken=4OVwdVhc6M1I-UwvLrNX");

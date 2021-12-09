@@ -47,13 +47,14 @@ module.exports = (on, _config) => {
     // These tasks are used to set up and run Wiremock
     downloadWiremock: () =>
       execSync("./cypress/support/wiremock/download-wiremock.sh"),
-    startWiremock: () => {
-      const wm = spawn("./cypress/support/wiremock/start-wiremock.sh");
+    startWiremock: ({ stubDir }) => {
+      const wm = spawn("./cypress/support/wiremock/start-wiremock.sh", [
+        stubDir,
+      ]);
       execSync("./cypress/support/wiremock/ping-wiremock.sh");
       global.wm = wm;
       return null;
     },
-    killWiremock: () => global.wm.kill(),
     stopWiremock: () => {
       execSync("./cypress/support/wiremock/stop-wiremock.sh");
       global.wm.kill();
