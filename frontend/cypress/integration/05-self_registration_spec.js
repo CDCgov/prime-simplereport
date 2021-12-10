@@ -1,10 +1,16 @@
-import { generatePatient } from "../support";
+import { loginHooks, generatePatient } from "../support";
 
 const patient = generatePatient();
 
 describe("Patient self registration", () => {
-  it("navigates to the self registration link and loads terms of service", () => {
-    cy.visit("/register/dis-org");
+  loginHooks();
+  it("gets the self registration link and navigates to it", () => {
+    cy.visit("/settings");
+    cy.contains("Patient self-registration").click();
+    cy.contains("Patients can now register themselves online");
+    cy.get("#org-link").then(($link) => cy.visit($link.val()));
+  });
+  it("loads terms of service", () => {
     cy.contains("Terms of service");
   });
   it("accepts the terms of service", () => {
@@ -36,7 +42,7 @@ describe("Patient self registration", () => {
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
     cy.get(".modal__container #save-confirmed-address").click();
-    cy.get(".prime-formgroup").contains(
+    cy.get("#self-reg-confirmation").contains(
       "thanks for completing your patient profile"
     );
   });

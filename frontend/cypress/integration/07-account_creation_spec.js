@@ -56,24 +56,23 @@ Cypress.Commands.add("verifySecurityCode", (code) => {
   cy.get(submitButton).first().click();
 });
 
-// Since these tests interact with Okta, we need to use
-// Wiremock to stub out the Okta API calls.
-before(() => {
-  cy.clearCookies();
-  cy.task("downloadWiremock");
-  cy.task("startWiremock", { stubDir: "accountCreation" });
-});
-beforeEach(() => {
-  // Cypress clears cookies by default, but for these tests
-  // we want to preserve the Spring session cookie
-  Cypress.Cookies.preserveOnce("SESSION");
-});
-after(() => {
-  cy.clearCookies();
-  cy.task("stopWiremock");
-});
-
-describe.skip("Okta account creation", () => {
+describe("Okta account creation", () => {
+  // Since these tests interact with Okta, we need to use
+  // Wiremock to stub out the Okta API calls.
+  before(() => {
+    cy.clearCookies();
+    cy.task("downloadWiremock");
+    cy.task("startWiremock", { stubDir: "accountCreation" });
+  });
+  beforeEach(() => {
+    // Cypress clears cookies by default, but for these tests
+    // we want to preserve the Spring session cookie
+    Cypress.Cookies.preserveOnce("SESSION");
+  });
+  after(() => {
+    cy.clearCookies();
+    cy.task("stopWiremock");
+  });
   describe("Account creation w/ SMS MFA", () => {
     it("navigates to the activation link", () => {
       cy.visit("/uac/?activationToken=h971awbXda7y7jGaxN8f");

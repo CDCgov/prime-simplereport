@@ -1,4 +1,7 @@
+import { loginHooks } from "../support";
+
 describe("Updating organization settings", () => {
+  loginHooks();
   it("navigates to the org settings page", () => {
     cy.visit("/settings/organization");
     cy.get(".prime-container").contains("Manage organization");

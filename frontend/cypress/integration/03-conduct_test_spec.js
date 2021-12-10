@@ -1,5 +1,8 @@
+import { loginHooks } from "../support";
+
 describe("Conducting a test", () => {
   let patientName, lastName, queueCard;
+  loginHooks();
   before("retrieve the patient name", () => {
     cy.task("getPatientName").then((name) => {
       patientName = name;

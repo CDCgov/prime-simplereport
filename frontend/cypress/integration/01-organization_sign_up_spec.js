@@ -1,26 +1,16 @@
-const token =
-  "eyJraWQiOiIwX0hWeTl2ZFd1bFZ6MFh1V0dUNmpCNDJib1d3ZWJXeFMwRS02OG9WVlpFIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULl9YLWRGcGdzd05TZEhDQzVlQkdtQW45NGQxVXRhMlBwZm84TERpMWRKa2siLCJpc3MiOiJodHRwczovL2hocy1wcmltZS5va3RhcHJldmlldy5jb20vb2F1dGgyL2RlZmF1bHQiLCJhdWQiOiJhcGk6Ly9kZWZhdWx0IiwiaWF0IjoxNjM5MDg4MTI4LCJleHAiOjE2MzkwOTE3MjgsImNpZCI6IjBvYTFrMDE2M25Bd2ZWeE5XMWQ3IiwidWlkIjoiMDB1MWFvbG5heGlFcTJqS3kxZDciLCJzY3AiOlsic2ltcGxlX3JlcG9ydF9kZXYiLCJzaW1wbGVfcmVwb3J0Iiwib3BlbmlkIl0sInN1YiI6Im5jbHlkZUBza3lsaWdodC5kaWdpdGFsIiwiZGV2X3JvbGVzIjpbIlNSLURFVi1URU5BTlQ6Q08tRGV2LUNhbXAtZTYzYjc2ODUtMGNiZi00MDRiLWExMDYtYWQ1ZDcxMmVkYTdjOkZBQ0lMSVRZX0FDQ0VTUzoyOGFhYWM3Yi03MjI4LTRjZDgtOTRlYS03Mzg5ODBiYjcxMGIiLCJTUi1ERVYtVEVOQU5UOkNPLURldi1DYW1wLWU2M2I3Njg1LTBjYmYtNDA0Yi1hMTA2LWFkNWQ3MTJlZGE3YzpOT19BQ0NFU1MiLCJTUi1ERVYtVEVOQU5UOkNPLURldi1DYW1wLWU2M2I3Njg1LTBjYmYtNDA0Yi1hMTA2LWFkNWQ3MTJlZGE3YzpBRE1JTiIsIlNSLURFVi1URU5BTlQ6Q08tRGV2LUNhbXAtZTYzYjc2ODUtMGNiZi00MDRiLWExMDYtYWQ1ZDcxMmVkYTdjOkFMTF9GQUNJTElUSUVTIiwiU1ItREVWLVRFTkFOVDpDTy1EZXYtQ2FtcC1lNjNiNzY4NS0wY2JmLTQwNGItYTEwNi1hZDVkNzEyZWRhN2M6VVNFUiIsIlNSLURFVi1URU5BTlQ6Q08tRGV2LUNhbXAtZTYzYjc2ODUtMGNiZi00MDRiLWExMDYtYWQ1ZDcxMmVkYTdjOkVOVFJZX09OTFkiLCJTUi1ERVYtQURNSU5TIl0sImdpdmVuX25hbWUiOiJOaWNrIiwiZmFtaWx5X25hbWUiOiJDbHlkZSJ9.Tc5Zp8TIIeJQDnoiA0pY6VnUgoSraMH-4uWd8P4rveVZgnidXzYvanVTCRRybQrFQXcpbLj_mBai8kuWyye4tkgJj9WZ5MLaCKdVagFpR42XwfN5_1E1E_zxLpsqp_aX4LrYHVMzcgIqystKguioRcHwmeqSlDYYy9cXB-32i4XVTjULOwI1jnAF7CZmGK0hM9urY4bl2_L8wC639iWVK7qLJhHZg_ejaUL3KmgcHCS9glh8uCH8Bk-nahvtFJlxRIQmqSNM4L8HUiEFgKmRj2dTkhkMegemohDPseMayn5exptLRK2R3cqysjLUJcFhEAnB3315zOm7fybNMvjqIw";
-
-// Since these tests interact with Okta, we need to use
-// Wiremock to stub out the Okta API calls.
-before(() => {
-  cy.clearCookies();
-  cy.task("downloadWiremock");
-  cy.task("startWiremock", { stubDir: "orgSignUp" });
-});
-beforeEach(() => {
-  // Cypress clears cookies by default, but for these tests
-  // we want to preserve the Spring session cookie
-  Cypress.Cookies.preserveOnce("SESSION");
-  cy.setLocalStorage("access_token", token);
-  cy.setLocalStorage("id_token", token);
-});
-after(() => {
-  cy.clearCookies();
-  cy.task("stopWiremock");
-});
+const { loginHooks } = require("../support");
 
 describe("Organization sign up", () => {
+  loginHooks();
+  before(() => {
+    // Since these tests interact with Okta, we need to use
+    // Wiremock to stub out the Okta API calls.
+    cy.task("downloadWiremock");
+    cy.task("startWiremock", { stubDir: "orgSignUp" });
+  });
+  after(() => {
+    cy.task("stopWiremock");
+  });
   it("navigates to the sign up form", () => {
     cy.visit("/sign-up");
     cy.contains("Sign up for SimpleReport");
@@ -38,12 +28,10 @@ describe("Organization sign up", () => {
     cy.get('input[name="workPhoneNumber"]').type("5308675309");
   });
   it("submits successfully", () => {
-    cy.clearLocalStorage();
     cy.get("button.submit-button").click();
     cy.contains("Identity verification consent");
   });
   it("navigates to the support pending org table", () => {
-    cy.getLocalStorage("access_token").should("equal", token);
     cy.visit("/admin/pending-organizations");
     cy.contains("Organizations Pending Identity Verification");
   });

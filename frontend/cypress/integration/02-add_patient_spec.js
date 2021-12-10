@@ -1,8 +1,9 @@
-import { generatePatient } from "../support";
+import { generatePatient, loginHooks } from "../support";
 
 const patient = generatePatient();
 
 describe("Adding a patient", () => {
+  loginHooks();
   before("store patient info", () => {
     cy.task("setPatientName", patient.fullName);
     cy.task("setPatientDOB", patient.dobForPatientLink);

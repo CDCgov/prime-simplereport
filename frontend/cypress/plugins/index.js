@@ -23,6 +23,13 @@ module.exports = (on, _config) => {
   // `config` is the resolved Cypress config
   on("task", {
     // These tasks set and read state to be passed between specs
+    setAuth: ({ id_token, access_token }) => {
+      global.auth = { id_token, access_token };
+      return null;
+    },
+    getAuth: () => {
+      return global.auth || {};
+    },
     setPatientName: (name) => {
       global.patientName = name;
       return null;
@@ -51,6 +58,12 @@ module.exports = (on, _config) => {
       const wm = spawn("./cypress/support/wiremock/start-wiremock.sh", [
         stubDir,
       ]);
+      execSync("./cypress/support/wiremock/ping-wiremock.sh");
+      global.wm = wm;
+      return null;
+    },
+    startOktaProxy: () => {
+      const wm = spawn("./cypress/support/wiremock/start-okta-proxy.sh");
       execSync("./cypress/support/wiremock/ping-wiremock.sh");
       global.wm = wm;
       return null;

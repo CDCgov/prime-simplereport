@@ -42,4 +42,4 @@ fi
 
 echo 'App is online! Starting Cypress...'
 
-npx nightwatch -e "$@"
+yarn run cypress run
