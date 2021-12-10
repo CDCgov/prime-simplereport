@@ -13,7 +13,7 @@ function addPatient(dobFormat) {
   // const dobForPatientLink = dob.format("MM/DD/YYYY");
   // js months are 0-offset
   const monthForPatientLink = dob.month() + 1;
-  const dayForPatientLink = dob.day();
+  const dayForPatientLink = dob.date();
   const yearForPatientLink = dob.year();
   console.log("dob.day: ", dayForPatientLink);
   const phone = "(800) 232-4636";
