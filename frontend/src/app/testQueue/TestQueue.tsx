@@ -85,17 +85,7 @@ export const queueQuery = gql`
           model
           testLength
         }
-        defaultDeviceSpecimen {
-          internalId
-          deviceType {
-            internalId
-            name
-          }
-          specimenType {
-            internalId
-            name
-          }
-        }
+        defaultDeviceSpecimen
       }
     }
     deviceSpecimenTypes {
@@ -133,7 +123,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   const { data, loading, error, refetch, startPolling, stopPolling } = useQuery(
     queueQuery,
     {
-      fetchPolicy: "no-cache",
       variables: {
         facilityId: activeFacilityId,
       },
@@ -168,6 +157,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   const facility = data.organization.testingFacility.find(
     (f: { id: string }) => f.id === activeFacilityId
   );
+
   if (!facility) {
     return <p>Facility not found</p>;
   }

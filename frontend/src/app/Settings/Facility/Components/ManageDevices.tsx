@@ -69,7 +69,7 @@ const ManageDevices: React.FC<Props> = ({
     return selectedDevicesOrDefault.map((device, idx) => {
       const deviceId = device.internalId;
 
-      const deviceDropdownOptions = (deviceTypes || [])
+      const deviceDropdownOptions = [...(deviceTypes || [])]
         .sort(function alphabetize(a, b) {
           if (a.name < b.name) {
             return -1;

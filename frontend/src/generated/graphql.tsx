@@ -104,7 +104,7 @@ export type Facility = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
-  defaultDeviceSpecimen?: Maybe<DeviceSpecimenType>;
+  defaultDeviceSpecimen?: Maybe<Scalars["String"]>;
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
   email?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
@@ -164,6 +164,7 @@ export type MutationAddFacilityArgs = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
+  defaultDevice: Scalars["String"];
   deviceTypes: Array<Maybe<Scalars["String"]>>;
   email?: Maybe<Scalars["String"]>;
   orderingProviderCity?: Maybe<Scalars["String"]>;
@@ -293,6 +294,7 @@ export type MutationCreateOrganizationArgs = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
+  defaultDevice: Scalars["String"];
   deviceTypes: Array<Maybe<Scalars["String"]>>;
   email?: Maybe<Scalars["String"]>;
   externalId: Scalars["String"];
@@ -922,6 +924,7 @@ export type GetFacilitiesQuery = {
       zipCode?: Maybe<string>;
       phone?: Maybe<string>;
       email?: Maybe<string>;
+      defaultDeviceSpecimen?: Maybe<string>;
       deviceTypes?: Maybe<
         Array<
           Maybe<{ __typename?: "DeviceType"; name: string; internalId: string }>
@@ -1002,6 +1005,7 @@ export type AddFacilityMutationVariables = Exact<{
   orderingProviderZipCode?: Maybe<Scalars["String"]>;
   orderingProviderPhone?: Maybe<Scalars["String"]>;
   devices: Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>;
+  defaultDevice: Scalars["String"];
 }>;
 
 export type AddFacilityMutation = {
@@ -1029,6 +1033,7 @@ export type GetManagedFacilitiesQuery = {
       zipCode?: Maybe<string>;
       phone?: Maybe<string>;
       email?: Maybe<string>;
+      defaultDeviceSpecimen?: Maybe<string>;
       deviceTypes?: Maybe<
         Array<
           Maybe<{ __typename?: "DeviceType"; internalId: string; name: string }>
@@ -1711,6 +1716,7 @@ export type GetFacilityQueueQuery = {
     testingFacility: Array<{
       __typename?: "Facility";
       id: string;
+      defaultDeviceSpecimen?: Maybe<string>;
       deviceTypes?: Maybe<
         Array<
           Maybe<{
@@ -1722,20 +1728,6 @@ export type GetFacilityQueueQuery = {
           }>
         >
       >;
-      defaultDeviceSpecimen?: Maybe<{
-        __typename?: "DeviceSpecimenType";
-        internalId: string;
-        deviceType: {
-          __typename?: "DeviceType";
-          internalId: string;
-          name: string;
-        };
-        specimenType: {
-          __typename?: "SpecimenType";
-          internalId: string;
-          name: string;
-        };
-      }>;
     }>;
   }>;
   deviceSpecimenTypes?: Maybe<
@@ -2189,6 +2181,7 @@ export const GetFacilitiesDocument = gql`
           name
           internalId
         }
+        defaultDeviceSpecimen
         orderingProvider {
           firstName
           middleName
@@ -2397,6 +2390,7 @@ export const AddFacilityDocument = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
+    $defaultDevice: String!
   ) {
     addFacility(
       testingFacilityName: $testingFacilityName
@@ -2420,6 +2414,7 @@ export const AddFacilityDocument = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceTypes: $devices
+      defaultDevice: $defaultDevice
     )
   }
 `;
@@ -2462,6 +2457,7 @@ export type AddFacilityMutationFn = Apollo.MutationFunction<
  *      orderingProviderZipCode: // value for 'orderingProviderZipCode'
  *      orderingProviderPhone: // value for 'orderingProviderPhone'
  *      devices: // value for 'devices'
+ *      defaultDevice: // value for 'defaultDevice'
  *   },
  * });
  */
@@ -2499,6 +2495,7 @@ export const GetManagedFacilitiesDocument = gql`
         zipCode
         phone
         email
+        defaultDeviceSpecimen
         deviceTypes {
           internalId
           name
@@ -4953,17 +4950,7 @@ export const GetFacilityQueueDocument = gql`
           model
           testLength
         }
-        defaultDeviceSpecimen {
-          internalId
-          deviceType {
-            internalId
-            name
-          }
-          specimenType {
-            internalId
-            name
-          }
-        }
+        defaultDeviceSpecimen
       }
     }
     deviceSpecimenTypes {

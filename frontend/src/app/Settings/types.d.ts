@@ -16,11 +16,6 @@ interface SpecimenType {
   name: string;
 }
 
-interface DeviceSpecimenTypeIds {
-  deviceType: ID;
-  specimenType: ID;
-}
-
 interface DeviceSpecimenType {
   internalId: ID;
   deviceType: DeviceType;
@@ -114,16 +109,13 @@ interface SettingsData {
         zipCode: string;
         phone: string;
         email: string;
-        defaultDeviceType: {
-          internalId: string;
-        };
+        defaultDeviceSpecimen: string;
         deviceTypes: [
           {
             name: string;
             internalId: string;
           }
         ];
-        deviceSpecimenTypes: DeviceSpecimenType[];
         orderingProvider: {
           firstName: string;
           middleName: string;

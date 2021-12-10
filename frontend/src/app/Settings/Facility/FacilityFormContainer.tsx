@@ -27,6 +27,7 @@ export const GET_FACILITY_QUERY = gql`
           name
           internalId
         }
+        defaultDeviceSpecimen
         orderingProvider {
           firstName
           middleName
@@ -124,6 +125,7 @@ const ADD_FACILITY_MUTATION = gql`
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
+    $defaultDevice: String!
   ) {
     addFacility(
       testingFacilityName: $testingFacilityName
@@ -147,6 +149,7 @@ const ADD_FACILITY_MUTATION = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceTypes: $devices
+      defaultDevice: $defaultDevice
     )
   }
 `;
@@ -158,10 +161,7 @@ interface Props {
 
 const FacilityFormContainer: any = (props: Props) => {
   const { data, loading, error } = useQuery<FacilityData, {}>(
-    GET_FACILITY_QUERY,
-    {
-      fetchPolicy: "no-cache",
-    }
+    GET_FACILITY_QUERY
   );
   const appInsights = getAppInsights();
   const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION);
@@ -235,18 +235,9 @@ const FacilityFormContainer: any = (props: Props) => {
       (f) => f.id === props.facilityId
     );
     if (facility) {
-      return {
-        ...facility,
-        deviceTypes: facility.deviceTypes,
-        /*
-        deviceSpecimenTypes: facility.deviceSpecimenTypes,
-        defaultDevice: facility.defaultDeviceType
-          ? facility.defaultDeviceType.internalId
-          : "",
-      };
-      */
-      };
+      return facility;
     }
+
     const dropdownDefaultDevice = data.deviceTypes[0];
 
     return {
@@ -274,8 +265,6 @@ const FacilityFormContainer: any = (props: Props) => {
         phone: "",
       },
       deviceTypes: [dropdownDefaultDevice],
-      //deviceSpecimenTypes: [dropdownDefaultDeviceSpecimen],
-      //defaultDevice: dropdownDefaultDeviceSpecimen.deviceType.internalId,
     };
   };
 
