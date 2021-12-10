@@ -69,7 +69,7 @@ jobs:
           backend/db-setup/create-db.sh
       - name: Set up nginx reverse proxy and application-local
         run: |
-          sudo cp ./frontend/e2e/utils/nginx/localhost.simplereport.gov /etc/nginx/sites-available
+          sudo cp ./frontend/cypress/support/nginx/localhost.simplereport.gov /etc/nginx/sites-available
           sudo ln -s /etc/nginx/sites-available/localhost.simplereport.gov /etc/nginx/sites-enabled/localhost.simplereport.gov
           echo "127.0.0.1 localhost.simplereport.gov" | sudo tee -a /etc/hosts
           sudo systemctl start nginx
