@@ -1,5 +1,5 @@
 {
-  "baseUrl": "https://localhost.simplereport.gov",
+  "baseUrl": "http://localhost.simplereport.gov",
   "viewportWidth": 1200,
   "viewportHeight": 800
 }

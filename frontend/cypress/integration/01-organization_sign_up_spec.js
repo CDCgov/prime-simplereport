@@ -6,7 +6,7 @@ describe("Organization sign up", () => {
     // Since these tests interact with Okta, we need to use
     // Wiremock to stub out the Okta API calls.
     cy.task("downloadWiremock");
-    cy.task("startWiremock", { stubDir: "orgSignUp" });
+    cy.restartWiremock("orgSignUp");
   });
   after(() => {
     cy.task("stopWiremock");

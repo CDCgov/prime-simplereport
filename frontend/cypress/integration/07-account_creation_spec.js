@@ -62,7 +62,7 @@ describe("Okta account creation", () => {
   before(() => {
     cy.clearCookies();
     cy.task("downloadWiremock");
-    cy.task("startWiremock", { stubDir: "accountCreation" });
+    cy.restartWiremock("accountCreation");
   });
   beforeEach(() => {
     // Cypress clears cookies by default, but for these tests

@@ -9,6 +9,7 @@ server:
 okta:
   client:
     org-url: http://localhost:8088
+    token: foo
   oauth2:
     client-id: 0oa1k0163nAwfVxNW1d7
     issuer: https://hhs-prime.oktapreview.com/oauth2/default
