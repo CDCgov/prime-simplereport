@@ -8,7 +8,7 @@ function acceptTos() {
   return this;
 }
 
-function verifyBirthDate(birthDate) {
+function verifyBirthDate(birthMonth, birthDay, birthYear) {
   this.expect.section("@app").to.be.visible;
   this.expect
     .section("@app")
@@ -16,12 +16,12 @@ function verifyBirthDate(birthDate) {
       "Enter your date of birth to access your COVID-19 testing portal."
     );
   this.section.app.expect.element("@monthInput").to.be.visible;
-  console.log("month: ", birthDate.month);
-  this.section.app.setValue("@monthInput", birthDate.month);
+  console.log("month: ", birthMonth);
+  this.section.app.setValue("@monthInput", birthMonth);
   this.section.app.expect.element("@dayInput").to.be.visible;
-  this.section.app.setValue("@dayInput", birthDate.day);
+  this.section.app.setValue("@dayInput", birthDay);
   this.section.app.expect.element("@yearInput").to.be.visible;
-  this.section.app.setValue("@yearInput", birthDate.year);
+  this.section.app.setValue("@yearInput", birthYear);
   this.section.app.click("@dobSubmitButton");
   this.expect.section("@app").to.be.visible;
   return this;
