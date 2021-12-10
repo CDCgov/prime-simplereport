@@ -76,4 +76,22 @@ module.exports = (on, _config) => {
       return null;
     },
   });
+  on("before:browser:launch", (browser, launchOptions) => {
+    if (browser.name === "chrome" && browser.isHeadless) {
+      launchOptions.args.push("--window-size=1200,800");
+      launchOptions.args.push("--force-device-scale-factor=1");
+    }
+
+    if (browser.name === "electron" && browser.isHeadless) {
+      launchOptions.preferences.width = 1200;
+      launchOptions.preferences.height = 1800;
+    }
+
+    if (browser.name === "firefox" && browser.isHeadless) {
+      launchOptions.args.push("--width=1200");
+      launchOptions.args.push("--height=800");
+    }
+
+    return launchOptions;
+  });
 };
