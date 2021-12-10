@@ -124,3 +124,11 @@ jobs:
         with:
           name: yarn logs
           path: yarn-log.txt
+      - name: Archive cypress execution videos
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: cypress-results
+          path: |
+            cypress/videos/*
+            cypress/screenshots/*
