@@ -37,11 +37,9 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class PatientExperienceControllerTest extends BaseFullStackTest {
 
-  @Autowired private MockMvc _mockMvc;
-
-  @Autowired private TimeOfConsentService _tocService;
-
-  @Autowired private PatientExperienceController _controller;
+  @Autowired private MockMvc mockMvc;
+  @Autowired private TimeOfConsentService tocService;
+  @Autowired private PatientExperienceController controller;
 
   private Organization org;
   private Facility facility;
@@ -64,7 +62,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
   @Test
   void contextLoads() {
-    assertThat(_controller).isNotNull();
+    assertThat(controller).isNotNull();
   }
 
   @Test
@@ -80,7 +78,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .characterEncoding("UTF-8")
             .content(requestBody);
 
-    this._mockMvc
+    this.mockMvc
         .perform(builder)
         .andExpect(status().isForbidden())
         .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER));
@@ -107,7 +105,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .content(requestBody);
 
     // THEN
-    String requestId = runBuilderReturningRequestId(_mockMvc, builder, status().isOk());
+    String requestId = runBuilderReturningRequestId(mockMvc, builder, status().isOk());
     assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK, requestId);
   }
 
@@ -132,7 +130,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // THEN
     String requestId =
-        _mockMvc
+        mockMvc
             .perform(builder)
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.firstName", is(person.getFirstName())))
@@ -168,7 +166,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .content(requestBody);
 
     // THEN
-    String requestId = runBuilderReturningRequestId(_mockMvc, builder, status().isGone());
+    String requestId = runBuilderReturningRequestId(mockMvc, builder, status().isGone());
     assertLastAuditEntry(HttpStatus.GONE, ResourceLinks.VERIFY_LINK, requestId);
   }
 
@@ -192,8 +190,8 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .content(requestBody);
 
     // THEN
-    _mockMvc.perform(builder).andExpect(status().isOk());
-    List<TimeOfConsent> tocList = _tocService.getTimeOfConsent(patientLink);
+    mockMvc.perform(builder).andExpect(status().isOk());
+    List<TimeOfConsent> tocList = tocService.getTimeOfConsent(patientLink);
     assertNotNull(tocList);
     assertNotEquals(tocList.size(), 0);
   }
@@ -227,7 +225,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .content(requestBody);
 
     // THEN
-    _mockMvc
+    mockMvc
         .perform(builder)
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.telephone", is(newTelephone)))
@@ -267,7 +265,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .content(requestBody);
 
     // THEN
-    _mockMvc
+    mockMvc
         .perform(builder)
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.zipCode", is(zipcode)));
@@ -298,7 +296,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .content(requestBody2);
 
     // THEN
-    _mockMvc
+    mockMvc
         .perform(builder2)
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.zipCode", is(postalCode)));
@@ -311,7 +309,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
     MockHttpServletRequestBuilder builder =
         get(ResourceLinks.ENTITY_NAME).param("patientRegistrationLink", link);
 
-    this._mockMvc
+    this.mockMvc
         .perform(builder)
         .andExpect(status().isNotFound())
         .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER));
