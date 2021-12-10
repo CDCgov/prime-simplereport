@@ -70,7 +70,9 @@ module.exports = (on, _config) => {
     },
     stopWiremock: () => {
       execSync("./cypress/support/wiremock/stop-wiremock.sh");
-      global.wm.kill();
+      if (global.wm) {
+        global.wm.kill();
+      }
       return null;
     },
   });

@@ -21,6 +21,7 @@ env:
   SIMPLE_REPORT_SENDGRID_ACCOUNT_REQUEST_RECIPIENT: usds@cdc.gov
   REACT_APP_BASE_URL: http://localhost.simplereport.gov
   REACT_APP_BACKEND_URL: http://localhost.simplereport.gov/api
+  REACT_APP_OKTA_ENABLED: true
 
 defaults:
   run:
