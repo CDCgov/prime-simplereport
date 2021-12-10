@@ -16,10 +16,6 @@ function verifyBirthDate(birthMonth, birthDay, birthYear) {
       "Enter your date of birth to access your COVID-19 testing portal."
     );
   this.section.app.expect.element("@monthInput").to.be.visible;
-  console.log("in verifyBirthDate");
-  console.log("month: ", birthMonth.toString());
-  console.log("day: ", birthDay.toString());
-  console.log("year: ", birthYear.toString());
   this.section.app.setValue("@monthInput", birthMonth.toString());
   this.section.app.expect.element("@dayInput").to.be.visible;
   this.section.app.setValue("@dayInput", birthDay.toString());
