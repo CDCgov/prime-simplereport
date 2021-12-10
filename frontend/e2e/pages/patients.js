@@ -15,6 +15,7 @@ function addPatient(dobFormat) {
   const monthForPatientLink = dob.month() + 1;
   const dayForPatientLink = dob.day();
   const yearForPatientLink = dob.year();
+  console.log("dob.day: ", dayForPatientLink);
   const phone = "(800) 232-4636";
   const address = "736 Jackson PI NW";
   const state = "DC";

@@ -19,6 +19,11 @@ module.exports = {
       birthYear,
     } = browser.page.patients().navigate().addPatient(getDobFormat(browser)));
 
+    console.log("after adding patient, here is birthday info:");
+    console.log("month: ", birthMonth);
+    console.log("day: ", birthDay);
+    console.log("year: ", birthYear);
+
     console.info(`Adding patient ${patientName}...`);
   },
   "2. Conduct a test": (browser) => {
