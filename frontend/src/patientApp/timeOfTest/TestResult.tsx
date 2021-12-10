@@ -11,7 +11,7 @@ const TestResult = () => {
   const patient = useSelector<RootState, Patient>((state) => state.patient);
   const fullName = formatFullName(patient as any);
   const dateTested = new Date(patient.lastTest.dateTested).toLocaleDateString();
-  const deviceType = patient.lastTest.deviceTypeModel;
+  const deviceType = patient.lastTest.deviceTypeName;
   const { t } = useTranslation();
 
   return (

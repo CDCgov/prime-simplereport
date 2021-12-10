@@ -84,6 +84,7 @@ export interface Patient {
     result: TestResultType;
     dateTested: string;
     deviceTypeModel: string;
+    deviceTypeName: string;
   };
 }
 
