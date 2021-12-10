@@ -60,13 +60,20 @@ public class ApiUserService {
 
   @Autowired private TenantDataAccessService _tenantService;
 
-  @Autowired private CurrentPatientContextHolder _patientContextHolder;
+  private CurrentPatientContextHolder _patientContextHolder;
 
-  @Autowired private CurrentAccountRequestContextHolder _accountRequestContextHolder;
+  private CurrentAccountRequestContextHolder _accountRequestContextHolder;
 
-  @Autowired private WebhookContextHolder _webhookContextHolder;
+  private WebhookContextHolder _webhookContextHolder;
 
-  @Autowired private ApiUserContextHolder _apiUserContextHolder;
+  private ApiUserContextHolder _apiUserContextHolder;
+
+  public ApiUserService() {
+    _patientContextHolder = new CurrentPatientContextHolder();
+    _accountRequestContextHolder = new CurrentAccountRequestContextHolder();
+    _webhookContextHolder = new WebhookContextHolder();
+    _apiUserContextHolder = new ApiUserContextHolder();
+  }
 
   public boolean userExists(String username) {
     Optional<ApiUser> found =

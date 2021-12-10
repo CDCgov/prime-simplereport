@@ -27,24 +27,28 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
 @Slf4j
-@RequiredArgsConstructor
 public class OrganizationService {
 
-  private final OrganizationRepository _repo;
-  private final FacilityRepository _facilityRepo;
-  private final ProviderRepository _providerRepo;
-  private final AuthorizationService _authService;
-  private final OktaRepository _oktaRepo;
-  private final CurrentOrganizationRolesContextHolder _currentOrgRolesContextHolder;
-  private final OrderingProviderRequiredValidator _orderingProviderRequiredValidator;
-  private final PatientSelfRegistrationLinkService _psrlService;
-  private final DeviceSpecimenTypeRepository deviceSpecimenTypeRepository;
+  @Autowired private OrganizationRepository _repo;
+  @Autowired private FacilityRepository _facilityRepo;
+  @Autowired private ProviderRepository _providerRepo;
+  @Autowired private AuthorizationService _authService;
+  @Autowired private OktaRepository _oktaRepo;
+  private CurrentOrganizationRolesContextHolder _currentOrgRolesContextHolder;
+  @Autowired private OrderingProviderRequiredValidator _orderingProviderRequiredValidator;
+  @Autowired private PatientSelfRegistrationLinkService _psrlService;
+  @Autowired private DeviceSpecimenTypeRepository deviceSpecimenTypeRepository;
+
+  public OrganizationService() {
+    _currentOrgRolesContextHolder = new CurrentOrganizationRolesContextHolder();
+  }
 
   public void resetOrganizationRolesContext() {
     _currentOrgRolesContextHolder.reset();

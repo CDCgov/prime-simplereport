@@ -6,9 +6,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.annotation.RequestScope;
 
 @Repository
-@Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+@RequestScope
 public class CurrentOrganizationRolesContextHolder {
   private boolean hasBeenPopulated = false;
   private Optional<OrganizationRoles> organizationRoles = Optional.empty();

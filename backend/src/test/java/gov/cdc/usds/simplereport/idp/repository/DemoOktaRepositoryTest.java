@@ -45,7 +45,7 @@ class DemoOktaRepositoryTest {
       new CurrentTenantDataAccessContextHolder();
 
   private DemoOktaRepository _repo =
-      new DemoOktaRepository(MOCK_EXTRACTOR, tenantDataAccessContextHolder);
+      new DemoOktaRepository(MOCK_EXTRACTOR);
 
   @BeforeEach
   public void setup() {

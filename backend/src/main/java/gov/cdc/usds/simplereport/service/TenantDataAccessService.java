@@ -28,9 +28,13 @@ public class TenantDataAccessService {
   private static final int VALID_MINUTES = 60;
 
   @Autowired private TenantDataAccessRepository _repo;
-  @Autowired private CurrentTenantDataAccessContextHolder _contextHolder;
+  private CurrentTenantDataAccessContextHolder _contextHolder;
   @Autowired private AuthorizationProperties _authProperties;
   @Autowired private OrganizationExtractor _extractor;
+
+  public TenantDataAccessService() {
+    _contextHolder = new CurrentTenantDataAccessContextHolder();
+  }
 
   public Set<String> getTenantDataAccessAuthorities(ApiUser apiUser) {
     List<TenantDataAccess> tenantDataAccessList =
