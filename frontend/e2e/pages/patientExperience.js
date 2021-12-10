@@ -17,6 +17,8 @@ function verifyBirthDate(birthMonth, birthDay, birthYear) {
     );
   this.section.app.expect.element("@monthInput").to.be.visible;
   console.log("month: ", birthMonth.toString());
+  console.log("day: ", birthDay.toString());
+  console.log("year: ", birthYear.toString());
   this.section.app.setValue("@monthInput", birthMonth.toString());
   this.section.app.expect.element("@dayInput").to.be.visible;
   this.section.app.setValue("@dayInput", birthDay.toString());

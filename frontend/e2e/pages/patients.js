@@ -9,8 +9,10 @@ function addPatient(dobFormat) {
   const fullName = `${lastName}, ${firstName}`;
   const dob = dayjs(faker.date.between("1920-01-01", "2002-12-31"));
   const dobForInput = dob.format(dobFormat);
+  console.log(dob);
   // const dobForPatientLink = dob.format("MM/DD/YYYY");
-  const monthForPatientLink = dob.month();
+  // js months are 0-offset
+  const monthForPatientLink = dob.month() + 1;
   const dayForPatientLink = dob.day();
   const yearForPatientLink = dob.year();
   const phone = "(800) 232-4636";
