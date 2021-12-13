@@ -1,6 +1,15 @@
 spring:
   profiles:
     include: server-debug, create-sample-devices
+  liquibase:
+    user: simple_report_migrations
+    password: migrations456
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: false # override this in application-local.yaml to get pretty-printed SQL all the time
+        default_schema: simple_report
 server:
   servlet:
     session:
