@@ -1,6 +1,6 @@
 spring:
   profiles:
-    include: server-debug, create-sample-devices
+    include: server-debug, create-sample-devices, local
   liquibase:
     user: simple_report_migrations
     password: migrations456
