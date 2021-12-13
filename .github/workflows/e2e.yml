@@ -95,14 +95,10 @@ jobs:
         uses: actions/setup-node@v2.1.5
         with:
           node-version: ${{env.NODE_VERSION}}
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - uses: actions/cache@v1
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      - name: Cache yarn
+        uses: actions/cache@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          path: ~/.cache/yarn
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
@@ -120,13 +116,13 @@ jobs:
         # print Cypress and OS info
         run: |
           yarn install --prefer-offline
-          yarn run cypress verify
-          yarn run cypress info
-          yarn run cypress version
-          yarn run cypress version --component package
-          yarn run cypress version --component binary
-          yarn run cypress version --component electron
-          yarn run cypress version --component node
+          yarn exec cypress verify
+          yarn exec cypress info
+          yarn exec cypress version
+          yarn exec cypress version --component package
+          yarn exec cypress version --component binary
+          yarn exec cypress version --component electron
+          yarn exec cypress version --component node
       - name: Run frontend
         working-directory: ./frontend
         run: yarn start &> ../yarn-log.txt &
