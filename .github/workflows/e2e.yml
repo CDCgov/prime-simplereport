@@ -78,7 +78,7 @@ jobs:
         working-directory: ./frontend
         run: |
           ./cypress/support/wiremock/download-wiremock.sh
-          java -jar ./wiremock-jre8-standalone-2.29.1.jar --port 8088 --root-dir ./cypress/stubs/orgSignUp --verbose --local-response-templating &
+          java -jar ./wiremock-jre8-standalone-2.29.1.jar --port 8088 --root-dir ./cypress/stubs/orgSignUp --verbose --local-response-templating &> ../wiremock-log.txt &
       - name: Run API
         env:
           OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
@@ -126,6 +126,12 @@ jobs:
         with:
           name: yarn logs
           path: yarn-log.txt
+      - name: Archive wiremock logs
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: wiremock logs
+          path: wiremock-log.txt
       - name: Archive cypress execution videos
         if: failure()
         uses: actions/upload-artifact@v2
