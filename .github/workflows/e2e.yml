@@ -114,12 +114,14 @@ jobs:
           CYPRESS_OKTA_PASSWORD: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
           CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
         run: yarn e2e
-      - uses: actions/upload-artifact@v2
+      - name: Archive gradle logs
+        uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: gradle logs
           path: gradle-log.txt
-      - uses: actions/upload-artifact@v2
+      - name: Archive yarn logs
+        uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: yarn logs
@@ -130,5 +132,5 @@ jobs:
         with:
           name: cypress-results
           path: |
-            cypress/videos/*
-            cypress/screenshots/*
+            frontend/cypress/videos/*
+            frontend/cypress/screenshots/*
