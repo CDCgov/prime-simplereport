@@ -74,7 +74,6 @@ jobs:
           echo "server.servlet.session.cookie.domain: localhost.simplereport.gov" >> ./backend/src/main/resources/application-local.yaml
           echo "okta.client.org-url: http://localhost:8088" >> ./backend/src/main/resources/application-local.yaml
           echo "okta.client.token: foo" >> ./backend/src/main/resources/application-local.yaml
-          echo "okta.oauth2.client-id: 0oa1k0163nAwfVxNW1d7" >> ./backend/src/main/resources/application-local.yaml
           echo "okta.oauth2.issuer: https://hhs-prime.oktapreview.com/oauth2/default" >> ./backend/src/main/resources/application-local.yaml
       - name: Run Wiremock
         working-directory: ./frontend
@@ -84,7 +83,7 @@ jobs:
       - name: Run API
         env:
           OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
-          OKTA_OAUTH2_CLIENT_ID: ${{ secrets.OKTA_OAUTH2_CLIENT_ID }}
+          OKTA_OAUTH2_CLIENT_ID: 0oa1k0163nAwfVxNW1d7
           SMARTY_AUTH_ID: ${{ secrets.SMARTY_AUTH_ID }}
           SMARTY_AUTH_TOKEN: ${{ secrets.SMARTY_AUTH_TOKEN }}
         working-directory: ./backend
