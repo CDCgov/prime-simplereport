@@ -45,8 +45,7 @@ public class DemoOktaRepository implements OktaRepository {
   Set<String> inactiveUsernames;
   Set<String> allUsernames;
 
-  public DemoOktaRepository(
-      OrganizationExtractor extractor) {
+  public DemoOktaRepository(OrganizationExtractor extractor) {
     this.usernameOrgRolesMap = new HashMap<>();
     this.orgUsernamesMap = new HashMap<>();
     this.orgFacilitiesMap = new HashMap<>();

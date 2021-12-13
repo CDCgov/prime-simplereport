@@ -44,7 +44,7 @@ dependencies {
     // UI layer dependencies
     implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:12.0.0"
     implementation "com.graphql-java-kickstart:graphiql-spring-boot-starter:11.1.0"
-    implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.1.0" //Don't change this! It breaks everything!
+    implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.1.0"
     implementation 'org.json:json:20210307'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'

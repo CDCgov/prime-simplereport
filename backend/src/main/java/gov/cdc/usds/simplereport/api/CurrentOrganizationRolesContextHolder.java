@@ -2,10 +2,7 @@ package gov.cdc.usds.simplereport.api;
 
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import java.util.Optional;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.annotation.RequestScope;
 
 @Repository
