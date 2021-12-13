@@ -277,7 +277,18 @@ To edit React settings, create `frontend/.env.local` (also git ignored).
 
 E2E/Integration tests are available using [Cypress](https://www.cypress.io/).
 
-In order to run them locally, some modifications will need to be made to your local environment. Spring session requires the frontend and backend to be hosted on the same domain in order to properly authenticate.
+In order to run the tests locally, some modifications will need to be made to your local environment. Spring session requires the frontend and backend to be hosted on the same domain in order to properly authenticate.
+
+First, the tests run best on a clean database, so empty out your database prior to running.
+
+Next, before starting up the app, you'll need to start Wiremock:
+
+```
+./frontend/cypress/support/wiremock/download-wiremock.sh
+./frontend/cypress/support/wiremock/start-wiremock.sh orgSignUp
+```
+
+The following settings are needed for the frontend:
 
 `frontend/.env.local`:
 ```
@@ -311,13 +322,26 @@ In order for `http://localhost.simplereport.gov` to route to your local applicat
 127.0.0.1 localhost.simplereport.gov
 ```
 
-Finally, you'll need to run a reverse proxy like nginx to point port 80 at your application server. However, this is handled for you by running a docker container in the `e2e.sh` script, which is called by the `yarn e2e` command.
+Finally, you'll need to run a reverse proxy like nginx to point port 80 at your application server. You can do this in a docker container with the following command:
 
-Run them with the following commands while the app (both frontend and backend) is already running:
 
 ```bash
-yarn e2e
+docker build -t nginx -f .frontend/cypress/support/nginx/Dockerfile.nginx . && docker run -d -p 80:80 nginx:latest
 ```
+
+If you are running nginx locally already, you can use the config located at `frontend/cypress/support/nginx/localhost.simplereport.gov`. 
+
+Once all of that is done, you are are ready for a test run! There are a few ways to run the tests (from the `frontend` dir):
+- `yarn cypress open` 
+  - this will open an interactive test runner that lets you select browsers and which test to run. tests will run headed by default
+- `yarn cypress run`
+  - this will run all the tests headlessly on the commandline using electron
+- `yarn cypress run --browser firefox`
+  - this will run all the tests headlessly on the commandline using firefox
+- `yarn cypress run --browser chrome --headed`
+  - this will run all the tests headed using chrome
+- `yarn e2e`
+  - this will run the `e2e.sh` script, which waits for the frontend and backend to become responsive before starting a headless firefox test run
 
 ### SchemaSpy
 
