@@ -53,7 +53,7 @@ public class SimpleReportApplication {
   @Bean
   @Profile(BeanProfiles.CREATE_SAMPLE_DEVICES)
   public CommandLineRunner initDevicesOnStartup(OrganizationInitializingService initService) {
-    return args -> initService.initDevicesOnly();
+    return args -> initService.initDevices();
   }
 
   @Bean

@@ -216,11 +216,7 @@ public class OrganizationInitializingService {
     _userService.getCurrentApiUserInContainedTransaction();
   }
 
-  public void initDevicesOnly() {
-    initDevices();
-  }
-
-  private Map<String, DeviceSpecimenType> initDevices() {
+  public Map<String, DeviceSpecimenType> initDevices() {
     Map<String, DeviceType> deviceTypesByName =
         _deviceTypeRepo.findAll().stream().collect(Collectors.toMap(d -> d.getName(), d -> d));
     Map<String, SpecimenType> specimenTypesByCode =
