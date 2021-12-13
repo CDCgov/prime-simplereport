@@ -1,6 +1,6 @@
 #!/bin/bash
-printf 'Starting nginx docker container'
-docker build -t nginx -f ./cypress/support/nginx/Dockerfile.nginx . && docker run -d -p 80:80 nginx:latest
+# printf 'Starting nginx docker container'
+# docker build -t nginx -f ./cypress/support/nginx/Dockerfile.nginx . && docker run -d -p 80:80 nginx:latest
 
 printf 'Waiting for backend to start...'
 curl -k http://localhost.simplereport.gov/api/health > /dev/null 2>&1

@@ -68,9 +68,12 @@ jobs:
         run: |
           chmod 0600 $PGPASSFILE
           backend/db-setup/create-db.sh
-      - name: Set up /etc/hosts and application-local
+      - name: Set up /etc/hosts, nginx, and application-local
         run: |
           echo "127.0.0.1 localhost.simplereport.gov" | sudo tee -a /etc/hosts
+          sudo cp ./frontend/cypress/support/nginx/localhost.simplereport.gov /etc/nginx/sites-available
+          sudo ln -s /etc/nginx/sites-available/localhost.simplereport.gov /etc/nginx/sites-enabled/localhost.simplereport.gov
+          sudo systemctl start nginx
           echo "server.servlet.session.cookie.domain: localhost.simplereport.gov" >> ./backend/src/main/resources/application-local.yaml
           echo "okta.client.org-url: http://localhost:8088" >> ./backend/src/main/resources/application-local.yaml
           echo "okta.client.token: foo" >> ./backend/src/main/resources/application-local.yaml
