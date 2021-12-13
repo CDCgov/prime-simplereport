@@ -95,15 +95,38 @@ jobs:
         uses: actions/setup-node@v2.1.5
         with:
           node-version: ${{env.NODE_VERSION}}
-      - name: Cache npm local files
-        uses: actions/cache@v2
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v1
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          path: |
-            ./frontend/node_modules
-          key: npm-${{matrix.node}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
-      - name: Node setup
-        working-directory: ./frontend
-        run: yarn
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Cache Cypress binary
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-${{ runner.os }}-cypress-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            cypress-${{ runner.os }}-cypress-
+      - name: install dependencies and verify Cypress
+        env:
+          # make sure every Cypress install prints minimal information
+          CI: 1
+        # print Cypress and OS info
+        run: |
+          yarn install --frozen-lockfile
+          yarn run cypress verify
+          yarn run cypress info
+          yarn run cypress version
+          yarn run cypress version --component package
+          yarn run cypress version --component binary
+          yarn run cypress version --component electron
+          yarn run cypress version --component node
       - name: Run frontend
         working-directory: ./frontend
         run: yarn start &> ../yarn-log.txt &
