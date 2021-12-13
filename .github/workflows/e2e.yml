@@ -96,14 +96,14 @@ jobs:
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache yarn
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cache/yarn
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Cache Cypress binary
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cache/Cypress
           key: cypress-${{ runner.os }}-cypress-${{ hashFiles('**/package.json') }}
