@@ -110,6 +110,7 @@ jobs:
           restore-keys: |
             cypress-${{ runner.os }}-cypress-
       - name: install dependencies and verify Cypress
+        working-directory: ./frontend
         env:
           # make sure every Cypress install prints minimal information
           CI: 1
