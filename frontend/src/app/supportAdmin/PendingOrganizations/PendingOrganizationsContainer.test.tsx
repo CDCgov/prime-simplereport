@@ -262,7 +262,9 @@ describe("PendingOrganizationsContainer", () => {
           ).toHaveValue("DC Space Camp");
 
           userEvent.click(screen.getByText("Save details", { exact: false }));
-
+          expect(
+            screen.getByLabelText("Organization name", { exact: false })
+          ).toHaveValue("DC Space Camp");
           expect(
             await screen.findByText(
               "DC-Space-Camp-fg413d4-btc5-449f-98b0-2e02abb7aae0",

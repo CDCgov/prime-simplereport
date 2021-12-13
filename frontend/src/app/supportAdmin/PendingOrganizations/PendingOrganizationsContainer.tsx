@@ -38,7 +38,7 @@ const PendingOrganizationsContainer = () => {
           showNotification(
             <Alert
               type="success"
-              title={`Identity verified for organization with external ID 
+              title={`Identity verified for organization with external ID
               ${externalId}`}
               body=""
             />
@@ -46,9 +46,10 @@ const PendingOrganizationsContainer = () => {
         })
         .finally(() => {
           refetch();
-          setVerifyInProgress(false);
         });
+      setVerifyInProgress(false);
     }
+    return verifyInProgress;
   };
 
   return (

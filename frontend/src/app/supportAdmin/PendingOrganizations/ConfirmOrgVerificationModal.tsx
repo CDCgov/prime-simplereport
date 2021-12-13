@@ -18,6 +18,7 @@ interface ModalProps {
   onSubmit: (organization: PendingOrganizationFormValues) => void;
   onEdit: (organization: PendingOrganizationFormValues) => void;
   isUpdating: boolean;
+  isVerifying: boolean;
 }
 
 type PendingOrganizationErrors = Record<
@@ -31,6 +32,7 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
   onSubmit,
   onEdit,
   isUpdating,
+  isVerifying,
 }) => {
   const [org, setOrg] = useState<PendingOrganizationFormValues>({
     name: organization.name,
@@ -162,13 +164,14 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
               className="margin-right-2"
               variant="outline"
               onClick={onSave}
-              label="Save details"
+              label={isUpdating ? "Updating..." : "Save details"}
+              disabled={isVerifying || isUpdating}
             />
             <Button
               className="margin-right-205"
               onClick={onVerify}
-              label={isUpdating ? "Submitting..." : "Submit"}
-              disabled={isUpdating}
+              label={isVerifying ? "Submitting..." : "Submit"}
+              disabled={isVerifying || isUpdating}
             />
           </div>
         </div>

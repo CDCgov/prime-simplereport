@@ -13,7 +13,7 @@ import ConfirmOrgVerificationModal from "./ConfirmOrgVerificationModal";
 
 interface Props {
   organizations: PendingOrganization[];
-  submitIdentityVerified: (externalId: string) => void;
+  submitIdentityVerified: (externalId: string) => boolean;
   loading: boolean;
   verifyInProgress: boolean;
   refetch: () => void;
@@ -26,6 +26,7 @@ const PendingOrganizations = ({
   submitIdentityVerified,
   loading,
   refetch,
+  verifyInProgress,
 }: Props) => {
   const [orgToVerify, setOrgToVerify] = useState<PendingOrganization | null>(
     null
@@ -56,7 +57,6 @@ const PendingOrganizations = ({
       console.error(e);
     }
     refetch();
-    setOrgToVerify(null);
     setIsUpdating(false);
     return updatedOrg;
   };
@@ -65,8 +65,7 @@ const PendingOrganizations = ({
     if (orgToVerify === null) {
       return;
     }
-    setIsUpdating(true);
-
+    let awaitingVerification = true;
     try {
       const valuesChangedArray = [
         org.name === orgToVerify.name,
@@ -85,6 +84,7 @@ const PendingOrganizations = ({
           updatedOrgExternalId === undefined ||
           updatedOrgExternalId === null
         ) {
+          awaitingVerification = false;
           throw Error(`Update function in submit returned undefined or null
           external ID. Check for errors and try again`);
         }
@@ -96,8 +96,10 @@ const PendingOrganizations = ({
     }
 
     refetch();
-    setOrgToVerify(null);
-    setIsUpdating(false);
+    if (awaitingVerification) {
+      console.log("nulling org to verify");
+      setOrgToVerify(null);
+    }
   };
 
   const orgRows = () => {
@@ -165,6 +167,7 @@ const PendingOrganizations = ({
                 onSubmit={handleConfirmOrg}
                 onEdit={handleUpdateOrg}
                 isUpdating={isUpdating}
+                isVerifying={verifyInProgress}
               />
             ) : null}
             <div className="usa-card__header">
