@@ -32,9 +32,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @Profile(
     "!"
-        + BeanProfiles.NO_SECURITY
+        + BeanProfiles.NO_SECURITY // Activate the "no-security" profile to disable security
         + " & !"
-        + BeanProfiles.CREATE_SAMPLE_DEVICES) // Activate this profile to disable security
+        + BeanProfiles.CREATE_SAMPLE_DEVICES) // If we're creating sample devices,
+// OktaLocalSecurityConfiguration is used instead
 @ConditionalOnWebApplication
 @Slf4j
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter
