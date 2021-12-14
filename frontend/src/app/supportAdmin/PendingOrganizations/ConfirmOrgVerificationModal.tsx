@@ -19,6 +19,7 @@ interface ModalProps {
   onEdit: (organization: PendingOrganizationFormValues) => void;
   isUpdating: boolean;
   isVerifying: boolean;
+  orgUsingOldSchema: boolean;
 }
 
 type PendingOrganizationErrors = Record<
@@ -33,6 +34,7 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
   onEdit,
   isUpdating,
   isVerifying,
+  orgUsingOldSchema,
 }) => {
   const [org, setOrg] = useState<PendingOrganizationFormValues>({
     name: organization.name,
@@ -93,7 +95,7 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
     }
   };
   const commonInputProps = {
-    disabled: false,
+    disabled: orgUsingOldSchema,
     formObject: org,
     onChange,
     required: true,
@@ -129,6 +131,16 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
           </button>
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
+        {orgUsingOldSchema ? (
+          <p>
+            Because of technical issues, this organization can't be edited but
+            can still be verified. If you need to edit this organization's
+            details, verify the organization first and then escalate the change
+            to the support inbox.
+          </p>
+        ) : (
+          <></>
+        )}
         <div>
           <Input {...commonInputProps} label="Organization name" field="name" />
           <Input
@@ -165,7 +177,7 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
               variant="outline"
               onClick={onSave}
               label={isUpdating ? "Updating..." : "Save details"}
-              disabled={isVerifying || isUpdating}
+              disabled={isVerifying || isUpdating || orgUsingOldSchema}
             />
             <Button
               className="margin-right-205"

@@ -33,10 +33,26 @@ const PendingOrganizations = ({
   );
   const [isUpdating, setIsUpdating] = useState(false);
   const [editOrg] = useEditPendingOrganizationMutation();
+  // should be removed once mutation for deletion of pending orgs is written
+  const checkIfOrgIsUsingOldOrgSchema = (
+    orgToCheck: PendingOrganization | null
+  ) => {
+    if (orgToCheck === null) return false;
+    const requiredFieldNotSet =
+      orgToCheck.adminEmail === null ||
+      orgToCheck.adminFirstName === null ||
+      orgToCheck.adminLastName === null ||
+      orgToCheck.adminPhone === null;
+    const createdBeforeSchemaChangeDate =
+      Date.parse(orgToCheck.createdAt) < Date.parse("2021-11-02T18:16:08Z");
+    return requiredFieldNotSet || createdBeforeSchemaChangeDate;
+  };
 
   const handleUpdateOrg = async (org: PendingOrganizationFormValues) => {
+    const orgUsesOldSchema = checkIfOrgIsUsingOldOrgSchema(orgToVerify);
+
     // Return nothing if no verification is set
-    if (orgToVerify === null) {
+    if (orgToVerify === null || orgUsesOldSchema) {
       return undefined;
     }
 
@@ -65,18 +81,23 @@ const PendingOrganizations = ({
     if (orgToVerify === null) {
       return;
     }
-    let awaitingVerification = true;
     try {
-      const valuesChangedArray = [
-        org.name === orgToVerify.name,
-        org.adminEmail === orgToVerify.adminEmail,
-        org.adminFirstName === orgToVerify.adminFirstName,
-        org.adminLastName === orgToVerify.adminLastName,
-        org.adminPhone === orgToVerify.adminPhone,
-      ];
-      const anyValueDifferent = !valuesChangedArray.every((v) => v === true);
+      // check to see if there are changes, verifying different type of
+      // empty states
+
       let externalIdToVerify = orgToVerify.externalId;
-      if (anyValueDifferent) {
+      let k: keyof typeof org;
+      let anyValueDifferent = false;
+      for (k in org) {
+        const orgField = org[k] === "" ? null : org[k];
+        const verifyField = orgToVerify[k];
+        if (orgField !== verifyField) {
+          anyValueDifferent = true;
+          break;
+        }
+      }
+      const orgUsesOldSchema = checkIfOrgIsUsingOldOrgSchema(orgToVerify);
+      if (anyValueDifferent && !orgUsesOldSchema) {
         // submit changed values and generate new externalId
         const newOrgData = await handleUpdateOrg(org);
         const updatedOrgExternalId = newOrgData?.data?.editPendingOrganization;
@@ -84,7 +105,6 @@ const PendingOrganizations = ({
           updatedOrgExternalId === undefined ||
           updatedOrgExternalId === null
         ) {
-          awaitingVerification = false;
           throw Error(`Update function in submit returned undefined or null
           external ID. Check for errors and try again`);
         }
@@ -96,10 +116,6 @@ const PendingOrganizations = ({
     }
 
     refetch();
-    if (awaitingVerification) {
-      console.log("nulling org to verify");
-      setOrgToVerify(null);
-    }
   };
 
   const orgRows = () => {
@@ -164,9 +180,13 @@ const PendingOrganizations = ({
                 onClose={() => {
                   setOrgToVerify(null);
                 }}
-                onSubmit={handleConfirmOrg}
+                onSubmit={(org) => {
+                  handleConfirmOrg(org);
+                  setOrgToVerify(null);
+                }}
                 onEdit={handleUpdateOrg}
                 isUpdating={isUpdating}
+                orgUsingOldSchema={checkIfOrgIsUsingOldOrgSchema(orgToVerify)}
                 isVerifying={verifyInProgress}
               />
             ) : null}

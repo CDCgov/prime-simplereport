@@ -47,7 +47,10 @@ const PendingOrganizationsContainer = () => {
         .finally(() => {
           refetch();
         });
-      setVerifyInProgress(false);
+
+      setTimeout(() => {
+        setVerifyInProgress(false);
+      }, 5000);
     }
     return verifyInProgress;
   };
