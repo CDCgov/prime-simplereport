@@ -66,6 +66,27 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
       Provider orderingProvider,
       DeviceSpecimenType defaultDeviceSpecimen,
       List<DeviceType> configuredDevices) {
+    this(
+        org,
+        facilityName,
+        cliaNumber,
+        facilityAddress,
+        phone,
+        email,
+        orderingProvider,
+        configuredDevices);
+    this.addDefaultDeviceSpecimen(defaultDeviceSpecimen);
+  }
+
+  public Facility(
+      Organization org,
+      String facilityName,
+      String cliaNumber,
+      StreetAddress facilityAddress,
+      String phone,
+      String email,
+      Provider orderingProvider,
+      List<DeviceType> configuredDevices) {
     super(org);
     this.facilityName = facilityName;
     this.cliaNumber = cliaNumber;
@@ -73,10 +94,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.telephone = phone;
     this.email = email;
     this.orderingProvider = orderingProvider;
-    this.defaultDeviceSpecimen = defaultDeviceSpecimen;
-    if (defaultDeviceSpecimen != null) {
-      this.configuredDeviceTypes.add(defaultDeviceSpecimen.getDeviceType());
-    }
     this.configuredDeviceTypes.addAll(configuredDevices);
   }
 

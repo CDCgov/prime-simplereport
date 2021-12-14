@@ -93,7 +93,7 @@ const ManageDevices: React.FC<Props> = ({
 
       return (
         <tr key={idx}>
-          <td>
+          <td className="">
             <Dropdown
               options={deviceDropdownOptions}
               selectedValue={deviceId}
@@ -103,7 +103,7 @@ const ManageDevices: React.FC<Props> = ({
               data-testid={`device-dropdown-${idx}`}
             />
           </td>
-          <td>
+          <td className="">
             <button
               className="usa-button--unstyled"
               onClick={() => onDeviceRemove(idx)}

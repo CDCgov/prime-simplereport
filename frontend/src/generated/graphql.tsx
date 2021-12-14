@@ -104,7 +104,7 @@ export type Facility = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
-  defaultDeviceSpecimen?: Maybe<Scalars["String"]>;
+  defaultDeviceSpecimen?: Maybe<Scalars["ID"]>;
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
   email?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
@@ -121,6 +121,7 @@ export type Facility = {
 export type Mutation = {
   __typename?: "Mutation";
   addFacility?: Maybe<Scalars["String"]>;
+  addFacilityNew?: Maybe<Scalars["String"]>;
   addPatient?: Maybe<Patient>;
   addPatientToQueue?: Maybe<Scalars["String"]>;
   addTestResult?: Maybe<TestOrder>;
@@ -150,6 +151,7 @@ export type Mutation = {
   setUserIsDeleted?: Maybe<User>;
   updateDeviceType?: Maybe<DeviceType>;
   updateFacility?: Maybe<Scalars["String"]>;
+  updateFacilityNew?: Maybe<Scalars["String"]>;
   updateOrganization?: Maybe<Scalars["String"]>;
   updatePatient?: Maybe<Patient>;
   updateRegistrationLink?: Maybe<Scalars["String"]>;
@@ -165,7 +167,33 @@ export type MutationAddFacilityArgs = {
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   defaultDevice: Scalars["String"];
+  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
   deviceTypes: Array<Maybe<Scalars["String"]>>;
+  email?: Maybe<Scalars["String"]>;
+  orderingProviderCity?: Maybe<Scalars["String"]>;
+  orderingProviderCounty?: Maybe<Scalars["String"]>;
+  orderingProviderFirstName?: Maybe<Scalars["String"]>;
+  orderingProviderLastName?: Maybe<Scalars["String"]>;
+  orderingProviderMiddleName?: Maybe<Scalars["String"]>;
+  orderingProviderNPI?: Maybe<Scalars["String"]>;
+  orderingProviderPhone?: Maybe<Scalars["String"]>;
+  orderingProviderState?: Maybe<Scalars["String"]>;
+  orderingProviderStreet?: Maybe<Scalars["String"]>;
+  orderingProviderStreetTwo?: Maybe<Scalars["String"]>;
+  orderingProviderSuffix?: Maybe<Scalars["String"]>;
+  orderingProviderZipCode?: Maybe<Scalars["String"]>;
+  phone?: Maybe<Scalars["String"]>;
+  state: Scalars["String"];
+  street: Scalars["String"];
+  streetTwo?: Maybe<Scalars["String"]>;
+  testingFacilityName: Scalars["String"];
+  zipCode: Scalars["String"];
+};
+
+export type MutationAddFacilityNewArgs = {
+  city?: Maybe<Scalars["String"]>;
+  cliaNumber?: Maybe<Scalars["String"]>;
+  deviceTypes: Array<Maybe<Scalars["ID"]>>;
   email?: Maybe<Scalars["String"]>;
   orderingProviderCity?: Maybe<Scalars["String"]>;
   orderingProviderCounty?: Maybe<Scalars["String"]>;
@@ -409,7 +437,35 @@ export type MutationUpdateFacilityArgs = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
+  defaultDevice: Scalars["String"];
+  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
   deviceTypes: Array<Maybe<Scalars["String"]>>;
+  email?: Maybe<Scalars["String"]>;
+  facilityId: Scalars["ID"];
+  orderingProviderCity?: Maybe<Scalars["String"]>;
+  orderingProviderCounty?: Maybe<Scalars["String"]>;
+  orderingProviderFirstName?: Maybe<Scalars["String"]>;
+  orderingProviderLastName?: Maybe<Scalars["String"]>;
+  orderingProviderMiddleName?: Maybe<Scalars["String"]>;
+  orderingProviderNPI?: Maybe<Scalars["String"]>;
+  orderingProviderPhone?: Maybe<Scalars["String"]>;
+  orderingProviderState?: Maybe<Scalars["String"]>;
+  orderingProviderStreet?: Maybe<Scalars["String"]>;
+  orderingProviderStreetTwo?: Maybe<Scalars["String"]>;
+  orderingProviderSuffix?: Maybe<Scalars["String"]>;
+  orderingProviderZipCode?: Maybe<Scalars["String"]>;
+  phone?: Maybe<Scalars["String"]>;
+  state: Scalars["String"];
+  street: Scalars["String"];
+  streetTwo?: Maybe<Scalars["String"]>;
+  testingFacilityName: Scalars["String"];
+  zipCode: Scalars["String"];
+};
+
+export type MutationUpdateFacilityNewArgs = {
+  city?: Maybe<Scalars["String"]>;
+  cliaNumber?: Maybe<Scalars["String"]>;
+  deviceIds: Array<Maybe<Scalars["ID"]>>;
   email?: Maybe<Scalars["String"]>;
   facilityId: Scalars["ID"];
   orderingProviderCity?: Maybe<Scalars["String"]>;
@@ -975,12 +1031,12 @@ export type UpdateFacilityMutationVariables = Exact<{
   orderingProviderState?: Maybe<Scalars["String"]>;
   orderingProviderZipCode?: Maybe<Scalars["String"]>;
   orderingProviderPhone?: Maybe<Scalars["String"]>;
-  devices: Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>;
+  devices: Array<Maybe<Scalars["ID"]>> | Maybe<Scalars["ID"]>;
 }>;
 
 export type UpdateFacilityMutation = {
   __typename?: "Mutation";
-  updateFacility?: Maybe<string>;
+  updateFacilityNew?: Maybe<string>;
 };
 
 export type AddFacilityMutationVariables = Exact<{
@@ -2276,9 +2332,9 @@ export const UpdateFacilityDocument = gql`
     $orderingProviderState: String
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
-    $devices: [String]!
+    $devices: [ID]!
   ) {
-    updateFacility(
+    updateFacilityNew(
       facilityId: $facilityId
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
@@ -2300,7 +2356,7 @@ export const UpdateFacilityDocument = gql`
       orderingProviderState: $orderingProviderState
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
-      deviceTypes: $devices
+      deviceIds: $devices
     )
   }
 `;

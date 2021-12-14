@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import static graphql.Assert.assertNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -21,7 +22,6 @@ import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
-import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
@@ -46,7 +46,6 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Autowired private OrganizationRepository organizationRepository;
 
   @Autowired private DeviceTypeRepository deviceTypeRepository;
-  @Autowired private SpecimenTypeRepository specimenTypeRepository;
 
   @BeforeEach
   void setupData() {
@@ -92,8 +91,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
     Facility fac = facilities.get(0);
     assertEquals("Facility 1", fac.getFacilityName());
-    assertNotNull(fac.getDefaultDeviceType());
-    assertEquals("Abbott ID Now", fac.getDefaultDeviceType().getName());
+    assertNull(fac.getDefaultDeviceType());
 
     PatientSelfRegistrationLink orgLink =
         patientRegistrationLinkRepository.findByOrganization(org).get();
