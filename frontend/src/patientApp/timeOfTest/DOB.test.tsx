@@ -25,14 +25,6 @@ const validateDateOfBirthSpy = jest
   .spyOn(PxpApi, "validateDateOfBirth")
   .mockImplementation(jest.fn());
 
-/**
- * Tests to write:
- * - DOB only valid if the year is after 1900 and before the next year
- * - can't get in by only entering some fields (correct month/date but not year, for example)
- * - can't access if DOB is incorrect
- * - error message given for invalid date (31/2/1993, for example)
- */
-
 describe("DOB (valid UUID)", () => {
   beforeEach(() => {
     const store = mockStore({
