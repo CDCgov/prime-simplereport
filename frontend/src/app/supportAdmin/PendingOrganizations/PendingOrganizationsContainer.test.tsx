@@ -25,7 +25,7 @@ const organizationsQuery = (name: string, id: string) => {
             adminFirstName: "John",
             adminLastName: "Doe",
             adminPhone: "530-867-5309",
-            createdAt: "2020-05-01T00:00:00.000Z",
+            createdAt: "2021-12-01T00:00:00.000Z",
           },
           {
             externalId:
@@ -35,12 +35,81 @@ const organizationsQuery = (name: string, id: string) => {
             adminFirstName: "Jane",
             adminLastName: "Doe",
             adminPhone: "410-867-5309",
-            createdAt: "2020-06-01T00:00:00.000Z",
+            createdAt: "2021-12-26T00:00:00.000Z",
           },
         ],
       },
     },
   };
+};
+
+const oldOrganizationsQuery = {
+  request: {
+    query: GetPendingOrganizationsDocument,
+  },
+  result: {
+    data: {
+      pendingOrganizations: [
+        {
+          externalId:
+            "CA-An-Old-Schema-Org-with-Nulls-f34183c4-b4c5-449f-97b4-2e02abb7aae0",
+          name: "An Old Schema Org with Nulls",
+          adminEmail: null,
+          adminFirstName: null,
+          adminLastName: null,
+          adminPhone: "410-867-5309",
+          createdAt: "2021-12-01T00:00:00.000Z",
+        },
+        {
+          externalId:
+            "CA-An-Old-Schema-Org-with-Date-f34183c4-b4c5-449f-97b4-2e02abb7aae0",
+          name: "An Old Schema Org with Date",
+          adminEmail: "admin@oldschema.org",
+          adminFirstName: "James",
+          adminLastName: "Doe",
+          adminPhone: "410-867-5309",
+          createdAt: "2020-12-26T00:00:00.000Z",
+        },
+      ],
+    },
+  },
+};
+
+const submittedOrganizationsQueryOldOrgs = {
+  request: {
+    query: GetPendingOrganizationsDocument,
+  },
+  result: {
+    data: {
+      pendingOrganizations: [
+        {
+          externalId:
+            "CA-An-Old-Schema-Org-with-Date-f34183c4-b4c5-449f-97b4-2e02abb7aae0",
+          name: "An Old Schema Org with Date",
+          adminEmail: "admin@oldschema.org",
+          adminFirstName: "James",
+          adminLastName: "Doe",
+          adminPhone: "410-867-5309",
+          createdAt: "2020-12-26T00:00:00.000Z",
+        },
+      ],
+    },
+  },
+};
+const oldOrganizationsVerificationMutation = {
+  request: {
+    query: SetOrgIdentityVerifiedDocument,
+    variables: {
+      externalId:
+        "CA-An-Old-Schema-Org-with-Date-f34183c4-b4c5-449f-97b4-2e02abb7aae0",
+      verified: true,
+    },
+  },
+  result: {
+    data: {
+      setOrganizationIdentityVerified: true,
+    },
+  },
 };
 
 const submittedOrganizationQuery = {
@@ -57,7 +126,7 @@ const submittedOrganizationQuery = {
           adminFirstName: "Jane",
           adminLastName: "Doe",
           adminPhone: "410-867-5309",
-          createdAt: "2020-06-01T00:00:00.000Z",
+          createdAt: "2021-12-26T00:00:00.000Z",
         },
       ],
     },
@@ -139,6 +208,81 @@ describe("PendingOrganizationsContainer", () => {
       ).toBeInTheDocument();
     });
   });
+  describe("bad schema organizations", () => {
+    beforeEach(async () => {
+      render(
+        <MockedProvider
+          mocks={[
+            oldOrganizationsQuery,
+            oldOrganizationsVerificationMutation,
+            submittedOrganizationsQueryOldOrgs,
+          ]}
+        >
+          <PendingOrganizationsContainer />
+        </MockedProvider>
+      );
+      expect(
+        await screen.findByText("An Old Schema Org with Nulls", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText("An Old Schema Org with Date", { exact: false })
+      ).toBeInTheDocument();
+    });
+
+    it("shows disabled modal with copy text for nulled fields", () => {
+      userEvent.click(screen.getAllByText("View details")[1]);
+      expect(
+        screen.getByText("Organization details", { exact: false })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByLabelText("Organization name", { exact: false })
+      ).toBeDisabled();
+      expect(screen.getByText("Save details", { exact: false })).toBeDisabled();
+      expect(screen.getByText("Submit", { exact: false })).toBeInTheDocument();
+      expect(screen.getByText("Submit", { exact: false })).toBeEnabled();
+      expect(
+        screen.getByTestId("old-schema-explanation", { exact: false })
+      ).toBeInTheDocument();
+    });
+    it("shows disabled modal with copy text for old date org", () => {
+      userEvent.click(screen.getAllByText("View details")[0]);
+      expect(
+        screen.getByText("Organization details", { exact: false })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByLabelText("Organization name", { exact: false })
+      ).toBeDisabled();
+      expect(screen.getByText("Save details", { exact: false })).toBeDisabled();
+      expect(screen.getByText("Submit", { exact: false })).toBeInTheDocument();
+      expect(screen.getByText("Submit", { exact: false })).toBeEnabled();
+      expect(
+        screen.getByTestId("old-schema-explanation", { exact: false })
+      ).toBeInTheDocument();
+    });
+    it("With nulls submitted", async () => {
+      expect(
+        await screen.findByText("An Old Schema Org with Nulls", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+      userEvent.click(
+        Array.from(await screen.findAllByText("View details"))[1]
+      );
+      userEvent.click(screen.getByText("Submit"));
+      expect(
+        await screen.findByText("An Old Schema Org with Nulls", {
+          exact: false,
+        })
+      ).not.toBeInTheDocument();
+      expect(
+        await screen.findByText("An Old Schema Org with Date", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+    });
+  });
 
   describe("organizations loaded", () => {
     beforeEach(async () => {
@@ -185,8 +329,8 @@ describe("PendingOrganizationsContainer", () => {
 
     it("shows the newest orgs first", () => {
       const rowsCreatedAt = screen.getAllByTestId("org-created-at-table-cell");
-      expect(rowsCreatedAt[0]).toHaveTextContent("6/1/2020, 12:00:00 AM");
-      expect(rowsCreatedAt[1]).toHaveTextContent("5/1/2020, 12:00:00 AM");
+      expect(rowsCreatedAt[0]).toHaveTextContent("12/26/2021, 12:00:00 AM");
+      expect(rowsCreatedAt[1]).toHaveTextContent("12/1/2021, 12:00:00 AM");
     });
 
     describe("confirm/edit modal acts correctly", () => {
@@ -296,6 +440,9 @@ describe("PendingOrganizationsContainer", () => {
         );
       });
       it("Space Camp submitted", async () => {
+        expect(
+          await screen.findByText("Space Camp", { exact: false })
+        ).toBeInTheDocument();
         userEvent.click(
           Array.from(await screen.findAllByText("View details"))[1]
         );

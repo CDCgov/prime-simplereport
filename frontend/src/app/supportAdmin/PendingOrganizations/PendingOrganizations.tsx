@@ -137,7 +137,6 @@ const PendingOrganizations = ({
     const orgsSortedByNewest = [...organizations].sort(
       (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)
     );
-
     return orgsSortedByNewest.map((o) => (
       <tr key={o.externalId} className="sr-org-row">
         <td>{o.name}</td>

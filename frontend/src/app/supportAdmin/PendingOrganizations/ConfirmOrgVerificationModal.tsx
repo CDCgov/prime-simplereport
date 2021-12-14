@@ -132,7 +132,7 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
         {orgUsingOldSchema ? (
-          <p>
+          <p data-testid="old-schema-explanation">
             Because of technical issues, this organization can't be edited but
             can still be verified. If you need to edit this organization's
             details, verify the organization first and then escalate the change
