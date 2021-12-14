@@ -36,6 +36,18 @@ public class PatientResolver implements GraphQLQueryResolver {
   }
 
   public boolean patientExists(
+      String firstName, String lastName, LocalDate birthDate, String zipCode, UUID facilityId) {
+    // Backwards compatibility shim -- zipCode is unused
+    Organization org = _os.getCurrentOrganization();
+    Optional<Facility> facility =
+        facilityId == null
+            ? Optional.empty()
+            : Optional.of(_os.getFacilityInCurrentOrg(facilityId));
+
+    return _ps.isDuplicatePatient(firstName, lastName, birthDate, org, facility);
+  }
+
+  public boolean patientExistsNew(
       String firstName, String lastName, LocalDate birthDate, UUID facilityId) {
     Organization org = _os.getCurrentOrganization();
     Optional<Facility> facility =

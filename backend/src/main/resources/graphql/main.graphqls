@@ -315,6 +315,13 @@ type Query {
     firstName: String!
     lastName: String!
     birthDate: LocalDate!
+    zipCode: String!
+    facilityId: ID
+  ): Boolean
+  patientExistsNew(
+    firstName: String!
+    lastName: String!
+    birthDate: LocalDate!
     facilityId: ID
   ): Boolean
   queue(facilityId: ID!): [TestOrder]

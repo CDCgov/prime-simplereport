@@ -28,7 +28,7 @@ class PatientResolverTest extends BaseServiceTest<PersonService> {
 
     var sut = new PatientResolver(personService, orgService);
 
-    sut.patientExists("John", "Schmidt", LocalDate.of(1990, 01, 01), facility.getInternalId());
+    sut.patientExistsNew("John", "Schmidt", LocalDate.of(1990, 01, 01), facility.getInternalId());
 
     verify(personService)
         .isDuplicatePatient(
@@ -45,7 +45,7 @@ class PatientResolverTest extends BaseServiceTest<PersonService> {
 
     var sut = new PatientResolver(personService, orgService);
 
-    sut.patientExists("John", "Schmidt", LocalDate.of(1990, 01, 01), null);
+    sut.patientExistsNew("John", "Schmidt", LocalDate.of(1990, 01, 01), null);
 
     verify(personService)
         .isDuplicatePatient("John", "Schmidt", LocalDate.of(1990, 01, 01), org, Optional.empty());

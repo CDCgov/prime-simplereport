@@ -399,7 +399,7 @@ describe("AddPatient", () => {
             patientExistsMock();
             return {
               data: {
-                patientExists: false,
+                patientExistsNew: false,
               },
             };
           },
@@ -458,7 +458,7 @@ describe("AddPatient", () => {
           },
           result: {
             data: {
-              patientExists: true,
+              patientExistsNew: true,
             },
           },
         },

@@ -639,6 +639,7 @@ export type Query = {
   organizations: Array<Organization>;
   patient?: Maybe<Patient>;
   patientExists?: Maybe<Scalars["Boolean"]>;
+  patientExistsNew?: Maybe<Scalars["Boolean"]>;
   patients?: Maybe<Array<Maybe<Patient>>>;
   patientsCount?: Maybe<Scalars["Int"]>;
   pendingOrganizations: Array<PendingOrganization>;
@@ -669,6 +670,14 @@ export type QueryPatientArgs = {
 };
 
 export type QueryPatientExistsArgs = {
+  birthDate: Scalars["LocalDate"];
+  facilityId?: Maybe<Scalars["ID"]>;
+  firstName: Scalars["String"];
+  lastName: Scalars["String"];
+  zipCode: Scalars["String"];
+};
+
+export type QueryPatientExistsNewArgs = {
   birthDate: Scalars["LocalDate"];
   facilityId?: Maybe<Scalars["ID"]>;
   firstName: Scalars["String"];
@@ -1283,7 +1292,7 @@ export type PatientExistsQueryVariables = Exact<{
 
 export type PatientExistsQuery = {
   __typename?: "Query";
-  patientExists?: Maybe<boolean>;
+  patientExistsNew?: Maybe<boolean>;
 };
 
 export type AddPatientMutationVariables = Exact<{
@@ -3374,7 +3383,7 @@ export const PatientExistsDocument = gql`
     $birthDate: LocalDate!
     $facilityId: ID
   ) {
-    patientExists(
+    patientExistsNew(
       firstName: $firstName
       lastName: $lastName
       birthDate: $birthDate
