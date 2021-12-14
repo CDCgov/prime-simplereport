@@ -30,7 +30,7 @@ type Facility {
   phone: String
   email: String
   deviceTypes: [DeviceType]
-  defaultDeviceSpecimen: String
+  defaultDeviceSpecimen: ID
   orderingProvider: Provider
   patientSelfRegistrationLink: String
 }
@@ -391,6 +391,8 @@ type Mutation {
     orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
+    deviceSpecimenTypes: [ID]
+    defaultDevice: String!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addFacility(
     testingFacilityName: String!
@@ -418,7 +420,59 @@ type Mutation {
     orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
+    deviceSpecimenTypes: [ID]
     defaultDevice: String!
+  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  addFacilityNew(
+    testingFacilityName: String!
+    cliaNumber: String
+    street: String!
+    streetTwo: String
+    city: String
+    state: String!
+    zipCode: String!
+    phone: String
+    email: String
+    orderingProviderFirstName: String
+    orderingProviderMiddleName: String
+    orderingProviderLastName: String
+    orderingProviderSuffix: String
+    orderingProviderNPI: String
+    orderingProviderStreet: String
+    orderingProviderStreetTwo: String
+    orderingProviderCity: String
+    orderingProviderCounty: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
+    orderingProviderPhone: String
+    deviceTypes: [ID]!
+  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  updateFacilityNew(
+    facilityId: ID!
+    testingFacilityName: String!
+    cliaNumber: String
+    street: String!
+    streetTwo: String
+    city: String
+    state: String!
+    zipCode: String!
+    phone: String
+    email: String
+    orderingProviderFirstName: String
+    orderingProviderMiddleName: String
+    orderingProviderLastName: String
+    orderingProviderSuffix: String
+    orderingProviderNPI: String
+    orderingProviderStreet: String
+    orderingProviderStreetTwo: String
+    orderingProviderCity: String
+    orderingProviderCounty: String
+    @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
+    orderingProviderPhone: String
+    deviceIds: [ID]!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addUserToCurrentOrg(
     name: NameInput

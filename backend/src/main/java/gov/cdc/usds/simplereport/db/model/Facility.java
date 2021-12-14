@@ -41,6 +41,13 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
+      name = "facility_device_specimen_type",
+      joinColumns = @JoinColumn(name = "facility_id"),
+      inverseJoinColumns = @JoinColumn(name = "device_specimen_type_id"))
+  private Set<DeviceSpecimenType> configuredDeviceSpecimenTypes = new HashSet<>();
+
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(
       name = "facility_device_type",
       joinColumns = @JoinColumn(name = "facility_id"),
       inverseJoinColumns = @JoinColumn(name = "device_type_id"))

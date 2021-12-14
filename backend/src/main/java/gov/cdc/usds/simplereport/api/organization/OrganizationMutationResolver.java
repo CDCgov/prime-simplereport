@@ -13,46 +13,36 @@ import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
-import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
-import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /** Created by nickrobison on 11/17/20 */
 @Component
+@RequiredArgsConstructor
 public class OrganizationMutationResolver implements GraphQLMutationResolver {
 
-  private final OrganizationService _os;
-  private final OrganizationQueueService _oqs;
-  private final DeviceTypeService _dts;
-  private final AddressValidationService _avs;
-  private final ApiUserService _aus;
-
-  public OrganizationMutationResolver(
-      OrganizationService os,
-      OrganizationQueueService oqs,
-      DeviceTypeService dts,
-      AddressValidationService avs,
-      ApiUserService aus) {
-    _os = os;
-    _oqs = oqs;
-    _dts = dts;
-    _avs = avs;
-    _aus = aus;
-  }
+  private final OrganizationService organizationService;
+  private final OrganizationQueueService organizationQueueService;
+  private final AddressValidationService addressValidationService;
+  private final ApiUserService apiUserService;
+  private final DeviceSpecimenTypeRepository deviceSpecimenTypeRepository;
 
   public ApiFacility addFacility(
       String testingFacilityName,
@@ -78,21 +68,80 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String orderingProviderZipCode,
       String orderingProviderTelephone,
       List<String> deviceIds,
+      List<UUID> deviceSpecimenTypes,
       String defaultDeviceId) {
-    _os.assertFacilityNameAvailable(testingFacilityName);
 
-    // For historical reasons, entities representing the internal database ID of a device type
-    // may be typed in the GraphQL schema as a String instead of an ID.
-    // Standardize on the UUID type for these IDs downstream of the mutation
-    List<UUID> deviceInternalIds =
-        deviceIds.stream().map(UUID::fromString).collect(Collectors.toList());
-    List<DeviceType> devices = _dts.getDeviceTypesByIds(deviceInternalIds);
-    DeviceSpecimenType defaultDeviceSpecimen =
-        _dts.getDefaultForDeviceId(UUID.fromString(defaultDeviceId));
+    List<UUID> deviceIdsFromDeviceSpecimenTypes =
+        deviceSpecimenTypes.stream()
+            .map(
+                id -> {
+                  return deviceSpecimenTypeRepository
+                      .findById(id)
+                      .map(DeviceSpecimenType::getDeviceType)
+                      .map(IdentifiedEntity::getInternalId)
+                      .orElse(null);
+                })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+
+    return addFacilityNew(
+        testingFacilityName,
+        cliaNumber,
+        street,
+        streetTwo,
+        city,
+        state,
+        zipCode,
+        phone,
+        email,
+        orderingProviderFirstName,
+        orderingProviderMiddleName,
+        orderingProviderLastName,
+        orderingProviderSuffix,
+        orderingProviderNPI,
+        orderingProviderStreet,
+        orderingProviderStreetTwo,
+        orderingProviderCity,
+        orderingProviderCounty,
+        orderingProviderState,
+        orderingProviderZipCode,
+        orderingProviderTelephone,
+        deviceIdsFromDeviceSpecimenTypes);
+  }
+
+  public ApiFacility addFacilityNew(
+      String testingFacilityName,
+      String cliaNumber,
+      String street,
+      String streetTwo,
+      String city,
+      String state,
+      String zipCode,
+      String phone,
+      String email,
+      String orderingProviderFirstName,
+      String orderingProviderMiddleName,
+      String orderingProviderLastName,
+      String orderingProviderSuffix,
+      String orderingProviderNPI,
+      String orderingProviderStreet,
+      String orderingProviderStreetTwo,
+      String orderingProviderCity,
+      String orderingProviderCounty,
+      String orderingProviderState,
+      String orderingProviderZipCode,
+      String orderingProviderTelephone,
+      List<UUID> deviceIds) {
+    organizationService.assertFacilityNameAvailable(testingFacilityName);
 
     StreetAddress facilityAddress =
-        _avs.getValidatedAddress(
-            street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
+        addressValidationService.getValidatedAddress(
+            street,
+            streetTwo,
+            city,
+            state,
+            zipCode,
+            addressValidationService.FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
         new StreetAddress(
             parseString(orderingProviderStreet),
@@ -108,17 +157,16 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             orderingProviderLastName,
             orderingProviderSuffix);
     Facility created =
-        _os.createFacility(
+        organizationService.createFacility(
             testingFacilityName,
             cliaNumber,
             facilityAddress,
             parsePhoneNumber(phone),
             parseEmail(email),
-            defaultDeviceSpecimen,
-            devices,
+            deviceIds,
             providerName,
             providerAddress,
-            orderingProviderTelephone,
+            parsePhoneNumber(orderingProviderTelephone),
             orderingProviderNPI);
 
     return new ApiFacility(created);
@@ -148,17 +196,89 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String orderingProviderState,
       String orderingProviderZipCode,
       String orderingProviderTelephone,
-      List<String> deviceIds) {
-    // For historical reasons, entities representing the internal database ID of a device type
-    // may be typed in the GraphQL schema as a String instead of an ID.
-    // Standardize on the UUID type for these IDs downstream of the mutation
-    List<UUID> deviceInternalIds =
-        deviceIds.stream().map(UUID::fromString).collect(Collectors.toList());
-    List<DeviceType> devices = _dts.getDeviceTypesByIds(deviceInternalIds);
+      List<String> deviceIds,
+      List<UUID> deviceSpecimenTypes,
+      String defaultDeviceId) {
+
+    List<UUID> deviceIdsFromDeviceSpecimenTypes =
+        deviceSpecimenTypes.stream()
+            .map(
+                id -> {
+                  return deviceSpecimenTypeRepository
+                      .findById(id)
+                      .map(DeviceSpecimenType::getDeviceType)
+                      .map(IdentifiedEntity::getInternalId)
+                      .orElse(null);
+                })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+
+    return updateFacilityNew(
+        facilityId,
+        testingFacilityName,
+        cliaNumber,
+        street,
+        streetTwo,
+        city,
+        state,
+        zipCode,
+        phone,
+        email,
+        orderingProviderFirstName,
+        orderingProviderMiddleName,
+        orderingProviderLastName,
+        orderingProviderSuffix,
+        orderingProviderNPI,
+        orderingProviderStreet,
+        orderingProviderStreetTwo,
+        orderingProviderCity,
+        orderingProviderCounty,
+        orderingProviderState,
+        orderingProviderZipCode,
+        orderingProviderTelephone,
+        deviceIdsFromDeviceSpecimenTypes);
+  }
+
+  public ApiFacility updateFacilityNew(
+      UUID facilityId,
+      String testingFacilityName,
+      String cliaNumber,
+      String street,
+      String streetTwo,
+      String city,
+      String state,
+      String zipCode,
+      String phone,
+      String email,
+      String orderingProviderFirstName,
+      String orderingProviderMiddleName,
+      String orderingProviderLastName,
+      String orderingProviderSuffix,
+      String orderingProviderNPI,
+      String orderingProviderStreet,
+      String orderingProviderStreetTwo,
+      String orderingProviderCity,
+      String orderingProviderCounty,
+      String orderingProviderState,
+      String orderingProviderZipCode,
+      String orderingProviderTelephone,
+      List<UUID> deviceIds) {
 
     StreetAddress facilityAddress =
-        _avs.getValidatedAddress(
-            street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
+        addressValidationService.getValidatedAddress(
+            street,
+            streetTwo,
+            city,
+            state,
+            zipCode,
+            addressValidationService.FACILITY_DISPLAY_NAME);
+
+    PersonName providerName =
+        new PersonName(
+            orderingProviderFirstName,
+            orderingProviderMiddleName,
+            orderingProviderLastName,
+            orderingProviderSuffix);
 
     StreetAddress providerAddress =
         new StreetAddress(
@@ -169,22 +289,18 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             parseString(orderingProviderZipCode),
             parseString(orderingProviderCounty));
     Facility facility =
-        _os.updateFacility(
+        organizationService.updateFacility(
             facilityId,
             testingFacilityName,
             cliaNumber,
             facilityAddress,
             parsePhoneNumber(phone),
             parseEmail(email),
-            orderingProviderFirstName,
-            orderingProviderMiddleName,
-            orderingProviderLastName,
-            orderingProviderSuffix,
-            orderingProviderNPI,
+            providerName,
             providerAddress,
+            orderingProviderNPI,
             parsePhoneNumber(orderingProviderTelephone),
-            devices);
-
+            deviceIds);
     return new ApiFacility(facility);
   }
 
@@ -227,13 +343,15 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
 
     List<UUID> deviceInternalIds =
         deviceIds.stream().map(UUID::fromString).collect(Collectors.toList());
-    List<DeviceType> devices = _dts.getDeviceTypesByIds(deviceInternalIds);
-    DeviceSpecimenType defaultDeviceSpecimen =
-        _dts.getDefaultForDeviceId(UUID.fromString(defaultDeviceId));
 
     StreetAddress facilityAddress =
-        _avs.getValidatedAddress(
-            street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
+        addressValidationService.getValidatedAddress(
+            street,
+            streetTwo,
+            city,
+            state,
+            zipCode,
+            addressValidationService.FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
         new StreetAddress(
             parseString(orderingProviderStreet),
@@ -254,7 +372,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         consolidateNameArguments(
             adminName, adminFirstName, adminMiddleName, adminLastName, adminSuffix);
     Organization org =
-        _os.createOrganizationAndFacility(
+        organizationService.createOrganizationAndFacility(
             name,
             parseOrganizationType(type),
             externalId,
@@ -263,34 +381,33 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             facilityAddress,
             parsePhoneNumber(phone),
             parseEmail(email),
-            defaultDeviceSpecimen,
-            devices,
+            deviceInternalIds,
             providerName,
             providerAddress,
             parsePhoneNumber(orderingProviderTelephone),
             orderingProviderNPI);
-    _aus.createUser(adminEmail, adminName, externalId, Role.ADMIN);
-    List<Facility> facilities = _os.getFacilities(org);
+    apiUserService.createUser(adminEmail, adminName, externalId, Role.ADMIN);
+    List<Facility> facilities = organizationService.getFacilities(org);
     return new ApiOrganization(org, facilities);
   }
 
   public void adminUpdateOrganization(String name, String type) {
     String parsedType = parseOrganizationType(type);
-    _os.updateOrganization(name, parsedType);
+    organizationService.updateOrganization(name, parsedType);
   }
 
   public void updateOrganization(String type) {
     String parsedType = parseOrganizationType(type);
-    _os.updateOrganization(parsedType);
+    organizationService.updateOrganization(parsedType);
   }
 
   public boolean setOrganizationIdentityVerified(String externalId, boolean verified) {
     Optional<OrganizationQueueItem> orgQueueItem =
-        _oqs.getUnverifiedQueuedOrganizationByExternalId(externalId);
+        organizationQueueService.getUnverifiedQueuedOrganizationByExternalId(externalId);
     if (orgQueueItem.isPresent() && verified) {
-      _oqs.createAndActivateQueuedOrganization(orgQueueItem.get());
+      organizationQueueService.createAndActivateQueuedOrganization(orgQueueItem.get());
     }
-    return _os.setIdentityVerified(externalId, verified);
+    return organizationService.setIdentityVerified(externalId, verified);
   }
 
   public String editPendingOrganization(
@@ -301,7 +418,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String adminEmail,
       String adminPhone) {
     OrganizationQueueItem editedItem =
-        _oqs.editQueueItem(
+        organizationQueueService.editQueueItem(
             orgExternalId,
             toOptional(name),
             toOptional(adminFirstName),
@@ -313,6 +430,6 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
 
   /** Support-only mutation to mark a facility as deleted. This is a soft deletion only. */
   public Facility markFacilityAsDeleted(UUID facilityId, boolean deleted) {
-    return _os.markFacilityAsDeleted(facilityId, deleted);
+    return organizationService.markFacilityAsDeleted(facilityId, deleted);
   }
 }

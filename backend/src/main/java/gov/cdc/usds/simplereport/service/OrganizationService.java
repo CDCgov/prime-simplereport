@@ -19,6 +19,7 @@ import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -190,14 +191,11 @@ public class OrganizationService {
       StreetAddress facilityAddress,
       String phone,
       String email,
-      String orderingProviderFirstName,
-      String orderingProviderMiddleName,
-      String orderingProviderLastName,
-      String orderingProviderSuffix,
-      String orderingProviderNPI,
+      PersonName orderingProviderName,
       StreetAddress orderingProviderAddress,
+      String orderingProviderNPI,
       String orderingProviderTelephone,
-      List<DeviceType> deviceTypes) {
+      List<UUID> deviceIds) {
 
     Facility facility = this.getFacilityInCurrentOrg(facilityId);
     facility.setFacilityName(testingFacilityName);
@@ -207,10 +205,10 @@ public class OrganizationService {
     facility.setAddress(facilityAddress);
 
     Provider p = facility.getOrderingProvider();
-    p.getNameInfo().setFirstName(orderingProviderFirstName);
-    p.getNameInfo().setMiddleName(orderingProviderMiddleName);
-    p.getNameInfo().setLastName(orderingProviderLastName);
-    p.getNameInfo().setSuffix(orderingProviderSuffix);
+    p.getNameInfo().setFirstName(orderingProviderName.getFirstName());
+    p.getNameInfo().setMiddleName(orderingProviderName.getMiddleName());
+    p.getNameInfo().setLastName(orderingProviderName.getLastName());
+    p.getNameInfo().setSuffix(orderingProviderName.getSuffix());
     p.setProviderId(orderingProviderNPI);
     p.setTelephone(orderingProviderTelephone);
     p.setAddress(orderingProviderAddress);
@@ -218,32 +216,11 @@ public class OrganizationService {
     _orderingProviderRequiredValidator.assertValidity(
         p.getNameInfo(), p.getProviderId(), p.getTelephone(), facility.getAddress().getState());
 
-    facility
-        .getDeviceTypes()
-        .forEach(
-            device -> {
-              // Removing default device
-              if (facility.getDefaultDeviceSpecimen() != null
-                  && facility.getDefaultDeviceSpecimen().getDeviceType() == device) {
-                facility.addDefaultDeviceSpecimen(null);
-              }
+    facility.getDeviceTypes().forEach(facility::removeDeviceType);
 
-              facility.removeDeviceType(device);
-            });
-
-    for (DeviceType device : deviceTypes) {
-      Optional<DeviceType> deviceTypeOptional =
-          _deviceTypeRepository.findById(device.getInternalId());
-      deviceTypeOptional.ifPresent(facility::addDeviceType);
-    }
-
-    // Default device specimen is not explicitly set by update/add facility operations,
-    // but it should still be defined
-    if (facility.getDefaultDeviceSpecimen() == null) {
-      var deviceId = deviceTypes.get(0).getInternalId();
-
-      facility.addDefaultDeviceSpecimen(_deviceService.getDefaultForDeviceId(deviceId));
-    }
+    deviceIds.stream()
+        .map(_deviceTypeRepository::findById)
+        .forEach(deviceTypeOptional -> deviceTypeOptional.ifPresent(facility::addDeviceType));
 
     return _facilityRepo.save(facility);
   }
@@ -258,8 +235,7 @@ public class OrganizationService {
       StreetAddress facilityAddress,
       String phone,
       String email,
-      DeviceSpecimenType defaultDeviceSpecimen,
-      List<DeviceType> deviceTypes,
+      List<UUID> deviceTypeIds,
       PersonName providerName,
       StreetAddress providerAddress,
       String providerTelephone,
@@ -273,8 +249,7 @@ public class OrganizationService {
         facilityAddress,
         phone,
         email,
-        defaultDeviceSpecimen,
-        deviceTypes,
+        deviceTypeIds,
         providerName,
         providerAddress,
         providerTelephone,
@@ -338,15 +313,14 @@ public class OrganizationService {
   }
 
   @Transactional(readOnly = false)
-  public Facility createFacilityNoPermissions(
+  private Facility createFacilityNoPermissions(
       Organization organization,
       String testingFacilityName,
       String cliaNumber,
       StreetAddress facilityAddress,
       String phone,
       String email,
-      DeviceSpecimenType defaultDeviceSpecimen,
-      List<DeviceType> deviceTypes,
+      List<UUID> deviceIds,
       PersonName providerName,
       StreetAddress providerAddress,
       String providerTelephone,
@@ -357,6 +331,19 @@ public class OrganizationService {
         _providerRepo.save(
             new Provider(providerName, providerNPI, providerAddress, providerTelephone));
 
+    List<DeviceType> configuredDevices = new ArrayList<>();
+
+    deviceIds.stream()
+        .map(_deviceTypeRepository::findById)
+        .forEach(deviceTypeOptional -> deviceTypeOptional.ifPresent(configuredDevices::add));
+
+    // to maintain compatibility with ui no working without defaultDeviceSpecimenType
+    DeviceSpecimenType deviceSpecimenType = null;
+    UUID deviceTypeId = Optional.of(deviceIds.get(0)).orElse(null);
+    if (deviceTypeId != null) {
+      deviceSpecimenType = _deviceService.getDefaultForDeviceId(deviceTypeId);
+    }
+
     Facility facility =
         new Facility(
             organization,
@@ -366,8 +353,8 @@ public class OrganizationService {
             phone,
             email,
             orderingProvider,
-            defaultDeviceSpecimen,
-            deviceTypes);
+            deviceSpecimenType,
+            configuredDevices);
     facility = _facilityRepo.save(facility);
     _psrlService.createRegistrationLink(facility);
     _oktaRepo.createFacility(facility);
@@ -382,8 +369,7 @@ public class OrganizationService {
       StreetAddress facilityAddress,
       String phone,
       String email,
-      DeviceSpecimenType defaultDeviceSpecimen,
-      List<DeviceType> deviceTypes,
+      List<UUID> deviceIds,
       PersonName providerName,
       StreetAddress providerAddress,
       String providerTelephone,
@@ -395,8 +381,7 @@ public class OrganizationService {
         facilityAddress,
         phone,
         email,
-        defaultDeviceSpecimen,
-        deviceTypes,
+        deviceIds,
         providerName,
         providerAddress,
         providerTelephone,
