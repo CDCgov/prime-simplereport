@@ -1,6 +1,6 @@
 ---
 name: G&E Ticket
-about: Suggest an idea for this project
+about: Create a new work item for the growth and engagement team
 title: ''
 labels: Growth & Engagement
 assignees: ''
