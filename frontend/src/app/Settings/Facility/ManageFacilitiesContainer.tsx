@@ -41,7 +41,9 @@ const GET_FACILITIES = gql`
 `;
 
 const ManageFacilitiesContainer: any = () => {
-  const { data, loading, error } = useQuery<SettingsData, {}>(GET_FACILITIES);
+  const { data, loading, error } = useQuery<SettingsData, {}>(GET_FACILITIES, {
+    fetchPolicy: "no-cache",
+  });
 
   if (loading) {
     return <p> Loading... </p>;
