@@ -29,15 +29,15 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   public static final int PATIENT_PAGE_OFFSET = 0;
   public static final int PATIENT_PAGE_SIZE = 1000;
 
-  @Autowired private PersonService _ps;
-  @MockBean protected AddressValidationService _addressValidation;
+  @Autowired private PersonService personService;
+  @MockBean protected AddressValidationService addressValidationService;
   private StreetAddress address;
 
   @BeforeEach
   void setupData() {
     address = new StreetAddress("123 Main Street", null, "Washington", "DC", "20008", null);
     initSampleData();
-    when(_addressValidation.getValidatedAddress(any(), any(), any(), any(), any(), any()))
+    when(addressValidationService.getValidatedAddress(any(), any(), any(), any(), any(), any()))
         .thenReturn(address);
   }
 
@@ -161,7 +161,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   }
 
   @Test
-  void testNoHeader() {
+  void testNoHeader_success() {
     // GIVEN
     InputStream inputStream = loadCsv("test-upload-valid-no-header.csv");
 
@@ -177,6 +177,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   }
 
   private List<Person> getPatients() {
-    return this._ps.getPatients(null, PATIENT_PAGE_OFFSET, PATIENT_PAGE_SIZE, false, null);
+    return this.personService.getPatients(
+        null, PATIENT_PAGE_OFFSET, PATIENT_PAGE_SIZE, false, null);
   }
 }

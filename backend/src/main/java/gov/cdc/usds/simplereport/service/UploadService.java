@@ -47,9 +47,9 @@ public class UploadService {
   private static final int MAX_LINE_LENGTH = 1024 * 6;
   public static final String ZIP_CODE_REGEX = "^[0-9]{5}(?:-[0-9]{4})?$";
 
-  private final PersonService _ps;
-  private final AddressValidationService _avs;
-  private final OrganizationService _os;
+  private final PersonService personService;
+  private final AddressValidationService addressValidationService;
+  private final OrganizationService organizationService;
   private boolean hasHeaderRow = false;
 
   private MappingIterator<Map<String, String>> getIteratorForCsv(InputStream csvStream)
@@ -96,7 +96,7 @@ public class UploadService {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public String processPersonCSV(InputStream csvStream) throws IllegalGraphqlArgumentException {
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
-    final var org = _os.getCurrentOrganization();
+    final var org = organizationService.getCurrentOrganization();
 
     // Since the CSV parser won't fail when give a single string, we simple check to see if it has
     // any parsed values
@@ -115,7 +115,7 @@ public class UploadService {
       try {
         var facilityId = parseUUID(getRow(row, FACILITY_ID, false));
         Optional<Facility> facility =
-            Optional.ofNullable(facilityId).map(_os::getFacilityInCurrentOrg);
+            Optional.ofNullable(facilityId).map(organizationService::getFacilityInCurrentOrg);
 
         String zipCode = getRow(row, "ZipCode", true);
         if (!zipCode.matches(ZIP_CODE_REGEX)) {
@@ -123,7 +123,7 @@ public class UploadService {
         }
 
         StreetAddress address =
-            _avs.getValidatedAddress(
+            addressValidationService.getValidatedAddress(
                 getRow(row, "Street", true),
                 getRow(row, "Street2", false),
                 getRow(row, "City", false),
@@ -140,12 +140,12 @@ public class UploadService {
           country = "USA";
         }
 
-        if (_ps.isDuplicatePatient(
+        if (personService.isDuplicatePatient(
             firstName, lastName, dob, address.getPostalCode(), org, facility)) {
           continue;
         }
 
-        _ps.addPatient(
+        personService.addPatient(
             facilityId,
             null, // lookupID
             firstName,
