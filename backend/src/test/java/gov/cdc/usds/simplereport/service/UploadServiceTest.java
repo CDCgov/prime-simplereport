@@ -1,19 +1,15 @@
 package gov.cdc.usds.simplereport.service;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.Role;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -30,16 +26,16 @@ import org.springframework.test.context.TestPropertySource;
     username = TestUserIdentities.SITE_ADMIN_USER,
     authorities = {Role.SITE_ADMIN, Role.DEFAULT_ORG_ADMIN})
 class UploadServiceTest extends BaseServiceTest<UploadService> {
-  public static final int PATIENT_PAGEOFFSET = 0;
-  public static final int PATIENT_PAGESIZE = 1000;
+  public static final int PATIENT_PAGE_OFFSET = 0;
+  public static final int PATIENT_PAGE_SIZE = 1000;
 
   @Autowired private PersonService _ps;
   @MockBean protected AddressValidationService _addressValidation;
-  private final StreetAddress address =
-      new StreetAddress("123 Main Street", null, "Washington", "DC", "20008", null);
+  private StreetAddress address;
 
   @BeforeEach
   void setupData() {
+    address = new StreetAddress("123 Main Street", null, "Washington", "DC", "20008", null);
     initSampleData();
     when(_addressValidation.getValidatedAddress(any(), any(), any(), any(), any(), any()))
         .thenReturn(address);
@@ -48,132 +44,139 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   @Test
   void testRowWithValue() {
     String value = this._service.getRow(Map.of("key1", "value1"), "key1", true);
-    assertEquals("value1", value);
+    assertThat(value).isEqualTo("value1");
   }
 
   @Test
   void testRowWithEmptyValue() {
     String value = this._service.getRow(Map.of("key1", ""), "key1", false);
-    assertEquals("", value);
+    assertThat(value).isEqualTo("");
   }
 
   @Test
   void testRowWithEmptyValueRequired() {
     assertThrows(
-        IllegalGraphqlArgumentException.class,
+        IllegalArgumentException.class,
         () -> this._service.getRow(Map.of("key1", ""), "key1", true));
   }
 
   @Test
-  void testInsert() throws IOException {
-    // Read the test CSV file
-    try (InputStream inputStream =
-        UploadServiceTest.class.getClassLoader().getResourceAsStream("test-upload.csv")) {
-      this._service.processPersonCSV(inputStream);
-    }
+  void testUploadValidCsv() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload.csv");
 
-    final List<Person> patients =
-        this._ps.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null);
-    assertAll(
-        () -> assertEquals(1, patients.size()),
-        () -> assertEquals("Best", patients.get(0).getLastName()),
-        () ->
-            assertEquals(address, patients.get(0).getAddress(), "Should have the correct address"));
+    // WHEN
+    this._service.processPersonCSV(inputStream);
+
+    // THEN
+    assertThat(getPatients()).hasSize(1);
+    assertThat(getPatients().get(0).getLastName()).isEqualTo("Best");
+    assertThat(getPatients().get(0).getAddress()).isEqualTo(address);
   }
 
   @Test
-  void testInsertNoCountry() throws IOException {
-    // Read the test CSV file
-    try (InputStream inputStream =
-        UploadServiceTest.class
-            .getClassLoader()
-            .getResourceAsStream("test-upload-no-country.csv")) {
-      this._service.processPersonCSV(inputStream);
-    }
+  void testInsertInvalidZipCode() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload-invalid-zipcode.csv");
 
-    final List<Person> patients =
-        this._ps.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null);
-    assertAll(
-        () -> assertEquals(1, patients.size()),
-        () -> assertEquals("Best", patients.get(0).getLastName()),
-        () ->
-            assertEquals(address, patients.get(0).getAddress(), "Should have the correct address"));
+    // WHEN
+    var error =
+        assertThrows(
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+
+    // THEN
+    assertThat(error.getMessage()).isEqualTo("Error on row 1; Invalid zip code");
+    assertThat(getPatients()).isEmpty();
   }
 
   @Test
-  void testInsertOneBadRow() throws IOException {
-    // Read the test CSV file
-    try (InputStream inputStream =
-        UploadServiceTest.class
-            .getClassLoader()
-            .getResourceAsStream("test-upload-one-invalid-row.csv")) {
-      final IllegalGraphqlArgumentException e =
-          assertThrows(
-              IllegalGraphqlArgumentException.class,
-              () -> this._service.processPersonCSV(inputStream),
-              "Should fail to parse. Missing facilityId");
+  void testInsertNoCountry() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload-no-country.csv");
 
-      final List<Person> patients =
-          this._ps.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null);
-      assertEquals(0, patients.size());
-    }
+    // WHEN
+    this._service.processPersonCSV(inputStream);
+
+    // THEN
+    assertThat(getPatients()).hasSize(1);
+    assertThat(getPatients().get(0).getLastName()).isEqualTo("Best");
+    assertThat(getPatients().get(0).getAddress()).isEqualTo(address);
   }
 
   @Test
-  void testNotCSV() throws IOException {
-    try (ByteArrayInputStream bis =
-        new ByteArrayInputStream("this is not a CSV".getBytes(StandardCharsets.UTF_8))) {
-      final IllegalGraphqlArgumentException e =
-          assertThrows(
-              IllegalGraphqlArgumentException.class,
-              () -> this._service.processPersonCSV(bis),
-              "Should fail to parse");
-      assertTrue(
-          e.getMessage().contains("Not enough column values:"),
-          "Should have correct error message");
-      assertEquals(
-          0,
-          this._ps.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null).size(),
-          "Should not have any patients");
-    }
+  void testInsertOneBadRow() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload-one-invalid-row.csv");
+
+    // WHEN
+    var error =
+        assertThrows(
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+
+    // THEN
+    assertThat(error.getMessage()).isEqualTo("Error on row 4; [abc] is not a valid date");
+    assertThat(getPatients()).isEmpty();
   }
 
   @Test
-  void testMalformedCSV() throws IOException {
-    try (ByteArrayInputStream bis =
-        new ByteArrayInputStream("patientID\n'123445'\n".getBytes(StandardCharsets.UTF_8))) {
-      final IllegalGraphqlArgumentException e =
-          assertThrows(
-              IllegalGraphqlArgumentException.class,
-              () -> this._service.processPersonCSV(bis),
-              "CSV parsing should fail");
-      assertTrue(
-          e.getMessage().contains("Not enough column values: expected 21, found 1"),
-          "Should have correct error message");
-    }
+  void testNotCSV() {
+    // GIVEN
+    var bis = new ByteArrayInputStream("this is not a CSV".getBytes(StandardCharsets.UTF_8));
+
+    // WHEN
+    var error =
+        assertThrows(IllegalArgumentException.class, () -> this._service.processPersonCSV(bis));
+
+    // THEN
+    assertThat(error.getMessage()).contains("Not enough column values:");
+    assertThat(getPatients()).isEmpty();
   }
 
   @Test
-  void testInvalidPhoneNumber() throws Exception {
-    try (InputStream inputStream =
-        UploadServiceTest.class
-            .getClassLoader()
-            .getResourceAsStream("test-upload-invalid-phone.csv")) {
-      assertThrows(
-          IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
-    }
+  void testMalformedCSV() {
+    // GIVEN
+    var bis = new ByteArrayInputStream("patientID\n'123445'\n".getBytes(StandardCharsets.UTF_8));
+
+    // WHEN
+    var error =
+        assertThrows(IllegalArgumentException.class, () -> this._service.processPersonCSV(bis));
+
+    // THEN
+    assertThat(error.getMessage()).contains("Not enough column values: expected 21, found 1");
   }
 
   @Test
-  void testNoHeader() throws Exception {
-    try (InputStream inputStream =
-        UploadServiceTest.class
-            .getClassLoader()
-            .getResourceAsStream("test-upload-valid-no-header.csv")) {
-      this._service.processPersonCSV(inputStream);
-    }
-    List<Person> patients =
-        this._ps.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null);
-    assertEquals(1, patients.size(), "Should have 1 patient");
+  void testInvalidPhoneNumber() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload-invalid-phone.csv");
+
+    // WHEN
+    var error =
+        assertThrows(
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+
+    // THEN
+    assertThat(error.getMessage())
+        .isEqualTo("Error on row 1; [not a phone number] is not a valid phone number");
+  }
+
+  @Test
+  void testNoHeader() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload-valid-no-header.csv");
+
+    // WHEN
+    this._service.processPersonCSV(inputStream);
+
+    // THEN
+    assertThat(getPatients()).hasSize(1);
+  }
+
+  private InputStream loadCsv(String csvFile) {
+    return UploadServiceTest.class.getClassLoader().getResourceAsStream(csvFile);
+  }
+
+  private List<Person> getPatients() {
+    return this._ps.getPatients(null, PATIENT_PAGE_OFFSET, PATIENT_PAGE_SIZE, false, null);
   }
 }

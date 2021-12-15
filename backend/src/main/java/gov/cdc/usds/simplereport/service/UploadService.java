@@ -45,6 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UploadService {
   private static final String FACILITY_ID = "facilityId";
   private static final int MAX_LINE_LENGTH = 1024 * 6;
+  public static final String ZIP_CODE_REGEX = "^[0-9]{5}(?:-[0-9]{4})?$";
 
   private final PersonService _ps;
   private final AddressValidationService _avs;
@@ -116,13 +117,18 @@ public class UploadService {
         Optional<Facility> facility =
             Optional.ofNullable(facilityId).map(_os::getFacilityInCurrentOrg);
 
+        String zipCode = getRow(row, "ZipCode", true);
+        if (!zipCode.matches(ZIP_CODE_REGEX)) {
+          throw new IllegalGraphqlArgumentException("Invalid zip code");
+        }
+
         StreetAddress address =
             _avs.getValidatedAddress(
                 getRow(row, "Street", true),
                 getRow(row, "Street2", false),
                 getRow(row, "City", false),
                 getRow(row, "State", true),
-                getRow(row, "ZipCode", true),
+                zipCode,
                 null);
 
         var firstName = parseString(getRow(row, "FirstName", true));
@@ -172,8 +178,9 @@ public class UploadService {
             rowElapsed.toMillis(),
             totalElapsed.toMinutes());
       } catch (IllegalGraphqlArgumentException e) {
-        throw new IllegalGraphqlArgumentException(
-            "Error on row " + rowNumber + "; " + e.getMessage());
+        String errorMessage = "Error on row " + rowNumber + "; " + e.getMessage();
+        log.error(errorMessage);
+        throw new IllegalGraphqlArgumentException(errorMessage);
       }
     }
 
