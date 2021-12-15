@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -63,5 +64,29 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
     found = _repo.findById(saved.getInternalId()).get();
     assertNull(found.getDefaultDeviceType());
     assertEquals(1, found.getDeviceTypes().size());
+  }
+
+  @Test
+  void facilityAddDeviceType_backwardCompatibleWithFacilityDeviceSpecimenType() {
+    // GIVEN
+    var facilityDeviceSpecimenType = _dataFactory.getGenericDeviceSpecimen();
+    var org = _dataFactory.createValidOrg();
+    var facility = _dataFactory.createValidFacility(org);
+    facility.getDeviceTypes().forEach(facility::removeDeviceType);
+    assertThat(facility.getDeviceTypes()).hasSize(0);
+
+    // WHEN
+    facility.addDeviceSpecimenType(facilityDeviceSpecimenType);
+    _repo.save(facility);
+
+    // THEN
+    assertThat(facility.getDeviceTypes()).hasSize(1);
+    assertThat(facility.getDeviceTypes()).contains(facilityDeviceSpecimenType.getDeviceType());
+
+    // WHEN
+    facility.addDeviceType(new DeviceType("New Shiny Device", "Nue Inc", "Shiny", "123", null, 15));
+
+    // THEN
+    assertThat(facility.getDeviceTypes()).hasSize(2);
   }
 }

@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -105,18 +106,43 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     return facilityName;
   }
 
-  public DeviceSpecimenType getDefaultDeviceSpecimen() {
-    return defaultDeviceSpecimen;
-  }
-
+  @Deprecated(forRemoval = true)
   public DeviceType getDefaultDeviceType() {
     return this.defaultDeviceSpecimen == null ? null : this.defaultDeviceSpecimen.getDeviceType();
+  }
+
+  public void addDeviceType(DeviceType device) {
+    configuredDeviceTypes.addAll(getDeviceTypes());
+    configuredDeviceTypes.add(device);
   }
 
   public List<DeviceType> getDeviceTypes() {
     // this might be better done on the DB side, but that seems like a recipe for
     // weird behaviors
-    return configuredDeviceTypes.stream().filter(e -> !e.isDeleted()).collect(Collectors.toList());
+    List<DeviceType> facilityDeviceTypes =
+        configuredDeviceTypes.stream().filter(e -> !e.isDeleted()).collect(Collectors.toList());
+
+    if (facilityDeviceTypes.isEmpty()) {
+      Set<DeviceType> deviceTypesFromFacilityDeviceSpecimenTypes =
+          this.configuredDeviceSpecimenTypes.stream()
+              .map(DeviceSpecimenType::getDeviceType)
+              .filter(e -> !e.isDeleted())
+              .collect(Collectors.toSet());
+      if (!deviceTypesFromFacilityDeviceSpecimenTypes.isEmpty()) {
+        facilityDeviceTypes = new ArrayList<>(deviceTypesFromFacilityDeviceSpecimenTypes);
+      }
+    }
+
+    return facilityDeviceTypes;
+  }
+
+  @Deprecated(forRemoval = true)
+  public void addDeviceSpecimenType(DeviceSpecimenType ds) {
+    configuredDeviceSpecimenTypes.add(ds);
+  }
+
+  public DeviceSpecimenType getDefaultDeviceSpecimen() {
+    return defaultDeviceSpecimen;
   }
 
   public void addDefaultDeviceSpecimen(DeviceSpecimenType newDefault) {
@@ -125,10 +151,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     }
 
     defaultDeviceSpecimen = newDefault;
-  }
-
-  public void addDeviceType(DeviceType device) {
-    configuredDeviceTypes.add(device);
   }
 
   public void removeDeviceType(DeviceType existingDevice) {
