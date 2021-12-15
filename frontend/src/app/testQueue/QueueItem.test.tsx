@@ -2,7 +2,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import configureStore, { MockStoreEnhanced } from "redux-mock-store";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import moment from "moment";
 import userEvent from "@testing-library/user-event";
 
@@ -494,6 +494,66 @@ describe("QueueItem", () => {
     expect(timeInput).toBeInTheDocument();
     userEvent.type(dateInput, `${updatedDateString}T00:00`);
     userEvent.type(timeInput, updatedTimeString);
+  });
+
+  it("does not allow future date for test date", async () => {
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <Provider store={store}>
+          <QueueItem
+            internalId={testProps.internalId}
+            patient={testProps.patient}
+            askOnEntry={testProps.askOnEntry}
+            selectedDeviceId={testProps.selectedDeviceId}
+            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+            selectedTestResult={testProps.selectedTestResult}
+            devices={testProps.devices}
+            refetchQueue={testProps.refetchQueue}
+            facilityId={testProps.facilityId}
+            dateTestedProp={testProps.dateTestedProp}
+            patientLinkId={testProps.patientLinkId}
+          />
+        </Provider>
+      </MockedProvider>
+    );
+    const toggle = await screen.findByLabelText("Current date/time");
+    userEvent.click(toggle);
+    const dateInput = screen.getByTestId("test-date");
+    expect(dateInput).toBeInTheDocument();
+    const timeInput = screen.getByTestId("test-time");
+    expect(timeInput).toBeInTheDocument();
+
+    // Select result
+    userEvent.click(
+      screen.getByLabelText("Inconclusive", {
+        exact: false,
+      })
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Input invalid (tomorrow) - can't submit
+    userEvent.type(dateInput, moment().add(5, "days").format("YYYY-MM-DD"));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await waitFor(async () =>
+      expect(await screen.findByText("Submit")).toBeDisabled()
+    );
+
+    // Input valid (current or past date) - can submit
+    userEvent.type(dateInput, moment().format("YYYY-MM-DD"));
+    userEvent.type(timeInput, updatedTimeString);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await waitFor(async () =>
+      expect(await screen.findByText("Submit")).toBeEnabled()
+    );
+
+    // TODO: this test shouldn't be passing but it is. The date field on the test card
+    // is super weird... gonna take a little more thought
+    fail();
   });
 
   it("displays person's mobile phone numbers", async () => {

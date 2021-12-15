@@ -457,6 +457,10 @@ const QueueItem = ({
 
   const onDateTestedChange = (date: moment.Moment) => {
     const newDateTested = date.toISOString();
+    console.log("====================================");
+    console.log("newDateTested");
+    console.log(newDateTested);
+    console.log("====================================");
     const isValidDate = isValidCustomDateTested(newDateTested);
 
     // the date string returned from the server is only precise to seconds; moment's
@@ -468,6 +472,10 @@ const QueueItem = ({
     }
 
     if (isValidDate) {
+      console.log("====================================");
+      console.log("isValidDate");
+      console.log(isValidDate);
+      console.log("====================================");
       /* the custom date input field manages its own state in the DOM, not in the react state
       The reason for this is an invalid custom date would update react. Updating another field in the queue item, like the test result, would attempt to submit the invalid date to the backend
       Instead, we are only going to update react if there is a *valid* date.
@@ -711,7 +719,7 @@ const QueueItem = ({
                         name="test-date"
                         type="date"
                         min={formatDate(new Date("Jan 1, 2020"))}
-                        max={formatDate(moment().add(1, "days").toDate())}
+                        max={formatDate(moment().toDate())}
                         defaultValue={formatDate(selectedDate.toDate())}
                         onChange={(event) => {
                           const date = event.target.value;
