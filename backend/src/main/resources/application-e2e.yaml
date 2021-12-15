@@ -1,6 +1,6 @@
 spring:
   profiles:
-    include: server-debug, create-sample-devices, local
+    include: server-debug, create-sample-devices
   liquibase:
     user: simple_report_migrations
     password: migrations456
@@ -17,7 +17,7 @@ server:
         domain: localhost.simplereport.gov
 okta:
   client:
-    org-url: http://localhost:8088
+    org-url: ${WIREMOCK_URL:http://localhost:8088}
     token: foo
   oauth2:
     client-id: 0oa1k0163nAwfVxNW1d7

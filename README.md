@@ -277,6 +277,8 @@ To edit React settings, create `frontend/.env.local` (also git ignored).
 
 E2E/Integration tests are available using [Cypress](https://www.cypress.io/).
 
+To run them the easy way, simply run `yarn e2e`. This will spin up the app with all the necessary configuration in a docker compose network and run the tests headlessly in firefox. Screenshots and videos from the test will be saved to `frontend/cypress/screenshots` and `frontend/cypress/videos`.
+
 In order to run the tests locally, some modifications will need to be made to your local environment. Spring session requires the frontend and backend to be hosted on the same domain in order to properly authenticate.
 
 First, the tests run best on a clean database, so empty out your database prior to running.
@@ -284,8 +286,9 @@ First, the tests run best on a clean database, so empty out your database prior 
 Next, before starting up the app, you'll need to start Wiremock:
 
 ```
-./frontend/cypress/support/wiremock/download-wiremock.sh
-./frontend/cypress/support/wiremock/start-wiremock.sh orgSignUp
+cd frontend
+./cypress/support/wiremock/download-wiremock.sh
+./cypress/support/wiremock/start-wiremock.sh orgSignUp
 ```
 
 The following settings are needed for the frontend:
@@ -295,11 +298,12 @@ The following settings are needed for the frontend:
 REACT_APP_BASE_URL=http://localhost.simplereport.gov
 REACT_APP_BACKEND_URL=http://localhost.simplereport.gov/api
 REACT_APP_OKTA_ENABLED=true
+REACT_APP_OKTA_URL=http://localhost:8088
 ```
 
 You will need to run the backend with the `e2e` profile, and with the following environment variable:
 ```bash
-OKTA_TESTING_DISABLEHTTPSCHECK=true ./gradlew bootRun --args='--spring.profiles.active=e2e
+OKTA_TESTING_DISABLEHTTPSCHECK=true ./gradlew bootRun --args='--spring.profiles.active=e2e'
 ```
 
 Or, if you are running with the `start.sh` script:  
@@ -326,7 +330,7 @@ Finally, you'll need to run a reverse proxy like nginx to point port 80 at your 
 
 
 ```bash
-docker build -t nginx -f .frontend/cypress/support/nginx/Dockerfile.nginx . && docker run -d -p 80:80 nginx:latest
+docker build -t nginx -f .frontend/cypress/support/nginx/Dockerfile.nginx.docker . && docker run -d -p 80:80 nginx:latest
 ```
 
 If you are running nginx locally already, you can use the config located at `frontend/cypress/support/nginx/localhost.simplereport.gov`. 
@@ -339,9 +343,9 @@ Once all of that is done, you are are ready for a test run! There are a few ways
 - `yarn cypress run --browser firefox`
   - this will run all the tests headlessly on the commandline using firefox
 - `yarn cypress run --browser chrome --headed`
-  - this will run all the tests headed using chrome
-- `yarn e2e`
-  - this will run the `e2e.sh` script, which waits for the frontend and backend to become responsive before starting a headless firefox test run
+  - this will run all the tests headed using chrome  
+  
+To write new tests, see the [Cypress documentation](https://docs.cypress.io/api/table-of-contents). If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
 
 ### SchemaSpy
 

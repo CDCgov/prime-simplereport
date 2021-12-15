@@ -1,18 +1,19 @@
 #!/bin/bash
-# printf 'Starting nginx docker container'
-# docker build -t nginx -f ./cypress/support/nginx/Dockerfile.nginx . && docker run -d -p 80:80 nginx:latest
+echo "Starting Wiremock for app bootup..."
+./cypress/support/wiremock/download-wiremock.sh > /dev/null 2>&1
+./cypress/support/wiremock/start-wiremock.sh orgSignUp > /dev/null 2>&1 &
 
-printf 'Waiting for backend to start...'
-curl -k http://localhost.simplereport.gov/api/health > /dev/null 2>&1
-result=$?
+echo "Waiting for app bootup..."
+sleep 30
+
+echo 'Waiting for backend to start...'
+http_response=$(curl -skL -w "%{http_code}" http://localhost.simplereport.gov/api/health)
 
 polls=0
-while [[ $result -ne 0 && $polls -lt 180 ]]; do
+while [[ $http_response != "200" && $polls -lt 180 ]]; do
   ((polls++))
-  printf .
   sleep 1
-  curl -k http://localhost.simplereport.gov/api/health > /dev/null 2>&1
-  result=$?
+  http_response=$(curl -skL -w "%{http_code}" http://localhost.simplereport.gov/api/health)
 done
 echo
 
@@ -21,24 +22,24 @@ if [[ $result -ne 0 ]]; then
   exit 1
 fi
 
-printf 'Waiting for frontend to start...'
-curl -k http://localhost.simplereport.gov > /dev/null 2>&1
-result=$?
+echo 'Backend started!'
+echo 'Waiting for frontend to start...'
+result=$(curl -skL http://localhost.simplereport.gov/health/ping | grep -c '<title>SimpleReport</title>')
 
 polls=0
-while [[ $result -ne 0 && $polls -lt 180 ]]; do
+while [[ $result -ne 1 && $polls -lt 180 ]]; do
   ((polls++))
-  printf .
   sleep 1
-  curl -k http://localhost.simplereport.gov > /dev/null 2>&1
-  result=$?
+  result=$(curl -skL http://localhost.simplereport.gov/health/ping | grep -c '<title>SimpleReport</title>')
 done
 echo
 
-if [[ $result -ne 0 ]]; then
+if [[ $result -ne 1 ]]; then
   echo 'Frontend never started. Exiting...'
   exit 1
 fi
+
+echo 'Frontend started!'
 
 echo 'App is online! Starting Cypress...'
 
