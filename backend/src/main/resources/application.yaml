@@ -32,7 +32,7 @@ spring:
         initialize-schema: never
         table-name: ${spring.jpa.properties.hibernate.default_schema}.spring_session
 management:
-  health.probes.enabled: true
+  endpoint.health.probes.enabled: true
 graphql:
   servlet:
     mapping: /graphql

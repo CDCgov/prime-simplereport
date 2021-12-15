@@ -37,7 +37,7 @@ import org.springframework.stereotype.Service;
 public class DemoOktaRepository implements OktaRepository {
 
   private final OrganizationExtractor organizationExtractor;
-  private CurrentTenantDataAccessContextHolder tenantDataContextHolder;
+  private final CurrentTenantDataAccessContextHolder tenantDataContextHolder;
 
   Map<String, OrganizationRoleClaims> usernameOrgRolesMap;
   Map<String, Set<String>> orgUsernamesMap;
@@ -45,7 +45,7 @@ public class DemoOktaRepository implements OktaRepository {
   Set<String> inactiveUsernames;
   Set<String> allUsernames;
 
-  public DemoOktaRepository(OrganizationExtractor extractor) {
+  public DemoOktaRepository(OrganizationExtractor extractor, CurrentTenantDataAccessContextHolder contextHolder) {
     this.usernameOrgRolesMap = new HashMap<>();
     this.orgUsernamesMap = new HashMap<>();
     this.orgFacilitiesMap = new HashMap<>();
@@ -53,7 +53,7 @@ public class DemoOktaRepository implements OktaRepository {
     this.allUsernames = new HashSet<>();
 
     this.organizationExtractor = extractor;
-    this.tenantDataContextHolder = new CurrentTenantDataAccessContextHolder();
+    this.tenantDataContextHolder = contextHolder; //new CurrentTenantDataAccessContextHolder();
 
     log.info("Done initializing Demo Okta repository.");
   }
