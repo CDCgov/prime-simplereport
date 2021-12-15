@@ -29,6 +29,7 @@ https://simplereport.gov/
     - [Frontend-Setup](#frontend-setup)
     - [Linters](#linters)
     - [Storybook and Chromatic](#storybook-and-chromatic)
+  - [PR Conventions](#pr-conventions)
   - [Cloud Environments](#cloud-environments)
   - [Deploy](#deploy)
     - [Revert to a Previous Release](#revert-to-a-previous-release)
@@ -365,6 +366,15 @@ Changes to the Storybook are sent to Chromatic when changes to the frontend sour
 any branch. The changes are automatically accepted on merge to `main`.
 
 View the [SimpleReport Storybook](https://main--60a556a7c807cc0039ec6786.chromatic.com/)
+
+## PR Conventions
+The convention for branch naming on this project is {firstName}/{ticketNumber}-{short-description}. This makes it easier for other developers to find your changes.
+
+If you're merging large or complex changes, it is strongly recommended that you smoke test them in `dev`, `test`, or `pentest`. These three environments are roughly the same, with small configuration changes between each (`test` sends text results for pxp while `dev` and `pentest` do not, for example.)
+
+For all changes, please ensure the PR checklist is completed before sending out for review. If you're making UI changes, make sure to screenshot and get approval from a designer or product manager, in addition to engineers.
+
+We require two reviewers per changeset, and you cannot merge until all commits have been reviewed.
 
 ## Cloud Environments
 
