@@ -6,7 +6,7 @@ services:
       dockerfile: ./cypress/Dockerfile.e2e
     container_name: cypress
     env_file:
-      - ../.env.local
+      - ./.env.e2e
     volumes:
       - ../:/app
     expose:
@@ -34,12 +34,12 @@ services:
     container_name: api
     command: bootRun
     env_file:
-      - ../../.env
+      - ./.env.e2e
     environment:
       SPRING_PROFILES_ACTIVE: e2e,db-dockerized
       SPRING_LIQUIBASE_ENABLED: "true"
       WIREMOCK_URL: http://cypress:8088
-      OKTA_TESTING_DISABLEHTTPSCHECK: true
+      OKTA_TESTING_DISABLEHTTPSCHECK: "true"
     depends_on:
       - db
       - cypress
@@ -56,7 +56,7 @@ services:
     environment:
       REACT_APP_BASE_URL: http://localhost.simplereport.gov
       REACT_APP_BACKEND_URL: http://localhost.simplereport.gov/api
-      REACT_APP_OKTA_ENABLED: true
+      REACT_APP_OKTA_ENABLED: "true"
       REACT_APP_OKTA_URL: http://cypress:8088
     volumes:
       - ../:/frontend/
