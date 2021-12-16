@@ -1,3 +1,5 @@
+const dayjs = require("dayjs");
+
 describe("Getting a test result from a patient link", () => {
   let patientLink, patientDOB;
   before("retrieve the patient link and dob", () => {
@@ -19,7 +21,14 @@ describe("Getting a test result from a patient link", () => {
     );
   });
   it("enters the date of birth and submits", () => {
-    cy.get('input[name="birthDate"]').type(patientDOB);
+    const dob = dayjs(patientDOB, "MM/DD/YYYY");
+    // Month is zero-indexed, so add 1
+    const birthMonth = dob.month() + 1;
+    const birthDay = dob.date();
+    const birthYear = dob.year();
+    cy.get('input[name="birthMonth"]').type(birthMonth);
+    cy.get('input[name="birthDay"]').type(birthDay);
+    cy.get('input[name="birthYear"]').type(birthYear);
     cy.get("#dob-submit-button").click();
   });
   it("shows the test result", () => {
