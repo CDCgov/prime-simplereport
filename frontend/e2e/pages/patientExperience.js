@@ -8,15 +8,19 @@ function acceptTos() {
   return this;
 }
 
-function verifyBirthDate(birthDate) {
+function verifyBirthDate(birthMonth, birthDay, birthYear) {
   this.expect.section("@app").to.be.visible;
   this.expect
     .section("@app")
     .to.contain.text(
       "Enter your date of birth to access your COVID-19 testing portal."
     );
-  this.section.app.expect.element("@dobInput").to.be.visible;
-  this.section.app.setValue("@dobInput", birthDate);
+  this.section.app.expect.element("@monthInput").to.be.visible;
+  this.section.app.setValue("@monthInput", birthMonth.toString());
+  this.section.app.expect.element("@dayInput").to.be.visible;
+  this.section.app.setValue("@dayInput", birthDay.toString());
+  this.section.app.expect.element("@yearInput").to.be.visible;
+  this.section.app.setValue("@yearInput", birthYear.toString());
   this.section.app.click("@dobSubmitButton");
   this.expect.section("@app").to.be.visible;
   return this;
@@ -44,7 +48,9 @@ module.exports = {
       selector: ".App",
       elements: {
         tosConsentButton: "#tos-consent-button",
-        dobInput: 'input[name="birthDate"]',
+        monthInput: "input[name=birthMonth]",
+        dayInput: "input[name=birthDay]",
+        yearInput: "input[name=birthYear]",
         dobSubmitButton: "#dob-submit-button",
       },
     },
