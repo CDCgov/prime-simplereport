@@ -52,12 +52,11 @@ export const SelfRegistrationForm = ({
 
   useEffect(() => {
     async function checkForDuplicates(data: IdentifyingData) {
-      const { firstName, lastName } = data;
       const birthDate = moment(data.birthDate).format("YYYY-MM-DD") as ISODate;
       try {
         const isDuplicate = await PxpApi.checkDuplicateRegistrant({
-          firstName,
-          lastName,
+          firstName: data.firstName,
+          lastName: data.lastName,
           birthDate,
           registrationLink,
         });
