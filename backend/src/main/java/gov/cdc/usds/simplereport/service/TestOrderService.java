@@ -345,9 +345,7 @@ public class TestOrderService {
     PatientAnswers answers = new PatientAnswers(survey);
     _parepo.save(answers);
     newOrder.setAskOnEntrySurvey(answers);
-    TestOrder savedOrder = _repo.save(newOrder);
-    _pls.createPatientLink(savedOrder.getInternalId());
-    return savedOrder;
+    return _repo.save(newOrder);
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForPatient

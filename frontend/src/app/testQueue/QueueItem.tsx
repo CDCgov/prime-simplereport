@@ -10,19 +10,17 @@ import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
 import classnames from "classnames";
 import moment from "moment";
-import { DatePicker, Label } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import Dropdown from "../commonComponents/Dropdown";
-import LabeledText from "../commonComponents/LabeledText";
-import TextInput from "../commonComponents/TextInput";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import { displayFullName, showNotification } from "../utils";
-import Checkboxes from "../commonComponents/Checkboxes";
 import { RootState } from "../store";
 import { getAppInsights } from "../TelemetryService";
+import { formatDate } from "../utils/date";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
@@ -205,9 +203,12 @@ const QueueItem = ({
   selectedTestResult,
   refetchQueue,
   facilityName,
+  facilityId,
   dateTestedProp,
 }: QueueItemProps) => {
   const appInsights = getAppInsights();
+  const history = useHistory();
+
   const trackRemovePatientFromQueue = () => {
     if (appInsights) {
       appInsights.trackEvent({ name: "Remove Patient From Queue" });
@@ -609,52 +610,6 @@ const QueueItem = ({
 
   const selectedDate = dateTested ? moment(dateTested) : moment();
 
-  const testDateFields =
-    useCurrentDateTime === "false" ? (
-      <>
-        <div className="prime-li tablet:grid-col-4 tablet:padding-left-1">
-          <div className="usa-form-group">
-            <Label htmlFor="test-date">Test date</Label>
-            <span className="usa-hint">mm/dd/yyyy</span>
-            <DatePicker
-              id="test-date"
-              name="test-date"
-              defaultValue={selectedDate.format(
-                moment.HTML5_FMT.DATETIME_LOCAL
-              )}
-              minDate="2020-01-01T00:00"
-              maxDate={moment().add(1, "days").format("YYYY-MM-DDThh:mm")} // TODO: is this a reasonable max?
-              onChange={(date) => {
-                if (date) {
-                  const newDate = moment(date)
-                    .hour(selectedDate.hours())
-                    .minute(selectedDate.minutes());
-                  onDateTestedChange(newDate);
-                }
-              }}
-            />
-          </div>
-        </div>
-        <div className="prime-li tablet:grid padding-right-1 tablet:padding-left-05">
-          <TextInput
-            label={"Test time"}
-            name={"test-time"}
-            hintText="hh:mm"
-            type="time"
-            step="60"
-            value={selectedDate.format("HH:mm")}
-            onChange={(e) => {
-              const [hours, minutes] = e.target.value.split(":");
-              const newDate = moment(selectedDate)
-                .hours(parseInt(hours))
-                .minutes(parseInt(minutes));
-              onDateTestedChange(newDate);
-            }}
-          />
-        </div>
-      </>
-    ) : null;
-
   const timer = useTestTimer(internalId, deviceTestLength);
 
   function cardColorDisplay() {
@@ -701,28 +656,36 @@ const QueueItem = ({
                 className="grid-row prime-test-name usa-card__header"
                 id="patient-name-header"
               >
-                <h2>{patientFullName}</h2>
+                <div className="card-header">
+                  <div
+                    className="card-name"
+                    onClick={() => {
+                      history.push({
+                        pathname: `/patient/${patient.internalId}`,
+                        search: `?facility=${facilityId}`,
+                      });
+                    }}
+                  >
+                    {patientFullName}
+                  </div>
+                  <div className="card-dob">
+                    Date of birth:
+                    <span className="card-date">
+                      {" "}
+                      {moment(patient.birthDate).format("MM/DD/yyyy")}
+                    </span>
+                  </div>
+                </div>
                 <TestTimerWidget timer={timer} context={timerContext} />
               </div>
               <div className="margin-top-2 margin-left-2 margin-bottom-2">
-                <div className="queue-item__description prime-ul grid-row grid-gap">
-                  <li className="prime-li tablet:grid-col-3">
-                    <LabeledText
-                      text={patient.telephone}
-                      label="Phone number"
-                    />
-                  </li>
-                  <li className="prime-li tablet:grid-col-3">
-                    <LabeledText
-                      text={moment(patient.birthDate).format("MM/DD/yyyy")}
-                      label="Date of birth"
-                    />
-                  </li>
-                  <li className="prime-li tablet:grid-col-3">
+                <div className="grid-row">
+                  <div className="grid-col-4 flex-col-container padding-right-2">
                     <Button
                       variant="unstyled"
                       label="Test questionnaire"
                       onClick={openAoeModal}
+                      className="test-questionnaire-btn"
                     />
                     {isAoeModalOpen && (
                       <AoEModalForm
@@ -732,10 +695,71 @@ const QueueItem = ({
                         saveCallback={saveAoeCallback}
                       />
                     )}
-                    <p>
+                    <div className="margin-bottom-1">
                       <AskOnEntryTag aoeAnswers={aoeAnswers} />
-                    </p>
-                  </li>
+                    </div>
+                  </div>
+
+                  <div className="flex-col-container">
+                    <div>Test date and time</div>
+                    <div className="test-date-time-container">
+                      <input
+                        hidden={useCurrentDateTime !== "false"}
+                        className="card-test-input"
+                        id="test-date"
+                        data-testid="test-date"
+                        name="test-date"
+                        type="date"
+                        min={formatDate(new Date("Jan 1, 2020"))}
+                        max={formatDate(moment().add(1, "days").toDate())}
+                        defaultValue={formatDate(selectedDate.toDate())}
+                        onChange={(event) => {
+                          const date = event.target.value;
+                          if (date) {
+                            const newDate = moment(date)
+                              .hour(selectedDate.hours())
+                              .minute(selectedDate.minutes());
+                            onDateTestedChange(newDate);
+                          }
+                        }}
+                      />
+                      <input
+                        hidden={useCurrentDateTime !== "false"}
+                        className="card-test-input"
+                        name={"test-time"}
+                        data-testid="test-time"
+                        type="time"
+                        step="60"
+                        value={selectedDate.format("HH:mm")}
+                        onChange={(e) => {
+                          const [hours, minutes] = e.target.value.split(":");
+                          const newDate = moment(selectedDate)
+                            .hours(parseInt(hours))
+                            .minutes(parseInt(minutes));
+                          onDateTestedChange(newDate);
+                        }}
+                      />
+
+                      <div className="check-box-container">
+                        <div className="usa-checkbox">
+                          <input
+                            id={`current-date-check-${patient.internalId}`}
+                            className="usa-checkbox__input margin"
+                            value={useCurrentDateTime}
+                            checked={useCurrentDateTime === "true"}
+                            type="checkbox"
+                            onChange={onUseCurrentDateChange}
+                          />
+                          <label
+                            className="usa-checkbox__label margin-0 margin-right-05em"
+                            htmlFor={`current-date-check-${patient.internalId}`}
+                          >
+                            Current date/time
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div
                   className={classnames(
@@ -743,7 +767,7 @@ const QueueItem = ({
                     useCurrentDateTime === "false" && "queue-item__form--open"
                   )}
                 >
-                  <div className="prime-li flex-align-self-end tablet:grid-col-3 padding-right-1">
+                  <div className="prime-li flex-align-self-end tablet:grid-col-4 padding-right-2">
                     <Dropdown
                       options={Array.from(deviceLookup.keys())
                         .sort(alphabetizeByName)
@@ -755,9 +779,10 @@ const QueueItem = ({
                       name="testDevice"
                       selectedValue={deviceId}
                       onChange={onDeviceChange}
+                      className="card-dropdown"
                     />
                   </div>
-                  <div className="prime-li flex-align-self-end tablet:grid-col-3 padding-left-1">
+                  <div className="prime-li flex-align-self-end tablet:grid-col-5 padding-right-2">
                     <Dropdown
                       options={(deviceLookup.get(
                         deviceTypes[deviceId]
@@ -771,28 +796,7 @@ const QueueItem = ({
                       name="swabType"
                       selectedValue={specimenId}
                       onChange={onSpecimenChange}
-                    />
-                  </div>
-                  {testDateFields}
-                  <div className="prime-li tablet:grid-col tablet:padding-left-2">
-                    <Checkboxes
-                      boxes={[
-                        {
-                          value: useCurrentDateTime,
-                          label: "Use current date",
-                          checked: useCurrentDateTime === "true",
-                        },
-                      ]}
-                      className={
-                        useCurrentDateTime === "false"
-                          ? "testdate-checkbox"
-                          : ""
-                      }
-                      legend={
-                        useCurrentDateTime === "true" ? "Test date" : null
-                      }
-                      name="currentDateTime"
-                      onChange={onUseCurrentDateChange}
+                      className="card-dropdown"
                     />
                   </div>
                 </div>

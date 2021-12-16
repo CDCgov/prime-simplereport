@@ -26,6 +26,10 @@ dependencies {
     // core infrastructure
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    // log4j vulnerability fixes (Dec 2021)
+    implementation 'org.apache.logging.log4j:log4j-api:2.16.0'
+    implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.16.0'
+
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'

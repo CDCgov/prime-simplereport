@@ -382,4 +382,16 @@ public class OrganizationService {
         providerTelephone,
         providerNPI);
   }
+
+  @Transactional(readOnly = false)
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public Facility markFacilityAsDeleted(UUID facilityId, boolean deleted) {
+    Optional<Facility> optionalFacility = _facilityRepo.findById(facilityId);
+    if (optionalFacility.isEmpty()) {
+      throw new IllegalGraphqlArgumentException("Facility not found.");
+    }
+    Facility facility = optionalFacility.get();
+    facility.setIsDeleted(deleted);
+    return _facilityRepo.save(facility);
+  }
 }

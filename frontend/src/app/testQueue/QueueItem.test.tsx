@@ -15,6 +15,13 @@ jest.mock("../TelemetryService", () => ({
   getAppInsights: jest.fn(),
 }));
 
+const mockPush = jest.fn();
+jest.mock("react-router-dom", () => ({
+  useHistory: () => ({
+    push: mockPush,
+  }),
+}));
+
 const initialDateString = "2021-02-14";
 const updatedDateString = "2021-03-10";
 const updatedTimeString = "10:05";
@@ -66,12 +73,45 @@ describe("QueueItem", () => {
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
             patientLinkId={testProps.patientLinkId}
-          ></QueueItem>
+          />
         </Provider>
       </MockedProvider>
     );
     expect(screen.getByText("Potter, Harry James")).toBeInTheDocument();
     expect(screen.getByTestId("timer")).toHaveTextContent("10:00");
+  });
+
+  it("navigates to edit the user when clicking their name", () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <Provider store={store}>
+          <QueueItem
+            internalId={testProps.internalId}
+            patient={testProps.patient}
+            askOnEntry={testProps.askOnEntry}
+            selectedDeviceId={testProps.selectedDeviceId}
+            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+            selectedTestResult={testProps.selectedTestResult}
+            devices={testProps.devices}
+            refetchQueue={testProps.refetchQueue}
+            facilityId={testProps.facilityId}
+            dateTestedProp={testProps.dateTestedProp}
+            patientLinkId={testProps.patientLinkId}
+          />
+        </Provider>
+      </MockedProvider>
+    );
+    const patientName = screen.getByText("Potter, Harry James");
+    expect(patientName).toBeInTheDocument();
+    userEvent.click(patientName);
+    expect(mockPush).toHaveBeenCalledWith({
+      pathname: "/patient/f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554",
+      search: "?facility=Hogwarts+123",
+    });
   });
 
   it("updates the timer when a device is changed", async () => {
@@ -94,7 +134,7 @@ describe("QueueItem", () => {
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
             patientLinkId={testProps.patientLinkId}
-          ></QueueItem>
+          />
         </Provider>
       </MockedProvider>
     );
@@ -124,7 +164,7 @@ describe("QueueItem", () => {
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
             patientLinkId={testProps.patientLinkId}
-          ></QueueItem>
+          />
         </Provider>
       </MockedProvider>
     );
@@ -162,7 +202,7 @@ describe("QueueItem", () => {
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
             patientLinkId={testProps.patientLinkId}
-          ></QueueItem>
+          />
         </Provider>
       </MockedProvider>
     );
@@ -244,7 +284,7 @@ describe("QueueItem", () => {
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
               patientLinkId={testProps.patientLinkId}
-            ></QueueItem>
+            />
           </Provider>
         </MockedProvider>
         <ToastContainer
@@ -357,7 +397,7 @@ describe("QueueItem", () => {
                 facilityId={testProps.facilityId}
                 dateTestedProp={testProps.dateTestedProp}
                 patientLinkId={testProps.patientLinkId}
-              ></QueueItem>
+              />
             </Provider>
           </MockedProvider>
           <ToastContainer
@@ -442,15 +482,15 @@ describe("QueueItem", () => {
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
             patientLinkId={testProps.patientLinkId}
-          ></QueueItem>
+          />
         </Provider>
       </MockedProvider>
     );
-    const toggle = await screen.findByLabelText("Use current date");
+    const toggle = await screen.findByLabelText("Current date/time");
     userEvent.click(toggle);
-    const dateInput = screen.getByLabelText("Test date");
+    const dateInput = screen.getByTestId("test-date");
     expect(dateInput).toBeInTheDocument();
-    const timeInput = screen.getByLabelText("Test time");
+    const timeInput = screen.getByTestId("test-time");
     expect(timeInput).toBeInTheDocument();
     userEvent.type(dateInput, `${updatedDateString}T00:00`);
     userEvent.type(timeInput, updatedTimeString);
@@ -476,7 +516,7 @@ describe("QueueItem", () => {
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
             patientLinkId={testProps.patientLinkId}
-          ></QueueItem>
+          />
         </Provider>
       </MockedProvider>
     );
@@ -515,7 +555,7 @@ describe("QueueItem", () => {
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
               patientLinkId={testProps.patientLinkId}
-            ></QueueItem>
+            />
           </Provider>
         </MockedProvider>
       );
@@ -610,7 +650,7 @@ const testProps = {
   selectedTestResult: {},
   dateTestedProp: "",
   refetchQueue: {},
-  facilityId: "Hogwarts",
+  facilityId: "Hogwarts+123",
   patientLinkId: "",
   deviceSpecimenTypes: [
     {

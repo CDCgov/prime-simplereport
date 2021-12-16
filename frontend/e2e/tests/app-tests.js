@@ -1,4 +1,4 @@
-let patientName, birthDate;
+let patientName, birthMonth, birthDay, birthYear;
 
 const getDobFormat = (browser) => {
   /* NOTE: DOB format is currently browser specific
@@ -12,10 +12,12 @@ const getDobFormat = (browser) => {
 
 module.exports = {
   "1. Add a patient": (browser) => {
-    ({ patientName, birthDate } = browser.page
-      .patients()
-      .navigate()
-      .addPatient(getDobFormat(browser)));
+    ({
+      patientName,
+      birthMonth,
+      birthDay,
+      birthYear,
+    } = browser.page.patients().navigate().addPatient(getDobFormat(browser)));
 
     console.info(`Adding patient ${patientName}...`);
   },
@@ -37,7 +39,7 @@ module.exports = {
         .patientExperience()
         .navigate(patientLink)
         .acceptTos()
-        .verifyBirthDate(birthDate)
+        .verifyBirthDate(birthMonth, birthDay, birthYear)
         .viewTestResult();
     });
   },

@@ -1,3 +1,88 @@
-.testdate-checkbox {
-  position: relative;
+.prime-card-container {
+  .card-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    .card-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: #005ea2;
+      cursor: pointer;
+    }
+
+    .card-dob {
+      margin-left: 24px;
+      font-size: 16px;
+      font-weight: 400;
+      color: #71767a;
+
+      .card-date {
+        font-weight: 700;
+      }
+    }
+  }
+
+  .card-test-input {
+    height: 34px;
+    margin-right: 12px;
+    max-width: 130px;
+    animation: 0.25s fadeIn;
+    animation-fill-mode: both;
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        visibility: visible;
+        opacity: 1;
+      }
+    }
+  }
+
+  .card-dropdown {
+    select {
+      height: 34px;
+      padding-top: 4px;
+      padding-bottom: 4px;
+    }
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    margin-left: 0;
+  }
+
+  .check-box-container {
+    display: flex;
+    align-items: center;
+    height: 34px;
+  }
+
+  .test-questionnaire-btn {
+    font-weight: 700 !important;
+    margin-bottom: 1em;
+  }
+
+  .flex-col-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .test-date-time-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+}
+
+.symptom-onset-date {
+  height: 40px;
+  width: 200px;
+  margin-top: 8px;
 }

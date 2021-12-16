@@ -9,7 +9,10 @@ function addPatient(dobFormat) {
   const fullName = `${lastName}, ${firstName}`;
   const dob = dayjs(faker.date.between("1920-01-01", "2002-12-31"));
   const dobForInput = dob.format(dobFormat);
-  const dobForPatientLink = dob.format("MM/DD/YYYY");
+  // js months are 0-offset
+  const monthForPatientLink = dob.month() + 1;
+  const dayForPatientLink = dob.date();
+  const yearForPatientLink = dob.year();
   const phone = "(800) 232-4636";
   const address = "736 Jackson PI NW";
   const state = "DC";
@@ -49,7 +52,12 @@ function addPatient(dobFormat) {
   this.expect.section("@patientList").to.be.visible;
   this.expect.section("@patientList").to.contain.text(fullName);
 
-  return { patientName: fullName, birthDate: dobForPatientLink };
+  return {
+    patientName: fullName,
+    birthMonth: monthForPatientLink,
+    birthDay: dayForPatientLink,
+    birthYear: yearForPatientLink,
+  };
 }
 
 module.exports = {
