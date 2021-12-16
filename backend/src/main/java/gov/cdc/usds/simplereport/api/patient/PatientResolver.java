@@ -47,7 +47,7 @@ public class PatientResolver implements GraphQLQueryResolver {
     return _ps.isDuplicatePatient(firstName, lastName, birthDate, org, facility);
   }
 
-  public boolean patientExistsNew(
+  public boolean patientExistsWithoutZip(
       String firstName, String lastName, LocalDate birthDate, UUID facilityId) {
     Organization org = _os.getCurrentOrganization();
     Optional<Facility> facility =

@@ -58,7 +58,7 @@ export const PATIENT_EXISTS = gql`
     $birthDate: LocalDate!
     $facilityId: ID
   ) {
-    patientExistsNew(
+    patientExistsWithoutZip(
       firstName: $firstName
       lastName: $lastName
       birthDate: $birthDate
@@ -300,7 +300,8 @@ const AddPatient = () => {
       <div className={"grid-container margin-bottom-4"}>
         <DuplicatePatientModal
           showModal={
-            patientExistsResponse?.patientExistsNew && preventModal === false
+            patientExistsResponse?.patientExistsWithoutZip &&
+            preventModal === false
           }
           onDuplicate={() => setRedirect(personPath)}
           entityName={

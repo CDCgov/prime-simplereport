@@ -318,7 +318,7 @@ type Query {
     zipCode: String!
     facilityId: ID
   ): Boolean
-  patientExistsNew(
+  patientExistsWithoutZip(
     firstName: String!
     lastName: String!
     birthDate: LocalDate!
