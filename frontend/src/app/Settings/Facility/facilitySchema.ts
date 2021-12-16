@@ -27,6 +27,17 @@ function orderingProviderIsRequired(
   return true;
 }
 
+function isValidNpi(
+  this: yup.TestContext<Record<string, any>>,
+  input = ""
+): boolean {
+  if (this?.options?.context?.orderingProviderIsRequired) {
+    let npiValidator = /^\d{1,10}$/;
+    return npiValidator.test(input);
+  }
+  return true;
+}
+
 type RequiredProviderFields = Nullable<Partial<Provider>>;
 
 const orderingProviderFormatError = (field: string) =>
@@ -54,7 +65,7 @@ const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
     .test(
       "ordering-provider-npi",
       orderingProviderFormatError("NPI"),
-      orderingProviderIsRequired
+      isValidNpi
     ),
   phone: yup
     .string()
