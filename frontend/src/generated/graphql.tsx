@@ -1720,6 +1720,7 @@ export type GetFacilityQueueQuery = {
           testResultDelivery?: Maybe<TestResultDeliveryPreference>;
           preferredLanguage?: Maybe<string>;
           email?: Maybe<string>;
+          emails?: Maybe<Array<Maybe<string>>>;
           phoneNumbers?: Maybe<
             Array<
               Maybe<{
@@ -4892,6 +4893,7 @@ export const GetFacilityQueueDocument = gql`
         testResultDelivery
         preferredLanguage
         email
+        emails
         phoneNumbers {
           type
           number
