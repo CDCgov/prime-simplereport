@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -25,20 +26,15 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Live (with Okta integration) request-level security configuration. Not to be confused with {@link
- * AuthorizationConfiguration}, which is not environment-specific and handles method-level or
- * object-level security.
+ * Live (with Okta integration) request-level security configuration, but skips audit logging for
+ * creating sample devices (we can get rid of this and just use SecurityConfiguration when we are no
+ * longer auditing).
  */
 @Configuration
-@Profile(
-    "!"
-        + BeanProfiles.NO_SECURITY // Activate the "no-security" profile to disable security
-        + " & !"
-        + BeanProfiles.CREATE_SAMPLE_DEVICES) // If we're creating sample devices,
-// OktaLocalSecurityConfiguration is used instead
+@Profile("!" + BeanProfiles.NO_SECURITY + " & " + BeanProfiles.CREATE_SAMPLE_DEVICES)
 @ConditionalOnWebApplication
 @Slf4j
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter
+public class OktaLocalSecurityConfiguration extends WebSecurityConfigurerAdapter
     implements WebMvcConfigurer {
 
   @Autowired CorsProperties _corsProperties;
@@ -115,7 +111,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
   @Bean
   public IdentitySupplier getRealIdentity() {
     return () -> {
-      Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+      if (auth == null) {
+        return new IdentityAttributes("devicesetup@simplereport.gov", "App", null, "Setup", null);
+      }
+
+      Object principal = auth.getPrincipal();
       if (principal instanceof OidcUser) {
         OidcUser me = (OidcUser) principal;
         log.debug("OIDC user found with attributes {}", me.getAttributes());

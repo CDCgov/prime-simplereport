@@ -19,6 +19,8 @@ public final class BeanProfiles {
   public static final String DEVELOPMENT = "dev";
   /** Profile that creates sample data on application startup. */
   public static final String CREATE_SAMPLE_DATA = "create-sample-data";
+  /** Profile that creates sample devices on application startup (for e2e tests). */
+  public static final String CREATE_SAMPLE_DEVICES = "create-sample-devices";
 
   private BeanProfiles() {
     /* no instances! */
