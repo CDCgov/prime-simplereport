@@ -37,7 +37,9 @@ const PendingOrganizations = ({
   const checkIfOrgIsUsingOldOrgSchema = (
     orgToCheck: PendingOrganization | null
   ) => {
-    if (orgToCheck === null) return false;
+    if (orgToCheck === null) {
+      return false;
+    }
     const requiredFieldNotSet =
       orgToCheck.adminEmail === null ||
       orgToCheck.adminFirstName === null ||
@@ -162,7 +164,7 @@ const PendingOrganizations = ({
               setOrgToVerify(o);
             }}
           >
-            View details
+            Edit/Verify
           </Button>
         </td>
       </tr>
@@ -201,7 +203,7 @@ const PendingOrganizations = ({
                     <th scope="row">Contact information</th>
                     <th scope="row">Created</th>
                     <th scope="col">External ID</th>
-                    <th scope="col">Edit or verify identity</th>
+                    <th scope="col"></th>
                   </tr>
                 </thead>
                 <tbody>{orgRows()}</tbody>

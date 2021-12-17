@@ -158,6 +158,41 @@ const verificationMutation = {
   },
 };
 
+const inVerifyVerificationMutation = {
+  request: {
+    query: SetOrgIdentityVerifiedDocument,
+    variables: {
+      externalId: "DC-Space-Camp-fg413d4-btc5-449f-98b0-2e02abb7aae0",
+      verified: true,
+    },
+  },
+  result: {
+    data: {
+      setOrganizationIdentityVerified: true,
+    },
+  },
+};
+
+const editOrganizationsInVerifyMutation = {
+  request: {
+    query: EditPendingOrganizationDocument,
+    variables: {
+      externalId: "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0",
+      name: "DC Space Camp",
+      adminFirstName: "John",
+      adminLastName: "Doe",
+      adminEmail: "admin@spacecamp.org",
+      adminPhone: "530-867-5309",
+    },
+  },
+  result: {
+    data: {
+      editPendingOrganization:
+        "DC-Space-Camp-fg413d4-btc5-449f-98b0-2e02abb7aae0",
+    },
+  },
+};
+
 const editOrganizationsMutation = {
   request: {
     query: EditPendingOrganizationDocument,
@@ -193,7 +228,6 @@ describe("PendingOrganizationsContainer", () => {
       ).toBeInTheDocument();
     });
   });
-
   describe("empty organizations", () => {
     beforeEach(() => {
       render(
@@ -232,33 +266,37 @@ describe("PendingOrganizationsContainer", () => {
     });
 
     it("shows disabled modal with copy text for nulled fields", () => {
-      userEvent.click(screen.getAllByText("View details")[1]);
+      userEvent.click(screen.getAllByText("Edit/Verify")[1]);
       expect(
         screen.getByText("Organization details", { exact: false })
       ).toBeInTheDocument();
       expect(
         screen.getByLabelText("Organization name", { exact: false })
       ).toBeDisabled();
-      expect(screen.getByText("Save details", { exact: false })).toBeDisabled();
-      expect(screen.getByText("Submit", { exact: false })).toBeInTheDocument();
-      expect(screen.getByText("Submit", { exact: false })).toBeEnabled();
+      expect(screen.getByText("Update only", { exact: false })).toBeDisabled();
+      expect(screen.getByText("Verify", { exact: true })).toBeInTheDocument();
+      expect(screen.getByText("Verify", { exact: true })).toBeEnabled();
       expect(
         screen.getByTestId("old-schema-explanation", { exact: false })
       ).toBeInTheDocument();
     });
     it("shows disabled modal with copy text for old date org", () => {
-      userEvent.click(screen.getAllByText("View details")[0]);
+      userEvent.click(screen.getAllByText("Edit/Verify")[0]);
       expect(
         screen.getByText("Organization details", { exact: false })
       ).toBeInTheDocument();
       expect(
         screen.getByLabelText("Organization name", { exact: false })
       ).toBeDisabled();
-      expect(screen.getByText("Save details", { exact: false })).toBeDisabled();
-      expect(screen.getByText("Submit", { exact: false })).toBeInTheDocument();
-      expect(screen.getByText("Submit", { exact: false })).toBeEnabled();
+      expect(screen.getByText("Update only", { exact: false })).toBeDisabled();
+      expect(screen.getByText("Verify", { exact: true })).toBeInTheDocument();
+      expect(screen.getByText("Verify", { exact: true })).toBeEnabled();
       expect(
         screen.getByTestId("old-schema-explanation", { exact: false })
+      ).toBeInTheDocument();
+      userEvent.click(screen.getByTestId("close-modal"));
+      expect(
+        screen.getByText("An Old Schema Org with Date", { exact: false })
       ).toBeInTheDocument();
     });
     it("With nulls submitted", async () => {
@@ -267,10 +305,8 @@ describe("PendingOrganizationsContainer", () => {
           exact: false,
         })
       ).toBeInTheDocument();
-      userEvent.click(
-        Array.from(await screen.findAllByText("View details"))[1]
-      );
-      userEvent.click(screen.getByText("Submit"));
+      userEvent.click(Array.from(await screen.findAllByText("Edit/Verify"))[1]);
+      userEvent.click(screen.getByText("Verify", { exact: true }));
       expect(
         await screen.findByText("An Old Schema Org with Nulls", {
           exact: false,
@@ -283,7 +319,6 @@ describe("PendingOrganizationsContainer", () => {
       ).toBeInTheDocument();
     });
   });
-
   describe("organizations loaded", () => {
     beforeEach(async () => {
       render(
@@ -335,12 +370,16 @@ describe("PendingOrganizationsContainer", () => {
 
     describe("confirm/edit modal acts correctly", () => {
       beforeEach(() => {
-        userEvent.click(screen.getAllByText("View details")[1]);
+        userEvent.click(screen.getAllByText("Edit/Verify")[1]);
       });
       it("populates modal", () => {
         expect(
           screen.getByText("Organization details", { exact: false })
         ).toBeInTheDocument();
+        expect(
+          screen.getByText("Space Camp", { exact: false })
+        ).toBeInTheDocument();
+        userEvent.click(screen.getByTestId("close-modal"));
         expect(
           screen.getByText("Space Camp", { exact: false })
         ).toBeInTheDocument();
@@ -405,7 +444,7 @@ describe("PendingOrganizationsContainer", () => {
             screen.getByLabelText("Organization name", { exact: false })
           ).toHaveValue("DC Space Camp");
 
-          userEvent.click(screen.getByText("Save details", { exact: false }));
+          userEvent.click(screen.getByText("Update only", { exact: false }));
           expect(
             screen.getByLabelText("Organization name", { exact: false })
           ).toHaveValue("DC Space Camp");
@@ -421,6 +460,7 @@ describe("PendingOrganizationsContainer", () => {
       });
     });
   });
+
   describe("marking an organization as verified", () => {
     describe("submitting the form", () => {
       beforeEach(async () => {
@@ -444,9 +484,9 @@ describe("PendingOrganizationsContainer", () => {
           await screen.findByText("Space Camp", { exact: false })
         ).toBeInTheDocument();
         userEvent.click(
-          Array.from(await screen.findAllByText("View details"))[1]
+          Array.from(await screen.findAllByText("Edit/Verify"))[1]
         );
-        userEvent.click(screen.getByText("Submit"));
+        userEvent.click(screen.getByText("Verify"));
         expect(
           await screen.findByText("Space Camp", { exact: false })
         ).not.toBeInTheDocument();
@@ -454,6 +494,59 @@ describe("PendingOrganizationsContainer", () => {
           await screen.findByText("A Real Hospital", { exact: false })
         ).toBeInTheDocument();
       });
+    });
+  });
+  describe("submitting the form with edits without saving", () => {
+    beforeEach(async () => {
+      render(
+        <MockedProvider
+          mocks={[
+            organizationsQuery(
+              "Space Camp",
+              "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+            ),
+            editOrganizationsInVerifyMutation,
+            organizationsQuery(
+              "DC Space Camp",
+              "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+            ),
+            inVerifyVerificationMutation,
+            submittedOrganizationQuery,
+          ]}
+        >
+          <PendingOrganizationsContainer />
+        </MockedProvider>
+      );
+    });
+    it("Space Camp submitted with new title", async () => {
+      expect(
+        await screen.findByText("Space Camp", { exact: false })
+      ).toBeInTheDocument();
+      userEvent.click(Array.from(await screen.findAllByText("Edit/Verify"))[1]);
+      userEvent.clear(
+        screen.getByLabelText("Organization name", {
+          exact: false,
+        })
+      );
+      userEvent.type(
+        screen.getByLabelText("Organization name", {
+          exact: false,
+        }),
+        "DC Space Camp"
+      );
+      userEvent.click(screen.getByText("Verify", { exact: true }));
+      // new title should be in the submit verification alert banner
+      expect(
+        await screen.findByText("DC Space Camp", { exact: false })
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText("A Real Hospital", { exact: false })
+      ).toBeInTheDocument();
+
+      // after alert banner disappears, we shouldn't find it on screen.
+      expect(
+        screen.queryByText("DC Space Camp", { exact: false })
+      ).not.toBeInTheDocument();
     });
   });
 });

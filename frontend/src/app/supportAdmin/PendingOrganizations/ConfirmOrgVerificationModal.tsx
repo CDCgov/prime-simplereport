@@ -6,6 +6,7 @@ import { PendingOrganization } from "../../../generated/graphql";
 import Button from "../../commonComponents/Button/Button";
 import Input from "../../commonComponents/Input";
 import { isFieldValid, isFormValid } from "../../utils/yupHelpers";
+import Alert from "../../commonComponents/Alert";
 
 import {
   PendingOrganizationFormValues,
@@ -123,7 +124,12 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
           <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
             Organization details
           </h1>
-          <button onClick={onClose} className="close-button" aria-label="Close">
+          <button
+            onClick={onClose}
+            className="close-button"
+            data-testid="close-modal"
+            aria-label="Close"
+          >
             <span className="fa-layers">
               <FontAwesomeIcon icon={"circle"} size="2x" inverse />
               <FontAwesomeIcon icon={"times-circle"} size="2x" />
@@ -132,12 +138,13 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
         {orgUsingOldSchema ? (
-          <p data-testid="old-schema-explanation">
-            Because of technical issues, this organization can't be edited but
-            can still be verified. If you need to edit this organization's
-            details, verify the organization first and then escalate the change
-            to the support inbox.
-          </p>
+          <div data-testid="old-schema-explanation">
+            <Alert
+              type="warning"
+              title={"Need to edit information for this organization?"}
+              body="You'll need to verify identity first, then contact support@simplereport.gov to request changes to organization information."
+            />
+          </div>
         ) : (
           <></>
         )}
@@ -176,13 +183,13 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
               className="margin-right-2"
               variant="outline"
               onClick={onSave}
-              label={isUpdating ? "Updating..." : "Save details"}
+              label={isUpdating ? "Updating..." : "Update only"}
               disabled={isVerifying || isUpdating || orgUsingOldSchema}
             />
             <Button
               className="margin-right-205"
               onClick={onVerify}
-              label={isVerifying ? "Submitting..." : "Submit"}
+              label={isVerifying ? "Verifying..." : "Verify"}
               disabled={isVerifying || isUpdating}
             />
           </div>
