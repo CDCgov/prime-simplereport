@@ -1,11 +1,10 @@
-mutation updateFacility($facilityId: ID!, $deviceId: String!) {
-    updateFacility(
+mutation updateFacility($facilityId: ID!, $deviceId: ID!) {
+    updateFacilityNew(
         facilityId: $facilityId
         testingFacilityName: "Fake Facility"
         cliaNumber: "123457890987654321"
         street: "123 Main Street"
         city: "Nowheresville"
-        county: "N/A"
         state: "NY"
         zipCode: "11238"
         phone: "(202) 555-1212"
@@ -20,6 +19,6 @@ mutation updateFacility($facilityId: ID!, $deviceId: String!) {
         orderingProviderState: "NY"
         orderingProviderZipCode: "11801"
         orderingProviderPhone: "(646) 5432123"
-        deviceTypes: [$deviceId]
+        deviceIds: [$deviceId]
     )
 }

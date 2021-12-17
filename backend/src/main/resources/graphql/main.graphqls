@@ -446,7 +446,7 @@ type Mutation {
     orderingProviderState: String
     orderingProviderZipCode: String
     orderingProviderPhone: String
-    deviceTypes: [ID]!
+    deviceIds: [ID]!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
   updateFacilityNew(
     facilityId: ID!
@@ -468,7 +468,7 @@ type Mutation {
     orderingProviderStreetTwo: String
     orderingProviderCity: String
     orderingProviderCounty: String
-    @deprecated(reason: "county is derived from smarty streets lookup")
+      @deprecated(reason: "county is derived from smarty streets lookup")
     orderingProviderState: String
     orderingProviderZipCode: String
     orderingProviderPhone: String
