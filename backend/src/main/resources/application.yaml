@@ -10,7 +10,8 @@ spring:
     hikari:
       maximum-pool-size: 50 # Maximum size that the pool is allowed to reach, including both idle and active connections. Effectively reflects number of concurrent database request threads. (Ex: A size of 50 represents a maximum capacity of 50 concurrent DB requests.)
       max-lifetime: 600000 # Maximum lifetime for a connection to be retained in the pool, in milliseconds, once it is closed.
-      minimum-idle: 30 # When a connection has been idle for 10 minutes (unless idleTimeout is overridden), it will be purged from the pool. This will allow for any un-closed, inactive transactions to be cleaned up more readily.
+      minimum-idle: 30 # Minimum number of idle connections to be retained in the pool. When a connection has been idle for the length of time specified in `idle-timeout`, it will be purged from the pool. This will allow for any un-closed, inactive transactions to be cleaned up more readily.
+      # idle-timeout: 600000 # Maximum lifetime for idle connections before they are purged from the pool. Only active if `minimum-idle` is set to less than `maximum-pool-size`. Defaults to 10 minutes.
   jpa:
     database: POSTGRESQL
     hibernate.ddl-auto: validate
