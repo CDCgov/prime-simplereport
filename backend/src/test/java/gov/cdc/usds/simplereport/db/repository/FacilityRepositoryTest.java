@@ -75,7 +75,7 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
     facility.getDeviceTypes().forEach(facility::removeDeviceType);
     assertThat(facility.getDeviceTypes()).hasSize(0);
 
-    // WHEN
+    // WHEN only a facility device specimen type is configured
     facility.addDeviceSpecimenType(facilityDeviceSpecimenType);
     _repo.save(facility);
 
@@ -83,10 +83,44 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
     assertThat(facility.getDeviceTypes()).hasSize(1);
     assertThat(facility.getDeviceTypes()).contains(facilityDeviceSpecimenType.getDeviceType());
 
-    // WHEN
+    // WHEN adding a new device
     facility.addDeviceType(new DeviceType("New Shiny Device", "Nue Inc", "Shiny", "123", null, 15));
 
     // THEN
     assertThat(facility.getDeviceTypes()).hasSize(2);
+
+    // WHEN Deleting a device
+    facility.removeDeviceType(facilityDeviceSpecimenType.getDeviceType());
+
+    // THEN
+    assertThat(facility.getDeviceTypes()).hasSize(1);
+    DeviceType device = facility.getDeviceTypes().get(0);
+    assertThat(device.getName()).isEqualTo("New Shiny Device");
+    assertThat(device.getManufacturer()).isEqualTo("Nue Inc");
+    assertThat(device.getModel()).isEqualTo("Shiny");
+  }
+
+  @Test
+  void facilityRemoveDeviceType_backwardCompatibleWithFacilityDeviceSpecimenType() {
+    // GIVEN
+    var facilityDeviceSpecimenType = _dataFactory.getGenericDeviceSpecimen();
+    var org = _dataFactory.createValidOrg();
+    var facility = _dataFactory.createValidFacility(org);
+    facility.getDeviceTypes().forEach(facility::removeDeviceType);
+    assertThat(facility.getDeviceTypes()).hasSize(0);
+
+    // WHEN only a facility device specimen type is configured
+    facility.addDeviceSpecimenType(facilityDeviceSpecimenType);
+    _repo.save(facility);
+
+    // THEN
+    assertThat(facility.getDeviceTypes()).hasSize(1);
+    assertThat(facility.getDeviceTypes()).contains(facilityDeviceSpecimenType.getDeviceType());
+
+    // WHEN Deleting a device
+    facility.removeDeviceType(facilityDeviceSpecimenType.getDeviceType());
+
+    // THEN
+    assertThat(facility.getDeviceTypes()).hasSize(0);
   }
 }

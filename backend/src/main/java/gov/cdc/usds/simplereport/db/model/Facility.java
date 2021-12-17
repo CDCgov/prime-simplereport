@@ -1,9 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -112,28 +110,27 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   }
 
   public void addDeviceType(DeviceType device) {
-    configuredDeviceTypes.addAll(getDeviceTypes());
+    initializeDeviceTypesSet();
     configuredDeviceTypes.add(device);
   }
 
   public List<DeviceType> getDeviceTypes() {
-    // this might be better done on the DB side, but that seems like a recipe for
-    // weird behaviors
-    List<DeviceType> facilityDeviceTypes =
-        configuredDeviceTypes.stream().filter(e -> !e.isDeleted()).collect(Collectors.toList());
+    initializeDeviceTypesSet();
+    return configuredDeviceTypes.stream().filter(e -> !e.isDeleted()).collect(Collectors.toList());
+  }
 
-    if (facilityDeviceTypes.isEmpty()) {
+  private void initializeDeviceTypesSet() {
+    if (this.configuredDeviceTypes.isEmpty()) {
       Set<DeviceType> deviceTypesFromFacilityDeviceSpecimenTypes =
           this.configuredDeviceSpecimenTypes.stream()
               .map(DeviceSpecimenType::getDeviceType)
               .filter(e -> !e.isDeleted())
               .collect(Collectors.toSet());
       if (!deviceTypesFromFacilityDeviceSpecimenTypes.isEmpty()) {
-        facilityDeviceTypes = new ArrayList<>(deviceTypesFromFacilityDeviceSpecimenTypes);
+        this.configuredDeviceTypes = deviceTypesFromFacilityDeviceSpecimenTypes;
+        this.configuredDeviceSpecimenTypes.clear();
       }
     }
-
-    return facilityDeviceTypes;
   }
 
   @Deprecated(forRemoval = true)
@@ -153,21 +150,16 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     defaultDeviceSpecimen = newDefault;
   }
 
-  public void removeDeviceType(DeviceType existingDevice) {
-    Iterator<DeviceType> i = configuredDeviceTypes.iterator();
-    UUID removedId = existingDevice.getInternalId();
+  public void removeDeviceType(DeviceType deletedDevice) {
+    initializeDeviceTypesSet();
+    this.configuredDeviceTypes.remove(deletedDevice);
 
-    while (i != null && i.hasNext()) {
-      DeviceType d = i.next();
-      if (d.getInternalId().equals(removedId)) {
-        i.remove();
-        if (this.defaultDeviceSpecimen != null
-            && this.defaultDeviceSpecimen.getDeviceType().getInternalId().equals(removedId)) {
-          // If the corresponding device to a facility's default device swab type is removed,
-          // set default to null
-          this.defaultDeviceSpecimen = null;
-        }
-        break;
+    // If the corresponding device to a facility's default device swab type is removed,
+    // set default to null
+    if (this.getDefaultDeviceSpecimen() != null) {
+      UUID defaultDeviceTypeId = this.defaultDeviceSpecimen.getDeviceType().getInternalId();
+      if (defaultDeviceTypeId.equals(deletedDevice.getInternalId())) {
+        this.addDefaultDeviceSpecimen(null);
       }
     }
   }
