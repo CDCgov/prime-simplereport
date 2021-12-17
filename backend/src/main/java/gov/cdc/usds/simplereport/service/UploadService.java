@@ -140,8 +140,7 @@ public class UploadService {
           country = "USA";
         }
 
-        if (personService.isDuplicatePatient(
-            firstName, lastName, dob, address.getPostalCode(), org, facility)) {
+        if (personService.isDuplicatePatient(firstName, lastName, dob, org, facility)) {
           continue;
         }
 
