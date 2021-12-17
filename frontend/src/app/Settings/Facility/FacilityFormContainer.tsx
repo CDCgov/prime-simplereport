@@ -124,10 +124,9 @@ const ADD_FACILITY_MUTATION = gql`
     $orderingProviderState: String
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
-    $devices: [String]!
-    $defaultDevice: String!
+    $devices: [ID]!
   ) {
-    addFacility(
+    addFacilityNew(
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
       street: $street
@@ -148,8 +147,7 @@ const ADD_FACILITY_MUTATION = gql`
       orderingProviderState: $orderingProviderState
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
-      deviceTypes: $devices
-      defaultDevice: $defaultDevice
+      deviceIds: $devices
     )
   }
 `;
@@ -167,9 +165,7 @@ const FacilityFormContainer: any = (props: Props) => {
     }
   );
   const appInsights = getAppInsights();
-  const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION, {
-    fetchPolicy: "no-cache",
-  });
+  const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION);
   const [addFacility] = useMutation(ADD_FACILITY_MUTATION);
   const [saveSuccess, updateSaveSuccess] = useState(false);
 

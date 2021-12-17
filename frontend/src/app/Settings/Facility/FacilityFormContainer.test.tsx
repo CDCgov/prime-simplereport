@@ -168,7 +168,7 @@ const mocks = [
     },
     result: {
       data: {
-        updateFacility:
+        updateFacilityNew:
           "this doesn't get serialized, it's an object pointer, whoops",
       },
     },

@@ -221,10 +221,7 @@ public class TestOrderService {
 
         // Set the most-recently configured device specimen for a facility's
         // test as facility default
-        if (!deviceSpecimenTypeId.equals(
-            order.getFacility().getDefaultDeviceSpecimen().getInternalId())) {
-          order.getFacility().addDefaultDeviceSpecimen(deviceSpecimenType);
-        }
+        order.getFacility().addDefaultDeviceSpecimen(deviceSpecimenType);
       }
 
       order.setResult(result == null ? null : TestResult.valueOf(result));
