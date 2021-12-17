@@ -8,8 +8,8 @@ spring:
     password: api123
     url: jdbc:postgresql://localhost:${SR_DB_PORT:5432}/simple_report
     hikari:
-      maximum-pool-size: 20
-      max-lifetime: 900000 # Maximum lifetime for a connection to be retained in the pool, in milliseconds, once it is closed.
+      maximum-pool-size: 50 # Maximum size that the pool is allowed to reach, including both idle and active connections. Effectively reflects number of concurrent database request threads. (Ex: A size of 50 represents a maximum capacity of 50 concurrent DB requests.)
+      max-lifetime: 600000 # Maximum lifetime for a connection to be retained in the pool, in milliseconds, once it is closed.
   jpa:
     database: POSTGRESQL
     hibernate.ddl-auto: validate
