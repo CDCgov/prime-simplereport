@@ -537,7 +537,7 @@ describe("PendingOrganizationsContainer", () => {
       userEvent.click(screen.getByText("Verify", { exact: true }));
       // new title should be in the submit verification alert banner
       expect(
-        await screen.findByText("DC Space Camp", { exact: false })
+        await screen.findByText("DC-Space-Camp", { exact: false })
       ).toBeInTheDocument();
       expect(
         await screen.findByText("A Real Hospital", { exact: false })
