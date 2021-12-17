@@ -179,8 +179,6 @@ const createPatient = ({
       },
     ],
     gender: "female",
-    phoneNumbers: [],
-    email: "test@foo.com",
     testResultDelivery: "",
     preferredLanguage: [],
     __typename: "Patient",

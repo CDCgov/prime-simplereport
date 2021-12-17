@@ -33,7 +33,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   @JoinColumn(name = "ordering_provider_id", nullable = false)
   private Provider orderingProvider;
 
-  // TODO: think hard about this
   @ManyToOne(optional = true, fetch = FetchType.EAGER)
   @JoinColumn(name = "default_device_specimen_type_id")
   private DeviceSpecimenType defaultDeviceSpecimen;

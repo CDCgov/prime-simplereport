@@ -193,7 +193,7 @@ export type MutationAddFacilityArgs = {
 export type MutationAddFacilityNewArgs = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
-  deviceTypes: Array<Maybe<Scalars["ID"]>>;
+  deviceIds: Array<Maybe<Scalars["ID"]>>;
   email?: Maybe<Scalars["String"]>;
   orderingProviderCity?: Maybe<Scalars["String"]>;
   orderingProviderCounty?: Maybe<Scalars["String"]>;
