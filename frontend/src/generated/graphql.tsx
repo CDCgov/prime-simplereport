@@ -1060,13 +1060,12 @@ export type AddFacilityMutationVariables = Exact<{
   orderingProviderState?: Maybe<Scalars["String"]>;
   orderingProviderZipCode?: Maybe<Scalars["String"]>;
   orderingProviderPhone?: Maybe<Scalars["String"]>;
-  devices: Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>;
-  defaultDevice: Scalars["String"];
+  devices: Array<Maybe<Scalars["ID"]>> | Maybe<Scalars["ID"]>;
 }>;
 
 export type AddFacilityMutation = {
   __typename?: "Mutation";
-  addFacility?: Maybe<string>;
+  addFacilityNew?: Maybe<string>;
 };
 
 export type GetManagedFacilitiesQueryVariables = Exact<{
@@ -2445,10 +2444,9 @@ export const AddFacilityDocument = gql`
     $orderingProviderState: String
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
-    $devices: [String]!
-    $defaultDevice: String!
+    $devices: [ID]!
   ) {
-    addFacility(
+    addFacilityNew(
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
       street: $street
@@ -2469,8 +2467,7 @@ export const AddFacilityDocument = gql`
       orderingProviderState: $orderingProviderState
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
-      deviceTypes: $devices
-      defaultDevice: $defaultDevice
+      deviceIds: $devices
     )
   }
 `;
@@ -2513,7 +2510,6 @@ export type AddFacilityMutationFn = Apollo.MutationFunction<
  *      orderingProviderZipCode: // value for 'orderingProviderZipCode'
  *      orderingProviderPhone: // value for 'orderingProviderPhone'
  *      devices: // value for 'devices'
- *      defaultDevice: // value for 'defaultDevice'
  *   },
  * });
  */
