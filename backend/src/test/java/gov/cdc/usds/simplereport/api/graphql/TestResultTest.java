@@ -52,9 +52,6 @@ class TestResultTest extends BaseGraphqlTest {
     _site = _orgService.getFacilities(_org).get(0);
     _device = _dataFactory.getGenericDeviceSpecimen();
     _secondSite = _orgService.getFacilities(_org).get(1);
-
-    _site.addDefaultDeviceSpecimen(_device);
-    _secondSite.addDefaultDeviceSpecimen(_device);
   }
 
   @Test
