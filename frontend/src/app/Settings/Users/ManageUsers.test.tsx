@@ -28,9 +28,9 @@ const loggedInUser = {
   firstName: "Bob",
   middleName: "",
   lastName: "Bobberoo",
+  suffix: "",
   id: "b1",
   email: "bob@bobberoo.org",
-  suffix: "",
   roleDescription: "Admin user",
 };
 
@@ -54,6 +54,7 @@ const users: SettingsUsers[keyof SettingsUsers][] = [
     firstName: "John",
     middleName: "",
     lastName: "Arthur",
+    suffix: "",
     id: "a123",
     email: "john@arthur.org",
     organization: { testingFacility: [] },
@@ -467,47 +468,119 @@ describe("ManageUsers", () => {
       });
     });
 
-    it("changes a user's name", async () => {
-      const newUser = {
-        firstName: "Karnov",
-        middleName: "Malachai",
-        lastName: "Beeblebrox"
+    describe("changing a user's name", () => {
+      let editButton: HTMLElement;
+      let first: HTMLElement;
+      let last: HTMLElement;
+      let confirmButton: HTMLElement;
+      let newUser = {
+        firstName: "Newuser",
+        lastName: "Lastname",
       };
 
-      const editButton = await screen.findByText("Edit name", { exact: true });
-      userEvent.click(editButton);
-      const [first, middle, last] = await screen.findAllByRole("textbox");
-      fireEvent.change(first, inputValue(newUser.firstName));
-      fireEvent.change(middle, inputValue(newUser.middleName));
-      fireEvent.change(last, inputValue(newUser.lastName));
-      const confirmButton = await screen.findByText("Confirm", { exact: false });
-      userEvent.click(confirmButton);
-      await waitFor(() => expect(updateUserName).toBeCalled());
-      expect(updateUserName).toBeCalledWith({
-        variables: {
-          id: users[0].id,
-          firstName: newUser.firstName,
-          middleName: newUser.middleName,
-          lastName: newUser.lastName
-        }
+      beforeEach(async () => {
+        editButton = await screen.findByText("Edit name", { exact: true });
+        userEvent.click(editButton);
+        [first, last] = await screen.findAllByRole("textbox");
+        confirmButton = await screen.findByText("Confirm", {
+          exact: false,
+        });
+      });
+
+      it("successfully changes a user's name", async () => {
+        [
+          { textbox: first, value: newUser.firstName },
+          { textbox: last, value: newUser.lastName },
+        ].forEach((t) => {
+          userEvent.clear(t.textbox);
+          userEvent.type(t.textbox, t.value);
+        });
+        userEvent.click(confirmButton);
+        await waitFor(() => expect(updateUserName).toBeCalled());
+        expect(updateUserName).toBeCalledWith({
+          variables: {
+            id: users[0].id,
+            firstName: newUser.firstName,
+            middleName: users[0].middleName,
+            lastName: newUser.lastName,
+            suffix: users[0].suffix,
+          },
+        });
+      });
+
+      it("fails for a missing first name", async () => {
+        userEvent.clear(first);
+        userEvent.click(confirmButton);
+        await waitFor(() => expect(confirmButton).toBeDisabled());
+        expect(
+          screen.getByText("A first name is required")
+        ).toBeInTheDocument();
+      });
+
+      it("fails for a missing last name", async () => {
+        userEvent.clear(last);
+        userEvent.click(confirmButton);
+        await waitFor(() => expect(confirmButton).toBeDisabled());
+        expect(screen.getByText("A last name is required")).toBeInTheDocument();
       });
     });
 
-    it("changes a user's email", async () => {
-      const newEmail = "thisisanewemail@newemail.com"
+    describe("changing a user's email", () => {
+      let editButton: HTMLElement;
+      let email: HTMLElement;
+      let confirmButton: HTMLElement;
 
-      const editButton = await screen.findByText("Edit email", { exact: true });
-      userEvent.click(editButton);
-      const [email] = await screen.findAllByRole("textbox");
-      fireEvent.change(email, inputValue(newEmail));
-      const confirmButton = await screen.findByText("Confirm", { exact: false });
-      userEvent.click(confirmButton);
-      await waitFor(() => expect(updateUserEmail).toBeCalled());
-      expect(updateUserEmail).toBeCalledWith({
-        variables: {
-          id: users[0].id,
-          email: newEmail
-        }
+      beforeEach(async () => {
+        editButton = await screen.findByText("Edit email", { exact: true });
+        userEvent.click(editButton);
+        [email] = await screen.findAllByRole("textbox");
+        confirmButton = await screen.findByText("Confirm", {
+          exact: false,
+        });
+      });
+
+      it("successfully changes a user's email", async () => {
+        const newEmail = "thisisanewemail@newemail.com";
+
+        userEvent.clear(email);
+        userEvent.type(email, newEmail);
+        userEvent.click(confirmButton);
+        await waitFor(() => expect(updateUserEmail).toBeCalled());
+        expect(updateUserEmail).toBeCalledWith({
+          variables: {
+            id: users[0].id,
+            email: newEmail,
+          },
+        });
+      });
+
+      it("fails for an invalid email", async () => {
+        const invalidEmail = "thisisanewemail@invalid";
+
+        userEvent.clear(email);
+        userEvent.type(email, invalidEmail);
+        userEvent.click(confirmButton);
+        await waitFor(() => expect(confirmButton).toBeDisabled());
+        expect(
+          screen.getByText("Email must be a valid email address")
+        ).toBeInTheDocument();
+      });
+
+      it("fails for the same email", async () => {
+        userEvent.click(confirmButton);
+        await waitFor(() => expect(confirmButton).toBeDisabled());
+        expect(
+          screen.getByText("The old and new email addresses must be different")
+        ).toBeInTheDocument();
+      });
+
+      it("fails with an empty textbox", async () => {
+        userEvent.clear(email);
+        userEvent.click(confirmButton);
+        await waitFor(() => expect(confirmButton).toBeDisabled());
+        expect(
+          screen.getByText("Enter a valid email address")
+        ).toBeInTheDocument();
       });
     });
   });
@@ -658,6 +731,7 @@ describe("ManageUsers", () => {
               firstName: "John",
               middleName: "",
               lastName: "Arthur",
+              suffix: "",
               roleDescription: "user",
               role: "USER",
               permissions: ["READ_PATIENT_LIST"],

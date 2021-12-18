@@ -50,7 +50,8 @@ interface Props {
     userId: string,
     firstName: string,
     middleName: string,
-    lastName: string
+    lastName: string,
+    suffix: string
   ) => void;
   handleEditUserEmail: (userId: string, emailAddress: string) => void;
   handleResetUserPassword: (userId: string) => void;
@@ -88,6 +89,14 @@ const UserDetail: React.FC<Props> = ({
   handleResetUserPassword,
   handleResendUserActivationEmail,
 }) => {
+  const isUserActive = () => {
+    return (
+      user.status !== "SUSPENDED" &&
+      user.status !== "PROVISIONED" &&
+      user?.id !== loggedInUser.id
+    );
+  };
+
   return (
     <div className="tablet:grid-col padding-left-2">
       <div className="user-header grid-row flex-row flex-align-center">
@@ -126,9 +135,7 @@ const UserDetail: React.FC<Props> = ({
             disabled={isUpdating}
           />
         ) : null}
-        {user.status !== "SUSPENDED" &&
-          user.status !== "PROVISIONED" &&
-          user?.id !== loggedInUser.id ? (
+        {isUserActive() ? (
           <Button
             variant="outline"
             className="margin-left-auto margin-bottom-1"
@@ -137,9 +144,7 @@ const UserDetail: React.FC<Props> = ({
             disabled={isUpdating}
           />
         ) : null}
-        {user.status !== "SUSPENDED" &&
-          user.status !== "PROVISIONED" &&
-          user?.id !== loggedInUser.id ? (
+        {isUserActive() ? (
           <Button
             variant="outline"
             className="margin-left-auto margin-bottom-1"
@@ -148,9 +153,7 @@ const UserDetail: React.FC<Props> = ({
             disabled={isUpdating}
           />
         ) : null}
-        {user.status !== "SUSPENDED" &&
-          user.status !== "PROVISIONED" &&
-          user?.id !== loggedInUser.id ? (
+        {isUserActive() ? (
           <Button
             variant="outline"
             className="margin-left-auto margin-bottom-1"

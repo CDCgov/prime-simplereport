@@ -76,14 +76,6 @@ public class UserMutationResolver implements GraphQLMutationResolver {
     return new User(user);
   }
 
-  public User editUserName(
-      UUID id, String firstName, String middleName, String lastName, String suffix) {
-    PersonName name =
-        Translators.consolidateNameArguments(null, firstName, middleName, lastName, suffix);
-    UserInfo user = _us.updateUser(id, name);
-    return new User(user);
-  }
-
   public User updateUserEmail(UUID id, String email) {
     UserInfo user = _us.updateUserEmail(id, email);
     return new User(user);

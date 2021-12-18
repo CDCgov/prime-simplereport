@@ -255,7 +255,8 @@ const ManageUsers: React.FC<Props> = ({
     userId: string,
     firstName: string,
     middleName: string,
-    lastName: string
+    lastName: string,
+    suffix: string
   ) => {
     try {
       await updateUserName({
@@ -264,9 +265,10 @@ const ManageUsers: React.FC<Props> = ({
           firstName: firstName,
           middleName: middleName,
           lastName: lastName,
+          suffix: suffix,
         },
       });
-      const fullName = displayFullName(firstName, middleName, lastName);
+      const fullName = displayFullName(firstName, "", lastName);
       updateEditUserNameModal(false);
       showNotification(
         <Alert type="success" title={`User name changed to ${fullName}`} />
