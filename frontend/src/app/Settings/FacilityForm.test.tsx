@@ -519,7 +519,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
