@@ -16,48 +16,33 @@ const PendingOrganizationsContainer = () => {
     throw error;
   }
   const submitIdentityVerified = async (externalId: string, name: string) => {
-    if (externalId === null) {
-      showNotification(
-        <Alert
-          type="error"
-          title={"No organization external ID set. Please try again"}
-          body=""
-        />
-      );
-      return Promise.reject("No organization external ID set");
-    } else {
-      return Promise.resolve(
-        verifyIdentity({
-          variables: {
-            externalId: externalId,
-            verified: true,
-          },
-        })
-      )
-        .then(() => {
-          showNotification(
-            <Alert
-              type="success"
-              title={`Identity verified for ${name}`}
-              body=""
-            />
-          );
-        })
-        .finally(() => {
-          refetch();
-        })
-        .catch((e) => {
-          console.error(e);
-          showNotification(
-            <Alert
-              type="error"
-              title={`Identity verification failed`}
-              body={e}
-            />
-          );
-          return Promise.reject("Organization verification failed");
-        });
-    }
+    return Promise.resolve(
+      verifyIdentity({
+        variables: {
+          externalId: externalId,
+          verified: true,
+        },
+      })
+    )
+      .then(() => {
+        showNotification(
+          <Alert
+            type="success"
+            title={`Identity verified for ${name}`}
+            body=""
+          />
+        );
+      })
+      .finally(() => {
+        refetch();
+      })
+      .catch((e) => {
+        console.error(e);
+        showNotification(
+          <Alert type="error" title={`Identity verification failed`} body={e} />
+        );
+        return Promise.reject("Organization verification failed");
+      });
   };
 
   return (
