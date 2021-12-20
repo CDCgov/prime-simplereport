@@ -211,6 +211,12 @@ public class ApiUserService {
     String username = apiUser.getLoginEmail();
     IdentityAttributes userIdentity = new IdentityAttributes(username, apiUser.getNameInfo());
 
+    // Check to make sure the changed email doesn't already exist in the system.
+    Optional<ApiUser> foundUser = _apiUserRepo.findByLoginEmail(email);
+    if (foundUser.isPresent()) {
+      throw new ConflictingUserException();
+    }
+
     apiUser.setLoginEmail(email);
     apiUser = _apiUserRepo.save(apiUser);
 

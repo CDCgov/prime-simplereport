@@ -26,7 +26,7 @@ const EditUserNameModal: React.FC<Props> = ({
   onEditUserName,
   user,
 }) => {
-  const heading = `Update name for ${displayFullName(
+  const heading = `Edit name for ${displayFullName(
     user.firstName,
     "",
     user.lastName

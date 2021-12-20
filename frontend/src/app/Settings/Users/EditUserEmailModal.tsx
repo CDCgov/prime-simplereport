@@ -20,7 +20,7 @@ const EditUserEmailModal: React.FC<Props> = ({
   onEditUserEmail,
   user,
 }) => {
-  const heading = `Update email address for ${displayFullName(
+  const heading = `Edit email address for ${displayFullName(
     user.firstName,
     user.middleName,
     user.lastName

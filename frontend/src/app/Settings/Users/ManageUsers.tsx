@@ -273,6 +273,7 @@ const ManageUsers: React.FC<Props> = ({
       showNotification(
         <Alert type="success" title={`User name changed to ${fullName}`} />
       );
+      queryUserWithPermissions();
     } catch (e) {
       setError(e);
     }
@@ -293,9 +294,8 @@ const ManageUsers: React.FC<Props> = ({
           title={`User email address changed to ${emailAddress}`}
         />
       );
-    } catch (e) {
-      setError(e);
-    }
+      await getUsers();
+    } catch (e) {}
   };
 
   const handleResetUserPassword = async (userId: string) => {
