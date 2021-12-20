@@ -255,7 +255,10 @@ public class LiveOktaRepository implements OktaRepository {
           "Cannot update email of Okta user with unrecognized username");
     }
     User user = users.single();
-    user.getProfile().setEmail(email);
+    UserProfile profile = user.getProfile();
+    profile.setLogin(email);
+    profile.setEmail(email);
+    user.setProfile(profile);
     user.update();
 
     return getOrganizationRoleClaimsForUser(user);
