@@ -26,16 +26,14 @@ const PendingOrganizationsContainer = () => {
       );
       return Promise.reject("No organization external ID set");
     } else {
-      return new Promise((resolve) => {
-        resolve(
-          verifyIdentity({
-            variables: {
-              externalId: externalId,
-              verified: true,
-            },
-          })
-        );
-      })
+      return Promise.resolve(
+        verifyIdentity({
+          variables: {
+            externalId: externalId,
+            verified: true,
+          },
+        })
+      )
         .then(() => {
           showNotification(
             <Alert
