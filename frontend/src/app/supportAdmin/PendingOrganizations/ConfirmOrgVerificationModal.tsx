@@ -79,9 +79,9 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
   const onEdit = () => {
     handleUpdateOrg(org);
     setOrgToVerify(null);
-    showNotification(
-      <Alert type="success" title="Organization details updated" body="" />
-    );
+    const updateMessage = `${org.name} details updated`;
+
+    showNotification(<Alert type="success" title={updateMessage} body="" />);
   };
 
   const getValidationStatus = (field: keyof PendingOrganizationFormValues) =>

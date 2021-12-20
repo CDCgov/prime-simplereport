@@ -490,7 +490,7 @@ describe("PendingOrganizationsContainer", () => {
           await screen.findByText("A Real Hospital", { exact: false })
         ).toBeInTheDocument();
         await waitForElementToBeRemoved(
-          screen.queryByText("Organization details")
+          screen.queryByText("Space Camp", { exact: true })
         );
       });
     });
