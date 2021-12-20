@@ -1,0 +1,14 @@
+FROM cypress/browsers:node14.17.0-chrome91-ff89
+
+# Install OpenJDK-11
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jdk && \
+    apt-get install -y ant && \
+    apt-get clean;
+
+COPY ./package.json /app/package.json
+WORKDIR /app
+
+RUN yarn install
+
+ENTRYPOINT [ "./e2e.sh" ]

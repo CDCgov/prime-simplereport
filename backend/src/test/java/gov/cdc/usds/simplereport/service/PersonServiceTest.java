@@ -673,7 +673,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     var result =
         _service.isDuplicatePatient(
-            "John", "Doe", LocalDate.parse("1990-01-01"), "27601", org, Optional.ofNullable(null));
+            "John", "Doe", LocalDate.parse("1990-01-01"), org, Optional.ofNullable(null));
 
     assertFalse(result);
   }
@@ -713,7 +713,6 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             person.getFirstName(),
             person.getLastName(),
             person.getBirthDate(),
-            person.getAddress().getPostalCode(),
             org,
             Optional.ofNullable(null));
 
@@ -756,7 +755,6 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             person.getFirstName(),
             person.getLastName(),
             person.getBirthDate(),
-            person.getAddress().getPostalCode(),
             org,
             Optional.ofNullable(null));
 
@@ -773,7 +771,6 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             "John",
             "Doe",
             LocalDate.parse("1990-01-01"),
-            "27601",
             facility.getOrganization(),
             Optional.of(facility));
 
@@ -815,7 +812,6 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             person.getFirstName(),
             person.getLastName(),
             person.getBirthDate(),
-            person.getAddress().getPostalCode(),
             facility.getOrganization(),
             Optional.of(facility));
 
@@ -862,7 +858,6 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             person.getFirstName(),
             person.getLastName(),
             person.getBirthDate(),
-            person.getAddress().getPostalCode(),
             facility2.getOrganization(),
             Optional.of(facility2));
 
@@ -908,7 +903,6 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             person.getFirstName(),
             person.getLastName(),
             person.getBirthDate(),
-            person.getAddress().getPostalCode(),
             organization,
             Optional.of(facility));
 

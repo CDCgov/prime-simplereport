@@ -651,6 +651,7 @@ export type Query = {
   organizations: Array<Organization>;
   patient?: Maybe<Patient>;
   patientExists?: Maybe<Scalars["Boolean"]>;
+  patientExistsWithoutZip?: Maybe<Scalars["Boolean"]>;
   patients?: Maybe<Array<Maybe<Patient>>>;
   patientsCount?: Maybe<Scalars["Int"]>;
   pendingOrganizations: Array<PendingOrganization>;
@@ -686,6 +687,13 @@ export type QueryPatientExistsArgs = {
   firstName: Scalars["String"];
   lastName: Scalars["String"];
   zipCode: Scalars["String"];
+};
+
+export type QueryPatientExistsWithoutZipArgs = {
+  birthDate: Scalars["LocalDate"];
+  facilityId?: Maybe<Scalars["ID"]>;
+  firstName: Scalars["String"];
+  lastName: Scalars["String"];
 };
 
 export type QueryPatientsArgs = {
@@ -1314,13 +1322,12 @@ export type PatientExistsQueryVariables = Exact<{
   firstName: Scalars["String"];
   lastName: Scalars["String"];
   birthDate: Scalars["LocalDate"];
-  zipCode: Scalars["String"];
   facilityId?: Maybe<Scalars["ID"]>;
 }>;
 
 export type PatientExistsQuery = {
   __typename?: "Query";
-  patientExists?: Maybe<boolean>;
+  patientExistsWithoutZip?: Maybe<boolean>;
 };
 
 export type AddPatientMutationVariables = Exact<{
@@ -1749,6 +1756,7 @@ export type GetFacilityQueueQuery = {
           testResultDelivery?: Maybe<TestResultDeliveryPreference>;
           preferredLanguage?: Maybe<string>;
           email?: Maybe<string>;
+          emails?: Maybe<Array<Maybe<string>>>;
           phoneNumbers?: Maybe<
             Array<
               Maybe<{
@@ -3525,14 +3533,12 @@ export const PatientExistsDocument = gql`
     $firstName: String!
     $lastName: String!
     $birthDate: LocalDate!
-    $zipCode: String!
     $facilityId: ID
   ) {
-    patientExists(
+    patientExistsWithoutZip(
       firstName: $firstName
       lastName: $lastName
       birthDate: $birthDate
-      zipCode: $zipCode
       facilityId: $facilityId
     )
   }
@@ -3553,7 +3559,6 @@ export const PatientExistsDocument = gql`
  *      firstName: // value for 'firstName'
  *      lastName: // value for 'lastName'
  *      birthDate: // value for 'birthDate'
- *      zipCode: // value for 'zipCode'
  *      facilityId: // value for 'facilityId'
  *   },
  * });
@@ -5037,6 +5042,7 @@ export const GetFacilityQueueDocument = gql`
         testResultDelivery
         preferredLanguage
         email
+        emails
         phoneNumbers {
           type
           number
