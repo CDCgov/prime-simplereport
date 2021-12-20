@@ -2,6 +2,7 @@ import {
   render,
   screen,
   waitForElementToBeRemoved,
+  within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
@@ -25,9 +26,6 @@ describe("TestQueue", () => {
   const mockStore = configureStore([]);
 
   beforeEach(() => {
-    jest
-      .useFakeTimers("modern")
-      .setSystemTime(new Date("2021-08-01 08:20").getTime());
     store = mockStore({
       organization: {
         name: "Organization Name",
@@ -42,6 +40,9 @@ describe("TestQueue", () => {
   });
 
   it("should render the test queue", async () => {
+    jest
+      .useFakeTimers("modern")
+      .setSystemTime(new Date("2021-08-01 08:20").getTime());
     const { container } = render(
       <MemoryRouter>
         <MockedProvider mocks={mocks}>
@@ -58,7 +59,6 @@ describe("TestQueue", () => {
   });
 
   it("should remove items queue using the transition group", async () => {
-    jest.useFakeTimers();
     render(
       <MemoryRouter>
         <MockedProvider mocks={mocks}>
@@ -75,6 +75,46 @@ describe("TestQueue", () => {
     userEvent.click(confirmButton);
     await waitForElementToBeRemoved(() => screen.queryByText("Doe, John A"));
     expect(screen.queryByText("Doe, John A")).not.toBeInTheDocument();
+  });
+
+  describe("clicking on test questionnaire", () => {
+    beforeEach(async () => {
+      await render(
+        <MemoryRouter>
+          <MockedProvider mocks={mocks}>
+            <Provider store={store}>
+              <TestQueue activeFacilityId="a1" />
+            </Provider>
+          </MockedProvider>
+        </MemoryRouter>
+      );
+
+      await screen.findByLabelText("Search");
+      expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
+      expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
+
+      userEvent.click(screen.getAllByText("Test questionnaire")[0]);
+    });
+
+    it("should open test questionnaire and display emails and phone numbers correctly", () => {
+      const modal = screen.getByRole("dialog");
+
+      expect(within(modal).getByText("Test questionnaire")).toBeInTheDocument();
+      expect(
+        within(modal).getByText(
+          "Would you like to receive a copy of your results via text message?"
+        )
+      ).toBeInTheDocument();
+      expect(
+        within(modal).getByText(
+          "Would you like to receive a copy of your results via email?"
+        )
+      ).toBeInTheDocument();
+      expect(within(modal).getByText("Doe@legacy.com")).toBeInTheDocument();
+      expect(within(modal).getByText("John@legacy.com")).toBeInTheDocument();
+      expect(within(modal).getByText("8178675309")).toBeInTheDocument();
+      expect(within(modal).getByText("8178675911")).toBeInTheDocument();
+    });
   });
 });
 
@@ -126,6 +166,18 @@ const createPatient = ({
     firstName: first,
     middleName: middle,
     lastName: last,
+    email: `${middle}@legacy.com`,
+    emails: [`${first}@legacy.com`, `${last}@legacy.com`],
+    phoneNumbers: [
+      {
+        number: "8178675309",
+        type: "MOBILE",
+      },
+      {
+        number: "8178675911",
+        type: "MOBILE",
+      },
+    ],
     gender: "female",
     __typename: "Patient",
   },

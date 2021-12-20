@@ -28,12 +28,12 @@ class PatientResolverTest extends BaseServiceTest<PersonService> {
 
     var sut = new PatientResolver(personService, orgService);
 
-    sut.patientExists(
-        "John", "Schmidt", LocalDate.of(1990, 01, 01), "02215", facility.getInternalId());
+    sut.patientExistsWithoutZip(
+        "John", "Schmidt", LocalDate.of(1990, 01, 01), facility.getInternalId());
 
     verify(personService)
         .isDuplicatePatient(
-            "John", "Schmidt", LocalDate.of(1990, 01, 01), "02215", org, Optional.of(facility));
+            "John", "Schmidt", LocalDate.of(1990, 01, 01), org, Optional.of(facility));
   }
 
   @Test
@@ -46,10 +46,9 @@ class PatientResolverTest extends BaseServiceTest<PersonService> {
 
     var sut = new PatientResolver(personService, orgService);
 
-    sut.patientExists("John", "Schmidt", LocalDate.of(1990, 01, 01), "02215", null);
+    sut.patientExistsWithoutZip("John", "Schmidt", LocalDate.of(1990, 01, 01), null);
 
     verify(personService)
-        .isDuplicatePatient(
-            "John", "Schmidt", LocalDate.of(1990, 01, 01), "02215", org, Optional.empty());
+        .isDuplicatePatient("John", "Schmidt", LocalDate.of(1990, 01, 01), org, Optional.empty());
   }
 }
