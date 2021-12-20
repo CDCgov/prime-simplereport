@@ -300,6 +300,9 @@ describe("PendingOrganizationsContainer", () => {
       ).toBeInTheDocument();
       userEvent.click(screen.getByTestId("close-modal"));
       expect(
+        screen.queryByText("Organization details", { exact: false })
+      ).not.toBeInTheDocument();
+      expect(
         screen.getByText("An Old Schema Org with Date", { exact: false })
       ).toBeInTheDocument();
     });
@@ -310,6 +313,11 @@ describe("PendingOrganizationsContainer", () => {
         })
       ).toBeInTheDocument();
       userEvent.click(Array.from(await screen.findAllByText("Edit/Verify"))[1]);
+      expect(
+        screen.getByLabelText("Organization name", { exact: false })
+      ).toBeDisabled();
+      expect(screen.getByText("Update only", { exact: false })).toBeDisabled();
+
       userEvent.click(screen.getByText("Verify", { exact: true }));
       expect(
         await screen.findByText("An Old Schema Org with Date", {
