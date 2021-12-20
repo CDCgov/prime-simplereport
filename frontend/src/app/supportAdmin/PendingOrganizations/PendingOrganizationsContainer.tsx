@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import "./PendingOrganizationsList.scss";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
@@ -11,8 +9,8 @@ import {
 import PendingOrganizations from "./PendingOrganizations";
 
 const PendingOrganizationsContainer = () => {
-  const [verifyInProgress, setVerifyInProgress] = useState<boolean>(false);
   const [verifyIdentity] = useSetOrgIdentityVerifiedMutation();
+
   const { data, refetch, loading, error } = useGetPendingOrganizationsQuery();
   if (error) {
     throw error;
@@ -48,7 +46,6 @@ const PendingOrganizationsContainer = () => {
           );
         })
         .finally(() => {
-          setVerifyInProgress(false);
           refetch();
         })
         .catch((e) => {
@@ -60,6 +57,7 @@ const PendingOrganizationsContainer = () => {
               body={e}
             />
           );
+          return Promise.reject("Organization verification failed");
         });
     }
   };
@@ -69,8 +67,6 @@ const PendingOrganizationsContainer = () => {
       organizations={data?.pendingOrganizations || []}
       submitIdentityVerified={submitIdentityVerified}
       loading={loading}
-      setVerfiyInProgress={setVerifyInProgress}
-      verifyInProgress={verifyInProgress}
       refetch={refetch}
       showNotification={showNotification}
     />

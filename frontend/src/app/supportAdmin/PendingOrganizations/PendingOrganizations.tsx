@@ -1,13 +1,17 @@
 import { PhoneNumberUtil, PhoneNumberFormat } from "google-libphonenumber";
 import { useState } from "react";
 
+import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button/Button";
 import {
   PendingOrganization,
   useEditPendingOrganizationMutation,
 } from "../../../generated/graphql";
 
-import { PendingOrganizationFormValues } from "./utils";
+import {
+  PendingOrganizationFormValues,
+  EditOrgMutationResponse,
+} from "./utils";
 import "./PendingOrganizationsList.scss";
 import ConfirmOrgVerificationModal from "./ConfirmOrgVerificationModal";
 
@@ -15,8 +19,6 @@ interface Props {
   organizations: PendingOrganization[];
   submitIdentityVerified: (externalId: string, name: string) => Promise<void>;
   loading: boolean;
-  verifyInProgress: boolean;
-  setVerfiyInProgress: (verifyInProgress: boolean) => void;
   refetch: () => void;
   showNotification: (notif: JSX.Element) => void;
 }
@@ -28,13 +30,12 @@ const PendingOrganizations = ({
   submitIdentityVerified,
   loading,
   refetch,
-  verifyInProgress,
-  setVerfiyInProgress,
   showNotification,
 }: Props) => {
   const [orgToVerify, setOrgToVerify] = useState<PendingOrganization | null>(
     null
   );
+  const [verifyInProgress, setVerifyInProgress] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [editOrg] = useEditPendingOrganizationMutation();
   // should be removed once mutation for deletion of pending orgs is written
@@ -53,19 +54,17 @@ const PendingOrganizations = ({
       Date.parse(orgToCheck.createdAt) < Date.parse("2021-11-02T18:16:08Z");
     return requiredFieldNotSet || createdBeforeSchemaChangeDate;
   };
-
   const handleUpdateOrg = async (org: PendingOrganizationFormValues) => {
     const orgUsesOldSchema = checkIfOrgIsUsingOldOrgSchema(orgToVerify);
 
     // Return nothing if no verification is set
     if (orgToVerify === null || orgUsesOldSchema) {
-      return undefined;
+      return Promise.reject();
     }
-
-    setIsUpdating(true);
     let updatedOrg;
     try {
-      updatedOrg = await editOrg({
+      setIsUpdating(true);
+      const mutationResponse = await editOrg({
         variables: {
           externalId: orgToVerify.externalId,
           name: org.name,
@@ -75,22 +74,26 @@ const PendingOrganizations = ({
           adminPhone: org.adminPhone,
         },
       });
+      updatedOrg = mutationResponse as EditOrgMutationResponse;
     } catch (e) {
       console.error(e);
+      return Promise.reject();
     }
     refetch();
     setIsUpdating(false);
-    return updatedOrg;
+    setOrgToVerify(null);
+    const updateMessage = `${org.name} details updated`;
+    showNotification(<Alert type="success" title={updateMessage} body="" />);
+    return Promise.resolve(updatedOrg);
   };
-
   const handleConfirmOrg = async (org: PendingOrganizationFormValues) => {
     if (orgToVerify === null) {
-      return;
+      return Promise.reject();
     }
     try {
+      setVerifyInProgress(true);
       // check to see if there are changes, verifying different type of
       // empty states
-
       let externalIdToVerify = orgToVerify.externalId;
       let externalNameToVerify = orgToVerify.name;
 
@@ -119,18 +122,21 @@ const PendingOrganizations = ({
         externalIdToVerify = updatedOrgExternalId;
         externalNameToVerify = org.name;
       }
-      submitIdentityVerified(externalIdToVerify, externalNameToVerify).then(
-        () => {
-          setOrgToVerify(null);
-        }
-      );
+      await submitIdentityVerified(externalIdToVerify, externalNameToVerify);
     } catch (e) {
       console.error(e);
+      return Promise.reject();
     }
-
+    setVerifyInProgress(false);
+    setOrgToVerify(null);
     refetch();
-  };
 
+    return Promise.resolve();
+  };
+  const handleClose = () => {
+    setOrgToVerify(null);
+    setVerifyInProgress(false);
+  };
   const orgRows = () => {
     if (loading) {
       return (
@@ -189,14 +195,12 @@ const PendingOrganizations = ({
             {orgToVerify ? (
               <ConfirmOrgVerificationModal
                 organization={orgToVerify}
-                setOrgToVerify={setOrgToVerify}
-                setVerifyInProgress={setVerfiyInProgress}
-                handleConfirmOrg={handleConfirmOrg}
-                handleUpdateOrg={handleUpdateOrg}
+                handleVerify={handleConfirmOrg}
+                handleUpdate={handleUpdateOrg}
+                handleClose={handleClose}
                 isUpdating={isUpdating}
                 orgUsingOldSchema={checkIfOrgIsUsingOldOrgSchema(orgToVerify)}
                 isVerifying={verifyInProgress}
-                showNotification={showNotification}
               />
             ) : null}
             <div className="usa-card__header">

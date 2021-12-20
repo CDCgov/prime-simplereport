@@ -2,24 +2,25 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import Modal from "react-modal";
 
+import Alert from "../../commonComponents/Alert";
 import { PendingOrganization } from "../../../generated/graphql";
 import Button from "../../commonComponents/Button/Button";
 import Input from "../../commonComponents/Input";
 import { isFieldValid, isFormValid } from "../../utils/yupHelpers";
-import Alert from "../../commonComponents/Alert";
 
 import {
+  EditOrgMutationResponse,
   PendingOrganizationFormValues,
   pendingOrganizationSchema,
 } from "./utils";
 
 interface ModalProps {
   organization: PendingOrganization;
-  setOrgToVerify: (organization: PendingOrganization | null) => void;
-  setVerifyInProgress: (v: boolean) => void;
-  handleConfirmOrg: (organization: PendingOrganizationFormValues) => void;
-  handleUpdateOrg: (organization: PendingOrganizationFormValues) => void;
-  showNotification: (notif: JSX.Element) => void;
+  handleUpdate: (
+    organization: PendingOrganizationFormValues
+  ) => Promise<EditOrgMutationResponse>;
+  handleVerify: (organization: PendingOrganizationFormValues) => Promise<void>;
+  handleClose: () => void;
   isUpdating: boolean;
   isVerifying: boolean;
   orgUsingOldSchema: boolean;
@@ -32,11 +33,9 @@ type PendingOrganizationErrors = Record<
 
 const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
   organization,
-  setOrgToVerify,
-  setVerifyInProgress,
-  handleConfirmOrg,
-  handleUpdateOrg,
-  showNotification,
+  handleUpdate,
+  handleClose,
+  handleVerify,
   isUpdating,
   isVerifying,
   orgUsingOldSchema,
@@ -67,23 +66,6 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
     );
   };
 
-  const onClose = () => {
-    setOrgToVerify(null);
-    setVerifyInProgress(false);
-  };
-
-  const onSubmit = () => {
-    setVerifyInProgress(true);
-    handleConfirmOrg(org);
-  };
-  const onEdit = () => {
-    handleUpdateOrg(org);
-    setOrgToVerify(null);
-    const updateMessage = `${org.name} details updated`;
-
-    showNotification(<Alert type="success" title={updateMessage} body="" />);
-  };
-
   const getValidationStatus = (field: keyof PendingOrganizationFormValues) =>
     errors[field] ? "error" : undefined;
 
@@ -99,7 +81,7 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
       schema: pendingOrganizationSchema,
     });
     if (validation.valid) {
-      onEdit();
+      handleUpdate(org);
     } else {
       setErrors(validation.errors);
     }
@@ -111,7 +93,7 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
       schema: pendingOrganizationSchema,
     });
     if (validation.valid) {
-      onSubmit();
+      handleVerify(org);
     } else {
       setErrors(validation.errors);
     }
@@ -146,7 +128,7 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
             Organization details
           </h1>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="close-button"
             data-testid="close-modal"
             aria-label="Close"
@@ -196,7 +178,7 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
           <div className="display-flex flex-justify-end">
             <Button
               className="margin-right-2"
-              onClick={onClose}
+              onClick={handleClose}
               variant="unstyled"
               label="Cancel"
             />

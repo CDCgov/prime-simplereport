@@ -312,15 +312,16 @@ describe("PendingOrganizationsContainer", () => {
       userEvent.click(Array.from(await screen.findAllByText("Edit/Verify"))[1]);
       userEvent.click(screen.getByText("Verify", { exact: true }));
       expect(
-        await screen.findByText("An Old Schema Org with Nulls", {
-          exact: false,
-        })
-      ).not.toBeInTheDocument();
-      expect(
         await screen.findByText("An Old Schema Org with Date", {
           exact: false,
         })
       ).toBeInTheDocument();
+
+      await waitForElementToBeRemoved(
+        screen.queryByText("An Old Schema Org with Nulls", {
+          exact: false,
+        })
+      );
     });
   });
   describe("organizations loaded", () => {
@@ -451,7 +452,6 @@ describe("PendingOrganizationsContainer", () => {
           expect(
             screen.getByLabelText("Organization name", { exact: false })
           ).toHaveValue("DC Space Camp");
-
           await waitForElementToBeRemoved(
             screen.queryByText("Organization details")
           );
@@ -489,9 +489,6 @@ describe("PendingOrganizationsContainer", () => {
         expect(
           await screen.findByText("A Real Hospital", { exact: false })
         ).toBeInTheDocument();
-        await waitForElementToBeRemoved(
-          screen.queryByText("Space Camp", { exact: true })
-        );
       });
     });
   });
@@ -534,9 +531,14 @@ describe("PendingOrganizationsContainer", () => {
         "DC Space Camp"
       );
       expect(
+        screen.getByLabelText("Organization name", {
+          exact: false,
+        })
+      ).toHaveValue("DC Space Camp");
+      userEvent.click(screen.getByText("Verify"));
+      expect(
         await screen.findByText("A Real Hospital", { exact: false })
       ).toBeInTheDocument();
-
       expect(
         screen.queryByText("DC Space Camp", { exact: false })
       ).not.toBeInTheDocument();
