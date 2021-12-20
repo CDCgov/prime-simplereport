@@ -15,9 +15,11 @@ import {
 
 interface ModalProps {
   organization: PendingOrganization;
-  onClose: () => void;
-  onSubmit: (organization: PendingOrganizationFormValues) => void;
-  onEdit: (organization: PendingOrganizationFormValues) => void;
+  setOrgToVerify: (organization: PendingOrganization | null) => void;
+  setVerifyInProgress: (v: boolean) => void;
+  handleConfirmOrg: (organization: PendingOrganizationFormValues) => void;
+  handleUpdateOrg: (organization: PendingOrganizationFormValues) => void;
+  showNotification: (notif: JSX.Element) => void;
   isUpdating: boolean;
   isVerifying: boolean;
   orgUsingOldSchema: boolean;
@@ -30,9 +32,11 @@ type PendingOrganizationErrors = Record<
 
 const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
   organization,
-  onClose,
-  onSubmit,
-  onEdit,
+  setOrgToVerify,
+  setVerifyInProgress,
+  handleConfirmOrg,
+  handleUpdateOrg,
+  showNotification,
   isUpdating,
   isVerifying,
   orgUsingOldSchema,
@@ -63,6 +67,23 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
     );
   };
 
+  const onClose = () => {
+    setOrgToVerify(null);
+    setVerifyInProgress(false);
+  };
+
+  const onSubmit = () => {
+    setVerifyInProgress(true);
+    handleConfirmOrg(org);
+  };
+  const onEdit = () => {
+    handleUpdateOrg(org);
+    setOrgToVerify(null);
+    showNotification(
+      <Alert type="success" title="Organization details updated" body="" />
+    );
+  };
+
   const getValidationStatus = (field: keyof PendingOrganizationFormValues) =>
     errors[field] ? "error" : undefined;
 
@@ -78,7 +99,7 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
       schema: pendingOrganizationSchema,
     });
     if (validation.valid) {
-      onEdit(org);
+      onEdit();
     } else {
       setErrors(validation.errors);
     }
@@ -90,7 +111,7 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
       schema: pendingOrganizationSchema,
     });
     if (validation.valid) {
-      onSubmit(org);
+      onSubmit();
     } else {
       setErrors(validation.errors);
     }
@@ -141,7 +162,7 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
           <div data-testid="old-schema-explanation">
             <Alert
               type="warning"
-              title={"Need to edit information for this organization?"}
+              title={"Need to edit organization details?"}
               body="You'll need to verify identity first, then contact support@simplereport.gov to request changes to organization information."
             />
           </div>

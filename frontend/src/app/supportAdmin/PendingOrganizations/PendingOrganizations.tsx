@@ -13,10 +13,12 @@ import ConfirmOrgVerificationModal from "./ConfirmOrgVerificationModal";
 
 interface Props {
   organizations: PendingOrganization[];
-  submitIdentityVerified: (externalId: string) => boolean;
+  submitIdentityVerified: (externalId: string, name: string) => Promise<void>;
   loading: boolean;
   verifyInProgress: boolean;
+  setVerfiyInProgress: (verifyInProgress: boolean) => void;
   refetch: () => void;
+  showNotification: (notif: JSX.Element) => void;
 }
 
 const phoneUtil = PhoneNumberUtil.getInstance();
@@ -27,6 +29,8 @@ const PendingOrganizations = ({
   loading,
   refetch,
   verifyInProgress,
+  setVerfiyInProgress,
+  showNotification,
 }: Props) => {
   const [orgToVerify, setOrgToVerify] = useState<PendingOrganization | null>(
     null
@@ -88,6 +92,8 @@ const PendingOrganizations = ({
       // empty states
 
       let externalIdToVerify = orgToVerify.externalId;
+      let externalNameToVerify = orgToVerify.name;
+
       let k: keyof typeof org;
       let anyValueDifferent = false;
       for (k in org) {
@@ -111,8 +117,13 @@ const PendingOrganizations = ({
           external ID. Check for errors and try again`);
         }
         externalIdToVerify = updatedOrgExternalId;
+        externalNameToVerify = org.name;
       }
-      submitIdentityVerified(externalIdToVerify);
+      submitIdentityVerified(externalIdToVerify, externalNameToVerify).then(
+        () => {
+          setOrgToVerify(null);
+        }
+      );
     } catch (e) {
       console.error(e);
     }
@@ -178,17 +189,14 @@ const PendingOrganizations = ({
             {orgToVerify ? (
               <ConfirmOrgVerificationModal
                 organization={orgToVerify}
-                onClose={() => {
-                  setOrgToVerify(null);
-                }}
-                onSubmit={(org) => {
-                  handleConfirmOrg(org);
-                  setOrgToVerify(null);
-                }}
-                onEdit={handleUpdateOrg}
+                setOrgToVerify={setOrgToVerify}
+                setVerifyInProgress={setVerfiyInProgress}
+                handleConfirmOrg={handleConfirmOrg}
+                handleUpdateOrg={handleUpdateOrg}
                 isUpdating={isUpdating}
                 orgUsingOldSchema={checkIfOrgIsUsingOldOrgSchema(orgToVerify)}
                 isVerifying={verifyInProgress}
+                showNotification={showNotification}
               />
             ) : null}
             <div className="usa-card__header">

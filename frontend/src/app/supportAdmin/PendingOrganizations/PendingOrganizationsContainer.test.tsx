@@ -1,4 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 
@@ -268,7 +272,7 @@ describe("PendingOrganizationsContainer", () => {
     it("shows disabled modal with copy text for nulled fields", () => {
       userEvent.click(screen.getAllByText("Edit/Verify")[1]);
       expect(
-        screen.getByText("Organization details", { exact: false })
+        screen.getByText("Organization details", { exact: true })
       ).toBeInTheDocument();
       expect(
         screen.getByLabelText("Organization name", { exact: false })
@@ -283,7 +287,7 @@ describe("PendingOrganizationsContainer", () => {
     it("shows disabled modal with copy text for old date org", () => {
       userEvent.click(screen.getAllByText("Edit/Verify")[0]);
       expect(
-        screen.getByText("Organization details", { exact: false })
+        screen.getByText("Organization details", { exact: true })
       ).toBeInTheDocument();
       expect(
         screen.getByLabelText("Organization name", { exact: false })
@@ -374,7 +378,7 @@ describe("PendingOrganizationsContainer", () => {
       });
       it("populates modal", () => {
         expect(
-          screen.getByText("Organization details", { exact: false })
+          screen.getByText("Organization details", { exact: true })
         ).toBeInTheDocument();
         expect(
           screen.getByText("Space Camp", { exact: false })
@@ -443,19 +447,14 @@ describe("PendingOrganizationsContainer", () => {
           expect(
             screen.getByLabelText("Organization name", { exact: false })
           ).toHaveValue("DC Space Camp");
-
           userEvent.click(screen.getByText("Update only", { exact: false }));
           expect(
             screen.getByLabelText("Organization name", { exact: false })
           ).toHaveValue("DC Space Camp");
-          expect(
-            await screen.findByText(
-              "DC-Space-Camp-fg413d4-btc5-449f-98b0-2e02abb7aae0",
-              {
-                exact: false,
-              }
-            )
-          ).toBeInTheDocument();
+
+          await waitForElementToBeRemoved(
+            screen.queryByText("Organization details")
+          );
         });
       });
     });
@@ -488,11 +487,11 @@ describe("PendingOrganizationsContainer", () => {
         );
         userEvent.click(screen.getByText("Verify"));
         expect(
-          await screen.findByText("Space Camp", { exact: false })
-        ).not.toBeInTheDocument();
-        expect(
           await screen.findByText("A Real Hospital", { exact: false })
         ).toBeInTheDocument();
+        await waitForElementToBeRemoved(
+          screen.queryByText("Organization details")
+        );
       });
     });
   });
@@ -534,16 +533,10 @@ describe("PendingOrganizationsContainer", () => {
         }),
         "DC Space Camp"
       );
-      userEvent.click(screen.getByText("Verify", { exact: true }));
-      // new title should be in the submit verification alert banner
-      expect(
-        await screen.findByText("DC-Space-Camp", { exact: false })
-      ).toBeInTheDocument();
       expect(
         await screen.findByText("A Real Hospital", { exact: false })
       ).toBeInTheDocument();
 
-      // after alert banner disappears, we shouldn't find it on screen.
       expect(
         screen.queryByText("DC Space Camp", { exact: false })
       ).not.toBeInTheDocument();
