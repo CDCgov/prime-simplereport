@@ -73,7 +73,7 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
     var org = _dataFactory.createValidOrg();
     var facility = _dataFactory.createValidFacility(org);
     facility.getDeviceTypes().forEach(facility::removeDeviceType);
-    assertThat(facility.getDeviceTypes()).hasSize(0);
+    assertThat(facility.getDeviceTypes()).isEmpty();
 
     // WHEN only a facility device specimen type is configured
     facility.addDeviceSpecimenType(facilityDeviceSpecimenType);
@@ -107,7 +107,7 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
     var org = _dataFactory.createValidOrg();
     var facility = _dataFactory.createValidFacility(org);
     facility.getDeviceTypes().forEach(facility::removeDeviceType);
-    assertThat(facility.getDeviceTypes()).hasSize(0);
+    assertThat(facility.getDeviceTypes()).isEmpty();
 
     // WHEN only a facility device specimen type is configured
     facility.addDeviceSpecimenType(facilityDeviceSpecimenType);
@@ -121,6 +121,6 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
     facility.removeDeviceType(facilityDeviceSpecimenType.getDeviceType());
 
     // THEN
-    assertThat(facility.getDeviceTypes()).hasSize(0);
+    assertThat(facility.getDeviceTypes()).isEmpty();
   }
 }

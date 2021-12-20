@@ -118,8 +118,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             eq("DOOOOOOM"));
 
     List<UUID> deviceIds = deviceIdTypeCaptor.getValue();
-    assertThat(deviceIds).hasSize(1);
-    assertThat(deviceIds).contains(deviceId);
+    assertThat(deviceIds).hasSize(1).contains(deviceId);
   }
 
   @Test
@@ -182,8 +181,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             any());
 
     List<UUID> deviceIds = deviceIdTypeCaptor.getValue();
-    assertThat(deviceIds).hasSize(1);
-    assertThat(deviceIds).contains(deviceId);
+    assertThat(deviceIds).hasSize(1).contains(deviceId);
   }
 
   @Test
@@ -240,8 +238,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             deviceIdTypeCaptor.capture());
 
     List<UUID> deviceIds = deviceIdTypeCaptor.getValue();
-    assertThat(deviceIds).hasSize(1);
-    assertThat(deviceIds).contains(deviceId);
+    assertThat(deviceIds).hasSize(1).contains(deviceId);
   }
 
   @Test
@@ -303,8 +300,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             deviceIdTypeCaptor.capture());
 
     List<UUID> deviceIds = deviceIdTypeCaptor.getValue();
-    assertThat(deviceIds).hasSize(1);
-    assertThat(deviceIds).contains(deviceId);
+    assertThat(deviceIds).hasSize(1).contains(deviceId);
   }
 
   @Test

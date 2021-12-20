@@ -122,8 +122,6 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
     .of(deviceTypeSchema)
     .min(1, "There must be at least one device")
     .required("There must be at least one device"),
-  // TODO: don't require validation of _all_ Facility properties
-  defaultDevice: yup.mixed().optional(),
   orderingProvider: providerSchema.nullable(),
   phone: yup
     .string()

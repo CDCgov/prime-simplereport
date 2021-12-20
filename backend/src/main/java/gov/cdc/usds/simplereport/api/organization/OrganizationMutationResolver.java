@@ -74,13 +74,12 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     List<UUID> deviceIdsFromDeviceSpecimenTypes =
         deviceSpecimenTypes.stream()
             .map(
-                id -> {
-                  return deviceSpecimenTypeRepository
-                      .findById(id)
-                      .map(DeviceSpecimenType::getDeviceType)
-                      .map(IdentifiedEntity::getInternalId)
-                      .orElse(null);
-                })
+                id ->
+                    deviceSpecimenTypeRepository
+                        .findById(id)
+                        .map(DeviceSpecimenType::getDeviceType)
+                        .map(IdentifiedEntity::getInternalId)
+                        .orElse(null))
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
@@ -203,13 +202,12 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     List<UUID> deviceIdsFromDeviceSpecimenTypes =
         deviceSpecimenTypes.stream()
             .map(
-                id -> {
-                  return deviceSpecimenTypeRepository
-                      .findById(id)
-                      .map(DeviceSpecimenType::getDeviceType)
-                      .map(IdentifiedEntity::getInternalId)
-                      .orElse(null);
-                })
+                id ->
+                    deviceSpecimenTypeRepository
+                        .findById(id)
+                        .map(DeviceSpecimenType::getDeviceType)
+                        .map(IdentifiedEntity::getInternalId)
+                        .orElse(null))
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
