@@ -18,8 +18,7 @@
 ## Checklist for Author and Reviewer
 
 ### Design
-- [ ] Any changes to the UI/UX are approved by design 
-- [ ] Any new or updated content (e.g. error messages) are approved by design 
+- [ ] Any UI/UX changes have a designer as a reviewer, and changes have been approved
 - [ ] Any large-scale changes have been deployed to `test`, `dev`, or `pentest` and smoke-tested by both the engineering and design teams
 
 ### Content
