@@ -105,6 +105,10 @@ export type Facility = {
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   defaultDeviceSpecimen?: Maybe<Scalars["ID"]>;
+  /** @deprecated kept for compatibility */
+  defaultDeviceType?: Maybe<DeviceType>;
+  /** @deprecated kept for compatibility */
+  deviceSpecimenTypes?: Maybe<Array<Maybe<DeviceSpecimenType>>>;
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
   email?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
@@ -980,7 +984,6 @@ export type GetFacilitiesQuery = {
       zipCode?: Maybe<string>;
       phone?: Maybe<string>;
       email?: Maybe<string>;
-      defaultDeviceSpecimen?: Maybe<string>;
       deviceTypes?: Maybe<
         Array<
           Maybe<{ __typename?: "DeviceType"; name: string; internalId: string }>
@@ -1081,33 +1084,6 @@ export type GetManagedFacilitiesQuery = {
       id: string;
       cliaNumber?: Maybe<string>;
       name: string;
-      street?: Maybe<string>;
-      streetTwo?: Maybe<string>;
-      city?: Maybe<string>;
-      state?: Maybe<string>;
-      zipCode?: Maybe<string>;
-      phone?: Maybe<string>;
-      email?: Maybe<string>;
-      defaultDeviceSpecimen?: Maybe<string>;
-      deviceTypes?: Maybe<
-        Array<
-          Maybe<{ __typename?: "DeviceType"; internalId: string; name: string }>
-        >
-      >;
-      orderingProvider?: Maybe<{
-        __typename?: "Provider";
-        firstName?: Maybe<string>;
-        middleName?: Maybe<string>;
-        lastName?: Maybe<string>;
-        suffix?: Maybe<string>;
-        NPI?: Maybe<string>;
-        street?: Maybe<string>;
-        streetTwo?: Maybe<string>;
-        city?: Maybe<string>;
-        state?: Maybe<string>;
-        zipCode?: Maybe<string>;
-        phone?: Maybe<string>;
-      }>;
     }>;
   }>;
 };
@@ -2236,7 +2212,6 @@ export const GetFacilitiesDocument = gql`
           name
           internalId
         }
-        defaultDeviceSpecimen
         orderingProvider {
           firstName
           middleName
@@ -2540,31 +2515,6 @@ export const GetManagedFacilitiesDocument = gql`
         id
         cliaNumber
         name
-        street
-        streetTwo
-        city
-        state
-        zipCode
-        phone
-        email
-        defaultDeviceSpecimen
-        deviceTypes {
-          internalId
-          name
-        }
-        orderingProvider {
-          firstName
-          middleName
-          lastName
-          suffix
-          NPI
-          street
-          streetTwo
-          city
-          state
-          zipCode
-          phone
-        }
       }
     }
   }
