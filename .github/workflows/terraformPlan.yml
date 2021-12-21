@@ -1,0 +1,26 @@
+name: Ad-hoc Terraform Plan
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: "Environment target"
+        required: true
+        default: "prod" 
+
+jobs:
+  terraform-plan:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - uses: actions/checkout@v2
+        - uses: azure/login@v1
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+        - uses: hashicorp/setup-terraform@v1
+          with:
+            terraform_version: 0.15.1
+        - name: Terraform plan
+          run: make plan-${{ github.event.inputs.env }}        

@@ -46,6 +46,10 @@ init-%: .valid-env-%
 	terraform -chdir=$*/persistent init
 	terraform -chdir=$* init
 
+plan-%: .valid-env-% api.tfvars
+	terraform -chdir=$*/persistent plan
+	terraform -chdir=$* plan -var-file=../api.tfvars	
+
 deploy-%: .valid-env-% api.tfvars
 	terraform -chdir=$*/persistent apply -auto-approve
 	terraform -chdir=$* apply -auto-approve -var-file=../api.tfvars
