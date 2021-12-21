@@ -40,7 +40,6 @@ const validFacility: Facility = {
     city: null,
   },
   deviceTypes: devices,
-  //defaultDevice: devices[0].internalId,
 };
 
 // Hardcoded suggestion scenarios
@@ -597,17 +596,13 @@ describe("FacilityForm", () => {
       const deleteButtons = await screen.findAllByLabelText("Delete device");
       expect(deleteButtons).toHaveLength(2);
       userEvent.click(deleteButtons[0]);
-      userEvent.click(deleteButtons[1]);
+      userEvent.click(deleteButtons[0]);
 
-      // TODO: why is this necessary...?
-      const updatedButton = await screen.findAllByLabelText("Delete device");
-      userEvent.click(updatedButton[0]);
       expect(
         await screen.findByText("There are currently no devices", {
           exact: false,
         })
       ).toBeInTheDocument();
-      //expect(await screen.findAllByLabelText("Delete device")).not.toBeInTheDocument();
 
       // Attempt save
       const saveButtons = await screen.findAllByText("Save changes");

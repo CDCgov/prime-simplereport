@@ -10,31 +10,6 @@ const GET_FACILITIES = gql`
         id
         cliaNumber
         name
-        street
-        streetTwo
-        city
-        state
-        zipCode
-        phone
-        email
-        defaultDeviceSpecimen
-        deviceTypes {
-          internalId
-          name
-        }
-        orderingProvider {
-          firstName
-          middleName
-          lastName
-          suffix
-          NPI
-          street
-          streetTwo
-          city
-          state
-          zipCode
-          phone
-        }
       }
     }
   }

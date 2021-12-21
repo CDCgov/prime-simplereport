@@ -27,7 +27,6 @@ export const GET_FACILITY_QUERY = gql`
           name
           internalId
         }
-        defaultDeviceSpecimen
         orderingProvider {
           firstName
           middleName
