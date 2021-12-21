@@ -27,8 +27,8 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Use prod Okta token if required
         if: ${{ github.event.inputs.env == 'prod' || github.event.inputs.env == 'stg' }}
-        env: 
-          OKTA_API_TOKEN: ${{ secrets.OKTA_API_TOKEN_PROD }} 
+        run: |
+          echo "OKTA_API_TOKEN=${{ secrets.OKTA_API_TOKEN_PROD }}" >> "$GITHUB_ENV"
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 0.15.1
