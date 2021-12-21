@@ -52,7 +52,6 @@ jobs:
           done
 
   terraform-plan:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     needs: [check-terraform-validity]
     env: # all Azure interaction is through terraform
