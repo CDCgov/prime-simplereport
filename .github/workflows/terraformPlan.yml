@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./frontend
+        working-directory: ./ops
     env: # all Azure interaction is through Terraform
       ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
