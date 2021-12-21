@@ -125,6 +125,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     {
       variables: {
         facilityId: activeFacilityId,
+        fetchPolicy: "no-cache",
       },
     }
   );

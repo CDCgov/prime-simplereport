@@ -93,8 +93,9 @@ const ManageDevices: React.FC<Props> = ({
 
       return (
         <tr key={idx}>
-          <td className="">
+          <td>
             <Dropdown
+              className="padding-0 margin-0"
               options={deviceDropdownOptions}
               selectedValue={deviceId}
               onChange={(e) =>
@@ -103,9 +104,9 @@ const ManageDevices: React.FC<Props> = ({
               data-testid={`device-dropdown-${idx}`}
             />
           </td>
-          <td className="">
+          <td>
             <button
-              className="usa-button--unstyled"
+              className="usa-button--unstyled margin-top-05em margin-left-2"
               onClick={() => onDeviceRemove(idx)}
               aria-label="Delete device"
             >
