@@ -17,6 +17,9 @@
 
 ## Checklist for Author and Reviewer
 
+### Infrastructure
+- [ ] **Consult the results of the `terraform-plan` job inside the "Terraform Checks" workflow run for this PR. Confirm that there are no unexpected changes!**
+
 ### UI
 - [ ] Any changes to the UI/UX are approved by design 
 - [ ] Any new or updated content (e.g. error messages) are approved by design 
