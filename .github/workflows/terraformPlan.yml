@@ -32,5 +32,7 @@ jobs:
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 0.15.1
+      - name: Terraform Init
+        run: make init-${{ github.event.inputs.env }}       
       - name: Terraform plan
         run: make plan-${{ github.event.inputs.env }}        
