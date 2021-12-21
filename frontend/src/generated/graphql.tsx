@@ -156,6 +156,7 @@ export type Mutation = {
   updateRegistrationLink?: Maybe<Scalars["String"]>;
   updateTimeOfTestQuestions?: Maybe<Scalars["String"]>;
   updateUser?: Maybe<User>;
+  updateUserEmail?: Maybe<User>;
   updateUserPrivileges?: Maybe<User>;
   uploadPatients?: Maybe<Scalars["String"]>;
 };
@@ -491,6 +492,11 @@ export type MutationUpdateUserArgs = {
   middleName?: Maybe<Scalars["String"]>;
   name?: Maybe<NameInput>;
   suffix?: Maybe<Scalars["String"]>;
+};
+
+export type MutationUpdateUserEmailArgs = {
+  email?: Maybe<Scalars["String"]>;
+  id: Scalars["ID"];
 };
 
 export type MutationUpdateUserPrivilegesArgs = {
@@ -1272,6 +1278,29 @@ export type ResendActivationEmailMutation = {
     email: string;
     status?: Maybe<string>;
   }>;
+};
+
+export type UpdateUserNameMutationVariables = Exact<{
+  id: Scalars["ID"];
+  firstName: Scalars["String"];
+  middleName?: Maybe<Scalars["String"]>;
+  lastName: Scalars["String"];
+  suffix?: Maybe<Scalars["String"]>;
+}>;
+
+export type UpdateUserNameMutation = {
+  __typename?: "Mutation";
+  updateUser?: Maybe<{ __typename?: "User"; id: string }>;
+};
+
+export type EditUserEmailMutationVariables = Exact<{
+  id: Scalars["ID"];
+  email?: Maybe<Scalars["String"]>;
+}>;
+
+export type EditUserEmailMutation = {
+  __typename?: "Mutation";
+  updateUserEmail?: Maybe<{ __typename?: "User"; id: string; email: string }>;
 };
 
 export type GetTopLevelDashboardMetricsNewQueryVariables = Exact<{
@@ -3313,6 +3342,122 @@ export type ResendActivationEmailMutationResult = Apollo.MutationResult<ResendAc
 export type ResendActivationEmailMutationOptions = Apollo.BaseMutationOptions<
   ResendActivationEmailMutation,
   ResendActivationEmailMutationVariables
+>;
+export const UpdateUserNameDocument = gql`
+  mutation UpdateUserName(
+    $id: ID!
+    $firstName: String!
+    $middleName: String
+    $lastName: String!
+    $suffix: String
+  ) {
+    updateUser(
+      id: $id
+      firstName: $firstName
+      middleName: $middleName
+      lastName: $lastName
+      suffix: $suffix
+    ) {
+      id
+    }
+  }
+`;
+export type UpdateUserNameMutationFn = Apollo.MutationFunction<
+  UpdateUserNameMutation,
+  UpdateUserNameMutationVariables
+>;
+
+/**
+ * __useUpdateUserNameMutation__
+ *
+ * To run a mutation, you first call `useUpdateUserNameMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUserNameMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUserNameMutation, { data, loading, error }] = useUpdateUserNameMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      firstName: // value for 'firstName'
+ *      middleName: // value for 'middleName'
+ *      lastName: // value for 'lastName'
+ *      suffix: // value for 'suffix'
+ *   },
+ * });
+ */
+export function useUpdateUserNameMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateUserNameMutation,
+    UpdateUserNameMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UpdateUserNameMutation,
+    UpdateUserNameMutationVariables
+  >(UpdateUserNameDocument, options);
+}
+export type UpdateUserNameMutationHookResult = ReturnType<
+  typeof useUpdateUserNameMutation
+>;
+export type UpdateUserNameMutationResult = Apollo.MutationResult<UpdateUserNameMutation>;
+export type UpdateUserNameMutationOptions = Apollo.BaseMutationOptions<
+  UpdateUserNameMutation,
+  UpdateUserNameMutationVariables
+>;
+export const EditUserEmailDocument = gql`
+  mutation EditUserEmail($id: ID!, $email: String) {
+    updateUserEmail(id: $id, email: $email) {
+      id
+      email
+    }
+  }
+`;
+export type EditUserEmailMutationFn = Apollo.MutationFunction<
+  EditUserEmailMutation,
+  EditUserEmailMutationVariables
+>;
+
+/**
+ * __useEditUserEmailMutation__
+ *
+ * To run a mutation, you first call `useEditUserEmailMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditUserEmailMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editUserEmailMutation, { data, loading, error }] = useEditUserEmailMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      email: // value for 'email'
+ *   },
+ * });
+ */
+export function useEditUserEmailMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    EditUserEmailMutation,
+    EditUserEmailMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    EditUserEmailMutation,
+    EditUserEmailMutationVariables
+  >(EditUserEmailDocument, options);
+}
+export type EditUserEmailMutationHookResult = ReturnType<
+  typeof useEditUserEmailMutation
+>;
+export type EditUserEmailMutationResult = Apollo.MutationResult<EditUserEmailMutation>;
+export type EditUserEmailMutationOptions = Apollo.BaseMutationOptions<
+  EditUserEmailMutation,
+  EditUserEmailMutationVariables
 >;
 export const GetTopLevelDashboardMetricsNewDocument = gql`
   query GetTopLevelDashboardMetricsNew(
