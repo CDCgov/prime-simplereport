@@ -69,10 +69,7 @@ jobs:
         with:
           terraform_version: 0.15.1
       - name: Terraform Init
-        run: make init-prod
-      - name: Force off existing lock
-        run: |
-          terraform force-unlock -force e992a380-5540-c97f-c265-c66bf226c2b8 
+        run: make init-prod 
       - name: Terraform plan
         run: make plan-prod
           
