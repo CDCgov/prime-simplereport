@@ -72,5 +72,3 @@ jobs:
         run: make init-prod 
       - name: Terraform plan
         run: make plan-prod
-          
-
