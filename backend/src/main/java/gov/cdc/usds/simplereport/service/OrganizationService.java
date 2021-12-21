@@ -329,7 +329,6 @@ public class OrganizationService {
             new Provider(providerName, providerNPI, providerAddress, providerTelephone));
 
     List<DeviceType> configuredDevices = new ArrayList<>();
-
     deviceIds.stream()
         .map(deviceTypeRepository::findById)
         .forEach(deviceTypeOptional -> deviceTypeOptional.ifPresent(configuredDevices::add));

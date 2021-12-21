@@ -217,11 +217,12 @@ public class TestOrderService {
       if (deviceSpecimenTypeId != null) {
         DeviceSpecimenType deviceSpecimenType = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
 
-        order.setDeviceSpecimen(deviceSpecimenType);
-
-        // Set the most-recently configured device specimen for a facility's
-        // test as facility default
-        order.getFacility().addDefaultDeviceSpecimen(deviceSpecimenType);
+        if (deviceSpecimenType != null) {
+          order.setDeviceSpecimen(deviceSpecimenType);
+          // Set the most-recently configured device specimen for a facility's
+          // test as facility default
+          order.getFacility().addDefaultDeviceSpecimen(deviceSpecimenType);
+        }
       }
 
       order.setResult(result == null ? null : TestResult.valueOf(result));
@@ -333,7 +334,8 @@ public class TestOrderService {
 
     if (testFacility.getDefaultDeviceSpecimen() == null) {
       testFacility.addDefaultDeviceSpecimen(
-          _dts.getDefaultForDeviceId(testFacility.getDeviceTypes().get(0).getInternalId()));
+          _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(
+              testFacility.getDeviceTypes().get(0).getInternalId()));
     }
 
     TestOrder newOrder = new TestOrder(patient, testFacility);

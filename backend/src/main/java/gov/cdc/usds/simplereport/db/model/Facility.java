@@ -103,7 +103,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     return facilityName;
   }
 
-  @Deprecated(forRemoval = true)
   public DeviceType getDefaultDeviceType() {
     return this.defaultDeviceSpecimen == null ? null : this.defaultDeviceSpecimen.getDeviceType();
   }
@@ -116,6 +115,16 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   public List<DeviceType> getDeviceTypes() {
     initializeDeviceTypesSet();
     return configuredDeviceTypes.stream().filter(e -> !e.isDeleted()).collect(Collectors.toList());
+  }
+
+  public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
+    return configuredDeviceSpecimenTypes.stream()
+        .filter(
+            e ->
+                !(e.isDeleted()
+                    || e.getSpecimenType().isDeleted()
+                    || e.getDeviceType().isDeleted()))
+        .collect(Collectors.toList());
   }
 
   private void initializeDeviceTypesSet() {
@@ -132,7 +141,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     }
   }
 
-  @Deprecated(forRemoval = true)
   public void addDeviceSpecimenType(DeviceSpecimenType ds) {
     configuredDeviceSpecimenTypes.add(ds);
   }

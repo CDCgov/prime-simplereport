@@ -31,6 +31,8 @@ type Facility {
   email: String
   deviceTypes: [DeviceType]
   defaultDeviceSpecimen: ID
+  deviceSpecimenTypes: [DeviceSpecimenType] @deprecated(reason: "kept for compatibility")
+  defaultDeviceType: DeviceType @deprecated(reason: "kept for compatibility")
   orderingProvider: Provider
   patientSelfRegistrationLink: String
 }
