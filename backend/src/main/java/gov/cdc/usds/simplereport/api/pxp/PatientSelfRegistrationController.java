@@ -106,7 +106,6 @@ public class PatientSelfRegistrationController {
         body.getFirstName(),
         body.getLastName(),
         body.getBirthDate(),
-        body.getPostalCode(),
         link.getOrganization(),
         Optional.ofNullable(link.getFacility()));
   }

@@ -318,6 +318,12 @@ type Query {
     zipCode: String!
     facilityId: ID
   ): Boolean
+  patientExistsWithoutZip(
+    firstName: String!
+    lastName: String!
+    birthDate: LocalDate!
+    facilityId: ID
+  ): Boolean
   queue(facilityId: ID!): [TestOrder]
     @requiredPermissions(anyOf: ["START_TEST", "UPDATE_TEST", "SUBMIT_TEST"])
   specimenTypes: [SpecimenType!]!
@@ -442,6 +448,7 @@ type Mutation {
     role: Role!
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   resetUserPassword(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
+  updateUserEmail(id: ID!, email: String): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   setUserIsDeleted(id: ID!, deleted: Boolean!): User
     @requiredPermissions(allOf: ["MANAGE_USERS"])
   reactivateUser(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])

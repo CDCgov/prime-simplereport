@@ -7,6 +7,8 @@ import {
   Maybe,
   useGetUsersAndStatusQuery,
   useResendActivationEmailMutation,
+  useUpdateUserNameMutation,
+  useEditUserEmailMutation,
   UserPermission,
 } from "../../../generated/graphql";
 
@@ -18,6 +20,7 @@ export interface SettingsUser {
   firstName?: Maybe<string>;
   middleName?: Maybe<string>;
   lastName: string;
+  suffix?: Maybe<string>;
   roleDescription: string;
   role?: Maybe<Role>;
   permissions: UserPermission[];
@@ -34,6 +37,7 @@ export interface LimitedUser {
   firstName?: Maybe<string>;
   middleName?: Maybe<string>;
   lastName: string;
+  suffix?: string;
   email: string;
   status?: Maybe<string>;
 }
@@ -116,6 +120,8 @@ const ManageUsersContainer = () => {
   const [deleteUser] = useMutation(DELETE_USER);
   const [reactivateUser] = useMutation(REACTIVATE_USER);
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
+  const [updateUserName] = useUpdateUserNameMutation();
+  const [updateUserEmail] = useEditUserEmailMutation();
   const [resetPassword] = useMutation(RESET_USER_PASSWORD);
   const [resendUserActivationEmail] = useResendActivationEmailMutation();
 
@@ -145,6 +151,8 @@ const ManageUsersContainer = () => {
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}
       addUserToOrg={addUserToOrg}
+      updateUserName={updateUserName}
+      updateUserEmail={updateUserEmail}
       resetUserPassword={resetPassword}
       deleteUser={deleteUser}
       reactivateUser={reactivateUser}

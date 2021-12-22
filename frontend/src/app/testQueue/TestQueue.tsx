@@ -67,6 +67,7 @@ export const queueQuery = gql`
         testResultDelivery
         preferredLanguage
         email
+        emails
         phoneNumbers {
           type
           number

@@ -1,0 +1,47 @@
+{
+  "id": "c31487c5-4a90-4cba-aaa9-68594fd67fbe",
+  "name": "api_v1_apps_0oa1k0163nawfvxnw1d7",
+  "request": {
+    "url": "/api/v1/apps/0oa1k0163nAwfVxNW1d7",
+    "method": "PUT",
+    "bodyPatterns": [
+      {
+        "equalToJson": "{\"settings\":{\"app\":{},\"notes\":{\"admin\":null,\"enduser\":null},\"notifications\":{\"vpn\":{\"network\":{\"connection\":\"DISABLED\"},\"message\":null,\"helpUrl\":null}},\"oauthClient\":{\"client_uri\":null,\"logo_uri\":null,\"redirect_uris\":[\"http://localhost:3000\",\"http://localhost.simplereport.gov\",\"https://localhost.simplereport.gov\"],\"post_logout_redirect_uris\":[\"http://localhost:3000\"],\"response_types\":[\"code\",\"token\",\"id_token\"],\"grant_types\":[\"authorization_code\",\"implicit\"],\"initiate_login_uri\":\"http://localhost:3000\",\"application_type\":\"web\",\"consent_method\":\"TRUSTED\",\"issuer_mode\":\"ORG_URL\",\"idp_initiated_login\":{\"mode\":\"SPEC\",\"default_scope\":[]},\"wildcard_redirect\":\"DISABLED\"}},\"visibility\":{\"hide\":{\"iOS\":true,\"web\":true},\"appLinks\":{\"oidc_client_link\":true},\"autoSubmitToolbar\":false,\"autoLaunch\":false},\"accessibility\":{\"selfService\":false,\"errorRedirectUrl\":null,\"loginRedirectUrl\":null},\"credentials\":{\"signing\":{\"kid\":\"ZwmZFx6s41hggQNgWEZWq7VoTwTLuxOTBe27cVRu0cM\"},\"userNameTemplate\":{\"template\":\"${source.login}\",\"type\":\"BUILT_IN\"},\"oauthClient\":{\"autoKeyRotation\":true,\"client_id\":\"0oa1k0163nAwfVxNW1d7\",\"client_secret\":\"-Ak1v2LkDsIxC_GAD_Dwbb7xU0BYIAX91QaOYsp8\",\"token_endpoint_auth_method\":\"client_secret_basic\"}},\"_links\":{\"uploadLogo\":{\"href\":\"https://hhs-prime.oktapreview.com/api/v1/apps/0oa1k0163nAwfVxNW1d7/logo\",\"hints\":{\"allow\":[\"POST\"]}},\"appLinks\":[{\"name\":\"oidc_client_link\",\"href\":\"https://hhs-prime.oktapreview.com/home/oidc_client/0oa1k0163nAwfVxNW1d7/aln177a159h7Zf52X0g8\",\"type\":\"text/html\"}],\"groups\":{\"href\":\"https://hhs-prime.oktapreview.com/api/v1/apps/0oa1k0163nAwfVxNW1d7/groups\"},\"logo\":[{\"name\":\"medium\",\"href\":\"https://op3static.oktacdn.com/assets/img/logos/default.6770228fb0dab49a1695ef440a5279bb.png\",\"type\":\"image/png\"}],\"users\":{\"href\":\"https://hhs-prime.oktapreview.com/api/v1/apps/0oa1k0163nAwfVxNW1d7/users\"},\"deactivate\":{\"href\":\"https://hhs-prime.oktapreview.com/api/v1/apps/0oa1k0163nAwfVxNW1d7/lifecycle/deactivate\"}},\"signOnMode\":\"OPENID_CONNECT\",\"label\":\"Simple Report (local dev)\",\"features\":[],\"name\":\"oidc_client\",\"id\":\"0oa1k0163nAwfVxNW1d7\",\"status\":\"ACTIVE\"}",
+        "ignoreArrayOrder": true,
+        "ignoreExtraElements": true
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "body": "{\"id\":\"0oa1k0163nAwfVxNW1d7\",\"name\":\"oidc_client\",\"label\":\"Simple Report (local dev)\",\"status\":\"ACTIVE\",\"lastUpdated\":\"2021-12-08T23:31:09.000Z\",\"created\":\"2021-10-06T16:03:31.000Z\",\"accessibility\":{\"selfService\":false,\"errorRedirectUrl\":null,\"loginRedirectUrl\":null},\"visibility\":{\"autoLaunch\":false,\"autoSubmitToolbar\":false,\"hide\":{\"iOS\":true,\"web\":true},\"appLinks\":{\"oidc_client_link\":true}},\"features\":[],\"signOnMode\":\"OPENID_CONNECT\",\"credentials\":{\"userNameTemplate\":{\"template\":\"${source.login}\",\"type\":\"BUILT_IN\"},\"signing\":{\"kid\":\"ZwmZFx6s41hggQNgWEZWq7VoTwTLuxOTBe27cVRu0cM\"},\"oauthClient\":{\"autoKeyRotation\":true,\"client_id\":\"0oa1k0163nAwfVxNW1d7\",\"client_secret\":\"-Ak1v2LkDsIxC_GAD_Dwbb7xU0BYIAX91QaOYsp8\",\"token_endpoint_auth_method\":\"client_secret_basic\"}},\"settings\":{\"app\":{},\"notifications\":{\"vpn\":{\"network\":{\"connection\":\"DISABLED\"},\"message\":null,\"helpUrl\":null}},\"notes\":{\"admin\":null,\"enduser\":null},\"oauthClient\":{\"client_uri\":null,\"logo_uri\":null,\"redirect_uris\":[\"http://localhost:3000\",\"http://localhost.simplereport.gov\",\"https://localhost.simplereport.gov\"],\"post_logout_redirect_uris\":[\"http://localhost:3000\"],\"response_types\":[\"code\",\"token\",\"id_token\"],\"grant_types\":[\"authorization_code\",\"implicit\"],\"initiate_login_uri\":\"http://localhost:3000\",\"application_type\":\"web\",\"consent_method\":\"TRUSTED\",\"issuer_mode\":\"ORG_URL\",\"idp_initiated_login\":{\"mode\":\"SPEC\",\"default_scope\":[]},\"wildcard_redirect\":\"DISABLED\"}},\"_links\":{\"uploadLogo\":{\"href\":\"https://hhs-prime.oktapreview.com/api/v1/apps/0oa1k0163nAwfVxNW1d7/logo\",\"hints\":{\"allow\":[\"POST\"]}},\"appLinks\":[{\"name\":\"oidc_client_link\",\"href\":\"https://hhs-prime.oktapreview.com/home/oidc_client/0oa1k0163nAwfVxNW1d7/aln177a159h7Zf52X0g8\",\"type\":\"text/html\"}],\"groups\":{\"href\":\"https://hhs-prime.oktapreview.com/api/v1/apps/0oa1k0163nAwfVxNW1d7/groups\"},\"logo\":[{\"name\":\"medium\",\"href\":\"https://op3static.oktacdn.com/assets/img/logos/default.6770228fb0dab49a1695ef440a5279bb.png\",\"type\":\"image/png\"}],\"users\":{\"href\":\"https://hhs-prime.oktapreview.com/api/v1/apps/0oa1k0163nAwfVxNW1d7/users\"},\"deactivate\":{\"href\":\"https://hhs-prime.oktapreview.com/api/v1/apps/0oa1k0163nAwfVxNW1d7/lifecycle/deactivate\"}}}",
+    "headers": {
+      "Date": "Wed, 08 Dec 2021 23:31:09 GMT",
+      "Content-Type": "application/json",
+      "Server": "nginx",
+      "Public-Key-Pins-Report-Only": "pin-sha256=\"jZomPEBSDXoipA9un78hKRIeN/+U4ZteRaiX8YpWfqc=\"; pin-sha256=\"axSbM6RQ+19oXxudaOTdwXJbSr6f7AahxbDHFy3p8s8=\"; pin-sha256=\"SE4qe2vdD9tAegPwO79rMnZyhHvqj3i5g1c2HkyGUNE=\"; pin-sha256=\"ylP0lMLMvBaiHn0ihLxHjzvlPVQNoyQ+rMiaj0da/Pw=\"; max-age=60; report-uri=\"https://okta.report-uri.com/r/default/hpkp/reportOnly\"",
+      "Vary": "Accept-Encoding",
+      "x-okta-request-id": "YbFAPNReL81G@OCxLXx9hAAAA9c",
+      "x-xss-protection": "0",
+      "p3p": "CP=\"HONK\"",
+      "x-rate-limit-limit": "600",
+      "x-rate-limit-remaining": "597",
+      "x-rate-limit-reset": "1639006279",
+      "cache-control": "no-cache, no-store",
+      "pragma": "no-cache",
+      "expires": "0",
+      "content-security-policy": "default-src 'self' hhs-prime.oktapreview.com *.oktacdn.com; connect-src 'self' hhs-prime.oktapreview.com hhs-prime-admin.oktapreview.com *.oktacdn.com *.mixpanel.com *.mapbox.com app.pendo.io data.pendo.io pendo-static-5634101834153984.storage.googleapis.com hhs-prime.kerberos.oktapreview.com https://oinmanager.okta.com data:; script-src 'unsafe-inline' 'unsafe-eval' 'self' hhs-prime.oktapreview.com *.oktacdn.com; style-src 'unsafe-inline' 'self' hhs-prime.oktapreview.com *.oktacdn.com app.pendo.io cdn.pendo.io pendo-static-5634101834153984.storage.googleapis.com; frame-src 'self' hhs-prime.oktapreview.com hhs-prime-admin.oktapreview.com login.okta.com; img-src 'self' hhs-prime.oktapreview.com *.oktacdn.com *.tiles.mapbox.com *.mapbox.com app.pendo.io data.pendo.io cdn.pendo.io pendo-static-5634101834153984.storage.googleapis.com data: blob:; font-src 'self' hhs-prime.oktapreview.com data: *.oktacdn.com fonts.gstatic.com; report-uri https://okta.report-uri.com/r/d/csp/enforce; report-to csp-enforce",
+      "report-to": "{\"group\":\"csp-enforce\",\"max_age\":31536000,\"endpoints\":[{\"url\":\"https://okta.report-uri.com/r/d/csp/enforce\"}],\"include_subdomains\":true}",
+      "expect-ct": "report-uri=\"https://oktaexpectct.report-uri.com/r/t/ct/reportOnly\", max-age=0",
+      "x-content-type-options": "nosniff",
+      "Strict-Transport-Security": "max-age=315360000; includeSubDomains",
+      "set-cookie": [
+        "sid=\"\"; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/",
+        "JSESSIONID=360A95E3909C27128F795B927846D793; Path=/; Secure; HttpOnly"
+      ]
+    }
+  },
+  "uuid": "c31487c5-4a90-4cba-aaa9-68594fd67fbe",
+  "persistent": true,
+  "insertionIndex": 78
+}
