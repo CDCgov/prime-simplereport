@@ -41,3 +41,28 @@ mutation ResendActivationEmail($id: ID!) {
     status
   }
 }
+
+mutation UpdateUserName(
+  $id: ID!
+  $firstName: String!
+  $middleName: String
+  $lastName: String!
+  $suffix: String
+) {
+  updateUser(
+    id: $id
+    firstName: $firstName
+    middleName: $middleName
+    lastName: $lastName
+    suffix: $suffix
+  ) {
+    id
+  }
+}
+
+mutation EditUserEmail($id: ID!, $email: String) {
+  updateUserEmail(id: $id, email: $email) {
+    id
+    email
+  }
+}

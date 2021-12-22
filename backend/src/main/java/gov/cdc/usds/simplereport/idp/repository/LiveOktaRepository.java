@@ -12,6 +12,7 @@ import com.okta.sdk.resource.group.GroupType;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserBuilder;
 import com.okta.sdk.resource.user.UserList;
+import com.okta.sdk.resource.user.UserProfile;
 import com.okta.sdk.resource.user.UserStatus;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
@@ -245,6 +246,23 @@ public class LiveOktaRepository implements OktaRepository {
     // don't have regular suffix? You decide.
     user.getProfile().setHonorificSuffix(userIdentity.getSuffix());
     user.update();
+  }
+
+  public Optional<OrganizationRoleClaims> updateUserEmail(
+      IdentityAttributes userIdentity, String email) {
+    UserList users = _client.listUsers(userIdentity.getUsername(), null, null, null, null);
+    if (users.stream().count() == 0) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot update email of Okta user with unrecognized username");
+    }
+    User user = users.single();
+    UserProfile profile = user.getProfile();
+    profile.setLogin(email);
+    profile.setEmail(email);
+    user.setProfile(profile);
+    user.update();
+
+    return getOrganizationRoleClaimsForUser(user);
   }
 
   public void reprovisionUser(IdentityAttributes userIdentity) {
