@@ -53,9 +53,9 @@ const ManageDevices: React.FC<Props> = ({
 
   // returns a list of deviceIds that have *not* been selected so far
   const _getRemainingDeviceOptions = () =>
-    deviceTypes.filter(
-      (device) => !selectedDeviceTypeIds.includes(device.internalId)
-    );
+    deviceTypes
+      .filter((device) => !selectedDeviceTypeIds.includes(device.internalId))
+      .sort((a, b) => a.name.localeCompare(b.name));
 
   const onAddDevice = () => {
     const remainingDeviceOptions = _getRemainingDeviceOptions();
@@ -70,17 +70,7 @@ const ManageDevices: React.FC<Props> = ({
       const deviceId = device.internalId;
 
       const deviceDropdownOptions = [...(deviceTypes || [])]
-        .sort(function alphabetize(a, b) {
-          if (a.name < b.name) {
-            return -1;
-          }
-
-          if (a.name > b.name) {
-            return 1;
-          }
-
-          return 0;
-        })
+        .sort((a, b) => a.name.localeCompare(b.name))
         .map((deviceType) => {
           return {
             label: deviceType.name,
