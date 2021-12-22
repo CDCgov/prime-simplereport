@@ -2,21 +2,28 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import Modal from "react-modal";
 
+import Alert from "../../commonComponents/Alert";
 import { PendingOrganization } from "../../../generated/graphql";
 import Button from "../../commonComponents/Button/Button";
 import Input from "../../commonComponents/Input";
 import { isFieldValid, isFormValid } from "../../utils/yupHelpers";
 
 import {
+  EditOrgMutationResponse,
   PendingOrganizationFormValues,
   pendingOrganizationSchema,
 } from "./utils";
 
-interface Props {
+interface ModalProps {
   organization: PendingOrganization;
-  onClose: () => void;
-  onSubmit: (organization: PendingOrganizationFormValues) => void;
+  handleUpdate: (
+    organization: PendingOrganizationFormValues
+  ) => Promise<EditOrgMutationResponse>;
+  handleVerify: (organization: PendingOrganizationFormValues) => Promise<void>;
+  handleClose: () => void;
   isUpdating: boolean;
+  isVerifying: boolean;
+  orgUsingOldSchema: boolean;
 }
 
 type PendingOrganizationErrors = Record<
@@ -24,11 +31,14 @@ type PendingOrganizationErrors = Record<
   string
 >;
 
-const EditOrgModal: React.FC<Props> = ({
+const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
   organization,
-  onClose,
-  onSubmit,
+  handleUpdate,
+  handleClose,
+  handleVerify,
   isUpdating,
+  isVerifying,
+  orgUsingOldSchema,
 }) => {
   const [org, setOrg] = useState<PendingOrganizationFormValues>({
     name: organization.name,
@@ -71,17 +81,28 @@ const EditOrgModal: React.FC<Props> = ({
       schema: pendingOrganizationSchema,
     });
     if (validation.valid) {
-      onSubmit(org);
+      handleUpdate(org);
     } else {
       setErrors(validation.errors);
     }
   };
 
+  const onVerify = async () => {
+    const validation = await isFormValid({
+      data: org,
+      schema: pendingOrganizationSchema,
+    });
+    if (validation.valid) {
+      handleVerify(org);
+    } else {
+      setErrors(validation.errors);
+    }
+  };
   const commonInputProps = {
+    disabled: orgUsingOldSchema,
     formObject: org,
     onChange,
     required: true,
-    disabled: isUpdating,
     validate: validateField,
     errors,
     getValidationStatus,
@@ -104,9 +125,14 @@ const EditOrgModal: React.FC<Props> = ({
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">
           <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-            Edit organization
+            Organization details
           </h1>
-          <button onClick={onClose} className="close-button" aria-label="Close">
+          <button
+            onClick={handleClose}
+            className="close-button"
+            data-testid="close-modal"
+            aria-label="Close"
+          >
             <span className="fa-layers">
               <FontAwesomeIcon icon={"circle"} size="2x" inverse />
               <FontAwesomeIcon icon={"times-circle"} size="2x" />
@@ -114,6 +140,17 @@ const EditOrgModal: React.FC<Props> = ({
           </button>
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
+        {orgUsingOldSchema ? (
+          <div data-testid="old-schema-explanation">
+            <Alert
+              type="warning"
+              title={"Need to edit organization details?"}
+              body="You'll need to verify identity first, then contact support@simplereport.gov to request changes to organization information."
+            />
+          </div>
+        ) : (
+          <></>
+        )}
         <div>
           <Input {...commonInputProps} label="Organization name" field="name" />
           <Input
@@ -141,15 +178,22 @@ const EditOrgModal: React.FC<Props> = ({
           <div className="display-flex flex-justify-end">
             <Button
               className="margin-right-2"
-              onClick={onClose}
+              onClick={handleClose}
               variant="unstyled"
-              label="Go back"
+              label="Cancel"
+            />
+            <Button
+              className="margin-right-2"
+              variant="outline"
+              onClick={onSave}
+              label={isUpdating ? "Updating..." : "Update only"}
+              disabled={isVerifying || isUpdating || orgUsingOldSchema}
             />
             <Button
               className="margin-right-205"
-              onClick={onSave}
-              label={isUpdating ? "Saving..." : "Save"}
-              disabled={isUpdating}
+              onClick={onVerify}
+              label={isVerifying ? "Verifying..." : "Verify"}
+              disabled={isVerifying || isUpdating}
             />
           </div>
         </div>
@@ -158,4 +202,4 @@ const EditOrgModal: React.FC<Props> = ({
   );
 };
 
-export default EditOrgModal;
+export default ConfirmOrgVerificationModal;

@@ -130,6 +130,8 @@ You can run the app against the "Okta Preview" instance by running the backend w
 You also need to set the following in `frontend/.env.local`:
 
 ```
+REACT_APP_BACKEND_URL=http://localhost:8080
+REACT_APP_BASE_URL=http://localhost:3000
 REACT_APP_OKTA_ENABLED=true
 ```
 
