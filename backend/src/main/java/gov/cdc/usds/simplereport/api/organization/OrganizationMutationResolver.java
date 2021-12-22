@@ -71,18 +71,6 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       List<UUID> deviceSpecimenTypes,
       String defaultDeviceId) {
 
-    List<UUID> deviceIdsFromDeviceSpecimenTypes =
-        deviceSpecimenTypes.stream()
-            .map(
-                id ->
-                    deviceSpecimenTypeRepository
-                        .findById(id)
-                        .map(DeviceSpecimenType::getDeviceType)
-                        .map(IdentifiedEntity::getInternalId)
-                        .orElse(null))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-
     return addFacilityNew(
         testingFacilityName,
         cliaNumber,
@@ -105,7 +93,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         orderingProviderState,
         orderingProviderZipCode,
         orderingProviderTelephone,
-        deviceIdsFromDeviceSpecimenTypes);
+        getDeviceIdsFromDeviceSpecimenTypes(deviceSpecimenTypes));
   }
 
   public ApiFacility addFacilityNew(
@@ -199,18 +187,6 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       List<UUID> deviceSpecimenTypes,
       String defaultDeviceId) {
 
-    List<UUID> deviceIdsFromDeviceSpecimenTypes =
-        deviceSpecimenTypes.stream()
-            .map(
-                id ->
-                    deviceSpecimenTypeRepository
-                        .findById(id)
-                        .map(DeviceSpecimenType::getDeviceType)
-                        .map(IdentifiedEntity::getInternalId)
-                        .orElse(null))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-
     return updateFacilityNew(
         facilityId,
         testingFacilityName,
@@ -234,7 +210,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         orderingProviderState,
         orderingProviderZipCode,
         orderingProviderTelephone,
-        deviceIdsFromDeviceSpecimenTypes);
+        getDeviceIdsFromDeviceSpecimenTypes(deviceSpecimenTypes));
   }
 
   public ApiFacility updateFacilityNew(
@@ -429,5 +405,18 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   /** Support-only mutation to mark a facility as deleted. This is a soft deletion only. */
   public Facility markFacilityAsDeleted(UUID facilityId, boolean deleted) {
     return organizationService.markFacilityAsDeleted(facilityId, deleted);
+  }
+
+  private List<UUID> getDeviceIdsFromDeviceSpecimenTypes(List<UUID> deviceSpecimenTypes) {
+    return deviceSpecimenTypes.stream()
+        .map(
+            id ->
+                deviceSpecimenTypeRepository
+                    .findById(id)
+                    .map(DeviceSpecimenType::getDeviceType)
+                    .map(IdentifiedEntity::getInternalId)
+                    .orElse(null))
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
   }
 }
