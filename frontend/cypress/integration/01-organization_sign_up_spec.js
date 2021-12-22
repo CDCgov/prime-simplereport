@@ -33,12 +33,12 @@ describe("Organization sign up", () => {
   });
   it("navigates to the support pending org table", () => {
     cy.visit("/admin/pending-organizations");
-    cy.contains("Organizations Pending Identity Verification");
+    cy.contains("[data-cy=pending-orgs-title]");
   });
   it("verifies the org", () => {
-    cy.get('input[name="identity_verified"]+label').first().click();
-    cy.contains("Save Changes").first().click();
-    cy.contains("Identity verified for 1 organization", { timeout: 30000 });
+    cy.get(".sr-active-button").first().click();
+    cy.get("button[label='verify'").click();
+    cy.contains("Identity verified for Beach Camp", { timeout: 30000 });
   });
   it("spoofs into the org", () => {
     cy.visit("/admin/tenant-data-access");

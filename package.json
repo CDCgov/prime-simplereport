@@ -20,5 +20,8 @@
     "e2e": "cd frontend; yarn e2e; cd ..",
     "spotless": "cd backend; ./gradlew spotlessApply; cd ..",
     "db": "docker-compose -f backend/docker-compose.yml exec db psql -U postgres simple_report"
+  },
+  "dependencies": {
+    "eslint-plugin-cypress": "^2.12.1"
   }
 }
