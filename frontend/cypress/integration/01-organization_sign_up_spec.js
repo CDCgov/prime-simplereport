@@ -33,7 +33,7 @@ describe("Organization sign up", () => {
   });
   it("navigates to the support pending org table", () => {
     cy.visit("/admin/pending-organizations");
-    cy.contains("[data-cy=pending-orgs-title]");
+    cy.get("[data-cy=pending-orgs-title]").should("be.visible");
   });
   it("verifies the org", () => {
     cy.get(".sr-active-button").first().click();
