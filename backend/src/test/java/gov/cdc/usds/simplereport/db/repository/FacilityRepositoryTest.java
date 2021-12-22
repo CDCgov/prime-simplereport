@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -29,15 +30,15 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void smokeTestDeviceOperations() {
-    List<DeviceSpecimenType> configuredDevices = new ArrayList<>();
+    List<DeviceType> configuredDevices = new ArrayList<>();
     DeviceType bill = _devices.save(new DeviceType("Bill", "Weasleys", "1", "12345-6", "E", 15));
     DeviceType percy = _devices.save(new DeviceType("Percy", "Weasleys", "2", "12345-7", "E", 15));
     SpecimenType spec = _specimens.save(new SpecimenType("Troll Bogies", "0001111234"));
     DeviceSpecimenType billbogies = _deviceSpecimens.save(new DeviceSpecimenType(bill, spec));
     Provider mccoy =
         _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));
-    configuredDevices.add(billbogies);
-    configuredDevices.add(_deviceSpecimens.save(new DeviceSpecimenType(percy, spec)));
+    configuredDevices.add(bill);
+    configuredDevices.add(percy);
     Organization org = _orgs.save(new Organization("My Office", "other", "650Mass", true));
     Facility saved =
         _repo.save(
@@ -63,5 +64,63 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
     found = _repo.findById(saved.getInternalId()).get();
     assertNull(found.getDefaultDeviceType());
     assertEquals(1, found.getDeviceTypes().size());
+  }
+
+  @Test
+  void facilityAddDeviceType_backwardCompatibleWithFacilityDeviceSpecimenType() {
+    // GIVEN
+    var facilityDeviceSpecimenType = _dataFactory.getGenericDeviceSpecimen();
+    var org = _dataFactory.createValidOrg();
+    var facility = _dataFactory.createValidFacility(org);
+    facility.getDeviceTypes().forEach(facility::removeDeviceType);
+    assertThat(facility.getDeviceTypes()).isEmpty();
+
+    // WHEN only a facility device specimen type is configured
+    facility.addDeviceSpecimenType(facilityDeviceSpecimenType);
+    _repo.save(facility);
+
+    // THEN
+    assertThat(facility.getDeviceTypes()).hasSize(1);
+    assertThat(facility.getDeviceTypes()).contains(facilityDeviceSpecimenType.getDeviceType());
+
+    // WHEN adding a new device
+    facility.addDeviceType(new DeviceType("New Shiny Device", "Nue Inc", "Shiny", "123", null, 15));
+
+    // THEN
+    assertThat(facility.getDeviceTypes()).hasSize(2);
+
+    // WHEN Deleting a device
+    facility.removeDeviceType(facilityDeviceSpecimenType.getDeviceType());
+
+    // THEN
+    assertThat(facility.getDeviceTypes()).hasSize(1);
+    DeviceType device = facility.getDeviceTypes().get(0);
+    assertThat(device.getName()).isEqualTo("New Shiny Device");
+    assertThat(device.getManufacturer()).isEqualTo("Nue Inc");
+    assertThat(device.getModel()).isEqualTo("Shiny");
+  }
+
+  @Test
+  void facilityRemoveDeviceType_backwardCompatibleWithFacilityDeviceSpecimenType() {
+    // GIVEN
+    var facilityDeviceSpecimenType = _dataFactory.getGenericDeviceSpecimen();
+    var org = _dataFactory.createValidOrg();
+    var facility = _dataFactory.createValidFacility(org);
+    facility.getDeviceTypes().forEach(facility::removeDeviceType);
+    assertThat(facility.getDeviceTypes()).isEmpty();
+
+    // WHEN only a facility device specimen type is configured
+    facility.addDeviceSpecimenType(facilityDeviceSpecimenType);
+    _repo.save(facility);
+
+    // THEN
+    assertThat(facility.getDeviceTypes()).hasSize(1);
+    assertThat(facility.getDeviceTypes()).contains(facilityDeviceSpecimenType.getDeviceType());
+
+    // WHEN Deleting a device
+    facility.removeDeviceType(facilityDeviceSpecimenType.getDeviceType());
+
+    // THEN
+    assertThat(facility.getDeviceTypes()).isEmpty();
   }
 }

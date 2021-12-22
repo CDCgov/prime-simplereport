@@ -1,10 +1,9 @@
-mutation addFac($deviceId: String!, $deviceSpecimenTypes: [ID]!) {
-  addFacility(
+mutation addFac($deviceId: ID!) {
+  addFacilityNew(
     testingFacilityName: "Nice Place"
     cliaNumber: "123457890987654321"
     street: "123 Main Street"
     city: "Nowheresville"
-    county: "N/A"
     state: "NY"
     zipCode: "11238"
     phone: "(202) 555-1212"
@@ -19,8 +18,6 @@ mutation addFac($deviceId: String!, $deviceSpecimenTypes: [ID]!) {
     orderingProviderState: "NY"
     orderingProviderZipCode: "11801"
     orderingProviderPhone: "(646) 5432123"
-    deviceTypes: [$deviceId]
-    deviceSpecimenTypes: $deviceSpecimenTypes
-    defaultDevice: $deviceId
+    deviceIds: [$deviceId]
   )
 }

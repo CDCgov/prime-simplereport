@@ -476,7 +476,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p.getInternalId(), TestResultDeliveryPreference.SMS);
     _service.addPatientToQueue(
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
-    DeviceSpecimenType devA = facility.getDefaultDeviceSpecimen();
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
 
     _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null);
 
@@ -496,7 +497,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p.getInternalId(), TestResultDeliveryPreference.SMS);
     _service.addPatientToQueue(
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
-    DeviceSpecimenType devA = facility.getDefaultDeviceSpecimen();
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
 
     _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null);
     assertThrows(
@@ -524,7 +526,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
-    DeviceSpecimenType devA = facility.getDefaultDeviceSpecimen();
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
     when(testResultsDeliveryService.smsTestResults(any(PatientLink.class))).thenReturn(true);
     when(testResultsDeliveryService.smsTestResults(any(UUID.class))).thenReturn(true);
 
@@ -559,7 +562,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
-    DeviceSpecimenType devA = facility.getDefaultDeviceSpecimen();
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
 
     when(testResultsDeliveryService.smsTestResults(any(PatientLink.class))).thenReturn(false);
     when(testResultsDeliveryService.smsTestResults(any(UUID.class))).thenReturn(false);
@@ -592,7 +596,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
-    DeviceSpecimenType devA = facility.getDefaultDeviceSpecimen();
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
 
     when(testResultsDeliveryService.emailTestResults(any(PatientLink.class))).thenReturn(true);
     when(testResultsDeliveryService.emailTestResults(any(UUID.class))).thenReturn(true);
@@ -628,7 +633,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
-    DeviceSpecimenType devA = facility.getDefaultDeviceSpecimen();
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
 
     when(testResultsDeliveryService.emailTestResults(any(PatientLink.class))).thenReturn(false);
     when(testResultsDeliveryService.emailTestResults(any(UUID.class))).thenReturn(false);
@@ -661,7 +667,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
-    DeviceSpecimenType devA = facility.getDefaultDeviceSpecimen();
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
     when(testResultsDeliveryService.emailTestResults(any(PatientLink.class))).thenReturn(true);
     when(testResultsDeliveryService.emailTestResults(any(UUID.class))).thenReturn(true);
 
@@ -694,7 +701,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
-    DeviceSpecimenType devA = facility.getDefaultDeviceSpecimen();
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
 
     // WHEN
     AddTestResultResponse res =
@@ -742,6 +750,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             LocalDate.of(1865, 12, 25),
             false);
     DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
     assertNotEquals(o.getDeviceType().getName(), devA.getDeviceType().getName());
 
     _service.editQueueItem(
@@ -772,7 +781,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             false);
     TestUserIdentities.setFacilityAuthorities();
 
-    DeviceSpecimenType devA = facility.getDefaultDeviceSpecimen();
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
 
     assertThrows(
         AccessDeniedException.class,
@@ -799,7 +808,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             Collections.emptyMap(),
             LocalDate.of(1865, 12, 25),
             false);
-    DeviceSpecimenType devA = facility.getDefaultDeviceSpecimen();
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
 
     _service.editQueueItem(
         o.getInternalId(), devA.getInternalId(), TestResult.POSITIVE.toString(), null);
@@ -827,7 +837,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             Collections.emptyMap(),
             LocalDate.of(1865, 12, 25),
             false);
-    DeviceSpecimenType devA = facility.getDefaultDeviceSpecimen();
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
 
     _service.editQueueItem(
         o.getInternalId(), devA.getInternalId(), TestResult.NEGATIVE.toString(), null);
@@ -891,6 +902,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void fetchTestResults_entryOnlyUser_error() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
+    facility.addDefaultDeviceSpecimen(_dataFactory.getGenericDeviceSpecimen());
     Person p = _dataFactory.createFullPerson(org);
     _dataFactory.createTestEvent(p, facility);
 
@@ -906,6 +918,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void fetchTestEventsResults_getTestEventsResults_NPlusOne() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
+    facility.addDefaultDeviceSpecimen(_dataFactory.getGenericDeviceSpecimen());
     Person p = _dataFactory.createFullPerson(org);
 
     // add some initial data
@@ -942,6 +955,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void editTestResult_getQueue_NPlusOne() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
+    facility.addDefaultDeviceSpecimen(_dataFactory.getGenericDeviceSpecimen());
     UUID facilityId = facility.getInternalId();
 
     Person p1 =
@@ -1015,6 +1029,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void correctionsTest() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
+    DeviceSpecimenType device = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(device);
     Person p = _dataFactory.createFullPerson(org);
     TestEvent _e = _dataFactory.createTestEvent(p, facility);
     TestOrder _o = _e.getTestOrder();

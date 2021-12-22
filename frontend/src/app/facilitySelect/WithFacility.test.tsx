@@ -25,24 +25,10 @@ const mocks = [
           internalId: "30b1d934-a877-4b1d-9565-575afd4d797e",
           testingFacility: [],
         },
-        deviceType: [
+        deviceTypes: [
           {
             internalId: "a9bd36fe-0df1-4256-93e8-9e503cabdc8b",
             name: "Abbott IDNow",
-          },
-        ],
-        specimenType: [],
-        deviceSpecimenTypes: [
-          {
-            internalId: "fake-id",
-            deviceType: {
-              internalId: "a9bd36fe-0df1-4256-93e8-9e503cabdc8b",
-              name: "Abbott IDNow",
-            },
-            specimenType: {
-              internalId: "fake-specimen-id",
-              name: "Fake Specimen Type",
-            },
           },
         ],
       },

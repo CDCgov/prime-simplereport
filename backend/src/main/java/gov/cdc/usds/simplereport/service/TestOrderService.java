@@ -217,12 +217,10 @@ public class TestOrderService {
       if (deviceSpecimenTypeId != null) {
         DeviceSpecimenType deviceSpecimenType = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
 
-        order.setDeviceSpecimen(deviceSpecimenType);
-
-        // Set the most-recently configured device specimen for a facility's
-        // test as facility default
-        if (!deviceSpecimenTypeId.equals(
-            order.getFacility().getDefaultDeviceSpecimen().getInternalId())) {
+        if (deviceSpecimenType != null) {
+          order.setDeviceSpecimen(deviceSpecimenType);
+          // Set the most-recently configured device specimen for a facility's
+          // test as facility default
           order.getFacility().addDefaultDeviceSpecimen(deviceSpecimenType);
         }
       }
@@ -333,6 +331,13 @@ public class TestOrderService {
           "Cannot add patient to this queue: patient's facility and/or organization "
               + "are incompatible with facility of queue");
     }
+
+    if (testFacility.getDefaultDeviceSpecimen() == null) {
+      testFacility.addDefaultDeviceSpecimen(
+          _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(
+              testFacility.getDeviceTypes().get(0).getInternalId()));
+    }
+
     TestOrder newOrder = new TestOrder(patient, testFacility);
 
     AskOnEntrySurvey survey =
