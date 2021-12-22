@@ -37,7 +37,7 @@ describe("Organization sign up", () => {
   });
   it("verifies the org", () => {
     cy.get(".sr-active-button").first().click();
-    cy.get("button[label='verify'").click();
+    cy.get("#verify-button'").click();
     cy.contains("Identity verified for Beach Camp", { timeout: 30000 });
   });
   it("spoofs into the org", () => {
