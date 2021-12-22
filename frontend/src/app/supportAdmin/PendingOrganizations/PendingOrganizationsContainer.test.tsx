@@ -318,19 +318,20 @@ describe("PendingOrganizationsContainer", () => {
         screen.getByLabelText("Organization name", { exact: false })
       ).toBeDisabled();
       expect(screen.getByText("Update only", { exact: false })).toBeDisabled();
-
       userEvent.click(screen.getByText("Verify", { exact: true }));
+      await waitForElementToBeRemoved(
+        screen.queryByText("Organization details")
+      );
       expect(
         await screen.findByText("An Old Schema Org with Date", {
           exact: false,
         })
       ).toBeInTheDocument();
-
-      await waitForElementToBeRemoved(
+      expect(
         screen.queryByText("An Old Schema Org with Nulls", {
           exact: false,
         })
-      );
+      ).not.toBeInTheDocument();
     });
   });
   describe("organizations loaded", () => {
