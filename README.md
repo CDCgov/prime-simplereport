@@ -299,6 +299,7 @@ cd frontend
 The following settings are needed for the frontend:
 
 `frontend/.env.local`:
+
 ```
 REACT_APP_BASE_URL=http://localhost.simplereport.gov
 REACT_APP_BACKEND_URL=http://localhost.simplereport.gov/api
@@ -307,19 +308,22 @@ REACT_APP_OKTA_URL=http://localhost:8088
 ```
 
 You will need to run the backend with the `e2e` profile, and with the following environment variable:
+
 ```bash
 OKTA_TESTING_DISABLEHTTPSCHECK=true ./gradlew bootRun --args='--spring.profiles.active=e2e'
 ```
 
-Or, if you are running with the `start.sh` script:  
-  
+Or, if you are running with the `start.sh` script:
+
 `backend/src/main/resources/application-local.yaml`
+
 ```
 spring.profiles.include: no-security, no-okta-mgmt, server-debug, create-sample-data
 server.servlet.session.cookie.domain: localhost.simplereport.gov
 okta.client.org-url: http://localhost:8088
 okta.client.token: foo
 ```
+
 ```bash
 OKTA_TESTING_DISABLEHTTPSCHECK=true ./start.sh
 ```
@@ -327,29 +331,30 @@ OKTA_TESTING_DISABLEHTTPSCHECK=true ./start.sh
 In order for `http://localhost.simplereport.gov` to route to your local application server, you'll need to make the following addition to your `/etc/hosts` file:
 
 `/etc/hosts`
+
 ```
 127.0.0.1 localhost.simplereport.gov
 ```
 
 Finally, you'll need to run a reverse proxy like nginx to point port 80 at your application server. You can do this in a docker container with the following command:
 
-
 ```bash
 docker build -t nginx -f .frontend/cypress/support/nginx/Dockerfile.nginx.docker . && docker run -d -p 80:80 nginx:latest
 ```
 
-If you are running nginx locally already, you can use the config located at `frontend/cypress/support/nginx/localhost.simplereport.gov`. 
+If you are running nginx locally already, you can use the config located at `frontend/cypress/support/nginx/localhost.simplereport.gov`.
 
 Once all of that is done, you are are ready for a test run! There are a few ways to run the tests (from the `frontend` dir):
-- `yarn cypress open` 
+
+- `yarn cypress open`
   - this will open an interactive test runner that lets you select browsers and which test to run. tests will run headed by default
 - `yarn cypress run`
   - this will run all the tests headlessly on the commandline using electron
 - `yarn cypress run --browser firefox`
   - this will run all the tests headlessly on the commandline using firefox
 - `yarn cypress run --browser chrome --headed`
-  - this will run all the tests headed using chrome  
-  
+  - this will run all the tests headed using chrome
+
 To write new tests, see the [Cypress documentation](https://docs.cypress.io/api/table-of-contents). If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
 
 ### SchemaSpy
@@ -437,6 +442,7 @@ any branch. The changes are automatically accepted on merge to `main`.
 View the [SimpleReport Storybook](https://main--60a556a7c807cc0039ec6786.chromatic.com/)
 
 ## PR Conventions
+
 The convention for branch naming on this project is {firstName}/{ticketNumber}-{short-description}. This makes it easier for other developers to find your changes.
 
 If you're merging large or complex changes, it is strongly recommended that you smoke test them in `dev`, `test`, or `pentest`. These three environments are roughly the same, with small configuration changes between each (`test` sends text results for pxp while `dev` and `pentest` do not, for example.)

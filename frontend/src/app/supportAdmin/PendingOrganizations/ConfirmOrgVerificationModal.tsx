@@ -191,6 +191,7 @@ const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
             />
             <Button
               className="margin-right-205"
+              id="verify-button"
               onClick={onVerify}
               label={isVerifying ? "Verifying..." : "Verify"}
               disabled={isVerifying || isUpdating}

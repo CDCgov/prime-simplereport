@@ -204,7 +204,9 @@ const PendingOrganizations = ({
               />
             ) : null}
             <div className="usa-card__header">
-              <h2>Edit or verify organization identity</h2>
+              <h2 data-cy="pending-orgs-title">
+                Edit or verify organization identity
+              </h2>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
