@@ -39,6 +39,7 @@ import { UPDATE_AOE } from "./addToQueue/AddToQueueSearch";
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
 
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
+const MAX_TEST_DATE = new Date();
 
 export const REMOVE_PATIENT_FROM_QUEUE = gql`
   mutation RemovePatientFromQueue($patientId: ID!) {
@@ -316,16 +317,11 @@ const QueueItem = ({
       return false;
     }
     const dateTested = new Date(customDate); // local time, may be an invalid date
-
     // if it is an invalid date
     if (isNaN(dateTested.getTime())) {
       return false;
     }
 
-    // problem: user can manually input future dates and bypass the `max` attribute.
-    // this enforces the max future date to be 1 day from the time of submission, an arbitrary upper bound -- not sure if this is a good idea?
-    const MAX_TEST_DATE = new Date();
-    MAX_TEST_DATE.setDate(MAX_TEST_DATE.getDate() + 1);
     return dateTested > EARLIEST_TEST_DATE && dateTested < MAX_TEST_DATE;
   }
 
@@ -368,6 +364,18 @@ const QueueItem = ({
   };
 
   const onTestResultSubmit = async (forceSubmit: boolean = false) => {
+    if (dateTested && !isValidCustomDateTested(dateTested)) {
+      showNotification(
+        <Alert
+          type="error"
+          title="Invalid test date"
+          body="Test date cannot be a future date"
+        />
+      );
+
+      return;
+    }
+
     if (!forceSubmit && !areAnswersComplete(aoeAnswers)) {
       return setConfirmationType("submitResult");
     }
@@ -457,11 +465,6 @@ const QueueItem = ({
 
   const onDateTestedChange = (date: moment.Moment) => {
     const newDateTested = date.toISOString();
-    console.log("====================================");
-    console.log("newDateTested");
-    console.log(newDateTested);
-    console.log("====================================");
-    const isValidDate = isValidCustomDateTested(newDateTested);
 
     // the date string returned from the server is only precise to seconds; moment's
     // toISOString method returns millisecond precision. as a result, an onChange event
@@ -471,19 +474,9 @@ const QueueItem = ({
       return;
     }
 
-    if (isValidDate) {
-      console.log("====================================");
-      console.log("isValidDate");
-      console.log(isValidDate);
-      console.log("====================================");
-      /* the custom date input field manages its own state in the DOM, not in the react state
-      The reason for this is an invalid custom date would update react. Updating another field in the queue item, like the test result, would attempt to submit the invalid date to the backend
-      Instead, we are only going to update react if there is a *valid* date.
-      this can be mitigated if the backend can reliably handle null/invalid dates (never needs to be the case, just default to current date)
-      or if we change our updateQueuItem function to update only a single value at a time, which is a TODO for later
-    */
-      updateDateTested(newDateTested);
-    }
+    // Save any date given as input to React state, valid or otherwise. Validation
+    // is performed on submit
+    updateDateTested(newDateTested);
   };
 
   const isMounted = useRef(false);
@@ -573,6 +566,10 @@ const QueueItem = ({
     // if we want to use a custom date
     if (shouldUseCurrentDateTime()) {
       updateUseCurrentDateTime("false");
+      // TODO: do we want to do this? Currently the date input field must be
+      // changed in some way to set this state in React, but it seems like
+      // simply un-checking the "current date" box should set this state
+      updateDateTested(formatDate(new Date()));
     }
     // if we want to use the current date time
     else {
@@ -721,7 +718,7 @@ const QueueItem = ({
                         min={formatDate(new Date("Jan 1, 2020"))}
                         max={formatDate(moment().toDate())}
                         defaultValue={formatDate(selectedDate.toDate())}
-                        onChange={(event) => {
+                        onBlur={(event) => {
                           const date = event.target.value;
                           if (date) {
                             const newDate = moment(date)
@@ -852,11 +849,7 @@ const QueueItem = ({
                 queueItemId={internalId}
                 testResultValue={testResultValue}
                 isSubmitDisabled={
-                  loading ||
-                  saveState === "editing" ||
-                  saveState === "saving" ||
-                  (!shouldUseCurrentDateTime() &&
-                    !isValidCustomDateTested(dateTested))
+                  loading || saveState === "editing" || saveState === "saving"
                 }
                 onSubmit={onTestResultSubmit}
                 onChange={onTestResultChange}

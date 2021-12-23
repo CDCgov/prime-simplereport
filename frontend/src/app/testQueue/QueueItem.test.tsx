@@ -498,28 +498,38 @@ describe("QueueItem", () => {
 
   it("does not allow future date for test date", async () => {
     render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <Provider store={store}>
-          <QueueItem
-            internalId={testProps.internalId}
-            patient={testProps.patient}
-            askOnEntry={testProps.askOnEntry}
-            selectedDeviceId={testProps.selectedDeviceId}
-            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-            selectedDeviceSpecimenTypeId={
-              testProps.selectedDeviceSpecimenTypeId
-            }
-            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-            selectedTestResult={testProps.selectedTestResult}
-            devices={testProps.devices}
-            refetchQueue={testProps.refetchQueue}
-            facilityId={testProps.facilityId}
-            dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
-          />
-        </Provider>
-      </MockedProvider>
+      <>
+        <MockedProvider mocks={mocks} addTypename={false}>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResult={testProps.selectedTestResult}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              patientLinkId={testProps.patientLinkId}
+            />
+          </Provider>
+        </MockedProvider>
+        <ToastContainer
+          autoClose={5000}
+          closeButton={false}
+          limit={2}
+          position="bottom-center"
+          hideProgressBar={true}
+        />
+      </>
     );
+
     const toggle = await screen.findByLabelText("Current date/time");
     userEvent.click(toggle);
     const dateInput = screen.getByTestId("test-date");
@@ -534,26 +544,23 @@ describe("QueueItem", () => {
       })
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // There is a 500ms debounce on queue item update operations
+    await new Promise((resolve) => setTimeout(resolve, 501));
 
-    // Input invalid (tomorrow) - can't submit
+    // Input invalid (future date) - can't submit
     userEvent.type(dateInput, moment().add(5, "days").format("YYYY-MM-DD"));
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    await waitFor(async () =>
-      expect(await screen.findByText("Submit")).toBeDisabled()
-    );
+    dateInput.blur();
 
-    // Input valid (current or past date) - can submit
-    userEvent.type(dateInput, moment().format("YYYY-MM-DD"));
-    userEvent.type(timeInput, updatedTimeString);
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    await waitFor(async () =>
-      expect(await screen.findByText("Submit")).toBeEnabled()
-    );
+    // 500ms debounce on queue item update operations
+    await new Promise((resolve) => setTimeout(resolve, 501));
 
-    // TODO: this test shouldn't be passing but it is. The date field on the test card
-    // is super weird... gonna take a little more thought
-    fail();
+    // Submit test
+    userEvent.click(await screen.findByText("Submit"));
+
+    // Toast alert should appear
+    await waitFor(async () => {
+      expect(await screen.findByText("Invalid test date")).toBeInTheDocument();
+    });
   });
 
   it("displays person's mobile phone numbers", async () => {
