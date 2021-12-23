@@ -17,28 +17,14 @@ import FacilityFormContainer, {
   UPDATE_FACILITY_MUTATION,
 } from "./FacilityFormContainer";
 
-const deviceSpecimenTypes: DeviceSpecimenType[] = [
+const deviceTypes: DeviceType[] = [
   {
-    internalId: "1",
-    deviceType: {
-      internalId: "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
-      name: "Fake Device 1",
-    },
-    specimenType: {
-      internalId: "fake-specimen-id-1",
-      name: "Fake Specimen 1",
-    },
+    internalId: "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
+    name: "Fake Device 1",
   },
   {
-    internalId: "2",
-    deviceType: {
-      internalId: "ee85bdfb-b6c9-4951-ae30-6c025be4580e",
-      name: "Fake Device 2",
-    },
-    specimenType: {
-      internalId: "fake-specimen-id-1",
-      name: "Fake Specimen 1",
-    },
+    internalId: "ee85bdfb-b6c9-4951-ae30-6c025be4580e",
+    name: "Fake Device 2",
   },
 ];
 
@@ -53,12 +39,7 @@ const mockFacility: Facility = {
   zipCode: "90000",
   phone: "(516) 432-1390",
   email: "testingsite@disorg.com",
-  defaultDevice: "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
-  deviceTypes: [
-    "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
-    "ee85bdfb-b6c9-4951-ae30-6c025be4580e",
-  ],
-  deviceSpecimenTypes: deviceSpecimenTypes,
+  deviceTypes,
   orderingProvider: {
     firstName: "Fred",
     middleName: null,
@@ -127,18 +108,10 @@ const mocks = [
               zipCode: "90000",
               phone: "(516) 432-1390",
               email: "testingsite@disorg.com",
-              defaultDeviceType: {
+              defaultDeviceSpecimen: {
                 internalId: "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
               },
-              deviceTypes: [
-                {
-                  internalId: "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
-                },
-                {
-                  internalId: "ee85bdfb-b6c9-4951-ae30-6c025be4580e",
-                },
-              ],
-              deviceSpecimenTypes,
+              deviceTypes,
               orderingProvider: {
                 firstName: "Fred",
                 middleName: null,
@@ -155,19 +128,7 @@ const mocks = [
             },
           ],
         },
-        deviceType: [
-          {
-            internalId: "a9bd36fe-0df1-4256-93e8-9e503cabdc8b",
-            name: "Abbott IDNow",
-          },
-        ],
-        deviceSpecimenTypes,
-        specimenType: [
-          {
-            internalId: "fake-specimen-id-1",
-            name: "Fake Specimen 1",
-          },
-        ],
+        deviceTypes,
       },
     },
   },
@@ -196,16 +157,12 @@ const mocks = [
         orderingProviderState: mockFacility.orderingProvider.state,
         orderingProviderZipCode: mockFacility.orderingProvider.zipCode,
         orderingProviderPhone: mockFacility.orderingProvider.phone || null,
-        devices: mockFacility.deviceTypes,
-        defaultDevice: mockFacility.defaultDevice,
-        deviceSpecimenTypes: mockFacility.deviceSpecimenTypes.map(
-          (dst) => dst.internalId
-        ),
+        devices: mockFacility.deviceTypes.map((d) => d.internalId),
       },
     },
     result: {
       data: {
-        updateFacility:
+        updateFacilityNew:
           "this doesn't get serialized, it's an object pointer, whoops",
       },
     },

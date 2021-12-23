@@ -272,11 +272,6 @@ exports[`TestQueue should render the test queue 1`] = `
                           LumiraDx
                         </option>
                         <option
-                          value="f8b9d9d6-c318-4c54-a516-76f0d9a25d32"
-                        >
-                          Quidel Sofia 2
-                        </option>
-                        <option
                           value="0f3d7426-3476-4800-97e7-3de8a93b090c"
                         >
                           Quidel Sofia 2
@@ -631,11 +626,6 @@ exports[`TestQueue should render the test queue 1`] = `
                           value="f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554"
                         >
                           LumiraDx
-                        </option>
-                        <option
-                          value="f8b9d9d6-c318-4c54-a516-76f0d9a25d32"
-                        >
-                          Quidel Sofia 2
                         </option>
                         <option
                           value="0f3d7426-3476-4800-97e7-3de8a93b090c"

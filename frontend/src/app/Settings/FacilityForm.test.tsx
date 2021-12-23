@@ -15,17 +15,6 @@ const devices: DeviceType[] = [
   { internalId: "device-2", name: "Device 2" },
 ];
 
-const deviceSpecimenTypes: DeviceSpecimenType[] = devices.map((device, idx) => {
-  return {
-    internalId: idx,
-    deviceType: device,
-    specimenType: {
-      internalId: "fake-specimen-id-1",
-      name: "Fake Specimen 1",
-    },
-  };
-});
-
 const validFacility: Facility = {
   name: "Foo Facility",
   cliaNumber: "12D4567890",
@@ -50,9 +39,7 @@ const validFacility: Facility = {
     streetTwo: null,
     city: null,
   },
-  deviceTypes: devices.map(({ internalId }) => internalId),
-  defaultDevice: devices[0].internalId,
-  deviceSpecimenTypes,
+  deviceTypes: devices,
 };
 
 // Hardcoded suggestion scenarios
@@ -115,7 +102,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceSpecimenTypeOptions={deviceSpecimenTypes}
+          deviceTypes={devices}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -133,7 +120,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceSpecimenTypeOptions={deviceSpecimenTypes}
+          deviceTypes={devices}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -151,7 +138,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceSpecimenTypeOptions={deviceSpecimenTypes}
+          deviceTypes={devices}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -170,7 +157,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceSpecimenTypeOptions={deviceSpecimenTypes}
+          deviceTypes={devices}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -201,7 +188,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceSpecimenTypeOptions={deviceSpecimenTypes}
+          deviceTypes={devices}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -236,7 +223,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -280,7 +267,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -318,7 +305,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={washingtonFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -345,7 +332,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={marylandFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -382,7 +369,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={californiaFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -410,7 +397,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={vermontFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -450,7 +437,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -484,7 +471,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -531,7 +518,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -568,7 +555,7 @@ describe("FacilityForm", () => {
         <MemoryRouter>
           <FacilityForm
             facility={facility}
-            deviceSpecimenTypeOptions={deviceSpecimenTypes}
+            deviceTypes={devices}
             saveFacility={saveFacility}
           />
         </MemoryRouter>
@@ -594,75 +581,37 @@ describe("FacilityForm", () => {
   });
 
   describe("Device validation", () => {
-    it("warns about missing default device", async () => {
+    it("warns about missing device selection", async () => {
       render(
         <MemoryRouter>
           <FacilityForm
             facility={validFacility}
-            deviceSpecimenTypeOptions={deviceSpecimenTypes}
+            deviceTypes={devices}
             saveFacility={saveFacility}
           />
         </MemoryRouter>
       );
-      // Delete default device
+
+      // Delete devices
       const deleteButtons = await screen.findAllByLabelText("Delete device");
+      expect(deleteButtons).toHaveLength(2);
       userEvent.click(deleteButtons[0]);
-      // Attempt save
-      const saveButtons = await screen.findAllByText("Save changes");
-      userEvent.click(saveButtons[0]);
-      await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
-      const warning = await screen.findByText(
-        "A default device must be selected",
-        { exact: false }
-      );
-      expect(warning).toBeInTheDocument();
-    });
+      userEvent.click(deleteButtons[0]);
 
-    it("properly unsets default device when the default device is changed", async () => {
-      const unusedDevice = { internalId: "device-3", name: "Device 3" };
-
-      render(
-        <MemoryRouter>
-          <FacilityForm
-            facility={validFacility}
-            deviceSpecimenTypeOptions={deviceSpecimenTypes.concat({
-              internalId: "4",
-              deviceType: unusedDevice,
-              specimenType: {
-                internalId: "fake-specimen-id-3",
-                name: "Fake Specimen 3",
-              },
-            })}
-            saveFacility={saveFacility}
-          />
-        </MemoryRouter>
-      );
-      // Change default device
-      const dropdown = screen.getByTestId(
-        "device-dropdown-0"
-      ) as HTMLSelectElement;
-
-      userEvent.selectOptions(dropdown, unusedDevice.internalId);
       expect(
-        (screen.getAllByRole("option", {
-          name: unusedDevice.name,
-        })[0] as HTMLOptionElement).selected
-      ).toBeTruthy();
-
-      const checkboxes = screen.getAllByRole("checkbox");
-
-      checkboxes.forEach((checkbox) => expect(checkbox).not.toBeChecked());
+        await screen.findByText("There are currently no devices", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
 
       // Attempt save
       const saveButtons = await screen.findAllByText("Save changes");
-
       userEvent.click(saveButtons[0]);
       await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
       const warning = await screen.findByText(
-        "A default device must be selected",
+        "There must be at least one device",
         { exact: false }
       );
-
       expect(warning).toBeInTheDocument();
     });
   });
