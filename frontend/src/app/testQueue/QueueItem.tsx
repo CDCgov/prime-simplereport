@@ -718,7 +718,7 @@ const QueueItem = ({
                         min={formatDate(new Date("Jan 1, 2020"))}
                         max={formatDate(moment().toDate())}
                         defaultValue={formatDate(selectedDate.toDate())}
-                        onBlur={(event) => {
+                        onChange={(event) => {
                           const date = event.target.value;
                           if (date) {
                             const newDate = moment(date)
