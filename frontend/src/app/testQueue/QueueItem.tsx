@@ -364,13 +364,18 @@ const QueueItem = ({
   };
 
   const onTestResultSubmit = async (forceSubmit: boolean = false) => {
-    if (!shouldUseCurrentDateTime() && !isValidCustomDateTested(dateTested)) {
+    if (
+      dateTested &&
+      !shouldUseCurrentDateTime() &&
+      !isValidCustomDateTested(dateTested)
+    ) {
+      const message =
+        new Date(dateTested) < EARLIEST_TEST_DATE
+          ? `Test date must be after ${formatDate(EARLIEST_TEST_DATE)}`
+          : "Test date can't be in the future";
+
       showNotification(
-        <Alert
-          type="error"
-          title="Invalid test date"
-          body="Test date cannot be a future date"
-        />
+        <Alert type="error" title="Invalid test date" body={message} />
       );
 
       return;
