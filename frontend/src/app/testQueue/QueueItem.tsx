@@ -364,7 +364,7 @@ const QueueItem = ({
   };
 
   const onTestResultSubmit = async (forceSubmit: boolean = false) => {
-    if (dateTested && !isValidCustomDateTested(dateTested)) {
+    if (!shouldUseCurrentDateTime() && !isValidCustomDateTested(dateTested)) {
       showNotification(
         <Alert
           type="error"
@@ -566,10 +566,6 @@ const QueueItem = ({
     // if we want to use a custom date
     if (shouldUseCurrentDateTime()) {
       updateUseCurrentDateTime("false");
-      // TODO: do we want to do this? Currently the date input field must be
-      // changed in some way to set this state in React, but it seems like
-      // simply un-checking the "current date" box should set this state
-      updateDateTested(formatDate(new Date()));
     }
     // if we want to use the current date time
     else {
