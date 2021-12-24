@@ -123,6 +123,18 @@
   margin-left: 2%;
 }
 
+.sr-result-test-details {
+  .sr-details-list {
+    li {
+      b {
+        width: unset !important;
+        min-width: 8rem;
+        max-width: 12rem;
+      }
+    }
+  }
+}
+
 .sr-details-list {
   list-style-type: none;
   margin-left: 0.5rem;
