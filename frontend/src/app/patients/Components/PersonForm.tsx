@@ -552,6 +552,7 @@ const PersonForm = (props: Props) => {
           legend={t("patient.form.demographics.gender")}
           hintText={t("patient.form.demographics.genderHelpText")}
           name="gender"
+          required={view !== PersonFormView.PXP}
           buttons={GENDER_VALUES}
           selectedRadio={patient.gender}
           onChange={onPersonChange("gender")}

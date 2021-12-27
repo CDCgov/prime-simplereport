@@ -9,7 +9,6 @@ import {
   RACE_VALUES,
   ROLE_VALUES,
   ETHNICITY_VALUES,
-  GENDER_VALUES,
   TRIBAL_AFFILIATION_VALUES,
   PHONE_TYPE_VALUES,
 } from "../constants";
@@ -36,7 +35,6 @@ type UpdateOptionalFields =
   | "county"
   | "race"
   | "ethnicity"
-  | "gender"
   | "tribalAffiliation"
   | "residentCongregateSetting"
   | "employedInHealthcare"
@@ -257,12 +255,7 @@ const updateFieldSchemata: (
       [...getValues(ETHNICITY_VALUES), "", null],
       t("patient.form.errors.ethnicity")
     ),
-  gender: yup
-    .mixed()
-    .oneOf(
-      [...getValues(GENDER_VALUES), "", null],
-      t("patient.form.errors.gender")
-    ),
+  gender: yup.mixed().required(t("Gender selection is required")),
   residentCongregateSetting: yup.boolean().nullable(),
   employedInHealthcare: yup.boolean().nullable(),
   tribalAffiliation: yup
