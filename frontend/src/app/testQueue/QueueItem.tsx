@@ -371,7 +371,9 @@ const QueueItem = ({
     ) {
       const message =
         new Date(dateTested) < EARLIEST_TEST_DATE
-          ? `Test date must be after ${formatDate(EARLIEST_TEST_DATE)}`
+          ? `Test date must be after ${moment(EARLIEST_TEST_DATE).format(
+              "MM/DD/YYYY"
+            )}`
           : "Test date can't be in the future";
 
       showNotification(
