@@ -205,9 +205,11 @@ const FacilityForm: React.FC<Props> = (props) => {
   };
 
   const validateFacilityAddresses = async () => {
+    const originalFacilityAddress = getFacilityAddress(facility);
+
     const isValidZipForState = await isValidZipCodeForState(
-      facility.state,
-      facility.zipCode
+      originalFacilityAddress.state,
+      originalFacilityAddress.zipCode
     );
 
     if (!isValidZipForState) {
@@ -224,7 +226,6 @@ const FacilityForm: React.FC<Props> = (props) => {
       return;
     }
 
-    const originalFacilityAddress = getFacilityAddress(facility);
     const suggestedFacilityAddress = await getBestSuggestion(
       originalFacilityAddress
     );

@@ -613,10 +613,7 @@ describe("FacilityForm", () => {
         .spyOn(smartyStreets, "isValidZipCodeForState")
         .mockReturnValue(Promise.resolve(false));
 
-      const facility: Facility = {
-        ...validFacility,
-        ...addresses[0].bad,
-      };
+      const facility = validFacility;
 
       // WHEN
       render(
