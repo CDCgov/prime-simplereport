@@ -1,4 +1,4 @@
-import { core, usStreet } from "smartystreets-javascript-sdk";
+import { core, usStreet, usZipcode } from "smartystreets-javascript-sdk";
 
 import { toLowerStripWhitespace } from "./text";
 
@@ -8,17 +8,6 @@ class SmartyStreetsError extends Error {
     this.name = "SmartyStreetsError";
   }
 }
-
-const getClient = () => {
-  if (process.env.REACT_APP_SMARTY_STREETS_KEY === undefined) {
-    throw new SmartyStreetsError("Missing REACT_APP_SMARTY_STREETS_KEY");
-  }
-  const credentials = new core.SharedCredentials(
-    process.env.REACT_APP_SMARTY_STREETS_KEY
-  );
-  return core.buildClient.usStreet(credentials);
-};
-
 const getLookup = (address: Address) => {
   const lookup = new usStreet.Lookup();
   lookup.street = address.street;
@@ -30,9 +19,14 @@ const getLookup = (address: Address) => {
 };
 
 const getAddress = (result: usStreet.Candidate) => {
+  if (!result) {
+    return;
+  }
+
   const zipCode = result.components.plus4Code
     ? `${result.components.zipCode}-${result.components.plus4Code}`
     : result.components.zipCode;
+
   return {
     street: result.deliveryLine1,
     streetTwo: result.deliveryLine2 || "",
@@ -52,6 +46,7 @@ export const getBestSuggestion = async (
     lookup.maxCandidates = 1;
     lookup.match = "strict";
     const response = await client.send(lookup);
+
     return getAddress(response.lookups[0].result[0]);
   } catch (error) {
     console.error("Unable to validate address:", error.message);
@@ -80,4 +75,59 @@ export function suggestionIsCloseEnough(
   }
 
   return true;
+}
+
+export async function getZipCode(
+  zipCode: string
+): Promise<core.Batch<usZipcode.Lookup> | undefined> {
+  try {
+    const client = getZipCodeClient();
+    const lookup = new usZipcode.Lookup();
+    lookup.zipCode = zipCode;
+
+    return client.send(lookup);
+  } catch (error) {
+    console.error("Unable to retrieve ZIP code data", error.message);
+  }
+}
+
+export async function isValidZipCodeForState(
+  state: string,
+  zipCode: string
+): Promise<boolean> {
+  const response = await getZipCode(zipCode);
+
+  if (!response) {
+    // Failed to retrieve ZIP code data - don't block facility management
+    return true;
+  }
+
+  const zipCodeData = response.lookups[0].result[0];
+
+  if (zipCodeData.status) {
+    // Zip code is entirely invalid (`status` is not present otherwise)
+    return false;
+  }
+
+  return zipCodeData.zipcodes[0].stateAbbreviation === state;
+}
+
+export function buildClient(builder: Function) {
+  if (process.env.REACT_APP_SMARTY_STREETS_KEY === undefined) {
+    throw new SmartyStreetsError("Missing REACT_APP_SMARTY_STREETS_KEY");
+  }
+
+  const credentials = new core.SharedCredentials(
+    process.env.REACT_APP_SMARTY_STREETS_KEY
+  );
+
+  return builder(credentials);
+}
+
+export function getClient() {
+  return buildClient(core.buildClient.usStreet);
+}
+
+export function getZipCodeClient() {
+  return buildClient(core.buildClient.usZipcode);
 }
