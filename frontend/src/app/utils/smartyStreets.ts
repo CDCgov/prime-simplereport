@@ -2,12 +2,19 @@ import { core, usStreet, usZipcode } from "smartystreets-javascript-sdk";
 
 import { toLowerStripWhitespace } from "./text";
 
+// cf. https://github.com/DefinitelyTyped/DefinitelyTyped/blob/11436c5a19fc6aabfd6b8d93b37dac38b4ab9bc2/types/smartystreets-javascript-sdk/index.d.ts#L625
+export type ZipCodeResult = RequiredExceptFor<
+  usZipcode.Result,
+  "status" | "reason"
+>;
+
 class SmartyStreetsError extends Error {
   constructor(message: string) {
     super(message);
     this.name = "SmartyStreetsError";
   }
 }
+
 const getLookup = (address: Address) => {
   const lookup = new usStreet.Lookup();
   lookup.street = address.street;
@@ -77,39 +84,36 @@ export function suggestionIsCloseEnough(
   return true;
 }
 
-export async function getZipCode(
+export async function getZipCodeData(
   zipCode: string
-): Promise<core.Batch<usZipcode.Lookup> | undefined> {
+): Promise<ZipCodeResult | undefined> {
   try {
     const client = getZipCodeClient();
     const lookup = new usZipcode.Lookup();
     lookup.zipCode = zipCode;
 
-    return client.send(lookup);
+    const response = await client.send(lookup);
+    return response.lookups[0].result[0] as ZipCodeResult;
   } catch (error) {
     console.error("Unable to retrieve ZIP code data", error.message);
   }
 }
 
-export async function isValidZipCodeForState(
+export function isValidZipCodeForState(
   state: string,
-  zipCode: string
-): Promise<boolean> {
-  const response = await getZipCode(zipCode);
-
-  if (!response) {
+  result: ZipCodeResult | undefined
+): boolean {
+  if (!result) {
     // Failed to retrieve ZIP code data - don't block facility management
     return true;
   }
 
-  const zipCodeData = response.lookups[0].result[0];
-
-  if (zipCodeData.status) {
+  if (result.status) {
     // Zip code is entirely invalid (`status` is not present otherwise)
     return false;
   }
 
-  return zipCodeData.zipcodes[0].stateAbbreviation === state;
+  return result.zipcodes[0].stateAbbreviation === state;
 }
 
 export function buildClient(builder: Function) {

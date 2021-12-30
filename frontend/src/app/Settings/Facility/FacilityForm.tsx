@@ -13,6 +13,7 @@ import {
   getBestSuggestion,
   suggestionIsCloseEnough,
   isValidZipCodeForState,
+  getZipCodeData,
 } from "../../utils/smartyStreets";
 import {
   AddressConfirmationModal,
@@ -207,9 +208,10 @@ const FacilityForm: React.FC<Props> = (props) => {
   const validateFacilityAddresses = async () => {
     const originalFacilityAddress = getFacilityAddress(facility);
 
-    const isValidZipForState = await isValidZipCodeForState(
+    const zipCodeData = await getZipCodeData(originalFacilityAddress.zipCode);
+    const isValidZipForState = isValidZipCodeForState(
       originalFacilityAddress.state,
-      originalFacilityAddress.zipCode
+      zipCodeData
     );
 
     if (!isValidZipForState) {

@@ -94,7 +94,7 @@ describe("FacilityForm", () => {
     saveFacility = jest.fn();
     getIsValidZipForStateSpy = jest
       .spyOn(smartyStreets, "isValidZipCodeForState")
-      .mockReturnValue(Promise.resolve(true));
+      .mockReturnValue(true);
     getBestSuggestionSpy = jest
       .spyOn(smartyStreets, "getBestSuggestion")
       .mockImplementation(
@@ -611,7 +611,7 @@ describe("FacilityForm", () => {
       getIsValidZipForStateSpy.mockRestore();
       getIsValidZipForStateSpy = jest
         .spyOn(smartyStreets, "isValidZipCodeForState")
-        .mockReturnValue(Promise.resolve(false));
+        .mockReturnValue(false);
 
       const facility = validFacility;
 
