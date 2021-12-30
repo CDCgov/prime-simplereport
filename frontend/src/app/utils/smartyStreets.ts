@@ -8,7 +8,7 @@ export type ZipCodeResult = RequiredExceptFor<
   "status" | "reason"
 >;
 
-class SmartyStreetsError extends Error {
+export class SmartyStreetsError extends Error {
   constructor(message: string) {
     super(message);
     this.name = "SmartyStreetsError";
@@ -25,11 +25,7 @@ const getLookup = (address: Address) => {
   return lookup;
 };
 
-const getAddress = (result: usStreet.Candidate) => {
-  if (!result) {
-    return;
-  }
-
+export const getAddress = (result: usStreet.Candidate) => {
   const zipCode = result.components.plus4Code
     ? `${result.components.zipCode}-${result.components.plus4Code}`
     : result.components.zipCode;

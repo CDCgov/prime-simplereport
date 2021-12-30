@@ -1,11 +1,30 @@
 import {
-  suggestionIsCloseEnough,
+  buildClient,
   isValidZipCodeForState,
+  SmartyStreetsError,
+  suggestionIsCloseEnough,
   ZipCodeResult,
 } from "./smartyStreets";
 
 describe("smartStreets", () => {
-  describe("smartyStreets.suggestionIsCloseEnough", () => {
+  describe("buildClient", () => {
+    it("throws an error if SmartyStreets API key is not in environment", () => {
+      const smartyStreetsAPIKey = process.env.REACT_APP_SMARTY_STREETS_KEY;
+      delete process.env.REACT_APP_SMARTY_STREETS_KEY;
+
+      try {
+        buildClient(() => {});
+
+        fail();
+      } catch (error) {
+        expect(error).toBeInstanceOf(SmartyStreetsError);
+      }
+
+      process.env.REACT_APP_SMARTY_STREETS_KEY = smartyStreetsAPIKey;
+    });
+  });
+
+  describe("suggestionIsCloseEnough", () => {
     it("should not match substantial differences", () => {
       const original: Address = {
         street: "123 Wherever St",
