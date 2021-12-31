@@ -1,10 +1,38 @@
 import {
-  buildClient,
+  getZipCodeData,
   isValidZipCodeForState,
-  SmartyStreetsError,
   suggestionIsCloseEnough,
   ZipCodeResult,
 } from "./smartyStreets";
+import * as smartyStreetsClients from "./smartyStreetsClients";
+
+const validZipCodeResult: ZipCodeResult = {
+  inputIndex: "0",
+  valid: true,
+  cities: [
+    {
+      city: "Schenectady",
+      stateAbbreviation: "NY",
+      state: "New York",
+      mailableCity: "true",
+    },
+  ],
+  zipcodes: [
+    {
+      zipcode: "12345",
+      zipcodeType: "U",
+      defaultCity: "Schenectady",
+      countyFips: "36093",
+      countyName: "Schenectady",
+      latitude: 42.82509,
+      longitude: -73.87898,
+      precision: "Zip5",
+      stateAbbreviation: "NY",
+      state: "New York",
+      alternateCounties: [],
+    },
+  ],
+};
 
 describe("smartStreets", () => {
   describe("buildClient", () => {
@@ -13,14 +41,40 @@ describe("smartStreets", () => {
       delete process.env.REACT_APP_SMARTY_STREETS_KEY;
 
       try {
-        buildClient(() => {});
+        smartyStreetsClients.buildClient(() => {});
 
         fail();
       } catch (error) {
-        expect(error).toBeInstanceOf(SmartyStreetsError);
+        expect(error).toBeInstanceOf(smartyStreetsClients.SmartyStreetsError);
       }
 
       process.env.REACT_APP_SMARTY_STREETS_KEY = smartyStreetsAPIKey;
+    });
+  });
+
+  describe("getZipCodeData", () => {
+    let getZipCodeClientSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      getZipCodeClientSpy = jest
+        .spyOn(smartyStreetsClients, "getZipCodeClient")
+        .mockReturnValue({
+          send: () => ({
+            lookups: [
+              {
+                result: [validZipCodeResult],
+              },
+            ],
+          }),
+        });
+    });
+
+    afterEach(() => {
+      getZipCodeClientSpy.mockRestore();
+    });
+
+    it("parses client response and returns a ZipCodeResult", async () => {
+      expect(await getZipCodeData("12345")).toStrictEqual(validZipCodeResult);
     });
   });
 
@@ -120,69 +174,13 @@ describe("smartStreets", () => {
     });
 
     it("returns `false` if ZIP code is not valid for state", () => {
-      const result: ZipCodeResult = {
-        inputIndex: "0",
-        valid: true,
-        cities: [
-          {
-            city: "Schenectady",
-            stateAbbreviation: "NY",
-            state: "New York",
-            mailableCity: "true",
-          },
-        ],
-        zipcodes: [
-          {
-            zipcode: "12345",
-            zipcodeType: "U",
-            defaultCity: "Schenectady",
-            countyFips: "36093",
-            countyName: "Schenectady",
-            latitude: 42.82509,
-            longitude: -73.87898,
-            precision: "Zip5",
-            stateAbbreviation: "NY",
-            state: "New York",
-            alternateCounties: [],
-          },
-        ],
-      };
-
-      const sut = isValidZipCodeForState("CA", result);
+      const sut = isValidZipCodeForState("CA", validZipCodeResult);
 
       expect(sut).toBe(false);
     });
 
     it("returns `true` if ZIP code is valid for state", () => {
-      const result: ZipCodeResult = {
-        inputIndex: "0",
-        valid: true,
-        cities: [
-          {
-            city: "Schenectady",
-            stateAbbreviation: "NY",
-            state: "New York",
-            mailableCity: "true",
-          },
-        ],
-        zipcodes: [
-          {
-            zipcode: "12345",
-            zipcodeType: "U",
-            defaultCity: "Schenectady",
-            countyFips: "36093",
-            countyName: "Schenectady",
-            latitude: 42.82509,
-            longitude: -73.87898,
-            precision: "Zip5",
-            stateAbbreviation: "NY",
-            state: "New York",
-            alternateCounties: [],
-          },
-        ],
-      };
-
-      const sut = isValidZipCodeForState("NY", result);
+      const sut = isValidZipCodeForState("NY", validZipCodeResult);
 
       expect(sut).toBe(true);
     });
