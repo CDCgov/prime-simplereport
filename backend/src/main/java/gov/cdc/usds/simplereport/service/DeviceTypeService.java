@@ -12,7 +12,6 @@ import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
-import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -71,13 +70,13 @@ public class DeviceTypeService {
     return _deviceSpecimenRepo.findAll();
   }
 
-  /**
-   * Find the original device/specimen type combination created for this DeviceType, since that will
-   * be the one that is assumed by callers who aren't aware that you can have multiple specimen
-   * types for a given device type.
-   */
-  @Deprecated // this is a backward-compatibility shim!
-  public DeviceSpecimenType getDefaultForDeviceId(UUID deviceId) {
+  public DeviceSpecimenType getDeviceSpecimenType(UUID deviceSpecimenTypeId) {
+    return _deviceSpecimenRepo
+        .findById(deviceSpecimenTypeId)
+        .orElseThrow(() -> new IllegalGraphqlArgumentException("invalid device specimen type ID"));
+  }
+
+  public DeviceSpecimenType getFirstDeviceSpecimenTypeForDeviceTypeId(UUID deviceId) {
     return _deviceSpecimenRepo
         .findFirstByDeviceTypeInternalIdOrderByCreatedAt(deviceId)
         .orElseThrow(
@@ -173,62 +172,5 @@ public class DeviceTypeService {
         .forEach(_deviceSpecimenRepo::save);
 
     return dt;
-  }
-
-  /**
-   * Retrieve the {@link DeviceSpecimenTypeHolder} that this operation needs based on the <b>DEVICE
-   * TYPE</b> IDs supplied to a mutation.
-   *
-   * @deprecated in favor of (eventually) using device-specimen-type IDs instead of device-type IDs.
-   * @param defaultDeviceTypeId the default DEVICE TYPE id to configure for this operation.
-   * @param configuredDeviceTypeIds the list of device type IDS to configure. <b>Must contain the
-   *     default value.</b>
-   * @return a {@link DeviceSpecimenTypeHolder} that holds the default {@link DeviceSpecimenType}
-   *     for each of the device types that was supplied either in the configured list or as the
-   *     default.
-   */
-  @Deprecated
-  public DeviceSpecimenTypeHolder getTypesForFacility(
-      UUID defaultDeviceTypeId, List<UUID> configuredDeviceTypeIds) {
-    if (!configuredDeviceTypeIds.contains(defaultDeviceTypeId)) {
-      throw new IllegalGraphqlArgumentException(
-          "default device type must be included in device type list");
-    }
-    List<DeviceSpecimenType> configuredTypes =
-        configuredDeviceTypeIds.stream()
-            .map(this::getDefaultForDeviceId)
-            .collect(Collectors.toList());
-
-    DeviceSpecimenType defaultType =
-        configuredTypes.stream()
-            .filter(dt -> dt.getDeviceType().getInternalId().equals(defaultDeviceTypeId))
-            .findFirst()
-            .orElseThrow(
-                () ->
-                    new RuntimeException(
-                        "Inexplicable inability to find device for ID "
-                            + defaultDeviceTypeId.toString()));
-    return new DeviceSpecimenTypeHolder(defaultType, configuredTypes);
-  }
-
-  public DeviceSpecimenTypeHolder getDeviceSpecimenTypesForFacility(
-      UUID defaultDeviceTypeId, List<UUID> configuredDeviceSpecimenTypeIds) {
-    List<DeviceSpecimenType> dsts =
-        this.getDeviceSpecimenTypesByIds(configuredDeviceSpecimenTypeIds);
-
-    DeviceSpecimenType defaultDeviceSpecimenType =
-        dsts.stream()
-            .filter(dst -> defaultDeviceTypeId.equals(dst.getDeviceType().getInternalId()))
-            .findAny()
-            .orElseThrow(
-                () ->
-                    new IllegalGraphqlArgumentException(
-                        "No default device specimen type selected"));
-
-    return new DeviceSpecimenTypeHolder(defaultDeviceSpecimenType, dsts);
-  }
-
-  public List<SpecimenType> getSpecimenTypes() {
-    return _specimenTypeRepo.findAllByIsDeletedFalse();
   }
 }

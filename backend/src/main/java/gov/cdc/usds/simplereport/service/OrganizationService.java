@@ -5,20 +5,20 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
-import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -36,36 +36,36 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class OrganizationService {
 
-  private final OrganizationRepository _repo;
-  private final FacilityRepository _facilityRepo;
-  private final ProviderRepository _providerRepo;
-  private final AuthorizationService _authService;
-  private final OktaRepository _oktaRepo;
-  private final CurrentOrganizationRolesContextHolder _currentOrgRolesContextHolder;
-  private final OrderingProviderRequiredValidator _orderingProviderRequiredValidator;
-  private final PatientSelfRegistrationLinkService _psrlService;
-  private final DeviceSpecimenTypeRepository deviceSpecimenTypeRepository;
+  private final OrganizationRepository organizationRepository;
+  private final FacilityRepository facilityRepository;
+  private final ProviderRepository providerRepository;
+  private final AuthorizationService authorizationService;
+  private final OktaRepository oktaRepository;
+  private final CurrentOrganizationRolesContextHolder organizationRolesContext;
+  private final OrderingProviderRequiredValidator orderingProviderValidator;
+  private final PatientSelfRegistrationLinkService patientSelfRegistrationLinkService;
+  private final DeviceTypeRepository deviceTypeRepository;
 
   public void resetOrganizationRolesContext() {
-    _currentOrgRolesContextHolder.reset();
+    organizationRolesContext.reset();
   }
 
   public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
-    if (_currentOrgRolesContextHolder.hasBeenPopulated()) {
-      return _currentOrgRolesContextHolder.getOrganizationRoles();
+    if (organizationRolesContext.hasBeenPopulated()) {
+      return organizationRolesContext.getOrganizationRoles();
     }
     var result = fetchCurrentOrganizationRoles();
-    _currentOrgRolesContextHolder.setOrganizationRoles(result);
+    organizationRolesContext.setOrganizationRoles(result);
     return result;
   }
 
   private Optional<OrganizationRoles> fetchCurrentOrganizationRoles() {
-    List<OrganizationRoleClaims> orgRoles = _authService.findAllOrganizationRoles();
+    List<OrganizationRoleClaims> orgRoles = authorizationService.findAllOrganizationRoles();
     List<String> candidateExternalIds =
         orgRoles.stream()
             .map(OrganizationRoleClaims::getOrganizationExternalId)
             .collect(Collectors.toList());
-    List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
+    List<Organization> validOrgs = organizationRepository.findAllByExternalId(candidateExternalIds);
     if (validOrgs == null || validOrgs.size() != 1) {
       int numOrgs = (validOrgs == null) ? 0 : validOrgs.size();
       log.warn("Found {} organizations for user", numOrgs);
@@ -114,7 +114,7 @@ public class OrganizationService {
   }
 
   public Organization getOrganization(String externalId) {
-    Optional<Organization> found = _repo.findByExternalId(externalId);
+    Optional<Organization> found = organizationRepository.findByExternalId(externalId);
     return found.orElseThrow(
         () ->
             new IllegalGraphqlArgumentException(
@@ -122,14 +122,14 @@ public class OrganizationService {
   }
 
   public List<Organization> getOrganizationsByName(String name) {
-    return _repo.findAllByName(name);
+    return organizationRepository.findAllByName(name);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<Organization> getOrganizations(Boolean identityVerified) {
     return identityVerified == null
-        ? _repo.findAll()
-        : _repo.findAllByIdentityVerified(identityVerified);
+        ? organizationRepository.findAll()
+        : organizationRepository.findAllByIdentityVerified(identityVerified);
   }
 
   public Set<Facility> getAccessibleFacilities(
@@ -138,16 +138,16 @@ public class OrganizationService {
     // get specified
     // list.
     return roleClaims.grantsAllFacilityAccess()
-        ? _facilityRepo.findAllByOrganization(org)
-        : _facilityRepo.findAllByOrganizationAndInternalId(org, roleClaims.getFacilities());
+        ? facilityRepository.findAllByOrganization(org)
+        : facilityRepository.findAllByOrganizationAndInternalId(org, roleClaims.getFacilities());
   }
 
   public List<Facility> getFacilities(Organization org) {
-    return _facilityRepo.findByOrganizationOrderByFacilityName(org);
+    return facilityRepository.findByOrganizationOrderByFacilityName(org);
   }
 
   public Set<Facility> getFacilities(Organization org, Collection<UUID> facilityIds) {
-    return _facilityRepo.findAllByOrganizationAndInternalId(org, facilityIds);
+    return facilityRepository.findAllByOrganizationAndInternalId(org, facilityIds);
   }
 
   public Facility getFacilityInCurrentOrg(UUID facilityId) {
@@ -161,7 +161,7 @@ public class OrganizationService {
   }
 
   public Organization getOrganizationByFacilityId(UUID facilityId) {
-    Facility facility = _facilityRepo.findById(facilityId).orElse(null);
+    Facility facility = facilityRepository.findById(facilityId).orElse(null);
 
     if (facility == null) {
       return null;
@@ -172,7 +172,7 @@ public class OrganizationService {
 
   public void assertFacilityNameAvailable(String testingFacilityName) {
     Organization org = getCurrentOrganization();
-    _facilityRepo
+    facilityRepository
         .findByOrganizationAndFacilityName(org, testingFacilityName)
         .ifPresent(
             f -> {
@@ -189,14 +189,11 @@ public class OrganizationService {
       StreetAddress facilityAddress,
       String phone,
       String email,
-      String orderingProviderFirstName,
-      String orderingProviderMiddleName,
-      String orderingProviderLastName,
-      String orderingProviderSuffix,
-      String orderingProviderNPI,
+      PersonName orderingProviderName,
       StreetAddress orderingProviderAddress,
+      String orderingProviderNPI,
       String orderingProviderTelephone,
-      DeviceSpecimenTypeHolder deviceSpecimenTypes) {
+      List<UUID> deviceIds) {
 
     Facility facility = this.getFacilityInCurrentOrg(facilityId);
     facility.setFacilityName(testingFacilityName);
@@ -206,32 +203,24 @@ public class OrganizationService {
     facility.setAddress(facilityAddress);
 
     Provider p = facility.getOrderingProvider();
-    p.getNameInfo().setFirstName(orderingProviderFirstName);
-    p.getNameInfo().setMiddleName(orderingProviderMiddleName);
-    p.getNameInfo().setLastName(orderingProviderLastName);
-    p.getNameInfo().setSuffix(orderingProviderSuffix);
+    p.getNameInfo().setFirstName(orderingProviderName.getFirstName());
+    p.getNameInfo().setMiddleName(orderingProviderName.getMiddleName());
+    p.getNameInfo().setLastName(orderingProviderName.getLastName());
+    p.getNameInfo().setSuffix(orderingProviderName.getSuffix());
     p.setProviderId(orderingProviderNPI);
     p.setTelephone(orderingProviderTelephone);
     p.setAddress(orderingProviderAddress);
 
-    _orderingProviderRequiredValidator.assertValidity(
+    orderingProviderValidator.assertValidity(
         p.getNameInfo(), p.getProviderId(), p.getTelephone(), facility.getAddress().getState());
 
-    facility.getDeviceSpecimenTypes().forEach(facility::removeDeviceSpecimenType);
+    facility.getDeviceTypes().forEach(facility::removeDeviceType);
 
-    for (DeviceSpecimenType ds : deviceSpecimenTypes.getFullList()) {
-      Optional<DeviceSpecimenType> deviceSpecimenTypeOptional =
-          deviceSpecimenTypeRepository.find(ds.getDeviceType(), ds.getSpecimenType());
-      deviceSpecimenTypeOptional.ifPresent(facility::addDeviceSpecimenType);
-    }
+    deviceIds.stream()
+        .map(deviceTypeRepository::findById)
+        .forEach(deviceTypeOptional -> deviceTypeOptional.ifPresent(facility::addDeviceType));
 
-    Optional<DeviceSpecimenType> deviceSpecimenTypeOptional =
-        deviceSpecimenTypeRepository.find(
-            deviceSpecimenTypes.getDefault().getDeviceType(),
-            deviceSpecimenTypes.getDefault().getSpecimenType());
-    deviceSpecimenTypeOptional.ifPresent(facility::addDefaultDeviceSpecimen);
-
-    return _facilityRepo.save(facility);
+    return facilityRepository.save(facility);
   }
 
   @Transactional(readOnly = false)
@@ -244,7 +233,7 @@ public class OrganizationService {
       StreetAddress facilityAddress,
       String phone,
       String email,
-      DeviceSpecimenTypeHolder deviceSpecimenTypes,
+      List<UUID> deviceTypeIds,
       PersonName providerName,
       StreetAddress providerAddress,
       String providerTelephone,
@@ -258,7 +247,7 @@ public class OrganizationService {
         facilityAddress,
         phone,
         email,
-        deviceSpecimenTypes,
+        deviceTypeIds,
         providerName,
         providerAddress,
         providerTelephone,
@@ -269,9 +258,9 @@ public class OrganizationService {
   @Transactional(readOnly = false)
   public Organization createOrganization(String name, String type, String externalId) {
     // for now, all new organizations have identity_verified = false by default
-    Organization org = _repo.save(new Organization(name, type, externalId, false));
-    _oktaRepo.createOrganization(org);
-    _psrlService.createRegistrationLink(org);
+    Organization org = organizationRepository.save(new Organization(name, type, externalId, false));
+    oktaRepository.createOrganization(org);
+    patientSelfRegistrationLinkService.createRegistrationLink(org);
     return org;
   }
 
@@ -281,7 +270,7 @@ public class OrganizationService {
     Organization org = getCurrentOrganization();
     org.setOrganizationName(name);
     org.setOrganizationType(type);
-    return _repo.save(org);
+    return organizationRepository.save(org);
   }
 
   @Transactional(readOnly = false)
@@ -289,7 +278,7 @@ public class OrganizationService {
   public Organization updateOrganization(String type) {
     Organization org = getCurrentOrganization();
     org.setOrganizationType(type);
-    return _repo.save(org);
+    return organizationRepository.save(org);
   }
 
   @Transactional(readOnly = false)
@@ -298,9 +287,9 @@ public class OrganizationService {
     Organization org = getOrganization(externalId);
     boolean oldStatus = org.getIdentityVerified();
     org.setIdentityVerified(verified);
-    boolean newStatus = _repo.save(org).getIdentityVerified();
+    boolean newStatus = organizationRepository.save(org).getIdentityVerified();
     if (oldStatus == false && newStatus == true) {
-      _oktaRepo.activateOrganization(org);
+      oktaRepository.activateOrganization(org);
     }
     return newStatus;
   }
@@ -317,28 +306,33 @@ public class OrganizationService {
       throw new IllegalStateException("Organization is already verified.");
     }
     org.setIdentityVerified(true);
-    _repo.save(org);
-    return _oktaRepo.activateOrganizationWithSingleUser(org);
+    organizationRepository.save(org);
+    return oktaRepository.activateOrganizationWithSingleUser(org);
   }
 
-  @Transactional(readOnly = false)
-  public Facility createFacilityNoPermissions(
+  private Facility createFacilityNoPermissions(
       Organization organization,
       String testingFacilityName,
       String cliaNumber,
       StreetAddress facilityAddress,
       String phone,
       String email,
-      DeviceSpecimenTypeHolder deviceSpecimenTypes,
+      List<UUID> deviceIds,
       PersonName providerName,
       StreetAddress providerAddress,
       String providerTelephone,
       String providerNPI) {
-    _orderingProviderRequiredValidator.assertValidity(
+    orderingProviderValidator.assertValidity(
         providerName, providerNPI, providerTelephone, facilityAddress.getState());
     Provider orderingProvider =
-        _providerRepo.save(
+        providerRepository.save(
             new Provider(providerName, providerNPI, providerAddress, providerTelephone));
+
+    List<DeviceType> configuredDevices = new ArrayList<>();
+    deviceIds.stream()
+        .map(deviceTypeRepository::findById)
+        .forEach(deviceTypeOptional -> deviceTypeOptional.ifPresent(configuredDevices::add));
+
     Facility facility =
         new Facility(
             organization,
@@ -348,11 +342,10 @@ public class OrganizationService {
             phone,
             email,
             orderingProvider,
-            deviceSpecimenTypes.getDefault(),
-            deviceSpecimenTypes.getFullList());
-    facility = _facilityRepo.save(facility);
-    _psrlService.createRegistrationLink(facility);
-    _oktaRepo.createFacility(facility);
+            configuredDevices);
+    facility = facilityRepository.save(facility);
+    patientSelfRegistrationLinkService.createRegistrationLink(facility);
+    oktaRepository.createFacility(facility);
     return facility;
   }
 
@@ -364,7 +357,7 @@ public class OrganizationService {
       StreetAddress facilityAddress,
       String phone,
       String email,
-      DeviceSpecimenTypeHolder deviceSpecimenTypes,
+      List<UUID> deviceIds,
       PersonName providerName,
       StreetAddress providerAddress,
       String providerTelephone,
@@ -376,10 +369,22 @@ public class OrganizationService {
         facilityAddress,
         phone,
         email,
-        deviceSpecimenTypes,
+        deviceIds,
         providerName,
         providerAddress,
         providerTelephone,
         providerNPI);
+  }
+
+  @Transactional(readOnly = false)
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public Facility markFacilityAsDeleted(UUID facilityId, boolean deleted) {
+    Optional<Facility> optionalFacility = facilityRepository.findById(facilityId);
+    if (optionalFacility.isEmpty()) {
+      throw new IllegalGraphqlArgumentException("Facility not found.");
+    }
+    Facility facility = optionalFacility.get();
+    facility.setIsDeleted(deleted);
+    return facilityRepository.save(facility);
   }
 }

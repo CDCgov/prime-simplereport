@@ -120,7 +120,7 @@ type AddressOptions = "facility" | "provider";
 
 export interface Props {
   facility: Facility;
-  deviceSpecimenTypeOptions: DeviceSpecimenType[];
+  deviceTypes: DeviceType[];
   saveFacility: (facility: Facility) => void;
   newOrg?: boolean;
 }
@@ -152,32 +152,10 @@ const FacilityForm: React.FC<Props> = (props) => {
     });
   };
 
-  const updateDeviceSpecimenTypes = (
-    deviceSpecimenTypes: DeviceSpecimenTypeIds[]
-  ) => {
-    const dst = deviceSpecimenTypes.map(({ deviceType, specimenType }) => {
-      const deviceSpecimenType = props.deviceSpecimenTypeOptions.find(
-        (options) => {
-          return (
-            options.deviceType.internalId === deviceType &&
-            options.specimenType.internalId === specimenType
-          );
-        }
-      );
-
-      return deviceSpecimenType || props.deviceSpecimenTypeOptions[0];
-    });
-
+  const updateSelectedDevices = (deviceTypes: DeviceType[]) => {
     updateForm((facility) => ({
       ...facility,
-      deviceSpecimenTypes: dst,
-    }));
-  };
-
-  const updateDefaultDevice = (defaultDevice: string) => {
-    updateForm((facility) => ({
-      ...facility,
-      defaultDevice,
+      deviceTypes,
     }));
   };
 
@@ -369,16 +347,10 @@ const FacilityForm: React.FC<Props> = (props) => {
           validateField={validateField}
         />
         <ManageDevices
-          deviceSpecimenTypes={facility.deviceSpecimenTypes.map((dst) => ({
-            deviceType: dst.deviceType.internalId,
-            specimenType: dst.specimenType.internalId,
-          }))}
-          defaultDevice={facility.defaultDevice}
-          updateDeviceSpecimenTypes={updateDeviceSpecimenTypes}
-          updateDefaultDevice={updateDefaultDevice}
-          deviceSpecimenTypeOptions={props.deviceSpecimenTypeOptions}
+          deviceTypes={props.deviceTypes}
+          selectedDevices={facility.deviceTypes}
+          updateSelectedDevices={updateSelectedDevices}
           errors={errors}
-          validateField={validateField}
         />
         <div className="float-right margin-bottom-4 margin-top-4">
           <Button

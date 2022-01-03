@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
@@ -149,9 +149,7 @@ describe("AddToSearchQueue - add to queue", () => {
   it("adds patient to queue from search form", async () => {
     userEvent.type(screen.getByRole("searchbox", { exact: false }), "bar");
 
-    await waitFor(async () => {
-      userEvent.click(screen.getAllByRole("button")[1]);
-    });
+    userEvent.click(screen.getAllByRole("button")[1]);
 
     expect(queryPatientMockIsDone).toBe(true);
     expect(addPatientMockIsDone).toBe(true);
@@ -160,9 +158,7 @@ describe("AddToSearchQueue - add to queue", () => {
   it("tracks custom telemetry event", async () => {
     userEvent.type(screen.getByRole("searchbox", { exact: false }), "bar");
 
-    await waitFor(async () => {
-      userEvent.click(screen.getAllByRole("button")[1]);
-    });
+    userEvent.click(screen.getAllByRole("button")[1]);
 
     expect(trackEventMock).toBeCalledWith({ name: "Add Patient To Queue" });
   });

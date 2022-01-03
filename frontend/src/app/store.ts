@@ -40,6 +40,7 @@ export const initialState = {
       result: COVID_RESULTS.INCONCLUSIVE,
       dateTested: "",
       deviceTypeModel: "",
+      deviceTypeName: "",
     },
   },
 };

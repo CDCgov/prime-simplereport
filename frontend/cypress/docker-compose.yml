@@ -1,0 +1,78 @@
+version: "3.5"
+services:
+  cypress:
+    build:
+      context: ../
+      dockerfile: ./cypress/Dockerfile.e2e
+    container_name: cypress
+    env_file:
+      - ./.env.e2e
+    volumes:
+      - ../:/app
+    expose:
+      - "8088"
+  db:
+    image: postgres:11-alpine
+    container_name: db
+    environment:
+      POSTGRES_PASSWORD: admin_password_for_local_dev_is_not_very_secure
+    volumes:
+      # Mount init scripts for first-run user/schema creation
+      - type: bind
+        source: ../../backend/db-setup/create-db.sh
+        target: /docker-entrypoint-initdb.d/01-user-db-creation.sh
+      - type: bind
+        source: ../../backend/db-setup/reset-db.sql
+        target: /usr/local/lib/reset-db.sql
+    expose: 
+      - "5432"
+  api:
+    build:
+      context: ../../
+      dockerfile: backend/Dockerfile
+    image: simple-report-api-build
+    container_name: api
+    command: bootRun
+    env_file:
+      - ./.env.e2e
+    environment:
+      SPRING_PROFILES_ACTIVE: e2e,db-dockerized
+      SPRING_LIQUIBASE_ENABLED: "true"
+      WIREMOCK_URL: http://cypress:8088
+      OKTA_TESTING_DISABLEHTTPSCHECK: "true"
+    depends_on:
+      - db
+      - cypress
+    expose:
+      - "8080"
+  frontend:
+    build:
+      context: ../
+      dockerfile: Dockerfile.dev
+      args: 
+        NODE_VER: 14
+        NODE_ENV: development
+    container_name: frontend
+    environment:
+      REACT_APP_BASE_URL: http://localhost.simplereport.gov
+      REACT_APP_BACKEND_URL: http://localhost.simplereport.gov/api
+      REACT_APP_OKTA_ENABLED: "true"
+      REACT_APP_OKTA_URL: http://cypress:8088
+    volumes:
+      - ../:/frontend/
+      - ../../backend/src/main/resources/graphql:/backend/src/main/resources/graphql
+    expose:
+      - "3000"
+  # This is an nginx server that serves both the frontend and the API
+  # at localhost.simplereport.gov
+  localhost.simplereport.gov:
+    build:
+      context: ../
+      dockerfile: ./cypress/support/nginx/Dockerfile.nginx.compose
+    container_name: nginx
+    depends_on:
+      - frontend
+      - api
+    expose:
+      - "80"
+      - "443"

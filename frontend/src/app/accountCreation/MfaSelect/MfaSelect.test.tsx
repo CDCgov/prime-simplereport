@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Switch } from "react-router";
 
@@ -54,7 +54,7 @@ describe("MfaSelect", () => {
   });
 });
 
-function create(obj: any) {
+function create(_obj: any) {
   return new Promise((cred) => {
     cred({
       response: {
@@ -139,11 +139,9 @@ describe("MfaSelect routing", () => {
       }
     );
 
-    await waitFor(() => {
-      userEvent.click(securityKeyRadio);
-      expect(securityKeyRadio).toBeChecked();
-      userEvent.click(continueButton);
-    });
+    userEvent.click(securityKeyRadio);
+    expect(securityKeyRadio).toBeChecked();
+    userEvent.click(continueButton);
 
     expect(
       screen.getByText(

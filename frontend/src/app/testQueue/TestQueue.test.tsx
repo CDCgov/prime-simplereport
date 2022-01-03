@@ -2,6 +2,7 @@ import {
   render,
   screen,
   waitForElementToBeRemoved,
+  within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
@@ -39,6 +40,9 @@ describe("TestQueue", () => {
   });
 
   it("should render the test queue", async () => {
+    jest
+      .useFakeTimers("modern")
+      .setSystemTime(new Date("2021-08-01 08:20").getTime());
     const { container } = render(
       <MemoryRouter>
         <MockedProvider mocks={mocks}>
@@ -53,8 +57,8 @@ describe("TestQueue", () => {
     expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
     expect(container).toMatchSnapshot();
   });
+
   it("should remove items queue using the transition group", async () => {
-    jest.useFakeTimers();
     render(
       <MemoryRouter>
         <MockedProvider mocks={mocks}>
@@ -71,6 +75,46 @@ describe("TestQueue", () => {
     userEvent.click(confirmButton);
     await waitForElementToBeRemoved(() => screen.queryByText("Doe, John A"));
     expect(screen.queryByText("Doe, John A")).not.toBeInTheDocument();
+  });
+
+  describe("clicking on test questionnaire", () => {
+    beforeEach(async () => {
+      await render(
+        <MemoryRouter>
+          <MockedProvider mocks={mocks}>
+            <Provider store={store}>
+              <TestQueue activeFacilityId="a1" />
+            </Provider>
+          </MockedProvider>
+        </MemoryRouter>
+      );
+
+      await screen.findByLabelText("Search");
+      expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
+      expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
+
+      userEvent.click(screen.getAllByText("Test questionnaire")[0]);
+    });
+
+    it("should open test questionnaire and display emails and phone numbers correctly", () => {
+      const modal = screen.getByRole("dialog");
+
+      expect(within(modal).getByText("Test questionnaire")).toBeInTheDocument();
+      expect(
+        within(modal).getByText(
+          "Would you like to receive a copy of your results via text message?"
+        )
+      ).toBeInTheDocument();
+      expect(
+        within(modal).getByText(
+          "Would you like to receive a copy of your results via email?"
+        )
+      ).toBeInTheDocument();
+      expect(within(modal).getByText("Doe@legacy.com")).toBeInTheDocument();
+      expect(within(modal).getByText("John@legacy.com")).toBeInTheDocument();
+      expect(within(modal).getByText("8178675309")).toBeInTheDocument();
+      expect(within(modal).getByText("8178675911")).toBeInTheDocument();
+    });
   });
 });
 
@@ -115,12 +159,6 @@ const createPatient = ({
   symptoms,
   symptomOnset: null,
   noSymptoms: false,
-  deviceType: {
-    internalId,
-    testLength: 15,
-    name: "LumiraDX",
-    __typename: "DeviceType",
-  },
   patient: {
     internalId: "31d42f7a-0a14-46b7-bc8a-38b3b1e78659",
     telephone: "1234567890",
@@ -128,8 +166,32 @@ const createPatient = ({
     firstName: first,
     middleName: middle,
     lastName: last,
+    email: `${middle}@legacy.com`,
+    emails: [`${first}@legacy.com`, `${last}@legacy.com`],
+    phoneNumbers: [
+      {
+        number: "8178675309",
+        type: "MOBILE",
+      },
+      {
+        number: "8178675911",
+        type: "MOBILE",
+      },
+    ],
     gender: "female",
+    testResultDelivery: "",
+    preferredLanguage: [],
     __typename: "Patient",
+  },
+  deviceType: {
+    internalId,
+    testLength: 15,
+    model: "lumira",
+    name: "LumiraDX",
+    __typename: "DeviceType",
+  },
+  deviceSpecimenType: {
+    internalId,
   },
   result: "",
   dateTested: null,
@@ -167,27 +229,71 @@ const result = {
             {
               internalId,
               testLength: 15,
+              model: "lumira",
               name: "LumiraDX",
               __typename: "DeviceType",
             },
             {
               internalId: "0f3d7426-3476-4800-97e7-3de8a93b090c",
               testLength: 15,
+              model: "quidel",
               name: "Quidel Sofia 2",
               __typename: "DeviceType",
             },
           ],
-          defaultDeviceType: {
-            internalId,
-            testLength: 15,
-            name: "LumiraDX",
-            __typename: "DeviceType",
-          },
+          defaultDeviceSpecimen: internalId,
           __typename: "Facility",
         },
       ],
       __typename: "Organization",
     },
+    deviceSpecimenTypes: [
+      {
+        internalId: "3d5c0c67-cddb-4344-8037-18008d6fe809",
+        deviceType: {
+          internalId: internalId,
+          model: "lumira",
+          name: "LumiraDx",
+          __typename: "DeviceType",
+        },
+        specimenType: {
+          internalId: "6aa957dc-add2-4938-8788-935aec3276d4",
+          name: "Swab of internal nose",
+          __typename: "SpecimenType",
+        },
+        __typename: "DeviceSpecimenType",
+      },
+      {
+        internalId: "0f3d7426-3476-4800-97e7-3de8a93b090c",
+        deviceType: {
+          internalId: "f8b9d9d6-c318-4c54-a516-76f0d9a25d32",
+          model: "quidel",
+          name: "Quidel Sofia 2",
+          __typename: "DeviceType",
+        },
+        specimenType: {
+          internalId: "6e4ccb35-d177-4ea0-9226-653358f1e081",
+          name: "Nasopharyngeal swab",
+          __typename: "SpecimenType",
+        },
+        __typename: "DeviceSpecimenType",
+      },
+      {
+        internalId: "c0c7b042-9a4f-47cd-b280-46c0daa51c86",
+        deviceType: {
+          internalId: "0f3d7426-3476-4800-97e7-3de8a93b090c",
+          model: "quidel",
+          name: "Quidel Sofia 2",
+          __typename: "DeviceType",
+        },
+        specimenType: {
+          internalId: "6aa957dc-add2-4938-8788-935aec3276d4",
+          name: "Swab of internal nose",
+          __typename: "SpecimenType",
+        },
+        __typename: "DeviceSpecimenType",
+      },
+    ],
   },
 };
 

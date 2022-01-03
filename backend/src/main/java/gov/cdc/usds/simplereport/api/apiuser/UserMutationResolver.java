@@ -76,6 +76,11 @@ public class UserMutationResolver implements GraphQLMutationResolver {
     return new User(user);
   }
 
+  public User updateUserEmail(UUID id, String email) {
+    UserInfo user = _us.updateUserEmail(id, email);
+    return new User(user);
+  }
+
   public User resetUserPassword(UUID id) {
     UserInfo user = _us.resetUserPassword(id);
     return new User(user);

@@ -1,3 +1,5 @@
+import React from "react";
+
 import { useGetManagedFacilitiesQuery } from "../../../generated/graphql";
 
 import ManageFacilities from "./ManageFacilities";
@@ -18,18 +20,7 @@ const ManageFacilitiesContainer: any = () => {
     return <p>Error: facilities not found</p>;
   }
 
-  const facilities: Facility[] = settingsData.organization.testingFacility.map(
-    (f) => {
-      return {
-        ...f,
-        defaultDevice: f.defaultDeviceType
-          ? f.defaultDeviceType.internalId
-          : "",
-        deviceTypes: Object.values(f.deviceTypes).map((d) => d.internalId),
-      };
-    }
-  );
-  return <ManageFacilities facilities={facilities} />;
+  return <ManageFacilities facilities={data.organization.testingFacility} />;
 };
 
 export default ManageFacilitiesContainer;

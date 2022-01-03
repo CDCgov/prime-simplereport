@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { SpecimenType } from "../../../generated/graphql";
@@ -37,10 +37,10 @@ jest.mock("react-router-dom", () => ({
 }));
 
 describe("DeviceTypeFormContainer", () => {
-  it("should show the device type form", () => {
+  it("should show the device type form", async () => {
     render(<DeviceTypeFormContainer />);
 
-    screen.findByText("Device type");
+    expect(await screen.findByText("Device type")).toBeInTheDocument();
   });
 
   it("should save the new device", async () => {
@@ -51,19 +51,13 @@ describe("DeviceTypeFormContainer", () => {
     addValue("Model", "Accula SARS-Cov-2 Test*");
     addValue("LOINC code", "95409-9");
 
-    act(() => {
-      userEvent.click(screen.getByTestId("multi-select-input"));
-    });
+    userEvent.click(screen.getByTestId("multi-select-input"));
 
-    act(() => {
-      userEvent.click(screen.getByText("Cotton (5309)"));
-    });
+    userEvent.click(screen.getByText("Cotton (5309)"));
 
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    userEvent.click(screen.getByText("Save changes"));
 
-    act(() => {
-      userEvent.click(screen.getByText("Save changes"));
-    });
+    await screen.findByText("Redirected to /admin");
 
     expect(mockCreateDeviceType).toBeCalledTimes(1);
     expect(mockCreateDeviceType).toHaveBeenCalledWith({

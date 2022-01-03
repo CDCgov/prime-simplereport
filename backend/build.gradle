@@ -26,6 +26,10 @@ dependencies {
     // core infrastructure
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    // log4j vulnerability fixes (Dec 2021)
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.0'
+    implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.17.0'
+
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -175,6 +179,7 @@ sonarqube {
         // In order to get both the frontend and backend code to report, we need to set the sonar project to the root directory.
         property "sonar.sources", "backend/src/main/java,frontend/src,ops/services/app_functions/"
         property "sonar.exclusions", "backend/src/**/*Config*.java,frontend/src/**/*.test.*,frontend/src/stories/**/*,frontend/src/**/*.stories.tsx,frontend/src/generated/*.tsx,ops/services/app_functions/**/*.test.*,ops/services/app_functions/**/*config*"
+        property "sonar.coverage.exclusions", "frontend/src/setupTests.js"
         property "sonar.cpd.exclusions", "frontend/src/lang/*.ts"
         property "sonar.javascript.lcov.reportPaths", "frontend/coverage/lcov.info,ops/services/app_functions/report_stream_batched_publisher/functions/coverage/lcov.info"
     }

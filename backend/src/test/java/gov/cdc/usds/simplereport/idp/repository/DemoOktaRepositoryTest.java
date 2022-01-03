@@ -185,6 +185,52 @@ class DemoOktaRepositoryTest {
   }
 
   @Test
+  void updateUser() {
+    createOrgAndFacilities();
+
+    // Check that updating a non-existent user throws the proper exception
+    assertThrows(
+        IllegalGraphqlArgumentException.class,
+        () -> {
+          _repo.updateUser(AMOS);
+        });
+
+    Optional<OrganizationRoleClaims> createdAmos =
+        _repo.createUser(
+            AMOS,
+            ABC,
+            Set.of(ABC_1),
+            Set.of(OrganizationRole.USER, OrganizationRole.ALL_FACILITIES),
+            true);
+    assertTrue(
+        new OrganizationRoleClaimsMatcher(createdAmos.get()).matches(_repo.updateUser(AMOS).get()));
+  }
+
+  @Test
+  void updateUserEmail() {
+    createOrgAndFacilities();
+
+    // Check that updating a non-existent user throws the proper exception
+    assertThrows(
+        IllegalGraphqlArgumentException.class,
+        () -> {
+          _repo.updateUserEmail(AMOS, AMOS.getUsername());
+        });
+
+    // Create a user and try updating their email
+    Optional<OrganizationRoleClaims> createdAmos =
+        _repo.createUser(
+            AMOS,
+            ABC,
+            Set.of(ABC_1),
+            Set.of(OrganizationRole.USER, OrganizationRole.ALL_FACILITIES),
+            true);
+    assertTrue(
+        new OrganizationRoleClaimsMatcher(createdAmos.get())
+            .matches(_repo.updateUserEmail(AMOS, AMOS.getUsername()).get()));
+  }
+
+  @Test
   void getOrganizationRoleClaimsForUser() {
     createOrgAndFacilities();
     _repo.createUser(

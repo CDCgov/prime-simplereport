@@ -27,6 +27,17 @@ function orderingProviderIsRequired(
   return true;
 }
 
+function isValidNpi(
+  this: yup.TestContext<Record<string, any>>,
+  input = ""
+): boolean {
+  if (this?.options?.context?.orderingProviderIsRequired) {
+    let npiValidator = /^\d{1,10}$/;
+    return npiValidator.test(input);
+  }
+  return true;
+}
+
 type RequiredProviderFields = Nullable<Partial<Provider>>;
 
 const orderingProviderFormatError = (field: string) =>
@@ -54,7 +65,7 @@ const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
     .test(
       "ordering-provider-npi",
       orderingProviderFormatError("NPI"),
-      orderingProviderIsRequired
+      isValidNpi
     ),
   phone: yup
     .string()
@@ -73,17 +84,7 @@ const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
 const deviceTypeSchema: yup.SchemaOf<DeviceType> = yup.object({
   internalId: yup.string().required(),
   name: yup.string().required(),
-});
-
-const specimenTypeSchema: yup.SchemaOf<SpecimenType> = yup.object({
-  internalId: yup.string().required(),
-  name: yup.string().required(),
-});
-
-export const deviceSchema: yup.SchemaOf<DeviceSpecimenType> = yup.object({
-  internalId: yup.string().required(),
-  deviceType: deviceTypeSchema,
-  specimenType: specimenTypeSchema,
+  testLength: yup.number().optional(),
 });
 
 export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
@@ -118,16 +119,9 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
   zipCode: yup.string().required("Facility zip code is missing"),
   deviceTypes: yup
     .array()
-    .of(yup.string().required())
+    .of(deviceTypeSchema)
     .min(1, "There must be at least one device")
     .required("There must be at least one device"),
-  deviceSpecimenTypes: yup.array().of(deviceSchema),
-  defaultDevice: yup.mixed().test(function (input) {
-    if (!input) {
-      return this.createError({ message: "A default device must be selected" });
-    }
-    return true;
-  }),
   orderingProvider: providerSchema.nullable(),
   phone: yup
     .string()

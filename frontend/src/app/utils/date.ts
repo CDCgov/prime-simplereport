@@ -26,3 +26,16 @@ export const isValidDate = (date: string, strict = false): boolean => {
     moment(date, "YYYY-MM-DD", strict).isValid()
   );
 };
+
+export function dateFromStrings(
+  monthStr: string,
+  dayStr: string,
+  yearStr: string
+) {
+  const month = parseInt(monthStr.trim());
+  const day = parseInt(dayStr.trim());
+  const year = parseInt(yearStr.trim());
+
+  // Javascript months are 0-offset. This is the worst.
+  return moment({ year: year, month: month - 1, day: day });
+}

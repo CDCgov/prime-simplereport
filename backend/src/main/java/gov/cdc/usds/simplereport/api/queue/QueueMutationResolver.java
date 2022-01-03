@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -24,25 +25,50 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
 
   private final TestOrderService _tos;
   private final PersonService _ps;
+  private final DeviceTypeService _dts;
 
-  public QueueMutationResolver(TestOrderService tos, PersonService ps) {
+  public QueueMutationResolver(TestOrderService tos, PersonService ps, DeviceTypeService dts) {
     _tos = tos;
     _ps = ps;
+    _dts = dts;
   }
 
   public AddTestResultResponse addTestResultNew(
-      String deviceID, String result, UUID patientID, Date dateTested) throws NumberParseException {
-    return _tos.addTestResult(deviceID, TestResult.valueOf(result), patientID, dateTested);
+      String deviceID, UUID deviceSpecimenType, String result, UUID patientID, Date dateTested)
+      throws NumberParseException {
+    UUID deviceSpecimenTypeId =
+        deviceSpecimenType == null
+            ? _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(UUID.fromString(deviceID))
+                .getInternalId()
+            : deviceSpecimenType;
+
+    return _tos.addTestResult(
+        deviceSpecimenTypeId, TestResult.valueOf(result), patientID, dateTested);
   }
 
-  public ApiTestOrder addTestResult(String deviceID, String result, UUID patientID, Date dateTested)
+  public ApiTestOrder addTestResult(
+      String deviceID, UUID deviceSpecimenType, String result, UUID patientID, Date dateTested)
       throws NumberParseException {
-    return _tos.addTestResult(deviceID, TestResult.valueOf(result), patientID, dateTested)
+    UUID deviceSpecimenTypeId =
+        deviceSpecimenType == null
+            ? _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(UUID.fromString(deviceID))
+                .getInternalId()
+            : deviceSpecimenType;
+
+    return _tos.addTestResult(
+            deviceSpecimenTypeId, TestResult.valueOf(result), patientID, dateTested)
         .getTestResult();
   }
 
-  public ApiTestOrder editQueueItem(UUID id, String deviceId, String result, Date dateTested) {
-    return new ApiTestOrder(_tos.editQueueItem(id, deviceId, result, dateTested));
+  public ApiTestOrder editQueueItem(
+      UUID id, String deviceId, UUID deviceSpecimenType, String result, Date dateTested) {
+    UUID dst =
+        deviceSpecimenType == null
+            ? _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(UUID.fromString(deviceId))
+                .getInternalId()
+            : deviceSpecimenType;
+
+    return new ApiTestOrder(_tos.editQueueItem(id, dst, result, dateTested));
   }
 
   public String addPatientToQueue(

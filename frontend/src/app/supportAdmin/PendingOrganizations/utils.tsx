@@ -10,6 +10,12 @@ export interface PendingOrganizationFormValues {
   adminPhone: string | undefined;
 }
 
+export interface EditOrgMutationResponse {
+  data: {
+    editPendingOrganization: string;
+  };
+}
+
 const phoneNumberIsValidOrEmpty = (input: any) =>
   input === "" || phoneNumberIsValid(input);
 

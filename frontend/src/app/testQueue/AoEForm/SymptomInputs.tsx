@@ -1,5 +1,5 @@
 import React from "react";
-import { DatePicker, Label } from "@trussworks/react-uswds";
+import { Label } from "@trussworks/react-uswds";
 
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 import Checkboxes from "../../commonComponents/Checkboxes";
@@ -77,21 +77,23 @@ const SymptomInputs: React.FC<Props> = ({
       {!noSymptoms && (
         <div className="usa-form-group">
           <Label htmlFor="meeting-time">Date of symptom onset</Label>
-          <span className="usa-hint">mm/dd/yyyy</span>
           {symptomOnsetError && (
             <span className="usa-error-message" role="alert">
               <span className="usa-sr-only">Error: </span>
               {symptomOnsetError}
             </span>
           )}
-          <DatePicker
-            className="maxw-mobile"
-            id="symptom_onset"
+          <input
+            className="symptom-onset-date"
+            id="symptom_onset_date"
+            data-testid="symptom_onset_date"
             name="symptom_onset"
             defaultValue={onsetDate || undefined}
-            minDate="2020-02-01"
-            maxDate={formatDate(new Date())}
-            onChange={(date) => {
+            min="2020-02-01"
+            type="date"
+            max={formatDate(new Date())}
+            onChange={(event) => {
+              const date = event.target.value;
               if (date) {
                 setFormattedOnsetDate(date);
               }

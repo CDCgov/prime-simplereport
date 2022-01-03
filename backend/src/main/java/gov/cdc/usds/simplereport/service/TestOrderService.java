@@ -209,13 +209,20 @@ public class TestOrderService {
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
   @Deprecated // switch to specifying device-specimen combo
   public TestOrder editQueueItem(
-      UUID testOrderId, String deviceId, String result, Date dateTested) {
+      UUID testOrderId, UUID deviceSpecimenTypeId, String result, Date dateTested) {
     lockOrder(testOrderId);
     try {
       TestOrder order = this.getTestOrder(testOrderId);
 
-      if (deviceId != null) {
-        order.setDeviceSpecimen(_dts.getDefaultForDeviceId(UUID.fromString(deviceId)));
+      if (deviceSpecimenTypeId != null) {
+        DeviceSpecimenType deviceSpecimenType = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
+
+        if (deviceSpecimenType != null) {
+          order.setDeviceSpecimen(deviceSpecimenType);
+          // Set the most-recently configured device specimen for a facility's
+          // test as facility default
+          order.getFacility().addDefaultDeviceSpecimen(deviceSpecimenType);
+        }
       }
 
       order.setResult(result == null ? null : TestResult.valueOf(result));
@@ -231,15 +238,13 @@ public class TestOrderService {
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
-      String deviceID, TestResult result, UUID patientId, Date dateTested) {
+      UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order =
         _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
 
-    UUID facilityId = order.getFacility().getInternalId();
-    DeviceSpecimenType deviceSpecimen =
-        _facilityDeviceTypeService.getDefaultForDeviceId(facilityId, UUID.fromString(deviceID));
+    DeviceSpecimenType deviceSpecimen = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
 
     lockOrder(order.getInternalId());
     try {
@@ -326,6 +331,13 @@ public class TestOrderService {
           "Cannot add patient to this queue: patient's facility and/or organization "
               + "are incompatible with facility of queue");
     }
+
+    if (testFacility.getDefaultDeviceSpecimen() == null) {
+      testFacility.addDefaultDeviceSpecimen(
+          _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(
+              testFacility.getDeviceTypes().get(0).getInternalId()));
+    }
+
     TestOrder newOrder = new TestOrder(patient, testFacility);
 
     AskOnEntrySurvey survey =
@@ -338,9 +350,7 @@ public class TestOrderService {
     PatientAnswers answers = new PatientAnswers(survey);
     _parepo.save(answers);
     newOrder.setAskOnEntrySurvey(answers);
-    TestOrder savedOrder = _repo.save(newOrder);
-    _pls.createPatientLink(savedOrder.getInternalId());
-    return savedOrder;
+    return _repo.save(newOrder);
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForPatient

@@ -12,7 +12,7 @@ export const Confirmation = ({ personName, entityName }: Props) => {
 
   return (
     <div className="grid-container maxw-tablet padding-y-3">
-      <div className="prime-formgroup">
+      <div className="prime-formgroup" id="self-reg-confirmation">
         <div className="grid-row flex-no-wrap flex-align-center">
           <FontAwesomeIcon
             className="text-green font-ui-3xl"

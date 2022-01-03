@@ -30,8 +30,9 @@ type Facility {
   phone: String
   email: String
   deviceTypes: [DeviceType]
-  deviceSpecimenTypes: [DeviceSpecimenType]
-  defaultDeviceType: DeviceType
+  defaultDeviceSpecimen: ID
+  deviceSpecimenTypes: [DeviceSpecimenType] @deprecated(reason: "kept for compatibility")
+  defaultDeviceType: DeviceType @deprecated(reason: "kept for compatibility")
   orderingProvider: Provider
   patientSelfRegistrationLink: String
 }
@@ -215,6 +216,7 @@ type TestOrder {
   symptoms: String
   symptomOnset: LocalDate
   deviceType: DeviceType
+  deviceSpecimenType: DeviceSpecimenType
   result: String
   dateTested: DateTime
   correctionStatus: String
@@ -231,6 +233,7 @@ type TestResult {
   symptoms: String
   symptomOnset: LocalDate
   deviceType: DeviceType
+  deviceSpecimenType: DeviceSpecimenType
   result: String
   dateTested: DateTime
   testPerformed: TestDescription!
@@ -314,6 +317,12 @@ type Query {
     lastName: String!
     birthDate: LocalDate!
     zipCode: String!
+    facilityId: ID
+  ): Boolean
+  patientExistsWithoutZip(
+    firstName: String!
+    lastName: String!
+    birthDate: LocalDate!
     facilityId: ID
   ): Boolean
   queue(facilityId: ID!): [TestOrder]
@@ -416,15 +425,38 @@ type Mutation {
     deviceSpecimenTypes: [ID]
     defaultDevice: String!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
-    updateFacilityV2(
+  addFacilityNew(
+    testingFacilityName: String!
+    cliaNumber: String
+    street: String!
+    streetTwo: String
+    city: String
+    state: String!
+    zipCode: String!
+    phone: String
+    email: String
+    orderingProviderFirstName: String
+    orderingProviderMiddleName: String
+    orderingProviderLastName: String
+    orderingProviderSuffix: String
+    orderingProviderNPI: String
+    orderingProviderStreet: String
+    orderingProviderStreetTwo: String
+    orderingProviderCity: String
+    orderingProviderCounty: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
+    orderingProviderPhone: String
+    deviceIds: [ID]!
+  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  updateFacilityNew(
     facilityId: ID!
     testingFacilityName: String!
     cliaNumber: String
     street: String!
     streetTwo: String
     city: String
-    county: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
@@ -442,18 +474,14 @@ type Mutation {
     orderingProviderState: String
     orderingProviderZipCode: String
     orderingProviderPhone: String
-    deviceTypes: [String]!
-    deviceSpecimenTypes: [ID]
-    defaultDevice: String!
-  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
-  addFacilityV2(
+    deviceIds: [ID]!
+  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  addFacilityV3(
     testingFacilityName: String!
     cliaNumber: String
     street: String!
     streetTwo: String
     city: String
-    county: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
@@ -471,9 +499,33 @@ type Mutation {
     orderingProviderState: String
     orderingProviderZipCode: String
     orderingProviderPhone: String
-    deviceTypes: [String]!
-    deviceSpecimenTypes: [ID]
-    defaultDevice: String!
+    deviceIds: [ID]!
+  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  updateFacilityV3(
+    facilityId: ID!
+    testingFacilityName: String!
+    cliaNumber: String
+    street: String!
+    streetTwo: String
+    city: String
+    state: String!
+    zipCode: String!
+    phone: String
+    email: String
+    orderingProviderFirstName: String
+    orderingProviderMiddleName: String
+    orderingProviderLastName: String
+    orderingProviderSuffix: String
+    orderingProviderNPI: String
+    orderingProviderStreet: String
+    orderingProviderStreetTwo: String
+    orderingProviderCity: String
+    orderingProviderCounty: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
+    orderingProviderPhone: String
+    deviceIds: [ID]!
   ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addUserToCurrentOrg(
     name: NameInput
@@ -499,6 +551,7 @@ type Mutation {
     role: Role!
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   resetUserPassword(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
+  updateUserEmail(id: ID!, email: String): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   setUserIsDeleted(id: ID!, deleted: Boolean!): User
     @requiredPermissions(allOf: ["MANAGE_USERS"])
   reactivateUser(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
@@ -576,12 +629,14 @@ type Mutation {
     @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
   addTestResultNew(
     deviceId: String!
+    deviceSpecimenType: ID
     result: String!
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
   addTestResult(
     deviceId: String!
+    deviceSpecimenType: ID
     result: String!
     patientId: ID!
     dateTested: DateTime
@@ -589,6 +644,7 @@ type Mutation {
   editQueueItem(
     id: ID!
     deviceId: String
+    deviceSpecimenType: ID
     result: String
     dateTested: DateTime
   ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])

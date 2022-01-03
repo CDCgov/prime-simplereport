@@ -15,17 +15,6 @@ const devices: DeviceType[] = [
   { internalId: "device-2", name: "Device 2" },
 ];
 
-const deviceSpecimenTypes: DeviceSpecimenType[] = devices.map((device, idx) => {
-  return {
-    internalId: idx,
-    deviceType: device,
-    specimenType: {
-      internalId: "fake-specimen-id-1",
-      name: "Fake Specimen 1",
-    },
-  };
-});
-
 const validFacility: Facility = {
   name: "Foo Facility",
   cliaNumber: "12D4567890",
@@ -40,7 +29,7 @@ const validFacility: Facility = {
   orderingProvider: {
     firstName: "Frank",
     lastName: "Grimes",
-    NPI: "npi",
+    NPI: "000",
     street: null,
     zipCode: null,
     state: null,
@@ -50,9 +39,7 @@ const validFacility: Facility = {
     streetTwo: null,
     city: null,
   },
-  deviceTypes: devices.map(({ internalId }) => internalId),
-  defaultDevice: devices[0].internalId,
-  deviceSpecimenTypes,
+  deviceTypes: devices,
 };
 
 // Hardcoded suggestion scenarios
@@ -115,7 +102,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceSpecimenTypeOptions={deviceSpecimenTypes}
+          deviceTypes={devices}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -133,7 +120,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceSpecimenTypeOptions={deviceSpecimenTypes}
+          deviceTypes={devices}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -151,7 +138,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceSpecimenTypeOptions={deviceSpecimenTypes}
+          deviceTypes={devices}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -160,10 +147,9 @@ describe("FacilityForm", () => {
     const facilityNameInput = screen.getByLabelText("Testing facility name", {
       exact: false,
     });
-    await waitFor(() => {
-      userEvent.clear(facilityNameInput);
-      userEvent.click(saveButton);
-    });
+    userEvent.clear(facilityNameInput);
+    userEvent.click(saveButton);
+    await waitFor(async () => expect(saveButton).toBeEnabled());
     expect(saveFacility).toBeCalledTimes(0);
   });
   it("validates optional email field", async () => {
@@ -171,7 +157,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceSpecimenTypeOptions={deviceSpecimenTypes}
+          deviceTypes={devices}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -189,15 +175,12 @@ describe("FacilityForm", () => {
       })
     ).toBeInTheDocument();
 
-    await waitFor(async () => {
-      userEvent.click(saveButton);
-    });
+    userEvent.click(saveButton);
     expect(saveFacility).toBeCalledTimes(0);
 
     userEvent.type(emailInput, "foofacility@example.com");
-    await waitFor(async () => {
-      userEvent.click(saveButton);
-    });
+    userEvent.click(saveButton);
+    await waitFor(async () => expect(saveButton).toBeEnabled());
     await validateAddress(saveFacility);
   });
   it("only accepts live jurisdictions", async () => {
@@ -205,7 +188,7 @@ describe("FacilityForm", () => {
       <MemoryRouter>
         <FacilityForm
           facility={validFacility}
-          deviceSpecimenTypeOptions={deviceSpecimenTypes}
+          deviceTypes={devices}
           saveFacility={saveFacility}
         />
       </MemoryRouter>
@@ -240,7 +223,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -262,9 +245,8 @@ describe("FacilityForm", () => {
         ).toBeInTheDocument();
 
         const saveButton = screen.getAllByText("Save changes")[0];
-        await waitFor(async () => {
-          userEvent.click(saveButton);
-        });
+        userEvent.click(saveButton);
+        await waitFor(async () => expect(saveButton).toBeEnabled());
         expect(saveFacility).toBeCalledTimes(0);
       });
     });
@@ -285,7 +267,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -323,7 +305,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={washingtonFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -350,7 +332,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={marylandFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -374,9 +356,8 @@ describe("FacilityForm", () => {
         ).toBeInTheDocument();
 
         const saveButton = screen.getAllByText("Save changes")[0];
-        await waitFor(async () => {
-          userEvent.click(saveButton);
-        });
+        userEvent.click(saveButton);
+        await waitFor(async () => expect(saveButton).toBeEnabled());
         expect(saveFacility).toBeCalledTimes(0);
       });
 
@@ -388,7 +369,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={californiaFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -416,7 +397,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={vermontFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -456,7 +437,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -480,9 +461,42 @@ describe("FacilityForm", () => {
         ).toBeInTheDocument();
 
         const saveButton = screen.getAllByText("Save changes")[0];
-        await waitFor(async () => {
-          userEvent.click(saveButton);
+        userEvent.click(saveButton);
+        await waitFor(async () => expect(saveButton).toBeEnabled());
+        expect(saveFacility).toBeCalledTimes(0);
+      });
+
+      it("requires a valid NPI (digits only)", async () => {
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={validFacility}
+              deviceTypes={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const npiInput = screen.getByLabelText("NPI", {
+          exact: false,
         });
+
+        userEvent.clear(npiInput);
+        userEvent.type(npiInput, "Facility name");
+        userEvent.tab();
+
+        const expectedError = "Ordering provider NPI is incorrectly formatted";
+        // The mock function was called at least once
+        expect(spy.mock.calls.length).toBeGreaterThan(0);
+        expect(
+          await screen.findByText(expectedError, {
+            exact: false,
+          })
+        ).toBeInTheDocument();
+
+        const saveButton = screen.getAllByText("Save changes")[0];
+        userEvent.click(saveButton);
+        await waitFor(async () => expect(saveButton).toBeEnabled());
         expect(saveFacility).toBeCalledTimes(0);
       });
     });
@@ -504,7 +518,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -541,7 +555,7 @@ describe("FacilityForm", () => {
         <MemoryRouter>
           <FacilityForm
             facility={facility}
-            deviceSpecimenTypeOptions={deviceSpecimenTypes}
+            deviceTypes={devices}
             saveFacility={saveFacility}
           />
         </MemoryRouter>
@@ -567,80 +581,37 @@ describe("FacilityForm", () => {
   });
 
   describe("Device validation", () => {
-    it("warns about missing default device", async () => {
+    it("warns about missing device selection", async () => {
       render(
         <MemoryRouter>
           <FacilityForm
             facility={validFacility}
-            deviceSpecimenTypeOptions={deviceSpecimenTypes}
+            deviceTypes={devices}
             saveFacility={saveFacility}
           />
         </MemoryRouter>
       );
-      // Delete default device
+
+      // Delete devices
       const deleteButtons = await screen.findAllByLabelText("Delete device");
-      await waitFor(() => {
-        userEvent.click(deleteButtons[0]);
-      });
+      expect(deleteButtons).toHaveLength(2);
+      userEvent.click(deleteButtons[0]);
+      userEvent.click(deleteButtons[0]);
+
+      expect(
+        await screen.findByText("There are currently no devices", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+
       // Attempt save
       const saveButtons = await screen.findAllByText("Save changes");
       userEvent.click(saveButtons[0]);
+      await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
       const warning = await screen.findByText(
-        "A default device must be selected",
+        "There must be at least one device",
         { exact: false }
       );
-      expect(warning).toBeInTheDocument();
-    });
-
-    it("properly unsets default device when the default device is changed", async () => {
-      const unusedDevice = { internalId: "device-3", name: "Device 3" };
-
-      render(
-        <MemoryRouter>
-          <FacilityForm
-            facility={validFacility}
-            deviceSpecimenTypeOptions={deviceSpecimenTypes.concat({
-              internalId: "4",
-              deviceType: unusedDevice,
-              specimenType: {
-                internalId: "fake-specimen-id-3",
-                name: "Fake Specimen 3",
-              },
-            })}
-            saveFacility={saveFacility}
-          />
-        </MemoryRouter>
-      );
-      // Change default device
-      const dropdown = screen.getByTestId(
-        "device-dropdown-0"
-      ) as HTMLSelectElement;
-
-      await waitFor(() => {
-        userEvent.selectOptions(dropdown, unusedDevice.internalId);
-      });
-
-      expect(
-        (screen.getAllByRole("option", {
-          name: unusedDevice.name,
-        })[0] as HTMLOptionElement).selected
-      ).toBeTruthy();
-
-      const checkboxes = screen.getAllByRole("checkbox");
-
-      checkboxes.forEach((checkbox) => expect(checkbox).not.toBeChecked());
-
-      // Attempt save
-      const saveButtons = await screen.findAllByText("Save changes");
-
-      await waitFor(async () => {
-        userEvent.click(saveButtons[0]);
-      });
-      const warning = await screen.findByText(
-        "A default device must be selected",
-        { exact: false }
-      );
-
       expect(warning).toBeInTheDocument();
     });
   });
@@ -654,7 +625,7 @@ async function validateAddress(
   const radios = screen.getAllByLabelText(selection, { exact: false });
   radios.forEach((r) => userEvent.click(r));
   const button = screen.getAllByText("Save changes")[2];
-  expect(button).not.toBeDisabled();
+  expect(button).toBeEnabled();
   userEvent.click(button);
   expect(saveFacility).toBeCalledTimes(1);
 }

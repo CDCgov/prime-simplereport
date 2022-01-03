@@ -80,9 +80,7 @@
     "lint:stylelint:write": "stylelint '**/*.scss' --fix",
     "test": "craco test",
     "test:ci": "CI=true yarn test --coverage",
-    "e2e": "./e2e.sh default",
-    "e2e:chrome": "./e2e.sh chrome",
-    "e2e:chromium": "./e2e.sh chromium",
+    "e2e": "cd cypress && docker-compose up -d && docker-compose logs -f cypress && docker-compose down",
     "eject": "craco eject",
     "compile-scss": "sass --load-path=./node_modules/uswds/dist/scss --style=compressed --no-source-map src/scss/App.scss:src/styles/App.css",
     "watch-css": "yarn compile-scss && sass --load-path=./node_modules/uswds/dist/scss --style=compressed --no-source-map -w src/scss/App.scss:src/styles/App.css",
@@ -103,7 +101,10 @@
       "plugin:import/warnings"
     ],
     "plugins": [
-      "graphql"
+      "graphql",
+      "testing-library",
+      "unused-imports",
+      "jest-dom"
     ],
     "rules": {
       "graphql/template-strings": [
@@ -124,7 +125,18 @@
         }
       ],
       "import/newline-after-import": 1,
-      "import/no-commonjs": 0
+      "import/no-commonjs": 0,
+      "no-unused-vars": "off",
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
+        "warn",
+        {
+          "vars": "all",
+          "varsIgnorePattern": "^_",
+          "args": "after-used",
+          "argsIgnorePattern": "^_"
+        }
+      ]
     },
     "overrides": [
       {
@@ -133,6 +145,25 @@
         ],
         "rules": {
           "import/no-anonymous-default-export": "off"
+        }
+      },
+      {
+        "files": [
+          "**/__tests__/**/*.[jt]s?(x)",
+          "**/?(*.)+(spec|test).[jt]s?(x)"
+        ],
+        "extends": [
+          "plugin:testing-library/react",
+          "plugin:jest-dom/recommended"
+        ],
+        "rules": {
+          "testing-library/no-render-in-setup": [
+            "error",
+            {
+              "allowTestingFrameworkSetupHook": "beforeEach"
+            }
+          ],
+          "testing-library/no-node-access": "off"
         }
       }
     ]
@@ -169,7 +200,6 @@
     "@types/react-dom": "^17.0.0",
     "@types/react-modal": "^3.10.6",
     "@types/react-redux": "^7.1.11",
-    "@types/react-test-renderer": "^17.0.1",
     "@types/redux-mock-store": "^1.0.2",
     "@types/smartystreets-javascript-sdk": "^1.6.2",
     "@types/uuid": "^8.3.0",
@@ -177,20 +207,25 @@
     "chromatic": "^5.8.3",
     "chromedriver": "91",
     "craco-sass-resources-loader": "^1.1.0",
+    "cypress": "^9.0.0",
+    "cypress-localstorage-commands": "^1.6.1",
     "dayjs": "^1.10.4",
     "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-graphql": "^4.0.0",
     "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest-dom": "^3.9.2",
+    "eslint-plugin-testing-library": "^5.0.0",
+    "eslint-plugin-unused-imports": "1.1.5",
     "faker": "^5.5.3",
     "geckodriver": "^1.22.3",
     "jest-fetch-mock": "^3.0.3",
     "mockdate": "^3.0.5",
     "msw": "^0.29.0",
     "msw-storybook-addon": "^1.2.0",
-    "nightwatch": "^1.5.1",
     "npm-run-all": "^4.1.5",
+    "otplib": "^12.0.1",
     "prettier": "^2.2.1",
-    "react-test-renderer": "^17.0.1",
     "redux-mock-store": "^1.5.4",
     "stylelint": "^13.12.0",
     "stylelint-config-standard": "^21.0.0",
