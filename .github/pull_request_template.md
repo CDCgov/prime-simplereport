@@ -24,6 +24,10 @@
 ### Content
 - [ ] Any content changes (including new error messages) have been approved by content team
 
+### Support
+- [ ] Any changes that might generate new support requests have been flagged to the support team
+- [ ] Any changes to support infrastructure have been demo'd to support team
+
 ### Testing
 - [ ] Includes a summary of what a code reviewer should verify
 
