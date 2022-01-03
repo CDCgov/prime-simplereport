@@ -1,5 +1,5 @@
-import renderer from "react-test-renderer";
 import { MockedProvider } from "@apollo/client/testing";
+import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 
@@ -15,7 +15,7 @@ jest.mock("react-router-dom", () => ({
 }));
 
 describe("PatientProfileContainer", () => {
-  it("snapshot", () => {
+  it("renders", () => {
     const store = mockStore({
       patient: {
         residentCongregateSetting: true,
@@ -25,7 +25,7 @@ describe("PatientProfileContainer", () => {
       },
       plid: "definitely not null I promise",
     });
-    const component = renderer.create(
+    render(
       <Provider store={store}>
         <MockedProvider mocks={[]} addTypename={false}>
           <PatientProfileContainer />
@@ -33,6 +33,8 @@ describe("PatientProfileContainer", () => {
       </Provider>
     );
 
-    expect(component.toJSON()).toMatchSnapshot();
+    expect(
+      screen.getAllByText("Profile information", { exact: false })[0]
+    ).toBeInTheDocument();
   });
 });

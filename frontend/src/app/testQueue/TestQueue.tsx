@@ -53,6 +53,9 @@ export const queueQuery = gql`
         model
         testLength
       }
+      deviceSpecimenType {
+        internalId
+      }
       patient {
         internalId
         telephone
@@ -64,6 +67,7 @@ export const queueQuery = gql`
         testResultDelivery
         preferredLanguage
         email
+        emails
         phoneNumbers {
           type
           number
@@ -81,12 +85,18 @@ export const queueQuery = gql`
           model
           testLength
         }
-        defaultDeviceType {
-          internalId
-          name
-          model
-          testLength
-        }
+        defaultDeviceSpecimen
+      }
+    }
+    deviceSpecimenTypes {
+      internalId
+      deviceType {
+        internalId
+        name
+      }
+      specimenType {
+        internalId
+        name
       }
     }
   }
@@ -103,6 +113,7 @@ interface QueueItemData extends AoEAnswers {
     internalId: string;
     testLength: number;
   };
+  deviceSpecimenType: DeviceSpecimenType;
   patient: TestQueuePerson;
   result: TestResult;
   dateTested: string;
@@ -147,14 +158,19 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   const facility = data.organization.testingFacility.find(
     (f: { id: string }) => f.id === activeFacilityId
   );
+
   if (!facility) {
     return <p>Facility not found</p>;
   }
+
   if (facility.deviceTypes.length === 0) {
     showError(
       "This facility does not have any testing devices. Go into Settings -> Manage facilities and add a device."
     );
   }
+
+  const deviceIds = facility.deviceTypes.map((d: DeviceType) => d.internalId);
+
   let shouldRenderQueue =
     data.queue.length > 0 && facility.deviceTypes.length > 0;
 
@@ -165,11 +181,27 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
         ({
           internalId,
           deviceType,
+          deviceSpecimenType,
           patient,
           result,
           dateTested,
           ...questions
         }) => {
+          // Get possible device specimen types for this facility
+          const deviceSpecimenTypes: DeviceSpecimenType[] = data.deviceSpecimenTypes.filter(
+            (d: DeviceSpecimenType) =>
+              deviceIds.includes(d.deviceType.internalId)
+          );
+
+          // a test may have been configured with a certain device/swab combo
+          // that could have since been removed from the facility
+          if (!deviceIds.includes(deviceType.internalId)) {
+            deviceType = facility.deviceTypes[0];
+            deviceSpecimenType = deviceSpecimenTypes.filter(
+              (dst) => dst.deviceType.internalId === deviceType.internalId
+            )[0];
+          }
+
           return (
             <CSSTransition
               key={internalId}
@@ -180,16 +212,21 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 internalId={internalId}
                 patient={patient}
                 askOnEntry={questions}
+                selectedDeviceSpecimenTypeId={
+                  deviceSpecimenType?.internalId ||
+                  facility.defaultDeviceSpecimen.internalId
+                }
                 selectedDeviceId={
                   deviceType?.internalId ||
-                  facility.defaultDeviceType.internalId
+                  facility.defaultDeviceSpecimen.deviceType.internalId
                 }
                 selectedDeviceTestLength={
                   deviceType?.testLength ||
-                  facility.defaultDeviceType.testLength
+                  facility.defaultDeviceSpecimen.deviceType.testLength
                 }
                 selectedTestResult={result}
                 devices={facility.deviceTypes}
+                deviceSpecimenTypes={deviceSpecimenTypes}
                 refetchQueue={refetch}
                 facilityName={selectedFacility?.name}
                 facilityId={activeFacilityId}

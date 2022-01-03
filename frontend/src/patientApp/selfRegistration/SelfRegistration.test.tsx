@@ -1,4 +1,9 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router";
 import createMockStore from "redux-mock-store";
@@ -46,38 +51,38 @@ describe("SelfRegistration", () => {
   });
 
   it("Renders a 404 page for a bad link", async () => {
-    await waitFor(() => {
-      render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={["/register/some-bad-link"]}>
-            <Route
-              exact
-              path="/register/:registrationLink"
-              component={SelfRegistration}
-            />
-          </MemoryRouter>
-        </Provider>
-      );
-    });
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={["/register/some-bad-link"]}>
+          <Route
+            exact
+            path="/register/:registrationLink"
+            component={SelfRegistration}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
 
-    expect(screen.queryByText("Page not found")).toBeInTheDocument();
+    await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
+
+    expect(screen.getByText("Page not found")).toBeInTheDocument();
   });
 
   it("Allows for user to register through link", async () => {
-    await waitFor(() => {
-      render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={[`/register/${VALID_LINK}`]}>
-            <Route
-              exact
-              path="/register/:registrationLink"
-              component={SelfRegistration}
-            />
-          </MemoryRouter>
-        </Provider>
-      );
-    });
-    expect(screen.queryByText("Foo Facility")).toBeInTheDocument();
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[`/register/${VALID_LINK}`]}>
+          <Route
+            exact
+            path="/register/:registrationLink"
+            component={SelfRegistration}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
+    expect(screen.getByText("Foo Facility")).toBeInTheDocument();
     fireEvent.click(screen.getByText("I agree"));
     expect(screen.getByText("General information")).toBeInTheDocument();
     Object.entries(filledForm).forEach(([field, value]) => {
@@ -97,20 +102,20 @@ describe("SelfRegistration", () => {
   });
 
   it("Handles duplicate registrant flow", async () => {
-    await waitFor(() => {
-      render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={[`/register/${VALID_LINK}`]}>
-            <Route
-              exact
-              path="/register/:registrationLink"
-              component={SelfRegistration}
-            />
-          </MemoryRouter>
-        </Provider>
-      );
-    });
-    expect(screen.queryByText("Foo Facility")).toBeInTheDocument();
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[`/register/${VALID_LINK}`]}>
+          <Route
+            exact
+            path="/register/:registrationLink"
+            component={SelfRegistration}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
+    expect(screen.getByText("Foo Facility")).toBeInTheDocument();
     fireEvent.click(screen.getByText("I agree"));
     expect(screen.getByText("General information")).toBeInTheDocument();
     Object.entries(filledForm).forEach(([field, value]) => {

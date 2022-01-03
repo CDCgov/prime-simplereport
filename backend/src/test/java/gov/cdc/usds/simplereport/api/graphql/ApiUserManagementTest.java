@@ -518,6 +518,75 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   }
 
   @Test
+  void updateUserEmail_adminUser_success() {
+    useOrgAdmin();
+
+    ObjectNode addUser = runBoilerplateAddUserToCurrentOrg(Role.USER);
+    String newEmail = addUser.get("id").asText();
+    String id = addUser.get("id").asText();
+
+    ObjectNode newEmailNode =
+        JsonNodeFactory.instance.objectNode().put("id", id).put("email", newEmail);
+    ObjectNode updateResp = runQuery("update-user-email", "updateUserEmail", newEmailNode, null);
+    ObjectNode updateUser = (ObjectNode) updateResp.get("updateUserEmail");
+
+    assertEquals(id, updateUser.get("id").asText());
+    assertEquals(newEmail, updateUser.get("email").asText());
+  }
+
+  @Test
+  void updateUserEmail_superUser_success() {
+    useSuperUser();
+
+    ObjectNode addUser = runBoilerplateAddUser(Role.ADMIN);
+    String newEmail = addUser.get("id").asText();
+    String id = addUser.get("id").asText();
+
+    ObjectNode updateVars =
+        JsonNodeFactory.instance.objectNode().put("id", id).put("email", newEmail);
+    ObjectNode updateResp = runQuery("update-user-email", "updateUserEmail", updateVars, null);
+    ObjectNode updateUser = (ObjectNode) updateResp.get("updateUserEmail");
+
+    assertEquals(id, updateUser.get("id").asText());
+    assertEquals(newEmail, updateUser.get("email").asText());
+  }
+
+  @Test
+  void updateUserEmail_orgUser_failure() {
+    useSuperUser();
+
+    ObjectNode addUser = runBoilerplateAddUser(Role.ADMIN);
+    String newEmail = addUser.get("id").asText();
+    String id = addUser.get("id").asText();
+
+    useOrgUser();
+
+    ObjectNode updateVars =
+        JsonNodeFactory.instance.objectNode().put("id", id).put("email", newEmail);
+    runQuery(
+        "update-user-email",
+        "updateUserEmail",
+        updateVars,
+        "Current user does not have permission to request [/updateUserEmail]");
+  }
+
+  @Test
+  void updateUserEmail_self_success() {
+    useOrgAdmin();
+    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    String newEmail = who.get("id").asText();
+    String id = who.get("id").asText();
+
+    ObjectNode updateVars =
+        JsonNodeFactory.instance.objectNode().put("id", id).put("email", newEmail);
+    ObjectNode resp = runQuery("update-user-email", "updateUserEmail", updateVars, null);
+    ObjectNode updateUser = (ObjectNode) resp.get("updateUserEmail");
+
+    assertEquals(id, updateUser.get("id").asText());
+    assertEquals(newEmail, updateUser.get("email").asText());
+  }
+
+  @Test
   void resetUserPassword_orgUser_success() {
     useSuperUser();
 

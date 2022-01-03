@@ -102,8 +102,22 @@ public class DemoOktaRepository implements OktaRepository {
     return Optional.of(orgRoles);
   }
 
-  // this method doesn't do much in a demo envt since a user's username doesn't change
+  // these two methods don't do much in a demo envt since a user's username or email don't change
   public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {
+    if (!usernameOrgRolesMap.containsKey(userIdentity.getUsername())) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot change name of Okta user with unrecognized username");
+    }
+    OrganizationRoleClaims orgRoles = usernameOrgRolesMap.get(userIdentity.getUsername());
+    return Optional.of(orgRoles);
+  }
+
+  public Optional<OrganizationRoleClaims> updateUserEmail(
+      IdentityAttributes userIdentity, String email) {
+    if (!usernameOrgRolesMap.containsKey(userIdentity.getUsername())) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot change email of Okta user with unrecognized username");
+    }
     OrganizationRoleClaims orgRoles = usernameOrgRolesMap.get(userIdentity.getUsername());
     return Optional.of(orgRoles);
   }

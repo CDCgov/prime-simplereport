@@ -113,7 +113,7 @@ public class PersonService {
   }
 
   private Specification<Person> patientExistsFilter(
-      String firstName, String lastName, LocalDate birthDate, String postalCode) {
+      String firstName, String lastName, LocalDate birthDate) {
     return (root, query, cb) ->
         cb.and(
             cb.equal(
@@ -122,8 +122,7 @@ public class PersonService {
             cb.equal(
                 cb.lower(root.get(SpecField.PERSON_NAME).get(SpecField.LAST_NAME)),
                 lastName.toLowerCase()),
-            cb.equal(root.get(SpecField.BIRTH_DATE), birthDate),
-            cb.equal(root.get(SpecField.ADDRESS).get(SpecField.POSTAL_CODE), postalCode));
+            cb.equal(root.get(SpecField.BIRTH_DATE), birthDate));
   }
 
   private Specification<Person> isDeletedFilter(boolean isDeleted) {
@@ -158,11 +157,10 @@ public class PersonService {
       String firstName,
       String lastName,
       LocalDate birthDate,
-      String postalCode,
       Optional<Facility> facility,
       Organization organization) {
     Specification<Person> filter =
-        patientExistsFilter(firstName, lastName, birthDate, postalCode)
+        patientExistsFilter(firstName, lastName, birthDate)
             .and(inOrganizationFilter(organization.getInternalId()));
 
     return facility.map(f -> filter.and(inFacilityFilter(f.getInternalId()))).orElse(filter);
@@ -200,12 +198,11 @@ public class PersonService {
       String firstName,
       String lastName,
       LocalDate birthDate,
-      String postalCode,
       Organization org,
       Optional<Facility> facility) {
     var patients =
         _repo.findAll(
-            buildPersonMatchFilter(firstName, lastName, birthDate, postalCode, facility, org),
+            buildPersonMatchFilter(firstName, lastName, birthDate, facility, org),
             PageRequest.of(0, 1, NAME_SORT));
 
     return !patients.isEmpty();
@@ -250,9 +247,10 @@ public class PersonService {
       String suffix,
       LocalDate birthDate,
       StreetAddress address,
+      String country,
       List<PhoneNumber> phoneNumbers,
       PersonRole role,
-      String email,
+      List<String> emails,
       String race,
       String ethnicity,
       String tribalAffiliation,
@@ -271,8 +269,9 @@ public class PersonService {
             suffix,
             birthDate,
             address,
+            country,
             role,
-            email,
+            emails,
             race,
             ethnicity,
             Arrays.asList(tribalAffiliation),
@@ -297,9 +296,10 @@ public class PersonService {
       String suffix,
       LocalDate birthDate,
       StreetAddress address,
+      String country,
       List<PhoneNumber> phoneNumbers,
       PersonRole role,
-      String email,
+      List<String> emails,
       String race,
       String ethnicity,
       String tribalAffiliation,
@@ -318,8 +318,9 @@ public class PersonService {
             suffix,
             birthDate,
             address,
+            country,
             role,
-            email,
+            emails,
             race,
             ethnicity,
             Arrays.asList(tribalAffiliation),
@@ -338,9 +339,10 @@ public class PersonService {
   // is verified, so there is no authorization check
   public Person updateMe(
       StreetAddress address,
+      String country,
       List<PhoneNumber> phoneNumbers,
       PersonRole role,
-      String email,
+      List<String> emails,
       String race,
       String ethnicity,
       String tribalAffiliation,
@@ -357,8 +359,9 @@ public class PersonService {
         toUpdate.getSuffix(),
         toUpdate.getBirthDate(),
         address,
+        country,
         role,
-        email,
+        emails,
         race,
         ethnicity,
         Arrays.asList(tribalAffiliation),
@@ -367,6 +370,11 @@ public class PersonService {
         employedInHealthcare,
         preferredLanguage,
         toUpdate.getTestResultDelivery());
+
+    if (!emails.isEmpty()) {
+      toUpdate.setPrimaryEmail(emails.get(0));
+    }
+
     updatePhoneNumbers(toUpdate, phoneNumbers);
     return _repo.save(toUpdate);
   }
@@ -433,9 +441,10 @@ public class PersonService {
       String suffix,
       LocalDate birthDate,
       StreetAddress address,
+      String country,
       List<PhoneNumber> phoneNumbers,
       PersonRole role,
-      String email,
+      List<String> emails,
       String race,
       String ethnicity,
       String tribalAffiliation,
@@ -453,8 +462,9 @@ public class PersonService {
         suffix,
         birthDate,
         address,
+        country,
         role,
-        email,
+        emails,
         race,
         ethnicity,
         Arrays.asList(tribalAffiliation),
@@ -463,7 +473,13 @@ public class PersonService {
         employedInHealthcare,
         preferredLanguage,
         testResultDelivery);
+
+    if (!emails.isEmpty()) {
+      patientToUpdate.setPrimaryEmail(emails.get(0));
+    }
+
     updatePhoneNumbers(patientToUpdate, phoneNumbers);
+
     updatePersonFacility(patientToUpdate, facilityId);
 
     return _repo.save(patientToUpdate);

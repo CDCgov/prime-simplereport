@@ -20,6 +20,6 @@ describe("Submit Email MFA", () => {
   it("requires a security code", () => {
     userEvent.click(screen.getByText("Submit"));
     const error = screen.getByRole("alert");
-    expect(error.textContent).toEqual("Error: Enter your security code");
+    expect(error).toHaveTextContent("Error: Enter your security code");
   });
 });

@@ -1,14 +1,12 @@
-import React from "react";
 import configureStore from "redux-mock-store";
-import renderer from "react-test-renderer";
 import { Provider } from "react-redux";
+import { render, screen } from "@testing-library/react";
 
 import FacilitySelect from "./FacilitySelect";
 
 const mockStore = configureStore([]);
 
 describe("FacilitySelect", () => {
-  let component: any;
   const mockSetActiveFacility = jest.fn();
 
   beforeEach(() => {
@@ -26,7 +24,7 @@ describe("FacilitySelect", () => {
       ],
     });
 
-    component = renderer.create(
+    render(
       <Provider store={store}>
         <FacilitySelect
           facilities={
@@ -41,15 +39,9 @@ describe("FacilitySelect", () => {
     );
   });
 
-  it("should render with a value", () => {
-    expect(component.toJSON()).toMatchSnapshot();
-  });
-
   describe("On facility select", () => {
-    beforeEach(() => {
-      renderer.act(() => {
-        component.root.findAllByType("button")[0].props.onClick();
-      });
+    beforeEach(async () => {
+      (await screen.findAllByRole("button"))[0].click();
     });
     it("should call setActiveFacility once", () => {
       expect(mockSetActiveFacility).toHaveBeenCalledTimes(1);

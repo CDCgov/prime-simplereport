@@ -77,6 +77,15 @@ const OrderingProvider: React.FC<Props> = ({
         />
         <TextInput
           label="NPI"
+          hintText={
+            <a
+              href="https://npiregistry.cms.hhs.gov/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Find my NPI
+            </a>
+          }
           name="NPI"
           required={isRequired}
           value={provider.NPI || ""}

@@ -131,8 +131,9 @@ public class TestDataFactory {
 
   public Facility createValidFacility(Organization org, String facilityName) {
     DeviceSpecimenType dev = getGenericDeviceSpecimen();
-    List<DeviceSpecimenType> configuredDevices = new ArrayList<>();
-    configuredDevices.add(dev);
+
+    List<DeviceType> configuredDevices = new ArrayList<>();
+    configuredDevices.add(dev.getDeviceType());
     Provider doc =
         _providerRepo.save(
             new Provider("Doctor", "", "Doom", "", "DOOOOOOM", getAddress(), "800-555-1212"));
@@ -209,8 +210,9 @@ public class TestDataFactory {
             null,
             DEFAULT_BDAY,
             getAddress(),
+            "USA",
             PersonRole.RESIDENT,
-            "fred@astaire.com",
+            List.of("fred@astaire.com"),
             "white",
             "not_hispanic",
             null,
@@ -223,6 +225,40 @@ public class TestDataFactory {
     PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, telephone);
     _phoneNumberRepo.save(pn);
     p.setPrimaryPhone(pn);
+    return _personRepo.save(p);
+  }
+
+  @Transactional
+  public Person createFullPersonEmails(Organization org, List<String> emails) {
+    // consts are to keep style check happy othewise it complains about
+    // "magic numbers"
+    Person p =
+        new Person(
+            org,
+            "HELLOTHERE",
+            "Fred",
+            null,
+            "Astaire",
+            null,
+            DEFAULT_BDAY,
+            getAddress(),
+            "USA",
+            PersonRole.RESIDENT,
+            emails,
+            "white",
+            "not_hispanic",
+            null,
+            "male",
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.SMS);
+    _personRepo.save(p);
+
+    if (emails != null) {
+      p.setPrimaryEmail(emails.get(0));
+    }
+
     return _personRepo.save(p);
   }
 

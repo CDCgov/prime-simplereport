@@ -74,10 +74,8 @@ class PersonSerializationTest {
     Organization fakeOrg = new Organization("ABC", "university", "123", true);
     Person p = makeSerializablePerson(fakeOrg);
     Provider mccoy = new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222");
-    DeviceSpecimenType ds =
-        new DeviceSpecimenType(
-            new DeviceType("Bill", "Weasleys", "1", "12345-6", "E", 15),
-            new SpecimenType("Troll Bogies", "000111222"));
+    DeviceType d = new DeviceType("Bill", "Weasleys", "1", "12345-6", "E", 15);
+    DeviceSpecimenType dst = new DeviceSpecimenType(d, new SpecimenType());
     StreetAddress addy =
         new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
     p.setFacility(
@@ -89,8 +87,8 @@ class PersonSerializationTest {
             "555-867-5309",
             "facility@test.com",
             mccoy,
-            ds,
-            List.of(ds)));
+            dst,
+            List.of(d)));
     JsonContent<Person> serialized = _tester.write(p);
     assertThat(serialized)
         .extractingJsonPathStringValue("lastName")
@@ -117,8 +115,9 @@ class PersonSerializationTest {
             "Jr.",
             LocalDate.of(BIRTH_YEAR, BIRTH_MONTH, BIRTH_DAY),
             addy,
+            "USA",
             null,
-            "a@b.c",
+            List.of("a@b.c"),
             "marathon",
             "generic",
             Arrays.asList("123"),

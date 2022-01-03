@@ -21,13 +21,8 @@ public interface DeviceSpecimenTypeRepository
   @Query(BASE_QUERY + " and e.deviceType = :deviceType and e.specimenType = :specimenType")
   Optional<DeviceSpecimenType> find(DeviceType deviceType, SpecimenType specimenType);
 
-  // INSTA-DEPRECATION: this should only be used until we fix the API to not need
-  // it
-  @Deprecated
   @EntityGraph(attributePaths = {"deviceType", "specimenType"})
-  Optional<DeviceSpecimenType> findFirstByDeviceTypeInternalIdOrderByCreatedAt(
-      UUID deviceTypeId); // IGNORES
-  // DELETION
+  Optional<DeviceSpecimenType> findFirstByDeviceTypeInternalIdOrderByCreatedAt(UUID deviceTypeId);
 
   List<DeviceSpecimenType> findAllByDeviceType(DeviceType deviceType);
 }

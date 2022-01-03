@@ -24,10 +24,12 @@ https://simplereport.gov/
     - [Local Settings](#local-settings)
     - [SchemaSpy](#schemaspy)
     - [Twilio](#twilio)
+    - [MailHog](#MailHog)
   - [Frontend](#frontend)
     - [Frontend-Setup](#frontend-setup)
     - [Linters](#linters)
     - [Storybook and Chromatic](#storybook-and-chromatic)
+  - [PR Conventions](#pr-conventions)
   - [Cloud Environments](#cloud-environments)
   - [Deploy](#deploy)
     - [Revert to a Previous Release](#revert-to-a-previous-release)
@@ -58,7 +60,7 @@ If Java isn't installed on a Mac you can get it from `brew`:
 
 ```sh
 brew tap adoptopenjdk/openjdk
-brew cask install adoptopenjdk11
+brew install --cask adoptopenjdk11
 brew install gradle
 ```
 
@@ -90,6 +92,9 @@ Running spring app locally and db in docker on port 5433
 1. Run ` SR_DB_PORT=5433 ./gradlew bootRun --args='--spring.profiles.active=dev'`
 1. view site at http://localhost:8080
 
+The GraphQL playground should load after replacing the default request url with
+`http://localhost:8080/graphql`
+
 ### Running the app with Make or start.sh
 
 For development, it may be more convenient to start the front and backends simultaneously. This can be done by running the following command in the root directory of the project:
@@ -115,7 +120,7 @@ Then run this to start the app:
 ./start.sh
 ```
 
-This will also start up both servers in "watch" mode.  When using `start.sh`, any environment variables put
+This will also start up both servers in "watch" mode. When using `start.sh`, any environment variables put
 in `.env` in the root directory will be available to the app. Press CTRL-C to exit and cleanup the servers cleanly.
 
 ### Running locally with Okta
@@ -125,6 +130,8 @@ You can run the app against the "Okta Preview" instance by running the backend w
 You also need to set the following in `frontend/.env.local`:
 
 ```
+REACT_APP_BACKEND_URL=http://localhost:8080
+REACT_APP_BASE_URL=http://localhost:3000
 REACT_APP_OKTA_ENABLED=true
 ```
 
@@ -226,20 +233,9 @@ Running a single test with a full stacktrace can be accomplished by supping the 
 gradle test --tests gov.cdc.usds.simplereport.api.QueueManagementTest.updateItemInQueue --stacktrace
 ```
 
-### E2E Tests
-
-E2E/Integration tests are available using [Nightwatch.js](https://nightwatchjs.org/).
-
-Run them with the following commands while the app (both front and backends) is already running:
-
-```bash
-cd frontend
-yarn e2e
-```
-
 ### Local Settings
 
-to edit Spring boot settings for your local set up you must first create a `application-local.yaml`
+To edit Spring Boot settings for your local set up you must first create a `application-local.yaml`
 (note this file is git ignored):
 
 bash
@@ -278,6 +274,88 @@ simple-report:
       - http://localhost:3000
 ```
 
+To edit React settings, create `frontend/.env.local` (also git ignored).
+
+### E2E Tests
+
+E2E/Integration tests are available using [Cypress](https://www.cypress.io/).
+
+To get started, you'll need to get the secrets listed in `frontend/cypress/.env.e2e.sample`. Reach out to another developer if you don't have them already, and place them in `frontend/cypress/.env.e2e`.
+
+To run the tests the easy way, simply run `yarn e2e`. This will spin up the app with all the necessary configuration in a docker compose network and run the tests headlessly in firefox. Screenshots and videos from the test will be saved to `frontend/cypress/screenshots` and `frontend/cypress/videos`.
+
+In order to run the tests locally, some modifications will need to be made to your local environment. Spring session requires the frontend and backend to be hosted on the same domain in order to properly authenticate.
+
+First, the tests run best on a clean database, so empty out your database prior to running.
+
+Next, before starting up the app, you'll need to start Wiremock:
+
+```
+cd frontend
+./cypress/support/wiremock/download-wiremock.sh
+./cypress/support/wiremock/start-wiremock.sh orgSignUp
+```
+
+The following settings are needed for the frontend:
+
+`frontend/.env.local`:
+
+```
+REACT_APP_BASE_URL=http://localhost.simplereport.gov
+REACT_APP_BACKEND_URL=http://localhost.simplereport.gov/api
+REACT_APP_OKTA_ENABLED=true
+REACT_APP_OKTA_URL=http://localhost:8088
+```
+
+You will need to run the backend with the `e2e` profile, and with the following environment variable:
+
+```bash
+OKTA_TESTING_DISABLEHTTPSCHECK=true ./gradlew bootRun --args='--spring.profiles.active=e2e'
+```
+
+Or, if you are running with the `start.sh` script:
+
+`backend/src/main/resources/application-local.yaml`
+
+```
+spring.profiles.include: no-security, no-okta-mgmt, server-debug, create-sample-data
+server.servlet.session.cookie.domain: localhost.simplereport.gov
+okta.client.org-url: http://localhost:8088
+okta.client.token: foo
+```
+
+```bash
+OKTA_TESTING_DISABLEHTTPSCHECK=true ./start.sh
+```
+
+In order for `http://localhost.simplereport.gov` to route to your local application server, you'll need to make the following addition to your `/etc/hosts` file:
+
+`/etc/hosts`
+
+```
+127.0.0.1 localhost.simplereport.gov
+```
+
+Finally, you'll need to run a reverse proxy like nginx to point port 80 at your application server. You can do this in a docker container with the following command:
+
+```bash
+docker build -t nginx -f .frontend/cypress/support/nginx/Dockerfile.nginx.docker . && docker run -d -p 80:80 nginx:latest
+```
+
+If you are running nginx locally already, you can use the config located at `frontend/cypress/support/nginx/localhost.simplereport.gov`.
+
+Once all of that is done, you are are ready for a test run! There are a few ways to run the tests (from the `frontend` dir):
+
+- `yarn cypress open`
+  - this will open an interactive test runner that lets you select browsers and which test to run. tests will run headed by default
+- `yarn cypress run`
+  - this will run all the tests headlessly on the commandline using electron
+- `yarn cypress run --browser firefox`
+  - this will run all the tests headlessly on the commandline using firefox
+- `yarn cypress run --browser chrome --headed`
+  - this will run all the tests headed using chrome
+
+To write new tests, see the [Cypress documentation](https://docs.cypress.io/api/table-of-contents). If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
 
 ### SchemaSpy
 
@@ -305,11 +383,29 @@ twilio:
 
 These can also be set by environment variable if desired.
 
+### MailHog
+
+MailHog is an email-testing tool with a fake SMTP server underneath, we can use it to test sending emails locally.
+
+- Mailhog client runs on docker, `docker-compose up -d mailhog`
+- add the following to `application-local.yaml` to configure the backend to send email to mailhog client
+
+```yml
+spring:
+  mail:
+    host: localhost
+    port: 1025
+```
+
+- Access mailhog inbox on `http://localhost:8025/`
+
 ## Frontend
 
-The front end is a React app. The app uses [Apollo](https://www.apollographql.com/) to manage the graphql API. For styling the app leverages the [U.S. Web Design System (USWDS)](https://designsystem.digital.gov/)
+The front end is a React app. The app uses [Apollo](https://www.apollographql.com/) to manage the graphql API. For styling the app leverages the [U.S. Web Design System (USWDS)](https://designsystem.digital.gov/). Ensure your node version is version 14 in order for
+yarn to build packages correctly.
 
 ### Frontend-Setup
+
 1. (optional) Install react developer tools extensions
 1. Install [yarn](https://classic.yarnpkg.com/en/docs/install)
 1. `cd frontend && yarn install && docker-compose up`
@@ -337,27 +433,38 @@ To view the Storybook locally:
 - Visit http://localhost:6006
 
 [Chromatic](https://www.chromatic.com/) is a web-based tool for Storybook that helps speed UI
-component development.  It provides regression testing and review.  It also allows for publication
+component development. It provides regression testing and review. It also allows for publication
 of the Storybook.
 
 Changes to the Storybook are sent to Chromatic when changes to the frontend source are push to a
-any branch.  The changes are automatically accepted on merge to `main`.
+any branch. The changes are automatically accepted on merge to `main`.
 
 View the [SimpleReport Storybook](https://main--60a556a7c807cc0039ec6786.chromatic.com/)
 
+## PR Conventions
+
+The convention for branch naming on this project is {firstName}/{ticketNumber}-{short-description}. This makes it easier for other developers to find your changes.
+
+If you're merging large or complex changes, it is strongly recommended that you smoke test them in `dev`, `test`, or `pentest`. These three environments are roughly the same, with small configuration changes between each (`test` sends text results for pxp while `dev` and `pentest` do not, for example.)
+
+For all changes, please ensure the PR checklist is completed before sending out for review. If you're making UI changes, make sure to screenshot and get approval from a designer or product manager, in addition to engineers.
+
+We require two reviewers per changeset, and you cannot merge until all commits have been reviewed.
+
 ## Cloud Environments
 
-**Name**|**Frontend**|**API**|**Deployment**|**Intended Use**
-:-----:|:-----:|:-----:|:-----:|:-----:
-prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|Dispatched on success of `stg` deploy| Used by end users
-demo|[/app/static/commit.txt](https://demo.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://demo.simplereport.gov/api/actuator/info)|Worflow on success of `stg` deploy| Used internally to demo the application to potential end users
-training|[/app/static/commit.txt](https://training.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://training.simplereport.gov/api/actuator/info)|Dispatched on success of `stg` deploy| Used externally by potential users to get a better uderstanding of the product
-stg|[/app/static/commit.txt](https://stg.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://stg.simplereport.gov/api/actuator/info)|Push to `main`| To validate the application work in the cloud and works with prod like data
-dev|[/app/static/commit.txt](https://dev.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://dev.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action)| To validate PRs before merging to main
-test|[/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://test.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action)| To validate PRs before merging to main
-pentest|[/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action)| To validate PRs before merging to main
+| **Name** |                                   **Frontend**                                    |                                  **API**                                  |            **Deployment**             |                                **Intended Use**                                |
+| :------: | :-------------------------------------------------------------------------------: | :-----------------------------------------------------------------------: | :-----------------------------------: | :----------------------------------------------------------------------------: |
+|   prod   |     [/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)      |     [/api/actuator/info](https://simplereport.gov/api/actuator/info)      | Dispatched on success of `stg` deploy |                               Used by end users                                |
+|   demo   |   [/app/static/commit.txt](https://demo.simplereport.gov/app/static/commit.txt)   |   [/api/actuator/info](https://demo.simplereport.gov/api/actuator/info)   |  Worflow on success of `stg` deploy   |         Used internally to demo the application to potential end users         |
+| training | [/app/static/commit.txt](https://training.simplereport.gov/app/static/commit.txt) | [/api/actuator/info](https://training.simplereport.gov/api/actuator/info) | Dispatched on success of `stg` deploy | Used externally by potential users to get a better uderstanding of the product |
+|   stg    |   [/app/static/commit.txt](https://stg.simplereport.gov/app/static/commit.txt)    |   [/api/actuator/info](https://stg.simplereport.gov/api/actuator/info)    |            Push to `main`             |  To validate the application work in the cloud and works with prod like data   |
+|   dev    |   [/app/static/commit.txt](https://dev.simplereport.gov/app/static/commit.txt)    |   [/api/actuator/info](https://dev.simplereport.gov/api/actuator/info)    |     [Action](#deploy-with-action)     |                     To validate PRs before merging to main                     |
+|   test   |   [/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)   |   [/api/actuator/info](https://test.simplereport.gov/api/actuator/info)   |     [Action](#deploy-with-action)     |                     To validate PRs before merging to main                     |
+| pentest  | [/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)  | [/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)  |     [Action](#deploy-with-action)     |                     To validate PRs before merging to main                     |
 
 ## Deploy
+
 SimpleReport uses a continuous deployment deployment (CD) process
 ![deployment-1](https://user-images.githubusercontent.com/53869143/130135128-e4cf1b7a-2903-4f20-bd3f-a98daea15fd1.png)
 
@@ -368,7 +475,7 @@ SimpleReport uses a continuous deployment deployment (CD) process
 1. checkout `main`
 2. create a new branch (example: `tim-best/revert-feature-A`)
 3. Revert to the desired commit `git revert --no-commit 9999999..HEAD && git commit` where 9999999 is the commit you want to revert to
-    - This will revert everything from the HEAD back to the commit hash, meaning it will recreate that commit state in the working tree as if every commit after 9999999 had been walked back
+   - This will revert everything from the HEAD back to the commit hash, meaning it will recreate that commit state in the working tree as if every commit after 9999999 had been walked back
 4. Create a PR with your branch, wait for tests to pass, get approval and merge
 5. Follow instructions in [deploy-with-release](#deploy-with-release)
 
@@ -376,6 +483,7 @@ SimpleReport uses a continuous deployment deployment (CD) process
 
 Navigate to the [Github Actions Tab](https://github.com/CDCgov/prime-simplereport/actions)
 ![Screen Shot 2021-02-24 at 11 07 13 AM](https://user-images.githubusercontent.com/53869143/109029807-36673100-7691-11eb-81d1-a474517c1eb6.png)
+
 1. Select the environment you want to deploy to from the workflows list on the left. In this case we are selecting the `test` environment
 2. Click the "Run workflow" button
 3. Select the branch you want to deploy. In this case we are deploying the latest commit on `main`
@@ -383,12 +491,22 @@ Navigate to the [Github Actions Tab](https://github.com/CDCgov/prime-simplerepor
 5. After the workflow is completed you can verify the changes are live by Checking the deployed commit hash. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`
 
 ## Deployment Issues
+
 ### Maintenance Mode
 
 Users can be notified of deployment issues by placing SimpleReport in maintenance mode. When maintenance mode is enabled, a banner will appear at the top of each page stating that SimpleReport is currently experiencing an outage, along with a configurable supplemental message (e.g. a reason why).
 
 To do so manually:
+
 1. Create a `MAINTENANCE MESSAGE` in JSON format with an `active` and a `message` key. Example: `{"active": true, "message": "SimpleReport is currently undergoing maintenance"}`. Note that the `active` value must be a _boolean_, not a string.
 2. `cd frontend && MAINTENANCE_MESSAGE=(JSON message here) MAINTENANCE_ENV=(desired env) yarn run maintenance:start`
+
+Example:
+
+```Shell
+MAINTENANCE_MESSAGE='{"active": true, "message": "SimpleReport is currently experiencing service degradation"}' MAINTENANCE_ENV=dev yarn run maintenance:start
+```
+
+Possible values for `MAINTENANCE_ENV`: `dev`, `test`, `pentest`, `training`, `demo`, `stg`, `prod`
 
 An easier way is to run the `Maintenance Mode` Action, which will automatically enable/disable maintenance mode for all environments with your desired message.

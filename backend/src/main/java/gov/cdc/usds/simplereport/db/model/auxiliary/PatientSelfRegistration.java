@@ -28,10 +28,12 @@ public class PatientSelfRegistration extends PersonUpdate {
       @JsonProperty("suffix") String suffix,
       @JsonProperty("birthDate") LocalDate birthDate,
       @JsonProperty("address") StreetAddress address,
+      @JsonProperty("country") String country,
       @JsonProperty("telephone") String telephone,
       @JsonProperty("phoneNumbers") List<PhoneNumberInput> phoneNumbers,
       @JsonProperty("role") String role,
       @JsonProperty("email") String email,
+      @JsonProperty("emails") List<String> emails,
       @JsonProperty("race") String race,
       @JsonProperty("ethnicity") String ethnicity,
       @JsonProperty("tribalAffiliation") String tribalAffiliation,
@@ -42,10 +44,12 @@ public class PatientSelfRegistration extends PersonUpdate {
       @JsonProperty("testResultDelivery") TestResultDeliveryPreference testResultDelivery) {
     super(
         address,
+        country,
         telephone,
         phoneNumbers,
         parsePersonRole(role, false),
         email,
+        emails,
         race,
         ethnicity,
         tribalAffiliation,
@@ -108,6 +112,7 @@ public class PatientSelfRegistration extends PersonUpdate {
         && Objects.equals(suffix, that.suffix)
         && Objects.equals(birthDate, that.birthDate)
         && Objects.equals(getAddress(), that.getAddress())
+        && Objects.equals(getCountry(), that.getCountry())
         && Objects.equals(getTelephone(), that.getTelephone())
         && Objects.equals(getPhoneNumbers(), that.getPhoneNumbers())
         && getRole() == that.getRole()
@@ -132,6 +137,7 @@ public class PatientSelfRegistration extends PersonUpdate {
         suffix,
         birthDate,
         getAddress(),
+        getCountry(),
         getTelephone(),
         getPhoneNumbers(),
         getRole(),

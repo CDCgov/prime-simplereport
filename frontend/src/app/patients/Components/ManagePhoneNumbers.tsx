@@ -203,7 +203,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
               formObject={phoneNumber}
               validate={(field) => validateField(idx, field)}
               getValidationStatus={() => validationStatus(idx, "number")}
-              onChange={(field) => (value) => onPhoneNumberChange(idx, value)}
+              onChange={(_) => (value) => onPhoneNumberChange(idx, value)}
               errors={errors[idx] || {}}
             />
             {!isPrimary && (

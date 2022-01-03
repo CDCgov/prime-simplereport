@@ -214,6 +214,43 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
+  void editUserName_orgAdmin_success() {
+    initSampleData();
+
+    final String email = "allfacilities@example.com"; // member of DIS_ORG
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+    PersonName newName = apiUser.getNameInfo();
+    newName.setFirstName("NewFirst");
+    newName.setMiddleName("NewFirst");
+    newName.setLastName("NewFirst");
+    newName.setSuffix("NewFirst");
+
+    UserInfo userInfo = _service.updateUser(apiUser.getInternalId(), newName);
+
+    assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
+    assertEquals(apiUser.getNameInfo().getFirstName(), newName.getFirstName());
+    assertEquals(apiUser.getNameInfo().getMiddleName(), newName.getMiddleName());
+    assertEquals(apiUser.getNameInfo().getLastName(), newName.getLastName());
+    assertEquals(apiUser.getNameInfo().getSuffix(), newName.getSuffix());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void editUserEmail_orgAdmin_success() {
+    initSampleData();
+
+    final String email = "allfacilities@example.com"; // member of DIS_ORG
+    final String newEmail = "newemail@example.com"; // member of DIS_ORG
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+
+    UserInfo userInfo = _service.updateUserEmail(apiUser.getInternalId(), newEmail);
+
+    assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
+    assertEquals(userInfo.getEmail(), newEmail);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
   void resetUserPassword_orgAdmin_success() {
     initSampleData();
 

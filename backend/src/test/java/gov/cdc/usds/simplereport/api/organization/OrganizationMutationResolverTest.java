@@ -1,64 +1,75 @@
 package gov.cdc.usds.simplereport.api.organization;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
-import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PersonService;
-import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@WithSimpleReportStandardUser // hackedy hack
+@ExtendWith(SpringExtension.class)
+@WithSimpleReportStandardUser
 class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
   @Autowired private TestDataFactory _dataFactory;
-  @Captor private ArgumentCaptor<DeviceSpecimenTypeHolder> deviceSpecimenCaptor;
+  @Captor private ArgumentCaptor<List<UUID>> deviceIdTypeCaptor;
 
-  AddressValidationService _avs;
-  ApiUserService _aus;
-  OrganizationService _os;
-  OrganizationQueueService _oqs;
-  DeviceTypeService _dts;
+  @Mock AddressValidationService mockedAddressValidationService;
+  @Mock ApiUserService mockedApiUserService;
+  @Mock OrganizationService mockedOrganizationService;
+  @Mock OrganizationQueueService mockedOrganizationQueueService;
+  @Mock DeviceSpecimenTypeRepository mockedDeviceSpecimenTypeRepository;
+  @InjectMocks OrganizationMutationResolver organizationMutationResolver;
+
+  private Facility facility;
+  private DeviceSpecimenType genericDeviceSpecimen;
+  private UUID deviceId;
+  private StreetAddress address;
 
   @BeforeEach
-  void initTestStart() {
-    _avs = mock(AddressValidationService.class);
-    _aus = mock(ApiUserService.class);
-    _os = mock(OrganizationService.class);
-    _oqs = mock(OrganizationQueueService.class);
-    _dts = mock(DeviceTypeService.class);
+  void setup() {
+    Organization org = _dataFactory.createValidOrg();
+    facility = _dataFactory.createValidFacility(org);
+    genericDeviceSpecimen = _dataFactory.getGenericDeviceSpecimen();
+    DeviceType genericDevice = genericDeviceSpecimen.getDeviceType();
+    deviceId = genericDevice.getInternalId();
+    address = facility.getAddress();
   }
 
   @Test
-  @SuppressWarnings("checkstyle:IllegalCatch")
   void addFacility_withDeviceIds_success() {
-    var sut = new OrganizationMutationResolver(_os, _oqs, _dts, _avs, _aus);
-    var org = _dataFactory.createValidOrg();
-    var facility = _dataFactory.createValidFacility(org);
-    var genericDeviceSpecimen = _dataFactory.getGenericDeviceSpecimen();
-    var deviceId = genericDeviceSpecimen.getDeviceType().getInternalId();
-    var dstHolder =
-        new DeviceSpecimenTypeHolder(genericDeviceSpecimen, List.of(genericDeviceSpecimen));
-
-    var address = facility.getAddress();
-    doNothing().when(_os).assertFacilityNameAvailable(facility.getFacilityName());
-    when(_dts.getTypesForFacility(deviceId, List.of(deviceId))).thenReturn(dstHolder);
-    when(_avs.getValidatedAddress(
+    // GIVEN
+    doNothing()
+        .when(mockedOrganizationService)
+        .assertFacilityNameAvailable(facility.getFacilityName());
+    when(mockedAddressValidationService.getValidatedAddress(
             address.getStreetOne(),
             address.getStreetTwo(),
             address.getCity(),
@@ -67,7 +78,68 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             "facility"))
         .thenReturn(address);
 
-    sut.addFacility(
+    // WHEN
+    organizationMutationResolver.addFacilityNew(
+        facility.getFacilityName(),
+        facility.getCliaNumber(),
+        facility.getAddress().getStreetOne(),
+        facility.getAddress().getStreetTwo(),
+        facility.getAddress().getCity(),
+        facility.getAddress().getState(),
+        facility.getAddress().getPostalCode(),
+        facility.getTelephone(),
+        facility.getEmail(),
+        facility.getOrderingProvider().getNameInfo().getFirstName(),
+        facility.getOrderingProvider().getNameInfo().getMiddleName(),
+        facility.getOrderingProvider().getNameInfo().getLastName(),
+        facility.getOrderingProvider().getNameInfo().getSuffix(),
+        facility.getOrderingProvider().getProviderId(),
+        facility.getOrderingProvider().getAddress().getStreetOne(),
+        facility.getOrderingProvider().getAddress().getStreetTwo(),
+        facility.getOrderingProvider().getAddress().getCity(),
+        facility.getOrderingProvider().getAddress().getCounty(),
+        facility.getOrderingProvider().getAddress().getState(),
+        facility.getOrderingProvider().getAddress().getPostalCode(),
+        facility.getOrderingProvider().getTelephone(),
+        List.of(deviceId));
+
+    // THEN
+    verify(mockedOrganizationService)
+        .createFacility(
+            eq("Imaginary Site"),
+            eq("123456"),
+            eq(facility.getAddress()),
+            eq("(555) 867-5309"),
+            eq("facility@test.com"),
+            deviceIdTypeCaptor.capture(),
+            eq(facility.getOrderingProvider().getNameInfo()),
+            eq(facility.getOrderingProvider().getAddress()),
+            eq("(800) 555-1212"),
+            eq("DOOOOOOM"));
+
+    List<UUID> deviceIds = deviceIdTypeCaptor.getValue();
+    assertThat(deviceIds).hasSize(1).contains(deviceId);
+  }
+
+  @Test
+  void addFacility_withDeviceSpecimenType_backwardCompatible_success() {
+    // GIVEN
+    doNothing()
+        .when(mockedOrganizationService)
+        .assertFacilityNameAvailable(facility.getFacilityName());
+    when(mockedAddressValidationService.getValidatedAddress(
+            address.getStreetOne(),
+            address.getStreetTwo(),
+            address.getCity(),
+            address.getState(),
+            address.getPostalCode(),
+            "facility"))
+        .thenReturn(address);
+    when(mockedDeviceSpecimenTypeRepository.findById(any()))
+        .thenReturn(Optional.of(genericDeviceSpecimen));
+
+    // WHEN
+    organizationMutationResolver.addFacility(
         facility.getFacilityName(),
         facility.getCliaNumber(),
         facility.getAddress().getStreetOne(),
@@ -91,47 +163,31 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
         facility.getOrderingProvider().getAddress().getPostalCode(),
         facility.getOrderingProvider().getTelephone(),
         List.of(deviceId.toString()),
-        null,
+        List.of(genericDeviceSpecimen.getInternalId()),
         deviceId.toString());
 
-    verify(_os)
+    // THEN
+    verify(mockedOrganizationService)
         .createFacility(
             any(),
             any(),
             any(),
             any(),
             any(),
-            deviceSpecimenCaptor.capture(),
+            deviceIdTypeCaptor.capture(),
             any(),
             any(),
             any(),
             any());
 
-    DeviceSpecimenTypeHolder dst = deviceSpecimenCaptor.getValue();
-
-    assertEquals(genericDeviceSpecimen, dst.getDefault());
-    assertEquals(List.of(genericDeviceSpecimen), dst.getFullList());
+    List<UUID> deviceIds = deviceIdTypeCaptor.getValue();
+    assertThat(deviceIds).hasSize(1).contains(deviceId);
   }
 
   @Test
-  @SuppressWarnings("checkstyle:IllegalCatch")
-  void addFacility_withDeviceSpecimenTypes_success() {
-    var sut = new OrganizationMutationResolver(_os, _oqs, _dts, _avs, _aus);
-
-    var org = _dataFactory.createValidOrg();
-    var facility = _dataFactory.createValidFacility(org);
-    var address = facility.getAddress();
-
-    var deviceSpecimenType = _dataFactory.getGenericDeviceSpecimen();
-    var deviceSpecimenTypeId = deviceSpecimenType.getInternalId();
-    var deviceSpecimenTypeIds = List.of(deviceSpecimenTypeId);
-    var holder = new DeviceSpecimenTypeHolder(deviceSpecimenType, List.of(deviceSpecimenType));
-
-    doNothing().when(_os).assertFacilityNameAvailable(facility.getFacilityName());
-    when(_dts.getDeviceSpecimenTypesForFacility(
-            deviceSpecimenType.getDeviceType().getInternalId(), deviceSpecimenTypeIds))
-        .thenReturn(holder);
-    when(_avs.getValidatedAddress(
+  void updateFacility_success() {
+    // GIVEN
+    when(mockedAddressValidationService.getValidatedAddress(
             address.getStreetOne(),
             address.getStreetTwo(),
             address.getCity(),
@@ -140,7 +196,68 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             "facility"))
         .thenReturn(address);
 
-    sut.addFacility(
+    // WHEN
+    organizationMutationResolver.updateFacilityNew(
+        facility.getInternalId(),
+        facility.getFacilityName(),
+        facility.getCliaNumber(),
+        facility.getAddress().getStreetOne(),
+        facility.getAddress().getStreetTwo(),
+        facility.getAddress().getCity(),
+        facility.getAddress().getState(),
+        facility.getAddress().getPostalCode(),
+        facility.getTelephone(),
+        facility.getEmail(),
+        facility.getOrderingProvider().getNameInfo().getFirstName(),
+        facility.getOrderingProvider().getNameInfo().getMiddleName(),
+        facility.getOrderingProvider().getNameInfo().getLastName(),
+        facility.getOrderingProvider().getNameInfo().getSuffix(),
+        facility.getOrderingProvider().getProviderId(),
+        facility.getOrderingProvider().getAddress().getStreetOne(),
+        facility.getOrderingProvider().getAddress().getStreetTwo(),
+        facility.getOrderingProvider().getAddress().getCity(),
+        facility.getOrderingProvider().getAddress().getCounty(),
+        facility.getOrderingProvider().getAddress().getState(),
+        facility.getOrderingProvider().getAddress().getPostalCode(),
+        facility.getOrderingProvider().getTelephone(),
+        List.of(deviceId));
+
+    // THEN
+    verify(mockedOrganizationService)
+        .updateFacility(
+            eq(facility.getInternalId()),
+            eq("Imaginary Site"),
+            eq("123456"),
+            eq(facility.getAddress()),
+            eq("(555) 867-5309"),
+            eq("facility@test.com"),
+            eq(facility.getOrderingProvider().getNameInfo()),
+            eq(facility.getOrderingProvider().getAddress()),
+            eq("DOOOOOOM"),
+            eq("(800) 555-1212"),
+            deviceIdTypeCaptor.capture());
+
+    List<UUID> deviceIds = deviceIdTypeCaptor.getValue();
+    assertThat(deviceIds).hasSize(1).contains(deviceId);
+  }
+
+  @Test
+  void updateFacility_backwardCompatible_success() {
+    // GIVEN
+    when(mockedAddressValidationService.getValidatedAddress(
+            address.getStreetOne(),
+            address.getStreetTwo(),
+            address.getCity(),
+            address.getState(),
+            address.getPostalCode(),
+            "facility"))
+        .thenReturn(address);
+    when(mockedDeviceSpecimenTypeRepository.findById(any()))
+        .thenReturn(Optional.of(genericDeviceSpecimen));
+
+    // WHEN
+    organizationMutationResolver.updateFacility(
+        facility.getInternalId(),
         facility.getFacilityName(),
         facility.getCliaNumber(),
         facility.getAddress().getStreetOne(),
@@ -163,26 +280,44 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
         facility.getOrderingProvider().getAddress().getState(),
         facility.getOrderingProvider().getAddress().getPostalCode(),
         facility.getOrderingProvider().getTelephone(),
-        List.of(deviceSpecimenType.getDeviceType().getInternalId().toString()),
-        List.of(deviceSpecimenTypeId),
-        deviceSpecimenType.getDeviceType().getInternalId().toString());
+        emptyList(),
+        List.of(genericDeviceSpecimen.getInternalId()),
+        null);
 
-    verify(_os)
-        .createFacility(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            deviceSpecimenCaptor.capture(),
-            any(),
-            any(),
-            any(),
-            any());
+    // THEN
+    verify(mockedOrganizationService)
+        .updateFacility(
+            eq(facility.getInternalId()),
+            eq("Imaginary Site"),
+            eq("123456"),
+            eq(facility.getAddress()),
+            eq("(555) 867-5309"),
+            eq("facility@test.com"),
+            eq(facility.getOrderingProvider().getNameInfo()),
+            eq(facility.getOrderingProvider().getAddress()),
+            eq("DOOOOOOM"),
+            eq("(800) 555-1212"),
+            deviceIdTypeCaptor.capture());
 
-    DeviceSpecimenTypeHolder dst = deviceSpecimenCaptor.getValue();
+    List<UUID> deviceIds = deviceIdTypeCaptor.getValue();
+    assertThat(deviceIds).hasSize(1).contains(deviceId);
+  }
 
-    assertEquals(deviceSpecimenType, dst.getDefault());
-    assertEquals(List.of(deviceSpecimenType), dst.getFullList());
+  @Test
+  void markFacilityAsDeleted_true() {
+    // WHEN
+    organizationMutationResolver.markFacilityAsDeleted(facility.getInternalId(), true);
+
+    // THEN
+    verify(mockedOrganizationService).markFacilityAsDeleted(facility.getInternalId(), true);
+  }
+
+  @Test
+  void markFacilityAsDeleted_false() {
+    // WHEN
+    organizationMutationResolver.markFacilityAsDeleted(facility.getInternalId(), false);
+
+    // THEN
+    verify(mockedOrganizationService).markFacilityAsDeleted(facility.getInternalId(), false);
   }
 }

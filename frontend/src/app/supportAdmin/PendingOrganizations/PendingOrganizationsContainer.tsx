@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import "./PendingOrganizationsList.scss";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
@@ -11,57 +9,49 @@ import {
 import PendingOrganizations from "./PendingOrganizations";
 
 const PendingOrganizationsContainer = () => {
-  const [verifiedOrgExternalIds, setVerifiedOrgExternalIds] = useState<
-    Set<string>
-  >(new Set());
   const [verifyIdentity] = useSetOrgIdentityVerifiedMutation();
+
   const { data, refetch, loading, error } = useGetPendingOrganizationsQuery();
   if (error) {
     throw error;
   }
-
-  function setVerifiedOrganization(externalId: string, verified: boolean) {
-    const newVerifiedOrgExternalIds = new Set(verifiedOrgExternalIds);
-    if (verified) {
-      newVerifiedOrgExternalIds.add(externalId);
-    } else {
-      newVerifiedOrgExternalIds.delete(externalId);
-    }
-    setVerifiedOrgExternalIds(newVerifiedOrgExternalIds);
-  }
-
-  const submitIdentityVerified = () => {
-    Promise.all(
-      Array.from(verifiedOrgExternalIds).map((externalId) => {
-        return verifyIdentity({
-          variables: {
-            externalId: externalId,
-            verified: true,
-          },
-        });
+  const submitIdentityVerified = async (externalId: string, name: string) => {
+    return Promise.resolve(
+      verifyIdentity({
+        variables: {
+          externalId: externalId,
+          verified: true,
+        },
       })
     )
       .then(() => {
         showNotification(
           <Alert
             type="success"
-            title={`Identity verified for ${
-              verifiedOrgExternalIds.size
-            } organization${verifiedOrgExternalIds.size === 1 ? "" : "s"}`}
+            title={`Identity verified for ${name}`}
             body=""
           />
         );
       })
-      .finally(refetch);
+      .finally(() => {
+        refetch();
+      })
+      .catch((e) => {
+        console.error(e);
+        showNotification(
+          <Alert type="error" title={`Identity verification failed`} body={e} />
+        );
+        return Promise.reject("Organization verification failed");
+      });
   };
 
   return (
     <PendingOrganizations
       organizations={data?.pendingOrganizations || []}
-      verifiedOrgExternalIds={verifiedOrgExternalIds}
       submitIdentityVerified={submitIdentityVerified}
-      setVerifiedOrganization={setVerifiedOrganization}
       loading={loading}
+      refetch={refetch}
+      showNotification={showNotification}
     />
   );
 };

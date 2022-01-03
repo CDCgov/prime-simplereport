@@ -1,10 +1,11 @@
 package gov.cdc.usds.simplereport.api.pxp;
 
-import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
+import static gov.cdc.usds.simplereport.api.Translators.parseEmails;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
+import static gov.cdc.usds.simplereport.api.Translators.parseString;
 
 import gov.cdc.usds.simplereport.api.model.PersonUpdate;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
@@ -18,6 +19,7 @@ import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
+import gov.cdc.usds.simplereport.service.model.PatientEmailsHolder;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -94,12 +96,16 @@ public class PatientExperienceController {
   public PxpVerifyResponse updatePatient(
       @RequestBody PxpRequestWrapper<PersonUpdate> body, HttpServletRequest request) {
     PersonUpdate person = body.getData();
+
+    var backwardsCompatibleEmails = new PatientEmailsHolder(person.getEmail(), person.getEmails());
+
     Person updated =
         _ps.updateMe(
             StreetAddress.deAndReSerializeForSafety(person.getAddress()),
+            parseString(person.getCountry()),
             parsePhoneNumbers(person.getPhoneNumbers()),
             person.getRole(),
-            parseEmail(person.getEmail()),
+            parseEmails(backwardsCompatibleEmails.getFullList()),
             parseRace(person.getRace()),
             parseEthnicity(person.getEthnicity()),
             person.getTribalAffiliation(),

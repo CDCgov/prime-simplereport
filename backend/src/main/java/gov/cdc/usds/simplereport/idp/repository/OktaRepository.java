@@ -27,6 +27,8 @@ public interface OktaRepository {
 
   Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity);
 
+  Optional<OrganizationRoleClaims> updateUserEmail(IdentityAttributes userIdentity, String email);
+
   void reprovisionUser(IdentityAttributes userIdentity);
 
   Optional<OrganizationRoleClaims> updateUserPrivileges(

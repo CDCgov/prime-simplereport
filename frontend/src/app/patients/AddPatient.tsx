@@ -8,7 +8,7 @@ import { LocationDescriptor } from "history";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
-import { showNotification } from "../utils";
+import { showNotification, dedupeAndCompactStrings } from "../utils";
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import {
@@ -40,12 +40,13 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   telephone: null,
   phoneNumbers: null,
   county: null,
-  email: null,
+  emails: null,
   street: "",
   streetTwo: null,
   city: null,
   state: "",
   zipCode: "",
+  country: "USA",
   preferredLanguage: null,
   testResultDelivery: null,
 };
@@ -55,14 +56,12 @@ export const PATIENT_EXISTS = gql`
     $firstName: String!
     $lastName: String!
     $birthDate: LocalDate!
-    $zipCode: String!
     $facilityId: ID
   ) {
-    patientExists(
+    patientExistsWithoutZip(
       firstName: $firstName
       lastName: $lastName
       birthDate: $birthDate
-      zipCode: $zipCode
       facilityId: $facilityId
     )
   }
@@ -84,7 +83,7 @@ export const ADD_PATIENT = gql`
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
     $lookupId: String
-    $email: String
+    $emails: [String]
     $county: String
     $race: String
     $ethnicity: String
@@ -110,7 +109,7 @@ export const ADD_PATIENT = gql`
       phoneNumbers: $phoneNumbers
       role: $role
       lookupId: $lookupId
-      email: $email
+      emails: $emails
       county: $county
       race: $race
       ethnicity: $ethnicity
@@ -155,7 +154,6 @@ const AddPatient = () => {
   >({
     firstName: null,
     lastName: null,
-    zipCode: null,
     birthDate: null,
     facilityId: null,
   });
@@ -184,21 +182,18 @@ const AddPatient = () => {
   const onBlur = ({
     firstName,
     lastName,
-    zipCode,
     birthDate,
     facilityId,
   }: Nullable<PersonFormData>) => {
     if (
       firstName !== identifyingData.firstName ||
       lastName !== identifyingData.lastName ||
-      zipCode !== identifyingData.zipCode ||
       !moment(birthDate).isSame(identifyingData.birthDate) ||
       facilityId !== identifyingData.facilityId
     ) {
       setIdentifyingData({
         firstName,
         lastName,
-        zipCode,
         birthDate: moment(birthDate),
         facilityId,
       });
@@ -206,9 +201,9 @@ const AddPatient = () => {
   };
 
   useEffect(() => {
-    const { firstName, lastName, zipCode, birthDate } = identifyingData;
+    const { firstName, lastName, birthDate } = identifyingData;
 
-    if (firstName && lastName && zipCode && birthDate?.isValid()) {
+    if (firstName && lastName && birthDate?.isValid()) {
       try {
         getPatientExists();
       } catch (e) {
@@ -246,6 +241,7 @@ const AddPatient = () => {
             return phoneNumber && phoneNumber.number && phoneNumber.type;
           }
         ),
+        emails: dedupeAndCompactStrings(person.emails || []),
       },
     });
     showNotification(
@@ -304,7 +300,8 @@ const AddPatient = () => {
       <div className={"grid-container margin-bottom-4"}>
         <DuplicatePatientModal
           showModal={
-            patientExistsResponse?.patientExists && preventModal === false
+            patientExistsResponse?.patientExistsWithoutZip &&
+            preventModal === false
           }
           onDuplicate={() => setRedirect(personPath)}
           entityName={

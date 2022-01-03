@@ -2,7 +2,11 @@ import { BrowserRouter as Router, MemoryRouter, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import createMockStore, { MockStoreEnhanced } from "redux-mock-store";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { GetTopLevelDashboardMetricsNewDocument } from "../generated/graphql";
@@ -11,7 +15,10 @@ import App, { WHOAMI_QUERY } from "./App";
 import { queueQuery } from "./testQueue/TestQueue";
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import { TRAINING_PURPOSES_ONLY } from "./commonComponents/TrainingNotification";
-import { getDateFromDaysAgo } from "./analytics/Analytics";
+import {
+  getStartDateFromDaysAgo,
+  getEndDateFromDaysAgo,
+} from "./analytics/Analytics";
 
 jest.mock("uuid");
 jest.mock("./VersionService", () => ({
@@ -170,8 +177,8 @@ const getAnalyticsQueryMock = () => ({
     query: GetTopLevelDashboardMetricsNewDocument,
     variables: {
       facilityId: "",
-      startDate: getDateFromDaysAgo(7),
-      endDate: new Date(),
+      startDate: getStartDateFromDaysAgo(7),
+      endDate: getEndDateFromDaysAgo(0),
     },
   },
   result: {
@@ -231,9 +238,10 @@ describe("App", () => {
       facilityQueryMock,
       getAnalyticsQueryMock(),
     ]);
-    await waitFor(() => {
-      userEvent.click(screen.getByText("Testing Site", { exact: false }));
-    });
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Loading account information...")
+    );
+    userEvent.click(screen.getAllByText("Testing Site", { exact: false })[0]);
     expect(
       await screen.findByText("COVID-19 testing data")
     ).toBeInTheDocument();
@@ -257,9 +265,7 @@ describe("App", () => {
       exact: false,
     });
     expect(trainingWelcome).toBeInTheDocument();
-    await waitFor(() => {
-      userEvent.click(screen.getByText("Got it", { exact: false }));
-    });
+    userEvent.click(screen.getByText("Got it", { exact: false }));
     expect(trainingWelcome).not.toBeInTheDocument();
   });
   it("does not display training notifications outside the training environment", () => {

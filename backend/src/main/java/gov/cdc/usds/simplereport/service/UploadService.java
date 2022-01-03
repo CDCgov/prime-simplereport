@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
-import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
+import static gov.cdc.usds.simplereport.api.Translators.parseEmails;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
@@ -45,10 +45,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class UploadService {
   private static final String FACILITY_ID = "facilityId";
   private static final int MAX_LINE_LENGTH = 1024 * 6;
+  public static final String ZIP_CODE_REGEX = "^[0-9]{5}(?:-[0-9]{4})?$";
 
-  private final PersonService _ps;
-  private final AddressValidationService _avs;
-  private final OrganizationService _os;
+  private final PersonService personService;
+  private final AddressValidationService addressValidationService;
+  private final OrganizationService organizationService;
   private boolean hasHeaderRow = false;
 
   private MappingIterator<Map<String, String>> getIteratorForCsv(InputStream csvStream)
@@ -95,7 +96,7 @@ public class UploadService {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public String processPersonCSV(InputStream csvStream) throws IllegalGraphqlArgumentException {
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
-    final var org = _os.getCurrentOrganization();
+    final var org = organizationService.getCurrentOrganization();
 
     // Since the CSV parser won't fail when give a single string, we simple check to see if it has
     // any parsed values
@@ -114,27 +115,36 @@ public class UploadService {
       try {
         var facilityId = parseUUID(getRow(row, FACILITY_ID, false));
         Optional<Facility> facility =
-            Optional.ofNullable(facilityId).map(_os::getFacilityInCurrentOrg);
+            Optional.ofNullable(facilityId).map(organizationService::getFacilityInCurrentOrg);
+
+        String zipCode = getRow(row, "ZipCode", true);
+        if (!zipCode.matches(ZIP_CODE_REGEX)) {
+          throw new IllegalGraphqlArgumentException("Invalid zip code");
+        }
 
         StreetAddress address =
-            _avs.getValidatedAddress(
+            addressValidationService.getValidatedAddress(
                 getRow(row, "Street", true),
                 getRow(row, "Street2", false),
                 getRow(row, "City", false),
                 getRow(row, "State", true),
-                getRow(row, "ZipCode", true),
+                zipCode,
                 null);
 
         var firstName = parseString(getRow(row, "FirstName", true));
         var lastName = parseString(getRow(row, "LastName", true));
         var dob = parseUserShortDate(getRow(row, "DOB", true));
+        var country = parseString(getRow(row, "Country", false));
 
-        if (_ps.isDuplicatePatient(
-            firstName, lastName, dob, address.getPostalCode(), org, facility)) {
+        if (country == null) {
+          country = "USA";
+        }
+
+        if (personService.isDuplicatePatient(firstName, lastName, dob, org, facility)) {
           continue;
         }
 
-        _ps.addPatient(
+        personService.addPatient(
             facilityId,
             null, // lookupID
             firstName,
@@ -143,12 +153,13 @@ public class UploadService {
             parseString(getRow(row, "Suffix", false)),
             dob,
             address,
+            country,
             parsePhoneNumbers(
                 List.of(
                     new PhoneNumberInput(
                         null, parsePhoneNumber((getRow(row, "PhoneNumber", true)))))),
             parsePersonRole(getRow(row, "Role", false), false),
-            parseEmail(getRow(row, "Email", false)),
+            parseEmails(List.of(getRow(row, "Email", false))),
             parseRaceDisplayValue(getRow(row, "Race", false)),
             parseEthnicity(getRow(row, "Ethnicity", false)),
             null,
@@ -166,8 +177,9 @@ public class UploadService {
             rowElapsed.toMillis(),
             totalElapsed.toMinutes());
       } catch (IllegalGraphqlArgumentException e) {
-        throw new IllegalGraphqlArgumentException(
-            "Error on row " + rowNumber + "; " + e.getMessage());
+        String errorMessage = "Error on row " + rowNumber + "; " + e.getMessage();
+        log.error(errorMessage);
+        throw new IllegalGraphqlArgumentException(errorMessage);
       }
     }
 
@@ -200,6 +212,7 @@ public class UploadService {
           .addColumn("County", CsvSchema.ColumnType.STRING)
           .addColumn("State", CsvSchema.ColumnType.STRING)
           .addColumn("ZipCode", CsvSchema.ColumnType.STRING)
+          .addColumn("Country", CsvSchema.ColumnType.STRING)
           .addColumn("PhoneNumber", CsvSchema.ColumnType.STRING)
           .addColumn("employedInHealthcare", CsvSchema.ColumnType.STRING)
           .addColumn("residentCongregateSetting", CsvSchema.ColumnType.STRING)

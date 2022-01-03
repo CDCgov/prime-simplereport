@@ -1,4 +1,9 @@
-import { act, render, screen } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { getAppInsights } from "../TelemetryService";
@@ -15,6 +20,8 @@ import {
 jest.mock("../TelemetryService", () => ({
   getAppInsights: jest.fn(),
 }));
+
+HTMLMediaElement.prototype.play = jest.fn();
 
 describe("TestTimer", () => {
   let now = 1600000000;
@@ -95,9 +102,7 @@ describe("TestTimerWidget", () => {
 
       const startTimer = await screen.findByRole("button");
 
-      act(() => {
-        userEvent.click(startTimer);
-      });
+      userEvent.click(startTimer);
       expect(trackEventMock).toHaveBeenCalled();
       expect(trackEventMock).toHaveBeenCalledTimes(1);
       expect(trackEventMock).toHaveBeenCalledWith(
@@ -112,19 +117,17 @@ describe("TestTimerWidget", () => {
       const timerButton = await screen.findByRole("button");
 
       // Start timer
-      act(() => {
-        userEvent.click(timerButton);
-      });
+      userEvent.click(timerButton);
+      await screen.findByText("15:00");
 
       // The timer does not enter the countdown state instantly, so clicking the
       // button in rapid succession will register as two "start timer" events.
       // Force the timer forward -- otherwise we would need a 1sec timeout here
-      findTimer("internal-id")?.tick(Date.now());
+      await waitFor(() => findTimer("internal-id")?.tick(Date.now()));
 
       // Reset timer
-      act(() => {
-        userEvent.click(timerButton);
-      });
+      userEvent.click(timerButton);
+      await screen.findByText("15:00");
 
       expect(trackEventMock).toHaveBeenCalledWith(
         { name: "Test timer reset" },
@@ -137,13 +140,12 @@ describe("TestTimerWidget", () => {
 
       const timerButton = await screen.findByRole("button");
 
-      act(() => {
-        userEvent.click(timerButton);
-      });
+      userEvent.click(timerButton);
+      await screen.findByText("0:00");
 
       // This is a 0-second timer, but it takes ~1 second to enter the
       // countdown state and register as completed
-      findTimer("internal-id")?.tick(Date.now() + 1000);
+      await waitForElementToBeRemoved(() => screen.queryByText("0:00"));
 
       expect(screen.getByText("RESULT READY")).toBeInTheDocument();
 

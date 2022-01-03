@@ -34,6 +34,7 @@ jest.mock("../../generated/graphql", () => ({
             middleName: "Francesca Holcomb",
             lastName: "Gordon",
             email: "gesezyx@mailinator.com",
+            emails: ["gesezyx@mailinator.com"],
             __typename: "Patient",
           },
           patientLink: {

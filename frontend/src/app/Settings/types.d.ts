@@ -5,18 +5,15 @@ type ISODate = `${number}${number}${number}${number}-${number}${number}-${number
 interface DeviceType {
   internalId: string;
   name: string;
+  testLength?: number | undefined;
 }
+
 interface DeviceTypes {
   deviceType: [DeviceType];
 }
 interface SpecimenType {
   internalId: string;
   name: string;
-}
-
-interface DeviceSpecimenTypeIds {
-  deviceType: ID;
-  specimenType: ID;
 }
 
 interface DeviceSpecimenType {
@@ -43,9 +40,7 @@ interface Facility extends Address {
   name: string;
   phone: string;
   email: string | null;
-  deviceTypes: string[];
-  deviceSpecimenTypes: DeviceSpecimenType[];
-  defaultDevice: string;
+  deviceTypes: DeviceType[];
   orderingProvider: Provider;
 }
 
@@ -114,15 +109,13 @@ interface SettingsData {
         zipCode: string;
         phone: string;
         email: string;
-        defaultDeviceType: {
-          internalId: string;
-        };
+        defaultDeviceSpecimen: string;
         deviceTypes: [
           {
+            name: string;
             internalId: string;
           }
         ];
-        deviceSpecimenTypes: DeviceSpecimenType[];
         orderingProvider: {
           firstName: string;
           middleName: string;
@@ -140,7 +133,7 @@ interface SettingsData {
       }
     ];
   };
-  deviceType: [
+  deviceTypes: [
     {
       internalId: string;
       name: string;
@@ -165,15 +158,12 @@ interface FacilityData {
         zipCode: string;
         phone: string;
         email: string;
-        defaultDeviceType: {
-          internalId: string;
-        };
         deviceTypes: [
           {
+            name: string;
             internalId: string;
           }
         ];
-        deviceSpecimenTypes: DeviceSpecimenType[];
         orderingProvider: {
           firstName: string;
           middleName: string;
@@ -191,7 +181,7 @@ interface FacilityData {
       }
     ];
   };
-  deviceSpecimenTypes: DeviceSpecimenType[];
+  deviceTypes: DeviceType[];
 }
 
 type TestCorrectionStatus = "ORIGINAL" | "CORRECTED" | "REMOVED";

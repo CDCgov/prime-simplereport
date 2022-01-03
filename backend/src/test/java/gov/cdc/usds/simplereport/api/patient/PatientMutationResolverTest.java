@@ -86,6 +86,8 @@ class PatientMutationResolverTest {
         "STAFF",
         null,
         null,
+        "USA",
+        null,
         null,
         null,
         null,
@@ -105,9 +107,71 @@ class PatientMutationResolverTest {
             any(),
             any(),
             any(),
+            any(),
             argThat((phoneNumbers) -> phoneNumbers.get(0).getNumber().equals(inputPhoneNumber)),
             any(),
             any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any());
+  }
+
+  @Test
+  void addPatient_canAddWithBackwardsCompatibleEmail() {
+    var personService = mock(PersonService.class);
+    var uploadService = mock(UploadService.class);
+
+    var sut = new PatientMutationResolver(personService, uploadService);
+
+    sut.addPatient(
+        UUID.randomUUID(),
+        "FOO",
+        "Fred",
+        null,
+        "Fosbury",
+        "Sr.",
+        LocalDate.of(1865, 12, 25),
+        "555 Fake St",
+        null,
+        "Durham",
+        "NC",
+        "27704",
+        null,
+        null,
+        "STAFF",
+        "fred.fosbury@foo.com",
+        // Simulate an older UI version by not using the multiple email field
+        null,
+        null,
+        "USA",
+        null,
+        null,
+        null,
+        null,
+        false,
+        false,
+        "English",
+        null);
+
+    verify(personService)
+        .addPatient(
+            any(UUID.class),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            argThat((emails) -> emails.get(0).equals("fred.fosbury@foo.com")),
             any(),
             any(),
             any(),

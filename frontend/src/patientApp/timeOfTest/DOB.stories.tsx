@@ -15,7 +15,7 @@ export default {
 } as Meta;
 
 const store = mockStore({
-  plid: "foo",
+  plid: "bc62c320-4ef5-4bff-a840-f3a78cda537c",
   patient: {
     birthDate: "07181992",
   },

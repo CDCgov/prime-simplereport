@@ -15,6 +15,7 @@ import {
 } from "../constants";
 import { Option } from "../commonComponents/Dropdown";
 import { languages } from "../../config/constants";
+import { emailIsValid } from "../utils/email";
 
 import { TestResultDeliveryPreferences } from "./TestResultDeliveryPreference";
 
@@ -29,7 +30,7 @@ type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 type UpdateOptionalFields =
   | "lookupId"
   | "role"
-  | "email"
+  | "emails"
   | "streetTwo"
   | "city"
   | "county"
@@ -158,6 +159,37 @@ export function isValidBirthdate18n(t: TFunction) {
   };
 }
 
+function isValidEmail18n(t: TFunction) {
+  return function isValidEmail(this: TestContext, email: string | undefined) {
+    if ([undefined, ""].includes(email)) {
+      return true;
+    }
+
+    if (!emailIsValid(email)) {
+      return false;
+    }
+
+    if (email && email.length > MAX_LENGTH) {
+      return this.createError({
+        message: t("patient.form.errors.fieldLength"),
+      });
+    }
+
+    return true;
+  };
+}
+
+function areValidEmails18n(t: TFunction) {
+  const validator = isValidEmail18n(t);
+
+  return function areValidEmails(emails: string[] | null | undefined) {
+    if (!Array.isArray(emails)) {
+      return true;
+    }
+
+    return emails.every(validator);
+  };
+}
 const updateFieldSchemata: (
   t: TFunction
 ) => Record<keyof PersonUpdate, yup.AnySchema> = (t) => ({
@@ -187,10 +219,9 @@ const updateFieldSchemata: (
       hasPhoneType
     )
     .required(),
-  email: yup
-    .string()
-    .email(t("patient.form.errors.email"))
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
+  emails: yup
+    .array()
+    .test("emails", t("patient.form.errors.email"), areValidEmails18n(t))
     .nullable(),
   street: yup
     .string()
@@ -213,6 +244,7 @@ const updateFieldSchemata: (
     .string()
     .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
     .required(t("patient.form.errors.zipCode")),
+  country: yup.string().required(t("patient.form.errors.country")),
   race: yup
     .mixed()
     .oneOf(
@@ -270,6 +302,14 @@ const updatePhoneNumberSchemata: (
     .oneOf(getValues(PHONE_TYPE_VALUES), "Phone type is missing or invalid"),
 });
 
+const translateUpdateEmailSchemata = (t: TFunction) => {
+  return yup
+    .string()
+    .email(t("patient.form.errors.email"))
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
+    .nullable();
+};
+
 const translatePhoneNumberUpdateSchema: TranslatedSchema<PhoneNumber> = (t) =>
   yup.object(updatePhoneNumberSchemata(t));
 
@@ -285,10 +325,10 @@ const translatePersonSchema: TranslatedSchema<RequiredPersonFields> = (t) =>
       .string()
       .test(
         "birth-date",
-        t("patient.form.errors.birthDate"),
+        t("patient.form.errors.birthDate.base"),
         isValidBirthdate18n(t)
       )
-      .required(t("patient.form.errors.birthDate")),
+      .required(t("patient.form.errors.birthDate.base")),
     facilityId: yup
       .string()
       .nullable()
@@ -319,7 +359,7 @@ const translateSelfRegistrationSchema: TranslatedSchema<SelfRegistationFields> =
         t("patient.form.errors.birthDate.base"),
         isValidBirthdate18n(t)
       )
-      .required(t("patient.form.errors.birthDate")),
+      .required(t("patient.form.errors.birthDate.base")),
     ...updateFieldSchemata(t),
   });
 
@@ -336,6 +376,7 @@ export const usePersonSchemata = () => {
     phoneNumberUpdateSchema: translatePhoneNumberUpdateSchema(t),
     personUpdateSchema: translatePersonUpdateSchema(t),
     personSchema: translatePersonSchema(t),
+    emailUpdateSchema: translateUpdateEmailSchemata(t),
     selfRegistrationSchema: translateSelfRegistrationSchema(t),
     defaultValidationError,
     getValidationError: (e: yup.ValidationError) =>

@@ -68,7 +68,7 @@ describe("AskOnEntryTag", () => {
   expectedStates.forEach(({ testName, answers, result }) => {
     it(testName, () => {
       render(<AskOnEntryTag aoeAnswers={answers} />);
-      expect(screen.queryByText(result)).toBeInTheDocument();
+      expect(screen.getByText(result)).toBeInTheDocument();
     });
   });
 });

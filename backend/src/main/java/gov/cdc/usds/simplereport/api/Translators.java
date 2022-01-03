@@ -12,6 +12,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -144,6 +145,14 @@ public class Translators {
     throw IllegalGraphqlArgumentException.invalidInput(e, "email");
   }
 
+  public static List<String> parseEmails(List<String> emails) {
+    if (emails == null || emails.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    return emails.stream().map(Translators::parseEmail).collect(Collectors.toList());
+  }
+
   private static final Map<String, String> RACES =
       Map.of(
           "american indian or alaskan native", "native",
@@ -264,12 +273,13 @@ public class Translators {
     return boolValue;
   }
 
+  // "NA" is used for international addresses
   private static final Set<String> STATE_CODES =
       Set.of(
           "AK", "AL", "AR", "AS", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "FM", "GA", "GU", "HI",
           "IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME", "MH", "MI", "MN", "MO", "MP",
           "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV", "NY", "OH", "OK", "OR", "PA", "PR",
-          "PW", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VI", "VT", "WA", "WI", "WV", "WY");
+          "PW", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VI", "VT", "WA", "WI", "WV", "WY", "NA");
 
   public static String parseState(String s) {
     String state = parseString(s);

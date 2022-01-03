@@ -59,7 +59,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
     return <Redirect to={redirect} />;
   }
 
-  const actionByPage = (patient: Patient) => {
+  const actionByPage = (patient: Patient, idx: Number) => {
     if (props.page === "queue") {
       const canAddToTestQueue =
         props.patientsInQueue.indexOf(patient.internalId) === -1;
@@ -67,6 +67,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
         <Button
           variant="unstyled"
           label="Begin test"
+          ariaDescribedBy={`name${idx} birthdate${idx}`}
           onClick={() => {
             setDialogPatient(patient);
             setCanAddToQueue(canAddToTestQueue);
@@ -123,11 +124,15 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
           </tr>
         </thead>
         <tbody>
-          {patients.map((p) => (
+          {patients.map((p, idx) => (
             <tr key={p.internalId}>
-              <td>{displayFullName(p.firstName, p.middleName, p.lastName)}</td>
-              <td>{moment(p.birthDate).format("MM/DD/YYYY")}</td>
-              <td>{actionByPage(p)}</td>
+              <td id={`name${idx}`}>
+                {displayFullName(p.firstName, p.middleName, p.lastName)}
+              </td>
+              <td id={`birthdate${idx}`}>
+                {moment(p.birthDate).format("MM/DD/YYYY")}
+              </td>
+              <td>{actionByPage(p, idx)}</td>
             </tr>
           ))}
         </tbody>

@@ -24,26 +24,30 @@ import org.springframework.stereotype.Component;
 public class QueryLoggingInstrumentation extends SimpleInstrumentation {
 
   private final TelemetryClient client;
+  private final boolean isDebugEnabled;
 
   public QueryLoggingInstrumentation(TelemetryClient client) {
     this.client = client;
+    this.isDebugEnabled = log.isDebugEnabled();
   }
 
   @Override
   public InstrumentationContext<List<ValidationError>> beginValidation(
       InstrumentationValidationParameters parameters) {
-    // Descend through the GraphQL query and pull out the field names and variables from the
-    // operation definitions
-    final Set<String> fieldSet =
-        parameters.getDocument().getDefinitions().stream()
-            .filter(definition -> definition instanceof OperationDefinition)
-            .flatMap(
-                definition ->
-                    ((OperationDefinition) definition).getSelectionSet().getSelections().stream())
-            .filter(selection -> selection instanceof Field)
-            .flatMap(selection -> GraphQLLoggingHelpers.walkFields("", selection))
-            .collect(Collectors.toSet());
-    log.info("Selecting fields: {}", fieldSet);
+    if (isDebugEnabled) {
+      // Descend through the GraphQL query and pull out the field names and variables from the
+      // operation definitions
+      final Set<String> fieldSet =
+          parameters.getDocument().getDefinitions().stream()
+              .filter(definition -> definition instanceof OperationDefinition)
+              .flatMap(
+                  definition ->
+                      ((OperationDefinition) definition).getSelectionSet().getSelections().stream())
+              .filter(selection -> selection instanceof Field)
+              .flatMap(selection -> GraphQLLoggingHelpers.walkFields("", selection))
+              .collect(Collectors.toSet());
+      log.debug("Selecting fields: {}", fieldSet);
+    }
     return super.beginValidation(parameters);
   }
 
