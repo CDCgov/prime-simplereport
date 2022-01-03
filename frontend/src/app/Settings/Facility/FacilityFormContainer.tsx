@@ -232,8 +232,8 @@ const FacilityFormContainer: any = (props: Props) => {
       ...facility,
       id:
         saveFacilityMutation === updateFacilityMutation
-          ? savedFacility.data.updateFacilityV2.id
-          : savedFacility.data.addFacilityV2.id,
+          ? savedFacility.data.updateFacilityV3.id
+          : savedFacility.data.addFacilityV3.id,
     }));
     const alert = (
       <Alert
