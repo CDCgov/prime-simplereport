@@ -20,7 +20,9 @@ const ManageFacilitiesContainer: any = () => {
     return <p>Error: facilities not found</p>;
   }
 
-  return <ManageFacilities facilities={data.organization.testingFacility} />;
+  return (
+    <ManageFacilities facilities={settingsData.organization.testingFacility} />
+  );
 };
 
 export default ManageFacilitiesContainer;
