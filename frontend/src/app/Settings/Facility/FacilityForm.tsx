@@ -12,6 +12,8 @@ import { getStateNameFromCode, requiresOrderProvider } from "../../utils/state";
 import {
   getBestSuggestion,
   suggestionIsCloseEnough,
+  isValidZipCodeForState,
+  getZipCodeData,
 } from "../../utils/smartyStreets";
 import {
   AddressConfirmationModal,
@@ -205,6 +207,27 @@ const FacilityForm: React.FC<Props> = (props) => {
 
   const validateFacilityAddresses = async () => {
     const originalFacilityAddress = getFacilityAddress(facility);
+
+    const zipCodeData = await getZipCodeData(originalFacilityAddress.zipCode);
+    const isValidZipForState = isValidZipCodeForState(
+      originalFacilityAddress.state,
+      zipCodeData
+    );
+
+    if (!isValidZipForState) {
+      const alert = (
+        <Alert
+          type="error"
+          title="Form Errors"
+          body="Invalid ZIP code for the selected state"
+        />
+      );
+
+      showNotification(alert);
+
+      return;
+    }
+
     const suggestedFacilityAddress = await getBestSuggestion(
       originalFacilityAddress
     );
