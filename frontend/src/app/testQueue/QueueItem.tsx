@@ -39,7 +39,6 @@ import { UPDATE_AOE } from "./addToQueue/AddToQueueSearch";
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
 
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
-const MAX_TEST_DATE = new Date();
 
 export const REMOVE_PATIENT_FROM_QUEUE = gql`
   mutation RemovePatientFromQueue($patientId: ID!) {
@@ -322,7 +321,7 @@ const QueueItem = ({
       return false;
     }
 
-    return dateTested > EARLIEST_TEST_DATE && dateTested < MAX_TEST_DATE;
+    return dateTested > EARLIEST_TEST_DATE && dateTested < new Date();
   }
 
   const [testResultValue, updateTestResultValue] = useState<
