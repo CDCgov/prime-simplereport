@@ -131,8 +131,9 @@ public class TestDataFactory {
 
   public Facility createValidFacility(Organization org, String facilityName) {
     DeviceSpecimenType dev = getGenericDeviceSpecimen();
-    List<DeviceSpecimenType> configuredDevices = new ArrayList<>();
-    configuredDevices.add(dev);
+
+    List<DeviceType> configuredDevices = new ArrayList<>();
+    configuredDevices.add(dev.getDeviceType());
     Provider doc =
         _providerRepo.save(
             new Provider("Doctor", "", "Doom", "", "DOOOOOOM", getAddress(), "800-555-1212"));

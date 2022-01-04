@@ -47,6 +47,7 @@ class QueueManagementTest extends BaseGraphqlTest {
   public void init() {
     _org = _orgService.getCurrentOrganizationNoCache();
     _site = _orgService.getFacilities(_org).get(0);
+    _site.addDefaultDeviceSpecimen(_dataFactory.getGenericDeviceSpecimen());
   }
 
   @Test

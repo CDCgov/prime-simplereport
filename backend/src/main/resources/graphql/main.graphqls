@@ -30,8 +30,9 @@ type Facility {
   phone: String
   email: String
   deviceTypes: [DeviceType]
-  deviceSpecimenTypes: [DeviceSpecimenType]
-  defaultDeviceType: DeviceType
+  defaultDeviceSpecimen: ID
+  deviceSpecimenTypes: [DeviceSpecimenType] @deprecated(reason: "kept for compatibility")
+  defaultDeviceType: DeviceType @deprecated(reason: "kept for compatibility")
   orderingProvider: Provider
   patientSelfRegistrationLink: String
 }
@@ -423,6 +424,57 @@ type Mutation {
     deviceTypes: [String]!
     deviceSpecimenTypes: [ID]
     defaultDevice: String!
+  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  addFacilityNew(
+    testingFacilityName: String!
+    cliaNumber: String
+    street: String!
+    streetTwo: String
+    city: String
+    state: String!
+    zipCode: String!
+    phone: String
+    email: String
+    orderingProviderFirstName: String
+    orderingProviderMiddleName: String
+    orderingProviderLastName: String
+    orderingProviderSuffix: String
+    orderingProviderNPI: String
+    orderingProviderStreet: String
+    orderingProviderStreetTwo: String
+    orderingProviderCity: String
+    orderingProviderCounty: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
+    orderingProviderPhone: String
+    deviceIds: [ID]!
+  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  updateFacilityNew(
+    facilityId: ID!
+    testingFacilityName: String!
+    cliaNumber: String
+    street: String!
+    streetTwo: String
+    city: String
+    state: String!
+    zipCode: String!
+    phone: String
+    email: String
+    orderingProviderFirstName: String
+    orderingProviderMiddleName: String
+    orderingProviderLastName: String
+    orderingProviderSuffix: String
+    orderingProviderNPI: String
+    orderingProviderStreet: String
+    orderingProviderStreetTwo: String
+    orderingProviderCity: String
+    orderingProviderCounty: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
+    orderingProviderPhone: String
+    deviceIds: [ID]!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addUserToCurrentOrg(
     name: NameInput

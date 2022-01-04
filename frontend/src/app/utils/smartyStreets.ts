@@ -1,23 +1,13 @@
-import { core, usStreet } from "smartystreets-javascript-sdk";
+import { usStreet, usZipcode } from "smartystreets-javascript-sdk";
 
+import { getZipCodeClient, getClient } from "./smartyStreetsClients";
 import { toLowerStripWhitespace } from "./text";
 
-class SmartyStreetsError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "SmartyStreetsError";
-  }
-}
-
-const getClient = () => {
-  if (process.env.REACT_APP_SMARTY_STREETS_KEY === undefined) {
-    throw new SmartyStreetsError("Missing REACT_APP_SMARTY_STREETS_KEY");
-  }
-  const credentials = new core.SharedCredentials(
-    process.env.REACT_APP_SMARTY_STREETS_KEY
-  );
-  return core.buildClient.usStreet(credentials);
-};
+// cf. https://github.com/DefinitelyTyped/DefinitelyTyped/blob/11436c5a19fc6aabfd6b8d93b37dac38b4ab9bc2/types/smartystreets-javascript-sdk/index.d.ts#L625
+export type ZipCodeResult = RequiredExceptFor<
+  usZipcode.Result,
+  "status" | "reason"
+>;
 
 const getLookup = (address: Address) => {
   const lookup = new usStreet.Lookup();
@@ -29,10 +19,11 @@ const getLookup = (address: Address) => {
   return lookup;
 };
 
-const getAddress = (result: usStreet.Candidate) => {
+export const getAddress = (result: usStreet.Candidate) => {
   const zipCode = result.components.plus4Code
     ? `${result.components.zipCode}-${result.components.plus4Code}`
     : result.components.zipCode;
+
   return {
     street: result.deliveryLine1,
     streetTwo: result.deliveryLine2 || "",
@@ -52,6 +43,7 @@ export const getBestSuggestion = async (
     lookup.maxCandidates = 1;
     lookup.match = "strict";
     const response = await client.send(lookup);
+
     return getAddress(response.lookups[0].result[0]);
   } catch (error) {
     console.error("Unable to validate address:", error.message);
@@ -80,4 +72,36 @@ export function suggestionIsCloseEnough(
   }
 
   return true;
+}
+
+export async function getZipCodeData(
+  zipCode: string
+): Promise<ZipCodeResult | undefined> {
+  try {
+    const client = getZipCodeClient();
+    const lookup = new usZipcode.Lookup();
+    lookup.zipCode = zipCode;
+
+    const response = await client.send(lookup);
+    return response.lookups[0].result[0] as ZipCodeResult;
+  } catch (error) {
+    console.error("Unable to retrieve ZIP code data", error.message);
+  }
+}
+
+export function isValidZipCodeForState(
+  state: string,
+  result: ZipCodeResult | undefined
+): boolean {
+  if (!result) {
+    // Failed to retrieve ZIP code data - don't block facility management
+    return true;
+  }
+
+  if (result.status) {
+    // Zip code is entirely invalid (`status` is not present otherwise)
+    return false;
+  }
+
+  return result.zipcodes[0].stateAbbreviation === state;
 }

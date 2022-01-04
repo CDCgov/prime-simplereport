@@ -38,7 +38,8 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
       throws NumberParseException {
     UUID deviceSpecimenTypeId =
         deviceSpecimenType == null
-            ? _dts.getDefaultForDeviceId(UUID.fromString(deviceID)).getInternalId()
+            ? _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(UUID.fromString(deviceID))
+                .getInternalId()
             : deviceSpecimenType;
 
     return _tos.addTestResult(
@@ -50,7 +51,8 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
       throws NumberParseException {
     UUID deviceSpecimenTypeId =
         deviceSpecimenType == null
-            ? _dts.getDefaultForDeviceId(UUID.fromString(deviceID)).getInternalId()
+            ? _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(UUID.fromString(deviceID))
+                .getInternalId()
             : deviceSpecimenType;
 
     return _tos.addTestResult(
@@ -62,7 +64,8 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
       UUID id, String deviceId, UUID deviceSpecimenType, String result, Date dateTested) {
     UUID dst =
         deviceSpecimenType == null
-            ? _dts.getDefaultForDeviceId(UUID.fromString(deviceId)).getInternalId()
+            ? _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(UUID.fromString(deviceId))
+                .getInternalId()
             : deviceSpecimenType;
 
     return new ApiTestOrder(_tos.editQueueItem(id, dst, result, dateTested));

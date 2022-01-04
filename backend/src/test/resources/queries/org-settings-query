@@ -30,16 +30,6 @@
         phone
         __typename
       }
-      defaultDeviceType {
-        internalId
-        name
-        __typename
-      }
-      deviceTypes {
-        internalId
-        name
-        __typename
-      }
       __typename
     }
   }
