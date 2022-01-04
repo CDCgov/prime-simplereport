@@ -1,5 +1,4 @@
 import { getAppInsightsHeaders } from "../TelemetryService";
-import SessionTimeout from "../accountCreation/SessionTimeout";
 
 interface JsonObject {
   [key: string]: any;
@@ -73,8 +72,8 @@ class FetchClient {
     if (!res.ok) {
       let errorText = await res.text();
       if (String(errorText).includes("Session timeout")) {
-        window.location.href = "/session-timeout";
-        throw SessionTimeout;
+        window.location.href = "/app/uac/session-timeout";
+        // throw SessionTimeout;
       } else {
         throw errorText;
       }
