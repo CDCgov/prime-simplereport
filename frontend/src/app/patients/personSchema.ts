@@ -9,6 +9,7 @@ import {
   RACE_VALUES,
   ROLE_VALUES,
   ETHNICITY_VALUES,
+  GENDER_VALUES,
   TRIBAL_AFFILIATION_VALUES,
   PHONE_TYPE_VALUES,
 } from "../constants";
@@ -255,7 +256,10 @@ const updateFieldSchemata: (
       [...getValues(ETHNICITY_VALUES), "", null],
       t("patient.form.errors.ethnicity")
     ),
-  gender: yup.mixed().required(t("Gender selection is required")),
+  gender: yup
+    .mixed()
+    .oneOf([...getValues(GENDER_VALUES), "", null])
+    .required(t("Sex assigned at birth is required")),
   residentCongregateSetting: yup.boolean().nullable(),
   employedInHealthcare: yup.boolean().nullable(),
   tribalAffiliation: yup
