@@ -11,6 +11,7 @@ import {
   SetOrgIdentityVerifiedDocument,
   EditPendingOrganizationDocument,
 } from "../../../generated/graphql";
+import Page from "../../commonComponents/Page/Page";
 
 import PendingOrganizationsContainer from "./PendingOrganizationsContainer";
 
@@ -162,7 +163,7 @@ const verificationMutation = {
   },
 };
 
-const inVerifyVerificationMutation = {
+const inEditVerificationMutation = {
   request: {
     query: SetOrgIdentityVerifiedDocument,
     variables: {
@@ -317,40 +318,43 @@ describe("PendingOrganizationsContainer", () => {
         screen.getByLabelText("Organization name", { exact: false })
       ).toBeDisabled();
       expect(screen.getByText("Update only", { exact: false })).toBeDisabled();
-
       userEvent.click(screen.getByText("Verify", { exact: true }));
+      await waitForElementToBeRemoved(
+        screen.queryByText("Organization details")
+      );
       expect(
         await screen.findByText("An Old Schema Org with Date", {
           exact: false,
         })
       ).toBeInTheDocument();
-
-      await waitForElementToBeRemoved(
+      expect(
         screen.queryByText("An Old Schema Org with Nulls", {
           exact: false,
         })
-      );
+      ).not.toBeInTheDocument();
     });
   });
   describe("organizations loaded", () => {
     beforeEach(async () => {
       render(
-        <MockedProvider
-          mocks={[
-            organizationsQuery(
-              "Space Camp",
-              "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
-            ),
-            verificationMutation,
-            editOrganizationsMutation,
-            organizationsQuery(
-              "DC Space Camp",
-              "DC-Space-Camp-fg413d4-btc5-449f-98b0-2e02abb7aae0"
-            ),
-          ]}
-        >
-          <PendingOrganizationsContainer />
-        </MockedProvider>
+        <Page>
+          <MockedProvider
+            mocks={[
+              organizationsQuery(
+                "Space Camp",
+                "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+              ),
+              verificationMutation,
+              editOrganizationsMutation,
+              organizationsQuery(
+                "DC Space Camp",
+                "DC-Space-Camp-fg413d4-btc5-449f-98b0-2e02abb7aae0"
+              ),
+            ]}
+          >
+            <PendingOrganizationsContainer />
+          </MockedProvider>
+        </Page>
       );
       expect(
         await screen.findByText("Space Camp", { exact: false })
@@ -463,6 +467,9 @@ describe("PendingOrganizationsContainer", () => {
           await waitForElementToBeRemoved(
             screen.queryByText("Organization details")
           );
+          expect(
+            screen.getByText("DC Space Camp details updated")
+          ).toBeInTheDocument();
         });
       });
     });
@@ -472,18 +479,20 @@ describe("PendingOrganizationsContainer", () => {
     describe("submitting the form", () => {
       beforeEach(async () => {
         render(
-          <MockedProvider
-            mocks={[
-              organizationsQuery(
-                "Space Camp",
-                "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
-              ),
-              verificationMutation,
-              submittedOrganizationQuery,
-            ]}
-          >
-            <PendingOrganizationsContainer />
-          </MockedProvider>
+          <Page>
+            <MockedProvider
+              mocks={[
+                organizationsQuery(
+                  "Space Camp",
+                  "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+                ),
+                verificationMutation,
+                submittedOrganizationQuery,
+              ]}
+            >
+              <PendingOrganizationsContainer />
+            </MockedProvider>
+          </Page>
         );
       });
       it("Space Camp submitted", async () => {
@@ -495,6 +504,9 @@ describe("PendingOrganizationsContainer", () => {
         );
         userEvent.click(screen.getByText("Verify"));
         expect(
+          await screen.findByText("Identity verified for Space Camp")
+        ).toBeInTheDocument();
+        expect(
           await screen.findByText("A Real Hospital", { exact: false })
         ).toBeInTheDocument();
       });
@@ -503,23 +515,25 @@ describe("PendingOrganizationsContainer", () => {
   describe("submitting the form with edits without saving", () => {
     beforeEach(async () => {
       render(
-        <MockedProvider
-          mocks={[
-            organizationsQuery(
-              "Space Camp",
-              "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
-            ),
-            editOrganizationsInVerifyMutation,
-            organizationsQuery(
-              "DC Space Camp",
-              "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
-            ),
-            inVerifyVerificationMutation,
-            submittedOrganizationQuery,
-          ]}
-        >
-          <PendingOrganizationsContainer />
-        </MockedProvider>
+        <Page>
+          <MockedProvider
+            mocks={[
+              organizationsQuery(
+                "Space Camp",
+                "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+              ),
+              editOrganizationsInVerifyMutation,
+              organizationsQuery(
+                "DC Space Camp",
+                "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+              ),
+              inEditVerificationMutation,
+              submittedOrganizationQuery,
+            ]}
+          >
+            <PendingOrganizationsContainer />
+          </MockedProvider>
+        </Page>
       );
     });
     it("Space Camp submitted with new title", async () => {
@@ -545,11 +559,8 @@ describe("PendingOrganizationsContainer", () => {
       ).toHaveValue("DC Space Camp");
       userEvent.click(screen.getByText("Verify"));
       expect(
-        await screen.findByText("A Real Hospital", { exact: false })
+        await screen.findByText("Identity verified for DC Space Camp")
       ).toBeInTheDocument();
-      expect(
-        screen.queryByText("DC Space Camp", { exact: false })
-      ).not.toBeInTheDocument();
     });
   });
 });
