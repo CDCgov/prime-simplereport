@@ -69,10 +69,14 @@ class FetchClient {
       this.getURL(path + query),
       this.getOptions(method, body)
     );
+    console.log("A request was made");
+    console.log(res);
     if (!res.ok) {
       let errorText = await res.text();
       if (String(errorText).includes("Session timeout")) {
-        window.location.href = "/app/uac/session-timeout";
+        console.log(window.location.href);
+        console.log(window.location);
+        window.location.href = "/uac/session-timeout";
         // throw SessionTimeout;
       } else {
         throw errorText;
