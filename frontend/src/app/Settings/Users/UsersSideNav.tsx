@@ -30,9 +30,7 @@ const UsersSideNav: React.FC<Props> = ({
           switch (user.status) {
             case "ACTIVE":
               statusText = (
-                <span className="sidenav-user-status padding-left-0">
-                  User role
-                </span>
+                <span className="sidenav-user-status padding-left-0"></span>
               );
               break;
             case "PROVISIONED":

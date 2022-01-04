@@ -5,7 +5,7 @@ import { Prompt } from "react-router";
 import { Role } from "../../permissions";
 import { displayFullName } from "../../utils";
 import Button from "../../commonComponents/Button/Button";
-import { formatUserStatus } from "../../utils/text";
+import { capitalizeText, formatUserStatus } from "../../utils/text";
 import { ReactComponent as DeactivatedIcon } from "../../../img/account-deactivated.svg";
 import { ReactComponent as PendingIcon } from "../../../img/account-pending.svg";
 
@@ -107,7 +107,9 @@ const UserDetail: React.FC<Props> = ({
   switch (user.status) {
     case "ACTIVE":
       statusText = (
-        <span className="top-user-status padding-left-0">User role</span>
+        <span className="top-user-status padding-left-0">
+          {capitalizeText(user.role || "")}
+        </span>
       );
       break;
     case "PROVISIONED":
@@ -176,15 +178,6 @@ const UserDetail: React.FC<Props> = ({
             />
           </>
         ) : null}
-        {/* {isUserActive() ? (
-          <Button
-            variant="outline"
-            className="margin-left-auto margin-bottom-1"
-            onClick={() => updateShowResetPasswordModal(true)}
-            label={"Reset password"}
-            disabled={isUpdating}
-          />
-        ) : null} */}
       </div>
       <nav
         className="prime-secondary-nav margin-top-4"
@@ -270,7 +263,7 @@ const UserDetail: React.FC<Props> = ({
             <Button
               variant="outline"
               className="margin-left-auto margin-bottom-1"
-              onClick={() => updateEditUserEmailModal(true)}
+              onClick={() => updateShowResetPasswordModal(true)}
               label={"Send password reset email"}
               disabled={isUpdating || !isUserActive()}
             />
@@ -292,7 +285,7 @@ const UserDetail: React.FC<Props> = ({
             <Button
               variant="outline"
               className="margin-left-auto margin-bottom-1"
-              onClick={() => updateEditUserEmailModal(true)}
+              onClick={() => null}
               label={"Reset MFA"}
               disabled={isUpdating || !isUserActive()}
             />
