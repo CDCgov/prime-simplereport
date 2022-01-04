@@ -1,83 +1,271 @@
-.users-sidenav {
-  border-right: 1px solid #dfe1e2; // color("text-base-lighter");
-}
-
-.users-sidenav-item:hover {
-  cursor: pointer;
-}
-
-.user-header {
-  border-bottom: 1px solid #dfe1e2;
-  padding: 0 0.5em;
-}
-
-.user-content {
-  padding: 0 0.5em;
-}
-
-.reset-button {
-  display: block;
-  margin: 1em auto;
-}
-
-.usa-current {
-  .sidenav-user-name,
-  .sidenav-user-email {
-    color: #005ea2;
+.prime-container.manage-users-card {
+  * {
+    font-family: Public Sans, sans-serif;
   }
-}
 
-.sidenav-user-name {
-  color: #171717; // color($theme-color-prime-gray-light)
-}
-
-.sidenav-user-email {
-  font-weight: normal;
-  font-size: 0.8em;
-}
-
-.sidenav-user-status {
-  font-weight: normal;
-  font-size: 0.8em;
-  font-style: italic;
-}
-
-.suspended-icon {
-  width: 0.7em !important;
-}
-
-.top-user-status {
-  font-style: italic;
-  color: #71767a; // color($text-base)
-}
-
-.facility-list {
-  td {
-    border: 1px solid #dfe1e2;
+  .users-sidenav {
+    border-right: 1px solid #dfe1e2; // color("text-base-lighter");
+    .users-header {
+      font-style: normal;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 19px;
+      color: #1b1b1b;
+    }
   }
-}
 
-.user-facilities td:nth-child(2) {
-  text-align: right;
-}
+  .users-sidenav-item:hover {
+    cursor: pointer;
+  }
 
-.remove-tag {
-  cursor: pointer;
-}
+  .user-header {
+    // border-bottom: 1px solid #dfe1e2;
+    // padding: 0 0.5em;
+    margin-bottom: 1em;
+  }
 
-.close-button {
-  display: block;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-}
+  .user-content {
+    padding: 0 0.5em;
+  }
 
-.modal-bottom-border {
-  border-bottom: 1px solid #f4f4f4;
-}
+  .reset-button {
+    display: block;
+    margin: 1em auto;
+  }
 
-.remove-tag--disabled {
-  cursor: not-allowed;
-  filter: grayscale(1);
-  opacity: 0.5;
+  .usa-sidenav__item.users-sidenav-item button {
+    width: 100%;
+  }
+
+  .usa-current {
+    .sidenav-user-name {
+      font-weight: bold;
+      color: #005ea2;
+    }
+  }
+
+  .sidenav-user-name {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 162%;
+    padding-bottom: 1px;
+  }
+
+  .sidenav-user-status {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 16px;
+    letter-spacing: 0.025em;
+    color: #1b1b1b;
+    padding-left: 6px;
+  }
+
+  .suspended-icon {
+    width: 0.7em !important;
+  }
+
+  .top-user-status {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 162%;
+    color: #1b1b1b;
+    padding-left: 10px;
+  }
+
+  .facility-list {
+    td {
+      border: 1px solid #dfe1e2;
+    }
+  }
+
+  .user-facilities td:nth-child(2) {
+    text-align: right;
+  }
+
+  .remove-tag {
+    cursor: pointer;
+  }
+
+  .close-button {
+    display: block;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .modal-bottom-border {
+    border-bottom: 1px solid #f4f4f4;
+  }
+
+  .remove-tag--disabled {
+    cursor: not-allowed;
+    filter: grayscale(1);
+    opacity: 0.5;
+  }
+
+  .usa-card__header,
+  .usa-card__body {
+    padding-left: 1.1rem;
+    padding-right: 1.1rem;
+  }
+
+  .usa-card__header {
+    padding-bottom: 2rem;
+
+    h2 {
+      margin-top: 8px;
+    }
+
+    button.usa-button {
+      margin-right: 1rem;
+    }
+  }
+
+  .user-detail-column {
+    .user-name-header {
+      font-style: normal;
+      font-weight: bold;
+      font-size: 32px;
+      line-height: 38px;
+      color: #1b1b1b;
+    }
+
+    .status-tagline {
+      font-style: italic;
+      font-weight: normal;
+      font-size: 16px;
+      line-height: 120%;
+      color: #3d4551;
+    }
+
+    .user-status-subheader {
+      svg {
+        transform: scale(1.27);
+        margin-left: 4px;
+      }
+    }
+
+    nav {
+      border-bottom: 1px solid #dcdee0;
+      padding-bottom: 4px;
+      margin-right: -18px;
+      margin-left: -24px;
+      padding-left: 20px;
+
+      .usa-nav__secondary-item {
+        font-style: normal;
+        font-weight: normal;
+        font-size: 22px;
+        line-height: 26px;
+        color: #1b1b1b;
+
+        span {
+          padding-bottom: 2px;
+        }
+
+        &.usa-current span {
+          font-weight: 600;
+          border-bottom: 0.25rem solid #005ea2;
+        }
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+
+    .basic-info-header {
+      font-style: normal;
+      font-weight: bold;
+      font-size: 18px;
+      line-height: 21px;
+      color: #1b1b1b;
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .userinfo-subheader {
+      font-style: normal;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 19px;
+      color: #1b1b1b;
+      margin-bottom: 5px;
+    }
+
+    .userinfo-text {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 16px;
+      line-height: 162%;
+      color: #1b1b1b;
+      margin-top: 0;
+    }
+
+    .userinfo-divider {
+      border-bottom: 1px solid #dcdee0;
+      margin-right: -18px;
+      margin-left: -32px;
+    }
+
+    .user-controls-header {
+      font-style: normal;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 19px;
+      color: #1b1b1b;
+      margin-bottom: 2rem;
+    }
+
+    .usercontrols-text {
+      font-style: italic;
+      font-weight: normal;
+      font-size: 16px;
+      line-height: 19px;
+      color: #3d4551;
+    }
+
+    .disabled-dark * {
+      color: #adadad !important;
+    }
+
+    .userrole-subtext {
+      font-style: italic;
+      font-weight: normal;
+      font-size: 16px;
+      line-height: 120%;
+      color: #3d4551;
+      margin-right: 2rem;
+    }
+
+    .usa-checkbox__label-description.text-base-dark {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 16px;
+      line-height: 19px;
+      letter-spacing: 0.025em;
+      color: #565c65;
+      margin-top: 0;
+    }
+
+    .testing-facility-access-subheader {
+      font-style: normal;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 19px;
+      color: #1b1b1b;
+    }
+
+    .testing-facility-access-subtext {
+      font-style: italic;
+      font-weight: normal;
+      font-size: 16px;
+      line-height: 120%;
+      color: #3d4551;
+      margin-top: 8px;
+    }
+  }
 }

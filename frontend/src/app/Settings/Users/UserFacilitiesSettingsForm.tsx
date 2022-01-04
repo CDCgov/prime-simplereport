@@ -1,11 +1,6 @@
 import React, { useRef, useState, useEffect, useMemo } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMinusCircle } from "@fortawesome/free-solid-svg-icons";
-import classnames from "classnames";
 
 import Checkboxes from "../../commonComponents/Checkboxes";
-import Dropdown from "../../commonComponents/Dropdown";
-import Button from "../../commonComponents/Button/Button";
 import { UserPermission } from "../../../generated/graphql";
 
 import { UpdateUser } from "./ManageUsers";
@@ -43,7 +38,6 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
   showRequired,
 }) => {
   const [isComponentVisible, setIsComponentVisible] = useState(false);
-  const [selectedFacility, setSelectedFacility] = useState("");
 
   const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
 
@@ -127,127 +121,72 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     [userFacilities]
   );
 
-  const facilitiesToAdd = allFacilities
-    .filter(({ id }) => !userFacilityLookup.has(id))
-    .sort(alphabeticalFacilitySort);
-
-  const removeButtonClasses = classnames(
-    "remove-tag",
-    "usa-button--unstyled",
-    hasAllFacilityAccess && "remove-tag--disabled"
-  );
+  const boxes = [
+    {
+      value: "ALL_FACILITIES",
+      label: `Access all facilities (${allFacilities.length})`,
+      disabled: isAdmin,
+    },
+    ...allFacilities.map((facility) => ({
+      value: facility.id,
+      label: facility.name,
+      disabled: isAdmin,
+    })),
+  ];
+  const checkedValues: { [key: string]: boolean | undefined } = {
+    ALL_FACILITIES: hasAllFacilityAccess,
+  };
+  allFacilities.forEach((facility) => {
+    checkedValues[facility.id] = userFacilityLookup.has(facility.id);
+  });
 
   return (
-    <React.Fragment>
-      <h3 className="margin-bottom-0">
-        Facility access{" "}
+    <>
+      <h3 className="testing-facility-access-subheader margin-bottom-0">
+        Testing facility access{" "}
         {showRequired && <span className="text-secondary-vivid">*</span>}
       </h3>
-      <p className="text-base">{facilityAccessDescription}</p>
+      <p className="testing-facility-access-subtext">
+        {facilityAccessDescription}
+      </p>
       <Checkboxes
-        boxes={[
-          {
-            value: "ALL_FACILITIES",
-            label: "Access all facilities",
-            disabled: isAdmin,
-          },
-        ]}
-        legend="Access all facilities"
+        boxes={boxes}
+        legend="Facilities"
         legendSrOnly
-        name="all-facilities"
-        checkedValues={{ ALL_FACILITIES: hasAllFacilityAccess }}
+        name="facilities"
+        checkedValues={checkedValues}
         onChange={(e) => {
-          if (e.target.checked) {
-            onUpdateUser("permissions", [
-              ...(activeUser.permissions || []),
-              UserPermission.AccessAllFacilities,
-            ]);
+          const { value, checked } = e.target;
+          if (value === "ALL_FACILITIES") {
+            if (checked) {
+              onUpdateUser("permissions", [
+                ...(activeUser.permissions || []),
+                UserPermission.AccessAllFacilities,
+              ]);
+            } else {
+              onUpdateUser(
+                "permissions",
+                activeUser.permissions?.filter(
+                  (permission) => permission !== "ACCESS_ALL_FACILITIES"
+                ) || []
+              );
+            }
           } else {
-            onUpdateUser(
-              "permissions",
-              activeUser.permissions?.filter(
-                (permission) => permission !== "ACCESS_ALL_FACILITIES"
-              ) || []
-            );
-          }
-        }}
-      />
-      <table
-        className="usa-table usa-table--borderless user-facilities"
-        style={{ width: "100%" }}
-      >
-        <tbody>
-          {userFacilities.length === 0 && (
-            <tr>
-              <td colSpan={2}>Please add at least one facility</td>
-            </tr>
-          )}
-          {userFacilities.map((facility) => (
-            <tr key={facility.id}>
-              <td>{facility.name}</td>
-              <td>
-                <button
-                  className={removeButtonClasses}
-                  onClick={() => onRemoveFacility(activeUser, facility.id)}
-                  disabled={hasAllFacilityAccess}
-                  aria-label={`Remove facility: ${facility.name}`}
-                >
-                  <FontAwesomeIcon
-                    icon={faMinusCircle}
-                    className={"prime-red-icon"}
-                  />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {hasAllFacilityAccess ? null : facilitiesToAdd.length === 0 ? (
-        <p>No more facilities left to select</p>
-      ) : (
-        <form className="display-flex flex-align-end">
-          <div>
-            <label className="text-bold" htmlFor="select-facility">
-              Add facility
-            </label>
-            <Dropdown
-              id="select-facility"
-              className="width-card-lg"
-              options={[
-                ...facilitiesToAdd.map(({ name, id }) => ({
-                  label: name,
-                  value: id,
-                })),
-              ]}
-              onChange={(e) => {
-                setSelectedFacility(e.target.value);
-              }}
-              selectedValue={selectedFacility}
-              defaultSelect
-              disabled={hasAllFacilityAccess}
-            />
-          </div>
-          <Button
-            className="height-5 margin-left-2"
-            variant="outline"
-            disabled={hasAllFacilityAccess || !selectedFacility}
-            onClick={(e) => {
-              e.preventDefault();
-              const facility = facilityLookup[selectedFacility];
+            if (checked) {
+              const facility = facilityLookup[value];
               onUpdateUser("organization", {
                 testingFacility: [
                   ...(activeUser.organization?.testingFacility || []),
                   facility,
                 ],
               });
-              setSelectedFacility("");
-            }}
-          >
-            Add
-          </Button>
-        </form>
-      )}
-    </React.Fragment>
+            } else {
+              onRemoveFacility(activeUser, value);
+            }
+          }
+        }}
+      />
+    </>
   );
 };
 

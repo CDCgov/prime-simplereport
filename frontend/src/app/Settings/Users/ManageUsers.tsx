@@ -431,13 +431,12 @@ const ManageUsers: React.FC<Props> = ({
     : emptySettingsUser;
 
   return (
-    <div className="prime-container card-container">
+    <div className="prime-container card-container manage-users-card">
       <div className="usa-card__header">
         <h2>Manage users</h2>
         <Button
-          variant="outline"
           onClick={() => updateShowAddUserModal(true)}
-          label="+ New user"
+          label="+ Add user"
         />
       </div>
       {showAddUserModal ? (
