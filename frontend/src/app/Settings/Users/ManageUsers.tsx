@@ -30,6 +30,7 @@ interface Props {
   updateUserName: (variables: any) => Promise<any>;
   updateUserEmail: (variables: any) => Promise<any>;
   resetUserPassword: (variables: any) => Promise<any>;
+  resetUserMfa: (variables: any) => Promise<any>;
   deleteUser: (variables: any) => Promise<any>;
   reactivateUser: (variables: any) => Promise<any>;
   resendUserActivationEmail: (variables: any) => Promise<any>;
@@ -82,6 +83,7 @@ const ManageUsers: React.FC<Props> = ({
   updateUserName,
   updateUserEmail,
   resetUserPassword,
+  resetUserMfa,
   deleteUser,
   reactivateUser,
   resendUserActivationEmail,
@@ -107,6 +109,7 @@ const ManageUsers: React.FC<Props> = ({
   const [showResetPasswordModal, updateShowResetPasswordModal] = useState(
     false
   );
+  const [showResetMfaModal, updateShowResetMfaModal] = useState(false);
   const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
   const [showReactivateUserModal, updateShowReactivateUserModal] = useState(
     false
@@ -319,6 +322,27 @@ const ManageUsers: React.FC<Props> = ({
     }
   };
 
+  const handleResetUserMfa = async (userId: string) => {
+    try {
+      await resetUserMfa({
+        variables: {
+          id: userId,
+        },
+      });
+      const fullName = displayFullName(
+        userWithPermissions?.firstName,
+        userWithPermissions?.middleName,
+        userWithPermissions?.lastName
+      );
+      updateShowResetMfaModal(false);
+      showNotification(
+        <Alert type="success" title={`MFA reset for ${fullName}`} />
+      );
+    } catch (e) {
+      setError(e);
+    }
+  };
+
   const handleDeleteUser = async (userId: string) => {
     try {
       await deleteUser({
@@ -484,6 +508,8 @@ const ManageUsers: React.FC<Props> = ({
               updateEditUserEmailModal={updateEditUserEmailModal}
               showResetUserPasswordModal={showResetPasswordModal}
               updateShowResetPasswordModal={updateShowResetPasswordModal}
+              showResetUserMfaModal={showResetMfaModal}
+              updateShowResetMfaModal={updateShowResetMfaModal}
               showDeleteUserModal={showDeleteUserModal}
               updateShowDeleteUserModal={updateShowDeleteUserModal}
               showInProgressModal={showInProgressModal}
@@ -494,6 +520,7 @@ const ManageUsers: React.FC<Props> = ({
               handleEditUserName={handleEditUserName}
               handleEditUserEmail={handleEditUserEmail}
               handleResetUserPassword={handleResetUserPassword}
+              handleResetUserMfa={handleResetUserMfa}
               handleResendUserActivationEmail={handleResendUserActivationEmail}
             />
           </div>

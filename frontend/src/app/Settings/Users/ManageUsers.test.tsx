@@ -223,6 +223,7 @@ let updateUserEmail: (obj: any) => Promise<any>;
 let getUsers: () => Promise<any>;
 let reactivateUser: (obj: any) => Promise<any>;
 let resetUserPassword: (obj: any) => Promise<any>;
+let resetUserMfa: (obj: any) => Promise<any>;
 let resendUserActivationEmail: (obj: any) => Promise<any>;
 
 let inputValue = (value: string) => ({ target: { value } });
@@ -282,6 +283,11 @@ describe("ManageUsers", () => {
         data: { setUserPasswordReset: { id: obj.variables.id } },
       })
     );
+    resetUserMfa = jest.fn((obj) =>
+      Promise.resolve({
+        data: { setUserMfaReset: { id: obj.variables.id } },
+      })
+    );
     resendUserActivationEmail = jest.fn((obj) =>
       Promise.resolve({
         data: { setUserActivationEmailResent: { id: obj.variables.id } },
@@ -303,6 +309,7 @@ describe("ManageUsers", () => {
             getUsers={getUsers}
             reactivateUser={reactivateUser}
             resetUserPassword={resetUserPassword}
+            resetUserMfa={resetUserMfa}
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={updateUserName}
             updateUserEmail={updateUserEmail}
@@ -468,6 +475,20 @@ describe("ManageUsers", () => {
       userEvent.click(sureButton);
       await waitFor(() => expect(resetUserPassword).toBeCalled());
       expect(resetUserPassword).toBeCalledWith({
+        variables: { id: users[0].id },
+      });
+    });
+
+    it("resets a user's MFA", async () => {
+      const resetButton = await screen.findByText("Reset MFA");
+      userEvent.click(resetButton);
+      const sureButton = await screen.findByRole("button", {
+        name: "Reset multi-factor authentication",
+        exact: false,
+      });
+      userEvent.click(sureButton);
+      await waitFor(() => expect(resetUserMfa).toBeCalled());
+      expect(resetUserMfa).toBeCalledWith({
         variables: { id: users[0].id },
       });
     });

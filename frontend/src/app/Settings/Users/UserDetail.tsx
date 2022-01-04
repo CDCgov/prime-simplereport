@@ -20,7 +20,7 @@ import ResendActivationEmailModal from "./ResendActivationEmailModal";
 import ResetUserPasswordModal from "./ResetUserPasswordModal";
 import EditUserNameModal from "./EditUserNameModal";
 import EditUserEmailModal from "./EditUserEmailModal";
-
+import ResetUserMfaModal from "./ResetUserMfaModal";
 import "./ManageUsers.scss";
 
 interface Props {
@@ -43,6 +43,8 @@ interface Props {
   updateEditUserEmailModal: (showEditUserEmailModal: boolean) => void;
   showResetUserPasswordModal: boolean;
   updateShowResetPasswordModal: (showResetPasswordModal: boolean) => void;
+  showResetUserMfaModal: boolean;
+  updateShowResetMfaModal: (showResetMfaModal: boolean) => void;
   showDeleteUserModal: boolean;
   updateShowDeleteUserModal: (showDeleteUserModal: boolean) => void;
   showInProgressModal: boolean;
@@ -59,6 +61,7 @@ interface Props {
   ) => void;
   handleEditUserEmail: (userId: string, emailAddress: string) => void;
   handleResetUserPassword: (userId: string) => void;
+  handleResetUserMfa: (userId: string) => void;
   handleResendUserActivationEmail: (userId: string) => void;
 }
 const roles: Role[] = ["ADMIN", "ENTRY_ONLY", "USER"];
@@ -81,6 +84,8 @@ const UserDetail: React.FC<Props> = ({
   updateEditUserEmailModal,
   showResetUserPasswordModal,
   updateShowResetPasswordModal,
+  showResetUserMfaModal,
+  updateShowResetMfaModal,
   showDeleteUserModal,
   updateShowDeleteUserModal,
   showInProgressModal,
@@ -91,6 +96,7 @@ const UserDetail: React.FC<Props> = ({
   handleEditUserName,
   handleEditUserEmail,
   handleResetUserPassword,
+  handleResetUserMfa,
   handleResendUserActivationEmail,
 }) => {
   const [navItemSelected, setNavItemSelected] = useState("userInfo");
@@ -285,7 +291,7 @@ const UserDetail: React.FC<Props> = ({
             <Button
               variant="outline"
               className="margin-left-auto margin-bottom-1"
-              onClick={() => null}
+              onClick={() => updateShowResetMfaModal(true)}
               label={"Reset MFA"}
               disabled={isUpdating || !isUserActive()}
             />
@@ -388,6 +394,13 @@ const UserDetail: React.FC<Props> = ({
           user={user}
           onClose={() => updateShowResetPasswordModal(false)}
           onResetPassword={handleResetUserPassword}
+        />
+      ) : null}
+      {showResetUserMfaModal ? (
+        <ResetUserMfaModal
+          user={user}
+          onClose={() => updateShowResetMfaModal(false)}
+          onResetMfa={handleResetUserMfa}
         />
       ) : null}
       {showEditUserNameModal ? (
