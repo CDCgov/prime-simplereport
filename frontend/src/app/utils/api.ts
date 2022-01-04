@@ -73,6 +73,7 @@ class FetchClient {
     if (!res.ok) {
       let errorText = await res.text();
       if (String(errorText).includes("Session timeout")) {
+        window.location.href = "/session-timeout";
         throw SessionTimeout;
       } else {
         throw errorText;
