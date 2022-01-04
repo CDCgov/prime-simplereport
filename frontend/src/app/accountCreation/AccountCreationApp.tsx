@@ -80,7 +80,29 @@ const AccountCreationApp = () => {
   }
 
   // Show error card if activation token is invalid
-  if (error) {
+  if (error && error.includes("activat")) {
+    return (
+      <CardBackground>
+        <Card
+          logo
+          bodyKicker={"Your SimpleReport account invitation has expired"}
+        >
+          <p>
+            Contact your organization administrator for a new account setup
+            email.
+          </p>
+
+          <p>
+            Not sure who your organization administrator is? Email{" "}
+            <a href="mailto:support@simplereport.gov">
+              support@simplereport.gov
+            </a>
+            .
+          </p>
+        </Card>
+      </CardBackground>
+    );
+  } else if (error) {
     return (
       <CardBackground>
         <Card logo bodyKicker={error} bodyKickerCentered={true}></Card>

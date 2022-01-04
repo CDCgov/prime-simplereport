@@ -76,7 +76,7 @@ class FetchClient {
       if (String(errorText).includes("Session timeout")) {
         console.log(window.location.href);
         console.log(window.location);
-        window.location.href = "/uac/session-timeout";
+        window.location.href = "/app/session-timeout";
         // throw SessionTimeout;
       } else {
         throw errorText;
