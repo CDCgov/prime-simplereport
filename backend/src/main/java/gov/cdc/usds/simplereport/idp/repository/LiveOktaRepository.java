@@ -461,8 +461,6 @@ public class LiveOktaRepository implements OktaRepository {
 
       log.info("Created Okta group={}", roleGroupName);
     }
-
-    _app.update();
   }
 
   private UserList getOrgAdminUsers(Organization org) {
@@ -528,8 +526,6 @@ public class LiveOktaRepository implements OktaRepository {
     _app.createApplicationGroupAssignment(g.getId());
 
     log.info("Created Okta group={}", facilityGroupName);
-
-    _app.update();
   }
 
   public void deleteFacility(Facility facility) {
