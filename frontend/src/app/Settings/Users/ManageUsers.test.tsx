@@ -317,7 +317,7 @@ describe("ManageUsers", () => {
       await waitForElementToBeRemoved(() => screen.queryByText("?, ?"));
     });
 
-    it("disables logged-in user's settings", async () => {
+    it("enables logged-in user's settings except deletion and roles", async () => {
       const nameButton = screen.getByRole("tab", {
         name: displayFullName("Bob", "", "Bobberoo"),
       });
@@ -325,10 +325,10 @@ describe("ManageUsers", () => {
       await waitFor(() => {
         expect(screen.getByText("YOU")).toBeInTheDocument();
       });
-      expect(screen.getByText("Edit name")).toBeDisabled();
-      expect(screen.getByText("Edit email")).toBeDisabled();
-      expect(screen.getByText("Send password reset email")).toBeDisabled();
-      expect(screen.getByText("Reset MFA")).toBeDisabled();
+      expect(screen.getByText("Edit name")).toBeEnabled();
+      expect(screen.getByText("Edit email")).toBeEnabled();
+      expect(screen.getByText("Send password reset email")).toBeEnabled();
+      expect(screen.getByText("Reset MFA")).toBeEnabled();
       expect(
         screen.getByRole("button", { name: "Delete user" })
       ).toBeDisabled();
