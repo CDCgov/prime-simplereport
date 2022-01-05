@@ -171,6 +171,13 @@ public class DemoOktaRepository implements OktaRepository {
     }
   }
 
+  public void resetUserMfa(String username) {
+    if (!usernameOrgRolesMap.containsKey(username)) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot reset MFA for Okta user with unrecognized username");
+    }
+  }
+
   public void setUserIsActive(String username, Boolean active) {
     if (active) {
       inactiveUsernames.remove(username);
