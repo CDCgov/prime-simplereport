@@ -29,7 +29,6 @@ import { MfaGoogleAuthVerify } from "./MfaGoogleAuthVerify/MfaGoogleAuthVerify";
 import { PasswordForm } from "./PasswordForm/PasswordForm";
 import { AccountCreationApi } from "./AccountCreationApiService";
 import { routeFromStatus, UserAccountStatus } from "./UserAccountStatus";
-import SessionTimeout from "./SessionTimeout";
 
 const AccountCreationApp = () => {
   // Initialize to loading state on app load
@@ -52,7 +51,6 @@ const AccountCreationApp = () => {
         try {
           await AccountCreationApi.initialize(activationToken);
         } catch (error) {
-          console.log(error);
           setError(error || "Invalid activation token");
         }
         // Re-retrieve the status since it will have changed after activation
@@ -132,7 +130,6 @@ const AccountCreationApp = () => {
           <Route path="/mfa-phone" component={MfaPhone} />
           <Route path="/mfa-email/verify" component={MfaEmailVerify} />
           <Route path="/success" component={MfaComplete} />
-          <Route path="/session-timeout" component={SessionTimeout} />
           <Route path="/not-found" component={PageNotFound} />
         </Switch>
       </Router>
