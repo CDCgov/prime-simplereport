@@ -101,13 +101,10 @@ const UserDetail: React.FC<Props> = ({
 }) => {
   const [navItemSelected, setNavItemSelected] = useState("userInfo");
 
-  const isUserActive = () => {
-    return (
-      user.status !== "SUSPENDED" &&
-      user.status !== "PROVISIONED" &&
-      user?.id !== loggedInUser.id
-    );
-  };
+  const isUserActive = () =>
+    user.status !== "SUSPENDED" && user.status !== "PROVISIONED";
+
+  const isUserSelf = () => user.id === loggedInUser.id;
 
   let statusText;
   switch (user.status) {
@@ -299,7 +296,7 @@ const UserDetail: React.FC<Props> = ({
           <div
             className={classnames(
               "user-header grid-row flex-row flex-align-center",
-              { "disabled-dark": user.id === loggedInUser.id }
+              { "disabled-dark": isUserSelf() }
             )}
           >
             <div>
@@ -313,7 +310,7 @@ const UserDetail: React.FC<Props> = ({
               className="margin-left-auto margin-bottom-1"
               onClick={() => updateShowDeleteUserModal(true)}
               label={"Delete user"}
-              disabled={isUpdating || user.id === loggedInUser.id}
+              disabled={isUpdating || isUserSelf()}
             />
           </div>
         </div>
