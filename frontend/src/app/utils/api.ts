@@ -69,8 +69,6 @@ class FetchClient {
       this.getURL(path + query),
       this.getOptions(method, body)
     );
-    console.log("A request was made");
-    console.log(res);
     if (!res.ok) {
       let errorText = await res.text();
       if (String(errorText).includes("Session timeout")) {
