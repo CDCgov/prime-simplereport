@@ -226,8 +226,6 @@ let resetUserPassword: (obj: any) => Promise<any>;
 let resetUserMfa: (obj: any) => Promise<any>;
 let resendUserActivationEmail: (obj: any) => Promise<any>;
 
-let inputValue = (value: string) => ({ target: { value } });
-
 const TestContainer: React.FC = ({ children }) => (
   <MemoryRouter>
     <Provider store={store}>
