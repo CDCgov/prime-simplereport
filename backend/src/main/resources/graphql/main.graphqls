@@ -476,7 +476,7 @@ type Mutation {
     orderingProviderPhone: String
     deviceIds: [ID]!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
-  addFacilityV3(
+  addAndReturnFacility(
     testingFacilityName: String!
     cliaNumber: String
     street: String!
@@ -501,7 +501,7 @@ type Mutation {
     orderingProviderPhone: String
     deviceIds: [ID]!
   ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
-  updateFacilityV3(
+  updateAndReturnFacility(
     facilityId: ID!
     testingFacilityName: String!
     cliaNumber: String
