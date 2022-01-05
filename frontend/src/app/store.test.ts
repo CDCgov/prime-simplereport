@@ -29,6 +29,7 @@ describe("store", () => {
       dateAdded: "",
       dateTested: "",
       deviceTypeModel: "",
+      deviceTypeName: "",
       result: "UNDETERMINED",
     },
     middleName: "",
