@@ -105,7 +105,7 @@ export const UPDATE_FACILITY_MUTATION = gql`
   }
 `;
 
-const ADD_FACILITY_MUTATION = gql`
+export const ADD_FACILITY_MUTATION = gql`
   mutation AddAndReturnFacility(
     $testingFacilityName: String!
     $cliaNumber: String
