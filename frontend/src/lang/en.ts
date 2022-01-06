@@ -42,7 +42,7 @@ export const en = {
       gender: {
         female: "Female",
         male: "Male",
-        other: "Non-binary",
+        other: "Other",
         refused: REFUSED,
       },
       ethnicity: {

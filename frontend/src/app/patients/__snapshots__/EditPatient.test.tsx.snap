@@ -2293,6 +2293,13 @@ Object {
                         class="usa-legend"
                       >
                         Sex assigned at birth
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
                       </legend>
                       <span
                         class="usa-hint"
@@ -2307,7 +2314,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="false"
+                            data-required="true"
                             id="88-val-female"
                             name="gender"
                             type="radio"
@@ -2325,7 +2332,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="false"
+                            data-required="true"
                             id="88-val-male"
                             name="gender"
                             type="radio"
@@ -2343,7 +2350,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="false"
+                            data-required="true"
                             id="88-val-other"
                             name="gender"
                             type="radio"
@@ -2353,7 +2360,7 @@ Object {
                             class="usa-radio__label"
                             for="88-val-other"
                           >
-                            Non-binary
+                            Other
                           </label>
                         </div>
                         <div
@@ -2361,7 +2368,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="false"
+                            data-required="true"
                             id="88-val-refused"
                             name="gender"
                             type="radio"
@@ -4851,6 +4858,13 @@ Object {
                       class="usa-legend"
                     >
                       Sex assigned at birth
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
                     </legend>
                     <span
                       class="usa-hint"
@@ -4865,7 +4879,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="88-val-female"
                           name="gender"
                           type="radio"
@@ -4883,7 +4897,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="88-val-male"
                           name="gender"
                           type="radio"
@@ -4901,7 +4915,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="88-val-other"
                           name="gender"
                           type="radio"
@@ -4911,7 +4925,7 @@ Object {
                           class="usa-radio__label"
                           for="88-val-other"
                         >
-                          Non-binary
+                          Other
                         </label>
                       </div>
                       <div
@@ -4919,7 +4933,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="88-val-refused"
                           name="gender"
                           type="radio"
