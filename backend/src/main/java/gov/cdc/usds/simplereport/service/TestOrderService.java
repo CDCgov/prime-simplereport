@@ -263,8 +263,8 @@ public class TestOrderService {
       _testEventReportingService.report(testEvent);
       ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
 
+      PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
       if (patientHasDeliveryPreference(savedOrder)) {
-        PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
 
         if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
           boolean smsDeliveryStatus = testResultsDeliveryService.smsTestResults(patientLink);

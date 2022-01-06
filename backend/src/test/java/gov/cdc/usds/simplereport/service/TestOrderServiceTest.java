@@ -65,6 +65,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Autowired private PersonService _personService;
   @Autowired private TestEventRepository _testEventRepository;
   @Autowired private TestDataFactory _dataFactory;
+  @Autowired private PatientLinkService patientLinkService;
   @MockBean private TestResultsDeliveryService testResultsDeliveryService;
 
   private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
@@ -132,6 +133,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility));
     assertThat(testEvents).hasSize(1);
     assertThat(testEvents.get(0).getPatientHasPriorTests()).isFalse();
+    verify(patientLinkService).createPatientLink(any());
   }
 
   @Test

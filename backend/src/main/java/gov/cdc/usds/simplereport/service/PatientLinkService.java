@@ -38,6 +38,7 @@ public class PatientLinkService {
 
   public PatientLink getRefreshedPatientLink(UUID internalId) {
     PatientLink pl = plrepo.findById(internalId).orElseThrow(InvalidPatientLinkException::new);
+
     PatientLinkFailedAttempt patientLinkFailedAttempt =
         plfarepo.findById(pl.getInternalId()).orElse(new PatientLinkFailedAttempt(pl));
     patientLinkFailedAttempt.resetFailedAttempts();
