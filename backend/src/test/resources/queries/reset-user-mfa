@@ -1,0 +1,17 @@
+mutation resetUserMfa (
+    $id: ID!
+    ){
+  resetUserMfa(
+    id: $id
+  ) {
+      id
+      firstName,
+      lastName,
+      email,
+      organization {
+        name
+        externalId
+      }
+    }
+}
+

@@ -36,6 +36,8 @@ public interface OktaRepository {
 
   void resetUserPassword(String username);
 
+  void resetUserMfa(String username);
+
   void setUserIsActive(String username, Boolean active);
 
   void reactivateUser(String username);
