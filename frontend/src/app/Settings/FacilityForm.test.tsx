@@ -1,11 +1,14 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
+import { ToastContainer } from "react-toastify";
 
 import * as clia from "../utils/clia";
 import * as state from "../utils/state";
+import * as smartyStreets from "../utils/smartyStreets";
 
 import FacilityForm from "./Facility/FacilityForm";
+
 import "../../i18n";
 
 let saveFacility: jest.Mock;
@@ -14,17 +17,6 @@ const devices: DeviceType[] = [
   { internalId: "device-1", name: "Device 1" },
   { internalId: "device-2", name: "Device 2" },
 ];
-
-const deviceSpecimenTypes: DeviceSpecimenType[] = devices.map((device, idx) => {
-  return {
-    internalId: idx,
-    deviceType: device,
-    specimenType: {
-      internalId: "fake-specimen-id-1",
-      name: "Fake Specimen 1",
-    },
-  };
-});
 
 const validFacility: Facility = {
   name: "Foo Facility",
@@ -50,9 +42,7 @@ const validFacility: Facility = {
     streetTwo: null,
     city: null,
   },
-  deviceTypes: devices.map(({ internalId }) => internalId),
-  defaultDevice: devices[0].internalId,
-  deviceSpecimenTypes,
+  deviceTypes: devices,
 };
 
 // Hardcoded suggestion scenarios
@@ -95,128 +85,152 @@ const addresses = [
   },
 ];
 
-jest.mock("../utils/smartyStreets", () => ({
-  getBestSuggestion: (
-    address: Address
-  ): Promise<AddressWithMetaData | undefined> => {
-    const lookup = addresses.find(({ bad }) => bad.street === address.street);
-    return Promise.resolve(lookup ? lookup.good : undefined);
-  },
-  suggestionIsCloseEnough: () => false,
-}));
-
 describe("FacilityForm", () => {
+  let getIsValidZipForStateSpy: jest.SpyInstance;
+  let getBestSuggestionSpy: jest.SpyInstance;
+  let suggestionIsCloseEnoughSpy: jest.SpyInstance;
+
   beforeEach(() => {
     saveFacility = jest.fn();
+    getIsValidZipForStateSpy = jest
+      .spyOn(smartyStreets, "isValidZipCodeForState")
+      .mockReturnValue(true);
+    getBestSuggestionSpy = jest
+      .spyOn(smartyStreets, "getBestSuggestion")
+      .mockImplementation(
+        (address: Address): Promise<AddressWithMetaData | undefined> => {
+          const lookup = addresses.find(
+            ({ bad }) => bad.street === address.street
+          );
+          return Promise.resolve(lookup ? lookup.good : undefined);
+        }
+      );
+    suggestionIsCloseEnoughSpy = jest
+      .spyOn(smartyStreets, "suggestionIsCloseEnough")
+      .mockReturnValue(false);
   });
 
-  it("submits a valid form", async () => {
-    render(
-      <MemoryRouter>
-        <FacilityForm
-          facility={validFacility}
-          deviceSpecimenTypeOptions={deviceSpecimenTypes}
-          saveFacility={saveFacility}
-        />
-      </MemoryRouter>
-    );
-    const saveButton = await screen.getAllByText("Save changes")[0];
-    userEvent.type(
-      screen.getByLabelText("Testing facility name", { exact: false }),
-      "Bar Facility"
-    );
-    userEvent.click(saveButton);
-    await validateAddress(saveFacility);
+  afterEach(() => {
+    getIsValidZipForStateSpy.mockRestore();
+    getBestSuggestionSpy.mockRestore();
+    suggestionIsCloseEnoughSpy.mockRestore();
   });
-  it("provides validation feedback during form completion", async () => {
-    render(
-      <MemoryRouter>
-        <FacilityForm
-          facility={validFacility}
-          deviceSpecimenTypeOptions={deviceSpecimenTypes}
-          saveFacility={saveFacility}
-        />
-      </MemoryRouter>
-    );
-    const facilityNameInput = screen.getByLabelText("Testing facility name", {
-      exact: false,
-    });
-    userEvent.clear(facilityNameInput);
-    userEvent.tab();
-    const warning = await screen.findByText("Facility name is missing");
-    expect(warning).toBeInTheDocument();
-  });
-  it("prevents submit for invalid form", async () => {
-    render(
-      <MemoryRouter>
-        <FacilityForm
-          facility={validFacility}
-          deviceSpecimenTypeOptions={deviceSpecimenTypes}
-          saveFacility={saveFacility}
-        />
-      </MemoryRouter>
-    );
-    const saveButton = await screen.getAllByText("Save changes")[0];
-    const facilityNameInput = screen.getByLabelText("Testing facility name", {
-      exact: false,
-    });
-    userEvent.clear(facilityNameInput);
-    userEvent.click(saveButton);
-    await waitFor(async () => expect(saveButton).toBeEnabled());
-    expect(saveFacility).toBeCalledTimes(0);
-  });
-  it("validates optional email field", async () => {
-    render(
-      <MemoryRouter>
-        <FacilityForm
-          facility={validFacility}
-          deviceSpecimenTypeOptions={deviceSpecimenTypes}
-          saveFacility={saveFacility}
-        />
-      </MemoryRouter>
-    );
-    const saveButton = (await screen.findAllByText("Save changes"))[0];
-    const emailInput = screen.getByLabelText("Email", {
-      exact: false,
-    });
-    userEvent.type(emailInput, "123-456-7890");
-    userEvent.tab();
 
-    expect(
-      await screen.findByText("Email is incorrectly formatted", {
+  describe("form submission", () => {
+    it("submits a valid form", async () => {
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+      const saveButton = await screen.getAllByText("Save changes")[0];
+      userEvent.type(
+        screen.getByLabelText("Testing facility name", { exact: false }),
+        "Bar Facility"
+      );
+      userEvent.click(saveButton);
+      await validateAddress(saveFacility);
+    });
+
+    it("provides validation feedback during form completion", async () => {
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+      const facilityNameInput = screen.getByLabelText("Testing facility name", {
         exact: false,
-      })
-    ).toBeInTheDocument();
+      });
+      userEvent.clear(facilityNameInput);
+      userEvent.tab();
+      const warning = await screen.findByText("Facility name is missing");
+      expect(warning).toBeInTheDocument();
+    });
 
-    userEvent.click(saveButton);
-    expect(saveFacility).toBeCalledTimes(0);
+    it("prevents submit for invalid form", async () => {
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+      const saveButton = await screen.getAllByText("Save changes")[0];
+      const facilityNameInput = screen.getByLabelText("Testing facility name", {
+        exact: false,
+      });
+      userEvent.clear(facilityNameInput);
+      userEvent.click(saveButton);
+      await waitFor(async () => expect(saveButton).toBeEnabled());
+      expect(saveFacility).toBeCalledTimes(0);
+    });
 
-    userEvent.type(emailInput, "foofacility@example.com");
-    userEvent.click(saveButton);
-    await waitFor(async () => expect(saveButton).toBeEnabled());
-    await validateAddress(saveFacility);
-  });
-  it("only accepts live jurisdictions", async () => {
-    render(
-      <MemoryRouter>
-        <FacilityForm
-          facility={validFacility}
-          deviceSpecimenTypeOptions={deviceSpecimenTypes}
-          saveFacility={saveFacility}
-        />
-      </MemoryRouter>
-    );
-    const stateDropdownElement = screen.getByTestId("facility-state-dropdown");
-    userEvent.selectOptions(stateDropdownElement, "PW");
-    userEvent.tab();
-    // There's a line break between these two statements, so they have to be separated
-    const warning = await screen.findByText(
-      "SimpleReport isn’t currently supported in",
-      { exact: false }
-    );
-    expect(warning).toBeInTheDocument();
-    const state = await screen.findByText("Palau", { exact: false });
-    expect(state).toBeInTheDocument();
+    it("validates optional email field", async () => {
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+      const saveButton = (await screen.findAllByText("Save changes"))[0];
+      const emailInput = screen.getByLabelText("Email", {
+        exact: false,
+      });
+      userEvent.type(emailInput, "123-456-7890");
+      userEvent.tab();
+
+      expect(
+        await screen.findByText("Email is incorrectly formatted", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+
+      userEvent.click(saveButton);
+      expect(saveFacility).toBeCalledTimes(0);
+
+      userEvent.type(emailInput, "foofacility@example.com");
+      userEvent.click(saveButton);
+      await waitFor(async () => expect(saveButton).toBeEnabled());
+      await validateAddress(saveFacility);
+    });
+
+    it("only accepts live jurisdictions", async () => {
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+      const stateDropdownElement = screen.getByTestId(
+        "facility-state-dropdown"
+      );
+      userEvent.selectOptions(stateDropdownElement, "PW");
+      userEvent.tab();
+      // There's a line break between these two statements, so they have to be separated
+      const warning = await screen.findByText(
+        "SimpleReport isn’t currently supported in",
+        { exact: false }
+      );
+      expect(warning).toBeInTheDocument();
+      const state = await screen.findByText("Palau", { exact: false });
+      expect(state).toBeInTheDocument();
+    });
   });
 
   describe("CLIA number validation", () => {
@@ -236,7 +250,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -280,7 +294,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -318,7 +332,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={washingtonFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -345,7 +359,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={marylandFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -382,7 +396,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={californiaFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -410,7 +424,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={vermontFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -437,8 +451,7 @@ describe("FacilityForm", () => {
       let spy: jest.SpyInstance;
 
       beforeEach(() => {
-        spy = jest.spyOn(state, "requiresOrderProvider");
-        spy.mockReturnValue(true);
+        spy = jest.spyOn(state, "requiresOrderProvider").mockReturnValue(true);
       });
 
       afterEach(() => {
@@ -450,7 +463,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -484,7 +497,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -531,7 +544,7 @@ describe("FacilityForm", () => {
           <MemoryRouter>
             <FacilityForm
               facility={validFacility}
-              deviceSpecimenTypeOptions={deviceSpecimenTypes}
+              deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
@@ -568,7 +581,7 @@ describe("FacilityForm", () => {
         <MemoryRouter>
           <FacilityForm
             facility={facility}
-            deviceSpecimenTypeOptions={deviceSpecimenTypes}
+            deviceTypes={devices}
             saveFacility={saveFacility}
           />
         </MemoryRouter>
@@ -581,6 +594,7 @@ describe("FacilityForm", () => {
       userEvent.type(facilityName, "La Croix Facility");
       userEvent.click(saveButton);
       await validateAddress(saveFacility, "suggested address");
+      expect(getIsValidZipForStateSpy).toBeCalledTimes(1);
       expect(saveFacility).toBeCalledWith({
         ...validFacility,
         name: "La Croix Facility",
@@ -591,78 +605,94 @@ describe("FacilityForm", () => {
         },
       });
     });
+
+    it("blocks submission of facility on invalid ZIP code for state", async () => {
+      // GIVEN
+      getIsValidZipForStateSpy.mockRestore();
+      getIsValidZipForStateSpy = jest
+        .spyOn(smartyStreets, "isValidZipCodeForState")
+        .mockReturnValue(false);
+
+      const facility = validFacility;
+
+      // WHEN
+      render(
+        <>
+          <MemoryRouter>
+            <FacilityForm
+              facility={facility}
+              deviceTypes={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+          <ToastContainer
+            autoClose={5000}
+            closeButton={false}
+            limit={2}
+            position="bottom-center"
+            hideProgressBar={true}
+          />
+        </>
+      );
+
+      const facilityName = await screen.findByLabelText(
+        "Testing facility name",
+        {
+          exact: false,
+        }
+      );
+      userEvent.clear(facilityName);
+      userEvent.type(facilityName, "La Croix Facility");
+      const saveButton = (await screen.findAllByText("Save changes"))[0];
+      userEvent.click(saveButton);
+
+      // THEN
+      // Toast alert appears
+      expect(
+        await screen.findByText("Invalid ZIP code for the selected state", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+
+      expect(getIsValidZipForStateSpy).toBeCalledTimes(1);
+
+      // Does not perform further address validation on invalid ZIP code for state
+      expect(getBestSuggestionSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe("Device validation", () => {
-    it("warns about missing default device", async () => {
+    it("warns about missing device selection", async () => {
       render(
         <MemoryRouter>
           <FacilityForm
             facility={validFacility}
-            deviceSpecimenTypeOptions={deviceSpecimenTypes}
+            deviceTypes={devices}
             saveFacility={saveFacility}
           />
         </MemoryRouter>
       );
-      // Delete default device
+
+      // Delete devices
       const deleteButtons = await screen.findAllByLabelText("Delete device");
+      expect(deleteButtons).toHaveLength(2);
       userEvent.click(deleteButtons[0]);
-      // Attempt save
-      const saveButtons = await screen.findAllByText("Save changes");
-      userEvent.click(saveButtons[0]);
-      await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
-      const warning = await screen.findByText(
-        "A default device must be selected",
-        { exact: false }
-      );
-      expect(warning).toBeInTheDocument();
-    });
+      userEvent.click(deleteButtons[0]);
 
-    it("properly unsets default device when the default device is changed", async () => {
-      const unusedDevice = { internalId: "device-3", name: "Device 3" };
-
-      render(
-        <MemoryRouter>
-          <FacilityForm
-            facility={validFacility}
-            deviceSpecimenTypeOptions={deviceSpecimenTypes.concat({
-              internalId: "4",
-              deviceType: unusedDevice,
-              specimenType: {
-                internalId: "fake-specimen-id-3",
-                name: "Fake Specimen 3",
-              },
-            })}
-            saveFacility={saveFacility}
-          />
-        </MemoryRouter>
-      );
-      // Change default device
-      const dropdown = screen.getByTestId(
-        "device-dropdown-0"
-      ) as HTMLSelectElement;
-
-      userEvent.selectOptions(dropdown, unusedDevice.internalId);
       expect(
-        (screen.getAllByRole("option", {
-          name: unusedDevice.name,
-        })[0] as HTMLOptionElement).selected
-      ).toBeTruthy();
-
-      const checkboxes = screen.getAllByRole("checkbox");
-
-      checkboxes.forEach((checkbox) => expect(checkbox).not.toBeChecked());
+        await screen.findByText("There are currently no devices", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
 
       // Attempt save
       const saveButtons = await screen.findAllByText("Save changes");
-
       userEvent.click(saveButtons[0]);
       await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
       const warning = await screen.findByText(
-        "A default device must be selected",
+        "There must be at least one device",
         { exact: false }
       );
-
       expect(warning).toBeInTheDocument();
     });
   });

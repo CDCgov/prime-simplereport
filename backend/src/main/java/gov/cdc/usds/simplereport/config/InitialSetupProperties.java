@@ -135,7 +135,7 @@ public class InitialSetupProperties {
         Organization org,
         Provider p,
         DeviceSpecimenType defaultDeviceSpec,
-        List<DeviceSpecimenType> configured) {
+        List<DeviceType> configured) {
       return new Facility(
           org, name, cliaNumber, address, telephone, email, p, defaultDeviceSpec, configured);
     }

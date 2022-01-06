@@ -2,6 +2,12 @@ type Nullable<T> = { [P in keyof T]: T[P] | null };
 
 type ISODate = `${number}${number}${number}${number}-${number}${number}-${number}${number}`;
 
+type RequiredExceptFor<T, TOptional extends keyof T> = Pick<
+  T,
+  Exclude<keyof T, TOptional>
+> &
+  Partial<T>;
+
 interface DeviceType {
   internalId: string;
   name: string;
@@ -14,11 +20,6 @@ interface DeviceTypes {
 interface SpecimenType {
   internalId: string;
   name: string;
-}
-
-interface DeviceSpecimenTypeIds {
-  deviceType: ID;
-  specimenType: ID;
 }
 
 interface DeviceSpecimenType {
@@ -45,9 +46,7 @@ interface Facility extends Address {
   name: string;
   phone: string;
   email: string | null;
-  deviceTypes: string[];
-  deviceSpecimenTypes: DeviceSpecimenType[];
-  defaultDevice: string;
+  deviceTypes: DeviceType[];
   orderingProvider: Provider;
 }
 
@@ -116,15 +115,13 @@ interface SettingsData {
         zipCode: string;
         phone: string;
         email: string;
-        defaultDeviceType: {
-          internalId: string;
-        };
+        defaultDeviceSpecimen: string;
         deviceTypes: [
           {
+            name: string;
             internalId: string;
           }
         ];
-        deviceSpecimenTypes: DeviceSpecimenType[];
         orderingProvider: {
           firstName: string;
           middleName: string;
@@ -142,7 +139,7 @@ interface SettingsData {
       }
     ];
   };
-  deviceType: [
+  deviceTypes: [
     {
       internalId: string;
       name: string;
@@ -167,15 +164,12 @@ interface FacilityData {
         zipCode: string;
         phone: string;
         email: string;
-        defaultDeviceType: {
-          internalId: string;
-        };
         deviceTypes: [
           {
+            name: string;
             internalId: string;
           }
         ];
-        deviceSpecimenTypes: DeviceSpecimenType[];
         orderingProvider: {
           firstName: string;
           middleName: string;
@@ -193,7 +187,7 @@ interface FacilityData {
       }
     ];
   };
-  deviceSpecimenTypes: DeviceSpecimenType[];
+  deviceTypes: DeviceType[];
 }
 
 type TestCorrectionStatus = "ORIGINAL" | "CORRECTED" | "REMOVED";

@@ -8,6 +8,7 @@ build/
 *.rej
 /db-setup/snapshots
 out.log
+.env.local
 
 # Local properties for Spring Boot--can be a .properties file or .yml/.yaml
 /src/main/resources/application-local.*

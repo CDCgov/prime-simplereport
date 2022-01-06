@@ -247,6 +247,20 @@ public class ApiUserService {
     return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
   }
 
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
+  public UserInfo resetUserMfa(UUID userId) {
+    ApiUser apiUser = getApiUser(userId);
+    String username = apiUser.getLoginEmail();
+    _oktaRepo.resetUserMfa(username);
+    OrganizationRoleClaims orgClaims =
+        _oktaRepo
+            .getOrganizationRoleClaimsForUser(username)
+            .orElseThrow(MisconfiguredUserException::new);
+    Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
+    OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
+    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
+  }
+
   @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
   public UserInfo setIsDeleted(UUID userId, boolean deleted) {
     ApiUser apiUser = getApiUser(userId, !deleted);

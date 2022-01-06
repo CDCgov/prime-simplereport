@@ -2,5 +2,9 @@
   "baseUrl": "http://localhost.simplereport.gov",
   "viewportWidth": 1200,
   "viewportHeight": 800,
-  "defaultCommandTimeout": 10000
+  "defaultCommandTimeout": 10000,
+  "retries": {
+    "runMode": 2,
+    "openMode": 1
+  }
 }

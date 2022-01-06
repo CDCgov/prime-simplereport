@@ -13,5 +13,6 @@ storybook-static
 build-storybook.log
 /storybook_public
 maintenance.json
+diff.txt
 
 wiremock-jre8-standalone-2.29.1.jar
