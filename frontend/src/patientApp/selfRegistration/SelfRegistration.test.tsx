@@ -92,6 +92,7 @@ describe("SelfRegistration", () => {
     });
     screen.getAllByLabelText("No").forEach(fireEvent.click);
     fireEvent.click(screen.getByLabelText("Mobile"));
+    fireEvent.click(screen.getByLabelText("Female"));
     fireEvent.click(screen.getByText("Submit"));
     await screen.findByText("Address validation");
     fireEvent.click(screen.getByLabelText("Use address", { exact: false }));

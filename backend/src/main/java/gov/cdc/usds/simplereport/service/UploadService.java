@@ -163,7 +163,7 @@ public class UploadService {
             parseRaceDisplayValue(getRow(row, "Race", false)),
             parseEthnicity(getRow(row, "Ethnicity", false)),
             null,
-            parseGender(getRow(row, "biologicalSex", false)),
+            parseGender(getRow(row, "biologicalSex", true)),
             parseYesNo(getRow(row, "residentCongregateSetting", true)),
             parseYesNo(getRow(row, "employedInHealthcare", true)),
             null, // Not including preferredLanguage for now

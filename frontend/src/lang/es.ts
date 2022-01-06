@@ -263,10 +263,9 @@ export const es: LanguageConfig = {
         name: "Nombre del centro",
         phone: "Teléfono del centro",
         address: "Dirección del centro",
-        clia:
-          "Número de Enmiendas para Mejoras de Laboratorios Clínicos (CLIA)",
+        clia: "Número de CLIA",
         orderingProvider: "Solicitado por",
-        npi: "Identificador de Proveedor Nacional (NPI)",
+        npi: "Número de NPI",
       },
       notes: {
         meaning:

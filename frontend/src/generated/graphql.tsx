@@ -146,6 +146,7 @@ export type Mutation = {
   removePatientFromQueue?: Maybe<Scalars["String"]>;
   resendActivationEmail?: Maybe<User>;
   resendToReportStream?: Maybe<Scalars["Boolean"]>;
+  resetUserMfa?: Maybe<User>;
   resetUserPassword?: Maybe<User>;
   sendPatientLinkEmail?: Maybe<Scalars["Boolean"]>;
   sendPatientLinkSms?: Maybe<Scalars["Boolean"]>;
@@ -421,6 +422,10 @@ export type MutationResendActivationEmailArgs = {
 
 export type MutationResendToReportStreamArgs = {
   testEventIds: Array<Scalars["ID"]>;
+};
+
+export type MutationResetUserMfaArgs = {
+  id: Scalars["ID"];
 };
 
 export type MutationResetUserPasswordArgs = {
@@ -1363,6 +1368,15 @@ export type EditUserEmailMutationVariables = Exact<{
 export type EditUserEmailMutation = {
   __typename?: "Mutation";
   updateUserEmail?: Maybe<{ __typename?: "User"; id: string; email: string }>;
+};
+
+export type ResetUserMfaMutationVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type ResetUserMfaMutation = {
+  __typename?: "Mutation";
+  resetUserMfa?: Maybe<{ __typename?: "User"; id: string }>;
 };
 
 export type GetTopLevelDashboardMetricsNewQueryVariables = Exact<{
@@ -3478,6 +3492,55 @@ export type EditUserEmailMutationResult = Apollo.MutationResult<EditUserEmailMut
 export type EditUserEmailMutationOptions = Apollo.BaseMutationOptions<
   EditUserEmailMutation,
   EditUserEmailMutationVariables
+>;
+export const ResetUserMfaDocument = gql`
+  mutation ResetUserMfa($id: ID!) {
+    resetUserMfa(id: $id) {
+      id
+    }
+  }
+`;
+export type ResetUserMfaMutationFn = Apollo.MutationFunction<
+  ResetUserMfaMutation,
+  ResetUserMfaMutationVariables
+>;
+
+/**
+ * __useResetUserMfaMutation__
+ *
+ * To run a mutation, you first call `useResetUserMfaMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useResetUserMfaMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [resetUserMfaMutation, { data, loading, error }] = useResetUserMfaMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useResetUserMfaMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ResetUserMfaMutation,
+    ResetUserMfaMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    ResetUserMfaMutation,
+    ResetUserMfaMutationVariables
+  >(ResetUserMfaDocument, options);
+}
+export type ResetUserMfaMutationHookResult = ReturnType<
+  typeof useResetUserMfaMutation
+>;
+export type ResetUserMfaMutationResult = Apollo.MutationResult<ResetUserMfaMutation>;
+export type ResetUserMfaMutationOptions = Apollo.BaseMutationOptions<
+  ResetUserMfaMutation,
+  ResetUserMfaMutationVariables
 >;
 export const GetTopLevelDashboardMetricsNewDocument = gql`
   query GetTopLevelDashboardMetricsNew(

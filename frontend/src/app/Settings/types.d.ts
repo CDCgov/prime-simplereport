@@ -2,6 +2,12 @@ type Nullable<T> = { [P in keyof T]: T[P] | null };
 
 type ISODate = `${number}${number}${number}${number}-${number}${number}-${number}${number}`;
 
+type RequiredExceptFor<T, TOptional extends keyof T> = Pick<
+  T,
+  Exclude<keyof T, TOptional>
+> &
+  Partial<T>;
+
 interface DeviceType {
   internalId: string;
   name: string;
