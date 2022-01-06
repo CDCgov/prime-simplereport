@@ -100,7 +100,9 @@ const AccountCreationApp = () => {
         </Card>
       </CardBackground>
     );
-  } else if (error) {
+  }
+  // show generic error card for other errors
+  else if (error) {
     return (
       <CardBackground>
         <Card logo bodyKicker={error} bodyKickerCentered={true}></Card>
