@@ -14,9 +14,6 @@ import {
 export const testQuery = gql`
   query getTestResultForText($id: ID!) {
     testResult(id: $id) {
-      patientLink {
-        internalId
-      }
       dateTested
       patient {
         firstName
@@ -40,7 +37,7 @@ const formatDate = (date: string | undefined, withTime?: boolean) => {
 
 export const SEND_SMS = gql`
   mutation sendSMS($id: ID!) {
-    sendPatientLinkSms(internalId: $id)
+    sendPatientLinkSmsByTestEventId(testEventId: $id)
   }
 `;
 
@@ -64,19 +61,22 @@ const mobilePhoneNumbers = (phoneArray: PhoneNumber[]) => {
   return mobileNumbers;
 };
 
-export const DetachedTestResultTextModal = ({ data, closeModal }: Props) => {
+export const DetachedTestResultTextModal = ({
+  data,
+  closeModal,
+  testResultId,
+}: Props) => {
   const [sendSMS] = useMutation(SEND_SMS);
   const { patient } = data.testResult;
-  const patientLink = data.testResult.patientLink.internalId;
   const { dateTested } = data.testResult;
   const resendSMS = () => {
     sendSMS({
       variables: {
-        id: patientLink,
+        id: testResultId,
       },
     })
       .then((response) => {
-        const success = response.data?.sendPatientLinkSms;
+        const success = response.data?.sendPatientLinkSmsByTestEventId;
         showAlertNotification(
           success ? "success" : "error",
           success ? "Texted test results." : "Failed to text test results."
