@@ -226,6 +226,70 @@ describe("QueueItem", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("selects a default device specimen type if type configured for test is invalid", async () => {
+    let editQueueMockIsDone = false;
+
+    const editQueueMocks = [
+      {
+        request: {
+          query: EDIT_QUEUE_ITEM,
+          variables: {
+            id: internalId,
+            deviceId: internalId,
+            result: "UNDETERMINED",
+            dateTested: undefined,
+            // This is _not_ the facility's default device or one selected
+            // manually - given a non-existent device specimen ID, the
+            // component should select another available one automatically
+            deviceSpecimenType: "device-specimen-1",
+          },
+        },
+        result: () => {
+          editQueueMockIsDone = true;
+
+          return {};
+        },
+      },
+    ];
+
+    render(
+      <MockedProvider mocks={editQueueMocks} addTypename={false}>
+        <Provider store={store}>
+          <QueueItem
+            internalId={testProps.internalId}
+            patient={testProps.patient}
+            askOnEntry={testProps.askOnEntry}
+            selectedDeviceId={testProps.selectedDeviceId}
+            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            // This is the important part: this ID should not be passed
+            // along in the GraphQL request
+            selectedDeviceSpecimenTypeId="nonexistent-device-id"
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+            selectedTestResult={testProps.selectedTestResult}
+            devices={testProps.devices}
+            refetchQueue={testProps.refetchQueue}
+            facilityId={testProps.facilityId}
+            dateTestedProp={testProps.dateTestedProp}
+            patientLinkId={testProps.patientLinkId}
+          />
+        </Provider>
+      </MockedProvider>
+    );
+
+    // Select result to trigger an editQueueItem call
+    userEvent.click(
+      screen.getByLabelText("Inconclusive", {
+        exact: false,
+      })
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 501));
+
+    // `true` iff a valid replacement default device specimen type was
+    // selected by the component
+    expect(editQueueMockIsDone).toBe(true);
+  });
+
   it("updates test order on device specimen type change", async () => {
     let editQueueMockIsDone = false;
 

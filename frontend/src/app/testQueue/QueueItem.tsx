@@ -253,13 +253,22 @@ const QueueItem = ({
       (dst) => dst.internalId === deviceSpecimenTypeId
     );
 
+    // If the device specimen type configured for an active test
+    // has been deleted, set the selected value to another valid
+    // device specimen
     if (!deviceSpecimenType) {
+      const deviceSpecimenTypesForDevice = deviceSpecimenTypes.filter(
+        (dst) => dst.deviceType.internalId === selectedDeviceId
+      );
+
+      updateDeviceSpecimenTypeId(deviceSpecimenTypesForDevice[0].internalId);
+
       return;
     }
 
     updateDeviceId(deviceSpecimenType.deviceType.internalId);
     updateSpecimenId(deviceSpecimenType.specimenType.internalId);
-  }, [deviceSpecimenTypes, deviceSpecimenTypeId]);
+  }, [deviceSpecimenTypes, deviceSpecimenTypeId, selectedDeviceId]);
 
   const deviceTypes = deviceSpecimenTypes
     .map((d) => d.deviceType)
