@@ -20,7 +20,7 @@ jest.mock("../../generated/graphql", () => ({
     (options: any) => {
       mockResendTestResultsEmail(options);
       return Promise.resolve({
-        data: { sendPatientLinkEmail: mockResendSuccessValue },
+        data: { sendPatientLinkEmailByTestEventId: mockResendSuccessValue },
       });
     },
   ],
@@ -36,10 +36,6 @@ jest.mock("../../generated/graphql", () => ({
             email: "gesezyx@mailinator.com",
             emails: ["gesezyx@mailinator.com"],
             __typename: "Patient",
-          },
-          patientLink: {
-            internalId: "e4c1c27f-768e-44d2-b9d5-e047454c1d24",
-            __typename: "PatientLink",
           },
           __typename: "TestResult",
         },
@@ -88,7 +84,7 @@ describe("EmailTestResultModal", () => {
       userEvent.click(screen.getByText("Send result"));
 
       expect(mockResendTestResultsEmail).toHaveBeenCalledWith({
-        variables: { patientLinkId: "e4c1c27f-768e-44d2-b9d5-e047454c1d24" },
+        variables: { testEventId: "super-fancy-id" },
       });
 
       await new Promise((resolve) => setTimeout(resolve, 0));
@@ -108,7 +104,7 @@ describe("EmailTestResultModal", () => {
       userEvent.click(screen.getByText("Send result"));
 
       expect(mockResendTestResultsEmail).toHaveBeenCalledWith({
-        variables: { patientLinkId: "e4c1c27f-768e-44d2-b9d5-e047454c1d24" },
+        variables: { testEventId: "super-fancy-id" },
       });
 
       await new Promise((resolve) => setTimeout(resolve, 0));
