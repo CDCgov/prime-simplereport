@@ -8,9 +8,11 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +36,17 @@ public class DeviceTypeService {
   private DeviceTypeRepository _repo;
   private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
   private SpecimenTypeRepository _specimenTypeRepo;
+  private FacilityRepository _facilityRepository;
 
   public DeviceTypeService(
       DeviceTypeRepository repo,
       DeviceSpecimenTypeRepository deviceSpecimenRepo,
-      SpecimenTypeRepository specimenTypeRepo) {
+      SpecimenTypeRepository specimenTypeRepo,
+      FacilityRepository facilityRepository) {
     _repo = repo;
     _deviceSpecimenRepo = deviceSpecimenRepo;
     _specimenTypeRepo = specimenTypeRepo;
+    _facilityRepository = facilityRepository;
   }
 
   @Transactional(readOnly = false)
@@ -130,6 +135,13 @@ public class DeviceTypeService {
       ArrayList<DeviceSpecimenType> toBeDeletedDeviceSpecimenTypes =
           new ArrayList<>(exitingDeviceSpecimenTypes);
       toBeDeletedDeviceSpecimenTypes.removeAll(newDeviceSpecimenTypes);
+
+      // Null out facilities' default device specimen if it was deleted
+      List<Facility> facilitiesToRemoveDefaultDeviceSpecimen =
+          _facilityRepository.findAllByDefaultDeviceSpecimenIn(toBeDeletedDeviceSpecimenTypes);
+
+      facilitiesToRemoveDefaultDeviceSpecimen.forEach(fac -> fac.addDefaultDeviceSpecimen(null));
+
       _deviceSpecimenRepo.deleteAll(toBeDeletedDeviceSpecimenTypes);
 
       // create new ones
